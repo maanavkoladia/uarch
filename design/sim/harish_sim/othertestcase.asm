@@ -1,0 +1,10 @@
+.ORIG x3050
+LEA R5, addr
+LDW R5, R5 #0
+AND R6, R6, #0
+ADD R6, R6, #1
+NOT R6, R6
+STW R6, R5, #0
+RET
+addr .FILL x4000
+.END

@@ -1,0 +1,57 @@
+#!/usr/bin/expect -f
+
+# Redirect output to a file
+log_file test.out
+
+# Set timeout for simulator response
+set timeout 2
+
+# Read the first argument
+#set test_case [lindex $argv 0]
+
+# Now branch based on the value
+#if {$test_case == "ex0"} {
+#    spawn ./build/exe.elf ucode6 objtestfiles/ex0.obj
+#} elseif {$test_case == "ex1"} {
+#    spawn ./build/exe.elf ucode6 objtestfiles/ex1.obj
+#} elseif {$test_case == "ex2"} {
+#    spawn ./build/exe.elf ucode6 objtestfiles/ex2.obj
+#} else {
+#    puts "❗ Unknown test case: $test_case"
+#    exit 1
+#}
+
+spawn ./lc3bsim6 ucode6.txt asrc.obj
+# Wait for LC-3b prompt
+expect "LC-3b-SIM> "
+send "idump\r"
+expect "LC-3b-SIM> "
+
+# Start running the simulator cycle-by-cycle
+while {1} {
+    send "run 1\r"
+    expect {
+        "Simulator halted" {
+            puts "🚀 Simulator halted. Exiting."
+            send "idump\r"
+            expect "LC-3b-SIM> "
+            send "q\r"
+            expect eof
+            exit 0
+        }
+        "LC-3b-SIM> " {
+            send "idump\r"
+            expect "LC-3b-SIM> "
+            # continue loop
+        }
+        timeout {
+            puts "⏳ Timeout occurred. Exiting."
+            exit 1
+        }
+        eof {
+            puts "❗ Unexpected EOF. Exiting."
+            exit 1
+        }
+    }
+}
+

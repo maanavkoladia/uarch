@@ -1,0 +1,32 @@
+i
+r 1
+idump
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+r 1
+i
+quit
