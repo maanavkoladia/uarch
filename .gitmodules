@@ -1,0 +1,3 @@
+[submodule "design/sim/sim_func/libs/mpsLibC"]
+	path = design/sim/sim_func/libs/mpsLibC
+	url = https://github.com/maanavkoladia/mpsLibC.git

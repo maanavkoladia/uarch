@@ -1,0 +1,67 @@
+[
+  {
+    "file": "src/main.c",
+    "arguments": [
+      "gcc",
+      "-Wextra",
+      "-Wall",
+      "-O0",
+      "-g3",
+      "-I./libs/mpsLibC/common",
+      "-c",
+      "src/main.c",
+      "-o",
+      "build/main.o"
+    ],
+    "directory": "/home/maanav/projects/school_projects/uarch/uarch_project/design/sim/sim_func",
+    "output": "build/main.o"
+  },
+  {
+    "file": "RingBuffer/PFifo/PFifo.c",
+    "arguments": [
+      "gcc",
+      "-Wextra",
+      "-Wall",
+      "-O3",
+      "-I.",
+      "-c",
+      "RingBuffer/PFifo/PFifo.c",
+      "-o",
+      "build/RingBuffer/PFifo/PFifo.o"
+    ],
+    "directory": "/home/maanav/projects/school_projects/uarch/uarch_project/design/sim/sim_func/libs/mpsLibC",
+    "output": "build/RingBuffer/PFifo/PFifo.o"
+  },
+  {
+    "file": "RingBuffer/LFfifo/LFfifo.c",
+    "arguments": [
+      "gcc",
+      "-Wextra",
+      "-Wall",
+      "-O3",
+      "-I.",
+      "-c",
+      "RingBuffer/LFfifo/LFfifo.c",
+      "-o",
+      "build/RingBuffer/LFfifo/LFfifo.o"
+    ],
+    "directory": "/home/maanav/projects/school_projects/uarch/uarch_project/design/sim/sim_func/libs/mpsLibC",
+    "output": "build/RingBuffer/LFfifo/LFfifo.o"
+  },
+  {
+    "file": "ThreadPool/ThreadPool.c",
+    "arguments": [
+      "gcc",
+      "-Wextra",
+      "-Wall",
+      "-O3",
+      "-I.",
+      "-c",
+      "ThreadPool/ThreadPool.c",
+      "-o",
+      "build/ThreadPool/ThreadPool.o"
+    ],
+    "directory": "/home/maanav/projects/school_projects/uarch/uarch_project/design/sim/sim_func/libs/mpsLibC",
+    "output": "build/ThreadPool/ThreadPool.o"
+  }
+]
