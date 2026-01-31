@@ -20,7 +20,7 @@ MPS_LIB_OBJ_STATIC = $(MPS_LIB_DIR)/build/mpsLibC.a
 SRC_FILES = \
 			src/main.c	\
 			src/sim_helpers.c 	\
-			src/cpu_design/RISC_FETCH.c	\
+			src/cpu_design/Fetch.c
 
 INCLUDES = \
 		   -I$(MPS_LIB_DIR)/common

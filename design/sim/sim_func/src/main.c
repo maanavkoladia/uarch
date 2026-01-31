@@ -6,13 +6,12 @@
 #include "LOG.h"
 #include <stdbool.h>
 #include "ForLoop.h"
-#include "cpu_design/RISC_FETCH.h"
 #include "sim_types.h"
 #include "Assert_Common.h"
 #include <readline/readline.h>
 #include <string.h>
-#include "cpu_design/RISC_FETCH.h"
 #include "sim_helpers.h"
+#include "cpu_design/Fetch.h"
 
 /* ================================================== */
 /*                      DEFINES                       */
@@ -65,8 +64,8 @@ bool ProgramDead_Check(void){
 void cycle(void){
     //new latches onto old
     new_latches = latches;
+    Fetch_Cycle();
     //run cycle per stage
-    RISC_FETCH_Cycle();
     //old latches onto new 
     latches = new_latches;
     SIM_CYCLES++;
@@ -93,7 +92,6 @@ void go(void){
 
 void Sim_Init(void){
     sim_state = SIM_HALTED;
-    RISC_FETCH_Init();
 }
 
 void ServeCMD(char* pCMD){
@@ -119,7 +117,6 @@ void ServeCMD(char* pCMD){
         go();
         return;
     }
-
 
     CMD_CHK(pTokCmd->tokens[0].tok, "run"){
         run(strtol(pTokCmd->tokens[1].tok, NULL, 10));
