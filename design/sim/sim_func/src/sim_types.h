@@ -1,6 +1,7 @@
 #pragma once
-#include <stdint.h>
 #include "sim_common.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 #define x86_32_NUM_REGS (8)
 
@@ -10,49 +11,67 @@ typedef enum {
     SIM_RUNNING,
     SIM_HALTED,
     SIM_DEAD,
-}sim_state_t;
+} sim_state_t;
 
 typedef union {
     uint32_t regs[x86_32_NUM_REGS];
-}reg_file_t;
+} reg_file_t;
 
-
-//exceptions psossible
-//gen exception and page fault
+// exceptions psossible
+// gen exception and page fault
 
 typedef struct {
-}PreDecode_cs_t;
+} PreDecode_cs_t;
 
 typedef struct {
     PreDecode_cs_t cs_s;
-    
+
     uint32_t valid_bit;
-}PreDecodeLatches_t;
+} PreDecodeLatches_t;
 
 typedef struct {
-    //need CS signals from DECODE, this should be the first set of latches that use them
+    // need CS signals from DECODE, this should be the first set of latches that use them
     uint32_t imm32;
     uint32_t dr_id;
     uint32_t dr_data;
     uint32_t sr_id;
     uint32_t sr_data;
-    uint32_t mem_addr;//comes from SIB address gen logic
+    uint32_t mem_addr; // comes from SIB address gen logic
     uint32_t valid_bit;
-}LD_MEM_latches_t;
+} LD_MEM_latches_t;
 
-typedef struct  {
-    cs_t imm_size_mask;//maybe a mask, or a bit field indicating how many bits in the imm are valid, this would inherently fix the invalid problem if done properly
+typedef struct {
+    cs_t imm_size_mask; // maybe a mask, or a bit field indicating how many bits in the imm are
+                        // valid, this would inherently fix the invalid problem if done properly
     cs_t ld_mem_needed;
-}MEM_CS_t;
+} MEM_CS_t;
 
-typedef struct  {
-    cs_t imm_size_mask;//maybe a mask, or a bit field indicating how many bits in the imm are valid, this would inherently fix the invalid problem if done properly
+typedef struct {
+    cs_t imm_size_mask; // maybe a mask, or a bit field indicating how many bits in the imm are
+                        // valid, this would inherently fix the invalid problem if done properly
     cs_t ld_mem_needed;
-}Decode_CS_t;
+} Decode_CS_t;
 
 typedef struct {
 
-}sim_latches_t;
+} sim_latches_t;
 
+typedef struct {
+    int SPC;
+    int valid_req;
+} cpu_2_icache_p;
 
+typedef struct {
+    uint8_t cache_line[ICACHE_LINE_SIZE];
+    bool valid_line;
+} icache_2_cpu_p;
 
+typedef struct {
+    uint32_t mem_addr;
+    bool mem_req;
+} icache_2_mem_p;
+
+typedef struct {
+    uint32_t mem_data;
+    bool mem_valid;
+} mem_2_icache_p;

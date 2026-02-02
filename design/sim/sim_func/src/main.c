@@ -1,17 +1,17 @@
 /* ================================================== */
 /*                      INCLUDES                      */
 /* ================================================== */
-#include <readline/chardefs.h>
-#include <stdlib.h>
-#include "LOG.h"
-#include <stdbool.h>
-#include "ForLoop.h"
-#include "sim_types.h"
 #include "Assert_Common.h"
-#include <readline/readline.h>
-#include <string.h>
-#include "sim_helpers.h"
+#include "ForLoop.h"
+#include "LOG.h"
 #include "cpu_design/Fetch.h"
+#include "sim_helpers.h"
+#include "sim_types.h"
+#include <readline/chardefs.h>
+#include <readline/readline.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* ================================================== */
 /*                      DEFINES                       */
@@ -26,12 +26,16 @@
 /* ================================================== */
 const char* sim_prompt = "cmd_here_monkey > ";
 
-//insteatiate all of the regs and cross stage wires and debug stuff
+// insteatiate all of the regs and cross stage wires and debug stuff
 sim_state_t sim_state;
 
 uint SIM_CYCLES;
 sim_latches_t latches, new_latches;
 
+icache_i_cpu_p icache_i_cpu;
+icache_o_cpu_p icache_o_cpu;
+icache_i_mem_p icache_i_mem;
+icache_o_mem_p icache_o_mem;
 
 /* ================================================== */
 /*            FUNCTION PROTOTYPES (DECLARATIONS)      */
@@ -40,41 +44,41 @@ sim_latches_t latches, new_latches;
 /* ================================================== */
 /*                 MACRO FUNC  DEFINITIONS            */
 /* ================================================== */
-#define CMD_CHK(cmdIn, cmdExp) if(strcmp((cmdIn), (cmdExp)) == 0)
+#define CMD_CHK(cmdIn, cmdExp) if (strcmp((cmdIn), (cmdExp)) == 0)
 
 /* ================================================== */
 /*                 FUNCTION DEFINITIONS               */
 /* ================================================== */
 
-void help(void){ 
-    //print usage
+void help(void) {
+    // print usage
     printf("Not written Yet\n");
 }
 
-void PrintLatches(void){
+void PrintLatches(void) {
     printf("Not written Yet\n");
 }
 
-bool ProgramDead_Check(void){
-    //i think needs to check if rax == 60 and rdi for the return 
-    //value, which we dint care about i think
+bool ProgramDead_Check(void) {
+    // i think needs to check if rax == 60 and rdi for the return
+    // value, which we dint care about i think
     return false;
 }
 
-void cycle(void){
-    //new latches onto old
+void cycle(void) {
+    // new latches onto old
     new_latches = latches;
     Fetch_Cycle();
-    //run cycle per stage
-    //old latches onto new 
+    // run cycle per stage
+    // old latches onto new
     latches = new_latches;
     SIM_CYCLES++;
 }
 
-void run(uint cycles){
-    FOR_LOOP_COMMON(i, cycles){
+void run(uint cycles) {
+    FOR_LOOP_COMMON(i, cycles) {
         cycle();
-        if(ProgramDead_Check()){
+        if (ProgramDead_Check()) {
             sim_state = SIM_DEAD;
             return;
         }
@@ -83,59 +87,59 @@ void run(uint cycles){
     LOG("Ran %u cycles", cycles);
 }
 
-void go(void){
+void go(void) {
     ASSERT_COMMON(sim_state == SIM_HALTED, "Sim in invalid state");
-    while(!ProgramDead_Check()){
+    while (!ProgramDead_Check()) {
         cycle();
     }
 }
 
-void Sim_Init(void){
+void Sim_Init(void) {
     sim_state = SIM_HALTED;
 }
 
-void ServeCMD(char* pCMD){
+void ServeCMD(char* pCMD) {
     Tokenized_Cmd_t* pTokCmd = NULL;
     TokenizedCMD_Init(pCMD, &pTokCmd);
     ASSERT_COMMON_NOT_NULL(pTokCmd);
 
-    if(pTokCmd->tokenCount == 0){
+    if (pTokCmd->tokenCount == 0) {
         return;
     }
 
-    CMD_CHK(pTokCmd->tokens[0].tok, "q"){
+    CMD_CHK(pTokCmd->tokens[0].tok, "q") {
         sim_state = SIM_DEAD;
         return;
     }
 
-    CMD_CHK(pTokCmd->tokens[0].tok, "h"){
+    CMD_CHK(pTokCmd->tokens[0].tok, "h") {
         help();
         return;
     }
 
-    CMD_CHK(pTokCmd->tokens[0].tok, "go"){
+    CMD_CHK(pTokCmd->tokens[0].tok, "go") {
         go();
         return;
     }
 
-    CMD_CHK(pTokCmd->tokens[0].tok, "run"){
+    CMD_CHK(pTokCmd->tokens[0].tok, "run") {
         run(strtol(pTokCmd->tokens[1].tok, NULL, 10));
         return;
     }
 
-    CMD_CHK(pTokCmd->tokens[0].tok, "idump"){
+    CMD_CHK(pTokCmd->tokens[0].tok, "idump") {
         PrintLatches();
         return;
     }
     TokenizedCMD_Dtr(pTokCmd);
 }
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
     LOG("Starting Sim");
     Sim_Init();
-    while(sim_state != SIM_DEAD){
+    while (sim_state != SIM_DEAD) {
         char* cmd = readline(sim_prompt);
-        if(!cmd){
+        if (!cmd) {
             continue;
         }
         ServeCMD(cmd);
@@ -145,5 +149,3 @@ int main(int argc, char** argv){
     LOG("Exiting Sim");
     return EXIT_SUCCESS;
 }
-
-
