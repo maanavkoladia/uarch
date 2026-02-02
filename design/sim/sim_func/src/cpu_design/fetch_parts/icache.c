@@ -52,35 +52,36 @@ void icache_cycle() {
     }
 
     // CPU to Icache interface
-    int offset = SPC & 0xF;
-    int index = (SPC >> 4) & 0x1F;
-    int tag = SPC >> 9;
-    if (valid_req) {
-        if (valid[index] && tags[index] == tag) {
+    int offset = cpu_to_icache->SPC & 0xF;
+    int index = (cpu_to_icache->SPC >> 4) & 0x1F;
+    int tag = cpu_to_icache->SPC >> 9;
+    
+    if (cpu_to_icache->valid_req) {
+        if (i_cache[index].valid && i_cache[index].tag == tag) {
             // Cache hit
             for (int i = 0; i < ICACHE_LINE_SIZE; i++) {
-                (*cache_line)[i] = cache[index][i];
+                icache_to_cpu->line[i] = i_cache[index].line[i];
             }
-            *valid_line = true;
+            icache_to_cpu->valid_line = true;
         } else {
             // Cache miss
-            *mem_addr = SPC;
-            *mem_req = true;
-            *valid_line = false;
+            icache_to_mem->mem_addr = cpu_to_icache->SPC;
+            icache_to_mem->mem_req = true;
+            icache_to_cpu->valid_line = false;
             filling_flag = true;
             fill_index = index;
             beat_count = 0;
         }
     } else {
-        *valid_line = false;
+        icache_to_cpu->valid_line = false;
     }
 
     // Mem to Icache interface (updating cache line)
-    if (mem_valid && filling_flag) {
-        cache[fill_index][3 - beat_count] = (mem_data >> (beat_count * 8)) & 0xFF;
+    if (mem_to_icache->valid && filling_flag) {
+        i_cache[fill_index].line[3 - beat_count] = (mem_to_icache->data >> (beat_count * 8)) & 0xFF;
         if (beat_count == 3) {
-            valid[fill_index] = true;
-            tags[fill_index] = SPC >> 9;
+            i_cache[fill_index].valid = true;
+            i_cache[fill_index].tag = cpu_to_icache->SPC >> 9;
             filling_flag = false;
         } else {
             beat_count++;
