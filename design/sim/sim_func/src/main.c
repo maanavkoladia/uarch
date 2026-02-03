@@ -32,10 +32,12 @@ sim_state_t sim_state;
 uint SIM_CYCLES;
 sim_latches_t latches, new_latches;
 
-icache_i_cpu_p icache_i_cpu;
-icache_o_cpu_p icache_o_cpu;
-icache_i_mem_p icache_i_mem;
-icache_o_mem_p icache_o_mem;
+tlb_2_icache_p tlb_to_icache;
+icache_2_qctrl_p icache_to_qctrl;
+icache_2_mem_p icache_to_mem;
+mem_2_icache_p mem_to_icache;
+
+bool reset;
 
 /* ================================================== */
 /*            FUNCTION PROTOTYPES (DECLARATIONS)      */

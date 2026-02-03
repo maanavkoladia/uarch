@@ -6,6 +6,8 @@
 #define x86_32_NUM_REGS (8)
 
 typedef uint32_t cs_t;
+typedef uint32_t mem_addr_t;
+typedef bool valid_bit_t;
 
 typedef enum {
     SIM_RUNNING,
@@ -57,21 +59,21 @@ typedef struct {
 } sim_latches_t;
 
 typedef struct {
-    int SPC;
-    int valid_req;
-} cpu_2_icache_p;
+    mem_addr_t tlb_addr;
+    valid_bit_t valid_req_addr;
+} tlb_2_icache_p;
 
 typedef struct {
     uint8_t cache_line[ICACHE_LINE_SIZE];
-    bool valid_line;
-} icache_2_cpu_p;
+    valid_bit_t valid_line;
+} icache_2_qctrl_p;
 
 typedef struct {
-    uint32_t mem_addr;
-    bool mem_req;
+    mem_addr_t mem_addr;
+    valid_bit_t mem_req;
 } icache_2_mem_p;
 
 typedef struct {
-    uint32_t mem_data;
-    bool mem_valid;
+    uint8_t dramData[DRAM_BUS_WIDTH];
+    valid_bit_t mem_valid;
 } mem_2_icache_p;

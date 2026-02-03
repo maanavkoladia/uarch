@@ -1,40 +1,141 @@
 #include "../../sim_types.h"
 #include "Assert_Common.h"
-#include "Fetch.h"
 #include "ForLoop.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
+////////////////////TYPES//////////////////////////
+
+#define ICACHE_OFFSET(addr) ((addr) & 0xF)
+#define ICACHE_INDEX(addr) (((addr) >> 4) & 0x1F)
+#define ICACHE_TAG(addr) ((addr) >> 9)
+
 typedef struct {
     bool valid;
     uint16_t tag;
-    bool fillingFlag;
     uint8_t line[ICACHE_LINE_SIZE];
 } CacheLine_t;
 
+typedef enum {
+    BYTE_0 = 0,
+    BYTE_1 = 1,
+    BYTE_2 = 2,
+    BYTE_3 = 3, // load in the ms byte into the desired cacheline
+    IDLE,
+} ld_line_fsm_state_e;
+
+////////////////////REGS//////////////////////////
+
 static CacheLine_t i_cache[ICACHE_LINES];
 
+static CacheLine_t i_cache_next[ICACHE_LINES];
+
+static ld_line_fsm_state_e cacheLineLoadState, cacheLineLoadState_next;
+
+////////////////////SIGNALS//////////////////////////
 /* Reset wire */
 static bool* reset;
 
+////////////////////DESIGN//////////////////////////
+
 /* Port handles */
-static cpu_2_icache_p* cpu_to_icache;
-static icache_2_cpu_p* icache_to_cpu;
+static tlb_2_icache_p* tlb_to_icache;
+static icache_2_qctrl_p* icache_to_qctrl;
 static icache_2_mem_p* icache_to_mem;
 static mem_2_icache_p* mem_to_icache;
 
-void icache_Init(bool* resetWire, cpu_2_icache_p* cpu2icache, icache_2_cpu_p* icache2cpu,
+void comb_logic(void) {
+    // TLB to Icache interface
+    int tag = ICACHE_TAG(tlb_to_icache->tlb_addr);
+    int index = ICACHE_INDEX(tlb_to_icache->tlb_addr);
+
+    if (tlb_to_icache->valid_req_addr) {
+        if (i_cache[index].valid && i_cache[index].tag == tag) {
+            // Cache hit
+            for (int i = 0; i < ICACHE_LINE_SIZE; i++) {
+                icache_to_qctrl->cache_line[i] = i_cache[index].line[i];
+            }
+            icache_to_qctrl->valid_line = true;
+        } else {
+            // Cache miss, assumming nonblocking
+            icache_to_mem->mem_addr = tlb_to_icache->tlb_addr;
+            icache_to_mem->mem_req = true;
+            icache_to_qctrl->valid_line = false;
+        }
+    } else {
+        icache_to_qctrl->valid_line = false;
+    }
+}
+
+void seq_logic(void) {
+    if (mem_to_icache->mem_valid && tlb_to_icache->valid_req_addr) {
+        uint32_t index = ICACHE_INDEX(tlb_to_icache->tlb_addr);
+        switch (cacheLineLoadState) {
+        case BYTE_0:
+            FOR_LOOP_COMMON(i, DRAM_BUS_WIDTH) {
+                uint32_t offset = BYTE_0 * DRAM_BUS_WIDTH;
+                i_cache_next[index].line[i + offset] = mem_to_icache->dramData[offset];
+                i_cache_next[index].valid = false;
+            }
+            break;
+        case BYTE_1:
+            FOR_LOOP_COMMON(i, DRAM_BUS_WIDTH) {
+                uint32_t offset = BYTE_1 * DRAM_BUS_WIDTH;
+                i_cache_next[index].line[i + offset] = mem_to_icache->dramData[offset];
+            }
+            break;
+        case BYTE_2:
+            FOR_LOOP_COMMON(i, DRAM_BUS_WIDTH) {
+                uint32_t offset = BYTE_2 * DRAM_BUS_WIDTH;
+                i_cache_next[index].line[i + offset] = mem_to_icache->dramData[offset];
+            }
+            break;
+        case BYTE_3:
+            FOR_LOOP_COMMON(i, DRAM_BUS_WIDTH) {
+                uint32_t offset = BYTE_3 * DRAM_BUS_WIDTH;
+                i_cache_next[index].line[i + offset] = mem_to_icache->dramData[offset];
+                i_cache_next[index].tag = ICACHE_TAG(tlb_to_icache->tlb_addr);
+                i_cache_next[index].valid = true;
+            }
+            break;
+        case IDLE:
+            break;
+        }
+    } else {
+    }
+
+    switch (cacheLineLoadState) {
+    case BYTE_0:
+        cacheLineLoadState_next = (mem_to_icache->mem_valid) ? BYTE_1 : BYTE_0;
+        break;
+    case BYTE_1:
+        cacheLineLoadState_next = (mem_to_icache->mem_valid) ? BYTE_2 : BYTE_1;
+        break;
+    case BYTE_2:
+        cacheLineLoadState_next = (mem_to_icache->mem_valid) ? BYTE_3 : BYTE_2;
+        break;
+    case BYTE_3:
+        cacheLineLoadState_next = (mem_to_icache->mem_valid) ? IDLE : BYTE_3;
+        break;
+    case IDLE:
+        cacheLineLoadState_next =
+            !(i_cache[index].valid && i_cache[index].tag == tag) ? BYTE_0 : IDLE;
+        break;
+    }
+}
+
+void icache_Init(bool* resetWire, tlb_2_icache_p* tlb2icache, icache_2_qctrl_p* icache2qctrl,
                  icache_2_mem_p* icache2mem, mem_2_icache_p* mem2icache) {
-    ASSERT_COMMON_NOT_NULL(resetWire && cpu2icache && icache2cpu && icache2mem && mem2icache);
+    ASSERT_COMMON_NOT_NULL(resetWire && tlb2icache && icache2qctrl && icache2mem && mem2icache);
 
     /* Wire up reset */
     reset = resetWire;
 
     /* Wire up ports */
-    cpu_to_icache = cpu2icache;
-    icache_to_cpu = icache2cpu;
+    tlb_to_icache = tlb2icache;
+    icache_to_qctrl = icache2qctrl;
     icache_to_mem = icache2mem;
     mem_to_icache = mem2icache;
 }
@@ -45,46 +146,13 @@ void icache_cycle() {
         FOR_LOOP_COMMON(i, ICACHE_LINES) {
             i_cache[i].valid = false;
         }
-        icache_to_cpu->valid_line = false;
+        icache_to_qctrl->valid_line = false;
         icache_to_mem->mem_req = false;
-
-        return;
-    }
-
-    // CPU to Icache interface
-    int offset = cpu_to_icache->SPC & 0xF;
-    int index = (cpu_to_icache->SPC >> 4) & 0x1F;
-    int tag = cpu_to_icache->SPC >> 9;
-    
-    if (cpu_to_icache->valid_req) {
-        if (i_cache[index].valid && i_cache[index].tag == tag) {
-            // Cache hit
-            for (int i = 0; i < ICACHE_LINE_SIZE; i++) {
-                icache_to_cpu->line[i] = i_cache[index].line[i];
-            }
-            icache_to_cpu->valid_line = true;
-        } else {
-            // Cache miss
-            icache_to_mem->mem_addr = cpu_to_icache->SPC;
-            icache_to_mem->mem_req = true;
-            icache_to_cpu->valid_line = false;
-            filling_flag = true;
-            fill_index = index;
-            beat_count = 0;
-        }
+        cacheLineLoadState = IDLE;
     } else {
-        icache_to_cpu->valid_line = false;
+        comb_logic();
+        seq_logic();
     }
 
-    // Mem to Icache interface (updating cache line)
-    if (mem_to_icache->valid && filling_flag) {
-        i_cache[fill_index].line[3 - beat_count] = (mem_to_icache->data >> (beat_count * 8)) & 0xFF;
-        if (beat_count == 3) {
-            i_cache[fill_index].valid = true;
-            i_cache[fill_index].tag = cpu_to_icache->SPC >> 9;
-            filling_flag = false;
-        } else {
-            beat_count++;
-        }
-    }
+    // DRAM
 }
