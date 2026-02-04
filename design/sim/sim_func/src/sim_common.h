@@ -5,4 +5,4 @@
 #define ICACHE_LINE_SIZE (16)
 #define ICACHE_LINES (32)
 
-#define DRAM_BUS_WIDTH (4)
+#define DRAM_BUS_WIDTH (8)
