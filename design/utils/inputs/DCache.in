@@ -1,0 +1,19 @@
+.i:
+State {IDLE, F0, F1, F2, F3, Evict, Commiting}
+DRAM_mem_valid {0,1}
+B_Q_Full {0,1}
+H_Cache {hit, miss}
+H_B_Q {hit, miss}
+Dirty {0,1}
+Valid {0,1}
+
+.o:
+NextState
+DRAM_mem_req
+Fill0_EN
+Fill1_EN
+Fill2_EN
+Fill3_EN
+B_Q_Push
+Bank_Stalling
+

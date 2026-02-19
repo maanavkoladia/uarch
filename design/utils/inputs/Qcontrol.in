@@ -1,0 +1,9 @@
+slots_avail
+BR Pending
+br_Location == NEIP
+valid line
+flush
+h_ptr offset instr_len > 16
+btb hit
+br loc
+

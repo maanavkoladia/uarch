@@ -5,3 +5,8 @@ build/
 build-clion/
 
 cmake-build-debug/
+
+venv/
+
+.venv
+
