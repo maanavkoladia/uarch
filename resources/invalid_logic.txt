@@ -1,0 +1,15 @@
+inputs : prev_eip, eip
+outputs: slots0.inv, slots1.inv, slots2.inv, slots3.inv, 
+
+if(prev_eip.slots == 0 && eip.slots == 1 ){
+    slot0.inv = 1
+}
+if(prev_eip.slots == 1 && eip.slots == 2 ){
+    slot1.inv = 1
+}
+if(prev_eip.slots == 2 && eip.slots == 3 ){
+    slot2.inv = 1
+}
+if(prev_eip.slots == 3 && eip.slots == 0 ){
+    slot3.inv = 1
+}
