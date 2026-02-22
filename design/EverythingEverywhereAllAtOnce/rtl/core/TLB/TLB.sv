@@ -3,6 +3,9 @@ module TLB (
     output tlb_outputs_t outputs
 );
 
+    import common_pkg::*;
+    import fetch_pkg::*;
+
     localparam int entries = 8;
     localparam int OFFSET_BITS = $clog2(PAGE_SIZE);
     localparam int VPN_BITS = ADDRESS_BITS - OFFSET_BITS;
@@ -67,3 +70,4 @@ module TLB (
     end
 
 endmodule
+
