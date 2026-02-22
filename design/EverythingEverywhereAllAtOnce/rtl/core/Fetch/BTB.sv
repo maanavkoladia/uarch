@@ -6,6 +6,7 @@ module BTB (
 );
 
     import common_pkg::*;
+    import Fetch_pkg::*;
 
     localparam int btb_entries = 64;
     localparam int btb_entries_bits = $clog2(btb_entries);

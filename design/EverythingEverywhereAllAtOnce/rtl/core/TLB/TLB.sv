@@ -4,7 +4,7 @@ module TLB (
 );
 
     import common_pkg::*;
-    import fetch_pkg::*;
+    import TLB_pkg::*;
 
     localparam int entries = 8;
     localparam int OFFSET_BITS = $clog2(PAGE_SIZE);
