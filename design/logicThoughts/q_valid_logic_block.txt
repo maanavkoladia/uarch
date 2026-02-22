@@ -1,0 +1,76 @@
+ipnuts: 
+
+icache.h_m
+spc.slot.num
+q.slots[0,3].v
+invalidate_slot[4]
+
+
+
+output:
+q_write_success
+slot[0,3].ld
+
+
+struct btb_data{
+    hit;
+    target;
+    eip;
+    XCL;
+}
+
+struct q{
+    slot_req[4]
+}
+
+struct slot_req{
+    valid;
+    ld_metadata
+
+    Br.valid;
+    br.eip;
+    br.target;
+    br.XCL;
+
+    ld_data;
+    byte data[16];
+};
+
+
+for(i, 4){
+
+    //we see that is invliad ro will be make invalid we are 
+    //going to make some type of change to it
+    if(invalidate_slot[i] == 1 || slot[spc.slot.num].valid == 0){
+
+    //we see that is invalid we are going to make some type of change ot it
+        slot[spc.slot_num].ld_metadata = 1;
+
+        //need to updaate data going to a slot, ie icache hit
+        if(
+            spc.slot_num == i &&
+            icache.h_m = HIT;
+        ){
+            slot[spc.slot.num].valid = 1;
+
+            //BTB HIT logic
+            if(btb_data.hit == 1){
+                slot[spc.slot.num].Br.valid = 1;
+                slot[spc.slot.num].Br.eip = btb_data.eip;
+                slot[spc.slot.num].Br.target = btb_data.target;
+                slot[spc.slot.num].Br.XCL = btb_data.XCL;
+            }
+            else{
+                slot[spc.slot.num].Br.valid = 0;
+            }
+
+            slot[spc.slot.num].ld_data = 1;
+            slot[spc.slot.num].data = icache.data;
+
+        }
+        else{
+            slot[spc.slot.num].valid = 0;
+        }
+    }
+}
+

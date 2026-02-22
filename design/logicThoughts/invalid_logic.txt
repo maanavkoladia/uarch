@@ -1,0 +1,76 @@
+ipnuts: 
+
+eip
+prev_eip
+q
+
+output:
+invalidate_slot[4]
+
+
+struct q{
+    slot[4]
+}
+
+struct slot{
+    valid;
+    ld_metadata
+
+    Br.valid;
+    br.eip;
+    br.target;
+    br.XCL;
+
+    ld_data;
+    byte data[16];
+};
+
+/deal with flushs
+
+for(i, 4){
+    invalidate_slot[i] = 0;
+}
+
+if(flush){
+    ret;
+}
+
+//return 
+if(q.slots[eip.slot_num].valid == 0){
+    ret;
+}
+
+
+bool slot_in_use_changed = !(eip.slot_num == prev_eip.slot_num);
+bool will_leave_for_br = (q.slots[eip.slot_num].br.eip == eip) 
+                        && q.slots[eip.slot_num].br.valid;
+
+if(slot_in_use_changed && will_leave_for_br){
+    we fucked up = true;
+}
+else if(slot_in_use_changed){
+    invalidate_slot[i] = 1;
+}
+else if(will_leave_for_br){
+    if(q.slots[wraparound[i+1]].vaild && q.slots[i].br.XCL){
+        invalidate_slot[i] = 1;
+        invalidate_slot[wraparound(i+1)] = 1;
+    }else if(!q.slots[wraparound[i+1]].vaild && q.slots[i].br.XCL){
+        invalidate_slot[i] = 0;
+        invalidate_slot[wraparound(i+1)] = 0;
+        
+    }else{
+        invalidate_slot[i] = 1;
+    }
+}
+else{
+    invalidate_slot[i] = 0;
+}
+
+
+if(){
+    invalidate_slot[i] = 1;
+    if()
+}else{
+    invalidate_slot[i] = 0;
+}
