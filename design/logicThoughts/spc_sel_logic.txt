@@ -1,3 +1,4 @@
+
 inputs:
 btb_data.eip
 icache_h_m
@@ -36,9 +37,6 @@ enum spc_select{
 
 if(exe.br_flush) {
     spc_select = branch_restore;
-}
-else if(pending_exception || stall){
-    spc_select = spc;
 }
 else if(icache_h_m == HIT || (btb_data.xcl && TempReg.xcl == 1)){
     spc_select = spc_16;
