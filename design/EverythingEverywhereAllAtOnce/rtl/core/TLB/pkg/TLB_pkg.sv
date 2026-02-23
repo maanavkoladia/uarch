@@ -1,17 +1,16 @@
 package TLB_pkg;
     import common_pkg::*;
 
-    typedef struct {
-        address_t virtual_addr;
-        bool write_intention;
-    } tlb_inputs_t;
+    localparam int entries = 8;
+    localparam int OFFSET_BITS = $clog2(PAGE_SIZE);
+    localparam int VPN_BITS = ADDRESS_BITS - OFFSET_BITS;
 
     typedef struct {
-        address_t physical_addr;
-        bool physical_addr_valid;
-        bool gp_exp;
-        bool pageFault;
-    } tlb_outputs_t;
-
+        logic [VPN_BITS-1:0] VPN;
+        logic [VPN_BITS-1:0] PFN;
+        bool valid;
+        bool present;
+        bool r_w;  // write permission: 1 = writable
+    } tlb_entries_t;
 
 endpackage

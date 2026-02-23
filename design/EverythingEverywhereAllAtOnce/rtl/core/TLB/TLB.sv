@@ -4,19 +4,10 @@ module TLB (
 );
 
     import common_pkg::*;
+    //for tlb entries and sutff
     import TLB_pkg::*;
-
-    localparam int entries = 8;
-    localparam int OFFSET_BITS = $clog2(PAGE_SIZE);
-    localparam int VPN_BITS = ADDRESS_BITS - OFFSET_BITS;
-
-    typedef struct {
-        logic [VPN_BITS-1:0] VPN;
-        logic [VPN_BITS-1:0] PFN;
-        bool valid;
-        bool present;
-        bool r_w;  // write permission: 1 = writable
-    } tlb_entries_t;
+    import core_common_pkg::tlb_inputs_t;
+    import core_common_pkg::tlb_outputs_t;
 
     tlb_entries_t tlb[entries];
 

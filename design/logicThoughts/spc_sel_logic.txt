@@ -1,0 +1,48 @@
+inputs:
+btb_data.eip
+icache_h_m
+TempReg.xcl
+exe.br_flush
+pending_exp
+stall
+
+outputs:
+spc_select select
+clear_xcl
+
+//hit implies btb hit and predicted taken
+
+struct TempReg{
+    xcl
+    br_eip
+}
+
+struct btb_data{
+    hit;
+    target;
+    eip;
+    XCL;
+}
+
+enum spc_select{
+    spc
+    spc_16
+    br_restore
+    btb_data.target
+}
+
+
+
+
+if(exe.br_flush) {
+    spc_select = branch_restore;
+}
+else if(pending_exception || stall){
+    spc_select = spc;
+}
+else if(icache_h_m == HIT || (btb_data.xcl && TempReg.xcl == 1)){
+    spc_select = spc_16;
+}
+else if(btb_h_m == HIT || (TempReg.xcl == 1)){
+    spc_select = btb_data.target;
+}
