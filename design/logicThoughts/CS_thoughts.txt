@@ -1,0 +1,21 @@
+MEM CS
+    ld_op
+    data_size
+
+EXE CS
+    exe_op
+    data_size
+    br_unconditional
+    br_conditional
+    br_clear_exp_mode
+    compute_type {add, and, bsf, not, or, PACKSSWB/W, PADDBW/D, PAVGB/W, SAL, SAR, SUB, } 
+
+
+
+WB CS
+    regFile_Wb
+    xchange
+    store_op
+    data_size
+
+
