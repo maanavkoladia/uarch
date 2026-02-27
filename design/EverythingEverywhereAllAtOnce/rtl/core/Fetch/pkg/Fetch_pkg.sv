@@ -21,7 +21,7 @@ package Fetch_pkg;
     typedef struct {
         bool   h_m;
         byte_t data[CACHE_LINES_SIZE];
-    } icache_output_t;
+    } icache_fetch_output_t;
 
     typedef struct {
         address_t spc;
