@@ -1,6 +1,6 @@
 package Predictor_pkg;
 
-    import common::*;
+    import common_pkg::*;
 
     typedef struct {
         address_t btfn_target;
@@ -9,6 +9,6 @@ package Predictor_pkg;
 
     typedef struct {bool taken;} btfn_output_t;
 
-    //at some point add ghare or TAGE 
+    //at some point add ghare or TAGE :)
 
 endpackage

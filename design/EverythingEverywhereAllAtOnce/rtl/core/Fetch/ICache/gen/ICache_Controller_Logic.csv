@@ -1,4 +1,4 @@
-state,hit_or_miss_i,mem_valid_i,,nextstate,mem_request_o,fill0_o, fill1_o, fill2_o, fill3_o
+state_s,hit_or_miss_i,mem_valid_i,,nextstate_ns,mem_request_o,fill0_o, fill1_o, fill2_o, fill3_o
 Fill0,x,0,,Fill0,1,1,1,1,1
 Fill0,x,1,,Fill1,1,0,1,1,1
 Fill1,x,0,,Fill1,1,1,1,1,1

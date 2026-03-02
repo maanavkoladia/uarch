@@ -1,3 +1,45 @@
 {
+    "script path" : { 
+        "Combinational SOP GEN": "scripts/genCombination_SOP.py",
+        "FSM SOP GEN" : "scripts/genFSM_SOP.py",
+        "Combinational LUT GEN" : "scripts/genTT_LUT.py",
+        "FSM LUT GEN" : "scripts/genFSM_LUT.py"
+    },
+
+    "genFiles" : {
+        "bank_controller_fsm_logic" : {
+            "csv": "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.csv",
+            "outputFilePath" : "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.sv",
+            "run Combinational SOP Gen": "false",
+            "run FSM SOP gen": "true",
+            "run Combinational LUT Gen": "false",
+            "run FSM LUT Gen": "false"
+        },
+
+        "mem_controller_fsm_logic" : {
+            "csv" : "rtl/mem/Mem_Controller/gen/mem_controller_fsm.csv",
+            "outputFilePath" : "rtl/mem/Mem_Controller/gen/mem_controller_fsm.sv",
+            "run FSM SOP gen": "true"
+        },
+
+        "simple" : {
+            "csv": "scripts/test/simple.csv",
+            "outputFilePath" : "scripts/test/rtl/simple.sv",
+            "run Combinational SOP Gen": "true"
+        },
+
+        "ex1" : {
+            "csv": "scripts/test/ex1.csv",
+            "outputFilePath" : "scripts/test/rtl/ex1.sv",
+            "run Combinational SOP Gen": "true"
+        },
+
+        "i_Cache_f_controller_fsm_logic" : {
+            "csv" : "rtl/core/Fetch/ICache/gen/ICache_Controller_Logic.csv",
+            "outputFilePath" : "rtl/core/Fetch/ICache/gen/ICache_Controller_Logic.sv",
+            "run FSM SOP gen": "true"
+        }
+
+    }
 
 }

@@ -18,7 +18,7 @@ module ICache (
     output icache_2_scheduler_t req_2_sch
 );
 
-    //output logic for the 
+    //output logic for the hit
 
     //instatiate the FSM MODULE, state needs to be exposed for the req_2_sch
 

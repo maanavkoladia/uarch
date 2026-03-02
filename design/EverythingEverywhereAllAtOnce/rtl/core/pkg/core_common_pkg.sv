@@ -1,6 +1,6 @@
 package core_common_pkg;
 
-    import common::*;
+    import common_pkg::*;
 
     typedef struct {
         address_t virtual_addr;
