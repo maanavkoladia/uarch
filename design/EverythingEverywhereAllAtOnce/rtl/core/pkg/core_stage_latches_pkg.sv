@@ -11,7 +11,19 @@ package core_stage_latches_pkg;
     
     //
     typedef struct{
-        
+        br_info branch_info;
+        uint32_t NEIP;
+        byte_t imm32[4];
+        byte_t disp[4];
+        uint8_t sib;
+        uint8_t mod;
+        uint8_t opcode;
+        logic[1:0] pfs;
+        logic[9:0] total_pf_vector;
+        bool needr_m;
+        logic [2:0] disp_size;
+        logic [2:0] imm_size;
+        bool sib_size;
     }decode_stage_latches_t;
 
     typedef struct{
