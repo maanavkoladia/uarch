@@ -35,8 +35,8 @@
         },
 
         "i_Cache_f_controller_fsm_logic" : {
-            "csv" : "rtl/core/Fetch/ICache/gen/ICache_Controller_Logic.csv",
-            "outputFilePath" : "rtl/core/Fetch/ICache/gen/ICache_Controller_Logic.sv",
+            "csv" : "rtl/core/ICache/gen/ICache_Controller_Logic.csv",
+            "outputFilePath" : "rtl/core/ICache/gen/ICache_Controller_Logic.sv",
             "run FSM SOP gen": "true"
         }
 
