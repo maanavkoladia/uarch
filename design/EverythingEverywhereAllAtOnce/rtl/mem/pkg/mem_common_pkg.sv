@@ -17,6 +17,10 @@ package mem_common_pkg;
     //this is the size of a cacheline 16B
     localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
 
+    localparam int MEM_SIZE = 1 << 15;
+    localparam int PHY_MEM_ADDRESS_SIZE = $clog2(MEM_SIZE);
+
+
     //need to figure out later
     //bank outputs
     typedef struct {
@@ -38,6 +42,9 @@ package mem_common_pkg;
         //this comes from the mem Controller, this gives
         //permission to this bank to write to the memBus
         bool driveMemBus;
+
+        //buf where write are stored fora bankgroup
+        byte_t writeBuf[CACHE_LINES_SIZE_B];
 
     } mem_controller_2_mem_bank_t;
 

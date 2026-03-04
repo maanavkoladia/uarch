@@ -72,7 +72,7 @@ package Fetch_pkg;
         address_t br_eip;
         address_t br_target;
         bool br_xcl;
-        byte_t data[CACHE_LINES_SIZE];
+        byte_t data[CACHE_LINES_SIZE_B];
     } instruction_q_slot_info_t;
 
     //this is comining out of instrucitno q into fetch, assuming i_q is

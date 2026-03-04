@@ -4,13 +4,27 @@ module mem_bank (
     input logic rst,
 
     input mem_controller_2_mem_bank_t controller2bank_i,
+    /*
+        logic [NUM_SRAM_ADDRESS_BITS -1 : 0] ld_address;
+
+        //address from the bank group table
+        logic [NUM_SRAM_ADDRESS_BITS -1 : 0] st_address;
+
+        //thse two signals are for the bank_fsm_controller
+        bool start_store;
+        bool ld_address_change;
+
+        //this comes from the mem Controller, this gives
+        //permission to this bank to write to the memBus
+        bool driveMemBus;
+
+        //buf where write are stored fora bankgrup
+        byte_t writeBuf[CACHE_LINES_SIZE_B];
+    */
 
     //ld should drive the whole bus, the entire $line
     //however, the write should come from the write bus
     inout [MEM_BUS_SIZE - 1 : 0] mem_bus,
-
-    //data from the write buf
-    input byte_t writeBuf[CACHE_LINES_SIZE_B],
 
     output mem_bank_out_t outputs
 
@@ -35,7 +49,7 @@ module mem_bank (
     logic [MEM_BUS_SIZE-1:0] bank_bus;
 
     // drive mem_bus tri-state
-    assign mem_bus  = mem_bank_controller_oe ? bank_bus : 'z;
+    assign mem_bus  = controller2bank_i.driveMemBus ? bank_bus : 'z;
     assign bank_bus = mem_bank_controller_we ? writeBuf : 'z;
 
     // create the SRAM cells

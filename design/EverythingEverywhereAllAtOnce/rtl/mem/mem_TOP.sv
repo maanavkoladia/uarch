@@ -50,8 +50,6 @@ module mem_TOP (
         .banks_i(bank_out_2_controller)
     );
 
-
-
     initial begin
         //need to load in the program
     end
@@ -62,7 +60,7 @@ module mem_TOP (
     always_comb begin
         data_bus = 'z;
         for (int i = 0; i < MEM_BUS_SIZE / DATA_BUS_WIDTH_BITS; i++) begin
-            if (inFromDte.permission2DriveBus) begin
+            if (inFromDte.permission2DriveBus[i]) begin
                 localparam int upperBound = (i + 1) * DATA_BUS_WIDTH_BITS - 1;
                 localparam int lowerBound = i * DATA_BUS_WIDTH_BITS;
                 data_bus = mem_bus[upperBound : lowerBound];
