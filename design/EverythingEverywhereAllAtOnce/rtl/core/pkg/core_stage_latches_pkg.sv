@@ -34,65 +34,46 @@ package core_stage_latches_pkg;
 
     }mem_stage_latches_t;
 
-    typedef struct{
+    typedef struct {
+        bool EXE_OP;
+        [1:0] DATA_SIZE;
+    }exe_cs_t;
 
+    typedef struct{
+        
     }execute_stage_latches_t;
     
+
+
+
     typedef struct {
         bool ST_OP;
         bool WB_DR;
         bool WB_SR;
         [1:0] DATA_SIZE;
-        bool LD_FLAGS;
-
+        uint32_t FLAG_MODIFIED_VEC;
     }wb_cs_t;
 
     typedef struct{
-        bool ST_XCL;
-        p_address_t ST_ADDR_0;
-        uint16_t ST_BIT_VEC_0;
-        p_address_t ST_ADDR_1;
-        uint16_t ST_BIT_VEC_1;
-        byte_t res_buf [32];
+        bool valid;
+        wb_cs_t cs;
+
+        bool ST_XCL;//valid bit or second set of st info if st_op
+        p_address_t ST_ADDR_0;//cacheline algned
+        uint16_t ST_BIT_VEC_0;//where to write
+        p_address_t ST_ADDR_1;//cacheline algned
+        uint16_t ST_BIT_VEC_1;//where to write
+
+        byte_t res_buf [32];//32 byte buf
 
         reg_ids_e sr_id;
         uint64_t sr_data;
         reg_ids_e dr_id;
         uint64_t dr_data;
+//flags from exe, these are the correct flags, shoudl be commited back normamly
         flags_t flags;
-
-        uint32_t flags_bit_vec;
-
-        wb_cs_t cs;
-        
-        bool valid;
+        uint32_t flag_we_vec;
     }wb_stage_latches_t;
 
-    typedef struct {
-        bool full;
-        bool empty;
-        p_address_t address;
-        uint16_t bit_vec;
-        byte_t data[CACHE_LINES_SIZE_B];
-    } st_q_outputs_t;
-    
-    typedef struct {
-        bool ST_Q_Full[NUM_WB_ST_QS];
-        bool ST_Q_Empty[NUM_WB_ST_QS];
-
-        uint32_t flags;
-
-        bool stall;
-
-        reg_ids_e DR_0_we;
-        reg_ids_e DR_0_id;
-        uint64_t DR_0_data;
-
-        reg_ids_e DR_1_we;
-        reg_ids_e DR_1_id;
-        uint64_t DR_1_data;
-        st_q_outputs_t st_outputs[NUM_WB_ST_QS];
-
-    } wb_outputs_t;
 
 endpackage;

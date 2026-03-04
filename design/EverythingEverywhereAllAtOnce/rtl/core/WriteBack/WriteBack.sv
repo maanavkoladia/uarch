@@ -5,7 +5,7 @@ module WriteBack (
     input wb_stage_latches_t WB_Latches,
 
 
-    //D$ write success
+    //D$ write success for st_qs
     input write_Success[NUM_WB_ST_QS],
 
     output wb_outputs_t outputs

@@ -6,43 +6,43 @@ package core_common_pkg;
 
     typedef enum {
         //{datasize, ID}
-        AL = 0,
-        AX = 8,
+        AL  = 0,
+        AX  = 8,
         EAX = 16,
         MM0 = 24,
 
-        CL = 1,
-        CX = 9,
+        CL  = 1,
+        CX  = 9,
         ECX = 17,
         MM1 = 25,
 
-        DL = 2,
-        DX = 10,
+        DL  = 2,
+        DX  = 10,
         EDX = 18,
         MM2 = 26,
 
-        BL = 3,
-        BX = 11,
+        BL  = 3,
+        BX  = 11,
         EBX = 19,
         MM3 = 27,
 
-        AH = 4,
-        SP = 12,
+        AH  = 4,
+        SP  = 12,
         ESP = 20,
         MM4 = 28,
 
-        CH = 5,
-        BP = 13,
+        CH  = 5,
+        BP  = 13,
         EBP = 21,
         MM5 = 29,
 
-        DH = 6,
-        SI = 14,
+        DH  = 6,
+        SI  = 14,
         ESI = 22,
         MM6 = 30,
 
-        BH = 7,
-        DI = 15,
+        BH  = 7,
+        DI  = 15,
         EDI = 23,
         MM7 = 31,
 
@@ -88,6 +88,35 @@ package core_common_pkg;
         bool gp_exp;
         bool pageFault;
     } tlb_outputs_t;
+
+
+    //needs to feed into dache
+    typedef struct {
+        bool full;
+        bool empty;
+        p_address_t address;
+        uint16_t bit_vec;
+        byte_t data[CACHE_LINES_SIZE_B];
+    } st_q_outputs_t;
+
+    typedef struct {
+        bool wb_stall;
+
+        bool DR_0_we;
+        reg_ids_e DR_0_id;
+        uint64_t DR_0_data;
+
+        bool DR_1_we;
+        reg_ids_e DR_1_id;  //
+        uint64_t DR_1_data;  //data is supposed to be aligned
+
+        uint32_t flags;
+        uint32_t flag_we_vec;
+
+        st_q_outputs_t st_outputs[NUM_WB_ST_QS];
+
+
+    } wb_outputs_t;
 
 endpackage
 
