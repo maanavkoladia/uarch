@@ -5,30 +5,53 @@ package core_common_pkg;
     localparam int NUM_WB_ST_QS = 4;
 
     typedef enum {
-        EAX = 0,
-        EBX = 3,
-        ECX = 1,
-        EDX = 2,
-        ESI = 6,
-        EDI = 7,
-        ESP = 4,
-        EBP = 5,
+        //{datasize, ID}
+        AL = 0,
+        AX = 8,
+        EAX = 16,
+        MM0 = 24,
 
-        MM0 = 8,
-        MM1 = 9,
-        MM2 = 10,
-        MM3 = 11,
-        MM4 = 12,
-        MM5 = 13,
-        MM6 = 14,
-        MM7 = 15,
+        CL = 1,
+        CX = 9,
+        ECX = 17,
+        MM1 = 25,
 
-        CS = 16,
-        DS = 17,
-        SS = 18,
-        ES = 19,
-        FS = 20,
-        GS = 21
+        DL = 2,
+        DX = 10,
+        EDX = 18,
+        MM2 = 26,
+
+        BL = 3,
+        BX = 11,
+        EBX = 19,
+        MM3 = 27,
+
+        AH = 4,
+        SP = 12,
+        ESP = 20,
+        MM4 = 28,
+
+        CH = 5,
+        BP = 13,
+        EBP = 21,
+        MM5 = 29,
+
+        DH = 6,
+        SI = 14,
+        ESI = 22,
+        MM6 = 30,
+
+        BH = 7,
+        DI = 15,
+        EDI = 23,
+        MM7 = 31,
+
+        CS = 32,
+        DS = 33,
+        SS = 34,
+        ES = 35,
+        FS = 36,
+        GS = 37
 
     } reg_ids_e;
 

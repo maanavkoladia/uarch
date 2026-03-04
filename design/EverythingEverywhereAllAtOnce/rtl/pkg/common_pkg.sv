@@ -23,5 +23,6 @@ package common_pkg;
     typedef logic [15:0] uint16_t;
     typedef logic [31:0] uint32_t;
     typedef logic [63:0] uint64_t;
+    typedef logic [128:0] uintCL_t;
 
 endpackage
