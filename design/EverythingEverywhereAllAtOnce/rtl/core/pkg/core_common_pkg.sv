@@ -66,7 +66,5 @@ package core_common_pkg;
         bool pageFault;
     } tlb_outputs_t;
 
-
-
 endpackage
 
