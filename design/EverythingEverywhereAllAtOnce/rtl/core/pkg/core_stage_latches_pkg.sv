@@ -36,22 +36,20 @@ package core_stage_latches_pkg;
 
     typedef struct {
         bool EXE_OP;
-        [1:0] DATA_SIZE;
+        logic [1:0] DATA_SIZE;
+        
     }exe_cs_t;
 
     typedef struct{
+        bool valid;
+        exe_cs_t cs;
         
     }execute_stage_latches_t;
-    
-
-
 
     typedef struct {
         bool ST_OP;
         bool WB_DR;
         bool WB_SR;
-        [1:0] DATA_SIZE;
-        uint32_t FLAG_MODIFIED_VEC;
     }wb_cs_t;
 
     typedef struct{
@@ -59,9 +57,9 @@ package core_stage_latches_pkg;
         wb_cs_t cs;
 
         bool ST_XCL;//valid bit or second set of st info if st_op
-        p_address_t ST_ADDR_0;//cacheline algned
+        p_address_t ST_PADDR_0;//cacheline algned
         uint16_t ST_BIT_VEC_0;//where to write
-        p_address_t ST_ADDR_1;//cacheline algned
+        p_address_t ST_PADDR_1;//cacheline algned
         uint16_t ST_BIT_VEC_1;//where to write
 
         byte_t res_buf [32];//32 byte buf
@@ -70,9 +68,7 @@ package core_stage_latches_pkg;
         uint64_t sr_data;
         reg_ids_e dr_id;
         uint64_t dr_data;
-//flags from exe, these are the correct flags, shoudl be commited back normamly
-        flags_t flags;
-        uint32_t flag_we_vec;
+
     }wb_stage_latches_t;
 
 

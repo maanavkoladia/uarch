@@ -9,7 +9,6 @@ module WriteBack (
     input write_Success[NUM_WB_ST_QS],
 
     output wb_outputs_t outputs
-
 );
 
 

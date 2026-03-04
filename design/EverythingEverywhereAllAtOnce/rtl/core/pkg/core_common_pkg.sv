@@ -110,9 +110,6 @@ package core_common_pkg;
         reg_ids_e DR_1_id;  //
         uint64_t DR_1_data;  //data is supposed to be aligned
 
-        uint32_t flags;
-        uint32_t flag_we_vec;
-
         st_q_outputs_t st_outputs[NUM_WB_ST_QS];
 
 
