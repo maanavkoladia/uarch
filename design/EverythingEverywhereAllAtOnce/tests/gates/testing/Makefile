@@ -7,7 +7,9 @@ TARGET = test_ram
 TB_FILES = \
 			tb_ram.sv
 
-SRC_FILES = $(TB_FILES) $(RTL_SRC_FILES)
+SRC_FILES = \
+			$(RTL_SRC_FILES)	\
+			$(TB_FILES)	\
 
 .PHONY: all run clean see
 
