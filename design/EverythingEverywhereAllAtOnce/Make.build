@@ -1,7 +1,2 @@
-CC = iverilog
-
-CC_FLAGS = -g2012 -Wall -Wno-implicit -Ttyp -gspecify
-
-SIM_TOOL = vvp
-
-
+include "rtl/STD_CELLS_LIB"
+include "rtl/pkgs.mk"
