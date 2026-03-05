@@ -13,8 +13,8 @@ SRC_FILES = $(TB_FILES) $(RTL_SRC_FILES)
 
 all: $(TARGET)
 
-$(TARGET): $(RTL_FILES)
-	$(CC) $(CC_FLAGS) -o $@ $(RTL_FILES)
+$(TARGET): $(SRC_FILES)
+	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES)
 
 run: $(TARGET)
 	./$<
