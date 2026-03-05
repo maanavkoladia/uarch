@@ -111,9 +111,11 @@ package core_common_pkg;
         uint64_t DR_1_data;  //data is supposed to be aligned
 
         st_q_outputs_t st_outputs[NUM_WB_ST_QS];
-
-
     } wb_outputs_t;
+
+    typedef struct{
+        
+    } exe_outputs_t;
 
 endpackage
 
