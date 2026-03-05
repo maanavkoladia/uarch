@@ -1,21 +1,21 @@
 UARCH_GATES_LIB = \
-		lib/Gates/lib1.v
-		lib/Gates/lib2.v
-		lib/Gates/lib3.v
-		lib/Gates/lib4.v
-		lib/Gates/lib5.v
-		lib/Gates/lib6.v
-		lib/Gates/time.v
+		$(ROOT)/lib/Gates/lib1.v \
+		$(ROOT)/lib/Gates/lib2.v \
+		$(ROOT)/lib/Gates/lib3.v \
+		$(ROOT)/lib/Gates/lib4.v \
+		$(ROOT)/lib/Gates/lib5.v \
+		$(ROOT)/lib/Gates/lib6.v \
+		$(ROOT)/lib/Gates/time.v \
 
 COMMON_GATES_LIB = \
-				   lib/LOG.v 	\
-				   lib/utils.v	\
+				   $(ROOT)/lib/LOG.v \
+				   $(ROOT)/lib/utils.v \
 
 STD_CELLS_LIB = \
-				lib/STDCells/reg1b.sv	\
+				$(ROOT)/lib/STDCells/reg1b.sv \
 
 LIB_SRC_FILES = \
-				$(UARCH_GATES_LIB)	\
+				$(UARCH_GATES_LIB) \
 				$(COMMON_GATES_LIB)	\
 				$(STD_CELLS_LIB) \
 

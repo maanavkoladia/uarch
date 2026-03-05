@@ -1,38 +1,29 @@
-TARGET=test_ram
+include ../../../Make.vars
+include ../../../Make.build
 
-CC = iverilog
+TARGET = test_ram
 
-COMMON_LIB_FILES = \
-			   ../../Common/LOG.v	\
-			   ../../Common/utils.v	\
 
-SRC_FILES = \
-    ../lib1 \
-    ../lib2 \
-    ../lib3 \
-    ../lib4 \
-    ../lib6
-
-TEST_FILE = \
+TB_FILES = \
 			tb_ram.sv
 
-RTL_FILES = $(COMMON_LIB_FILES) $(TEST_FILE) $(SRC_FILES)
+SRC_FILES = $(TB_FILES) $(RTL_SRC_FILES)
 
-CC_FLAGS = -g2012 -Wall -Wno-implicit -Ttyp -gspecify
-OUTPUT = test
-
-.PHONY: all run clean
+.PHONY: all run clean see
 
 all: $(TARGET)
 
 $(TARGET): $(RTL_FILES)
 	$(CC) $(CC_FLAGS) -o $@ $(RTL_FILES)
 
-run: all $(TARGET)
-	vvp $(TARGET)
+run: $(TARGET)
+	./$<
 
 view: run
-	gtkwave test.vcd &
+	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd
+
+see:
+	@echo $(SRC_FILES) | sed 's/ /\n/g'
 
 clean:
 	rm -f *.vcd

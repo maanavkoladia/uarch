@@ -13,11 +13,12 @@ package common_pkg;
     localparam int ADDRESS_BUS_WIDTH_BITS = 32;
 
     typedef logic [7:0] byte_t;
-    typedef logic [ADDRESS_BITS -1 : 0] address_t;
-    typedef address_t v_address_t;
+    typedef logic [ADDRESS_BITS - 1 : 0] address_t;
     typedef logic bool;
 
     typedef logic [$clog(PHY_MEM_SIZE) - 1 : 0] p_address_t;
+    typedef address_t v_address_t;
+    typedef address_t l_address_t;
 
     typedef logic [7:0] uint8_t;
     typedef logic [15:0] uint16_t;

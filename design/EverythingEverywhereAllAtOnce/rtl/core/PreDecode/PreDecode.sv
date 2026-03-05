@@ -3,11 +3,13 @@ import Fetch_pkg::instruction_q_2_predecode_t;
 `define slot inputs.latches.slot_info_list
 
 module PreDecode(
+    input wire clk,
+    input wire rst,
     input predecode_stage_latches_t inputs,
 
-    output reg[31:0] EIP;
-    output predecode_2_fetch predecode_forward;
-    output decode_stage_latches decode_latches;
+    output reg[31:0] EIP,
+    output predecode_2_fetch predecode_forward,
+    output decode_stage_latches decode_latches
 );
 
     byte_t IR[CACHE_LINES_SIZE];
@@ -43,7 +45,7 @@ module PreDecode(
     assign decode_latches.opcode = op_byte;
     assign decode_latches.pfs = num_pfs;
     assign decode_latches.total_pf_vector = total_pf_vector;
-    assign decode_latches.needr_m = needr_m
+    assign decode_latches.needr_m = needr_m;
     assign decode_latches.disp_size = disp_size;
     assign decode_latches.imm_size = imm_size;
     assign decode_latches.sib_size = sib_size;

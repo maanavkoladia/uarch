@@ -90,6 +90,22 @@ package core_common_pkg;
     } tlb_outputs_t;
 
 
+    typedef struct {
+        bool valid;
+        bool miss_prediction;
+        p_address_t br_target;
+        bool taken;
+        p_address_t br_eip;
+        p_address_t neip;
+    } execute_outputs_br_info_t;
+
+    typedef struct {
+        bool valid;
+        bool stall;
+        bool flush;
+        execute_outputs_br_info_t br_res_out;
+    } exe_outputs_t;
+
     //needs to feed into dache
     typedef struct {
         bool full;
@@ -100,6 +116,7 @@ package core_common_pkg;
     } st_q_outputs_t;
 
     typedef struct {
+        bool valid;
         bool wb_stall;
 
         bool DR_0_we;
@@ -113,9 +130,6 @@ package core_common_pkg;
         st_q_outputs_t st_outputs[NUM_WB_ST_QS];
     } wb_outputs_t;
 
-    typedef struct{
-        
-    } exe_outputs_t;
 
 endpackage
 

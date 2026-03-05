@@ -72,16 +72,8 @@ package Fetch_pkg;
         address_t br_eip;
         address_t br_target;
         bool br_xcl;
-        //br_info br_metadata;
         byte_t data[CACHE_LINES_SIZE_B];
     } instruction_q_slot_info_t;
-
-    typedef struct {
-        bool br_valid;
-        address_t br_eip;
-        address_t br_target;
-        bool br_xcl;
-    } br_info;
 
     //this is comining out of instrucitno q into fetch, assuming i_q is
     //instatitated in fetch

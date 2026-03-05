@@ -1,5 +1,8 @@
 module Execute (
-    ports
+    input wire clk,
+    input wire rst,
+    
+
 );
     
 endmodule
