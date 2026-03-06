@@ -8,8 +8,8 @@ module mem_controller (
     input wire rst,
 
     //adress and data bus, shoudl proably just be an input
-    inout logic [PHY_MEM_ADDRESS_SIZE - 1 : 0] address_bus,
-    inout logic [DATA_BUS_WIDTH_BITS - 1 : 0] data_bus,
+    inout [PHY_MEM_ADDRESS_SIZE - 1 : 0] address_bus,
+    inout [DATA_BUS_WIDTH_BITS - 1 : 0] data_bus,
     //arb stuff
     input dte_2_mem_t DTE_i,
 
@@ -148,11 +148,10 @@ module mem_controller (
     always_comb begin
         //send load address to each bank
         for (int i = 0; i < NUM_OF_BANK_CHIPS; i++) begin
-            chip_entry_t currEntry = chipTable[i];
             for (int j = 0; j < NUM_BANKS_PER_CHIP; i++) begin
                 bank_cmds_o[{
                     (i*NUM_BANKS_PER_CHIP)+j
-                }].ld_address = currEntry.valid ? currEntry.address[14:10] : 0;
+                }].ld_address = chipTable[i].valid ? chipTable[i].address[14:10] : 0;
             end
         end
     end
@@ -178,7 +177,7 @@ module mem_controller (
     always_comb begin
         for (int i = 0; i < NUM_OF_BANK_CHIPS; i++) begin
             for (int j = 0; j < NUM_BANKS_PER_CHIP; j++) begin
-                chipTable[i].precharge_Status[j] = banks_i[i*NUM_BANKS_PER_CHIP+j];
+                chipTable[i].precharge_Status[j] = banks_i[i*NUM_BANKS_PER_CHIP+j].precharged;
             end
         end
     end
@@ -208,17 +207,28 @@ module mem_controller (
             end
 
             if (fsm_outs.fill0) begin
-                bankGroupTable[bankGroup].writeBuf[3:0] <= data_bus;
+                for (int j = 0; j < 4; j++) begin
+                    bankGroupTable[bankGroup].writeBuf[j] <= data_bus[8*j +: 8];
+                end
             end
+
             if (fsm_outs.fill1) begin
-                bankGroupTable[bankGroup].writeBuf[7:4] <= data_bus;
+                for (int j = 0; j < 4; j++) begin
+                    bankGroupTable[bankGroup].writeBuf[4 + j] <= data_bus[8*j +: 8];
+                end
             end
+
             if (fsm_outs.fill2) begin
-                bankGroupTable[bankGroup].writeBuf[11:8] <= data_bus;
+                for (int j = 0; j < 4; j++) begin
+                    bankGroupTable[bankGroup].writeBuf[8 + j] <= data_bus[8*j +: 8];
+                end
             end
+
             if (fsm_outs.fill3) begin
-                bankGroupTable[bankGroup].writeBuf[15:12] <= data_bus;
-            end
+                for (int j = 0; j < 4; j++) begin
+                    bankGroupTable[bankGroup].writeBuf[12 + j] <= data_bus[8*j +: 8];
+                end
+            end            
 
             for (int i = 0; i < NUM_BANKS; i++) begin
                 if (banks_i[i].clear_writebufV) begin
@@ -241,12 +251,13 @@ module mem_controller (
     always_comb begin
         //clear all of them to clear them
         for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
-            bankGroupTable[i].startStore = '0;
+            for(int j = 0; j < NUM_BANKS_PER_BANK_GROUP; j++) begin
+                bankGroupTable[i].startStore[j] = 0;
+            end
         end
 
         //now assert the correct ones
         for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
-            bankgroup_table_entry_t currEntry = bankGroupTable[i];
             if (fsm_outs.start_store) begin  //need to assert the start_store signle for the correct bank
                 bank_cmds_o[{address_bus[9:7], bankGroup}].start_store = 1;
             end

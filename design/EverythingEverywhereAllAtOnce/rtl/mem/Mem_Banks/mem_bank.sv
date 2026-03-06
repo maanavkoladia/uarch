@@ -46,22 +46,31 @@ module mem_bank (
                             controller2bank_i.st_address : controller2bank_i.ld_address;
 
     // bank internal bus
-    logic [MEM_BUS_SIZE-1:0] bank_bus;
+    wire [MEM_BUS_SIZE-1:0] bank_bus;
+
+    //buffer to take 16 bytes array into a 128 bit bank bus out
+    wire [MEM_BUS_SIZE-1:0] bank_write_data;
 
     // drive mem_bus tri-state
     assign mem_bus  = controller2bank_i.driveMemBus ? bank_bus : 'z;
-    assign bank_bus = mem_bank_controller_we ? controller2bank_i.writeBuf : 'z;
+    assign bank_bus = mem_bank_controller_we ? bank_write_data : 'z;
+
+
+    assign bank_write_data = {
+        controller2bank_i.writeBuf[3],
+        controller2bank_i.writeBuf[2],
+        controller2bank_i.writeBuf[1],
+        controller2bank_i.writeBuf[0]
+    };
 
     // create the SRAM cells needs to be split 4 ways
     genvar i_gen;
     generate
         for (i_gen = 0; i_gen < NUM_SRAM_CELLS; i_gen++) begin : g_sram_cells
-            int UPPER_BOUND = (i_gen + 1) * (MEM_BUS_SIZE/4)  - 1;
-            int LOWER_BOUND = i_gen * (MEM_BUS_SIZE/4);
 
             sram32x32$ mem_cell_u_X (
                 .A(bank_address_i),
-                .DIO(bank_bus[UPPER_BOUND : LOWER_BOUND]),
+                .DIO(bank_bus[(i_gen + 1) * (MEM_BUS_SIZE/4)  - 1 : i_gen * (MEM_BUS_SIZE/4)]),
                 .OE(mem_bank_controller_oe),
                 .WR(mem_bank_controller_we),
                 .CE(1'b0)  // always enabled

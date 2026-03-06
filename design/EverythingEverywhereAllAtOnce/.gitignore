@@ -1,0 +1,13 @@
+*.daidir/
+
+.daidir
+
+csrc/
+
+ucli.key
+
+*.vpd
+
+*.vcd
+
+*.db.gz/

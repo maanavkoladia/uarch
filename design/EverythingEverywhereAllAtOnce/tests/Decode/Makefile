@@ -1,7 +1,7 @@
-include ../../../Make.vars
-include ../../../Make.build
+include ../../Make.vars
+include ../../Make.build
 
-TARGET = test_ram
+TARGET = test_Decode
 
 
 TB_FILES = \
