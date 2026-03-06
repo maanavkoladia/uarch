@@ -16,7 +16,7 @@ package common_pkg;
     typedef logic [ADDRESS_BITS - 1 : 0] address_t;
     typedef logic bool;
 
-    typedef logic [$clog(PHY_MEM_SIZE) - 1 : 0] p_address_t;
+    typedef logic [$clog2(PHY_MEM_SIZE) - 1 : 0] p_address_t;
     typedef address_t v_address_t;
     typedef address_t l_address_t;
 

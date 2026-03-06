@@ -137,8 +137,8 @@ module mem_controller (
             //need to latch in the new ld address from the address bus coming
             //in
             if (fsm_outs.ld_address_changed) begin
-                chipTable[chipNum_FromAddress].valid   <= 1;
-                chipTable[chipNum_FromAddress].address <= address[14:0];
+                chipTable[chipNum].valid   <= 1;
+                chipTable[chipNum].address <= address_bus[14:0];
 
             end
         end
@@ -152,7 +152,7 @@ module mem_controller (
             for (int j = 0; j < NUM_BANKS_PER_CHIP; i++) begin
                 bank_cmds_o[{
                     (i*NUM_BANKS_PER_CHIP)+j
-                }].ld_address = currEntry.valid ? currEntry.ld_address[14:10] : 0;
+                }].ld_address = currEntry.valid ? currEntry.address[14:10] : 0;
             end
         end
     end
@@ -192,7 +192,7 @@ module mem_controller (
 
     //logic
     logic [$clog2(NUM_BANK_GROUPS) - 1 : 0] bankGroup;
-    assign bankGroup = address[6:4];
+    assign bankGroup = address_bus[6:4];
     //seq logic to drive the bank table, add new entries
     //needs to be decided based on fillX signal
     always_ff @(posedge clk) begin
@@ -241,14 +241,14 @@ module mem_controller (
     always_comb begin
         //clear all of them to clear them
         for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
-            bankGroupTable[i].start_store = '0;
+            bankGroupTable[i].startStore = '0;
         end
 
         //now assert the correct ones
         for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
             bankgroup_table_entry_t currEntry = bankGroupTable[i];
             if (fsm_outs.start_store) begin  //need to assert the start_store signle for the correct bank
-                bank_cmds_o[{address[9:7], bankGroup}].start_store = 1;
+                bank_cmds_o[{address_bus[9:7], bankGroup}].start_store = 1;
             end
         end
     end
@@ -262,7 +262,7 @@ module mem_controller (
 
     //need to do DTE_out logic
     always_comb begin
-        ToDTE_o.mem_Ready = fsm_outs.mem_Ready;
+        ToDTE_o.mem_Ready = fsm_outs.mem_ready;
     end
 
     //need to do hit logic

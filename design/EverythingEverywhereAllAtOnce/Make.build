@@ -3,5 +3,9 @@ ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 include $(ROOT)/rtl/srcs.mk
 include $(ROOT)/lib/srcs.mk
 
-RTL_SRC_FILES += $(LIB_SRC_FILES) $(RTL_DESIGN_SRC_FILES) $(RTL_DESIGN_PKGS)
+RTL_PKGS = $(RTL_DESIGN_PKGS)
+
+RTL_SRC_FILES = \
+                $(LIB_SRC_FILES) \
+                $(RTL_DESIGN_SRC_FILES) \
 

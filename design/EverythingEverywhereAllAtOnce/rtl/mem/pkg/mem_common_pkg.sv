@@ -14,9 +14,6 @@ package mem_common_pkg;
     localparam int NUM_SRAM_ADDRESS_WORD = 32;
     localparam int NUM_SRAM_ADDRESS_BITS = $clog2(NUM_SRAM_ADDRESS_WORD);
 
-    //this is the size of a cacheline 16B
-    localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
-
     localparam int MEM_SIZE = 1 << 15;
     localparam int PHY_MEM_ADDRESS_SIZE = $clog2(MEM_SIZE);
 

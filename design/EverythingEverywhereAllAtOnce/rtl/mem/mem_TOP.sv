@@ -1,3 +1,7 @@
+import common_pkg::*;
+import mem_common_pkg::*;
+import system_bus_ifs_pkg::*;
+
 module mem_TOP (
     input wire clk,
     input wire rst,
@@ -14,9 +18,6 @@ module mem_TOP (
 
 
 );
-    import common_pkg::*;
-    import mem_common_pkg::*;
-    import system_bus_ifs_pkg::*;
 
     mem_controller_2_mem_bank_t controller_2_bank_Cmds[NUM_BANKS];
     mem_bank_out_t bank_out_2_controller[NUM_BANKS];
@@ -30,9 +31,9 @@ module mem_TOP (
             mem_bank mem_bank_unit_uX (
                 .clk(clk),
                 .rst(rst),
-                .controller2bank_i(controller_2_bank_Cmds[i]),
+                .controller2bank_i(controller_2_bank_Cmds[i_gen]),
                 .mem_bus(mem_bus),
-                .outputs(bank_out_2_controller[i])
+                .outputs(bank_out_2_controller[i_gen])
             );
         end
     endgenerate
@@ -43,6 +44,7 @@ module mem_TOP (
         .clk(clk),
         .rst(rst),
         .address_bus(address_bus),
+        .data_bus(data_bus),
         .DTE_i(inFromDte),
         .ToDTE_o(out2Dte),
         .ToScheduler_o(out2Sch),
@@ -61,8 +63,8 @@ module mem_TOP (
         data_bus = 'z;
         for (int i = 0; i < MEM_BUS_SIZE / DATA_BUS_WIDTH_BITS; i++) begin
             if (inFromDte.permission2DriveBus[i]) begin
-                localparam int upperBound = (i + 1) * DATA_BUS_WIDTH_BITS - 1;
-                localparam int lowerBound = i * DATA_BUS_WIDTH_BITS;
+                int upperBound = (i + 1) * DATA_BUS_WIDTH_BITS - 1;
+                int lowerBound = i * DATA_BUS_WIDTH_BITS;
                 data_bus = mem_bus[upperBound : lowerBound];
             end
         end

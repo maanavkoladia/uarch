@@ -50,14 +50,14 @@ module mem_bank (
 
     // drive mem_bus tri-state
     assign mem_bus  = controller2bank_i.driveMemBus ? bank_bus : 'z;
-    assign bank_bus = mem_bank_controller_we ? writeBuf : 'z;
+    assign bank_bus = mem_bank_controller_we ? controller2bank_i.writeBuf : 'z;
 
-    // create the SRAM cells
+    // create the SRAM cells needs to be split 4 ways
     genvar i_gen;
     generate
         for (i_gen = 0; i_gen < NUM_SRAM_CELLS; i_gen++) begin : g_sram_cells
-            localparam int UPPER_BOUND = (i_gen + 1) * data_bus_width_bits - 1;
-            localparam int LOWER_BOUND = i_gen * data_bus_width_bits;
+            int UPPER_BOUND = (i_gen + 1) * (MEM_BUS_SIZE/4)  - 1;
+            int LOWER_BOUND = i_gen * (MEM_BUS_SIZE/4);
 
             sram32x32$ mem_cell_u_X (
                 .A(bank_address_i),

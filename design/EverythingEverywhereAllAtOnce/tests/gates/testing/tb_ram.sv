@@ -1,7 +1,7 @@
-`include "../../Common/LOG.v"
-`include "../../Common/utils.v"
+//`include "../../Common/LOG.v"
+//`include "../../Common/utils.v"
 
-module tb_ram;
+module tb_ram();
 
     // Parameters
     localparam int clk_period = 10;
