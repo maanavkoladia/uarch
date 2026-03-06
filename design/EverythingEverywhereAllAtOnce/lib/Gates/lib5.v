@@ -388,7 +388,7 @@ module alu4$(a,b,cin,m,s,cout,out);
   output [3:0] out;
   reg  cout;
   reg [3:0] out;
-  reg [3:0] logic;
+  reg [3:0] logic_lib5;
   reg [4:0] pr;
   reg [3:0] pr1;
   reg [4:0] arith;
@@ -405,42 +405,42 @@ module alu4$(a,b,cin,m,s,cout,out);
       cinbar = ( ~ cin_temp);
       if((s_temp == 4'd0))
         begin
-        logic = ( ~ a_temp);
+        logic_lib5 = ( ~ a_temp);
         arith = ({1'b0,a_temp} - cinbar);
         end
       else      if((s_temp == 4'd1))
         begin
-        logic = ( ~ (a_temp & b_temp));
+        logic_lib5 = ( ~ (a_temp & b_temp));
         pr = (a_temp & b_temp);
         arith = ({1'b0,pr} - cinbar);
         end
       else      if((s_temp == 4'd2))
         begin
-        logic = (( ~ a_temp) | b_temp);
-        pr = ( ~ logic);
+        logic_lib5 = (( ~ a_temp) | b_temp);
+        pr = ( ~ logic_lib5);
         arith = ({1'b0,pr} - cinbar);
         end
       else      if((s_temp == 4'd3))
         begin
-        logic = ( ~ 'b0);
-        arith = ({1'b0,logic} + cin_temp);
+        logic_lib5 = ( ~ 'b0);
+        arith = ({1'b0,logic_lib5} + cin_temp);
         end
       else      if((s_temp == 4'd4))
         begin
-        logic = ( ~ (a_temp | b_temp));
+        logic_lib5 = ( ~ (a_temp | b_temp));
         pr = (a_temp | ( ~ b_temp));
         arith = (a_temp + ({1'b0,pr} + cin_temp));
         end
       else      if((s_temp == 4'd5))
         begin
-        logic = ( ~ b_temp);
+        logic_lib5 = ( ~ b_temp);
         pr = (a_temp & b_temp);
         pr1 = (a_temp | ( ~ b_temp));
         arith = (pr + ({1'b0,pr1} + cin_temp));
         end
       else      if((s_temp == 4'd6))
         begin
-        logic = ( ~ (a_temp ^ b_temp));
+        logic_lib5 = ( ~ (a_temp ^ b_temp));
         //pr = (( ~ (b_temp + cinbar)) + 1'b1);
         //arith = ({1'b0,a_temp} + pr);
         arith = a - b - cin;
@@ -448,63 +448,63 @@ module alu4$(a,b,cin,m,s,cout,out);
         end
       else      if((s_temp == 4'd7))
         begin
-        logic = (a_temp | ( ~ b_temp));
-        arith = ({1'b0,logic} + cin_temp);
+        logic_lib5 = (a_temp | ( ~ b_temp));
+        arith = ({1'b0,logic_lib5} + cin_temp);
         end
       else      if((s_temp == 4'd8))
         begin
-        logic = (( ~ a_temp) & b_temp);
+        logic_lib5 = (( ~ a_temp) & b_temp);
         pr = (a_temp | b_temp);
         arith = (a_temp + ({1'b0,pr} + cin_temp));
         end
       else      if((s_temp == 4'd9))
         begin
-        logic = (a_temp ^ b_temp);
+        logic_lib5 = (a_temp ^ b_temp);
         arith = (a_temp + ({1'b0,b_temp} + cin_temp));
         end
       else      if((s_temp == 4'd10))
         begin
-        logic = b_temp;
+        logic_lib5 = b_temp;
         pr = (a_temp & ( ~ b_temp));
         pr1 = (a_temp | b_temp);
         arith = (pr + ({1'b0,pr1} + cin_temp));
         end
       else      if((s_temp == 4'd11))
         begin
-        logic = (a_temp | b_temp);
-        arith = ({1'b0,logic} + cin_temp);
+        logic_lib5 = (a_temp | b_temp);
+        arith = ({1'b0,logic_lib5} + cin_temp);
         end
       else      if((s_temp == 4'd12))
         begin
-        logic = 'b0;
+        logic_lib5 = 'b0;
         arith = (a_temp + ({1'b0,a_temp} + cin_temp));
         end
       else      if((s_temp == 4'd13))
         begin
-        logic = (a_temp & ( ~ b_temp));
+        logic_lib5 = (a_temp & ( ~ b_temp));
         pr = (a_temp & b_temp);
         arith = (pr + ({1'b0,a_temp} + cin_temp));
         end
       else      if((s_temp == 4'd14))
         begin
-        logic = (a_temp & b_temp);
+        logic_lib5 = (a_temp & b_temp);
         pr = (a_temp & ( ~ b_temp));
         arith = (pr + ({1'b0,a_temp} + cin_temp));
         end
       else      if((s_temp == 4'd15))
         begin
-        logic = a_temp;
+        logic_lib5 = a_temp;
         arith = ({1'b0,a_temp} + cin_temp);
         end
       else
         begin
-        logic = 'bX;
+        logic_lib5 = 'bX;
         arith = 'bX;
         end
       if((m_temp == 1'b0))
         begin
         cout = 1'b0;
-        out = logic;
+        out = logic_lib5;
         end
       else      if((m_temp == 1'b1))
         begin

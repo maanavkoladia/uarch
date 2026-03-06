@@ -8,8 +8,8 @@ UARCH_GATES_LIB = \
 		$(ROOT)/lib/Gates/time.v \
 
 COMMON_GATES_LIB = \
-				   $(ROOT)/lib/LOG.v \
-				   $(ROOT)/lib/utils.v \
+				   $(ROOT)/lib/Common/LOG.v \
+				   $(ROOT)/lib/Common/utils.v \
 
 STD_CELLS_LIB = \
 				$(ROOT)/lib/STDCells/reg1b.sv \
