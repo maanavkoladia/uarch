@@ -47,7 +47,7 @@ package core_stage_latches_pkg;
 
     typedef struct {
         bool valid;
-        mem_cs_t cs;
+        dc_cs_t cs;
 
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
@@ -73,7 +73,9 @@ package core_stage_latches_pkg;
 
     } dc_latches_t;
 
-    typedef struct {bool MEM_OP;} mem_cs_t;
+    typedef struct {
+        bool MEM_OP;
+    } mem_cs_t;
 
     typedef struct {
         bool valid;
