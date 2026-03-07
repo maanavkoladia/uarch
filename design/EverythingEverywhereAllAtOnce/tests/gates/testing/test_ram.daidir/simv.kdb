@@ -1,9 +1,9 @@
 rc file Version 1.0
 
 [Design]
-COMPILE_PATH=/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/tests/gates/testing
-VCS_HOME=/usr/local/packages/synopsys_2022/vcs/T-2022.06/
-VERDI_HOME=
+COMPILE_PATH=/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/tests/gates/testing
+VCS_HOME=/usr/local/packages/synopsys_2020/vcs/R-2020.12/
+VERDI_HOME=/usr/local/packages/synopsys_2020/verdi-R/R-2020.12
 SystemC=FALSE
 UUM=FALSE
 KDB=FALSE
