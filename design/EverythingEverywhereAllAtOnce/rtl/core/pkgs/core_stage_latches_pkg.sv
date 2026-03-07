@@ -1,16 +1,27 @@
 package core_stage_latches_pkg;
 
-    import Fetch_pkg::instruction_q_2_predecode_t;
     import core_common_pkg::*;
     import common_pkg::*;
     import execute_op_types_pkg::exe_cs_operation_type_e;
 
-    //this one is weird should
-    typedef struct {instruction_q_2_predecode_t latches;} predecode_stage_latches_t;
+    localparam int num_byte_q_slots = 4;
 
-    //
     typedef struct {
-        br_info branch_info;
+        bool valid;
+        bool br_valid;
+        address_t br_eip;
+        address_t br_target;
+        bool br_xcl;
+        byte_t data[CACHE_LINES_SIZE_B];
+    } byte_q_slot_info_t;
+
+    typedef struct {byte_q_slot_info_t bytes_q[num_byte_q_slots];} predecode_stage_latches_t;
+
+    typedef struct {
+        bool br_pred_taken;
+        v_address_t br_target;
+        v_address_t br_eip;
+
         uint32_t NEIP;
         byte_t imm32[4];
         byte_t disp[4];
@@ -25,11 +36,7 @@ package core_stage_latches_pkg;
         bool sib_size;
     } decode_stage_latches_t;
 
-    //typedef struct{
-
-    //}RR_stage_latches_t;
-
-    typedef struct {bool LD_OP;} mem_cs_t;
+    typedef struct {bool MEM_OP;} mem_cs_t;
 
     typedef struct {
         bool valid;

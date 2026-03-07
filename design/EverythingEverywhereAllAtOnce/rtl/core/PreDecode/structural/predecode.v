@@ -1,8 +1,8 @@
 module predecode(
     input [63:0][7:0] queue,
     input clk, rst,
-    output reg EIP,
-    output [3:0] inst_length
+    output reg [31:0] EIP,
+    output wire [3:0] inst_length
 );
     wire [15:0][7:0] IRbyte; //16 different IR bytes
     wire [3:0][3:0] ppu_inst_length;
@@ -11,7 +11,7 @@ module predecode(
     wire [1:0] num_pfs;
     wire [9:0] pf_vector0, pf_vector1, pf_vector2, total_pf_vector;
     wire [15:0] eip_bar_top, eip_bar_bottom;
-    wire [7:0] carry;
+    wire [8:0] carry;
     wire [31:0] sext_inst_length, NEIP;
 
     assign carry[0] = 1'b0;

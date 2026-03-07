@@ -1,6 +1,6 @@
 MEM_SRC_FILES_BANKS = \
 					  $(ROOT)/rtl/mem/Mem_Banks/mem_bank.sv \
-					  $(ROOT)/rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.sv	\
+					  $(ROOT)/rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.sv
 
 
 MEM_SRC_FILES_CONTROLLER = \

@@ -1,7 +1,10 @@
 package Fetch_pkg;
     import common_pkg::*;
-
-    localparam int num_slots = 4;
+    import core_stage_latches_pkg::predecode_stage_latches_t;
+    import core_stage_latches_pkg::byte_q_slot_info_t;
+    import core_stage_latches_pkg::num_byte_q_slots;
+    
+    localparam int num_slots = num_byte_q_slots;
 
     typedef struct {
         address_t btfn_target;
@@ -79,10 +82,6 @@ package Fetch_pkg;
     //instatitated in fetch
     typedef struct {instruction_q_slot_info_t slot_info_list[num_slots];} instruction_q_2_fetch_t;
 
-    //this is in input into predecode;
-    typedef struct {
-        instruction_q_slot_info_t slot_info_list[num_slots];
-    } instruction_q_2_predecode_t;
 
     typedef enum {
         SPC = 2'b00,
