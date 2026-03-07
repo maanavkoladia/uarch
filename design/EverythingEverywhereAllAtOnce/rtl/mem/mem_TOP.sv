@@ -23,7 +23,7 @@ module mem_TOP (
     mem_bank_out_t bank_out_2_controller[NUM_BANKS];
 
     wire [MEM_BUS_SIZE - 1 : 0] mem_bus;
-    
+
     //create the banks
     genvar i_gen;
     generate
@@ -37,9 +37,8 @@ module mem_TOP (
             );
         end
     endgenerate
-    //create the controller,
-    //
 
+    //create the controller,
     mem_controller controller (
         .clk(clk),
         .rst(rst),
@@ -68,7 +67,7 @@ module mem_TOP (
         dataToDrive = '0;
         for (int i = 0; i < MEM_BUS_SIZE / DATA_BUS_WIDTH_BITS; i++) begin
             if (inFromDte.permission2DriveBus[i]) begin
-                dataToDrive = mem_bus[i*DATA_BUS_WIDTH_BITS +: DATA_BUS_WIDTH_BITS];
+                dataToDrive = mem_bus[i*DATA_BUS_WIDTH_BITS+:DATA_BUS_WIDTH_BITS];
                 drive_Data_Bus = 1;
             end
         end
