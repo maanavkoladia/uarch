@@ -2,7 +2,7 @@ module predecode(
     input [63:0][7:0] queue,
     input clk, rst,
     output reg [31:0] EIP,
-    output wire [3:0] inst_length
+    output [3:0] inst_length
 );
     wire [15:0][7:0] IRbyte; //16 different IR bytes
     wire [3:0][3:0] ppu_inst_length;
