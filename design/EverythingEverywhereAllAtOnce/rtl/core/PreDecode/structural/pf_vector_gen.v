@@ -7,9 +7,9 @@ module pf_vector_gen (
     wire [9:0] real_vector0, real_vector1, real_vector2;
     wire sel0, sel2;
 
-    mux2_10 mux0(.in0(9'b0), .in1(pf_vector0), .sel(sel0), .out(real_vector0));
-    mux2_10 mux1(.in0(9'b0), .in1(pf_vector1), .sel(pfs[1]), .out(real_vector1));
-    mux2_10 mux2(.in0(9'b0), .in1(pf_vector2), .sel(sel2), .out(real_vector2));
+    mux2_10 mux0(.in0(10'b0), .in1(pf_vector0), .sel(sel0), .out(real_vector0));
+    mux2_10 mux1(.in0(10'b0), .in1(pf_vector1), .sel(pfs[1]), .out(real_vector1));
+    mux2_10 mux2(.in0(10'b0), .in1(pf_vector2), .sel(sel2), .out(real_vector2));
 
     or2$ or0(sel0, pfs[0], pfs[1]);
     and2$ and0(sel2, pfs[0], pfs[1]);

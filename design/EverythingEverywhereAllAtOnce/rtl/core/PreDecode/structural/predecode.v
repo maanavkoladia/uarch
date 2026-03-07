@@ -17,10 +17,6 @@ module predecode(
     assign carry[0] = 1'b0;
     assign sext_inst_length = {28'b0, inst_length};
 
-    initial begin
-        EIP = 32'h0;
-    end
-
     selection_logic sel_log1(.queue(queue), .EIP(EIP), .IRbyte(IRbyte));
 
     ppu pfs0(.opcode_byte(IRbyte[0]), .mod_byte(IRbyte[1]), .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'b001), 
