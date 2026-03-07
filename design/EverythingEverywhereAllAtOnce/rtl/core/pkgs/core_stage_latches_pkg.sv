@@ -36,6 +36,43 @@ package core_stage_latches_pkg;
         bool sib_size;
     } decode_stage_latches_t;
 
+    typedef struct {bool RR_OP;} rr_cs_t;
+
+    typedef struct {
+        bool valid;
+        rr_cs_t cs;
+    } rr_latches_t;
+
+    typedef struct {bool DC_OP;} dc_cs_t;
+
+    typedef struct {
+        bool valid;
+        mem_cs_t cs;
+
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
+        p_address_t ST_PADDR_1;  //cacheline algned
+
+        bool br_pred_taken;
+        v_address_t br_target;
+        v_address_t br_eip;
+
+        v_address_t NEIP;
+
+        uint32_t imm32;
+
+        bool LD_XCL;
+        p_address_t LD_PADDR_0;  //cacheline unalgned, ie actual addr
+        p_address_t LD_PADDR_1;  //cacheline algned
+        bool swapLines;
+
+        reg_ids_e sr_id;
+        uint64_t  sr_data;
+        reg_ids_e dr_id;
+        uint64_t  dr_data;
+
+    } dc_latches_t;
+
     typedef struct {bool MEM_OP;} mem_cs_t;
 
     typedef struct {
