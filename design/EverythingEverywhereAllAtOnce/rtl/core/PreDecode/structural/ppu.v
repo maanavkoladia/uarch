@@ -16,7 +16,7 @@ module ppu (
     mux2_3 immmux(.in0(imm_size), .in1(3'b010), .sel(total_pf_vector[5]), .out(imm_size));
     mux2_3 msdmux(.in0(3'b000), .in1(msd_size), .sel(needrm), .out(msd_size));
 
-    adder4bit adder0(.in0, .in1, .in2, .out(inst_length));
+    adder4bit adder0 (.in0(msd_size), .in1(imm_size), .in2(num_pfs_plusone), .result(inst_length));
 
     
 endmodule

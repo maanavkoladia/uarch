@@ -130,6 +130,5 @@ package core_common_pkg;
         st_q_outputs_t st_outputs[NUM_WB_ST_QS];
     } wb_outputs_t;
 
-
 endpackage
 

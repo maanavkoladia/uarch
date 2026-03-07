@@ -1,5 +1,5 @@
 module mux4_4 (
-    input [3:0] in0, in1, in2, in3
+    input [3:0] in0, in1, in2, in3,
     input sel0, sel1,
     output [3:0] out
 );

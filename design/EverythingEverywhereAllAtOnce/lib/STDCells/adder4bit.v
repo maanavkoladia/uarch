@@ -3,5 +3,5 @@ module adder4bit (
     output [3:0] result
 );
     //sops
-    
+     
 endmodule

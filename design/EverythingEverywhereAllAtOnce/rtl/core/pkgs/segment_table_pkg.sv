@@ -1,7 +1,7 @@
 package segment_table_pkg;
     
-    typedef struct {
-    };
+    //typedef struct {
+    //};
 
 
 endpackage
