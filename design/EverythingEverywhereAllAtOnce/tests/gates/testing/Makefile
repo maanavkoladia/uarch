@@ -5,13 +5,13 @@ TARGET = test_ram
 
 
 TB_FILES = \
-		   tb_Dec.sv
+		   tb_ram.sv
 
 PKGS = $(RTL_PKGS)
 
 SRC_FILES = \
 			$(PKGS)	\
-			$(RTL_SRC_FILES)	\
+			$(RTL_SRC_FILES) \
 			$(TB_FILES)	\
 
 .PHONY: all run clean see
