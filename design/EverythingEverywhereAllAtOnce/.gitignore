@@ -13,3 +13,5 @@ ucli.key
 *.db.gz/
 
 *espresso.out
+
+gen/

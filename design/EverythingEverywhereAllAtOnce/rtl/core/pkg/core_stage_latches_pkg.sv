@@ -6,12 +6,10 @@ package core_stage_latches_pkg;
     import execute_op_types_pkg::exe_cs_operation_type_e;
 
     //this one is weird should
-    typedef struct{
-        instruction_q_2_predecode_t latches;
-    }predecode_stage_latches_t;
-    
+    typedef struct {instruction_q_2_predecode_t latches;} predecode_stage_latches_t;
+
     //
-    typedef struct{
+    typedef struct {
         br_info branch_info;
         uint32_t NEIP;
         byte_t imm32[4];
@@ -19,27 +17,47 @@ package core_stage_latches_pkg;
         uint8_t sib;
         uint8_t mod;
         uint8_t opcode;
-        logic[1:0] pfs;
-        logic[9:0] total_pf_vector;
+        logic [1:0] pfs;
+        logic [9:0] total_pf_vector;
         bool needr_m;
         logic [2:0] disp_size;
         logic [2:0] imm_size;
         bool sib_size;
-    }decode_stage_latches_t;
+    } decode_stage_latches_t;
 
-    typedef struct{
+    //typedef struct{
 
-    }RR_stage_latches_t;
-    
+    //}RR_stage_latches_t;
+
+    typedef struct {bool LD_OP;} mem_cs_t;
+
     typedef struct {
-          
-    }mem_cs_t;
-
-    typedef struct{
         bool valid;
         mem_cs_t cs;
 
-    }mem_stage_latches_t;
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
+        p_address_t ST_PADDR_1;  //cacheline algned
+
+        bool br_pred_taken;
+        v_address_t br_target;
+        v_address_t br_eip;
+
+        v_address_t NEIP;
+
+        uint32_t imm32;
+
+        reg_ids_e sr_id;
+        uint64_t  sr_data;
+        reg_ids_e dr_id;
+        uint64_t  dr_data;
+
+        bool LD_XCL;
+        bool swapLines;
+        p_address_t LD_PADDR_0;  //cacheline unalgned, ie actual addr
+        p_address_t LD_PADDR_1;  //cacheline algned
+
+    } mem_stage_latches_t;
 
     typedef struct {
         bool EXE_OP;
@@ -48,64 +66,65 @@ package core_stage_latches_pkg;
         bool xchg;
         bool cmpxchg;
         bool cmovc;
-        bool mem_operand; //if not mem, then sr
+        bool mem_operand;  //if not mem, then sr
         bool ld_flags;
         uint32_t flag_modified_vector;
         bool clear_df;
         bool set_df;
-    }exe_cs_t;
+    } exe_cs_t;
 
-    typedef struct{
+    typedef struct {
         bool valid;
         exe_cs_t cs;
 
-        bool ST_XCL;//valid bit or second set of st info if st_op
-        p_address_t ST_PADDR_0;//cacheline unalgned, ie actual addr
-        p_address_t ST_PADDR_1;//cacheline algned
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
+        p_address_t ST_PADDR_1;  //cacheline algned
 
         bool br_pred_taken;
         v_address_t br_target;
         v_address_t br_eip;
-        
+
         v_address_t NEIP;
 
         uint32_t imm32;
-        
-        byte_t ld_buf [32];//32 byte buf
+
+        byte_t ld_buf[32];  //32 byte buf
 
         reg_ids_e sr_id;
-        uint64_t sr_data;
+        uint64_t  sr_data;
         reg_ids_e dr_id;
-        uint64_t dr_data;
-        
+        uint64_t  dr_data;
+
         v_address_t ld_addy;
 
-    }execute_stage_latches_t;
+    } execute_stage_latches_t;
 
 
     typedef struct {
         bool ST_OP;
         bool WB_DR;
         bool WB_SR;
-    }wb_cs_t;
+    } wb_cs_t;
 
-    typedef struct{
+    typedef struct {
         bool valid;
         wb_cs_t cs;
 
-        bool ST_XCL;//valid bit or second set of st info if st_op
-        p_address_t ST_PADDR_0;//cacheline algned
-        uint16_t ST_BIT_VEC_0;//where to write
-        p_address_t ST_PADDR_1;//cacheline algned
-        uint16_t ST_BIT_VEC_1;//where to write
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline algned
+        uint16_t ST_BIT_VEC_0;  //where to write
+        p_address_t ST_PADDR_1;  //cacheline algned
+        uint16_t ST_BIT_VEC_1;  //where to write
 
-        byte_t res_buf [32];//32 byte buf
+        byte_t res_buf[32];  //32 byte buf
 
         reg_ids_e sr_id;
-        uint64_t sr_data;
+        uint64_t  sr_data;
         reg_ids_e dr_id;
-        uint64_t dr_data;
+        uint64_t  dr_data;
 
-    }wb_stage_latches_t;
+    } wb_stage_latches_t;
 
-endpackage;
+endpackage
+;
