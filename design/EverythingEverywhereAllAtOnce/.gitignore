@@ -11,3 +11,5 @@ ucli.key
 *.vcd
 
 *.db.gz/
+
+*espresso.out

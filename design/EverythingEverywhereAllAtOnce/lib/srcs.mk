@@ -16,6 +16,11 @@ STD_CELLS_LIB = \
 				$(ROOT)/lib/STDCells/reg1b.sv \
 				$(ROOT)/lib/STDCells/and_N.v \
 				$(ROOT)/lib/STDCells/or_N.v \
+				$(ROOT)/mux2_10.v \
+				$(ROOT)/mux4_4.v \
+				$(ROOT)/mux64_8.v \
+				$(ROOT)/mux64_8.v \
+				$(ROOT)/adder4bit.v \
 
 LIB_SRC_FILES = \
 				$(UARCH_GATES_LIB) \

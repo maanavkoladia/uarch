@@ -1,0 +1,5 @@
+wb_V:
+    if(!EXE.V) 
+        wb_V = 0;
+    else 
+

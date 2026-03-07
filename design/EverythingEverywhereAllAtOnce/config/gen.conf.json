@@ -38,6 +38,18 @@
             "csv" : "rtl/core/ICache/gen/ICache_Controller_Logic.csv",
             "outputFilePath" : "rtl/core/ICache/gen/ICache_Controller_Logic.sv",
             "run FSM SOP gen": "true"
+        },
+
+        "PreDecode MOD LUT" : {
+            "csv" : "rtl/core/PreDecode/structural/gen/MOD_LUT.csv",
+            "outputFilePath": "rtl/core/PreDecode/structural/gen/MOD_LUT.v",
+            "run Combinational SOP Gen": "true"
+        },
+
+        "Predecode OP LUT" : {
+            "csv" : "rtl/core/PreDecode/structural/gen/OP_LUT.csv",
+            "outputFilePath": "rtl/core/PreDecode/structural/gen/OP_LUT.v",
+            "run Combinational SOP Gen": "true"
         }
 
     }
