@@ -41,7 +41,15 @@ module tb_Dec();
         queue[10] = 8'h03; queue[11] = 8'hCB; // add ecx, ebx
         queue[12] = 8'h01; queue[13] = 8'hD8; // add eax, ebx
         queue[14] = 8'h01; queue[15] = 8'hCA; // add edx, ecx
-
-
     end
+
+    initial
+        begin
+            //$dumpfile ("d_latch.dump");
+            //$dumpvars (0, TOP);
+            $vcdplusfile("tb_dec.vpd");
+            $vcdpluson(0, tb_Dec); 
+        end // initial begin
+
+    //`GEN_WAVEFORM_VCD("test.vcd", tb_ram, 2);
 endmodule
