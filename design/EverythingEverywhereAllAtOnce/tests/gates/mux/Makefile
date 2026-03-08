@@ -1,11 +1,11 @@
 include ../../../Make.vars
 include ../../../Make.build
 
-TARGET = test_ram
+TARGET = mux_test
 
 
 TB_FILES = \
-		   tb_ram.sv
+		   tb_mux.sv
 
 PKGS = $(RTL_PKGS)
 

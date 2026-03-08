@@ -1,0 +1,248 @@
+
+Warning-[DEBUG_DEP] Option will be deprecated
+  The option '-debug_all' will be deprecated in a future release.  Please use 
+  '-debug_acc+all+dmptf -debug_region+cell+encrypt' instead.
+
+Command: vcs -sverilog -full64 -debug_all -l compile.log +lint=TFIPC-L +lint=PCWM \
+-j4 -o mux_test -f master
+                         Chronologic VCS (TM)
+         Version T-2022.06_Full64 -- Sun Mar  8 15:16:30 2026
+
+                    Copyright (c) 1991 - 2022 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+
+
+Warning-[DEBUG_DEP] Option will be deprecated
+  The option '-debug_all' will be deprecated in a future release.  Please use 
+  '-debug_acc+all -debug_region+cell+encrypt' instead.
+
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/Gates/time.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/pkg/common_pkg.sv'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/pkg/system_bus_ifs_pkg.sv'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/pkg/types_pkg.sv'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/pkg/mem_common_pkg.sv'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/pkgs/execute_op_types_pkg.sv'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/pkgs/core_common_pkg.sv'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/pkgs/core_stage_latches_pkg.sv'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/pkgs/segment_table_pkg.sv'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/Gates/lib1.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/Gates/lib2.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/Gates/lib4.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/Gates/lib5.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/Common/LOG.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/Common/utils.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/adder4bit.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/and_N.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/mux2_10.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/mux2_3.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/mux4_4.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/mux64_8.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/or_N.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/reg1b.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/gen/MOD_LUT.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/gen/OP_LUT.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/modrm_size.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/op_size.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/pf_checker.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/pf_gen.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/pf_vector_gen.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/ppu.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/predecode.v'
+Parsing design file '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/PreDecode/structural/selection_logic.v'
+Parsing design file 'tb_mux.sv'
+Top Level Modules:
+       time_unit
+       nand2$
+       nand3$
+       nand4$
+       nor3$
+       nor4$
+       xor2$
+       xnor2$
+       dff8$
+       jkff8$
+       jkff16$
+       buffer$
+       buffer8$
+       buffer16$
+       bufferH16$
+       bufferH64$
+       bufferH256$
+       bufferH1024$
+       bufferH4096$
+       bufferHInv16$
+       bufferHInv64$
+       bufferHInv256$
+       bufferHInv1024$
+       bufferHInv4096$
+       latch$
+       latch8$
+       latch16$
+       tristateL$
+       tristate8L$
+       tristate16L$
+       tristateH$
+       tristate8H$
+       tristate16H$
+       tristate_bus_driver1$
+       tristate_bus_driver8$
+       tristate_bus_driver16$
+       dff16b$
+       dff32b$
+       reg64e$
+       reg32e$
+       ioreg8$
+       ioreg16$
+       mux3$
+       mux2_8$
+       mux3_8$
+       mux3_16$
+       mux4_16$
+       decoder2_4$
+       decoder3_8$
+       syn_cntr8$
+       pencoder8_3v$
+       pencoder8_3$
+       mag_comp4$
+       and9$
+       and10$
+       and11$
+       and12$
+       or6$
+       or8$
+       or9$
+       or11$
+       or12$
+       reg1b
+       predecode
+       tb_mux
+TimeScale is 1 ns / 10 ps
+Notice: Ports coerced to inout, use -notice for details
+Starting vcs inline pass...
+
+
+Note-[VCS_PARAL] Parallel code-gen enabled
+  VCS is running with parallel code generation(-j)...
+
+90 modules and 5 UDPs read.
+recompiling module and10$
+recompiling module reg32e$
+recompiling module jkff8$
+recompiling module pencoder8_3$
+recompiling module or5$
+recompiling module reg1b
+recompiling module mux4_16$
+recompiling module mux3_16$
+recompiling module or11$
+recompiling module mux3$
+recompiling module mux2$
+recompiling module nand3$
+recompiling module tristateL$
+recompiling module nor2$
+recompiling module tristate8L$
+recompiling module tristate16H$
+recompiling module buffer16$
+recompiling package system_bus_ifs_pkg
+recompiling package core_stage_latches_pkg
+recompiling module bufferH64$
+recompiling module bufferHInv16$
+recompiling module bufferHInv4096$
+recompiling module ppu
+recompiling module pf_checker
+recompiling module pencoder8_3v$
+recompiling module ioreg16$
+recompiling module dff16b$
+recompiling module mux64_8
+recompiling module latch$
+recompiling module latch16$
+recompiling module decoder3_8$
+recompiling module and11$
+recompiling module mux2_8$
+recompiling module nand4$
+recompiling module mag_comp4$
+recompiling module nor3$
+recompiling module nand2$
+recompiling module xor2$
+recompiling module tristateH$
+recompiling module tristate_bus_driver16$
+recompiling module tristate_bus_driver1$
+recompiling package execute_op_types_pkg
+recompiling module buffer$
+recompiling module bufferH1024$
+recompiling module bufferHInv256$
+recompiling module predecode
+recompiling module syn_cntr8$
+recompiling module reg64e$
+recompiling module dff8$
+recompiling module dff32b$
+recompiling module and7$
+recompiling module and6$
+recompiling module mux4_8$
+recompiling module mux3_8$
+recompiling module mux2_10
+recompiling module or9$
+recompiling module nor4$
+recompiling module or6$
+recompiling module or3$
+recompiling module and2$
+recompiling module xnor2$
+recompiling module tristate8H$
+recompiling module buffer8$
+recompiling package common_pkg
+recompiling package core_common_pkg
+recompiling module bufferH16$
+recompiling module bufferH4096$
+recompiling module bufferHInv1024$
+recompiling module alu4$
+recompiling module tb_mux
+recompiling module ioreg8$
+recompiling module jkff16$
+recompiling module and8$
+recompiling module and12$
+recompiling module latch8$
+recompiling module decoder2_4$
+recompiling module or12$
+recompiling module mux4$
+recompiling module or8$
+recompiling module mag_comp8$
+recompiling module and3$
+recompiling module and9$
+recompiling module or2$
+recompiling module tristate16L$
+recompiling module tristate_bus_driver8$
+recompiling module time_unit
+recompiling package mem_common_pkg
+recompiling package segment_table_pkg
+recompiling module bufferH256$
+recompiling module bufferHInv64$
+All of 90 modules done
+make[1]: Entering directory '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/tests/gates/mux/csrc' \
+
+rm -f _cuarc*.so _csrc*.so pre_vcsobj_*.so share_vcsobj_*.so
+if [ -x ../mux_test ]; then chmod a-x ../mux_test; fi
+g++  -o ../mux_test      -rdynamic  -Wl,-rpath='$ORIGIN'/mux_test.daidir -Wl,-rpath=./mux_test.daidir \
+-Wl,-rpath=/usr/local/packages/synopsys_2022/vcs/T-2022.06/linux64/lib -L/usr/local/packages/synopsys_2022/vcs/T-2022.06/linux64/lib \
+-Wl,-rpath-link=./  /usr/lib64/libnuma.so.1   objs/amcQw_d.o   _2516392_archive_1.so \
+_2516737_archive_1.so _2516739_archive_1.so _2516740_archive_1.so objs/udps/abmDd.o \
+objs/udps/H4YNa.o objs/udps/BYmPi.o objs/udps/pIp1i.o objs/udps/i5D5s.o  SIM_l.o \
+rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o        \
+-lvirsim -lerrorinf -lsnpsmalloc -lvfs    -lvcsnew -lsimprofile -luclinative /usr/local/packages/synopsys_2022/vcs/T-2022.06/linux64/lib/vcs_tls.o \
+-Wl,-whole-archive  -lvcsucli    -Wl,-no-whole-archive          /usr/local/packages/synopsys_2022/vcs/T-2022.06/linux64/lib/vcs_save_restore_new.o \
+-ldl  -lc -lm -lpthread -ldl 
+../mux_test up to date
+make[1]: Leaving directory '/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/tests/gates/mux/csrc' \
+
+CPU time: .949 seconds to compile + .424 seconds to elab + .247 seconds to link

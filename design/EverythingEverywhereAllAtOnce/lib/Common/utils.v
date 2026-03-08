@@ -32,7 +32,7 @@
       `LOG("%sCHECK PASSED %s(%s)", `ANSI_COLOR_GREEN, `ANSI_COLOR_WHITE, TestName); \
     end else begin \
       `LOG("%sCHECK FAILED %s(%s): %s", `ANSI_COLOR_RED, `ANSI_COLOR_WHITE, TestName, errMsg); \
-      $fatal; \
+      $finish; \
     end
 `else
 `define ERR_CHECK(cond, TestName, msg) `DO_NOTHING

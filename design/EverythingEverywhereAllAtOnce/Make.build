@@ -9,3 +9,4 @@ RTL_SRC_FILES = \
                 $(LIB_SRC_FILES) \
                 $(RTL_DESIGN_SRC_FILES) \
 
+TIME_FILE = $(ROOT)/lib/Gates/time.v
