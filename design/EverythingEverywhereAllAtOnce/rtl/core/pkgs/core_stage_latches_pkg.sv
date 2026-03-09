@@ -73,9 +73,7 @@ package core_stage_latches_pkg;
 
     } dc_latches_t;
 
-    typedef struct {
-        bool MEM_OP;
-    } mem_cs_t;
+    typedef struct {bool MEM_OP;} mem_cs_t;
 
     typedef struct {
         bool valid;
