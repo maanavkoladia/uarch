@@ -1,0 +1,17 @@
+TODO:
+
++ finish the core
+    - Rep, register compare logic, hard wire the ESI and EDI regs
+    - int
+    - set up scoreboards, reg and mem
+    - segX
+    - implementing EIP logic for segX, prev inst length, prevEIP, etc.
+    - deal with far call CS changing dependency
++ DTE and scheduler
+    - create interface
+    - priority setting
+    - DTE fsm into excel
+    - 
++ DMA
++ Simple IO
+    - Data Display Register

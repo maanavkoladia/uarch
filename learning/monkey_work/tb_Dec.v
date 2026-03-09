@@ -19,13 +19,13 @@ module tb_Dec();
     // Clock generation (50ns period)
     initial begin
         clk = 0;
-        //forever #25 clk = ~clk; // 25ns high, 25ns low
+        forever #25 clk = ~clk; // 25ns high, 25ns low
     end
 
     // Reset sequence
     initial begin
         rst = 0;   // assert reset (active low)
-        //#100;
+        #100;
         rst = 1;   // deassert reset
     end
 
@@ -33,6 +33,7 @@ module tb_Dec();
     initial begin
         // Initialize queue here
         // Example:
+	queue = '{default: 8'h00};
         queue[0]  = 8'h03; queue[1]  = 8'hC1; // add eax, ecx
         queue[2]  = 8'h03; queue[3]  = 8'hC8; // add ecx, eax
         queue[4]  = 8'h03; queue[5]  = 8'hD3; // add edx, ebx
@@ -49,6 +50,8 @@ module tb_Dec();
             //$dumpvars (0, TOP);
             $vcdplusfile("tb_dec.vpd");
             $vcdpluson(0, tb_Dec); 
+		#1000;
+		$finish;
         end // initial begin
 
     //`GEN_WAVEFORM_VCD("test.vcd", tb_ram, 2);

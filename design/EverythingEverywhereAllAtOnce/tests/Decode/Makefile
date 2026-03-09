@@ -34,5 +34,5 @@ clean:
 	rm -f *.vcd
 	rm -f *.vpd
 	rm -f $(TARGET)
-	rm -rf test_ram.daidir
+	rm -rf test_*.daidir
 	rm -rf csrc
