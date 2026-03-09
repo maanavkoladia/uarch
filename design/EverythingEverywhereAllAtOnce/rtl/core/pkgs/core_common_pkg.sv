@@ -88,6 +88,16 @@ package core_common_pkg;
         bool gp_exp;
         bool pageFault;
     } tlb_outputs_t;
+    
+
+    
+
+    typedef struct {
+        
+    }dc_2_dcache_t;
+
+    typedef struct{
+    }dcache_2_mem_t;
 
 
     typedef struct {
@@ -126,7 +136,7 @@ package core_common_pkg;
         bool DR_1_we;
         reg_ids_e DR_1_id;  //
         uint64_t DR_1_data;  //data is supposed to be aligned
-
+        bool st_override;
         st_q_outputs_t st_outputs[NUM_WB_ST_QS];
     } wb_outputs_t;
 

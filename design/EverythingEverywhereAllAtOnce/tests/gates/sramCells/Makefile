@@ -17,9 +17,12 @@ SRC_FILES = \
 .PHONY: all run clean see
 
 all: $(TARGET)
-
+	
 $(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES)
+	@echo "$(TIME_FILE)" > master
+	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g' >> master
+	@cat master
+	$(CC) $(CC_FLAGS) -o $@ -f master
 
 run: $(TARGET)
 	./$<
@@ -28,11 +31,15 @@ view: run
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd
 
 see:
-	@echo $(SRC_FILES) | sed 's/ /\n/g'
+	@echo $(TIME_FILE)
+	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'	
+	@echo -e "\n"
+	#@echo "$(TIME_FILE) -v" > master
+	#@echo $(SRC_FILES) | sed 's/ /\n/g' >> master
 
 clean:
 	rm -f *.vcd
 	rm -f *.vpd
 	rm -f $(TARGET)
-	rm -rf test_ram.daidir
+	rm -rf *.daidir
 	rm -rf csrc
