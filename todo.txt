@@ -7,11 +7,13 @@ TODO:
     - segX
     - implementing EIP logic for segX, prev inst length, prevEIP, etc.
     - deal with far call CS changing dependency
+
 + DTE and scheduler
     - create interface
     - priority setting
     - DTE fsm into excel
     - 
 + DMA
+
 + Simple IO
     - Data Display Register
