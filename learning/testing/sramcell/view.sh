@@ -1,3 +1,3 @@
 #!/bin/bash
-./simv
+dve -full64
 

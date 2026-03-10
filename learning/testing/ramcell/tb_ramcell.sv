@@ -51,7 +51,7 @@ module tb_ramcell;
 
   // Optional waveform dump
   initial begin
-    $vcdplusfile("ramcell.vcd");
+    $vcdplusfile("ramcell.vpd");
     $vcdpluson(0, tb_ramcell);
   end
 

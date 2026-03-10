@@ -1,0 +1,10 @@
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Gates/time.v
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Gates/lib1.v 
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Gates/lib2.v 
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Gates/lib3.v 
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Gates/lib4.v 
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Gates/lib5.v 
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Gates/lib6.v
+tb_sramcell.sv
+
+
