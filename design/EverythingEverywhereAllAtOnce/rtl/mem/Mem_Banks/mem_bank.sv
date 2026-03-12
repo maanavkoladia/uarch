@@ -1,3 +1,7 @@
+import common_pkg::*;
+import mem_common_pkg::*;
+import system_bus_ifs_pkg::MEM_BUS_SIZE;
+
 module mem_bank (
 
     input logic clk,
@@ -29,9 +33,6 @@ module mem_bank (
     output mem_bank_out_t outputs
 
 );
-
-    import common_pkg::*;
-    import mem_common_pkg::*;
 
     localparam int NUM_SRAM_CELLS = 4;
 

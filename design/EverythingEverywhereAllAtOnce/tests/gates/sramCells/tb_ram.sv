@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-
 module tb_ram();
     localparam int CLK_PERIOD = 10;
     localparam int DATA_WIDTH = 8;

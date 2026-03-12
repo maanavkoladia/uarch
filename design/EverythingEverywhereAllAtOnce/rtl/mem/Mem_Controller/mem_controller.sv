@@ -1,7 +1,12 @@
+
 //module is resposible for managing the various banks, this module should not
 //
 //
 //this module shoudl also control which bank gets the bus via tristates
+
+import common_pkg::*;
+import system_bus_ifs_pkg::*;
+import mem_common_pkg::*;
 
 module mem_controller (
     input wire clk,
@@ -47,9 +52,6 @@ module mem_controller (
      */
 
 );
-    import common_pkg::*;
-    import system_bus_ifs_pkg::*;
-    import mem_common_pkg::*;
 
     typedef struct {
         bool valid;
@@ -148,7 +150,7 @@ module mem_controller (
     always_comb begin
         //send load address to each bank
         for (int i = 0; i < NUM_OF_BANK_CHIPS; i++) begin
-            for (int j = 0; j < NUM_BANKS_PER_CHIP; i++) begin
+            for (int j = 0; j < NUM_BANKS_PER_CHIP; j++) begin
                 bank_cmds_o[{
                     (i*NUM_BANKS_PER_CHIP)+j
                 }].ld_address = chipTable[i].valid ? chipTable[i].address[14:10] : 0;
@@ -158,7 +160,9 @@ module mem_controller (
 
     //ld_address_changed logic
     always_comb begin
-        for (int i = 0; i < NUM_BANKS; i++) bank_cmds_o[i].ld_address_change = 0;
+        for (int i = 0; i < NUM_BANKS; i++) begin 
+            bank_cmds_o[i].ld_address_change = 0;
+        end
         if (fsm_outs.ld_address_changed) begin
             for (int i = 0; i < NUM_BANKS_PER_CHIP; i++) begin
                 bank_cmds_o[chipNum+i].ld_address_change = 1;

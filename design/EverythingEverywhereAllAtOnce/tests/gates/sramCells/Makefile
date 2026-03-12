@@ -19,10 +19,10 @@ SRC_FILES = \
 all: $(TARGET)
 	
 $(TARGET): $(SRC_FILES)
-	@echo "$(TIME_FILE)" > master
-	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g' >> master
-	@cat master
-	$(CC) $(CC_FLAGS) -o $@ -f master
+	#@echo "$(TIME_FILE)" > master
+	#@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g' > master
+	#@cat master
+	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES)
 
 run: $(TARGET)
 	./$<
@@ -31,11 +31,9 @@ view: run
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd
 
 see:
-	@echo $(TIME_FILE)
+	#@echo $(TIME_FILE)
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'	
 	@echo -e "\n"
-	#@echo "$(TIME_FILE) -v" > master
-	#@echo $(SRC_FILES) | sed 's/ /\n/g' >> master
 
 clean:
 	rm -f *.vcd
@@ -43,3 +41,8 @@ clean:
 	rm -f $(TARGET)
 	rm -rf *.daidir
 	rm -rf csrc
+	rm -f master
+	rm -f *.log
+	rm -f ucli.key
+
+

@@ -92,12 +92,12 @@ package core_common_pkg;
 
     
 
-    typedef struct {
-        
-    }dc_2_dcache_t;
+    //typedef struct {
+    //    
+    //}dc_2_dcache_t;
 
-    typedef struct{
-    }dcache_2_mem_t;
+    //typedef struct{
+    //}dcache_2_mem_t;
 
 
     typedef struct {

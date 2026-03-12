@@ -11,19 +11,17 @@ package system_bus_ifs_pkg;
     typedef struct {bool Mem_Valid;} dte_2_icache_t;
 
     typedef enum {
-        IDLE = 0,
-        LOW_PRI_REQ = 1,
-        HIGH_PRI = 2
+        ICACHE_IDLE = 0,
+        ICACHE_LOW_PRI_REQ = 1,
+        ICACHE_HIGH_PRI = 2
     } icache_req_types_2_scheduler_e;
 
     typedef struct {icache_req_types_2_scheduler_e req;} icache_2_scheduler_t;
 
-
-
     typedef enum {
-        IDLE = 0,
-        LOW_PRI_REQ = 1,
-        HIGH_PRI = 2
+        DCACHE_IDLE = 0,
+        DCACHE_LOW_PRI_REQ = 1,
+        DCACHE_HIGH_PRI = 2
     } dcache_req_types_2_scheduler_e;
 
     typedef struct {
