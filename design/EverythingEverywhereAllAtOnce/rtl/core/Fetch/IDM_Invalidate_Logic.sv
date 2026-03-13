@@ -1,14 +1,17 @@
-module Q_Invalidate_Logic (
+//this decode stall sthit needs to be resolved, its probably not needed
+//though
+
+module IDM_Invalidate_Logic (
     input wire clk,
     input wire rst,
 
     input address_t eip,
     input bool flush,
     input bool exp_pipeclear,
-    input bool pd_stall,
-    input instruction_q_2_fetch_t q_meta,
+    input bool decode_stall,
+    input idm_outputs_t q_meta,
 
-    output q_invalidate_logic_ouput_t out_invalidates
+    output idm_invalidate_logic_ouput_t out_invalidates
 );
 
     import common_pkg::*;
@@ -46,7 +49,7 @@ module Q_Invalidate_Logic (
         end else begin
 
             // Early exit if current slot invalid
-            if (!q_meta.slot_info_list[eip_slot_num].valid || pd_stall) begin
+            if (!q_meta.slot_info_list[eip_slot_num].valid || decode_stall) begin
                 // do nothing (all zero)
             end else begin
                 bool slot_in_use_changed;

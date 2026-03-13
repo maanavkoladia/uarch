@@ -1,15 +1,17 @@
-module Q_Ctrl_Logic (
+import Fetch_pkg::*;
+import core_common_pkg::icache_output_t;
+
+module IDM_Ctrl_Logic (
     input address_t spc,
-    input instruction_q_2_fetch_t q,
-    input q_invalidate_logic_ouput_t invalid_logic_out,
+    input idm_outputs_t idm,
+    input idm_invalidate_logic_ouput_t invalidate_logic_out,
     input btb_output_t btb_out,
     input predictor_output_t pred_out,
     input icache_output_t icache_out,
 
-    output q_ctrl_logic_output_t out
+    output idm_ctrl_logic_output_t out
 );
 
-    import Fetch_pkg::*;
 
     localparam int OFFSET_BITS = $clog2(CACHE_LINES_SIZE);
     localparam int SLOT_BITS = $clog2(num_slots);
@@ -30,7 +32,7 @@ module Q_Ctrl_Logic (
                 out.q_input.req[i].ld_meta_data = 1;
 
                 //if hit and slot num same, load meta
-                if ((i == slot_num) && icache_out.h_m) begin
+                if ((i == slot_num) && icache_out.hit) begin
 
                     out.q_input.req[i].valid = 1;
 

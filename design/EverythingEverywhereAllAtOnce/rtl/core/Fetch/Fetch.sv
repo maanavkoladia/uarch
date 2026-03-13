@@ -1,4 +1,20 @@
-module Fetch ();
+module Fetch (
+    input wire clk,
+    input wire rst,
+
+    //en addr
+    input icache_output_t i_cache_outs_i,
+
+    input decode_outputs_t decode_outs_i,
+    input rr_outputs_t rr_outs_i,
+    input dc_outputs_t dc_outs_i,
+    input mem_outputs_t mem_outs_i,
+    input exe_outputs_t exe_outs_i,
+    input wb_outputs_t wb_outs_i,
+
+    output fetch_outputs_t outs_o
+
+);
     /*
 
 if(v_bk0 & v_bk1) {

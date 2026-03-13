@@ -1,12 +1,11 @@
 TODO:
 
 + finish the core
-    - Rep, register compare logic, hard wire the ESI and EDI regs
-    - int
     - set up scoreboards, reg and mem
     - segX
-    - implementing EIP logic for segX, prev inst length, prevEIP, etc.
+    - implementing EIP logic for segX, prev inst length, prevEIP, etc., and trhowing gps in seg segX
     - deal with far call CS changing dependency
+    - need to deal with invalidate logic in fetch, ie need to deal with stall in possible stage coming back
 
 + DTE and scheduler
     - create interface

@@ -3,7 +3,9 @@ module SPC_Sel_Logic (
     input wire rst,
 
     input bool flush,
-    input bool pd_stall,
+
+    //probably not needed, harish is a fuck up
+    input bool decode_stall,
 
     input btb_output_t btb_outputs,
     input predictor_output_t pred_out,

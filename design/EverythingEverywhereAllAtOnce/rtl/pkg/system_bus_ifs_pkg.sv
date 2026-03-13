@@ -8,7 +8,10 @@ package system_bus_ifs_pkg;
 
     localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
 
-    typedef struct {bool Mem_Valid;} dte_2_icache_t;
+    typedef struct {
+        bool Mem_Valid;
+        bool driveAddrBus;
+    } dte_2_icache_t;
 
     typedef enum {
         ICACHE_IDLE = 0,

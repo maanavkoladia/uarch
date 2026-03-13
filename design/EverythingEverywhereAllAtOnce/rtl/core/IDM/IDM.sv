@@ -1,30 +1,20 @@
-module Instruction_Q (
+import common_pkg::*;
+import core_common_pkg::fetch_outputs_t;
+import core_common_pkg::fetch_idm_ctrl_2_idm_t;
+import core_common_pkg::idm_slot_req_t;
+import IDM_pkg::*;
+
+module IDM (
     input wire clk,
     input wire rst,
 
-    input  instruction_q_input_t       inputs,
-    output instruction_q_2_fetch_t     output_2_fetch,
-    output instruction_q_2_predecode_t output_2_predecode
+    //used for slot reqs, and exp_pipe_clear signal
+    input  fetch_outputs_t fetch_outs_i,
+    //basically feeds the state of the idm to fetch and decode
+    output idm_outputs_t   idm_outs_o
 );
 
-    import common_pkg::*;
-    import Fetch_pkg::*;
-
-    typedef struct {
-        bool valid;
-        bool br_valid;
-        address_t br_eip;
-        address_t br_target;
-        bool br_xcl;
-        byte_t data[CACHE_LINES_SIZE];
-
-        // you may add internal-only metadata here later
-        // e.g. age bits, debug tags, etc.
-    } slot_t;
-
-    typedef struct {slot_t slots[num_slots];} instr_q_t;
-
-    instr_q_t q;
+    idm_t q;
 
     // --------------------------------
     // Combinational fanout to outputs

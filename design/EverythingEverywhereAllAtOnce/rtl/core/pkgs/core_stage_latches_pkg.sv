@@ -4,7 +4,7 @@ package core_stage_latches_pkg;
     import common_pkg::*;
     import execute_op_types_pkg::exe_cs_operation_type_e;
 
-    localparam int num_byte_q_slots = 4;
+    localparam int NUM_IDM_SLOTS = 4;
 
     typedef struct {
         bool valid;
@@ -13,9 +13,10 @@ package core_stage_latches_pkg;
         address_t br_target;
         bool br_xcl;
         byte_t data[CACHE_LINES_SIZE_B];
-    } byte_q_slot_info_t;
+    } idm_slot_info_t;
 
-    typedef struct {byte_q_slot_info_t bytes_q[num_byte_q_slots];} predecode_stage_latches_t;
+    typedef struct {idm_slot_info_t idm_slots[NUM_IDM_SLOTS];} idm_outputs_t;
+
 
     typedef struct {
         bool br_pred_taken;
