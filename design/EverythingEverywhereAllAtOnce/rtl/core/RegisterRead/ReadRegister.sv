@@ -1,5 +1,0 @@
-module ReadRegister (
-    logic
-);
-    
-endmodule

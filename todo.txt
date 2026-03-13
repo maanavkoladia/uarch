@@ -6,6 +6,7 @@ TODO:
     - implementing EIP logic for segX, prev inst length, prevEIP, etc., and trhowing gps in seg segX
     - deal with far call CS changing dependency
     - need to deal with invalidate logic in fetch, ie need to deal with stall in possible stage coming back
+    - valid bit logic per stage
 
 + DTE and scheduler
     - create interface

@@ -70,15 +70,22 @@ package core_common_pkg;
         bool stall;
         l_address_t eip;
         bool invalid_instruction;
+        bool decode_gp;  //instruciton crossing segment line
     } decode_outputs_t;
 
     typedef struct {
         bool valid;
-        bool flush;
+        bool stall;  //dep stall or exp present
+        bool exp_present;  //if present and not pf, then gp
+        bool exp_pf;
+
         //outputs to decode
         bool ecx_sb;
         uint32_t ecx;
         bool set_ZF_sb;
+
+        bool codeSeg_sb;  //needed for far brs, the sb will disable the i cache
+        uint32_t codeSeg_data;  //used for translation from spc to phyiscial addr
     } rr_outputs_t;
 
     typedef struct {bool valid;} dc_outputs_t;
@@ -86,15 +93,15 @@ package core_common_pkg;
     typedef struct {bool valid;} mem_outputs_t;
 
     typedef struct {
-        bool valid;
-        bool flush;
-        bool miss_prediction;
-        l_address_t br_eip;
-        l_address_t neip;
-        l_address_t br_target;
+        bool valid;  //is this valid
+        bool flush;  //do we need to flush
+        bool miss_prediction;  //was there a miss predict
+        l_address_t br_eip;  //where is the br, this is for btb entries
+        l_address_t neip;//for when we miss predict on a taken and we need to fall thrhough on a flush in decode(EIP) and fetch (SPC)
+        l_address_t br_target;//actual target if we need to flush and we miss predicted on a not taken, also for comparision to br_info from stage latches 
         bool taken;  //this is the correct resolution
-        bool br_XCL;
-        bool clr_exp_mode;
+        bool br_XCL;  //this is for btb entry
+        bool clr_exp_mode;  //for the special exp br in the rom, to clear exp mode in fetch
     } exe_br_resolution_outputs_t;
 
     typedef struct {
@@ -130,7 +137,7 @@ package core_common_pkg;
         bool DR_1_we;
         reg_ids_e DR_1_id;  //
         uint64_t DR_1_data;  //data is supposed to be aligned
-        bool st_override;
+        bool st_override;  //NOTE maybe four needed
         st_q_outputs_t st_outputs[NUM_WB_ST_QS];
     } wb_outputs_t;
 
