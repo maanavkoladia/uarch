@@ -18,8 +18,7 @@ module CoreTop (
     //dcache 2 core these need to be assinged from dc outs and wb outs
     output core_2_dcache_t out2DCache_o,
 
-    input wire dma_int,
-    input wire ddr5_int
+    input dma_controller_2_core_t inFromDMA_i
 
 );
     idm_outputs_t idm_outputs;
@@ -95,8 +94,7 @@ module CoreTop (
         .dc_outs_i(dc_outputs),
         .mem_outs_i(mem_outputs),
         .exe_outs_i(exe_outputs),
-        .dma_int(dma_int),
-        .ddr5_int(ddr5_int),
+        .dma_int(inFromDMA_i.dma_int),
         .wb_outs_i(wb_outputs),
         .outs_o(fetch_outputs)
     );

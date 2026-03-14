@@ -1,5 +1,3 @@
-#add fetch, RR, DC, MEM, EXE, WB srcmks files
-
 CORE_PATH_INTERNAL = $(ROOT)/rtl/core/
 
 include $(CORE_PATH_INTERNAL)/Decode/structural/srcs.mk

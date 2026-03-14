@@ -15,8 +15,6 @@ module mem_TOP (
 
     output mem_2_dte_t out2Dte,
     output mem_2_scheduler_t out2Sch
-
-
 );
 
     mem_controller_2_mem_bank_t controller_2_bank_Cmds[NUM_BANKS];

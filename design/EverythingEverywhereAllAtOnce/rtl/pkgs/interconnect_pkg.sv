@@ -5,14 +5,9 @@ package interconnect_pkg;
     localparam int numWriteBufsInMem = 8;
     localparam int NUM_DCACHE_PORTS = 4;
 
-
     localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
 
-    typedef struct {
-        bool Mem_Valid;
-        bool driveAddrBus;
-    } dte_2_icache_t;
-
+    //ICACHE interconnect
     typedef enum {
         ICACHE_IDLE = 0,
         ICACHE_LOW_PRI_REQ = 1,
@@ -21,6 +16,12 @@ package interconnect_pkg;
 
     typedef struct {icache_req_types_2_scheduler_e req;} icache_2_scheduler_t;
 
+    typedef struct {
+        bool Mem_Valid;
+        bool driveAddrBus;
+    } dte_2_icache_t;
+
+    //DCACHE interconnect
     typedef enum {
         DCACHE_IDLE = 0,
         DCACHE_LOW_PRI_REQ = 1,
@@ -29,8 +30,7 @@ package interconnect_pkg;
 
     typedef struct {
         dcache_req_types_2_scheduler_e req[NUM_DCACHE_PORTS];
-        bool evictionBuf_st_req[NUM_DCACHE_PORTS];
-        bool evictionBuf_p_addr[NUM_DCACHE_PORTS];
+        p_address_t evictionBufAddr[NUM_DCACHE_PORTS];
     } dcache_2_scheduler_t;
 
     typedef struct {
@@ -38,8 +38,7 @@ package interconnect_pkg;
         bool evictionBuf_PermissionToDriveBus[NUM_DCACHE_PORTS][MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
     } dte_2_dcache_t;
 
-
-
+    //MEM interconnect
     typedef struct {logic writeBuf_V[numWriteBufsInMem];} mem_2_scheduler_t;
     typedef struct {bool mem_Ready;} mem_2_dte_t;
 
@@ -50,6 +49,20 @@ package interconnect_pkg;
         bool permission2DriveBus[MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
     } dte_2_mem_t;
 
+
+    //DMA_Controller interconnect if
+    typedef struct {bool writeReq;} dma_controller_2_scheduler_t;
+
+    typedef struct {
+        bool permission2DriveBus[MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
+        bool start_transaction;
+    } dte_2_dma_controller_t;
+
+    //DDR5 interconnect if
+
+    typedef struct {bool start_transaction;} dte_2_ddr5_t;
+
+    ////////////////////////////////////////////////////////////////
     //core needs create its own internal and manage this w and assign
     typedef struct {
         bool   lineValid;
@@ -100,5 +113,7 @@ package interconnect_pkg;
         //TODO
         //
     } dcache_2_core_t;
+
+    typedef struct {bool intOut;} dma_controller_2_core_t;
 
 endpackage

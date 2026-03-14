@@ -32,8 +32,6 @@ module Fetch (
 
     input wire dma_int,
 
-    input wire ddr5_int,
-
     output fetch_outputs_t outs_o
 
 );

@@ -47,7 +47,10 @@ package reg_ids_pkg;
         SS = 34,
         ES = 35,
         FS = 36,
-        GS = 37
+        GS = 37,
+
+        //tmep reg for rep mov cmp
+        ETR = 38
 
     } reg_ids_e;
 

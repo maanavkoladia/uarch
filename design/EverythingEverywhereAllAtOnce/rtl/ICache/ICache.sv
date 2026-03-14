@@ -7,21 +7,17 @@ module ICache (
     input wire clk,
     input wire rst,
 
-    input bool en_i,
-    input tlb_outputs_t tlb_addr_outs_i,
-    input v_address_t v_spc_addr_i,
+    //
+    input  core_2_icache_t inFromCore_i,
+    output icache_2_core_t out2Core_o,
 
     //input from dte drive bus tristate, and memvalid for fsm control
     input dte_2_icache_t dte_out_i,
-
-    //if only >= 1 lines valid
-    input uint8_t numLinesValidInQ,
-
+    output icache_2_scheduler_t out2Sch_o,
 
     //okay mankey
     inout [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus,
-    inout [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus,
-    output icache_output_t icache_o
+    inout [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus
 );
 
     //output logic for the hit
