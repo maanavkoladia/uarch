@@ -8,3 +8,4 @@ DCACHE_SRC_FILES = \
 					$(DCACHE_PATH_INTERNAL)/DCache.sv	\
 
 DCACHE_PKGS = \
+			  $(DCACHE_PATH_INTERNAL)/pkg/DCache_pkg.sv

@@ -1,8 +1,8 @@
 package DCache_pkg;
 
-    import common::*;
+    import common_pkg::*;
 
-    localparam NUM_BANKS = 4;
+    localparam DCACHE_NUM_BANKS = 4;
 
     typedef struct {
         uint16_t vec;

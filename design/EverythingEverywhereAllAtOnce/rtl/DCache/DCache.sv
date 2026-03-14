@@ -1,7 +1,6 @@
-import common::*;
+import common_pkg::*;
 import DCache_pkg::*;
-import core_common_pkg::st_q_outputs_t;
-import core_common_pkg::NUM_WB_ST_QS;
+import interconnect_pkg::*;
 
 module DCache (
     input wire clk,
@@ -37,7 +36,6 @@ module DCache (
     //
     //create four banks
     //
-    bank_req_t banks_reqs[NUM_BANKS];
 
     //not sure if valid are needed, leaving for now
     //if not XCL, then wait for line_0 to hit, if XCL, wait for both line_0

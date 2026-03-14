@@ -1,7 +1,6 @@
 import common_pkg::*;
 import ICache_pkg::*;
-import core_common_pkg::tlb_outputs_t;
-import core_common_pkg::tlb_outputs_t;
+import interconnect_pkg::*;
 
 module ICache (
     input wire clk,

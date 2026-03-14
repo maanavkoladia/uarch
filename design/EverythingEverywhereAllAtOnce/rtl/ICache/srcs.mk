@@ -8,3 +8,4 @@ ICACHE_SRC_FILES = \
 					$(ICACHE_PATH_INTERNAL)/ICache.sv	\
 
 ICACHE_PKGS = \
+			  $(ICACHE_PATH_INTERNAL)/pkg/ICache_pkg.sv

@@ -94,7 +94,7 @@ module CoreTop (
         .dc_outs_i(dc_outputs),
         .mem_outs_i(mem_outputs),
         .exe_outs_i(exe_outputs),
-        .dma_int(inFromDMA_i.dma_int),
+        .dma_int(inFromDMA_i.intOut),
         .wb_outs_i(wb_outputs),
         .outs_o(fetch_outputs)
     );

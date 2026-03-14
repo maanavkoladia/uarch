@@ -7,7 +7,7 @@ module mem_TOP (
     input wire rst,
 
     //adress and data bus
-    inout [PHY_MEM_ADDRESS_SIZE -1 : 0] address_bus,
+    inout [ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus,
     inout [DATA_BUS_WIDTH_BITS - 1 : 0] data_bus,
 
     //arb stuff
@@ -22,6 +22,10 @@ module mem_TOP (
 
     wire [MEM_BUS_SIZE - 1 : 0] mem_bus;
 
+    //mem never needs to drive address bus
+    assign address_bus = 'z;
+
+    //wire [ADDRESS_BUS_WIDTH_BITS -1 : 0] add
     //create the banks
     genvar i_gen;
     generate
@@ -35,12 +39,12 @@ module mem_TOP (
             );
         end
     endgenerate
-
+    
     //create the controller,
     mem_controller controller (
         .clk(clk),
         .rst(rst),
-        .address_bus(address_bus),
+        .address_bus(address_bus[PHY_MEM_ADDRESS_SIZE - 1 : 0]),
         .data_bus(data_bus),
         .DTE_i(inFromDte),
         .ToDTE_o(out2Dte),

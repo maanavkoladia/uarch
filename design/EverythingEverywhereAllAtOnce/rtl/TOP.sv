@@ -5,9 +5,6 @@ module TOP (
     input wire rst
 );
 
-    initial begin
-        //for init rituals
-    end
 
     icache_2_scheduler_t                                          icache2sched;
     dte_2_icache_t                                                dte2icache;
@@ -32,10 +29,10 @@ module TOP (
     dcache_2_core_t                                               dcache2core;
 
     dma_controller_2_core_t                                       dma2core;
-
-    logic                        [   DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;
-    logic                        [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addressBus;
-
+    
+    wire                        [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;
+    wire                        [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addressBus;
+    
     //core
     CoreTop core_unit (
         .clk(clk),
@@ -52,7 +49,7 @@ module TOP (
         .clk(clk),
         .rst(rst),
         .address_bus(addressBus),
-        .data_bus(data_bus),
+        .data_bus(dataBus),
         .inFromDte(dte2mem),
         .out2Dte(mem2dte),
         .out2Sch(mem2sched)
@@ -66,7 +63,7 @@ module TOP (
         .out2Core_o(dcache2core),
         .inFromDTE_i(dte2dcache),
         .out2Sch_o(dcache2sched),
-        .address_bus(address_bus),
+        .address_bus(addressBus),
         .dataBus(dataBus)
     );
 
@@ -119,4 +116,7 @@ module TOP (
 
     );
 
+    initial begin
+        //for init rituals
+    end
 endmodule
