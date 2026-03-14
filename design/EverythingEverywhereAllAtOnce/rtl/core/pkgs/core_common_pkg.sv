@@ -1,5 +1,7 @@
 package core_common_pkg;
-    import system_bus_ifs_pkg::*;
+
+    //update the interconnect_pkg imports only we needs
+    import interconnect_pkg::*;
     import common_pkg::*;
     import reg_ids_pkg::*;
 
@@ -18,29 +20,8 @@ package core_common_pkg;
         bool physical_addr_valid;
         bool gp_exp;
         bool pageFault;
+        bool MIO;  //
     } tlb_outputs_t;
-
-    typedef struct {
-        icache_req_types_2_scheduler_e req_2_sch_o;
-        bool lineValid;
-        bool hit;
-        byte_t instruction_line[CACHE_LINES_SIZE_B];
-    } icache_output_t;
-
-
-    //typedef struct {
-    //    
-    //}dc_2_dcache_t;
-
-    //typedef struct{
-    //}dcache_2_mem_t;
-
-
-    typedef struct {
-        bool icache_en;
-        tlb_outputs_t tlb_addr_outs_i;
-        v_address_t v_spc_addr_i;
-    } fetch_2_icache_t;
 
     typedef struct {
         bool ld_meta_data;
@@ -88,9 +69,24 @@ package core_common_pkg;
         uint32_t codeSeg_data;  //used for translation from spc to phyiscial addr
     } rr_outputs_t;
 
-    typedef struct {bool valid;} dc_outputs_t;
+    typedef struct {
+        bool valid;
 
-    typedef struct {bool valid;} mem_outputs_t;
+        bool stall;  //dep stall
+
+        //outputs to D$ arb
+        bool ld_addr_0_V;
+        p_address_t ld_addr_0;
+        bool ld_addr_1_V;
+        p_address_t ld_addr_1;
+
+    } dc_outputs_t;
+
+    typedef struct {
+        bool valid;
+        bool stall;  //dep stall
+
+    } mem_outputs_t;
 
     typedef struct {
         bool valid;  //is this valid

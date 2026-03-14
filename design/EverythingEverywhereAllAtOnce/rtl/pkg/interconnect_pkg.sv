@@ -1,0 +1,92 @@
+package interconnect_pkg;
+
+    import common_pkg::*;
+
+    localparam int numWriteBufsInMem = 8;
+    localparam int NUM_DCACHE_PORTS = 4;
+
+    localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
+
+    typedef struct {
+        bool Mem_Valid;
+        bool driveAddrBus;
+    } dte_2_icache_t;
+
+    typedef enum {
+        ICACHE_IDLE = 0,
+        ICACHE_LOW_PRI_REQ = 1,
+        ICACHE_HIGH_PRI = 2
+    } icache_req_types_2_scheduler_e;
+
+    typedef struct {icache_req_types_2_scheduler_e req;} icache_2_scheduler_t;
+
+    typedef enum {
+        DCACHE_IDLE = 0,
+        DCACHE_LOW_PRI_REQ = 1,
+        DCACHE_HIGH_PRI = 2
+    } dcache_req_types_2_scheduler_e;
+
+    typedef struct {
+        dcache_req_types_2_scheduler_e req[NUM_DCACHE_PORTS];
+        bool evictionBuf_st_req[NUM_DCACHE_PORTS];
+        bool evictionBuf_p_addr[NUM_DCACHE_PORTS];
+    } dcache_2_scheduler_t;
+
+    typedef struct {
+        bool mem_valid[NUM_DCACHE_PORTS];
+        bool evictionBuf_PermissionToDriveBus[NUM_DCACHE_PORTS][MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
+    } dte_2_dcache_t;
+
+
+
+    typedef struct {logic writeBuf_V[numWriteBufsInMem];} mem_2_scheduler_t;
+    typedef struct {bool mem_Ready;} mem_2_dte_t;
+
+    typedef struct {
+        bool ld_req;
+        bool st_req;
+        bool start_transaction;
+        bool permission2DriveBus[MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
+    } dte_2_mem_t;
+
+    //core needs create its own internal and manage this w and assign
+    typedef struct {
+        icache_req_types_2_scheduler_e req_2_sch_o;
+        bool lineValid;
+        bool hit;
+        byte_t instruction_line[CACHE_LINES_SIZE_B];
+    } icache_2_core_t;
+
+    typedef struct {
+        bool icache_en;
+        tlb_outputs_t tlb_addr_outs_i;
+        v_address_t v_spc_addr_i;
+    } core_2_icache_t;
+
+    typedef struct {
+        //outputs to D$ arb
+        bool ld_addr_0_V;
+        p_address_t ld_addr_0;
+        bool ld_addr_1_V;
+        p_address_t ld_addr_1;
+
+        //for wb
+        //TODO
+    } core_2_dcache_t;
+
+    typedef struct {
+        //for mem
+        bool   valid_0;
+        bool   hit_line_0;
+        byte_t line_0[CACHE_LINES_SIZE_B];
+        bool   valid_1;
+        bool   hit_line_1;
+        byte_t line_1[CACHE_LINES_SIZE_B];
+
+        //for wb
+        //TODO
+        //
+    } dcache_2_core_t;
+
+
+endpackage

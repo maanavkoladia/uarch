@@ -54,6 +54,9 @@ module DCache (
     //
     bank_req_t banks_reqs[NUM_BANKS];
 
+    //not sure if valid are needed, leaving for now
+    //if not XCL, then wait for line_0 to hit, if XCL, wait for both line_0
+    //and line_1
 
 
 endmodule

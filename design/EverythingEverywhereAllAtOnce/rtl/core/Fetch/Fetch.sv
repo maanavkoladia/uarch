@@ -5,12 +5,27 @@ module Fetch (
     //en addr
     input icache_output_t i_cache_outs_i,
 
+
+    //invalid instruction for exp logic, also eip for prev eip invalidate
+    //logic
     input decode_outputs_t decode_outs_i,
+
+    //valid and exp logic
     input rr_outputs_t rr_outs_i,
+
+    //valid and exp logic
     input dc_outputs_t dc_outs_i,
+
+    //valid and exp logic
     input mem_outputs_t mem_outs_i,
+
+    //valid, br.valid, br.target, br.eip, br.xcl, br.hit, br.taken, br.flush
     input exe_outputs_t exe_outs_i,
+
+    //valid and exp logic
     input wb_outputs_t wb_outs_i,
+
+
 
     output fetch_outputs_t outs_o
 

@@ -4,7 +4,6 @@ package DCache_pkg;
 
     localparam NUM_BANKS = 4;
 
-
     typedef struct {
         uint16_t vec;
         byte_t st_q_data[CACHE_LINES_SIZE_B];
@@ -12,6 +11,7 @@ package DCache_pkg;
         bool we;
         bool oe;
     } bank_req_t;
+
 
 
 endpackage
