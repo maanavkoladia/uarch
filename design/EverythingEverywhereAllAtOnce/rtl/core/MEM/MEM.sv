@@ -3,7 +3,7 @@ module MEM (
     input wire rst,
 
 
-    input mem_stage_latches_t latches_i,
+    input mem_latches_t latches_i,
 
     //these are for valid bit shit and flushing
     input exe_outputs_t exe_outs_i,
@@ -22,7 +22,7 @@ module MEM (
     input byte_t line_1[CACHE_LINES_SIZE_B],
 
 
-    output execute_stage_latches_t exe_latches_next_o,
+    output execute_latches_t exe_latches_next_o,
     output mem_outputs_t outs_o
 );
 

@@ -3,9 +3,9 @@ module Fetch (
     input wire rst,
 
     //en addr
-    input icache_output_t i_cache_outs_i,
+    input icache_2_core_t icache_info_i,
 
-
+    input idm_outputs_t idm_info_i,
     //invalid instruction for exp logic, also eip for prev eip invalidate
     //logic
     input decode_outputs_t decode_outs_i,
@@ -25,7 +25,9 @@ module Fetch (
     //valid and exp logic
     input wb_outputs_t wb_outs_i,
 
+    input wire dma_int,
 
+    input wire ddr5_int,
 
     output fetch_outputs_t outs_o
 

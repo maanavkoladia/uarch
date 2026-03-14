@@ -5,9 +5,6 @@ package core_common_pkg;
     import common_pkg::*;
     import reg_ids_pkg::*;
 
-    localparam int NUM_WB_ST_QS = 4;
-
-
     typedef uint32_t flags_t;
 
     typedef struct {
@@ -41,7 +38,7 @@ package core_common_pkg;
     typedef struct {idm_slot_req_t req[num_slots];} fetch_idm_ctrl_2_idm_t;
 
     typedef struct {
-        fetch_2_icache_t fetch_2_icache;
+        core_2_icache_t fetch_2_icache;
         fetch_idm_ctrl_2_idm_t idm_reqs;
         bool exp_pipe_clear;
     } fetch_outputs_t;
@@ -131,12 +128,10 @@ package core_common_pkg;
         bool DR_1_we;
         reg_ids_e DR_1_id;  //
         uint64_t DR_1_data;  //data is supposed to be aligned
-        bool st_override;  //NOTE maybe four needed
-        st_q_outputs_t st_outputs[NUM_WB_ST_QS];
+
+        st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
         st_q_2_dep_check_outputs_t dep_check;
     } wb_outputs_t;
-
-
 
 endpackage
 

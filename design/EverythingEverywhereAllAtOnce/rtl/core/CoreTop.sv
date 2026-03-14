@@ -1,3 +1,185 @@
-module CoreTop ();
+import interconnect_pkg::*;
+import common_pkg::*;
+import core_common_pkg::*;
+
+module CoreTop (
+    input wire clk,
+    input wire rst,
+
+    //icache 2 core
+    input  icache_2_core_t ICacheIn_i,
+    output core_2_icache_t out2ICache_o,
+    //core2 icache
+    //
+    //core 2 dcache
+    input  dcache_2_core_t DCacheIn_i,
+
+    //dcache 2 core these need to be assinged from dc outs and wb outs
+    output core_2_dcache_t out2DCache_o,
+
+    input wire dma_int,
+    input wire ddr5_int
+
+);
+    idm_outputs_t idm_outputs;
+    fetch_outputs_t fetch_outputs;
+    decode_outputs_t decode_outputs;
+    rr_outputs_t rr_outputs;
+    dc_outputs_t dc_outputs;
+    mem_outputs_t mem_outputs;
+    exe_outputs_t exe_outputs;
+    wb_outputs_t wb_outputs;
+
+    rr_latches_t rr_latches, rr_latches_next;
+    dc_latches_t dc_latches, dc_latches_next;
+    mem_latches_t mem_latches, mem_latches_next;
+    execute_latches_t exe_latches, exe_latches_next;
+    wb_latches_t wb_latches, wb_latches_next;
+
+    //assign icache out and dache out
+    assign out2ICache_o = fetch_outputs.fetch_2_icache;
+
+    //dealing with dc to dcache
+    assign out2DCache_o = '{
+            ld_addr_0_V : dc_outputs.ld_addr_0_V,
+            ld_addr_0 : dc_outputs.ld_addr_0,
+            ld_addr_1_V : dc_outputs.ld_addr_1_V,
+            ld_addr_1 : dc_outputs.ld_addr_1
+        };
+
+    //deals with stq head to D$
+    assign out2DCache_o.stq_heads = wb_outputs.stq_heads;
+
+    RR_Latches rr_latches (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(rr_latches_next),
+        .latches_o(rr_latches)
+    );
+
+    DC_Latches rr_latches (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(dc_latches_next),
+        .latches_o(dc_latches)
+    );
+
+    MEM_Latches mem_latches (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(mem_latches_next),
+        .latches_o(mem_latches)
+    );
+
+    Execute_Latches execute_latches (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(exe_latches_next),
+        .latches_o(exe_latches)
+    );
+
+    WB_Latches wb_latches (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(wb_latches_next),
+        .latches_o(wb_latches)
+    );
+
+    Fetch fetch_unit (
+        .clk(clk),
+        .rst(rst),
+        .icache_info_i(ICacheIn_i),
+        .idm_info_i(idm_outputs),
+        .decode_outs_i(decode_outputs),
+        .rr_outs_i(rr_outputs),
+        .dc_outs_i(dc_outputs),
+        .mem_outs_i(mem_outputs),
+        .exe_outs_i(exe_outputs),
+        .dma_int(dma_int),
+        .ddr5_int(ddr5_int),
+        .wb_outs_i(wb_outputs),
+        .outs_o(fetch_outputs_t)
+    );
+
+    IDM idm_unit (
+        .clk(clk),
+        .rst(rst),
+        .fetch_outs_i(fetch_outputs),
+        .idm_outs_o(idm_outputs)
+    );
+
+    Decode decode_unit (
+        .clk(clk),
+        .rst(rst),
+        .idm_outs_i(idm_outputs),
+        .fetch_outs_i(fetch_outputs),
+        .rr_outs_i(rr_outputs),
+        .dc_outs_i(dc_outputs),
+        .mem_outs_i(mem_outputs),
+        .exe_outs_i(exe_outputs),
+        .wb_outs_i(wb_outputs),
+        .rr_latches_next(rr_latches_next),
+        .outs_o(decode_outputs)
+    );
+
+    RR rr_unit (
+        .clk(clk),
+        .rst(rst),
+        .latches_i(rr_latches),
+        .fetch_outs_i(fetch_outputs),
+        .decode_outs_i(decode_outputs),
+        .dc_outs_i(dc_outputs),
+        .mem_outs_i(mem_outputs),
+        .exe_outs_i(exe_outputs),
+        .wb_outs_i(wb_outputs),
+        .dc_latches_next(dc_latches_next),
+        .outs_o(rr_outputs)
+    );
+
+    DC dc_unit (
+        .clk(clk),
+        .rst(rst),
+        .latches_i(dc_latches),
+        .mem_outs_i(mem_outputs),
+        .exe_outs_i(exe_outputs),
+        .wb_outs_i(wb_outputs),
+        .mem_latches_next_o(mem_latches_next),
+        .dc_outs_o(dc_outputs)
+    );
+
+    MEM mem_unit (
+        .clk(clk),
+        .rst(rst),
+        .latches_i(mem_latches),
+        .exe_outs_i(exe_outputs),
+        .wb_outs_i(wb_outputs),
+        .valid_0(DCacheIn_i.valid_0),
+        .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
+        .line_0(DCacheIn_i.line_0),
+        .valid_1(DCacheIn_i.valid_1),
+        .hit_line_1(DCacheIn_i.hit_line_1),
+        .line_1(DCacheIn_i.line_1),
+        .exe_latches_next_o(exe_latches_next),
+        .outs_o(mem_outputs)
+    );
+
+    Execute execute_unit (
+        .clk(clk),
+        .rst(rst),
+        .latches_i(exe_latches),
+        .wb_outs_i(wb_outputs),
+        .wb_latches_next_o(wb_latches_next),
+        .outs_o(exe_outputs)
+    );
+
+    WriteBack write_back_unit (
+        .clk(clk),
+        .rst(rst),
+        .wb_latches(wb_latches),
+        .write_Success(DCacheIn_i.writeSuccess),
+        .outputs(wb_outputs)
+    );
+
+
 
 endmodule

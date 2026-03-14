@@ -48,7 +48,7 @@ module DCache (
     //dache bank fsms
     //victim cache
     //eviction bufs
-
+    //st overide needs to be set here
     //
     //create four banks
     //

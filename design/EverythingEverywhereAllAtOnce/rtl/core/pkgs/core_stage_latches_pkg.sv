@@ -28,8 +28,6 @@ package core_stage_latches_pkg;
 
     typedef struct {idm_slot_info_t idm_slots[NUM_IDM_SLOTS];} idm_outputs_t;
 
-
-
     //typedef struct {
     //    bool br_pred_taken;
     //    v_address_t br_target;
@@ -148,7 +146,7 @@ package core_stage_latches_pkg;
         p_address_t LD_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t LD_PADDR_1;  //cacheline algned
 
-    } mem_stage_latches_t;
+    } mem_latches_t;
 
     typedef struct {
         bool EXE_OP;
@@ -186,9 +184,9 @@ package core_stage_latches_pkg;
         reg_ids_e dr_id;
         uint64_t  dr_data;
 
-        v_address_t ld_addy; //not cache aligned. Only use index bits to find start 
+        v_address_t ld_addy;  //not cache aligned. Only use index bits to find start 
 
-    } execute_stage_latches_t;
+    } execute_latches_t;
 
 
     typedef struct {
@@ -215,7 +213,7 @@ package core_stage_latches_pkg;
         reg_ids_e dr_id;
         uint64_t  dr_data;
 
-    } wb_stage_latches_t;
+    } wb_latches_t;
 
 endpackage
 ;

@@ -26,4 +26,7 @@ package common_pkg;
     typedef logic [63:0] uint64_t;
     typedef logic [128:0] uintCL_t;
 
+    localparam int NUM_WB_ST_QS = 4;
+    localparam int ST_Q_DEPTH = 4;  //needs to be a power of two
+
 endpackage

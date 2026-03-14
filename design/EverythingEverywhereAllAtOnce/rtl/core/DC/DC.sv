@@ -14,7 +14,7 @@ module DC (
     //in flight store addys and stq addys/entries 
     input wb_outputs_t wb_outs_i,
 
-    output mem_stage_latches_t mem_latches_next_o,
+    output mem_latches_t mem_latches_next_o,
 
     output dc_outputs_t dc_outs_o
 

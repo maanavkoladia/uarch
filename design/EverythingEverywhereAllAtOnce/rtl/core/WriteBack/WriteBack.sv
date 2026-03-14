@@ -2,17 +2,17 @@ module WriteBack (
     input wire clk,
     input wire rst,
 
-    input wb_stage_latches_t WB_Latches,
-
+    input wb_latches_t wb_latches,
 
     //D$ write success for st_qs
-    input write_Success[NUM_WB_ST_QS],
+    input bool write_Success[NUM_WB_ST_QS],
 
     output wb_outputs_t outputs
 );
 
 
     //need to write_Success from D$ to inputs into st_qs
-
+    //
+    //
 
 endmodule

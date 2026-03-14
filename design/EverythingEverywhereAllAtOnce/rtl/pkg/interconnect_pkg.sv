@@ -52,9 +52,8 @@ package interconnect_pkg;
 
     //core needs create its own internal and manage this w and assign
     typedef struct {
-        icache_req_types_2_scheduler_e req_2_sch_o;
-        bool lineValid;
-        bool hit;
+        bool   lineValid;
+        bool   hit;
         byte_t instruction_line[CACHE_LINES_SIZE_B];
     } icache_2_core_t;
 
@@ -62,12 +61,11 @@ package interconnect_pkg;
         bool icache_en;
         tlb_outputs_t tlb_addr_outs_i;
         v_address_t v_spc_addr_i;
+        uint8_t numValidIDMSlots;
     } core_2_icache_t;
-
 
     typedef struct {
         bool full;
-        bool st_override;
         bool empty;
         p_address_t address;
         uint16_t bit_vec;
@@ -75,14 +73,13 @@ package interconnect_pkg;
         byte_t data[CACHE_LINES_SIZE_B];
     } st_q_2_dcache_t;
 
-    
-
     typedef struct {
         //outputs to D$ arb
         bool ld_addr_0_V;
         p_address_t ld_addr_0;
         bool ld_addr_1_V;
         p_address_t ld_addr_1;
+
         //for wb
         //TODO
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
@@ -99,9 +96,9 @@ package interconnect_pkg;
         byte_t line_1[CACHE_LINES_SIZE_B];
 
         //for wb
+        bool writeSuccess[NUM_WB_ST_QS];
         //TODO
         //
     } dcache_2_core_t;
-
 
 endpackage
