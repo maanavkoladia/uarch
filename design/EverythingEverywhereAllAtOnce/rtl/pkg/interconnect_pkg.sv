@@ -5,6 +5,7 @@ package interconnect_pkg;
     localparam int numWriteBufsInMem = 8;
     localparam int NUM_DCACHE_PORTS = 4;
 
+
     localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
 
     typedef struct {
@@ -63,15 +64,29 @@ package interconnect_pkg;
         v_address_t v_spc_addr_i;
     } core_2_icache_t;
 
+
+    typedef struct {
+        bool full;
+        bool st_override;
+        bool empty;
+        p_address_t address;
+        uint16_t bit_vec;
+        bool MIO;
+        byte_t data[CACHE_LINES_SIZE_B];
+    } st_q_2_dcache_t;
+
+    
+
     typedef struct {
         //outputs to D$ arb
         bool ld_addr_0_V;
         p_address_t ld_addr_0;
         bool ld_addr_1_V;
         p_address_t ld_addr_1;
-
         //for wb
         //TODO
+        st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
+
     } core_2_dcache_t;
 
     typedef struct {

@@ -102,25 +102,23 @@ package core_common_pkg;
 
     typedef struct {
         bool valid;
-        bool stall;
-        bool flush;
-
         //for fetch and decode
-        execute_outputs_br_info_t br_res_out;
+        exe_br_resolution_outputs_t br_res_out;
 
-        //for decode
+        //for decode for rep engine
         bool  clr_ZF_sb;
         logic ZF;
     } exe_outputs_t;
 
-    //needs to feed into dache
     typedef struct {
-        bool full;
-        bool empty;
+        bool valid;
         p_address_t address;
-        uint16_t bit_vec;
-        byte_t data[CACHE_LINES_SIZE_B];
-    } st_q_outputs_t;
+    } st_q_entry_info_t;
+
+    typedef struct {
+        //all 4 store queue
+        st_q_entry_info_t entries[NUM_WB_ST_QS * ST_Q_DEPTH];
+    } st_q_2_dep_check_outputs_t;
 
     typedef struct {
         bool valid;
@@ -135,6 +133,7 @@ package core_common_pkg;
         uint64_t DR_1_data;  //data is supposed to be aligned
         bool st_override;  //NOTE maybe four needed
         st_q_outputs_t st_outputs[NUM_WB_ST_QS];
+        st_q_2_dep_check_outputs_t dep_check;
     } wb_outputs_t;
 
 

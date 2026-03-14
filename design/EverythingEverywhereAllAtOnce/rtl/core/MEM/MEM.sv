@@ -2,7 +2,14 @@ module MEM (
     input wire clk,
     input wire rst,
 
+
     input mem_stage_latches_t latches_i,
+
+    //these are for valid bit shit and flushing
+    input exe_outputs_t exe_outs_i,
+
+    //only used for valid logic
+    input wb_outputs_t wb_outs_i,
 
     //not sure if valid are needed, leaving for now
     //if not XCL, then wait for line_0 to hit, if XCL, wait for both line_0

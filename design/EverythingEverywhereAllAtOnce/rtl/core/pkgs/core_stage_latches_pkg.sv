@@ -5,6 +5,7 @@ package core_stage_latches_pkg;
     import execute_op_types_pkg::exe_cs_operation_type_e;
 
     localparam int NUM_IDM_SLOTS = 4;
+    localparam int EXE_BUFFER_SIZE = 32;
 
     typedef struct {
         bool valid;  //we had a br in decode
@@ -172,22 +173,20 @@ package core_stage_latches_pkg;
         p_address_t ST_PADDR_1;  //cacheline algned
         bool MIO;
 
-        bool br_pred_taken;
-        v_address_t br_target;
-        v_address_t br_eip;
+        br_info_t br_info;
 
-        v_address_t NEIP;
+        l_address_t NEIP;
 
-        uint32_t imm32;
+        uint64_t imm64;
 
-        byte_t ld_buf[32];  //32 byte buf
+        byte_t ld_buf[EXE_BUFFER_SIZE];  //32 byte buf
 
         reg_ids_e sr_id;
         uint64_t  sr_data;
         reg_ids_e dr_id;
         uint64_t  dr_data;
 
-        v_address_t ld_addy;
+        v_address_t ld_addy; //not cache aligned. Only use index bits to find start 
 
     } execute_stage_latches_t;
 
