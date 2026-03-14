@@ -22,7 +22,7 @@ module MEM (
     input byte_t line_1[CACHE_LINES_SIZE_B],
 
 
-    output execute_latches_t exe_latches_next_o,
+    output exe_latches_t exe_latches_next_o,
     output mem_outputs_t outs_o
 );
 

@@ -186,7 +186,7 @@ package core_stage_latches_pkg;
 
         v_address_t ld_addy;  //not cache aligned. Only use index bits to find start 
 
-    } execute_latches_t;
+    } exe_latches_t;
 
 
     typedef struct {

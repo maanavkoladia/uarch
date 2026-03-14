@@ -1,6 +1,7 @@
-import interconnect_pkg::*;
 import common_pkg::*;
+import interconnect_pkg::*;
 import core_common_pkg::*;
+import core_stage_latches_pkg::*;
 
 module CoreTop (
     input wire clk,
@@ -33,7 +34,7 @@ module CoreTop (
     rr_latches_t rr_latches, rr_latches_next;
     dc_latches_t dc_latches, dc_latches_next;
     mem_latches_t mem_latches, mem_latches_next;
-    execute_latches_t exe_latches, exe_latches_next;
+    exe_latches_t exe_latches, exe_latches_next;
     wb_latches_t wb_latches, wb_latches_next;
 
     //assign icache out and dache out
@@ -44,41 +45,40 @@ module CoreTop (
             ld_addr_0_V : dc_outputs.ld_addr_0_V,
             ld_addr_0 : dc_outputs.ld_addr_0,
             ld_addr_1_V : dc_outputs.ld_addr_1_V,
-            ld_addr_1 : dc_outputs.ld_addr_1
+            ld_addr_1 : dc_outputs.ld_addr_1,
+            stq_heads : wb_outputs.stq_heads
         };
 
-    //deals with stq head to D$
-    assign out2DCache_o.stq_heads = wb_outputs.stq_heads;
 
-    RR_Latches rr_latches (
+    RR_Latches rr_latches_unit (
         .clk(clk),
         .rst(rst),
         .nextLatches_i(rr_latches_next),
         .latches_o(rr_latches)
     );
 
-    DC_Latches rr_latches (
+    DC_Latches dc_latches_unit (
         .clk(clk),
         .rst(rst),
         .nextLatches_i(dc_latches_next),
         .latches_o(dc_latches)
     );
 
-    MEM_Latches mem_latches (
+    MEM_Latches mem_latches_unit (
         .clk(clk),
         .rst(rst),
         .nextLatches_i(mem_latches_next),
         .latches_o(mem_latches)
     );
 
-    Execute_Latches execute_latches (
+    EXE_Latches exe_latches_unit (
         .clk(clk),
         .rst(rst),
         .nextLatches_i(exe_latches_next),
         .latches_o(exe_latches)
     );
 
-    WB_Latches wb_latches (
+    WB_Latches wb_latches_unit (
         .clk(clk),
         .rst(rst),
         .nextLatches_i(wb_latches_next),
@@ -98,7 +98,7 @@ module CoreTop (
         .dma_int(dma_int),
         .ddr5_int(ddr5_int),
         .wb_outs_i(wb_outputs),
-        .outs_o(fetch_outputs_t)
+        .outs_o(fetch_outputs)
     );
 
     IDM idm_unit (
@@ -163,7 +163,7 @@ module CoreTop (
         .outs_o(mem_outputs)
     );
 
-    Execute execute_unit (
+    EXE execute_unit (
         .clk(clk),
         .rst(rst),
         .latches_i(exe_latches),
@@ -172,7 +172,7 @@ module CoreTop (
         .outs_o(exe_outputs)
     );
 
-    WriteBack write_back_unit (
+    WB write_back_unit (
         .clk(clk),
         .rst(rst),
         .wb_latches(wb_latches),

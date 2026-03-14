@@ -1,8 +1,8 @@
-module Execute_Latches (
+module EXE (
     input wire clk,
     input wire rst,
 
-    input execute_latches_t latches_i,
+    input exe_latches_t latches_i,
 
     //only used for valid logic and stall (no flags)
     input wb_outputs_t wb_outs_i,

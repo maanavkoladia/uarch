@@ -1,5 +1,5 @@
 import common_pkg::*;
-import interconnect_pkg::icache_2_core_t;
+import interconnect_pkg::*;
 import core_common_pkg::*;
 import core_stage_latches_pkg::*;
 
