@@ -1,9 +1,9 @@
 package core_common_pkg;
 
     //update the interconnect_pkg imports only we needs
-    import interconnect_pkg::*;
     import common_pkg::*;
     import reg_ids_pkg::*;
+    import interconnect_pkg::*;
 
     typedef uint32_t flags_t;
 
@@ -32,10 +32,10 @@ package core_common_pkg;
         address_t br_eip;
         address_t br_target;
         bool br_xcl;
-        byte_t data[CACHE_LINES_SIZE];
+        byte_t data[CACHE_LINES_SIZE_B];
     } idm_slot_req_t;
 
-    typedef struct {idm_slot_req_t req[num_slots];} fetch_idm_ctrl_2_idm_t;
+    typedef struct {idm_slot_req_t req[NUM_IDM_SLOTS];} fetch_idm_ctrl_2_idm_t;
 
     typedef struct {
         core_2_icache_t fetch_2_icache;

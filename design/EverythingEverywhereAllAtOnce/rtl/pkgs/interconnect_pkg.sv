@@ -59,7 +59,7 @@ package interconnect_pkg;
 
     typedef struct {
         bool icache_en;
-        tlb_outputs_t tlb_addr_outs_i;
+        p_address_t p_addr;
         v_address_t v_spc_addr_i;
         uint8_t numValidIDMSlots;
     } core_2_icache_t;

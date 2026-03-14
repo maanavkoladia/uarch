@@ -3,9 +3,8 @@
 //
 //
 //this module shoudl also control which bank gets the bus via tristates
-
 import common_pkg::*;
-import system_bus_ifs_pkg::*;
+import interconnect_pkg::*;
 import mem_common_pkg::*;
 
 module mem_controller (

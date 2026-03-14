@@ -1,3 +1,8 @@
+import common_pkg::*;
+import interconnect_pkg::icache_2_core_t;
+import core_common_pkg::*;
+import core_stage_latches_pkg::*;
+
 module Fetch (
     input wire clk,
     input wire rst,

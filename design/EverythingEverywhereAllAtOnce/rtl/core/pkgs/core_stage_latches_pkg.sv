@@ -1,10 +1,10 @@
 package core_stage_latches_pkg;
 
-    import core_common_pkg::*;
     import common_pkg::*;
+    import reg_ids_pkg::*;
+    import core_common_pkg::*;
     import execute_op_types_pkg::exe_cs_operation_type_e;
 
-    localparam int NUM_IDM_SLOTS = 4;
     localparam int EXE_BUFFER_SIZE = 32;
 
     typedef struct {

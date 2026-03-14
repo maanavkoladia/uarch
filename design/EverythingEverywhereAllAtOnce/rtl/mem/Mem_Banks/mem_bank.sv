@@ -1,6 +1,6 @@
 import common_pkg::*;
+import interconnect_pkg::MEM_BUS_SIZE;
 import mem_common_pkg::*;
-import system_bus_ifs_pkg::MEM_BUS_SIZE;
 
 module mem_bank (
 

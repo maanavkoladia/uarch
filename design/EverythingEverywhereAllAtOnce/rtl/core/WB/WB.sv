@@ -1,4 +1,4 @@
-module WriteBack (
+module WB (
     input wire clk,
     input wire rst,
 
