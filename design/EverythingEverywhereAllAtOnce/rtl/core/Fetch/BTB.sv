@@ -4,7 +4,13 @@ import Fetch_pkg::*;
 module BTB (
     input  wire         clk,
     input  wire         reset,
-    input  btb_input_t  inputs,
+    input  address_t    spc,
+
+        //execute info
+    input  bool         exe_br_valid,
+    input  address_t    exe_br_target,
+    input  address_t    exe_br_eip,
+    input  bool         exe_br_XCL,
     output BTB_output_t outputs
 );
 
@@ -14,12 +20,15 @@ module BTB (
     localparam int tagBits = ADDRESS_BITS - $clog2(CACHE_LINES_SIZE) - btb_entries_bits;
     localparam int indexIdx = $clog2(CACHE_LINES_SIZE);
 
+    //entries are for storing regular branches and uncodintiaonal branches and calls
+    //we dont store far calls or jumps
     typedef struct packed {
         logic [tagBits-1:0] tag;
-        address_t           exe_br_target;
-        address_t           exe_br_eip;
-        logic               XCL;
-        logic               valid;
+        l_address_t           exe_br_target;
+        l_address_t           exe_br_eip;
+        bool                XCL;
+        bool                ucond_br; //for call and jmp.
+        bool                valid;
     } btb_entry_t;
 
     typedef struct packed {

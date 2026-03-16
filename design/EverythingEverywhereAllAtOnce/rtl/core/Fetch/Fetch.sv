@@ -2,6 +2,7 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import core_common_pkg::*;
 import core_stage_latches_pkg::*;
+import Fetch_pkg::*;
 
 module Fetch (
     input wire clk,
@@ -35,7 +36,90 @@ module Fetch (
     output fetch_outputs_t outs_o
 
 );
+
+    bool exp_mode_jk;
+    bool int_mode_jk;
+    bool DMA_int_jk;
+    l_address_t SPC;
+
+
+    predictor_input_t predictor_inputs;
+
+
+    btb_outpts_t btb_outs;
+    spc_sel_logic_output_t spc_sel_logic_outs;
+    predictor_output_t predictor_outs;
+    idm_ctrl_logic_output_t idm_ctrl_logic_outs;
+    idm_invalidate_logic_ouput_t idm_invalidate_logic_outs;
+
+
+    l_address_t btb_spc;
+    assign btb_spc = spc_sel_logic_outs.xcl ? spc_sel_logic_outs.br_eip : SPC;
+
+    assign predictor_inputs = '{
+        btfn_target: btb_outs.br_target,
+        spc: btb_spc,
+        exe_br_target: exe_outs_i.br_res_out.br_target,
+        exe_br_hit: exe_outs_i.br_res_out.taken
+    };
+    
+    BTB btb(
+        .clk(clk),
+        .reset(rst),
+        .spc(btb_spc), //address
+
+        .exe_br_valid(exe_outs_i.br_res_out.valid), //bool
+        .exe_br_target(exe_outs_i.br_res_out.br_target), //address_t
+        .exe_br_eip(exe_outs_i.br_res_out.br_eip), //address_t
+        .exe_br_XCL(exe_outs_i.br_res_out.br_XCL), //bool
+        .outputs(btb_outs), //BTB_outputs_t
+    );
+
+    SPC_Sel_Logic spc_sel_logic(
+        .clk(clk),
+        .rst(rst),
+        .flush(exe_outs_i.br_res_out.flush),
+
+        //probably not needed
+        .decode_stall(decode_outs_i.invalid_instruction),
+
+        .btb_outputs(btb_outs), //btb outs struct
+        .pred_out(predictor_outs), //predictor_outputs_t
+        .idm_ctrl_logic_out(idm_ctrl_logic_outs), //for push success
+
+        .outputs(spc_sel_logic_outs)
+    );
+
+   IDM_Ctrl_Logic idm_ctrl_logic (
+        .spc(SPC),
+        .idm(idm_info_i),
+        .invalidate_logic_out(idm_invalidate_logic_outs),
+        .btb_out(btb_outs),
+        .pred_out(predictor_outs),
+        .icache_out(icache_info_i),
+        .out(idm_ctrl_logic_outs)
+    );
+
+    Predictor predictor(
+        .inputs(predictor_inputs),
+        .outputs(predictor_outs)
+    );
+
     /*
+
+    I am going to try to keep all the registers inside of this module and as structural like as possible 
+
+    modules in this file:a
+    SPC_SEL_LOGIC
+    BTB
+    Predictor
+    iCache_en_logic
+    TLB
+    Seg_Xlation
+    Qcntrl
+    InvalidLogic
+    EXP_CTRL_ROMS
+
 
 if(v_bk0 & v_bk1) {
     SPC <= SPC
@@ -67,7 +151,7 @@ xbr -> xbr
 
 btb outputs xcl, next line, target, br.location
 
-if xcl, load a temp register with br.location with valid bit set. SPC will get SPC + 16
+if xcl, load a temp register with br.location with XCL valid bit set. SPC will get SPC + 16
 
 since valid is set, mux will pick br.location instead of SPC to feed into BTB.
 This will keep the BTB predicting the same cache line while the SPC moves on to SPC + 16

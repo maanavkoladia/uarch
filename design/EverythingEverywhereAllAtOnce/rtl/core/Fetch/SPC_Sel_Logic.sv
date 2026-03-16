@@ -1,15 +1,17 @@
+import Fetch_pkg::*;
+
 module SPC_Sel_Logic (
     input wire clk,
     input wire rst,
 
     input bool flush,
 
-    //probably not needed, harish is a fuck up
+    //probably not needed
     input bool decode_stall,
 
     input btb_output_t btb_outputs,
     input predictor_output_t pred_out,
-    input q_ctrl_logic_output_t q_ctrl_logic_out,
+    input idm_ctrl_logic_output_t idm_ctrl_logic_out,
 
     output spc_sel_logic_output_t outputs
 
@@ -21,7 +23,7 @@ module SPC_Sel_Logic (
     bool br_taken, push_success, btb_xcl;
 
     assign br_taken = btb_outputs.hit && pred_out.taken;
-    assign push_success = q_ctrl_logic_out.push_success;
+    assign push_success = idm_ctrl_logic_out.push_success;
     assign btb_xcl = btb_outputs.XCL;
 
     always_comb begin

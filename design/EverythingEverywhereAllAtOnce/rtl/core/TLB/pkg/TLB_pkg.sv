@@ -10,7 +10,8 @@ package TLB_pkg;
         logic [VPN_BITS-1:0] PFN;
         bool valid;
         bool present;
-        bool r_w;  // write permission: 1 = writable
+        bool r_w; // write permission: 1 = writable
+        bool MMIO;  
     } tlb_entries_t;
 
 endpackage

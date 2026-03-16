@@ -25,6 +25,13 @@ package Fetch_pkg;
         byte_t data[CACHE_LINES_SIZE];
     } icache_fetch_output_t;
 
+
+    typedef struct{
+        bool exp_pipe_clear;
+        bool int_pipe_clear;
+    }exp_set_logic_output_t;
+
+
     typedef struct {
         address_t spc;
 
@@ -44,7 +51,7 @@ package Fetch_pkg;
 
 
     typedef struct {
-        fetch_idm_ctrl_2_idm_t q_input;
+        fetch_idm_ctrl_2_idm_t idm_input;
         bool push_success;
     } idm_ctrl_logic_output_t;
 

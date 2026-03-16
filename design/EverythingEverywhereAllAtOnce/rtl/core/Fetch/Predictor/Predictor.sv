@@ -1,5 +1,5 @@
 module Predictor (
-    predictor_input_t  inputs,
+    predictor_inputs inputs,
     predictor_output_t outputs
 );
 

@@ -3,7 +3,7 @@ package Predictor_pkg;
     import common_pkg::*;
 
     typedef struct {
-        address_t btfn_target;
+        address_t target;
         address_t spc;
     } btfn_inputs_t;
 
