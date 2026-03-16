@@ -27,7 +27,7 @@ package mem_common_pkg;
 
     typedef struct {
         //address from the chip entry
-        logic [NUM_SRAM_ADDRESS_BITS -1 : 0] ld_address;
+        logic [NUM_SRAM_ADDRESS_BITS - 1 : 0] ld_address;
 
         //address from the bank group table
         logic [NUM_SRAM_ADDRESS_BITS -1 : 0] st_address;

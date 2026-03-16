@@ -6,7 +6,7 @@ module mux2_10 (
 
     genvar i;
     generate
-        for(i=0; i<10; i=i+1) begin
+        for(i=0; i<10; i=i+1) begin : g_mux2_10_sub_muxes_0
             mux2$ muxX(out[0], in0[0], in1[0], sel);
         end
     endgenerate

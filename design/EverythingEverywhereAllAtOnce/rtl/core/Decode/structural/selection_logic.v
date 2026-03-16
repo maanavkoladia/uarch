@@ -36,7 +36,7 @@ module selection_logic (
 
     genvar i;
     generate
-        for(i = 0; i < 16; i=i+1) begin
+        for(i = 0; i < 16; i=i+1) begin : g_harish_name_this_1
             mux64_8 sixtyfourmux(.in(queue), .sel(temp[i]), .out(IRbyte[i]));
         end
     endgenerate

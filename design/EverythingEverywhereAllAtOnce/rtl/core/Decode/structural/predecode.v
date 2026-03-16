@@ -41,7 +41,7 @@ module predecode(
 
     genvar i;
     generate
-        for(i=0; i<8; i=i+1) begin
+        for(i=0; i<8; i=i+1) begin : g_harish_name_this_0
             alu4$ alu(
                 .a(EIP[i*4+3:i*4]),
                 .b(sext_inst_length[i*4+3:i*4]),

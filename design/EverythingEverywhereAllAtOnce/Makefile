@@ -10,4 +10,4 @@ gen:
 	python ./scripts/generateStructural.py ./config/gen.conf.json
 
 clean:
-	echo "Not yet written"
+	@echo "Not yet written"

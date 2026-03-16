@@ -22,8 +22,8 @@ module pf_checker (
 
 
     genvar i;
-    generate
-        for(i=0; i<10; i=i+1) begin
+    generate 
+        for(i=0; i<10; i=i+1) begin : g_harish_name_this_2
             nor2$ norX(pf_vector[i], a_greater[i], b_greater[i]);
         end
     endgenerate
