@@ -37,24 +37,53 @@ module Fetch (
 
 );
 
+
+
+    //internal reg to Fetch
     bool exp_mode_jk;
     bool int_mode_jk;
-    bool DMA_int_jk;
+    bool DMA_int_jk; //corresponds to unterrupt "unit" Need to figure out how to clear int bit
     l_address_t SPC;
 
 
+    //wires
+    bool f_exp;
+    wire seg_xlation_out;
+    wire seg_xlation_gp_fault; //not used
+    byte_t rom_data_out[CACHE_LINES_SIZE_B];
+    byte_t idm_ctrl_data_in;
+    l_address_t next_spc;
+    wire spc_16;
+    l_address_t btb_spc;
+    l_address_t br_restore_spc;
+
     predictor_input_t predictor_inputs;
+    tlb_inputs_t tlb_inputs;
 
-
+    //logic block outputs
     btb_outpts_t btb_outs;
     spc_sel_logic_output_t spc_sel_logic_outs;
     predictor_output_t predictor_outs;
     idm_ctrl_logic_output_t idm_ctrl_logic_outs;
     idm_invalidate_logic_ouput_t idm_invalidate_logic_outs;
+    icache_en_logic_output_t icache_en_logic_outs;
+    tlb_outputs_t tlb_outs;
+    exp_set_logic_output_t exp_set_logic_outs;
+
+    //gate logic
 
 
-    l_address_t btb_spc;
+
     assign btb_spc = spc_sel_logic_outs.xcl ? spc_sel_logic_outs.br_eip : SPC;
+
+
+    assign f_exp = tlb_outs.gp_exp & tlb_outs.pageFault & ~exp_mode;
+
+
+    assign tlb_inputs = '{
+        virtual_addr : seg_xlation_out, //seg_Xlation outputs
+        write_intention : '0
+    };
 
     assign predictor_inputs = '{
         btfn_target: btb_outs.br_target,
@@ -62,7 +91,72 @@ module Fetch (
         exe_br_target: exe_outs_i.br_res_out.br_target,
         exe_br_hit: exe_outs_i.br_res_out.taken
     };
-    
+
+    assign idm_ctrl_data_in = (exp_mode_jk ||int_mode_jk) ?
+                               icache_info_i.instruction_line : rom_data_out;
+
+    assign br_restore_spc = exe_outs_i.br_taken ? exe_outs_i.br_target : exe_outs_i.br_target;
+
+    always_comb begin
+        case(spc_sel_logic_outs.sel)
+            SPC: next_spc = SPC;
+            SPC_P16: next_spc = spc_16;
+            BR_RESTORE: next_spc = br_restore_spc;
+            BTB_TARGET: btb_outs.br_target;
+            default: next_spc = 0;
+        endcase
+    end
+
+    //DMA JK
+    always_ff@(posedge clk or rst) begin
+        if(rst_n)
+            DMA_int_jk <= 0;
+        else begin
+            case({dma_int, exe_outs_i.clr_exp_mode})
+                2'b00: DMA_int_jk <= DMA_int_jk;
+                2'b01: DMA_int_jk <= 0;
+                2'b10: DMA_int_jk <= 1;
+                2'b11: DMA_int_jk <= ~DMA_int_jk;
+            endcase
+        end
+    end
+
+// exp_mode JK
+    always_ff@(posedge clk or rst) begin
+        if(rst_n)
+            exp_mode_jk <= 0;
+        else begin
+            case({EXP_Set_logic.exp_pipe_clear, exe_outs_i.clr_exp_mode})
+                2'b00: exp_mode_jk <= exp_mode_jk;
+                2'b01: exp_mode_jk <= 0;
+                2'b10: exp_mode_jk <= 1;
+                2'b11: exp_mode_jk <= ~exp_mode_jk;
+            endcase
+        end
+    end
+
+//int JK
+    always_ff@(posedge clk or rst) begin
+        if(rst_n)
+            q <= 0;
+        else begin
+            case({exp_set_logic_outs.int_pipe_clear, exe_outs_i.clr_exp_mode})
+                2'b00: int_mode_jk <= int_mode_jk;
+                2'b01: int_mode_jk <= 0;
+                2'b10: int_mode_jk <= 1;
+                2'b11: int_mode_jk <= ~int_mode_jk;
+            endcase
+        end
+    end
+
+    //SPC flop
+    always_ff@(posedge_clk or rst)begin
+        if(rst)SPC <= 0;
+        else begin
+            SPC <= next_spc;
+        end
+    end
+
     BTB btb(
         .clk(clk),
         .reset(rst),
@@ -75,13 +169,18 @@ module Fetch (
         .outputs(btb_outs), //BTB_outputs_t
     );
 
+    Predictor predictor(
+        .inputs(predictor_inputs),
+        .outputs(predictor_outs)
+    );
+
     SPC_Sel_Logic spc_sel_logic(
         .clk(clk),
         .rst(rst),
         .flush(exe_outs_i.br_res_out.flush),
 
         //probably not needed
-        .decode_stall(decode_outs_i.invalid_instruction),
+        .decode_stall(decode_outs_i.stall),
 
         .btb_outputs(btb_outs), //btb outs struct
         .pred_out(predictor_outs), //predictor_outputs_t
@@ -90,24 +189,89 @@ module Fetch (
         .outputs(spc_sel_logic_outs)
     );
 
-   IDM_Ctrl_Logic idm_ctrl_logic (
+
+    IDM_Ctrl_Logic idm_ctrl_logic (
         .spc(SPC),
         .idm(idm_info_i),
         .invalidate_logic_out(idm_invalidate_logic_outs),
         .btb_out(btb_outs),
         .pred_out(predictor_outs),
         .icache_out(icache_info_i),
+        .data_in(idm_ctrl_data_in),
         .out(idm_ctrl_logic_outs)
     );
 
-    Predictor predictor(
-        .inputs(predictor_inputs),
-        .outputs(predictor_outs)
+
+    IDM_Invalidate_Logic idm_invalidate_logic(
+        .clk(clk),
+        .rst(rst),
+
+        .eip(decode_outs_i.eip),
+        .flush(exe_outs_i.br_res_out.flush),
+        .exp_pipeclear(exp_set_logic_outs.exp_pipe_clear),
+        .decode_stall(decode_outs_i.stall),
+        .idm_meta(idm_info_i),
+
+        .out_invalidates(idm_invalidate_logic_outs)
     );
+
+
+    EXP_Set_logic exp_set_logic(
+        .invalid_instruction(decode_outs_i.invalid_instruction),
+        .rr_valid(rr_outs_i.valid),
+        .dc_valid(dc_outs_i.valid),
+        .mem_valid(mem_outs_i.valid),
+        .exe_valid(exe_outs_i.valid),
+        .wb_valid(wb_outs_i.valid),
+        .f_exp(f_exp),
+        .rr_exp(rr_outs_i.exp_present),
+        .int_set(DMA_int_jk),
+        .outputs(exp_set_logic_outs)
+    );
+
+    EXP_CTRL_ROMS exp_ctrl_roms(
+        .RR_pf(rr_outs_i.exp_pf),
+        .RR_exp(rr_outs_i.exp_present),
+        .Fetch_pf(tlb_outs.pageFault),
+        .DMA_int(DMA_int_jk),
+        .exp_mode(exp_mode_jk),
+        .rom_data_out(rom_data_out[CACHE_LINES_SIZE_B])
+    );
+
+
+    //spc to icache path
+    ICache_En_Logic icache_en_logic(
+        .exp_mode(exp_mode_jk),
+        .cs_sb(rr_outs_i.codeSeg_sb),
+        .int_mode(int_mode_jk),
+
+        .out(icache_en_logic_outs)
+    );
+
+    TLB tlb(
+        .inputs(tlb_inputs),
+        .outputs(tlb_outs)
+    );
+
+    SegmentTranslation seg_Xlation(
+        .clk(clk),
+        .rst(rst),
+        .l_addr_i(spc),
+        .segID_i(reg_ids_e.CS),
+        .v_addr_o(seg_xlation_out),
+        .gp_fault_o(gp_fault)
+    );
+
+
+
+    endmodule
+
+
+
 
     /*
 
-    I am going to try to keep all the registers inside of this module and as structural like as possible 
+    I am going to try to keep all the registers inside of this module and as structural like as possible
 
     modules in this file:a
     SPC_SEL_LOGIC
@@ -147,7 +311,7 @@ xcl branch problem for SPC fetching (figure 1)
 problems:
 xbr -> E (regular intrsduction)
 xbr -> br
-xbr -> xbr 
+xbr -> xbr
 
 btb outputs xcl, next line, target, br.location
 
@@ -157,14 +321,14 @@ since valid is set, mux will pick br.location instead of SPC to feed into BTB.
 This will keep the BTB predicting the same cache line while the SPC moves on to SPC + 16
 while valid is set, SPC logic will ignore BTB predictions since you don't want to load SPC with BTB prediction target,
 you want to keep SPC the same (SPC + 16 from previous SPC update) so that you finish fetching the next cache line
-in which the xcl branch finishes before moving onto the target cache line. 
+in which the xcl branch finishes before moving onto the target cache line.
 
 cache will produce hit signal for the next line which will clear the valid bit of the br.location register,
-same cycle, SPC will get target from BTB. 
+same cycle, SPC will get target from BTB.
 
 this also fixes xbr to xbr situation since valid bit would clear same cycle as SPC update.
 This means that there is one cycle of invalidity for the temp register where the updated SPC value is being fed to the BTB
-Next cycle the temp register will be loaded with the br.location and valid bit will be set. xcl status would be reupdated. 
+Next cycle the temp register will be loaded with the br.location and valid bit will be set. xcl status would be reupdated.
 
 
 
@@ -172,13 +336,13 @@ other problems:
 how to invalidate both xcl slots
 
 
-invalidate slot + xcl when EIP = br.location. 
+invalidate slot + xcl when EIP = br.location.
 if br.location = EIP, and its not xcl, only invalidate the current slot since slot + xcl = slot + 0 = slot
-if xcl then slot + 1 and slot must be invalidated together. 
+if xcl then slot + 1 and slot must be invalidated together.
 
 
 
 */
 
 
-endmodule
+

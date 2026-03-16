@@ -7,14 +7,16 @@ module IDM_Ctrl_Logic (
     input idm_invalidate_logic_ouput_t invalidate_logic_out,
     input btb_output_t btb_out,
     input predictor_output_t pred_out,
-    input icache_output_t icache_out,
-
+    input icache_output_t icache_out, //data is for hit miss. 
+    input byte_t data_in[CACHE_LINES_SIZE],
     output idm_ctrl_logic_output_t out
 );
 
     /*
     we can probably remove the idm sending data to the controller and manage
     it all thru the invalidation logic... keeping it the same for now
+
+    3/16: need to add exp/int integration!
     */
 
     localparam int OFFSET_BITS = $clog2(CACHE_LINES_SIZE);
@@ -50,7 +52,7 @@ module IDM_Ctrl_Logic (
 
                     // Data
                     out.idm_input.req[i].ld_data = 1;
-                    out.idm_input.req[i].data    = icache_out.data;
+                    out.idm_input.req[i].data    = data_in;
 
                     out.push_success = 1;
 

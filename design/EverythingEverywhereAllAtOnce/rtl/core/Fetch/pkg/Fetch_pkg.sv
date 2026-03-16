@@ -74,4 +74,8 @@ package Fetch_pkg;
         address_t br_eip;
     } spc_sel_logic_output_t;
 
+    typedef struct {
+        bool en_icache;
+    } icache_en_logic_output_t;
+
 endpackage
