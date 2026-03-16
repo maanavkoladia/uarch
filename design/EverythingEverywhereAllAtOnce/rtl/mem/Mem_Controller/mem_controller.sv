@@ -88,6 +88,11 @@ module mem_controller (
     //bundlede fsm out
     mem_controller_fsm_out_t fsm_outs;
 
+    logic [MEM_CONTROLLER_FSM_STATES - 1 : 0] mem_controller_states_bits;  // packed 5-bit vector
+
+    //writing the structurcal state bits to the sv enum
+    mem_controller_fsm_state_t fsm_state;
+    assign fsm_state = mem_controller_states_bits;
 
     //TODO: WRite this
     logic hit_into_fsm;
@@ -100,6 +105,10 @@ module mem_controller (
         .ld_req_i(DTE_i.ld_req),
         .write_req_i(DTE_i.st_req),
         .hit_i(hit_into_fsm),
+        .S_0(mem_controller_states_bits[0]),  // current-state bit 0
+        .S_1(mem_controller_states_bits[1]),  // current-state bit 1
+        .S_2(mem_controller_states_bits[2]),  // current-state bit 2
+        .S_3(mem_controller_states_bits[3]),  // current-state bit 3
         .mem_ready_o(fsm_outs.mem_ready),
         .set_ld_tristate_o(fsm_outs.set_ld_tristate),
         .start_store_o(fsm_outs.start_store),
@@ -159,7 +168,7 @@ module mem_controller (
 
     //ld_address_changed logic
     always_comb begin
-        for (int i = 0; i < NUM_BANKS; i++) begin 
+        for (int i = 0; i < NUM_BANKS; i++) begin
             bank_cmds_o[i].ld_address_change = 0;
         end
         if (fsm_outs.ld_address_changed) begin
@@ -211,27 +220,27 @@ module mem_controller (
 
             if (fsm_outs.fill0) begin
                 for (int j = 0; j < 4; j++) begin
-                    bankGroupTable[bankGroup].writeBuf[j] <= data_bus[8*j +: 8];
+                    bankGroupTable[bankGroup].writeBuf[j] <= data_bus[8*j+:8];
                 end
             end
 
             if (fsm_outs.fill1) begin
                 for (int j = 0; j < 4; j++) begin
-                    bankGroupTable[bankGroup].writeBuf[4 + j] <= data_bus[8*j +: 8];
+                    bankGroupTable[bankGroup].writeBuf[4+j] <= data_bus[8*j+:8];
                 end
             end
 
             if (fsm_outs.fill2) begin
                 for (int j = 0; j < 4; j++) begin
-                    bankGroupTable[bankGroup].writeBuf[8 + j] <= data_bus[8*j +: 8];
+                    bankGroupTable[bankGroup].writeBuf[8+j] <= data_bus[8*j+:8];
                 end
             end
 
             if (fsm_outs.fill3) begin
                 for (int j = 0; j < 4; j++) begin
-                    bankGroupTable[bankGroup].writeBuf[12 + j] <= data_bus[8*j +: 8];
+                    bankGroupTable[bankGroup].writeBuf[12+j] <= data_bus[8*j+:8];
                 end
-            end            
+            end
 
             for (int i = 0; i < NUM_BANKS; i++) begin
                 if (banks_i[i].clear_writebufV) begin
@@ -254,7 +263,7 @@ module mem_controller (
     always_comb begin
         //clear all of them to clear them
         for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
-            for(int j = 0; j < NUM_BANKS_PER_BANK_GROUP; j++) begin
+            for (int j = 0; j < NUM_BANKS_PER_BANK_GROUP; j++) begin
                 bankGroupTable[i].startStore[j] = 0;
             end
         end

@@ -7,6 +7,22 @@
     },
 
     "genFiles" : {
+
+        "simple" : {
+            "csv": "scripts/test/simple.csv",
+            "outputFilePath" : "scripts/test/rtl/simple.sv",
+            "run Combinational SOP Gen": "true",
+            "run FSM SOP gen": "false",
+            "run Combinational LUT Gen": "false",
+            "run FSM LUT Gen": "false"
+        },
+
+        "ex1" : {
+            "csv": "scripts/test/ex1.csv",
+            "outputFilePath" : "scripts/test/rtl/ex1.sv",
+            "run Combinational SOP Gen": "true"
+        },
+
         "bank_controller_fsm_logic" : {
             "csv": "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.csv",
             "outputFilePath" : "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.sv",
@@ -22,32 +38,20 @@
             "run FSM SOP gen": "true"
         },
 
-        "simple" : {
-            "csv": "scripts/test/simple.csv",
-            "outputFilePath" : "scripts/test/rtl/simple.sv",
-            "run Combinational SOP Gen": "true"
-        },
-
-        "ex1" : {
-            "csv": "scripts/test/ex1.csv",
-            "outputFilePath" : "scripts/test/rtl/ex1.sv",
-            "run Combinational SOP Gen": "true"
-        },
-
         "i_Cache_f_controller_fsm_logic" : {
-            "csv" : "rtl/core/ICache/gen/ICache_Controller_Logic.csv",
+            "csv" : "rtl/ICache/gen/ICache_Controller_Logic.csv",
             "outputFilePath" : "rtl/core/ICache/gen/ICache_Controller_Logic.sv",
             "run FSM SOP gen": "true"
         },
 
         "PreDecode MOD LUT" : {
-            "csv" : "rtl/core/PreDecode/structural/gen/MOD_LUT.csv",
+            "csv" : "rtl/core/Decode/structural/gen/MOD_LUT.csv",
             "outputFilePath": "rtl/core/PreDecode/structural/gen/MOD_LUT.v",
             "run Combinational SOP Gen": "true"
         },
 
         "Predecode OP LUT" : {
-            "csv" : "rtl/core/PreDecode/structural/gen/OP_LUT.csv",
+            "csv" : "rtl/core/Decode/structural/gen/OP_LUT.csv",
             "outputFilePath": "rtl/core/PreDecode/structural/gen/OP_LUT.v",
             "run Combinational SOP Gen": "true"
         }

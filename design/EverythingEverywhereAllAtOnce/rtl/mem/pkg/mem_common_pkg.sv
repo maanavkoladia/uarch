@@ -45,6 +45,47 @@ package mem_common_pkg;
 
     } mem_controller_2_mem_bank_t;
 
+    //FSM states for Bank controller FSM
+    localparam int BANK_CONTROLLER_FSM_LOGIC_STATES = 18;
+    typedef enum logic [$clog2(
+BANK_CONTROLLER_FSM_LOGIC_STATES
+) - 1 : 0] {
+        IDLE            = 5'd0,
+        LD_ADDR_WAIT_0  = 5'd1,
+        LD_WAIT_0       = 5'd2,
+        LD_WAIT_1       = 5'd3,
+        LD_WAIT_2       = 5'd4,
+        LD_WAIT_3       = 5'd5,
+        LD_WAIT_4       = 5'd6,
+        LD_WAIT_5       = 5'd7,
+        ST_ADDR_WAIT_0  = 5'd8,
+        ST_ADDR_WAIT_1  = 5'd9,
+        ST_ADDR_WAIT_2  = 5'd10,
+        ST_ADDR_WAIT_3  = 5'd11,
+        ST_WRITE_WAIT_0 = 5'd12,
+        ST_WRITE_WAIT_1 = 5'd13,
+        ST_WRITE_WAIT_2 = 5'd14,
+        ST_WRITE_WAIT_3 = 5'd15,
+        ST_WRITE_WAIT_4 = 5'd16,
+        ST_WRITE_WAIT_5 = 5'd17
+    } bank_fsm_controller_state_t;
+
+    localparam int MEM_CONTROLLER_FSM_STATES = 10;
+    typedef enum logic [$clog2(
+MEM_CONTROLLER_FSM_STATES
+) - 1 : 0] {
+        ERROR   = 5'd0,
+        IDLE    = 5'd1,
+        LD_0    = 5'd2,
+        LD_1    = 5'd3,
+        LD_2    = 5'd4,
+        LD_HIT  = 5'd5,
+        LD_MISS = 5'd6,
+        W0      = 5'd7,
+        W1      = 5'd8,
+        W2      = 5'd9
+
+    } mem_controller_fsm_state_t;
 
 endpackage
 

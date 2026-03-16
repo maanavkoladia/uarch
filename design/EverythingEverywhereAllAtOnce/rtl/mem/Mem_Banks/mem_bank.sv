@@ -41,6 +41,14 @@ module mem_bank (
     logic mem_bank_controller_we;
     logic mem_bank_controller_send_store_address;
 
+    logic [$clog2(
+BANK_CONTROLLER_FSM_LOGIC_STATES
+) - 1 : 0] mem_bank_controller_states_bits;  // packed 5-bit vector
+
+    //writing the structurcal state bits to the sv enum
+    bank_fsm_controller_state_t fsm_state;
+    assign fsm_state = mem_bank_controller_states_bits;
+
     // address mux
     logic [NUM_SRAM_ADDRESS_BITS-1:0] bank_address_i;
     assign bank_address_i = mem_bank_controller_send_store_address ?
@@ -53,7 +61,7 @@ module mem_bank (
     wire [MEM_BUS_SIZE-1:0] bank_write_data;
 
     // drive mem_bus tri-state
-    assign mem_bus  = controller2bank_i.driveMemBus ? bank_bus : 'z;
+    assign mem_bus = controller2bank_i.driveMemBus ? bank_bus : 'z;
     assign bank_bus = mem_bank_controller_we ? bank_write_data : 'z;
 
 
@@ -71,7 +79,7 @@ module mem_bank (
 
             sram32x32$ mem_cell_u_X (
                 .A(bank_address_i),
-                .DIO(bank_bus[(i_gen + 1) * (MEM_BUS_SIZE/4)  - 1 : i_gen * (MEM_BUS_SIZE/4)]),
+                .DIO(bank_bus[(i_gen+1)*(MEM_BUS_SIZE/4)-1 : i_gen*(MEM_BUS_SIZE/4)]),
                 .OE(mem_bank_controller_oe),
                 .WR(mem_bank_controller_we),
                 .CE(1'b0)  // always enabled
@@ -85,6 +93,11 @@ module mem_bank (
         .rst(rst),
         .ld_address_change_i(controller2bank_i.ld_address_change),
         .start_store_i(controller2bank_i.start_store),
+        .S_0(mem_bank_controller_states_bits[0]),  // current-state bit 0
+        .S_1(mem_bank_controller_states_bits[1]),  // current-state bit 1
+        .S_2(mem_bank_controller_states_bits[2]),  // current-state bit 2
+        .S_3(mem_bank_controller_states_bits[3]),  // current-state bit 3
+        .S_4(mem_bank_controller_states_bits[4]),  // current-state bit 4
         .st_addr_release_o(mem_bank_controller_send_store_address),
         .OE_o(mem_bank_controller_oe),
         .WE_o(mem_bank_controller_we),
