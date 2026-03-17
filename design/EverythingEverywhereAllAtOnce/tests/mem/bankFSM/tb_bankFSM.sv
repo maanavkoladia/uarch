@@ -27,12 +27,14 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
     logic mem_bank_controller_send_store_address;
     logic clearWB;
     logic Precharged;
+    logic cmd_ld_addr_changed;
+    logic cmd_start_store;
 
     bank_controller_fsm_logic uut0 (
         .clk(clk),
         .rst(rst),
-        .ld_address_change_i(1'b0),
-        .start_store_i(1'b0),
+        .ld_address_change_i(cmd_ld_addr_changed),
+        .start_store_i(cmd_start_store),
         .S_0(mem_bank_controller_states_bits[0]),  // current-state bit 0
         .S_1(mem_bank_controller_states_bits[1]),  // current-state bit 1
         .S_2(mem_bank_controller_states_bits[2]),  // current-state bit 2
@@ -51,7 +53,11 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
         rst = 0;
         `DELAY_CYCLES(10);
         rst = 1;
-        `DELAY_CYCLES(30);
+        `DELAY_CYCLES(10);
+        cmd_ld_addr_changed = 1;
+        `DELAY_CYCLES(1);
+        cmd_ld_addr_changed = 0;
+
         `LOG("Mem Bank Tb Complete");
         $finish;
     end
