@@ -8,8 +8,11 @@ import mem_common_pkg::*;
 module tb_memBanks ();
 
     `CLK_INIT(`CYCLE_TIME) 
-    `GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 2);
-    `GEN_WAVEFORM_VPD("wave.vpd");
+    //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
+    //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
+    initial begin
+        $vcdpluson;
+    end
     
     logic rst = 0;
     wire [MEM_BUS_SIZE - 1: 0] memBus;

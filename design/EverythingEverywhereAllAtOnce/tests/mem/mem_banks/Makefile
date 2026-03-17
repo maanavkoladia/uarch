@@ -19,16 +19,14 @@ SRC_FILES = \
 all: $(TARGET)
 	
 $(TARGET): $(SRC_FILES)
-	#@echo "$(TIME_FILE)" > master
-	#@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g' > master
-	#@cat master
 	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES)
 
 run: $(TARGET)
 	./$<
 
 view: run
-	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd
+	#./$(TARGET) -gui &
+	$(SIM_TOOL) $(SIM_TOOL_FLAGS) *.vpd &
 
 see:
 	#@echo $(TIME_FILE)
