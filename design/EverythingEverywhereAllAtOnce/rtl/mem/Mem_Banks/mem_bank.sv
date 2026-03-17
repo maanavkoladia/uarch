@@ -118,4 +118,12 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
         .PreCharged_o(outputs.precharged)
     );
 
+    //initial begin
+    //    $readmemh("fakeData/mem0.hex", mem_bank.g_sram_cells[0].mem_cell.mem);
+    //    $readmemh("fakeData/mem1.hex", mem_bank.g_sram_cells[1].mem_cell.mem);
+    //    $readmemh("fakeData/mem2.hex", mem_bank.g_sram_cells[2].mem_cell.mem);
+    //    $readmemh("fakeData/mem3.hex", mem_bank.g_sram_cells[3].mem_cell.mem);
+    //    `LOG("read in mem");
+    //end
+
 endmodule

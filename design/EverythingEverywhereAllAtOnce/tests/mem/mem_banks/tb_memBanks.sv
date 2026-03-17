@@ -61,6 +61,8 @@ module tb_memBanks ();
 
         `DELAY_CYCLES(3);
         rst = 1;
+        `DELAY_CYCLES(10);
+        bankCmds.driveMemBus = 1;
         `DELAY_CYCLES(30);
         `LOG("Mem Bank Tb Complete");
         $finish;
@@ -72,6 +74,7 @@ module tb_memBanks ();
         $readmemh("fakeData/mem1.hex", tb_memBanks.uut0.g_sram_cells[1].mem_cell.mem);
         $readmemh("fakeData/mem2.hex", tb_memBanks.uut0.g_sram_cells[2].mem_cell.mem);
         $readmemh("fakeData/mem3.hex", tb_memBanks.uut0.g_sram_cells[3].mem_cell.mem);
+        `LOG("read in mem");
     end
 
 endmodule
