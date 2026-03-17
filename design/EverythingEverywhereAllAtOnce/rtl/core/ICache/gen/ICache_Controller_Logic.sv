@@ -89,21 +89,21 @@ inv1$ inv_mem_valid_i (mem_valid_i_inv, mem_valid_i);
 
 // Next-state and output SOP logic
 
-// NS_0 = (S_0 & !S_1 & !S_2 & hit_or_miss_i) | (!S_0 & S_1 & S_2 & mem_valid_i)
+// NS_0 = (!S_0 & S_1 & S_2 & mem_valid_i) | (S_0 & !S_1 & !S_2 & hit_or_miss_i)
 wire NS_0_t0;
 wire NS_0_t1;
 
-and4$ NS_0_and0 (NS_0_t0, S_0, S_1_inv, S_2_inv, hit_or_miss_i);
-and4$ NS_0_and1 (NS_0_t1, S_0_inv, S_1, S_2, mem_valid_i);
+and4$ NS_0_and0 (NS_0_t0, S_0_inv, S_1, S_2, mem_valid_i);
+and4$ NS_0_and1 (NS_0_t1, S_0, S_1_inv, S_2_inv, hit_or_miss_i);
 or2$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1);
 
-// NS_1 = (!S_0 & S_1 & !mem_valid_i) | (!S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2 & mem_valid_i)
+// NS_1 = (!S_0 & S_1 & !S_2) | (!S_0 & S_1 & !mem_valid_i) | (!S_0 & !S_1 & S_2 & mem_valid_i)
 wire NS_1_t0;
 wire NS_1_t1;
 wire NS_1_t2;
 
-and3$ NS_1_and0 (NS_1_t0, S_0_inv, S_1, mem_valid_i_inv);
-and3$ NS_1_and1 (NS_1_t1, S_0_inv, S_1, S_2_inv);
+and3$ NS_1_and0 (NS_1_t0, S_0_inv, S_1, S_2_inv);
+and3$ NS_1_and1 (NS_1_t1, S_0_inv, S_1, mem_valid_i_inv);
 and4$ NS_1_and2 (NS_1_t2, S_0_inv, S_1_inv, S_2, mem_valid_i);
 or3$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1, NS_1_t2);
 
@@ -155,16 +155,16 @@ and2$  fill2_o_and1 ( fill2_o_t1, S_1_inv, S_2_inv);
 and2$  fill2_o_and2 ( fill2_o_t2, S_0_inv, mem_valid_i_inv);
 or3$   fill2_o_or  ( fill2_o,  fill2_o_t0,  fill2_o_t1,  fill2_o_t2);
 
-//  fill3_o = (!S_0 & !S_1) | (!S_0 & !mem_valid_i) | (!S_1 & !S_2) | (!S_0 & !S_2)
+//  fill3_o = (!S_1 & !S_2) | (!S_0 & !mem_valid_i) | (!S_0 & !S_2) | (!S_0 & !S_1)
 wire  fill3_o_t0;
 wire  fill3_o_t1;
 wire  fill3_o_t2;
 wire  fill3_o_t3;
 
-and2$  fill3_o_and0 ( fill3_o_t0, S_0_inv, S_1_inv);
+and2$  fill3_o_and0 ( fill3_o_t0, S_1_inv, S_2_inv);
 and2$  fill3_o_and1 ( fill3_o_t1, S_0_inv, mem_valid_i_inv);
-and2$  fill3_o_and2 ( fill3_o_t2, S_1_inv, S_2_inv);
-and2$  fill3_o_and3 ( fill3_o_t3, S_0_inv, S_2_inv);
+and2$  fill3_o_and2 ( fill3_o_t2, S_0_inv, S_2_inv);
+and2$  fill3_o_and3 ( fill3_o_t3, S_0_inv, S_1_inv);
 or4$   fill3_o_or  ( fill3_o,  fill3_o_t0,  fill3_o_t1,  fill3_o_t2,  fill3_o_t3);
 
 endmodule
