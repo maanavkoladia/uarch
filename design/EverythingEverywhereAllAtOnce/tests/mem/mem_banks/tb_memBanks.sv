@@ -7,15 +7,15 @@ import mem_common_pkg::*;
 
 module tb_memBanks ();
 
-    `CLK_INIT(`CYCLE_TIME) 
+    `CLK_INIT(`CYCLE_TIME)
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
     initial begin
         $vcdpluson;
     end
-    
+
     logic rst = 0;
-    wire [MEM_BUS_SIZE - 1: 0] memBus;
+    wire [MEM_BUS_SIZE - 1:0] memBus;
     mem_controller_2_mem_bank_t bankCmds;
 
     mem_bank_out_t bankOut;
@@ -23,14 +23,14 @@ module tb_memBanks ();
     //gate the bus
     assign memBus = 'z;
 
-    mem_bank uut0(
+    mem_bank uut0 (
         .clk(clk),
         .rst(rst),
         .controller2bank_i(bankCmds),
         .mem_bus(memBus),
         .outputs(bankOut)
     );
-    
+
     initial begin
         `LOG("Mem Bank Tb Starting up");
         rst = 0;
@@ -39,8 +39,25 @@ module tb_memBanks ();
         bankCmds.start_store = 0;
         bankCmds.ld_address_change = 0;
         bankCmds.driveMemBus = 0;
-        
-        bankCmds.writeBuf = '{8'h00, 8'h11,8'h22,8'h33,8'h44,8'h55,8'h66,8'h77,8'h88,8'h99,8'hAA,8'hBB,8'hCC,8'hDD,8'hEE,8'hFF};
+
+        bankCmds.writeBuf = '{
+            8'h00,
+            8'h11,
+            8'h22,
+            8'h33,
+            8'h44,
+            8'h55,
+            8'h66,
+            8'h77,
+            8'h88,
+            8'h99,
+            8'hAA,
+            8'hBB,
+            8'hCC,
+            8'hDD,
+            8'hEE,
+            8'hFF
+        };
 
         `DELAY_CYCLES(3);
         rst = 1;
@@ -48,8 +65,13 @@ module tb_memBanks ();
         `LOG("Mem Bank Tb Complete");
         $finish;
     end
+
     //load mem
     initial begin
-        read
+        $readmemh("fakeData/mem0.hex", tb_memBanks.uut0.g_sram_cells[0].mem_cell.mem);
+        $readmemh("fakeData/mem1.hex", tb_memBanks.uut0.g_sram_cells[1].mem_cell.mem);
+        $readmemh("fakeData/mem2.hex", tb_memBanks.uut0.g_sram_cells[2].mem_cell.mem);
+        $readmemh("fakeData/mem3.hex", tb_memBanks.uut0.g_sram_cells[3].mem_cell.mem);
     end
+
 endmodule
