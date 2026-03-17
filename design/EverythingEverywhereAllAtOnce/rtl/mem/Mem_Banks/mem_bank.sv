@@ -37,9 +37,12 @@ module mem_bank (
     localparam int NUM_SRAM_CELLS = 4;
 
     // controller outputs
-    logic mem_bank_controller_oe;
-    logic mem_bank_controller_we;
+    logic mem_bank_controller_oe, oe_into_SRAM;
+    logic mem_bank_controller_we, we_into_SRAM;
     logic mem_bank_controller_send_store_address;
+    assign oe_into_SRAM = rst ? 1'b1 : mem_bank_controller_oe;
+    assign we_into_SRAM =  rst ? 1'b1 : mem_bank_controller_we;
+
 
     logic [$clog2(
 BANK_CONTROLLER_FSM_LOGIC_STATES
@@ -47,11 +50,11 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
 
     //writing the structurcal state bits to the sv enum
     bank_fsm_controller_state_t fsm_state;
-    assign fsm_state = mem_bank_controller_states_bits;
+    assign fsm_state = bank_fsm_controller_state_t'(mem_bank_controller_states_bits);
 
     // address mux
     logic [NUM_SRAM_ADDRESS_BITS-1:0] bank_address_i;
-    assign bank_address_i = mem_bank_controller_send_store_address ?
+    assign bank_address_i = mem_bank_controller_send_store_address?
                             controller2bank_i.st_address : controller2bank_i.ld_address;
 
     // bank internal bus
@@ -66,6 +69,18 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
 
 
     assign bank_write_data = {
+        controller2bank_i.writeBuf[15],
+        controller2bank_i.writeBuf[14],
+        controller2bank_i.writeBuf[13],
+        controller2bank_i.writeBuf[12],
+        controller2bank_i.writeBuf[11],
+        controller2bank_i.writeBuf[10],
+        controller2bank_i.writeBuf[9],
+        controller2bank_i.writeBuf[8],
+        controller2bank_i.writeBuf[7],
+        controller2bank_i.writeBuf[6],
+        controller2bank_i.writeBuf[5],
+        controller2bank_i.writeBuf[4],
         controller2bank_i.writeBuf[3],
         controller2bank_i.writeBuf[2],
         controller2bank_i.writeBuf[1],
@@ -80,8 +95,8 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
             sram32x32$ mem_cell_u_X (
                 .A(bank_address_i),
                 .DIO(bank_bus[(i_gen+1)*(MEM_BUS_SIZE/4)-1 : i_gen*(MEM_BUS_SIZE/4)]),
-                .OE(mem_bank_controller_oe),
-                .WR(mem_bank_controller_we),
+                .OE(oe_into_SRAM),
+                .WR(we_into_SRAM),
                 .CE(1'b0)  // always enabled
             );
         end

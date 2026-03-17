@@ -35,13 +35,13 @@ module tb_memBanks ();
     initial begin
         `LOG("Mem Bank Tb Starting up");
         rst = 1;
-        bankCmds.ld_address = 0;
-        bankCmds.st_address = 0;
+        bankCmds.ld_address = 1;
+        bankCmds.st_address = 3;
         bankCmds.start_store = 0;
         bankCmds.ld_address_change = 0;
         bankCmds.driveMemBus = 0;
 
-        bankCmds.writeBuf = '{8'h11,8'h22,8'h11,8'h22,8'h11,8'h22,8'h11,8'h22,8'h11,8'h22,8'h11,8'h22,8'h11,8'h22,8'h11,8'h22};
+        bankCmds.writeBuf = '{8'h00, 8'h11,8'h22,8'h33,8'h44,8'h55,8'h66,8'h77,8'h88,8'h99,8'hAA,8'hBB,8'hCC,8'hDD,8'hEE,8'hFF};
 
         `DELAY_CYCLES(10);
         rst = 0;
