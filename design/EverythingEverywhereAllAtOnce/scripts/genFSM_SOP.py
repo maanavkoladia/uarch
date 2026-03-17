@@ -55,12 +55,26 @@ if len(ns_cols) != 1:
 state_col = state_cols[0]
 ns_col    = ns_cols[0]
 
-# Enumerate states
-all_states = sorted(set(
-    r[state_col].strip() for r in rows
-) | set(
-    r[ns_col].strip() for r in rows
-))
+# Enumerate states — defined states come from the _s (current-state) column only.
+# The _ns column must reference only those defined states; anything else is an error.
+defined_states = sorted(set(r[state_col].strip() for r in rows))
+
+# Validate: every next-state value must be a defined current state
+errors = []
+for lineno, row in enumerate(rows, start=2):   # +2: 1-based + header row
+    ns_val = row[ns_col].strip()
+    if ns_val not in defined_states:
+        errors.append(
+            f"  Row {lineno}: next-state '{ns_val}' in column '{ns_col}' "
+            f"is not a defined state. Defined states: {defined_states}"
+        )
+if errors:
+    print("ERROR: Undefined next-state reference(s) found:")
+    for e in errors:
+        print(e)
+    sys.exit(1)
+
+all_states   = defined_states
 n_states     = len(all_states)
 n_state_bits = max(1, math.ceil(math.log2(n_states))) if n_states > 1 else 1
 state_enc    = {s: i for i, s in enumerate(all_states)}
