@@ -1,0 +1,22 @@
+# Enumeration map for FSM: bank_controller_fsm_logic
+# 17 states -> 5 bit(s)
+#
+# state_name                      decimal  binary
+# --------------------------------------------------
+  IDLE                                  0  00000
+  LD_WAIT_0                             1  00001
+  LD_WAIT_1                             2  00010
+  LD_WAIT_2                             3  00011
+  LD_WAIT_3                             4  00100
+  LD_WAIT_4                             5  00101
+  LD_WAIT_5                             6  00110
+  ST_ADDR_WAIT_0                        7  00111
+  ST_ADDR_WAIT_1                        8  01000
+  ST_ADDR_WAIT_2                        9  01001
+  ST_ADDR_WAIT_3                       10  01010
+  ST_WRITE_WAIT_0                      11  01011
+  ST_WRITE_WAIT_1                      12  01100
+  ST_WRITE_WAIT_2                      13  01101
+  ST_WRITE_WAIT_3                      14  01110
+  ST_WRITE_WAIT_4                      15  01111
+  ST_WRITE_WAIT_5                      16  10000

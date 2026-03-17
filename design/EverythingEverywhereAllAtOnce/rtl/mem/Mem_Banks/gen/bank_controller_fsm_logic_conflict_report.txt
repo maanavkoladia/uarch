@@ -1,0 +1,10 @@
+# Conflict & coverage report for FSM: bank_controller_fsm_logic
+
+## Coverage errors (minimisation did not cover ON minterms)
+  None -- all ON-set minterms covered  OK
+
+## Missing transitions (state+input combos absent from CSV)
+  None -- all state/input combinations defined  OK
+
+## Sink states (states never targeted as next-state)
+  None

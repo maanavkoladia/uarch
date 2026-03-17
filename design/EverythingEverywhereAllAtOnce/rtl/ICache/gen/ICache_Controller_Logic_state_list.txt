@@ -1,0 +1,11 @@
+# State list for FSM: ICache_Controller_Logic
+# Total states      : 5
+# State bits needed : 3
+#
+#  idx  binary  state_name
+# --------------------------------------------------
+     0  000  Fill0
+     1  001  Fill1
+     2  010  Fill2
+     3  011  Fill3
+     4  100  IDLE
