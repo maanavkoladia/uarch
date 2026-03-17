@@ -131,26 +131,26 @@ and4$ NS_0_and0 (NS_0_t0, S_0_inv, S_1, S_2, S_3);
 and4$ NS_0_and1 (NS_0_t1, S_0, S_1_inv, S_2_inv, S_3_inv);
 or2$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1);
 
-// NS_1 = (!S_0 & S_1 & !S_3) | (!S_0 & !S_1 & !S_2 & S_3 & ld_req_i & !write_req_i) | (!S_0 & !S_1 & !S_2 & S_3 & !ld_req_i & write_req_i)
+// NS_1 = (!S_0 & S_1 & !S_3) | (!S_0 & !S_1 & !S_2 & S_3 & !ld_req_i & write_req_i) | (!S_0 & !S_1 & !S_2 & S_3 & ld_req_i & !write_req_i)
 wire NS_1_t0;
 wire NS_1_t1;
 wire NS_1_t2;
 
 and3$ NS_1_and0 (NS_1_t0, S_0_inv, S_1, S_3_inv);
-and6$ NS_1_and1 (NS_1_t1, S_0_inv, S_1_inv, S_2_inv, S_3, ld_req_i, write_req_i_inv);
-and6$ NS_1_and2 (NS_1_t2, S_0_inv, S_1_inv, S_2_inv, S_3, ld_req_i_inv, write_req_i);
+and6$ NS_1_and1 (NS_1_t1, S_0_inv, S_1_inv, S_2_inv, S_3, ld_req_i_inv, write_req_i);
+and6$ NS_1_and2 (NS_1_t2, S_0_inv, S_1_inv, S_2_inv, S_3, ld_req_i, write_req_i_inv);
 or3$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1, NS_1_t2);
 
-// NS_2 = (!S_0 & !S_1 & S_2 & !S_3) | (!S_0 & S_1 & !S_2 & S_3) | (!S_0 & S_2 & !S_3 & !hit_i) | (!S_0 & !S_2 & S_3 & !ld_req_i & write_req_i) | (!S_0 & !S_2 & S_3 & ld_req_i & !write_req_i & !hit_i)
+// NS_2 = (!S_0 & S_2 & !S_3 & !hit_i) | (!S_0 & S_1 & !S_2 & S_3) | (!S_0 & !S_1 & S_2 & !S_3) | (!S_0 & !S_2 & S_3 & !ld_req_i & write_req_i) | (!S_0 & !S_2 & S_3 & ld_req_i & !write_req_i & !hit_i)
 wire NS_2_t0;
 wire NS_2_t1;
 wire NS_2_t2;
 wire NS_2_t3;
 wire NS_2_t4;
 
-and4$ NS_2_and0 (NS_2_t0, S_0_inv, S_1_inv, S_2, S_3_inv);
+and4$ NS_2_and0 (NS_2_t0, S_0_inv, S_2, S_3_inv, hit_i_inv);
 and4$ NS_2_and1 (NS_2_t1, S_0_inv, S_1, S_2_inv, S_3);
-and4$ NS_2_and2 (NS_2_t2, S_0_inv, S_2, S_3_inv, hit_i_inv);
+and4$ NS_2_and2 (NS_2_t2, S_0_inv, S_1_inv, S_2, S_3_inv);
 and5$ NS_2_and3 (NS_2_t3, S_0_inv, S_2_inv, S_3, ld_req_i_inv, write_req_i);
 and6$ NS_2_and4 (NS_2_t4, S_0_inv, S_2_inv, S_3, ld_req_i, write_req_i_inv, hit_i_inv);
 or5$  NS_2_or  (NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3, NS_2_t4);
