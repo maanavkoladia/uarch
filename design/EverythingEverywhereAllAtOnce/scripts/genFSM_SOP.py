@@ -291,12 +291,13 @@ enum_rows = []
 for exp_row in expanded_rows:
     s_enc_val  = state_enc[exp_row[state_col].strip()]
     ns_enc_val = state_enc[exp_row[ns_col].strip()]
-    s_bits_str  = format(s_enc_val,  f'0{n_state_bits}b')
-    ns_bits_str = format(ns_enc_val, f'0{n_state_bits}b')
+    # Reverse so index 0 = LSB, index (n_state_bits-1) = MSB
+    s_bits_str  = format(s_enc_val,  f'0{n_state_bits}b')[::-1]
+    ns_bits_str = format(ns_enc_val, f'0{n_state_bits}b')[::-1]
     new_row = {}
     for b in range(n_state_bits):
-        new_row[state_bit_name(b)] = s_bits_str[b]
-        new_row[ns_bit_name(b)]    = ns_bits_str[b]
+        new_row[state_bit_name(b)] = s_bits_str[b]   # b=0 -> LSB
+        new_row[ns_bit_name(b)]    = ns_bits_str[b]  # b=0 -> LSB
     for col in input_cols:
         new_row[col] = exp_row[col].strip()
     for col in output_cols:
@@ -326,8 +327,8 @@ log(f"  Enumeration map written -> {p_enum_map}  OK")
 stage(5, "PLA construction")
 
 # PLA signal order:
-#   inputs  = state-bits (MSB first) + _i columns
-#   outputs = NS-bits    (MSB first) + _o columns
+#   inputs  = state-bits (LSB first: S_0=LSB ... S_N=MSB) + _i columns
+#   outputs = NS-bits   (LSB first: NS_0=LSB ... NS_N=MSB) + _o columns
 pla_inputs  = state_bit_names + input_cols
 pla_outputs = ns_bit_names    + output_cols
 ni = len(pla_inputs)
@@ -637,8 +638,9 @@ with open(sv_path, 'w') as f:
     for row in rows:
         s_val   = state_enc[row[state_col].strip()]
         ns_val  = state_enc[row[ns_col].strip()]
-        s_str   = format(s_val,  f'0{n_state_bits}b')
-        ns_str  = format(ns_val, f'0{n_state_bits}b')
+        # Reverse so column S_0 shows LSB, matching port convention
+        s_str   = format(s_val,  f'0{n_state_bits}b')[::-1]
+        ns_str  = format(ns_val, f'0{n_state_bits}b')[::-1]
         in_vals  = list(s_str) + [row[c].strip() for c in input_cols]
         out_vals = list(ns_str) + [row[c].strip() for c in output_cols]
         in_part  = '  '.join(f"{v:>10}" for v in in_vals)
@@ -657,7 +659,7 @@ with open(sv_path, 'w') as f:
         port_lines.append(f"    input  wire {inp},")
     for b in range(n_state_bits):
         port_lines.append(
-            f"    output wire {state_bit_name(b)},  // current-state bit {b}")
+            f"    output wire {state_bit_name(b)},  // current-state bit {b} ({"LSB" if b==0 else "MSB" if b==n_state_bits-1 else str(b)})")
     for idx, out in enumerate(output_cols):
         comma = "," if idx < len(output_cols) - 1 else ""
         port_lines.append(f"    output wire {out}{comma}")
@@ -665,7 +667,7 @@ with open(sv_path, 'w') as f:
     f.write("\n);\n\n")
 
     # ── NS wires ──────────────────────────────────────────────────────────────
-    f.write("// Next-state wires (current-state S_* are output ports above)\n")
+    f.write("// Next-state wires  (NS_0=LSB ... NS_{N-1}=MSB)\n")
     for b in range(n_state_bits):
         f.write(f"wire {ns_bit_name(b)};\n")
     f.write("\n")
@@ -768,4 +770,3 @@ for label, path in file_manifest:
     size = os.path.getsize(path) if os.path.exists(path) else 0
     log(f"  {label:<22}  {path}  ({size} bytes)")
 log()
-
