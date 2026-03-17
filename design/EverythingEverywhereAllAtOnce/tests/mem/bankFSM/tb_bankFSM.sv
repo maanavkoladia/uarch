@@ -51,13 +51,53 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
     initial begin
         `LOG("Mem Bank Tb Starting up");
         rst = 0;
-        `DELAY_CYCLES(10);
+        cmd_start_store = 0;
+        cmd_ld_addr_changed = 0;
+        `DELAY_CYCLES(3);
         rst = 1;
+        //testing precharging
         `DELAY_CYCLES(10);
+        //testing ld addr changed functionality
+        cmd_ld_addr_changed = 1;
+        `DELAY_CYCLES(1);
+        cmd_ld_addr_changed = 0;
+        `DELAY_CYCLES(20);
+
+        //testing store functionality
+        cmd_start_store = 1;
+        `DELAY_CYCLES(1);
+        cmd_start_store = 0;
+        `DELAY_CYCLES(13);
+
+        //need to test: interrutip ld with ld_addr changed, should restart
+        //load sequence
+        cmd_ld_addr_changed = 1;
+        `DELAY_CYCLES(1);
+        cmd_ld_addr_changed = 0;
+        `DELAY_CYCLES(20);
+
+        //need to test: interppt store w ld addr chagned, shoudl not interrupt
+        //write sequence
+        cmd_start_store = 1;
+        `DELAY_CYCLES(1);
+        cmd_start_store = 0;
+        `DELAY_CYCLES(5);
         cmd_ld_addr_changed = 1;
         `DELAY_CYCLES(1);
         cmd_ld_addr_changed = 0;
 
+        //test: st interrutps a ld sequnce
+        `DELAY_CYCLES(20);
+        cmd_ld_addr_changed = 1;
+        `DELAY_CYCLES(1);
+        cmd_ld_addr_changed = 0;
+        `DELAY_CYCLES(2);
+        cmd_start_store = 1;
+        `DELAY_CYCLES(1);
+        cmd_start_store = 0;
+
+        `DELAY_CYCLES(50);
+ 
         `LOG("Mem Bank Tb Complete");
         $finish;
     end
