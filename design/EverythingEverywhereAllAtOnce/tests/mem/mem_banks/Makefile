@@ -26,7 +26,7 @@ run: $(TARGET)
 
 view: run
 	#./$(TARGET) -gui &
-	$(SIM_TOOL) $(SIM_TOOL_FLAGS) *.vpd &
+	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd &
 
 see:
 	#@echo $(TIME_FILE)

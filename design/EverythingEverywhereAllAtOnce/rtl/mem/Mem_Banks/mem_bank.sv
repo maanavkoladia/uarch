@@ -37,11 +37,9 @@ module mem_bank (
     localparam int NUM_SRAM_CELLS = 4;
 
     // controller outputs
-    logic mem_bank_controller_oe, oe_into_SRAM;
-    logic mem_bank_controller_we, we_into_SRAM;
+    logic mem_bank_controller_oe;
+    logic mem_bank_controller_we;
     logic mem_bank_controller_send_store_address;
-    assign oe_into_SRAM = rst ? 1'b1 : mem_bank_controller_oe;
-    assign we_into_SRAM =  rst ? 1'b1 : mem_bank_controller_we;
 
 
     logic [$clog2(
@@ -92,11 +90,11 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
     generate
         for (i_gen = 0; i_gen < NUM_SRAM_CELLS; i_gen++) begin : g_sram_cells
 
-            sram32x32$ mem_cell_u_X (
+            sram32x32$ mem_cell(
                 .A(bank_address_i),
                 .DIO(bank_bus[(i_gen+1)*(MEM_BUS_SIZE/4)-1 : i_gen*(MEM_BUS_SIZE/4)]),
-                .OE(oe_into_SRAM),
-                .WR(we_into_SRAM),
+                .OE(mem_bank_controller_oe),
+                .WR(mem_bank_controller_we),
                 .CE(1'b0)  // always enabled
             );
         end
