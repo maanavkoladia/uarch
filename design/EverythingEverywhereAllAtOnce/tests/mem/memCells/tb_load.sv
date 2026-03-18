@@ -35,7 +35,15 @@ module tb_ram ();
         we = 1;
         address = 0;
 
-        `DELAY_CYCLES(30);
+        `DELAY_CYCLES(20);
+
+        //now do a read teest
+        address = 8;
+        oe = 0;
+        `DELAY_CYCLES(20);
+        //data shoudl be FF000088
+
+        `DELAY_CYCLES(20);
         $finish;
     end
 
