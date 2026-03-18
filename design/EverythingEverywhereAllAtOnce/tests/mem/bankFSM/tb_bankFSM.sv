@@ -2,7 +2,7 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import mem_common_pkg::*;
 
-`define CYCLE_TIME (100)
+`define CYCLE_TIME (20)
 `define DELAY_CYCLES(cycles) #(`CYCLE_TIME * cycles)
 
 module tb_bankFSM ();
@@ -10,9 +10,6 @@ module tb_bankFSM ();
     `CLK_INIT(`CYCLE_TIME)
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
-    initial begin
-        $vcdpluson;
-    end
 
     logic rst;
 
@@ -47,8 +44,46 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
         .PreCharged_o(Precharged)
     );
 
+    property check_dataBus (
+        logic                          trigger,
+        logic [DATA_WIDTH_BITS - 1 : 0] expected,
+        logic [DATA_WIDTH_BITS - 1 : 0] actual
+    );
+        @(posedge clk)
+        disable iff (rst)
+        $fell(trigger) |=> ##10 (actual == expected && !$isunknown(actual));
+    endproperty
+
+    // Cover: confirm the antecedent actually fires at least once.
+    // If this cover is never hit the assertion was vacuously passing.
+    cover property (@(posedge clk) disable iff (rst) $fell(sva_trigger))
+        $display("[COVER] sva_trigger fell — SVA antecedent fired at time %0t", $realtime);
+
+    // Assertion: expected value must match mem[8] from your hex file.
+    // Replace 32'hDEADBEEF with the real expected value.
+    assert property (check_dataBus(sva_trigger, 32'h ff777711, memCellBus))
+        else $fatal(1, "[FAIL] check_dataBus SVA failed at time %0t — got %h",
+                    $realtime, memCellBus);
 
     initial begin
+        $vcdpluson;
+        $vcdplusmemon;
+    end
+
+    initial begin
+        `DELAY_CYCLES(5);
+        for(int i = 0; i < 4; i++; i++) begin
+            string fileName = $sformatf("fakeData/mem%d.hex", i);
+            $readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[i].mem_cell.mem);
+        end
+        //$readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[0].mem_cell.mem);;
+        //$readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[1].mem_cell.mem);;
+        //$readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[2].mem_cell.mem);;
+        //$readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[3].mem_cell.mem);;
+    end
+
+    initial begin
+        `DELAY_CYCLES(10);
         `LOG("Mem Bank Tb Starting up");
         rst = 0;
         cmd_start_store = 0;

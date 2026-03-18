@@ -10,10 +10,7 @@ module tb_memBanks ();
     `CLK_INIT(`CYCLE_TIME)
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
-    initial begin
-        $vcdpluson;
-    end
-
+    
     logic rst = 0;
     wire [MEM_BUS_SIZE - 1:0] memBus;
     mem_controller_2_mem_bank_t bankCmds;
@@ -30,6 +27,18 @@ module tb_memBanks ();
         .mem_bus(memBus),
         .outputs(bankOut)
     );
+
+    initial begin
+        $vcdpluson;
+        $vcdplusmemon;
+    end
+
+    initial begin
+        $readmemh("fakeData/mem0.hex", tb_memBanks.uut0.g_sram_cells[0].mem_cell.mem);
+        $readmemh("fakeData/mem1.hex", tb_memBanks.uut0.g_sram_cells[1].mem_cell.mem);
+        $readmemh("fakeData/mem2.hex", tb_memBanks.uut0.g_sram_cells[2].mem_cell.mem);
+        $readmemh("fakeData/mem3.hex", tb_memBanks.uut0.g_sram_cells[3].mem_cell.mem);
+    end
 
     initial begin
         `LOG("Mem Bank Tb Starting up");
@@ -66,15 +75,6 @@ module tb_memBanks ();
         `DELAY_CYCLES(30);
         `LOG("Mem Bank Tb Complete");
         $finish;
-    end
-
-    //load mem
-    initial begin
-        $readmemh("fakeData/mem0.hex", tb_memBanks.uut0.g_sram_cells[0].mem_cell.mem);
-        $readmemh("fakeData/mem1.hex", tb_memBanks.uut0.g_sram_cells[1].mem_cell.mem);
-        $readmemh("fakeData/mem2.hex", tb_memBanks.uut0.g_sram_cells[2].mem_cell.mem);
-        $readmemh("fakeData/mem3.hex", tb_memBanks.uut0.g_sram_cells[3].mem_cell.mem);
-        `LOG("read in mem");
     end
 
 endmodule
