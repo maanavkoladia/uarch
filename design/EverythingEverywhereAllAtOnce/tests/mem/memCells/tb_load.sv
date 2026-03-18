@@ -36,7 +36,7 @@ module tb_ram ();
         address = 0;
 
         `DELAY_CYCLES(30);
-        $finish
+        $finish;
     end
 
     initial begin
