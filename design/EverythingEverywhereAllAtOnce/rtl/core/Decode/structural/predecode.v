@@ -39,7 +39,7 @@ module predecode(
     pf_checker checker0(.IRbyte(IRbyte[0]), .pf(pf0), .pf_vector(pf_vector0));
     pf_checker checker1(.IRbyte(IRbyte[1]), .pf(pf1), .pf_vector(pf_vector1));
     pf_checker checker2(.IRbyte(IRbyte[2]), .pf(pf2), .pf_vector(pf_vector2));
-    pf_gen pf_gen0(pf0, pf1 ,pf2, num_pfs);
+    num_pf_gen num_pf_gen0(pf0, pf1 ,pf2, num_pfs);
     pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2), 
         .total_pf_vector(total_pf_vector));
 
