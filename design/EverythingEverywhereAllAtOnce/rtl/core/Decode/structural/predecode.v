@@ -4,6 +4,10 @@ module predecode(
     output reg [31:0] EIP,
     output [3:0] inst_length
 );
+
+    initial begin
+        EIP = 32'b0;
+    end
     wire [15:0][7:0] IRbyte; //16 different IR bytes
     wire [3:0][3:0] ppu_inst_length;
     wire [4:0][2:0] ppu_imm_size, ppu_msd_size;
@@ -41,7 +45,7 @@ module predecode(
 
     genvar i;
     generate
-        for(i=0; i<8; i=i+1) begin : g_harish_name_this_0
+        for(i=0; i<8; i=i+1) begin : neip_adder
             alu4$ alu(
                 .a(EIP[i*4+3:i*4]),
                 .b(sext_inst_length[i*4+3:i*4]),
@@ -54,6 +58,6 @@ module predecode(
         end
     endgenerate
 
-    dff16$ topword(clk, NEIP[31:16], EIP[31:16], eip_bar_top, rst, 1'b1);
-    dff16$ bottomword(clk, NEIP[15:0], EIP[15:0], eip_bar_bottom, rst, 1'b1);
+    //dff16$ topword(clk, NEIP[31:16], EIP[31:16], eip_bar_top, rst, 1'b1);
+    //dff16$ bottomword(clk, NEIP[15:0], EIP[15:0], eip_bar_bottom, rst, 1'b1);
 endmodule

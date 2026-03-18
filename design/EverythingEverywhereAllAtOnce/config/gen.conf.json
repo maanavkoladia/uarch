@@ -46,13 +46,19 @@
 
         "PreDecode MOD LUT" : {
             "csv" : "rtl/core/Decode/structural/gen/MOD_LUT.csv",
-            "outputFilePath": "rtl/core/PreDecode/structural/gen/MOD_LUT.v",
+            "outputFilePath": "rtl/core/Decode/structural/gen/MOD_LUT.v",
             "run Combinational SOP Gen": "true"
         },
 
         "Predecode OP LUT" : {
             "csv" : "rtl/core/Decode/structural/gen/OP_LUT.csv",
-            "outputFilePath": "rtl/core/PreDecode/structural/gen/OP_LUT.v",
+            "outputFilePath": "rtl/core/Decode/structural/gen/OP_LUT.v",
+            "run Combinational SOP Gen": "true"
+        },
+
+	"Predecode pf LUT" : {
+            "csv" : "rtl/core/Decode/structural/gen/pf_gen.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/PF_LUT.v",
             "run Combinational SOP Gen": "true"
         }
 
