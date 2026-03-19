@@ -44,7 +44,7 @@ module predecode(
     pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2), 
         .total_pf_vector(total_pf_vector));
 
-    kogge_stone_adder #(.WIDTH(32)) neip_adder(.a(EIP), .b(sext_inst_length), .cin(1'b0), .sum(NEIP), cout(inst_length_cout));
+    kogge_stone_adder #(.WIDTH(32)) neip_adder (.a(EIP), .b(sext_inst_length), .cin(1'b0), .sum(NEIP), .cout(inst_length_cout));
 
     //dff16$ topword(clk, NEIP[31:16], EIP[31:16], eip_bar_top, rst, 1'b1);
     //dff16$ bottomword(clk, NEIP[15:0], EIP[15:0], eip_bar_bottom, rst, 1'b1);
