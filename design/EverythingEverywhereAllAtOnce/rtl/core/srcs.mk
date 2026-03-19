@@ -1,6 +1,7 @@
 CORE_PATH_INTERNAL = $(ROOT)/rtl/core/
 
 include $(CORE_PATH_INTERNAL)/Decode/structural/srcs.mk
+include $(CORE_PATH_INTERNAL)/Fetch/srcs.mk
 
 
 CORE_GEN_SRC_FILES = \
@@ -11,7 +12,9 @@ CORE_SRC_FILES = \
 				 $(CORE_GEN_SRC_FILES)	\
 				 $(DECODE_SRC_FILES_STRUCTURAL)	\
 				 $(CORE_PATH_INTERNAL)/IDM/IDM.sv	\
-				 $(CORE_PATH_INTERNAL)/Fetch/Fetch.sv \
+				 $(CORE_PATH_INTERNAL)/TLB/TLB.sv \
+				 $(CORE_PATH_INTERNAL)/SegmentTranslation/SegmentTranslation.sv \
+				 $(FETCH_SRC_FILES) \
 				 $(CORE_PATH_INTERNAL)/Decode/Decode.sv \
 				 $(CORE_PATH_INTERNAL)/RR/RR.sv \
 				 $(CORE_PATH_INTERNAL)/DC/DC.sv \
@@ -35,3 +38,5 @@ CORE_PKGS = \
 			$(CORE_PATH_INTERNAL)/pkgs/core_common_pkg.sv \
 			$(CORE_PATH_INTERNAL)/pkgs/core_stage_latches_pkg.sv \
 			$(CORE_PATH_INTERNAL)/IDM/pkg/IDM_pkg.sv	\
+			$(CORE_PATH_INTERNAL)/TLB/pkg/TLB_pkg.sv \
+			$(FETCH_PKGS) \

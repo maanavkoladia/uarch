@@ -67,7 +67,7 @@ package interconnect_pkg;
     typedef struct {
         bool   lineValid;
         bool   hit;
-        byte_t [CACHE_LINES_SIZE_B];
+        byte_t instruction_line[CACHE_LINES_SIZE_B];
     } icache_2_core_t;
 
     typedef struct {

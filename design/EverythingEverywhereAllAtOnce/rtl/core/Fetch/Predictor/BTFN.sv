@@ -1,8 +1,10 @@
+import Fetch_pkg::*;
+import Predictor_pkg::*;
+
 module BTFN (
-    input  predictor_inputs_t inputs,
+    input  predictor_input_t inputs,
     output predictor_output_t outputs
 );
-    import Predictor_pkg::*;
 
     assign outputs.taken = inputs.btfn_target < inputs.spc;
 endmodule

@@ -26,7 +26,7 @@ package core_stage_latches_pkg;
         byte_t data[CACHE_LINES_SIZE_B];
     } idm_slot_info_t;
 
-    typedef struct {idm_slot_info_t idm_slots[NUM_SLOTS];} idm_outputs_t;
+    typedef struct {idm_slot_info_t idm_slots[NUM_IDM_SLOTS];} idm_outputs_t;
 
     //typedef struct {
     //    bool br_pred_taken;

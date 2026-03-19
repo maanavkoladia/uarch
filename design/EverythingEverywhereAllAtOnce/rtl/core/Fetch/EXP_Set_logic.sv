@@ -51,10 +51,10 @@ wire not_wb_valid;
 
 
 inv1$ not0 (.out(not_rr_valid), .in(rr_valid));
-inv1$ not0 (.out(not_dc_valid), .in(dc_valid));
-inv1$ not0 (.out(not_mem_valid), .in(mem_valid));
-inv1$ not0 (.out(not_exe_valid), .in(exe_valid));
-inv1$ not0 (.out(not_wb_valid), .in(wb_valid));
+inv1$ not1 (.out(not_dc_valid), .in(dc_valid));
+inv1$ not2 (.out(not_mem_valid), .in(mem_valid));
+inv1$ not3 (.out(not_exe_valid), .in(exe_valid));
+inv1$ not4 (.out(not_wb_valid), .in(wb_valid));
 
 and7$ and_exp (.out(f_pipe_clear), .in0(invalid_instruction),
                 .in1(not_rr_valid), .in2(not_dc_valid), .in3(not_mem_valid), 
@@ -64,14 +64,14 @@ and7$ and_exp (.out(f_pipe_clear), .in0(invalid_instruction),
 and4$ and_rr (.out(rr_pipe_clear), .in0(invalid_instruction),
                 .in1(not_rr_valid), .in2(not_dc_valid), .in3(not_mem_valid));
 
-mux2$ mux_exp_sel (.outb(exp_set_logic_output_t.exp_pipe_clear),
+mux2$ mux_exp_sel (.outb(outputs.exp_pipe_clear),
                     .in0(f_pipe_clear),
                     .in1(rr_pipe_clear),
                     .s0(rr_exp)
                 );
 
 
-and7$ and_int (.out(exp_set_logic_output_t.int_pipe_clear), .in0(invalid_instruction),
+and7$ and_int (.out(outputs.int_pipe_clear), .in0(invalid_instruction),
                 .in1(not_rr_valid), .in2(not_dc_valid), .in3(not_mem_valid),
                 .in4(not_exe_valid), .in5(not_wb_valid), .in6(int_set));
 

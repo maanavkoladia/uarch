@@ -95,6 +95,7 @@ package core_common_pkg;
         bool taken;  //this is the correct resolution
         bool br_XCL;  //this is for btb entry
         bool clr_exp_mode;  //for the special exp br in the rom, to clear exp mode in fetch
+        bool br_ucond; //3/17 adding this for btb info on on if branch was unconditional - Jacob
     } exe_br_resolution_outputs_t;
 
     typedef struct {

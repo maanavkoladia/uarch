@@ -1,7 +1,9 @@
 
 package IDM_pkg;
-
     import common_pkg::*;
+    import core_common_pkg::*;
+
+
     typedef struct {
         bool valid;
         bool br_valid;

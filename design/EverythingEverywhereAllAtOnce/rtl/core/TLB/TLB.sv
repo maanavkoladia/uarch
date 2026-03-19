@@ -1,15 +1,16 @@
 //this needs to be updates to supprort mio stuf now
+    import common_pkg::*;
+    //for tlb entries and sutff
+    import TLB_pkg::*;
+    import core_common_pkg::tlb_inputs_t;
+    import core_common_pkg::tlb_outputs_t;
 
 module TLB (
     input  tlb_inputs_t  inputs,
     output tlb_outputs_t outputs
 );
 
-    import common_pkg::*;
-    //for tlb entries and sutff
-    import TLB_pkg::*;
-    import core_common_pkg::tlb_inputs_t;
-    import core_common_pkg::tlb_outputs_t;
+
 
     tlb_entries_t tlb[entries];
 

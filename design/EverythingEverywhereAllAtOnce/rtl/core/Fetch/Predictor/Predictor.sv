@@ -1,8 +1,15 @@
+import Fetch_pkg::*;
+import Predictor_pkg::*;
+
 module Predictor (
-    predictor_inputs inputs,
-    predictor_output_t outputs
+    input  predictor_input_t inputs,
+    output predictor_output_t outputs
 );
 
-    //pass into the pred we want accordinly
+    // Instantiate BTFN predictor
+    BTFN btfn_inst (
+        .inputs(inputs),
+        .outputs(outputs)
+    );
 
 endmodule

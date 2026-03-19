@@ -48,24 +48,24 @@ module Fetch (
 
     //wires
     bool f_exp;
-    wire seg_xlation_out;
-    wire seg_xlation_gp_fault; //not used
+    v_address_t seg_xlation_out;
+    bool seg_xlation_gp_fault; //not used
     byte_t rom_data_out[CACHE_LINES_SIZE_B];
-    byte_t idm_ctrl_data_in;
+    byte_t idm_ctrl_data_in[CACHE_LINES_SIZE_B];
     l_address_t next_spc;
-    wire spc_16;
-    l_address_t btb_spc;
+    l_address_t spc_16;
     l_address_t br_restore_spc;
+    l_address_t br_target;
 
     predictor_input_t predictor_inputs;
     tlb_inputs_t tlb_inputs;
 
     //logic block outputs
-    btb_outpts_t btb_outs;
+    btb_output_t btb_outs;
     spc_sel_logic_output_t spc_sel_logic_outs;
     predictor_output_t predictor_outs;
     idm_ctrl_logic_output_t idm_ctrl_logic_outs;
-    idm_invalidate_logic_ouput_t idm_invalidate_logic_outs;
+    idm_invalidate_logic_output_t idm_invalidate_logic_outs;
     icache_en_logic_output_t icache_en_logic_outs;
     tlb_outputs_t tlb_outs;
     exp_set_logic_output_t exp_set_logic_outs;
@@ -74,10 +74,9 @@ module Fetch (
 
 
 
-    assign btb_spc = spc_sel_logic_outs.xcl ? spc_sel_logic_outs.br_eip : SPC;
 
 
-    assign f_exp = tlb_outs.gp_exp & tlb_outs.pageFault & ~exp_mode;
+    assign f_exp = tlb_outs.gp_exp & tlb_outs.pageFault & ~exp_mode_jk;
 
 
     assign tlb_inputs = '{
@@ -87,71 +86,82 @@ module Fetch (
 
     assign predictor_inputs = '{
         btfn_target: btb_outs.br_target,
-        spc: btb_spc,
+        spc: SPC,
+        exe_br_valid: exe_outs_i.br_res_out.valid,
         exe_br_target: exe_outs_i.br_res_out.br_target,
+        exe_br_taken: exe_outs_i.br_res_out.taken,
         exe_br_hit: exe_outs_i.br_res_out.taken
     };
 
     assign idm_ctrl_data_in = (exp_mode_jk ||int_mode_jk) ?
                                icache_info_i.instruction_line : rom_data_out;
 
-    assign br_restore_spc = exe_outs_i.br_taken ? exe_outs_i.br_target : exe_outs_i.br_target;
+    assign br_restore_spc = exe_outs_i.br_res_out.taken
+                          ? exe_outs_i.br_res_out.br_target
+                          : exe_outs_i.br_res_out.br_eip;
+
+    assign br_target =  spc_sel_logic_outs.br_target_sel ?
+                        spc_sel_logic_outs.br_target
+                        : btb_outs.br_target;
 
     always_comb begin
         case(spc_sel_logic_outs.sel)
             SPC: next_spc = SPC;
             SPC_P16: next_spc = spc_16;
             BR_RESTORE: next_spc = br_restore_spc;
-            BTB_TARGET: btb_outs.br_target;
+            BTB_TARGET: next_spc = br_target;
             default: next_spc = 0;
         endcase
     end
 
     //DMA JK
-    always_ff@(posedge clk or rst) begin
-        if(rst_n)
+    always_ff@(posedge clk or posedge rst) begin
+        if(rst)
             DMA_int_jk <= 0;
         else begin
-            case({dma_int, exe_outs_i.clr_exp_mode})
+            case({dma_int, exe_outs_i.br_res_out.clr_exp_mode})
                 2'b00: DMA_int_jk <= DMA_int_jk;
                 2'b01: DMA_int_jk <= 0;
                 2'b10: DMA_int_jk <= 1;
                 2'b11: DMA_int_jk <= ~DMA_int_jk;
+                default: DMA_int_jk <= DMA_int_jk;
             endcase
         end
     end
 
 // exp_mode JK
-    always_ff@(posedge clk or rst) begin
-        if(rst_n)
+    always_ff@(posedge clk or posedge rst) begin
+        if(rst)
             exp_mode_jk <= 0;
         else begin
-            case({EXP_Set_logic.exp_pipe_clear, exe_outs_i.clr_exp_mode})
+            case({exp_set_logic_outs.exp_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
                 2'b00: exp_mode_jk <= exp_mode_jk;
                 2'b01: exp_mode_jk <= 0;
                 2'b10: exp_mode_jk <= 1;
                 2'b11: exp_mode_jk <= ~exp_mode_jk;
+                default: exp_mode_jk <= exp_mode_jk;
             endcase
         end
     end
 
 //int JK
-    always_ff@(posedge clk or rst) begin
-        if(rst_n)
-            q <= 0;
+    always_ff@(posedge clk or posedge rst) begin
+        if(rst)
+            int_mode_jk <= 0;
         else begin
-            case({exp_set_logic_outs.int_pipe_clear, exe_outs_i.clr_exp_mode})
+            case({exp_set_logic_outs.int_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
                 2'b00: int_mode_jk <= int_mode_jk;
                 2'b01: int_mode_jk <= 0;
                 2'b10: int_mode_jk <= 1;
                 2'b11: int_mode_jk <= ~int_mode_jk;
+                default: int_mode_jk <= int_mode_jk;
             endcase
         end
     end
 
     //SPC flop
-    always_ff@(posedge_clk or rst)begin
-        if(rst)SPC <= 0;
+    always_ff@(posedge clk or posedge rst)begin
+        if(rst) SPC <= 0;
         else begin
             SPC <= next_spc;
         end
@@ -160,13 +170,14 @@ module Fetch (
     BTB btb(
         .clk(clk),
         .reset(rst),
-        .spc(btb_spc), //address
+        .spc(SPC), //address
 
         .exe_br_valid(exe_outs_i.br_res_out.valid), //bool
         .exe_br_target(exe_outs_i.br_res_out.br_target), //address_t
         .exe_br_eip(exe_outs_i.br_res_out.br_eip), //address_t
-        .exe_br_XCL(exe_outs_i.br_res_out.br_XCL), //bool
-        .outputs(btb_outs), //BTB_outputs_t
+        .exe_br_XCL(exe_outs_i.br_res_out.br_XCL),
+        .exe_br_ucond(exe_outs_i.br_res_out.br_ucond), //bool
+        .outputs(btb_outs) //BTB_outputs_t
     );
 
     Predictor predictor(
@@ -192,11 +203,12 @@ module Fetch (
 
     IDM_Ctrl_Logic idm_ctrl_logic (
         .spc(SPC),
-        .idm(idm_info_i),
-        .invalidate_logic_out(idm_invalidate_logic_outs),
-        .btb_out(btb_outs),
-        .pred_out(predictor_outs),
-        .icache_out(icache_info_i),
+        .idm_i(idm_info_i),
+        .invalidate_logic_outs_i(idm_invalidate_logic_outs),
+        .btb_out_i(btb_outs),
+        .pred_out_i(predictor_outs),
+        .icache_out_i(icache_info_i),
+        .spc_sel_logic_out_i(spc_sel_logic_outs),
         .data_in(idm_ctrl_data_in),
         .out(idm_ctrl_logic_outs)
     );
@@ -229,13 +241,13 @@ module Fetch (
         .outputs(exp_set_logic_outs)
     );
 
-    EXP_CTRL_ROMS exp_ctrl_roms(
+    EXP_Ctrl_ROMS exp_ctrl_roms(
         .RR_pf(rr_outs_i.exp_pf),
         .RR_exp(rr_outs_i.exp_present),
         .Fetch_pf(tlb_outs.pageFault),
         .DMA_int(DMA_int_jk),
         .exp_mode(exp_mode_jk),
-        .rom_data_out(rom_data_out[CACHE_LINES_SIZE_B])
+        .rom_data_out(rom_data_out)
     );
 
 
@@ -256,10 +268,11 @@ module Fetch (
     SegmentTranslation seg_Xlation(
         .clk(clk),
         .rst(rst),
-        .l_addr_i(spc),
-        .segID_i(reg_ids_e.CS),
+        .l_addr_i(SPC),
+        .dataSize_i(1'b0),
+        .segID_i(reg_ids_pkg::CS),
         .v_addr_o(seg_xlation_out),
-        .gp_fault_o(gp_fault)
+        .gp_fault_o(seg_xlation_gp_fault)
     );
 
 

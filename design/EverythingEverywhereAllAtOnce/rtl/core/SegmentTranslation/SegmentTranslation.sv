@@ -1,5 +1,7 @@
 import common_pkg::l_address_t;
 import common_pkg::v_address_t;
+import common_pkg::bool;
+import reg_ids_pkg::reg_ids_e;
 
 module SegmentTranslation (
     input wire clk,

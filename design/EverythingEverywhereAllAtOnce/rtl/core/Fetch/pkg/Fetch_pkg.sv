@@ -1,9 +1,7 @@
 package Fetch_pkg;
     import common_pkg::*;
-    import core_stage_latches_pkg::predecode_stage_latches_t;
-    import core_stage_latches_pkg::byte_q_slot_info_t;
-    import core_stage_latches_pkg::num_byte_q_slots;
-    import core_stage_latches_pkg::NUM_IDM_SLOTS;
+    import core_stage_latches_pkg::*;
+    import core_common_pkg::*;
 
     typedef struct {
         address_t btfn_target;
@@ -22,7 +20,7 @@ package Fetch_pkg;
 
     typedef struct {
         bool   h_m;
-        byte_t data[CACHE_LINES_SIZE];
+        byte_t data[CACHE_LINES_SIZE_B];
     } icache_fetch_output_t;
 
 
@@ -40,6 +38,7 @@ package Fetch_pkg;
         address_t exe_br_target;
         address_t exe_br_eip;
         bool exe_br_XCL;
+        bool exe_br_ucond;
     } btb_input_t;
 
     typedef struct {
@@ -47,6 +46,7 @@ package Fetch_pkg;
         address_t br_target;
         address_t br_eip;
         bool XCL;
+        bool br_ucond; //doesnt go to IDM just used for masking or setting prediction
     } btb_output_t;
 
 
@@ -56,12 +56,12 @@ package Fetch_pkg;
     } idm_ctrl_logic_output_t;
 
 
-    typedef struct {bool invalidate[NUM_IDM_SLOTS];} idm_invalidate_logic_ouput_t;
+    typedef struct {bool invalidate[NUM_IDM_SLOTS];} idm_invalidate_logic_output_t;
 
     //this is comining out of instrucitno q into fetch, assuming i_q is
     //instatitated in fetch
 
-    typedef enum {
+    typedef enum logic [1:0] {
         SPC = 2'b00,
         SPC_P16 = 2'b01,
         BR_RESTORE = 2'b10,
@@ -70,8 +70,9 @@ package Fetch_pkg;
 
     typedef struct {
         spc_sel_logic_output_options_e sel;
-        bool xcl;
-        address_t br_eip;
+        bool br_target_sel;
+        address_t br_target; //same as XCL_stall
+        bool flush_reg; //honestly only outputted for debugging and masking branch info (techincally not needed)
     } spc_sel_logic_output_t;
 
     typedef struct {

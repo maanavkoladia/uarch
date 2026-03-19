@@ -1,5 +1,4 @@
 import common_pkg::*;
-import interconnect_pkg::MEM_BUS_SIZE;
 import mem_common_pkg::*;
 
 module mem_TOP (
