@@ -4,6 +4,10 @@ module predecode(
     output reg [31:0] EIP,
     output [3:0] inst_length
 );
+
+    initial begin
+        EIP = 32'b0;
+    end
     wire [15:0][7:0] IRbyte; //16 different IR bytes
     wire [3:0][3:0] ppu_inst_length;
     wire [4:0][2:0] ppu_imm_size, ppu_msd_size;
@@ -35,13 +39,13 @@ module predecode(
     pf_checker checker0(.IRbyte(IRbyte[0]), .pf(pf0), .pf_vector(pf_vector0));
     pf_checker checker1(.IRbyte(IRbyte[1]), .pf(pf1), .pf_vector(pf_vector1));
     pf_checker checker2(.IRbyte(IRbyte[2]), .pf(pf2), .pf_vector(pf_vector2));
-    pf_gen pf_gen0(pf0, pf1 ,pf2, num_pfs);
+    num_pf_gen num_pf_gen0(pf0, pf1 ,pf2, num_pfs);
     pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2), 
         .total_pf_vector(total_pf_vector));
 
     genvar i;
     generate
-        for(i=0; i<8; i=i+1) begin : g_harish_name_this_0
+        for(i=0; i<8; i=i+1) begin : neip_adder
             alu4$ alu(
                 .a(EIP[i*4+3:i*4]),
                 .b(sext_inst_length[i*4+3:i*4]),
@@ -54,6 +58,6 @@ module predecode(
         end
     endgenerate
 
-    dff16$ topword(clk, NEIP[31:16], EIP[31:16], eip_bar_top, rst, 1'b1);
-    dff16$ bottomword(clk, NEIP[15:0], EIP[15:0], eip_bar_bottom, rst, 1'b1);
+    //dff16$ topword(clk, NEIP[31:16], EIP[31:16], eip_bar_top, rst, 1'b1);
+    //dff16$ bottomword(clk, NEIP[15:0], EIP[15:0], eip_bar_bottom, rst, 1'b1);
 endmodule
