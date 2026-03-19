@@ -31,6 +31,7 @@ import sys, os, csv, math, itertools
 from collections import defaultdict
 
 BANNER = "=" * 72
+IDLE_STATE_NAME = "IDLE"
 
 def log(msg=""):
     print(msg)
@@ -94,7 +95,6 @@ if not rows:
 # Classify columns by suffix
 input_cols   = [h for h in headers if h.endswith('_i')]
 output_cols  = [h for h in headers if h.endswith('_o')]
-# _s must not end with _ns (avoid matching 'foo_ns' as both _s and _ns)
 state_cols   = [h for h in headers if h.endswith('_s') and not h.endswith('_ns')]
 ns_cols      = [h for h in headers if h.endswith('_ns')]
 unknown_cols = [h for h in headers
@@ -150,13 +150,19 @@ log(f"\n  {len(rows)} data rows, {len(input_cols)} input(s), "
 # ─────────────────────────────────────────────────────────────────────────────
 stage(2, "State & next-state semantic checks")
 
-# Defined states = unique names in the _s (current-state) column only.
-# The _ns column is a set of references that must be a subset of those names.
 defined_states = sorted(set(r[state_col].strip() for r in rows))
 ns_values_seen = sorted(set(r[ns_col].strip() for r in rows))
 
 log(f"  Defined states ({len(defined_states)}): {defined_states}")
 log(f"  NS values seen ({len(ns_values_seen)}): {ns_values_seen}")
+
+# ── IDLE state check ──────────────────────────────────────────────────────────
+if IDLE_STATE_NAME not in defined_states:
+    die(f"No '{IDLE_STATE_NAME}' state found in the '{state_col}' column. "
+        f"Every FSM must have an IDLE state (it will be assigned encoding 0). "
+        f"Defined states are: {defined_states}")
+else:
+    log(f"\n  IDLE state found  OK  (will be assigned encoding 0)")
 
 # Collect all undefined-NS errors before dying
 errors = []
@@ -185,7 +191,8 @@ n_bits_preview = max(1, math.ceil(math.log2(len(defined_states)))) \
 with open(p_state_list, 'w') as f:
     f.write(f"# State list for FSM: {stem}\n")
     f.write(f"# Total states      : {len(defined_states)}\n")
-    f.write(f"# State bits needed : {n_bits_preview}\n#\n")
+    f.write(f"# State bits needed : {n_bits_preview}\n")
+    f.write(f"# NOTE: IDLE is always assigned encoding 0\n#\n")
     f.write(f"# {'idx':>4}  {'binary':<{n_bits_preview}}  state_name\n")
     f.write("# " + "-"*50 + "\n")
     for i, s in enumerate(defined_states):
@@ -204,11 +211,6 @@ log(f"  No undefined next-states found  OK")
 stage(3, "X-expansion (don't-care inputs, state names preserved)")
 
 def expand_row_inputs(row, in_cols):
-    """
-    Expand X/x/- don't-cares in the input columns only.
-    State, NS, and output values are copied verbatim.
-    Returns a list of fully-concrete row dicts.
-    """
     dc_cols = [(i, col) for i, col in enumerate(in_cols)
                if row[col].strip() in ('-', 'x', 'X')]
     if not dc_cols:
@@ -224,14 +226,13 @@ def expand_row_inputs(row, in_cols):
 expanded_rows = []
 for lineno, row in enumerate(rows, start=2):
     for exp_row in expand_row_inputs(row, input_cols):
-        exp_row['_src_row'] = lineno   # bookkeeping only
+        exp_row['_src_row'] = lineno
         expanded_rows.append(exp_row)
 
 log(f"  Original rows : {len(rows)}")
 log(f"  Expanded rows : {len(expanded_rows)}")
 
-# Detect conflicts: same (state, input_bits) -> different (ns, output_bits)
-conflict_key = {}   # (state, input_tuple) -> (ns, out_tuple, src_lineno)
+conflict_key = {}
 conflicts    = []
 for exp_row in expanded_rows:
     in_tup  = tuple(exp_row[c].strip() for c in input_cols)
@@ -258,7 +259,6 @@ if conflicts:
 else:
     log(f"  No conflicts after expansion  OK")
 
-# Write expanded CSV (strip bookkeeping column)
 with open(p_expanded_csv, 'w', newline='') as f:
     writer = csv.DictWriter(f, fieldnames=headers, extrasaction='ignore')
     writer.writeheader()
@@ -269,15 +269,21 @@ log(f"  Expanded CSV written -> {p_expanded_csv}  OK")
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 4: State enumeration  ->  _enumerated.csv  +  _enum_map.txt
 # ─────────────────────────────────────────────────────────────────────────────
-stage(4, "State enumeration (name -> binary)")
+stage(4, "State enumeration (name -> binary, IDLE always = 0)")
 
 n_states     = len(defined_states)
 n_state_bits = max(1, math.ceil(math.log2(n_states))) if n_states > 1 else 1
-state_enc    = {s: i for i, s in enumerate(defined_states)}
+
+# IDLE is forced to 0; all other states get 1..N-1 in sorted order
+other_states = sorted(s for s in defined_states if s != IDLE_STATE_NAME)
+ordered_states = [IDLE_STATE_NAME] + other_states
+state_enc = {s: i for i, s in enumerate(ordered_states)}
 
 log(f"  States : {n_states}  ->  {n_state_bits} bit(s)")
+log(f"  (IDLE forced to encoding 0)")
 for s, v in state_enc.items():
-    log(f"    {s:<30}  {format(v, f'0{n_state_bits}b')}  ({v})")
+    idle_tag = "  <- IDLE (forced 0)" if s == IDLE_STATE_NAME else ""
+    log(f"    {s:<30}  {format(v, f'0{n_state_bits}b')}  ({v}){idle_tag}")
 
 def state_bit_name(b):  return f"S_{b}"
 def ns_bit_name(b):     return f"NS_{b}"
@@ -285,19 +291,17 @@ def ns_bit_name(b):     return f"NS_{b}"
 state_bit_names = [state_bit_name(b) for b in range(n_state_bits)]
 ns_bit_names    = [ns_bit_name(b)    for b in range(n_state_bits)]
 
-# Build enumerated rows: replace state/NS name columns with per-bit columns
 enum_headers = state_bit_names + input_cols + ns_bit_names + output_cols
 enum_rows = []
 for exp_row in expanded_rows:
     s_enc_val  = state_enc[exp_row[state_col].strip()]
     ns_enc_val = state_enc[exp_row[ns_col].strip()]
-    # Reverse so index 0 = LSB, index (n_state_bits-1) = MSB
     s_bits_str  = format(s_enc_val,  f'0{n_state_bits}b')[::-1]
     ns_bits_str = format(ns_enc_val, f'0{n_state_bits}b')[::-1]
     new_row = {}
     for b in range(n_state_bits):
-        new_row[state_bit_name(b)] = s_bits_str[b]   # b=0 -> LSB
-        new_row[ns_bit_name(b)]    = ns_bits_str[b]  # b=0 -> LSB
+        new_row[state_bit_name(b)] = s_bits_str[b]
+        new_row[ns_bit_name(b)]    = ns_bits_str[b]
     for col in input_cols:
         new_row[col] = exp_row[col].strip()
     for col in output_cols:
@@ -313,11 +317,13 @@ log(f"\n  Enumerated CSV written -> {p_enumerated}  OK")
 
 with open(p_enum_map, 'w') as f:
     f.write(f"# Enumeration map for FSM: {stem}\n")
-    f.write(f"# {n_states} states -> {n_state_bits} bit(s)\n#\n")
+    f.write(f"# {n_states} states -> {n_state_bits} bit(s)\n")
+    f.write(f"# IDLE is always assigned encoding 0\n#\n")
     f.write(f"# {'state_name':<30} {'decimal':>8}  binary\n")
     f.write("# " + "-"*50 + "\n")
     for s, v in state_enc.items():
-        f.write(f"  {s:<30} {v:>8}  {format(v, f'0{n_state_bits}b')}\n")
+        idle_tag = "  # IDLE (forced 0)" if s == IDLE_STATE_NAME else ""
+        f.write(f"  {s:<30} {v:>8}  {format(v, f'0{n_state_bits}b')}{idle_tag}\n")
 
 log(f"  Enumeration map written -> {p_enum_map}  OK")
 
@@ -326,22 +332,16 @@ log(f"  Enumeration map written -> {p_enum_map}  OK")
 # ─────────────────────────────────────────────────────────────────────────────
 stage(5, "PLA construction")
 
-# PLA signal order:
-#   inputs  = state-bits (LSB first: S_0=LSB ... S_N=MSB) + _i columns
-#   outputs = NS-bits   (LSB first: NS_0=LSB ... NS_N=MSB) + _o columns
 pla_inputs  = state_bit_names + input_cols
 pla_outputs = ns_bit_names    + output_cols
 ni = len(pla_inputs)
 no = len(pla_outputs)
 
-# Build truth table: in_str -> out_str
-# Conflicts were already caught in Stage 3, so last-write is safe here.
 truth_table = {}
 for erow in enum_rows:
     in_str  = ''.join(erow[c] for c in pla_inputs)
     out_str = ''.join(erow[c] for c in pla_outputs)
     if in_str in truth_table and truth_table[in_str] != out_str:
-        # Should not be reachable, but log defensively
         log(f"  WARNING (Stage 5): key collision {in_str}  "
             f"old={truth_table[in_str]}  new={out_str}  (keeping old)")
     truth_table[in_str] = out_str
@@ -367,10 +367,6 @@ log(f"  PLA written -> {p_pla}  OK")
 stage(6, "Quine-McCluskey minimisation")
 
 def qm_minimise(on_set, dc_set, n_vars):
-    """
-    Return a list of prime-implicant cubes covering all of on_set.
-    Each cube is a tuple of '0', '1', or '-'.
-    """
     on_cubes  = [tuple(v) for v in on_set]
     all_cubes = list(set(on_cubes) | set(tuple(v) for v in dc_set))
     if not all_cubes:
@@ -381,7 +377,7 @@ def qm_minimise(on_set, dc_set, n_vars):
         if len(diffs) != 1:
             return None
         if a[diffs[0]] == '-' or b[diffs[0]] == '-':
-            return None   # already a DC position — do not re-merge
+            return None
         m = list(a)
         m[diffs[0]] = '-'
         return tuple(m)
@@ -389,7 +385,6 @@ def qm_minimise(on_set, dc_set, n_vars):
     def covers(pi, minterm):
         return all(p == '-' or p == c for p, c in zip(pi, minterm))
 
-    # Iteratively merge until no new merges are possible
     groups = all_cubes
     prime_implicants = set()
     while groups:
@@ -411,7 +406,6 @@ def qm_minimise(on_set, dc_set, n_vars):
     if not on_cubes:
         return []
 
-    # Greedy essential-PI cover: maximise coverage, break ties by generality
     uncovered = list(on_cubes)
     chosen    = []
     remaining = list(prime_implicants)
@@ -434,7 +428,6 @@ def qm_minimise(on_set, dc_set, n_vars):
 
     return chosen
 
-# Per-output-bit on/dc sets
 on_sets = defaultdict(list)
 dc_sets = defaultdict(list)
 
@@ -455,7 +448,6 @@ for oi, oname in enumerate(pla_outputs):
     minimised[oname] = cubes
     log(f"  {oname:<20}: {len(on):>4} ON minterms  ->  {len(cubes):>3} prime implicants")
 
-# Build cube -> output-vector map for the minimised PLA
 cube_out_map = defaultdict(lambda: ['0'] * no)
 for oi, oname in enumerate(pla_outputs):
     for cube in minimised[oname]:
@@ -475,7 +467,6 @@ with open(p_minimised_pla, 'w') as f:
 
 log(f"\n  Minimised PLA written -> {p_minimised_pla}  OK")
 
-# ── Human-readable SOP equations ─────────────────────────────────────────────
 def cube_to_term(cube, signal_names):
     lits = []
     for bit, name in zip(cube, signal_names):
@@ -483,8 +474,7 @@ def cube_to_term(cube, signal_names):
             lits.append(name)
         elif bit == '0':
             lits.append('!' + name)
-        # '-' -> omit (don't-care)
-    return lits if lits else ['1']   # all-DC cube = tautology
+    return lits if lits else ['1']
 
 equations = {}
 for oname in pla_outputs:
@@ -535,7 +525,6 @@ for oi, oname in enumerate(pla_outputs):
             + "\n".join(snippet)
         )
 
-# Missing transitions: (state, input combo) pairs with no CSV row
 all_input_combos = list(itertools.product('01', repeat=len(input_cols)))
 missing_transitions = []
 for state in defined_states:
@@ -593,7 +582,6 @@ def literal_to_wire(lit):
     sig = lit.lstrip('!')
     return (sig + '_inv') if neg else sig
 
-# Collect signals that appear negated in any equation
 negated_signals = set()
 for terms in equations.values():
     for term in terms:
@@ -604,7 +592,6 @@ negated_signals = sorted(negated_signals)
 
 mod = make_module_name(stem)
 
-# Truth-table comment helpers
 def tt_header():
     cols_in  = state_bit_names + input_cols
     cols_out = ns_bit_names + output_cols
@@ -615,21 +602,19 @@ def tt_header():
 
 with open(sv_path, 'w') as f:
 
-    # ── File header ───────────────────────────────────────────────────────────
     f.write(f"// {'='*70}\n")
     f.write(f"// FSM : {stem}\n")
     f.write(f"// Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)\n")
     f.write(f"// {'='*70}\n//\n")
 
-    # ── State enumeration comment ─────────────────────────────────────────────
     f.write(f"// State Enumeration  ({n_state_bits} bit{'s' if n_state_bits>1 else ''}, "
             f"{n_states} states)\n")
     f.write(f"// {'-'*50}\n")
     for sname, sval in state_enc.items():
-        f.write(f"//   {sname:<28}  {format(sval, f'0{n_state_bits}b')}  (decimal {sval})\n")
+        idle_tag = "  // IDLE (reset state)" if sname == IDLE_STATE_NAME else ""
+        f.write(f"//   {sname:<28}  {format(sval, f'0{n_state_bits}b')}  (decimal {sval}){idle_tag}\n")
     f.write("//\n")
 
-    # ── Truth table comment (pre-expansion, from original CSV) ────────────────
     in_hdr, out_hdr, sep = tt_header()
     f.write("// Truth Table (pre-expansion, original CSV rows)\n")
     f.write(f"// {sep}\n")
@@ -638,7 +623,6 @@ with open(sv_path, 'w') as f:
     for row in rows:
         s_val   = state_enc[row[state_col].strip()]
         ns_val  = state_enc[row[ns_col].strip()]
-        # Reverse so column S_0 shows LSB, matching port convention
         s_str   = format(s_val,  f'0{n_state_bits}b')[::-1]
         ns_str  = format(ns_val, f'0{n_state_bits}b')[::-1]
         in_vals  = list(s_str) + [row[c].strip() for c in input_cols]
@@ -649,7 +633,6 @@ with open(sv_path, 'w') as f:
                 f"   {row[state_col].strip()} -> {row[ns_col].strip()}\n")
     f.write(f"// {sep}\n//\n\n")
 
-    # ── Module header ─────────────────────────────────────────────────────────
     f.write(f"module {mod} (\n")
     port_lines = [
         "    input  wire clk,",
@@ -666,20 +649,19 @@ with open(sv_path, 'w') as f:
     f.write("\n".join(port_lines))
     f.write("\n);\n\n")
 
-    # ── NS wires ──────────────────────────────────────────────────────────────
     f.write("// Next-state wires  (NS_0=LSB ... NS_{N-1}=MSB)\n")
     for b in range(n_state_bits):
         f.write(f"wire {ns_bit_name(b)};\n")
     f.write("\n")
 
-    # ── State encoding inline comment ─────────────────────────────────────────
-    f.write("// State encoding\n")
+    f.write("// State encoding  (IDLE = 0, guaranteed by tool)\n")
     for sname, sval in state_enc.items():
-        f.write(f"//   {sname:<28} = {format(sval, f'0{n_state_bits}b')}  (decimal {sval})\n")
+        idle_tag = "  // IDLE (reset state)" if sname == IDLE_STATE_NAME else ""
+        f.write(f"//   {sname:<28} = {format(sval, f'0{n_state_bits}b')}  (decimal {sval}){idle_tag}\n")
     f.write("\n")
 
-    # ── State flip-flops ──────────────────────────────────────────────────────
     f.write("// State flip-flops  (reg1b, active-low async reset)\n")
+    f.write("// Reset drives all state bits to 0, which is IDLE by construction.\n")
     for b in range(n_state_bits):
         f.write(
             f"reg1b ff_{b} (\n"
@@ -691,7 +673,6 @@ with open(sv_path, 'w') as f:
         )
     f.write("\n")
 
-    # ── Inverters ─────────────────────────────────────────────────────────────
     if negated_signals:
         f.write("// Inverters\n")
         for s in negated_signals:
@@ -701,7 +682,6 @@ with open(sv_path, 'w') as f:
             f.write(f"inv1$ inv_{s} ({s}_inv, {s});\n")
         f.write("\n")
 
-    # ── SOP combinational logic ───────────────────────────────────────────────
     f.write("// Next-state and output SOP logic\n\n")
 
     for sig in pla_outputs:

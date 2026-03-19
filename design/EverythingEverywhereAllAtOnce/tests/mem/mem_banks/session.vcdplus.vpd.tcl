@@ -1,18 +1,19 @@
 # Begin_DVE_Session_Save_Info
 # DVE full session
-# Saved on Wed Mar 18 21:55:55 2026
+# Saved on Thu Mar 19 14:15:33 2026
 # Designs open: 1
 #   V1: vcdplus.vpd
 # Toplevel windows open: 2
 # 	TopLevel.1
 # 	TopLevel.2
-#   Source.1: and10$
 #   Schematic.1: tb_memBanks.uut0
-#   Wave.1: 33 signals
-#   Group count = 3
+#   Source.1: tb_memBanks.uut0
+#   Wave.1: 34 signals
+#   Group count = 4
 #   Group tb_memBanks signal count = 6
-#   Group uut0 signal count = 13
+#   Group uut0 signal count = 14
 #   Group g_sram_cells[0].mem_cell signal count = 14
+#   Group Group1 signal count = 0
 # End_DVE_Session_Save_Info
 
 # DVE version: T-2022.06_Full64
@@ -71,7 +72,7 @@ if {![gui_exist_window -window TopLevel.1]} {
 } else { 
     set TopLevel.1 TopLevel.1
 }
-gui_show_window -window ${TopLevel.1} -show_state maximized -rect {{0 51} {1375 773}}
+gui_show_window -window ${TopLevel.1} -show_state maximized -rect {{0 51} {1919 1079}}
 
 # ToolBar settings
 gui_set_toolbar_attributes -toolbar {TimeOperations} -dock_state top
@@ -112,23 +113,28 @@ gui_hide_toolbar -toolbar {Testbench}
 # End ToolBar settings
 
 # Docked window settings
-set HSPane.1 [gui_create_window -type HSPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 194]
+set HSPane.1 [gui_create_window -type HSPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 193]
 catch { set Hier.1 [gui_share_window -id ${HSPane.1} -type Hier] }
-gui_set_window_pref_key -window ${HSPane.1} -key dock_width -value_type integer -value 194
+gui_set_window_pref_key -window ${HSPane.1} -key dock_width -value_type integer -value 193
 gui_set_window_pref_key -window ${HSPane.1} -key dock_height -value_type integer -value -1
 gui_set_window_pref_key -window ${HSPane.1} -key dock_offset -value_type integer -value 0
-gui_update_layout -id ${HSPane.1} {{left 0} {top 0} {width 193} {height 446} {dock_state left} {dock_on_new_line true} {child_hier_colhier 131} {child_hier_coltype 61} {child_hier_colpd 0} {child_hier_col1 0} {child_hier_col2 1} {child_hier_col3 -1}}
-set DLPane.1 [gui_create_window -type DLPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 428]
+gui_update_layout -id ${HSPane.1} {{left 0} {top 0} {width 192} {height 774} {dock_state left} {dock_on_new_line true} {child_hier_colhier 131} {child_hier_coltype 61} {child_hier_colpd 0} {child_hier_col1 0} {child_hier_col2 1} {child_hier_col3 -1}}
+set DLPane.1 [gui_create_window -type DLPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 895]
 catch { set Data.1 [gui_share_window -id ${DLPane.1} -type Data] }
-gui_set_window_pref_key -window ${DLPane.1} -key dock_width -value_type integer -value 428
+gui_set_window_pref_key -window ${DLPane.1} -key dock_width -value_type integer -value 895
 gui_set_window_pref_key -window ${DLPane.1} -key dock_height -value_type integer -value 594
 gui_set_window_pref_key -window ${DLPane.1} -key dock_offset -value_type integer -value 0
-gui_update_layout -id ${DLPane.1} {{left 0} {top 0} {width 427} {height 446} {dock_state left} {dock_on_new_line true} {child_data_colvariable 191} {child_data_colvalue 151} {child_data_coltype 91} {child_data_col1 0} {child_data_col2 1} {child_data_col3 2}}
-set Console.1 [gui_create_window -type Console -parent ${TopLevel.1} -dock_state bottom -dock_on_new_line true -dock_extent 178]
-gui_set_window_pref_key -window ${Console.1} -key dock_width -value_type integer -value 271
-gui_set_window_pref_key -window ${Console.1} -key dock_height -value_type integer -value 178
+gui_update_layout -id ${DLPane.1} {{left 0} {top 0} {width 894} {height 774} {dock_state left} {dock_on_new_line true} {child_data_colvariable 437} {child_data_colvalue 250} {child_data_coltype 197} {child_data_col1 0} {child_data_col2 1} {child_data_col3 2}}
+set Console.1 [gui_create_window -type Console -parent ${TopLevel.1} -dock_state bottom -dock_on_new_line true -dock_extent 177]
+gui_set_window_pref_key -window ${Console.1} -key dock_width -value_type integer -value -1
+gui_set_window_pref_key -window ${Console.1} -key dock_height -value_type integer -value 177
 gui_set_window_pref_key -window ${Console.1} -key dock_offset -value_type integer -value 0
-gui_update_layout -id ${Console.1} {{left 0} {top 0} {width 1375} {height 177} {dock_state bottom} {dock_on_new_line true}}
+gui_update_layout -id ${Console.1} {{left 0} {top 0} {width 271} {height 179} {dock_state bottom} {dock_on_new_line true}}
+set DriverLoad.1 [gui_create_window -type DriverLoad -parent ${TopLevel.1} -dock_state bottom -dock_on_new_line false -dock_extent 180]
+gui_set_window_pref_key -window ${DriverLoad.1} -key dock_width -value_type integer -value 150
+gui_set_window_pref_key -window ${DriverLoad.1} -key dock_height -value_type integer -value 180
+gui_set_window_pref_key -window ${DriverLoad.1} -key dock_offset -value_type integer -value 0
+gui_update_layout -id ${DriverLoad.1} {{left 0} {top 0} {width 1647} {height 179} {dock_state bottom} {dock_on_new_line false}}
 #### Start - Readjusting docked view's offset / size
 set dockAreaList { top left right bottom }
 foreach dockArea $dockAreaList {
@@ -173,7 +179,7 @@ if {![gui_exist_window -window TopLevel.2]} {
 } else { 
     set TopLevel.2 TopLevel.2
 }
-gui_show_window -window ${TopLevel.2} -show_state normal -rect {{5 56} {1769 973}}
+gui_show_window -window ${TopLevel.2} -show_state maximized -rect {{0 51} {1919 1079}}
 
 # ToolBar settings
 gui_set_toolbar_attributes -toolbar {TimeOperations} -dock_state top
@@ -221,7 +227,7 @@ gui_sync_global -id ${TopLevel.2} -option true
 # MDI window settings
 set Wave.1 [gui_create_window -type {Wave}  -parent ${TopLevel.2}]
 gui_show_window -window ${Wave.1} -show_state maximized
-gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 472} {child_wave_right 1287} {child_wave_colname 243} {child_wave_colvalue 225} {child_wave_col1 0} {child_wave_col2 1}}
+gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 454} {child_wave_right 1460} {child_wave_colname 226} {child_wave_colvalue 224} {child_wave_col1 0} {child_wave_col2 1}}
 
 # End MDI window settings
 
@@ -264,23 +270,28 @@ gui_load_child_values {tb_memBanks}
 gui_load_child_values {tb_memBanks.uut0.g_sram_cells[0].mem_cell}
 
 
-set _session_group_7 tb_memBanks
-gui_sg_create "$_session_group_7"
-set tb_memBanks "$_session_group_7"
+set _session_group_50 tb_memBanks
+gui_sg_create "$_session_group_50"
+set tb_memBanks "$_session_group_50"
 
-gui_sg_addsignal -group "$_session_group_7" { {tb_memBanks.$unit} tb_memBanks.bankCmds tb_memBanks.bankOut tb_memBanks.clk tb_memBanks.memBus tb_memBanks.rst }
+gui_sg_addsignal -group "$_session_group_50" { {tb_memBanks.$unit} tb_memBanks.bankCmds tb_memBanks.bankOut tb_memBanks.clk tb_memBanks.memBus tb_memBanks.rst }
 
-set _session_group_8 uut0
-gui_sg_create "$_session_group_8"
-set uut0 "$_session_group_8"
+set _session_group_51 uut0
+gui_sg_create "$_session_group_51"
+set uut0 "$_session_group_51"
 
-gui_sg_addsignal -group "$_session_group_8" { tb_memBanks.uut0.rst tb_memBanks.uut0.clk tb_memBanks.uut0.controller2bank_i tb_memBanks.uut0.bank_write_data tb_memBanks.uut0.bank_address_i tb_memBanks.uut0.outputs.precharged tb_memBanks.uut0.outputs.clear_writebufV tb_memBanks.uut0.bank_bus tb_memBanks.uut0.fsm_state tb_memBanks.uut0.mem_bank_controller_oe tb_memBanks.uut0.mem_bank_controller_we tb_memBanks.uut0.mem_bank_controller_send_store_address tb_memBanks.uut0.mem_bus }
+gui_sg_addsignal -group "$_session_group_51" { tb_memBanks.uut0.rst tb_memBanks.uut0.clk tb_memBanks.uut0.controller2bank_i tb_memBanks.uut0.bank_write_data tb_memBanks.uut0.bank_address_i tb_memBanks.uut0.outputs.precharged tb_memBanks.uut0.outputs.clear_writebufV tb_memBanks.uut0.bank_bus tb_memBanks.uut0.fsm_state tb_memBanks.uut0.mem_bank_controller_oe tb_memBanks.uut0.mem_bank_controller_we tb_memBanks.uut0.mem_bank_controller_send_store_address tb_memBanks.uut0.mem_bank_controller_send_store_address_delayed tb_memBanks.uut0.mem_bus }
 
-set _session_group_9 {g_sram_cells[0].mem_cell}
-gui_sg_create "$_session_group_9"
-set {g_sram_cells[0].mem_cell} "$_session_group_9"
+set _session_group_52 {g_sram_cells[0].mem_cell}
+gui_sg_create "$_session_group_52"
+set {g_sram_cells[0].mem_cell} "$_session_group_52"
 
-gui_sg_addsignal -group "$_session_group_9" { {tb_memBanks.uut0.g_sram_cells[0].mem_cell.$unit} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.A} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.A_temp} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.CE} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.CE_temp} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.DIO} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.DIO} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.OE} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.WR} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.a_changed} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.addr_unstable_memory} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.din_changed} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.lastread_addr} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.mem} }
+gui_sg_addsignal -group "$_session_group_52" { {tb_memBanks.uut0.g_sram_cells[0].mem_cell.$unit} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.A} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.A_temp} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.CE} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.CE_temp} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.DIO} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.DIO} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.OE} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.WR} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.a_changed} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.addr_unstable_memory} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.din_changed} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.lastread_addr} {tb_memBanks.uut0.g_sram_cells[0].mem_cell.mem} }
+
+set _session_group_53 Group1
+gui_sg_create "$_session_group_53"
+set Group1 "$_session_group_53"
+
 
 # Global: Highlighting
 
@@ -290,7 +301,7 @@ gui_change_stack_mode -mode list
 # Post database loading setting...
 
 # Restore C1 time
-gui_set_time -C1_only 231
+gui_set_time -C1_only 606
 
 
 
@@ -317,15 +328,16 @@ gui_list_set_filter -id ${Hier.1} -text {*}
 gui_hier_list_init -id ${Hier.1}
 gui_change_design -id ${Hier.1} -design V1
 catch {gui_list_expand -id ${Hier.1} tb_memBanks}
-catch {gui_list_expand -id ${Hier.1} tb_memBanks.uut0}
-catch {gui_list_select -id ${Hier.1} {{tb_memBanks.uut0.g_sram_cells[0].mem_cell}}}
+catch {gui_list_select -id ${Hier.1} {tb_memBanks.uut0}}
 gui_view_scroll -id ${Hier.1} -vertical -set 1025
 gui_view_scroll -id ${Hier.1} -horizontal -set 0
 
 # Data 'Data.1'
 gui_list_set_filter -id ${Data.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {LowPower 1} {Parameter 1} {All 1} {Aggregate 1} {LibBaseMember 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {BaseMembers 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Data.1} -text {*}
-gui_list_show_data -id ${Data.1} {tb_memBanks.uut0.g_sram_cells[0].mem_cell}
+gui_list_show_data -id ${Data.1} {tb_memBanks.uut0}
+gui_show_window -window ${Data.1}
+catch { gui_list_select -id ${Data.1} {tb_memBanks.uut0.mem_bank_controller_send_store_address_delayed }}
 gui_view_scroll -id ${Data.1} -vertical -set 0
 gui_view_scroll -id ${Data.1} -horizontal -set 0
 gui_view_scroll -id ${Hier.1} -vertical -set 1025
@@ -334,8 +346,8 @@ gui_view_scroll -id ${Hier.1} -horizontal -set 0
 # Source 'Source.1'
 gui_src_value_annotate -id ${Source.1} -switch false
 gui_set_env TOGGLE::VALUEANNOTATE 0
-gui_open_source -id ${Source.1}  -replace -active {and10$} /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/and_N.v
-gui_view_scroll -id ${Source.1} -vertical -set 345
+gui_open_source -id ${Source.1}  -replace -active tb_memBanks.uut0 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/Mem_Banks/mem_bank.sv
+gui_view_scroll -id ${Source.1} -vertical -set 480
 gui_src_set_reusable -id ${Source.1}
 
 # View 'Wave.1'
@@ -347,14 +359,15 @@ gui_list_set_height -id Wave -height 25
 set origGroupCreationState [gui_list_create_group_when_add -wave]
 gui_list_create_group_when_add -wave -disable
 gui_marker_set_ref -id ${Wave.1}  C1
-gui_wv_zoom_timerange -id ${Wave.1} 0 423
+gui_wv_zoom_timerange -id ${Wave.1} 1064 1179
 gui_list_add_group -id ${Wave.1} -after {New Group} {tb_memBanks}
 gui_list_add_group -id ${Wave.1} -after {New Group} {uut0}
 gui_list_add_group -id ${Wave.1} -after {New Group} {{g_sram_cells[0].mem_cell}}
+gui_list_add_group -id ${Wave.1} -after {New Group} {Group1}
 gui_list_collapse -id ${Wave.1} tb_memBanks
 gui_list_collapse -id ${Wave.1} {g_sram_cells[0].mem_cell}
 gui_list_expand -id ${Wave.1} tb_memBanks.uut0.controller2bank_i
-gui_list_select -id ${Wave.1} {tb_memBanks.uut0.controller2bank_i.start_store tb_memBanks.uut0.bank_bus tb_memBanks.uut0.fsm_state tb_memBanks.uut0.mem_bank_controller_we }
+gui_list_select -id ${Wave.1} {tb_memBanks.uut0.bank_bus }
 gui_seek_criteria -id ${Wave.1} {Any Edge}
 
 
@@ -370,11 +383,15 @@ if { $groupExD } {
 }
 gui_list_set_filter -id ${Wave.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {Parameter 1} {All 1} {Aggregate 1} {LibBaseMember 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {BaseMembers 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Wave.1} -text {*}
-gui_list_set_insertion_bar  -id ${Wave.1} -group uut0  -item {tb_memBanks.uut0.bank_write_data[127:0]} -position below
+gui_list_set_insertion_bar  -id ${Wave.1} -group uut0  -item tb_memBanks.uut0.mem_bank_controller_send_store_address_delayed -position below
 
-gui_marker_move -id ${Wave.1} {C1} 231
+gui_marker_move -id ${Wave.1} {C1} 606
 gui_view_scroll -id ${Wave.1} -vertical -set 0
 gui_show_grid -id ${Wave.1} -enable false
+
+# DriverLoad 'DriverLoad.1'
+gui_get_drivers -session -id ${DriverLoad.1} -signal {tb_memBanks.uut0.g_sram_cells[0].mem_cell.mem[31:0][31:0]} -time 231 -starttime 231
+gui_get_loads -session -id ${DriverLoad.1} -signal tb_memBanks.uut0.mem_bank_controller_send_store_address_delayed
 
 # View 'Schematic.1'
 gui_use_schematics
@@ -382,14 +399,15 @@ gui_use_schematics
 # Create schematic window 'Schematic.1'
 gui_sch_show -window ${Schematic.1} -name tb_memBanks.uut0
 gui_show_pin_value_annotate [gui_window_hier_name -window ${Schematic.1}]
-gui_zoom -window ${Schematic.1} -rect { {-149534 -227959} {278375 3217} }
+gui_zoom -window ${Schematic.1} -rect { {-147026 -302954} {272388 71467} }
 
 
 # Restore toplevel window zorder
 # The toplevel window could be closed if it has no view/pane
 if {[gui_exist_window -window ${TopLevel.1}]} {
 	gui_set_active_window -window ${TopLevel.1}
-	gui_set_active_window -window ${Schematic.1}
+	gui_set_active_window -window ${Source.1}
+	gui_set_active_window -window ${DriverLoad.1}
 }
 if {[gui_exist_window -window ${TopLevel.2}]} {
 	gui_set_active_window -window ${TopLevel.2}

@@ -96,7 +96,6 @@ module mem_controller (
 
     //TODO: WRite this
     logic hit_into_fsm;
-    //assign hit_into_fsm = chipTable[chipTable].address{[14:12],[5:4]} == ;
 
     //instaiate the mem controller fsm module
     mem_controller_fsm u0_Controller (
@@ -290,10 +289,8 @@ module mem_controller (
 
     //need to do hit logic
     always_comb begin
-        hit_into_fsm = chipTable[chipNum].address[14:10] == address_bus[14:10] && chipTable[chipNum].precharge_Status[bankBits_InChip];
+        hit_into_fsm = DTE_i.ld_req && chipTable[chipNum].address[14:10] == address_bus[14:10] && chipTable[chipNum].precharge_Status[bankBits_InChip];
     end
 
 
 endmodule
-
-

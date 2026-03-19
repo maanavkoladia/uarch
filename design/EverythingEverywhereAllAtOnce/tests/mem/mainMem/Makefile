@@ -33,9 +33,9 @@ view: run
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
 
 genMem: 
-	python3 ../../../scripts/LoadMem/compile.py $(MEM_GEN_CONF)
-	python3 ../../../scripts/LoadMem/genHexMem.py $(MEM_GEN_CONF)
-	python3 ../../../scripts/LoadMem/genReadMemFile.py $(MEM_GEN_CONF)
+	python3.9 ../../../scripts/LoadMem/compile.py $(MEM_GEN_CONF)
+	python3.9 ../../../scripts/LoadMem/genHexMem.py $(MEM_GEN_CONF)
+	python3.9 ../../../scripts/LoadMem/genReadMemFile.py $(MEM_GEN_CONF)
 
 see:
 	#@echo $(TIME_FILE)

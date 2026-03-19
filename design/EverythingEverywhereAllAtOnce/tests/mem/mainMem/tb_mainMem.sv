@@ -57,9 +57,19 @@ module tb_mainMem ();
     );
     
     //init module to initMem
-
+    tb_memGen_InitRitual memLoader();
     initial begin
         `LOG("Main Mem Tb Starting up");
+        fromDte.ld_req = 0;
+        fromDte.st_req = 0;
+        fromDte.start_transaction = 0;
+        fromDte.permission2DriveBus[0] = 0;
+        fromDte.permission2DriveBus[1] = 0;
+        fromDte.permission2DriveBus[2] = 0;
+        fromDte.permission2DriveBus[3] = 0;
+        rst = 0;//actve low
+        DelayCLKs(5);
+        rst = 1;//actve low
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////

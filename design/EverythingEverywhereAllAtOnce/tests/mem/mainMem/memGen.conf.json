@@ -6,7 +6,7 @@
     "output_LoadableHex_Path" : "memGen/hexLoad",
     "output_metaData_Path"    : "memGen/meta/",
 
-    "randomizeMem"            : "true",
+    "randomizeMem"            : "false",
     "debug_bank_layouts"      : "false",
 
     "mem_size_bytes"          : 32768,
