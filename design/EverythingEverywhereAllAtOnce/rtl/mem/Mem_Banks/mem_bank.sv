@@ -2,7 +2,9 @@ import common_pkg::*;
 import interconnect_pkg::MEM_BUS_SIZE;
 import mem_common_pkg::*;
 
-module mem_bank (
+module mem_bank #(
+    parameter int BANK_ID
+) (
 
     input logic clk,
     input logic rst,
@@ -94,7 +96,7 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
     generate
         for (i_gen = 0; i_gen < NUM_SRAM_CELLS; i_gen++) begin : g_sram_cells
 
-            sram32x32$ mem_cell(
+            sram32x32$ mem_cell (
                 .A(bank_address_i),
                 .DIO(bank_bus[(i_gen+1)*(MEM_BUS_SIZE/4)-1 : i_gen*(MEM_BUS_SIZE/4)]),
                 .OE(mem_bank_controller_oe),

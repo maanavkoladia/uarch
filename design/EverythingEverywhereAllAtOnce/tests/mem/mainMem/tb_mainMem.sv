@@ -59,14 +59,16 @@ module tb_mainMem ();
     initial begin
         string fileName;
         `DELAY_CYCLES(3);
-        for (int i = 0; i < NUM_BANKS; i++) begin
-            for (int j = 0; j < 4; j++) begin
-                fileName = $sformatf("./memGen/hexLoad/mem_%d_%d.hex", i, j);
-                `LOG("Wrote in : %s", fileName);
-                $readmemh(fileName,
-                          tb_mainMem.uut0.g_mem_banks[i].mem_bank.g_sram_cells[j].mem_cell.mem);
-            end
-        end
+        //for (int i = 0; i < NUM_BANKS; i++) begin
+        //    for (int j = 0; j < 4; j++) begin
+        //        fileName = $sformatf("./memGen/hexLoad/mem_%d_%d.hex", i, j);
+        //        `LOG("Wrote in : %s", fileName);
+        //        $readmemh(fileName,
+        //                  tb_mainMem.uut0.g_mem_banks[i].mem_bank.g_sram_cells[j].mem_cell.mem);
+        //    end
+        //end
+        $readmemh("./memGen/hexLoad/mem_0_0.hex",
+                  tb_mainMem.uut0.g_mem_banks[0].mem_bank.g_sram_cells[0].mem_cell.mem);
         `LOG("Mem Read in");
     end
 
