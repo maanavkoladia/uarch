@@ -1,6 +1,7 @@
 # State list for FSM: mem_controller_fsm
 # Total states      : 9
 # State bits needed : 4
+# NOTE: IDLE is always assigned encoding 0
 #
 #  idx  binary  state_name
 # --------------------------------------------------

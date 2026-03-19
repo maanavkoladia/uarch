@@ -1,6 +1,7 @@
 # State list for FSM: ICache_Controller_Logic
 # Total states      : 5
 # State bits needed : 3
+# NOTE: IDLE is always assigned encoding 0
 #
 #  idx  binary  state_name
 # --------------------------------------------------

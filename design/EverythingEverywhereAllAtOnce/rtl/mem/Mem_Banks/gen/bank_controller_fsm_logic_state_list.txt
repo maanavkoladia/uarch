@@ -1,6 +1,7 @@
 # State list for FSM: bank_controller_fsm_logic
 # Total states      : 17
 # State bits needed : 5
+# NOTE: IDLE is always assigned encoding 0
 #
 #  idx  binary  state_name
 # --------------------------------------------------

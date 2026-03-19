@@ -1,10 +1,11 @@
 # Enumeration map for FSM: ICache_Controller_Logic
 # 5 states -> 3 bit(s)
+# IDLE is always assigned encoding 0
 #
 # state_name                      decimal  binary
 # --------------------------------------------------
-  Fill0                                 0  000
-  Fill1                                 1  001
-  Fill2                                 2  010
-  Fill3                                 3  011
-  IDLE                                  4  100
+  IDLE                                  0  000  # IDLE (forced 0)
+  Fill0                                 1  001
+  Fill1                                 2  010
+  Fill2                                 3  011
+  Fill3                                 4  100
