@@ -104,7 +104,8 @@ module kogge_stone_adder #(
 
                 if (i >= (1 << (s-1))) begin : g_active
 
-                    if (s < STAGES) begin : g_black ///// bug here, s will never be stages until end of loop, need to build this part myself
+                    //if (s < STAGES) begin : g_black ///// bug here, s will never be stages until end of loop, need to build this part myself
+                    if(i >= (1 << s)) begin : g_black
                         // ---- Black Cell ----------------------------------------
                         black_cell u_black (
                             .g_hi  (g_arr[(s-1)*WIDTH + i]),

@@ -62,9 +62,15 @@
             "run Combinational SOP Gen": "true"
         },
 
-	"Decode IR logic" : {
+	    "Decode IR logic" : {
             "csv" : "rtl/core/Decode/structural/gen/ir_logic.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/ir_logic.v",
+            "run Combinational SOP Gen": "true"
+        },
+
+        "Decode threeinput_adder logic" : {
+            "csv" : "rtl/core/Decode/structural/gen/three_input_adder.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/three_input_adder.v",
             "run Combinational SOP Gen": "true"
         }
 
