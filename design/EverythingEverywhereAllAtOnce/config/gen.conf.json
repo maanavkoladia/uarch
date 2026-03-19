@@ -1,16 +1,16 @@
 {
     "script path" : { 
-        "Combinational SOP GEN": "scripts/genCombination_SOP.py",
-        "FSM SOP GEN" : "scripts/genFSM_SOP.py",
-        "Combinational LUT GEN" : "scripts/genTT_LUT.py",
-        "FSM LUT GEN" : "scripts/genFSM_LUT.py"
+        "Combinational SOP GEN": "scripts/RTL_Generation/genCombination_SOP.py",
+        "FSM SOP GEN" : "scripts/RTL_Generation/genFSM_SOP.py",
+        "Combinational LUT GEN" : "scripts/RTL_Generation/genTT_LUT.py",
+        "FSM LUT GEN" : "scripts/RTL_Generation/genFSM_LUT.py"
     },
 
     "genFiles" : {
 
         "simple" : {
-            "csv": "scripts/test/simple.csv",
-            "outputFilePath" : "scripts/test/rtl/simple.sv",
+            "csv": "scripts/RTL_Generation/test/simple.csv",
+            "outputFilePath" : "scripts/RTL_Generation/test/rtl/simple.sv",
             "run Combinational SOP Gen": "true",
             "run FSM SOP gen": "false",
             "run Combinational LUT Gen": "false",
@@ -18,8 +18,8 @@
         },
 
         "ex1" : {
-            "csv": "scripts/test/ex1.csv",
-            "outputFilePath" : "scripts/test/rtl/ex1.sv",
+            "csv": "scripts/RTL_Generation/test/ex1.csv",
+            "outputFilePath" : "scripts/RTL_Generation/test/rtl/ex1.sv",
             "run Combinational SOP Gen": "true"
         },
 
@@ -56,7 +56,7 @@
             "run Combinational SOP Gen": "true"
         },
 
-	"Predecode pf LUT" : {
+        "Predecode pf LUT" : {
             "csv" : "rtl/core/Decode/structural/gen/pf_gen.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/PF_LUT.v",
             "run Combinational SOP Gen": "true"
