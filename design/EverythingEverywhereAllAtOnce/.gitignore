@@ -17,3 +17,7 @@ ucli.key
 *.vdb
 
 *.log
+
+hexLoad/
+
+meta/

@@ -1,0 +1,14 @@
+# Enumeration map for FSM: mem_controller_fsm
+# 9 states -> 4 bit(s)
+#
+# state_name                      decimal  binary
+# --------------------------------------------------
+  ERROR                                 0  0000
+  IDLE                                  1  0001
+  LD_0                                  2  0010
+  LD_1                                  3  0011
+  LD_HIT                                4  0100
+  LD_MISS                               5  0101
+  W0                                    6  0110
+  W1                                    7  0111
+  W2                                    8  1000

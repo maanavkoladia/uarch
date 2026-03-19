@@ -3,6 +3,8 @@ include ../../../Make.build
 
 TARGET = mainMem
 
+MEM_GEN_CONF = memGen/mainMem_memGen.conf.json
+TEST_PROG = memGen/testProg.s
 
 TB_FILES = \
 		   tb_mainMem.sv
@@ -14,7 +16,7 @@ SRC_FILES = \
 			$(RTL_SRC_FILES) \
 			$(TB_FILES)	\
 
-.PHONY: all run clean see
+.PHONY: all run clean see genMem
 
 all: $(TARGET)
 	
@@ -27,6 +29,10 @@ run: $(TARGET)
 view: run
 	#./$(TARGET) -gui &
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
+
+genMem: 
+	python3 ../../../scripts/LoadMem/compile.py $(MEM_GEN_CONF)
+	python3 ../../../scripts/LoadMem/genHexMem.py $(MEM_GEN_CONF)
 
 see:
 	#@echo $(TIME_FILE)
@@ -42,5 +48,6 @@ clean:
 	rm -f master
 	rm -f *.log
 	rm -f ucli.key
+	rm -rf memGen
 
 

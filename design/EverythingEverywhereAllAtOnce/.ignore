@@ -9,3 +9,7 @@ build
 *.daidir
 
 csrc
+
+hexLoad/
+
+meta/

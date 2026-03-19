@@ -28,7 +28,7 @@ module tb_mainMem ();
     `CLK_INIT(`CYCLE_TIME)
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
-    
+
     logic rst;
     wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus;
@@ -55,20 +55,26 @@ module tb_mainMem ();
         .out2Dte(mem2dte),
         .out2Sch(mem2Sch)
     );
+
     initial begin
+        string fileName;
         `DELAY_CYCLES(3);
-        //$readmemh("fakeData/mem0.hex", tb_memBanks.uut0.g_sram_cells[0].mem_cell.mem);
-        //$readmemh("fakeData/mem1.hex", tb_memBanks.uut0.g_sram_cells[1].mem_cell.mem);
-        //$readmemh("fakeData/mem2.hex", tb_memBanks.uut0.g_sram_cells[2].mem_cell.mem);
-        //$readmemh("fakeData/mem3.hex", tb_memBanks.uut0.g_sram_cells[3].mem_cell.mem);
+        for (int i = 0; i < NUM_BANKS; i++) begin
+            for (int j = 0; j < 4; j++) begin
+                fileName = $sformatf("./memGen/hexLoad/mem_%d_%d.hex", i, j);
+                `LOG("Wrote in : %s", fileName);
+                $readmemh(fileName,
+                          tb_mainMem.uut0.g_mem_banks[i].mem_bank.g_sram_cells[j].mem_cell.mem);
+            end
+        end
         `LOG("Mem Read in");
     end
 
     initial begin
         `LOG("Main Mem Tb Starting up");
-/////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
-/////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
         `DELAY_CYCLES(30);
         `LOG("Mem Bank Tb Complete");
         $finish;
