@@ -15,3 +15,5 @@ ucli.key
 *espresso.out
 
 *.vdb
+
+*.log

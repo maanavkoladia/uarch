@@ -19,7 +19,7 @@ SRC_FILES = \
 all: $(TARGET)
 	
 $(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES)
+	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES) | tee compile.log
 
 run: $(TARGET)
 	./$<
