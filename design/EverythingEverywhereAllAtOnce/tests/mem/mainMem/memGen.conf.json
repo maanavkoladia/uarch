@@ -14,7 +14,7 @@
     "cache_line_bytes"        : 16,
     "cells_per_bank"          : 4,
 
-    "readmemFilePath"         : "tb_memGenRitual.sv",
+    "readmemFilePath"         : "memLoader.sv",
     "memCellPath"             : "tb_mainMem.uut0.g_mem_banks[<bankNum>].mem_bank.g_sram_cells[<cellNum>].mem_cell.mem",
     "startUpDelay"            : "3",
     "pkg_Name"                : "memGen/tb_mainMem_pkg.sv"

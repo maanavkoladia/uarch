@@ -8,7 +8,7 @@ TEST_PROG = testProg.s
 
 TB_FILES = \
 		   tb_mainMem_pkg.sv	\
-			tb_memGenRitual.sv	\
+		   memLoader.sv	\
 		   tb_mainMem.sv
 
 PKGS = $(RTL_PKGS)
