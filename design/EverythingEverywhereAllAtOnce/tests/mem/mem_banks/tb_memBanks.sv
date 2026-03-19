@@ -2,7 +2,7 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import mem_common_pkg::*;
 
-`define CYCLE_TIME (100)
+`define CYCLE_TIME (7)
 `define DELAY_CYCLES(cycles) #(`CYCLE_TIME * cycles)
 
 module tb_memBanks ();
@@ -71,8 +71,8 @@ module tb_memBanks ();
 
         `DELAY_CYCLES(10);
         rst = 1;
-        //`DELAY_CYCLES(10);
-        //bankCmds.driveMemBus = 1;
+        `DELAY_CYCLES(10);
+        bankCmds.driveMemBus = 1;
         `DELAY_CYCLES(30);
         `LOG("Mem Bank Tb Complete");
         $finish;

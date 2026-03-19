@@ -63,7 +63,9 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
 
     // drive mem_bus tri-state
     assign mem_bus = controller2bank_i.driveMemBus ? bank_bus : 'z;
-    assign bank_bus = mem_bank_controller_we ? bank_write_data : 'z;
+
+    //no mem_bank_controller_we, bc active low, i forgot about ts, fck
+    assign bank_bus = !mem_bank_controller_we ? bank_write_data : 'z;
 
 
     assign bank_write_data = {
