@@ -60,6 +60,12 @@
             "csv" : "rtl/core/Decode/structural/gen/pf_gen.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/PF_LUT.v",
             "run Combinational SOP Gen": "true"
+        },
+
+	"Decode IR logic" : {
+            "csv" : "rtl/core/Decode/structural/gen/ir_logic.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/ir_logic.v",
+            "run Combinational SOP Gen": "true"
         }
 
     }
