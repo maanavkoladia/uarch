@@ -21,6 +21,7 @@ STD_CELLS_LIB = \
 				$(ROOT)/lib/STDCells/mux64_8.v \
 				$(ROOT)/lib/STDCells/or_N.v \
 				$(ROOT)/lib/STDCells/reg1b.v \
+				$(ROOT)/lib/STDCells/KoggeStone.v \
 
 LIB_SRC_FILES = \
 				$(UARCH_GATES_LIB) \

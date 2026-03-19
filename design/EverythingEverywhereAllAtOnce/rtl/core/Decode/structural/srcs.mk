@@ -4,6 +4,7 @@ GEN_DECODE_SRC_FILES = \
 						  $(DECODE_PATH_INTERNAL)/gen/MOD_LUT.v \
 						  $(DECODE_PATH_INTERNAL)/gen/OP_LUT.v	\
 						  $(DECODE_PATH_INTERNAL)/gen/PF_LUT.v \
+						  $(DECODE_PATH_INTERNAL)/gen/three_input_adder.v \
 
 DECODE_SRC_FILES_STRUCTURAL = \
 								$(DECODE_PATH_INTERNAL)/modrm_size.v \
