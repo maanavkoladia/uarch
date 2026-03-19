@@ -7,6 +7,7 @@ MEM_GEN_CONF = memGen/mainMem_memGen.conf.json
 TEST_PROG = memGen/testProg.s
 
 TB_FILES = \
+		   tb_mainMem_pkg.sv	\
 		   tb_mainMem.sv
 
 PKGS = $(RTL_PKGS)
@@ -31,8 +32,8 @@ view: run
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
 
 genMem: 
-	python3 ../../../scripts/LoadMem/compile.py $(MEM_GEN_CONF)
-	python3 ../../../scripts/LoadMem/genHexMem.py $(MEM_GEN_CONF)
+	python3.9 ../../../scripts/LoadMem/compile.py $(MEM_GEN_CONF)
+	python3.9 ../../../scripts/LoadMem/genHexMem.py $(MEM_GEN_CONF)
 
 see:
 	#@echo $(TIME_FILE)
@@ -48,6 +49,5 @@ clean:
 	rm -f master
 	rm -f *.log
 	rm -f ucli.key
-	rm -rf memGen
 
 

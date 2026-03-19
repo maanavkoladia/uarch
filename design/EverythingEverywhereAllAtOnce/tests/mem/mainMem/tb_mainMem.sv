@@ -1,6 +1,8 @@
 import common_pkg::*;
 import interconnect_pkg::*;
 import mem_common_pkg::*;
+import tb_mainMem_pkg::*;
+
 /*
 typedef struct {
     bool ld_req;
@@ -20,12 +22,10 @@ typedef struct {
 */
 
 
-`define CYCLE_TIME (10)
-`define DELAY_CYCLES(cycles) #(`CYCLE_TIME * cycles)
 
 module tb_mainMem ();
 
-    `CLK_INIT(`CYCLE_TIME)
+    `CLK_INIT(CLK_PERIOD)
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
 
@@ -55,29 +55,15 @@ module tb_mainMem ();
         .out2Dte(mem2dte),
         .out2Sch(mem2Sch)
     );
-
-    initial begin
-        string fileName;
-        `DELAY_CYCLES(3);
-        //for (int i = 0; i < NUM_BANKS; i++) begin
-        //    for (int j = 0; j < 4; j++) begin
-        //        fileName = $sformatf("./memGen/hexLoad/mem_%d_%d.hex", i, j);
-        //        `LOG("Wrote in : %s", fileName);
-        //        $readmemh(fileName,
-        //                  tb_mainMem.uut0.g_mem_banks[i].mem_bank.g_sram_cells[j].mem_cell.mem);
-        //    end
-        //end
-        $readmemh("./memGen/hexLoad/mem_0_0.hex",
-                  tb_mainMem.uut0.g_mem_banks[0].mem_bank.g_sram_cells[0].mem_cell.mem);
-        `LOG("Mem Read in");
-    end
+    
+    //init module to initMem
 
     initial begin
         `LOG("Main Mem Tb Starting up");
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
-        `DELAY_CYCLES(30);
+        DelayCLKs(30);
         `LOG("Mem Bank Tb Complete");
         $finish;
     end
