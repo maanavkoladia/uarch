@@ -2,7 +2,7 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import mem_common_pkg::*;
 
-`define CYCLE_TIME (7)
+`define CYCLE_TIME (10)
 `define DELAY_CYCLES(cycles) #(`CYCLE_TIME * cycles)
 
 module tb_memBanks ();
@@ -69,10 +69,52 @@ module tb_memBanks ();
             8'hFF
         };
 
+/////////////////////////////////////////////////////////////////////////////////////
+        //Give some time for start up, and precharging
+/////////////////////////////////////////////////////////////////////////////////////
         `DELAY_CYCLES(10);
         rst = 1;
-        `DELAY_CYCLES(10);
-        bankCmds.driveMemBus = 1;
+        `DELAY_CYCLES(20);
+/////////////////////////////////////////////////////////////////////////////////////
+        //testing ld_addr_changed;
+/////////////////////////////////////////////////////////////////////////////////////
+        bankCmds.ld_address = 20;
+        bankCmds.ld_address_change = 1;
+        `DELAY_CYCLES(1);
+        bankCmds.ld_address_change = 0;
+        `DELAY_CYCLES(20);
+/////////////////////////////////////////////////////////////////////////////////////
+        //testing ld_addr_changed while not precharged, shoudl restart
+/////////////////////////////////////////////////////////////////////////////////////
+        bankCmds.ld_address = 5;
+        bankCmds.ld_address_change = 1;
+        `DELAY_CYCLES(1);
+        bankCmds.ld_address_change = 0;
+        `DELAY_CYCLES(2);
+        bankCmds.ld_address = 6;
+        bankCmds.ld_address_change = 1;
+        `DELAY_CYCLES(1);
+        bankCmds.ld_address_change = 0;
+        `DELAY_CYCLES(20);
+/////////////////////////////////////////////////////////////////////////////////////
+        //Doing store work and testing to make sure that the data is correct
+        //also making sure that ld addr changed doesmnt fuck anything up
+        //shoudlnt bc i tested the bankcontrller module seperatly
+/////////////////////////////////////////////////////////////////////////////////////
+        //start store
+        bankCmds.start_store = 1;
+        `DELAY_CYCLES(1);
+        bankCmds.start_store = 0;
+        `DELAY_CYCLES(2);
+        //signal that the ld addr has changed
+        bankCmds.ld_address = bankCmds.st_address;
+        bankCmds.ld_address_change = 1;
+        `DELAY_CYCLES(1);
+        bankCmds.ld_address_change = 0;
+        `DELAY_CYCLES(20);
+/////////////////////////////////////////////////////////////////////////////////////
+        //Extra completion time
+/////////////////////////////////////////////////////////////////////////////////////
         `DELAY_CYCLES(30);
         `LOG("Mem Bank Tb Complete");
         $finish;

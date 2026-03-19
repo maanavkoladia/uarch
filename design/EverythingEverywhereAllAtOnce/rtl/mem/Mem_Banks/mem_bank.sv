@@ -40,7 +40,9 @@ module mem_bank (
     logic mem_bank_controller_oe;
     logic mem_bank_controller_we;
     logic mem_bank_controller_send_store_address;
+    logic mem_bank_controller_send_store_address_delayed;
 
+    assign #1 mem_bank_controller_send_store_address_delayed = mem_bank_controller_send_store_address;
 
     logic [$clog2(
 BANK_CONTROLLER_FSM_LOGIC_STATES
@@ -52,7 +54,7 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
 
     // address mux
     logic [NUM_SRAM_ADDRESS_BITS-1:0] bank_address_i;
-    assign bank_address_i = mem_bank_controller_send_store_address?
+    assign bank_address_i = mem_bank_controller_send_store_address_delayed ?
                             controller2bank_i.st_address : controller2bank_i.ld_address;
 
     // bank internal bus
