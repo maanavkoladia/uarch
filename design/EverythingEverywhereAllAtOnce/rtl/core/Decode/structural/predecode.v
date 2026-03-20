@@ -17,6 +17,7 @@ module predecode(
     wire [15:0] eip_bar_top, eip_bar_bottom;
     wire [8:0] carry;
     wire [31:0] sext_inst_length, NEIP;
+    wire inst_length_cout;
 
     assign carry[0] = 1'b0;
     assign sext_inst_length = {28'b0, inst_length};
@@ -43,20 +44,7 @@ module predecode(
     pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2), 
         .total_pf_vector(total_pf_vector));
 
-    genvar i;
-    generate
-        for(i=0; i<8; i=i+1) begin : neip_adder
-            alu4$ alu(
-                .a(EIP[i*4+3:i*4]),
-                .b(sext_inst_length[i*4+3:i*4]),
-                .cin(carry[i]),
-                .m(1'b1),
-                .s(4'd9),
-                .cout(carry[i+1]),
-                .out(NEIP[i*4+3:i*4])
-            );
-        end
-    endgenerate
+    kogge_stone_adder #(.WIDTH(32)) neip_adder (.a(EIP), .b(sext_inst_length), .cin(1'b0), .sum(NEIP), .cout(inst_length_cout));
 
     //dff16$ topword(clk, NEIP[31:16], EIP[31:16], eip_bar_top, rst, 1'b1);
     //dff16$ bottomword(clk, NEIP[15:0], EIP[15:0], eip_bar_bottom, rst, 1'b1);
