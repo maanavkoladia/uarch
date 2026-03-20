@@ -69,21 +69,19 @@ ST_WRITE_WAIT_4       = 5'd15,
 ST_WRITE_WAIT_5       = 5'd16
     } bank_fsm_controller_state_t;
 
-    localparam int MEM_CONTROLLER_FSM_STATES = 10;
+    localparam int MEM_CONTROLLER_FSM_STATES = 9;
     typedef enum logic [$clog2(
 MEM_CONTROLLER_FSM_STATES
 ) - 1 : 0] {
-        MEM_CTRLR_ERROR   = 4'd0,
-        MEM_CTRLR_IDLE    = 4'd1,
-        MEM_CTRLR_LD_0    = 4'd2,
-        MEM_CTRLR_LD_1    = 4'd3,
-        MEM_CTRLR_LD_2    = 4'd4,
-        MEM_CTRLR_LD_HIT  = 4'd5,
-        MEM_CTRLR_LD_MISS = 4'd6,
-        MEM_CTRLR_W0      = 4'd7,
-        MEM_CTRLR_W1      = 4'd8,
-        MEM_CTRLR_W2      = 4'd9
-
+MEM_CTRLR_IDLE                          = 4'd0,  // IDLE (reset state)
+MEM_CTRLR_ERROR                         = 4'd1,
+MEM_CTRLR_LD_0                          = 4'd2,
+MEM_CTRLR_LD_1                          = 4'd3,
+MEM_CTRLR_LD_HIT                        = 4'd4,
+MEM_CTRLR_LD_MISS                       = 4'd5,
+MEM_CTRLR_W0                            = 4'd6,
+MEM_CTRLR_W1                            = 4'd7,
+MEM_CTRLR_W2                            = 4'd8
     } mem_controller_fsm_state_t;
 
 endpackage
