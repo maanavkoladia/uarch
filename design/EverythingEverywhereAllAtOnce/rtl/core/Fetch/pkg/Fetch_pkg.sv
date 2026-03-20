@@ -56,7 +56,10 @@ package Fetch_pkg;
     } idm_ctrl_logic_output_t;
 
 
-    typedef struct {bool invalidate[NUM_IDM_SLOTS];} idm_invalidate_logic_output_t;
+    typedef struct {
+        bool invalidate[NUM_IDM_SLOTS];
+        bool no_writes; //when there is a rst flush we cant write even if we have cache hit
+    } idm_invalidate_logic_output_t;
 
     //this is comining out of instrucitno q into fetch, assuming i_q is
     //instatitated in fetch

@@ -217,7 +217,6 @@ module Fetch (
     IDM_Invalidate_Logic idm_invalidate_logic(
         .clk(clk),
         .rst(rst),
-
         .eip(decode_outs_i.eip),
         .flush(exe_outs_i.br_res_out.flush),
         .exp_pipeclear(exp_set_logic_outs.exp_pipe_clear),

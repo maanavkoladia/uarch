@@ -234,10 +234,10 @@ module tb_IDM_Subsystem();
 
 
 
-    // Test 2: Branch invalidation and refill
+    // Test 2: Mostly My test case
     task automatic test_branch_invalidation_and_refill();
         test_num++;
-        $fdisplay(log_file, "\n[TEST %0d] Branch Invalidation and Refill", test_num);
+        $fdisplay(log_file, "\n[TEST %0d] Branch to branch XCL", test_num);
         $fdisplay(log_file, "========================================");
         $fdisplay(log_file, "Scenario: Fill slot 0 with branch, take branch, refill slot 0 with new data");
 
@@ -265,8 +265,6 @@ module tb_IDM_Subsystem();
                         //That has a branch that is xcl but we get a miss
         #1;
         $fdisplay(log_file, "\n--- Progress to Branch EIP (0x2008), Invalidate signal Slot0 should be 1");
-
-        #1;
         if (idm_state.idm_slots[0].br_valid != 1) begin
             $fdisplay(log_file, "FAIL: Branch metadata should be loaded");
             failed++;
@@ -290,8 +288,6 @@ module tb_IDM_Subsystem();
                         //nothing should be pending on invalidation since we are waiting to grab cache line we need to operate on 
         #1;
         $fdisplay(log_file, "\n--- Refill Slot 0 at Branch Target (0x5000) ---");
-
-        #1;
         if (idm_state.idm_slots[0].valid != 0) begin
             $fdisplay(log_file, "FAIL: Slot 0 should be invalidated at branch");
             failed++;
@@ -317,7 +313,6 @@ module tb_IDM_Subsystem();
         #1;
         $fdisplay(log_file, "\n-- getting next slot cache line for xcl");
 
-        #1;
         if (idm_state.idm_slots[0].valid != 1) begin
             $fdisplay(log_file, "FAIL: Slot 0 should be valid at branch");
             failed++;
@@ -341,8 +336,6 @@ module tb_IDM_Subsystem();
 
         #1;
         $fdisplay(log_file, "\n-- serving branch");
-
-        #1;
         if (idm_state.idm_slots[0].valid != 1) begin
             $fdisplay(log_file, "FAIL: Slot 0 should be valid at branch");
             failed++;
@@ -366,15 +359,13 @@ module tb_IDM_Subsystem();
         @(posedge clk)
         #1;
         $fdisplay(log_file, "\n-- on slot 3... slot 0 and 1 should be invalid");
-
-        #1;
         $fdisplay(log_file, "\n---Ending tests and checking final asserts");
 
         if (idm_state.idm_slots[0].valid != 1 && idm_state.idm_slots[1].valid != 0 &&  idm_state.idm_slots[3].valid != 1)  begin
             $fdisplay(log_file, "FAIL: Slot 0 should be refilled with new data");
             failed++;
         end else begin
-            $fdisplay(log_file, "  ✓ PASS: Branch invalidation and refill works correctly");
+            $fdisplay(log_file, "PASS: Branch invalidation and refill works correctly");
             passed++;
         end
         $fdisplay(log_file, "");
@@ -390,11 +381,13 @@ module tb_IDM_Subsystem();
         $fdisplay(log_file, "Scenario: Fill slots 0 & 1, XCL branch at end of slot 0");
 
         init_inputs();
+        
+        // Cycle 1: Fill slot 0 with XCL branch
         @(posedge clk);
         #1;
-
-        // Fill slot 0 with XCL branch
-        $fdisplay(log_file, "\n--- Fill Slot 0 with XCL Branch ---");
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 0 with XCL Branch at 0x300E ---", cycle_count);
+        
+        // Update inputs
         spc = 32'h3000;
         eip = 32'h3000;
         icache_out_i.hit = 1;
@@ -404,36 +397,91 @@ module tb_IDM_Subsystem();
         btb_out_i.XCL = 1;
         pred_out_i.taken = 1;
         setup_cache_data(8'hE0);
-        @(posedge clk);
-        #1;
+        
+        display_state();
 
-        // Fill slot 1
+        // Cycle 2: Check slot 0 filled, fill slot 1 (continuation)
         @(posedge clk);
         #1;
-        $fdisplay(log_file, "\n--- Fill Slot 1 (continuation of XCL) ---");
-        spc = 32'h3010;
-        eip = 32'h3008;
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 1 (XCL continuation) ---", cycle_count);
+        
+        // Assert slot 0 should be valid with branch metadata
+        if (idm_state.idm_slots[0].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slot 0 should be valid with branch");
+            failed++;
+        end
+        if (idm_state.idm_slots[0].br_valid != 1 || idm_state.idm_slots[0].br_xcl != 1) begin
+            $fdisplay(log_file, "FAIL: Branch metadata should indicate XCL");
+            failed++;
+        end
+        
+        // Update inputs
+        spc = 32'h3010;  // Slot 1
+        eip = 32'h3008;  // Still in slot 0, progressing
         btb_out_i.hit = 0;
         pred_out_i.taken = 0;
         icache_out_i.hit = 1;
         setup_cache_data(8'hE1);
-        @(posedge clk);
-        #1;
+        
+        display_state();
 
-        // Progress to XCL branch point
+        // Cycle 3: Check slot 1 filled, progress toward branch EIP
         @(posedge clk);
         #1;
-        $fdisplay(log_file, "\n--- Reach XCL Branch EIP, Should Invalidate Both Slots ---");
-        eip = 32'h300E;
+        $fdisplay(log_file, "\n--- Cycle %0d: Progress to near branch EIP ---", cycle_count);
+        
+        // Assert both slots should be valid
+        if (idm_state.idm_slots[0].valid != 1 || idm_state.idm_slots[1].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Both slots should be valid");
+            failed++;
+        end
+        
+        // Update inputs - progress EIP but don't reach branch yet
+        spc = 32'h3010;
+        eip = 32'h300C;  // Close to branch
+        icache_out_i.hit = 1;
+        btb_out_i.hit = 0;
+        pred_out_i.taken = 0;
+        
+        display_state();
+
+        // Cycle 4: Reach XCL branch EIP, should invalidate both slots
         @(posedge clk);
         #1;
-        if (idm_state.idm_slots[0].valid != 0 || idm_state.idm_slots[1].valid != 0) begin
-            $fdisplay(log_file, "  ✗ FAIL: Both slots should be invalidated for XCL branch");
+        $fdisplay(log_file, "\n--- Cycle %0d: Reach XCL Branch EIP (0x300E) ---", cycle_count);
+        
+        // Assert both slots still valid before we hit branch
+        if (idm_state.idm_slots[0].valid != 1 || idm_state.idm_slots[1].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Both slots should still be valid");
+            failed++;
+        end
+        
+        // Update inputs - reach the branch EIP
+        spc = 32'h7000;  // Branch target (new slot 0)
+        eip = 32'h300E;  // Reach branch EIP
+        icache_out_i.hit = 1;
+        btb_out_i.hit = 0;
+        pred_out_i.taken = 0;
+        setup_cache_data(8'hF0);
+        
+        display_state();
+
+        // Cycle 5: Check that slot 0 refilled with target, slot 1 invalidated
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Verify XCL invalidation and refill ---", cycle_count);
+        
+        // Assert slot 0 should be valid (refilled), slot 1 should be invalid
+        if (idm_state.idm_slots[0].valid != 1 || idm_state.idm_slots[1].valid != 0) begin
+            $fdisplay(log_file, "FAIL: Slot 0 should be valid with branch target data, slot 1 should be invalid");
             failed++;
         end else begin
-            $fdisplay(log_file, "  ✓ PASS: XCL branch invalidates both slots correctly");
+            $fdisplay(log_file, "PASS: XCL branch invalidates both slots and refills slot 0 with target");
             passed++;
         end
+        
+        display_state();
+        
         $fdisplay(log_file, "");
     endtask
 
@@ -446,40 +494,58 @@ module tb_IDM_Subsystem();
         $fdisplay(log_file, "Scenario: Try to refill valid slot without invalidation");
 
         init_inputs();
+        
+        // Cycle 1: Fill slot 2
         @(posedge clk);
         #1;
-
-        // Fill slot 2
-        $fdisplay(log_file, "\n--- Fill Slot 2 ---");
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 2 ---", cycle_count);
+        
+        // Update inputs
         spc = 32'h4020;
         eip = 32'h4020;
         icache_out_i.hit = 1;
         setup_cache_data(8'hF0);
+        
+        display_state();
+
+        // Cycle 2: Check slot 2 filled, try to refill same slot (should be protected)
         @(posedge clk);
         #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Try to Refill Slot 2 (should be protected) ---", cycle_count);
+        
+        // Assert slot 2 should be valid
         if (idm_state.idm_slots[2].valid != 1) begin
-            $fdisplay(log_file, "  ✗ FAIL: Slot 2 should be filled");
+            $fdisplay(log_file, "FAIL: Slot 2 should be filled");
             failed++;
         end
-
-        // Try to refill slot 2 without invalidating
-        @(posedge clk);
-        #1;
-        $fdisplay(log_file, "\n--- Try to Refill Slot 2 (should be protected) ---");
+        
+        // Save original data
+        original_data = idm_state.idm_slots[2].data[0];
+        
+        // Update inputs - try to refill same slot without invalidation
         spc = 32'h4020;  // Same slot
         eip = 32'h4024;  // Different EIP but same slot
         icache_out_i.hit = 1;
         setup_cache_data(8'hF1);  // Different data
-        original_data = idm_state.idm_slots[2].data[0];
+        
+        display_state();
+
+        // Cycle 3: Verify slot 2 still has original data (protection worked)
         @(posedge clk);
         #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Verify slot protection ---", cycle_count);
+        
+        // Assert slot 2 should have original data
         if (idm_state.idm_slots[2].data[0] != original_data) begin
-            $fdisplay(log_file, "  ✗ FAIL: Slot 2 should be protected from overwrite");
+            $fdisplay(log_file, "FAIL: Slot 2 should be protected from overwrite");
             failed++;
         end else begin
-            $fdisplay(log_file, "  ✓ PASS: Valid slot protected from overwrite");
+            $fdisplay(log_file, "PASS: Valid slot protected from overwrite");
             passed++;
         end
+        
+        display_state();
+        
         $fdisplay(log_file, "");
     endtask
 
@@ -493,31 +559,98 @@ module tb_IDM_Subsystem();
 
         init_inputs();
 
-        for (int slot = 0; slot < NUM_IDM_SLOTS; slot++) begin
-            @(posedge clk);
-            #1;
-            $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot %0d ---", cycle_count, slot);
-            spc = 32'h6000 + (slot << 4);
-            eip = 32'h6000 + (slot << 4);
-            icache_out_i.hit = 1;
-            setup_cache_data(8'hA0 + slot);
-            @(posedge clk);
-            #1;
-        end
+        // Cycle 1: Fill slot 0
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 0 ---", cycle_count);
+        
+        // Update inputs
+        spc = 32'h6000;
+        eip = 32'h6000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'hA0);
+        
+        display_state();
 
-        // Verify all slots valid
+        // Cycle 2: Check slot 0 valid, fill slot 1
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 1 ---", cycle_count);
+        
+        // Assert slot 0 should be valid
+        if (idm_state.idm_slots[0].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slot 0 should be valid");
+            failed++;
+        end
+        
+        // Update inputs
+        spc = 32'h6010;
+        eip = 32'h6000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'hA1);
+        
+        display_state();
+
+        // Cycle 3: Check slots 0-1 valid, fill slot 2
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 2 ---", cycle_count);
+        
+        // Assert slots 0-1 should be valid
+        if (idm_state.idm_slots[0].valid != 1 || idm_state.idm_slots[1].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slots 0-1 should be valid");
+            failed++;
+        end
+        
+        // Update inputs
+        spc = 32'h6020;
+        eip = 32'h6000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'hA2);
+        
+        display_state();
+
+        // Cycle 4: Check slots 0-2 valid, fill slot 3
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 3 ---", cycle_count);
+        
+        // Assert slots 0-2 should be valid
+        if (idm_state.idm_slots[0].valid != 1 || idm_state.idm_slots[1].valid != 1 || 
+            idm_state.idm_slots[2].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slots 0-2 should be valid");
+            failed++;
+        end
+        
+        // Update inputs
+        spc = 32'h6030;
+        eip = 32'h6000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'hA3);
+        
+        display_state();
+
+        // Cycle 5: Verify all 4 slots valid
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Verify all slots filled ---", cycle_count);
+        
+        // Count valid slots
         valid_count = 0;
         for (int i = 0; i < NUM_IDM_SLOTS; i++) begin
             if (idm_state.idm_slots[i].valid) valid_count++;
         end
 
         if (valid_count == NUM_IDM_SLOTS) begin
-            $fdisplay(log_file, "  ✓ PASS: All %0d slots filled successfully", NUM_IDM_SLOTS);
+            $fdisplay(log_file, "PASS: All %0d slots filled successfully", NUM_IDM_SLOTS);
             passed++;
         end else begin
-            $fdisplay(log_file, "  ✗ FAIL: Only %0d/%0d slots filled", valid_count, NUM_IDM_SLOTS);
+            $fdisplay(log_file, "FAIL: Only %0d/%0d slots filled", valid_count, NUM_IDM_SLOTS);
             failed++;
         end
+        
+        display_state();
+        
         $fdisplay(log_file, "");
     endtask
 
@@ -527,13 +660,20 @@ module tb_IDM_Subsystem();
         $fdisplay(log_file, "\n[TEST %0d] Branch Then Sequential Invalidation", test_num);
         $fdisplay(log_file, "========================================");
         $fdisplay(log_file, "Scenario: Branch to new slot, then sequentially move to next");
-
-        init_inputs();
+        @(posedge clk);
+        $fdisplay(log_file, "Reset everything");
+        rst = 1;
+        #1
+        display_state();
+ 
+        //init_inputs();
+        
+        // Cycle 1: Fill slot 0 with branch
         @(posedge clk);
         #1;
-
-        // Fill slot 0 with branch
-        $fdisplay(log_file, "\n--- Fill Slot 0 with Branch ---");
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 0 with Branch ---", cycle_count);
+        // Update inputs
+        rst = 0;
         spc = 32'h7000;
         eip = 32'h7000;
         icache_out_i.hit = 1;
@@ -542,38 +682,74 @@ module tb_IDM_Subsystem();
         btb_out_i.br_target = 32'h8000;
         pred_out_i.taken = 1;
         setup_cache_data(8'h10);
-        @(posedge clk);
-        #1;
+        
+        display_state();
 
-        // Take branch to new address (slot 0 based on bits [5:4])
+        // Cycle 2: Check slot 0 has branch, progress to branch EIP
         @(posedge clk);
         #1;
-        $fdisplay(log_file, "\n--- Take Branch, Refill Slot 0 ---");
-        spc = 32'h8000;
-        eip = 32'h8000;
-        btb_out_i.hit = 0;
-        pred_out_i.taken = 0;
-        setup_cache_data(8'h20);
-        @(posedge clk);
-        #1;
-
-        // Sequential progression to slot 1
-        @(posedge clk);
-        #1;
-        $fdisplay(log_file, "\n--- Sequential Move to Slot 1 ---");
-        spc = 32'h8010;
-        eip = 32'h8010;
-        setup_cache_data(8'h21);
-        @(posedge clk);
-        #1;
-
-        if (idm_state.idm_slots[0].valid == 0 && idm_state.idm_slots[1].valid == 1) begin
-            $fdisplay(log_file, "  ✓ PASS: Branch + sequential invalidation works");
-            passed++;
-        end else begin
-            $fdisplay(log_file, "  ✗ FAIL: Invalidation pattern incorrect");
+        $fdisplay(log_file, "\n--- Cycle %0d: Progress to Branch EIP ---", cycle_count);
+        
+        // Assert slot 0 should be valid with branch
+        if (idm_state.idm_slots[0].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slot 0 should be valid with branch");
             failed++;
         end
+        if (idm_state.idm_slots[0].br_valid != 1) begin
+            $fdisplay(log_file, "FAIL: Branch metadata should be loaded");
+            failed++;
+        end
+        
+        // Update inputs - reach branch EIP
+        spc = 32'h8000;  // Branch target
+        eip = 32'h7008;  // Branch EIP
+        btb_out_i.hit = 0;
+        pred_out_i.taken = 0;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'h20);
+        
+        display_state();
+
+        // Cycle 3: Check slot 0 invalidated and refilled with branch target
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Branch taken, refill Slot 0 ---", cycle_count);
+        
+        // Assert slot 0 should be valid (refilled with branch target)
+        if (idm_state.idm_slots[0].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slot 0 should be refilled with branch target");
+            failed++;
+        end
+        
+        // Update inputs - sequential move to slot 1
+        spc = 32'h8010;
+        eip = 32'h8000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'h21);
+        
+        display_state();
+
+        // Cycle 4: Check slot 0 invalidated, slot 1 filled
+        @(posedge clk);
+        $fdisplay(log_file, "\n--- Cycle %0d: Sequential move to Slot 1 ---", cycle_count);
+        spc = 32'h8020;
+        eip = 32'h8010;
+        icache_out_i.hit = 0;
+        #1;
+        display_state();
+        @(posedge clk)
+        #1
+        // Assert slot 0 should be invalid, slot 1 valid
+        if (idm_state.idm_slots[0].valid == 0 && idm_state.idm_slots[1].valid == 1) begin
+            $fdisplay(log_file, "PASS: Branch + sequential invalidation works");
+            passed++;
+        end else begin
+            $fdisplay(log_file, "FAIL: Invalidation pattern incorrect");
+            failed++;
+        end
+
+        display_state();
+
         $fdisplay(log_file, "");
     endtask
 
@@ -586,37 +762,130 @@ module tb_IDM_Subsystem();
 
         init_inputs();
 
-        // Fill all 4 slots sequentially
-        for (int slot = 0; slot < NUM_IDM_SLOTS; slot++) begin
-            @(posedge clk);
-            #1;
-            spc = 32'h9000 + (slot << 4);
-            eip = 32'h9000 + (slot << 4);
-            icache_out_i.hit = 1;
-            setup_cache_data(8'h30 + slot);
-        end
-
+        // Cycle 1: Fill slot 0
         @(posedge clk);
         #1;
-        $fdisplay(log_file, "\n--- All Slots Filled ---");
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 0 ---", cycle_count);
+        
+        // Update inputs
+        spc = 32'h9000;
+        eip = 32'h9000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'h30);
+        
+        display_state();
 
-        // Wraparound from slot 3 to slot 0
+        // Cycle 2: Check slot 0 valid, fill slot 1
         @(posedge clk);
         #1;
-        $fdisplay(log_file, "\n--- Wraparound: Slot 3 -> Slot 0 ---");
-        spc = 32'h9040;  // Wraps to slot 0
-        eip = 32'h9040;
-        setup_cache_data(8'h34);
-        @(posedge clk);
-        #1;
-
-        if (idm_state.idm_slots[3].valid == 0 && idm_state.idm_slots[0].valid == 1) begin
-            $fdisplay(log_file, "  ✓ PASS: Wraparound invalidation works");
-            passed++;
-        end else begin
-            $fdisplay(log_file, "  ✗ FAIL: Wraparound behavior incorrect");
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 1 ---", cycle_count);
+        
+        // Assert slot 0 should be valid
+        if (idm_state.idm_slots[0].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slot 0 should be valid");
             failed++;
         end
+        
+        // Update inputs
+        spc = 32'h9010;
+        eip = 32'h9000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'h31);
+        
+        display_state();
+
+        // Cycle 3: Check slots 0-1 valid, fill slot 2
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 2 ---", cycle_count);
+        
+        // Assert slots 0-1 should be valid
+        if (idm_state.idm_slots[0].valid != 1 || idm_state.idm_slots[1].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slots 0-1 should be valid");
+            failed++;
+        end
+        
+        // Update inputs
+        spc = 32'h9020;
+        eip = 32'h9000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'h32);
+        
+        display_state();
+
+        // Cycle 4: Check slots 0-2 valid, fill slot 3
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 3 ---", cycle_count);
+        
+        // Assert slots 0-2 should be valid
+        if (idm_state.idm_slots[0].valid != 1 || idm_state.idm_slots[1].valid != 1 ||
+            idm_state.idm_slots[2].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slots 0-2 should be valid");
+            failed++;
+        end
+        
+        // Update inputs
+        spc = 32'h9030;
+        eip = 32'h9000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'h33);
+        
+        display_state();
+
+        // Cycle 5: Check all slots valid
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: All Slots Filled ---", cycle_count);
+        
+        // Assert all slots should be valid
+        if (idm_state.idm_slots[0].valid != 1 || idm_state.idm_slots[1].valid != 1 ||
+            idm_state.idm_slots[2].valid != 1 || idm_state.idm_slots[3].valid != 1) begin
+            $fdisplay(log_file, "FAIL: All slots should be valid");
+            failed++;
+        end
+        
+        // Update inputs - prepare for wraparound
+        spc = 32'h9030;
+        eip = 32'h9030;
+        
+        display_state();
+
+        // Cycle 6: Wraparound from slot 3 to slot 0
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Wraparound to Slot 0 ---", cycle_count);
+        
+        // Assert all slots still valid before wraparound
+        if (idm_state.idm_slots[3].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slot 3 should be valid before wraparound");
+            failed++;
+        end
+        
+        // Update inputs - wraparound to slot 0
+        spc = 32'h9040;  // Wraps to slot 0
+        eip = 32'h9040;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'h34);
+        
+        display_state();
+
+        // Cycle 7: Verify wraparound invalidation
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Verify Wraparound Invalidation ---", cycle_count);
+        
+        // Assert slot 3 invalid, slot 0 valid (refilled)
+        if (idm_state.idm_slots[3].valid == 0 && idm_state.idm_slots[0].valid == 1) begin
+            $fdisplay(log_file, "PASS: Wraparound invalidation works");
+            passed++;
+        end else begin
+            $fdisplay(log_file, "FAIL: Wraparound behavior incorrect");
+            failed++;
+        end
+        
+        display_state();
+        
         $fdisplay(log_file, "");
     endtask
 
@@ -630,59 +899,133 @@ module tb_IDM_Subsystem();
 
         init_inputs();
 
-        // Fill some slots
-        for (int slot = 0; slot < 2; slot++) begin
-            @(posedge clk);
-            #1;
-            spc = 32'hA000 + (slot << 4);
-            eip = 32'hA000 + (slot << 4);
-            icache_out_i.hit = 1;
-            setup_cache_data(8'h40 + slot);
+        // Cycle 1: Fill slot 0
+        @(posedge clk);
+        rst = 1;
+        @(posedge clk)
+
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 0 ---", cycle_count);
+        
+        // Update inputs
+        rst = 0;
+        spc = 32'hA000;
+        eip = 32'hA000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'h40);
+        
+        display_state();
+
+        // Cycle 2: Check slot 0 valid, fill slot 1
+        @(posedge clk);
+        #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Fill Slot 1 ---", cycle_count);
+        
+        // Assert slot 0 should be valid
+        if (idm_state.idm_slots[0].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slot 0 should be valid");
+            failed++;
         end
+        
+        // Update inputs
+        spc = 32'hA010;
+        eip = 32'hA000;
+        icache_out_i.hit = 1;
+        setup_cache_data(8'h41);
+        
+        display_state();
 
+        // Cycle 3: Check slots 0-1 valid before flush
         @(posedge clk);
         #1;
-        $fdisplay(log_file, "\n--- Before Flush ---");
+        $fdisplay(log_file, "\n--- Cycle %0d: Verify Slots Before Flush ---", cycle_count);
+        
+        // Assert slots 0-1 should be valid
+        if (idm_state.idm_slots[0].valid != 1 || idm_state.idm_slots[1].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slots 0-1 should be valid before flush");
+            failed++;
+        end
+        
+        // Keep inputs same
+        spc = 32'hA010;
+        eip = 32'hA010;
+        
+        display_state();
 
-        // Flush
+        // Cycle 4: Apply flush
         @(posedge clk);
         #1;
-        $fdisplay(log_file, "\n--- Applying Flush ---");
+        $fdisplay(log_file, "\n--- Cycle %0d: Apply Flush ---", cycle_count);
+        
+        // Assert slots still valid before flush takes effect
+        if (idm_state.idm_slots[0].valid != 0 || idm_state.idm_slots[1].valid != 1) begin
+            $fdisplay(log_file, "FAIL: Slots should still be valid before flush");
+            failed++;
+        end
+        
+        // Update inputs - apply flush
         flush = 1;
+        spc = 32'hB020;
+        icache_out_i.hit = 1;
+        
+        display_state();
+
+        // Cycle 5: Check all slots invalid after flush
         @(posedge clk);
         #1;
-
+        $fdisplay(log_file, "\n--- Cycle %0d: Verify Flush Cleared All Slots ---", cycle_count);
+        
+        // Count valid slots after flush
         valid_after_flush = 0;
         for (int i = 0; i < NUM_IDM_SLOTS; i++) begin
             if (idm_state.idm_slots[i].valid) valid_after_flush++;
         end
-
+        
         if (valid_after_flush != 0) begin
-            $fdisplay(log_file, "  ✗ FAIL: All slots should be invalid after flush");
+            $fdisplay(log_file, "FAIL: All slots should be invalid after flush (found %0d valid)", valid_after_flush);
             failed++;
-        end else begin
-            $fdisplay(log_file, "  ✓ PASS: Flush cleared all slots");
         end
+        
+        // Keep flush active
+        flush = 1;
+        
+        display_state();
 
-        // Restart from new address
+        // Cycle 6: Restart from new address
         @(posedge clk);
         #1;
-        $fdisplay(log_file, "\n--- Restart from New Address ---");
+        $fdisplay(log_file, "\n--- Cycle %0d: Restart from New Address ---", cycle_count);
+        
+        // Assert all slots still invalid
+        if (valid_after_flush == 0) begin
+            // Good, continue
+        end
+
+        // Update inputs - deassert flush and start new fill
         flush = 0;
         spc = 32'hB000;
         eip = 32'hB000;
         icache_out_i.hit = 1;
         setup_cache_data(8'h50);
+
+        display_state();
+
+        // Cycle 7: Verify restart after flush
         @(posedge clk);
         #1;
+        $fdisplay(log_file, "\n--- Cycle %0d: Verify Restart After Flush ---", cycle_count);
 
+        // Assert slot 0 should be valid after restart
         if (idm_state.idm_slots[0].valid == 1) begin
-            $fdisplay(log_file, "  ✓ PASS: Restart after flush works");
+            $fdisplay(log_file, "PASS: Restart after flush works");
             passed++;
         end else begin
-            $fdisplay(log_file, "  ✗ FAIL: Refill after flush failed");
+            $fdisplay(log_file, "FAIL: Refill after flush failed");
             failed++;
         end
+
+        display_state();
+
         $fdisplay(log_file, "");
     endtask
 

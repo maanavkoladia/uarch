@@ -3,7 +3,6 @@
 module IDM_Invalidate_Logic (
     input wire clk,
     input wire rst,
-
     input address_t eip,
     input bool flush,
     input bool exp_pipeclear,
@@ -41,8 +40,9 @@ module IDM_Invalidate_Logic (
         prev_eip_next = eip;
 
         // Global flushes
-        if (flush || exp_pipeclear) begin
+        if (flush || exp_pipeclear || rst) begin
             out_invalidates = '{default: '1};
+            out_invalidates.no_writes = 1;
         end
         else begin
             slot_in_use_changed = (eip_slot_num != prev_eip_slot_num);

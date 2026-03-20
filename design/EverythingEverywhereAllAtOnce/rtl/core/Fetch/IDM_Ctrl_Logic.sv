@@ -3,6 +3,8 @@ import core_common_pkg::*;
 import interconnect_pkg::icache_2_core_t;
 
 module IDM_Ctrl_Logic (
+    input rst,
+    input exp_pipe_clear,
     input address_t spc,
     input idm_outputs_t idm_i,
     input idm_invalidate_logic_output_t invalidate_logic_outs_i,
@@ -38,7 +40,7 @@ module IDM_Ctrl_Logic (
                 out.idm_input.req[i].ld_meta_data = 1;
 
                 //if hit and we are opertating on the slot where the data will go
-                if ((i == slot_num) && icache_out_i.hit) begin
+                if ((i == slot_num) && icache_out_i.hit & ~invalidate_logic_outs_i.no_writes) begin //forgot if exp_mode or pipeclear actually flushes things
 
                     out.idm_input.req[i].valid = 1;
 
