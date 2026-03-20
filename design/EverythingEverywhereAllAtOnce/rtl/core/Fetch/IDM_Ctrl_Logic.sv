@@ -37,7 +37,7 @@ module IDM_Ctrl_Logic (
                 //and data
                 out.idm_input.req[i].ld_meta_data = 1;
 
-                //if hit and slot num same, load meta
+                //if hit and we are opertating on the slot where the data will go
                 if ((i == slot_num) && icache_out_i.hit) begin
 
                     out.idm_input.req[i].valid = 1;

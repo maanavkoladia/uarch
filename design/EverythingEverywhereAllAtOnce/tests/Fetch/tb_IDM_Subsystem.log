@@ -1,0 +1,342 @@
+========================================
+  IDM Subsystem Integration Testbench
+========================================
+
+
+[TEST 1] Sequential Fill and Progression
+========================================
+Scenario: Fill slot 0, progress through it, fill slot 1
+
+--- Cycle 2: Fill Slot 0 (SPC=0x1000) ---
+
+--- Cycle 3: Progress within Slot 0 (EIP=0x1004) ---
+
+--- Cycle 4: Cross to Slot 1 (EIP=0x1010) ---
+starting cycle 4: invalid for 0 should be set to 1 and incoming slot 1 should be valid
+
+ -- Cycle 5: Ending test case. doing asserts
+PASS: Sequential progression and slot management correct
+  ╔════════════════════════════════════════════════════════════════╗
+  ║                    IDM SUBSYSTEM STATE                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Inputs: SPC=0x00001010  EIP=0x00001010                        ║
+  ║         ICache Hit=1  Flush=0  Stall=0                          ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Logic Debug:                                           ║
+  ║   slot_num=1 (from spc[5:4])                                  ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Requests:                                              ║
+  ║   Slot 0: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 1: valid=0 ld_meta=0 ld_data=0                          ║
+  ║         (idm_valid=1, invalidate=0)                         ║
+  ║   Slot 2: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 3: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   push_success=0                                              ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidations: [0 0 0 0]                                      ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidate Logic Debug:                                        ║
+  ║   prev_eip=0x00001010  eip=0x00001010                          ║
+  ║   prev_slot=1  curr_slot=1  slot_changed=0                     ║
+  ║   will_leave_for_br=0                                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot State:                                                ║
+  ║ Slot 0: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0xa0                                   ║
+  ║ Slot 1: V=1  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0xb0                                   ║
+  ║ Slot 2: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ║ Slot 3: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ╚════════════════════════════════════════════════════════════════╝
+
+
+[TEST 2] Branch Invalidation and Refill
+========================================
+Scenario: Fill slot 0 with branch, take branch, refill slot 0 with new data
+
+--- Fill Slot 0 with Branch at 0x2008
+  ╔════════════════════════════════════════════════════════════════╗
+  ║                    IDM SUBSYSTEM STATE                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Inputs: SPC=0x00002000  EIP=0x00002000                        ║
+  ║         ICache Hit=1  Flush=0  Stall=0                          ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Logic Debug:                                           ║
+  ║   slot_num=0 (from spc[5:4])                                  ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Requests:                                              ║
+  ║   Slot 0: valid=1 ld_meta=1 ld_data=1                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 1: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 2: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 3: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   push_success=1                                              ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidations: [0 0 0 0]                                      ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidate Logic Debug:                                        ║
+  ║   prev_eip=0x00000000  eip=0x00002000                          ║
+  ║   prev_slot=0  curr_slot=0  slot_changed=0                     ║
+  ║   will_leave_for_br=0                                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot State:                                                ║
+  ║ Slot 0: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0xa0                                   ║
+  ║ Slot 1: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0xb0                                   ║
+  ║ Slot 2: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ║ Slot 3: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ╚════════════════════════════════════════════════════════════════╝
+
+--- Progress to Branch EIP (0x2008), Invalidate signal Slot0 should be 1
+  ╔════════════════════════════════════════════════════════════════╗
+  ║                    IDM SUBSYSTEM STATE                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Inputs: SPC=0x00005000  EIP=0x00002008                        ║
+  ║         ICache Hit=0  Flush=0  Stall=0                          ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Logic Debug:                                           ║
+  ║   slot_num=0 (from spc[5:4])                                  ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Requests:                                              ║
+  ║   Slot 0: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=1, invalidate=1)                         ║
+  ║   Slot 1: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 2: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 3: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   push_success=0                                              ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidations: [1 0 0 0]                                      ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidate Logic Debug:                                        ║
+  ║   prev_eip=0x00002000  eip=0x00002008                          ║
+  ║   prev_slot=0  curr_slot=0  slot_changed=0                     ║
+  ║   will_leave_for_br=1                                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot State:                                                ║
+  ║ Slot 0: V=1  BR_V=1  BR_EIP=0x00002008  BR_TGT=0x00005000   ║
+  ║         XCL=0  Data[0]=0xc0                                   ║
+  ║ Slot 1: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0xb0                                   ║
+  ║ Slot 2: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ║ Slot 3: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ╚════════════════════════════════════════════════════════════════╝
+
+--- Refill Slot 0 at Branch Target (0x5000) ---
+  ╔════════════════════════════════════════════════════════════════╗
+  ║                    IDM SUBSYSTEM STATE                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Inputs: SPC=0x00005000  EIP=0x00005000                        ║
+  ║         ICache Hit=1  Flush=0  Stall=0                          ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Logic Debug:                                           ║
+  ║   slot_num=0 (from spc[5:4])                                  ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Requests:                                              ║
+  ║   Slot 0: valid=1 ld_meta=1 ld_data=1                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 1: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 2: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 3: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   push_success=1                                              ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidations: [0 0 0 0]                                      ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidate Logic Debug:                                        ║
+  ║   prev_eip=0x00005000  eip=0x00005000                          ║
+  ║   prev_slot=0  curr_slot=0  slot_changed=0                     ║
+  ║   will_leave_for_br=0                                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot State:                                                ║
+  ║ Slot 0: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0xc0                                   ║
+  ║ Slot 1: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0xb0                                   ║
+  ║ Slot 2: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ║ Slot 3: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ╚════════════════════════════════════════════════════════════════╝
+
+-- getting next slot cache line for xcl
+  ╔════════════════════════════════════════════════════════════════╗
+  ║                    IDM SUBSYSTEM STATE                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Inputs: SPC=0x00005010  EIP=0x00005000                        ║
+  ║         ICache Hit=1  Flush=0  Stall=0                          ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Logic Debug:                                           ║
+  ║   slot_num=1 (from spc[5:4])                                  ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Requests:                                              ║
+  ║   Slot 0: valid=0 ld_meta=0 ld_data=0                          ║
+  ║         (idm_valid=1, invalidate=0)                         ║
+  ║   Slot 1: valid=1 ld_meta=1 ld_data=1                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 2: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 3: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   push_success=1                                              ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidations: [0 0 0 0]                                      ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidate Logic Debug:                                        ║
+  ║   prev_eip=0x00005000  eip=0x00005000                          ║
+  ║   prev_slot=0  curr_slot=0  slot_changed=0                     ║
+  ║   will_leave_for_br=1                                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot State:                                                ║
+  ║ Slot 0: V=1  BR_V=1  BR_EIP=0x00005000  BR_TGT=0x00002030   ║
+  ║         XCL=1  Data[0]=0xd0                                   ║
+  ║ Slot 1: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0xb0                                   ║
+  ║ Slot 2: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ║ Slot 3: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ╚════════════════════════════════════════════════════════════════╝
+
+-- serving branch
+  ╔════════════════════════════════════════════════════════════════╗
+  ║                    IDM SUBSYSTEM STATE                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Inputs: SPC=0x00002030  EIP=0x00005000                        ║
+  ║         ICache Hit=1  Flush=0  Stall=0                          ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Logic Debug:                                           ║
+  ║   slot_num=3 (from spc[5:4])                                  ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Control Requests:                                              ║
+  ║   Slot 0: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=1, invalidate=1)                         ║
+  ║   Slot 1: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=1, invalidate=1)                         ║
+  ║   Slot 2: valid=0 ld_meta=1 ld_data=0                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   Slot 3: valid=1 ld_meta=1 ld_data=1                          ║
+  ║         (idm_valid=0, invalidate=0)                         ║
+  ║   push_success=1                                              ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidations: [1 1 0 0]                                      ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ Invalidate Logic Debug:                                        ║
+  ║   prev_eip=0x00005000  eip=0x00005000                          ║
+  ║   prev_slot=0  curr_slot=0  slot_changed=0                     ║
+  ║   will_leave_for_br=1                                         ║
+  ╠════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot State:                                                ║
+  ║ Slot 0: V=1  BR_V=1  BR_EIP=0x00005000  BR_TGT=0x00002030   ║
+  ║         XCL=1  Data[0]=0xd0                                   ║
+  ║ Slot 1: V=1  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0xe0                                   ║
+  ║ Slot 2: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ║ Slot 3: V=0  BR_V=0  BR_EIP=0x00000000  BR_TGT=0x00000000   ║
+  ║         XCL=0  Data[0]=0x00                                   ║
+  ╚════════════════════════════════════════════════════════════════╝
+
+-- on slot 3... slot 0 and 1 should be invalid
+
+---Ending tests and checking final asserts
+  ✓ PASS: Branch invalidation and refill works correctly
+
+
+[TEST 3] XCL Branch Scenario
+========================================
+Scenario: Fill slots 0 & 1, XCL branch at end of slot 0
+
+--- Fill Slot 0 with XCL Branch ---
+
+--- Fill Slot 1 (continuation of XCL) ---
+
+--- Reach XCL Branch EIP, Should Invalidate Both Slots ---
+  ✗ FAIL: Both slots should be invalidated for XCL branch
+
+
+[TEST 4] Slot Protection During Refill
+========================================
+Scenario: Try to refill valid slot without invalidation
+
+--- Fill Slot 2 ---
+
+--- Try to Refill Slot 2 (should be protected) ---
+  ✓ PASS: Valid slot protected from overwrite
+
+
+[TEST 5] Multiple Sequential Fills
+========================================
+Scenario: Sequentially fill all 4 slots
+
+--- Cycle 22: Fill Slot 0 ---
+
+--- Cycle 24: Fill Slot 1 ---
+
+--- Cycle 26: Fill Slot 2 ---
+
+--- Cycle 28: Fill Slot 3 ---
+  ✗ FAIL: Only 1/4 slots filled
+
+
+[TEST 6] Branch Then Sequential Invalidation
+========================================
+Scenario: Branch to new slot, then sequentially move to next
+
+--- Fill Slot 0 with Branch ---
+
+--- Take Branch, Refill Slot 0 ---
+
+--- Sequential Move to Slot 1 ---
+  ✓ PASS: Branch + sequential invalidation works
+
+
+[TEST 7] All Slots Filled Then Wraparound
+========================================
+Scenario: Fill all slots, then wrap from slot 3 to slot 0
+
+--- All Slots Filled ---
+
+--- Wraparound: Slot 3 -> Slot 0 ---
+  ✓ PASS: Wraparound invalidation works
+
+
+[TEST 8] Flush and Restart
+========================================
+Scenario: Fill slots, flush all, restart from new address
+
+--- Before Flush ---
+
+--- Applying Flush ---
+  ✗ FAIL: All slots should be invalid after flush
+
+--- Restart from New Address ---
+  ✓ PASS: Restart after flush works
+
+
+========================================
+  Test Summary
+========================================
+  Passed: 6
+  Failed: 3
+  Total:  9
+  STATUS: SOME TESTS FAILED
+========================================
+
