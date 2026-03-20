@@ -9,7 +9,7 @@ import mem_common_pkg::*;
 
 module mem_controller (
     input wire clk,
-    input wire rst,
+    input wire rst,//active low
 
     //adress and data bus, shoudl proably just be an input
     inout [PHY_MEM_ADDRESS_SIZE - 1 : 0] address_bus,
@@ -54,7 +54,7 @@ module mem_controller (
 
     typedef struct {
         bool valid;
-        logic [PHY_MEM_ADDRESS_SIZE - 1 : 0] address;
+        logic [(PHY_MEM_ADDRESS_SIZE) - 1 : 0] address;
         //logic lock;
         logic precharge_Status[NUM_BANKS_PER_CHIP];
     } chip_entry_t;
@@ -138,19 +138,19 @@ module mem_controller (
 
     //seq to drive the chip table
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (!rst) begin
             //we can proabaly cheese here and preload a chunk
             for (int i = 0; i < NUM_OF_BANK_CHIPS; i++) begin
                 chipTable[i].valid <= 1;
                 chipTable[i].address <= 0;
             end
         end else begin
-            //need to signal each bank that the ld_address has changed
             //need to latch in the new ld address from the address bus coming
             //in
             if (fsm_outs.ld_address_changed) begin
+            `LOG("fsm_outs.ld_address_changed block entered");
                 chipTable[chipNum].valid   <= 1;
-                chipTable[chipNum].address <= address_bus[PHY_MEM_ADDRESS_SIZE - 1 : 0];
+                chipTable[chipNum].address <= address_bus;
             end
         end
     end
@@ -215,7 +215,7 @@ module mem_controller (
     //seq logic to drive the bank table, add new entries
     //needs to be decided based on fillX signal
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (!rst) begin
             for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
                 bankGroupTable[i].valid <= 0;
                 bankGroupTable[i].writeBuf_Valid <= 0;
@@ -315,8 +315,10 @@ module mem_controller (
 
     //need to do hit logic
     always_comb begin
-        hit_into_fsm = DTE_i.ld_req && chipTable[chipNum].address[14:10] == address_bus[14:10] && chipTable[chipNum].precharge_Status[bankBits_InChip];
+        hit_into_fsm = 
+            DTE_i.ld_req && 
+            chipTable[chipNum].address[14:10] == address_bus[14:10] && 
+            chipTable[chipNum].precharge_Status[bankBits_InChip];
     end
-
 
 endmodule

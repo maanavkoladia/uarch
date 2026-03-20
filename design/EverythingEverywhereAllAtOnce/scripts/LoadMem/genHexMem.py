@@ -140,12 +140,12 @@ def write_interleave_map(image: bytearray,
         f.write(f"// Interleave map  total_lines={total_lines}  "
                 f"num_banks={num_banks}  line_bytes={line_bytes}\n")
         f.write(f"// {'global_line':>12}  {'addr':>8}  {'bank':>6}  "
-                f"{'local_line':>10}  first_8_bytes\n\n")
+                f"{'local_line':>10}  all_16_bytes\n\n")
         for gl in range(total_lines):
             addr       = gl * line_bytes
             bank       = gl % num_banks
             local_line = gl // num_banks
-            preview    = ' '.join(f'{b:02x}' for b in image[addr:addr+8])
+            preview    = ' '.join(f'{b:02x}' for b in image[addr:addr+16])
             f.write(f"  {gl:>12d}  0x{addr:04x}  {bank:>6d}  "
                     f"{local_line:>10d}  {preview}\n")
     print(f"[genHexMem] Wrote interleave map → {out_path}")

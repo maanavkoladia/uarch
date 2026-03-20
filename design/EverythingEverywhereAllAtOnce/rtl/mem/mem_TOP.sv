@@ -46,7 +46,7 @@ module mem_TOP (
     mem_controller controller (
         .clk(clk),
         .rst(rst),
-        .address_bus(address_bus[PHY_MEM_ADDRESS_SIZE-1 : 0]),
+        .address_bus(address_bus[PHY_MEM_ADDRESS_SIZE - 1 : 0]),
         .data_bus(data_bus),
         .DTE_i(inFromDte),
         .ToDTE_o(out2Dte),
