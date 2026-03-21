@@ -56,6 +56,7 @@ module Fetch (
     l_address_t spc_16;
     l_address_t br_restore_spc;
     l_address_t br_target;
+    l_address_t spc_2_IDM_CTRL;
 
     predictor_input_t predictor_inputs;
     tlb_inputs_t tlb_inputs;
@@ -72,11 +73,16 @@ module Fetch (
 
     //gate logic
 
+    always_comb begin
+        outs_o.fetch_2_icache = '{default: '0};
+        outs_o.idm_reqs = idm_ctrl_logic_outs.idm_input;
+        outs_o.exp_pipe_clear = exp_set_logic_outs.exp_pipe_clear
+                                | exp_set_logic_outs.int_pipe_clear;
+    end
 
 
 
-
-    assign f_exp = tlb_outs.gp_exp & tlb_outs.pageFault & ~exp_mode_jk;
+    assign f_exp = (tlb_outs.gp_exp | tlb_outs.pageFault) & ~exp_mode_jk;
 
 
     assign tlb_inputs = '{
@@ -94,7 +100,7 @@ module Fetch (
     };
 
     assign idm_ctrl_data_in = (exp_mode_jk ||int_mode_jk) ?
-                               icache_info_i.instruction_line : rom_data_out;
+                               rom_data_out :icache_info_i.instruction_line;
 
     assign br_restore_spc = exe_outs_i.br_res_out.taken
                           ? exe_outs_i.br_res_out.br_target
@@ -104,16 +110,23 @@ module Fetch (
                         spc_sel_logic_outs.br_target
                         : btb_outs.br_target;
 
+    assign spc_2_IDM_CTRL = (exp_mode_jk ||int_mode_jk) ? //this might be a stupid way of doing this but I force the slot number address on an exception to 0
+                            32'h00000000 : SPC;   //This wont work if we are doing this routine an interrupt comes in during the exception transition...which it shouldnt?
+
+    assign spc_16 = SPC+16;
+
     always_comb begin
         case(spc_sel_logic_outs.sel)
-            SPC: next_spc = SPC;
-            SPC_P16: next_spc = spc_16;
-            BR_RESTORE: next_spc = br_restore_spc;
-            BTB_TARGET: next_spc = br_target;
+            Fetch_pkg::SPC: next_spc = SPC;
+            Fetch_pkg::SPC_P16: next_spc = spc_16;
+            Fetch_pkg::BR_RESTORE: next_spc = br_restore_spc;
+            Fetch_pkg::BTB_TARGET: next_spc = br_target;
             default: next_spc = 0;
         endcase
     end
 
+
+    
     //DMA JK
     always_ff@(posedge clk or posedge rst) begin
         if(rst)
@@ -129,6 +142,7 @@ module Fetch (
         end
     end
 
+    
 // exp_mode JK
     always_ff@(posedge clk or posedge rst) begin
         if(rst)
@@ -167,6 +181,10 @@ module Fetch (
         end
     end
 
+    // BTB Training Note:
+    // Special branches in exception/interrupt handlers (indicated by CS)
+    // do not send training signals (exe_br_valid controlled by execute stage)
+    // This prevents exception handler branches from polluting user BTB entries
     BTB btb(
         .clk(clk),
         .reset(rst),
@@ -202,7 +220,9 @@ module Fetch (
 
 
     IDM_Ctrl_Logic idm_ctrl_logic (
-        .spc(SPC),
+        .spc(spc_2_IDM_CTRL),
+        .exp_mode(exp_mode_jk),
+        .int_mode(int_mode_jk),
         .idm_i(idm_info_i),
         .invalidate_logic_outs_i(idm_invalidate_logic_outs),
         .btb_out_i(btb_outs),
@@ -220,6 +240,7 @@ module Fetch (
         .eip(decode_outs_i.eip),
         .flush(exe_outs_i.br_res_out.flush),
         .exp_pipeclear(exp_set_logic_outs.exp_pipe_clear),
+        .int_pipe_clear(exp_set_logic.int_pipe_clear),
         .decode_stall(decode_outs_i.stall),
         .idm_meta(idm_info_i),
 
@@ -241,6 +262,9 @@ module Fetch (
     );
 
     EXP_Ctrl_ROMS exp_ctrl_roms(
+        .clk(clk),
+        .exp_pipe_clear(exp_set_logic_outs.exp_pipe_clear),
+        .int_pipe_clear(exp_set_logic_outs.int_pipe_clear),
         .RR_pf(rr_outs_i.exp_pf),
         .RR_exp(rr_outs_i.exp_present),
         .Fetch_pf(tlb_outs.pageFault),
@@ -268,7 +292,7 @@ module Fetch (
         .clk(clk),
         .rst(rst),
         .l_addr_i(SPC),
-        .dataSize_i(1'b0),
+        .data_size_i(1'b0),
         .segID_i(reg_ids_pkg::CS),
         .v_addr_o(seg_xlation_out),
         .gp_fault_o(seg_xlation_gp_fault)

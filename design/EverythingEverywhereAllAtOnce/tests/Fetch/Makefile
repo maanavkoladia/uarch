@@ -1,11 +1,11 @@
 include ../../Make.vars
 include ../../Make.build
 
-TARGET = test_IDM_System
+TARGET = test_Fetcj
 
 
 TB_FILES = \
-		   tb_IDM_Subsystem.sv
+		   tb_Fetch.sv
 
 PKGS = $(RTL_PKGS)
 

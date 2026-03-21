@@ -6,6 +6,7 @@ module IDM_Invalidate_Logic (
     input address_t eip,
     input bool flush,
     input bool exp_pipeclear,
+    input bool int_pipe_clear,
     input bool decode_stall,
     input idm_outputs_t idm_meta,
 
@@ -40,7 +41,7 @@ module IDM_Invalidate_Logic (
         prev_eip_next = eip;
 
         // Global flushes
-        if (flush || exp_pipeclear || rst) begin
+        if (flush || exp_pipeclear || rst || int_pipe_clear) begin
             out_invalidates = '{default: '1};
             out_invalidates.no_writes = 1;
         end

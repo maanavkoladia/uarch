@@ -39,4 +39,5 @@ CORE_PKGS = \
 			$(CORE_PATH_INTERNAL)/pkgs/core_stage_latches_pkg.sv \
 			$(CORE_PATH_INTERNAL)/IDM/pkg/IDM_pkg.sv	\
 			$(CORE_PATH_INTERNAL)/TLB/pkg/TLB_pkg.sv \
+			$(CORE_PATH_INTERNAL)/SegmentTranslation/SegmentTranslation_pkg.sv \
 			$(FETCH_PKGS) \

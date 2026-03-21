@@ -10,9 +10,12 @@ module EXP_Set_logic(
     input mem_valid,
     input exe_valid,
     input wb_valid,
+
+// ispresent
     input f_exp,
     input rr_exp,
     input int_set,
+        //exp mux sels
 
     output exp_set_logic_output_t outputs
 );
@@ -61,8 +64,8 @@ and7$ and_exp (.out(f_pipe_clear), .in0(invalid_instruction),
                 .in4(not_exe_valid), .in5(not_wb_valid), .in6(f_exp));
 
 
-and4$ and_rr (.out(rr_pipe_clear), .in0(invalid_instruction),
-                .in1(not_rr_valid), .in2(not_dc_valid), .in3(not_mem_valid));
+and4$ and_rr (.out(rr_pipe_clear), .in0(not_mem_valid),
+                .in1(not_exe_valid), .in2(not_wb_valid), .in3(rr_exp));
 
 mux2$ mux_exp_sel (.outb(outputs.exp_pipe_clear),
                     .in0(f_pipe_clear),
@@ -74,6 +77,8 @@ mux2$ mux_exp_sel (.outb(outputs.exp_pipe_clear),
 and7$ and_int (.out(outputs.int_pipe_clear), .in0(invalid_instruction),
                 .in1(not_rr_valid), .in2(not_dc_valid), .in3(not_mem_valid),
                 .in4(not_exe_valid), .in5(not_wb_valid), .in6(int_set));
+
+
 
 
 endmodule

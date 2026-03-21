@@ -32,7 +32,7 @@ module SPC_Sel_Logic (
     assign outputs.flush_reg = flush_reg;
     //SPC sel
     always_comb begin
-        outputs.sel = SPC;
+        outputs.sel = SPC; //still need to work out reset logic for this or maybe that is controlled by fetch
         if (flush) outputs.sel = BR_RESTORE;
         else begin
             if (push_success) begin

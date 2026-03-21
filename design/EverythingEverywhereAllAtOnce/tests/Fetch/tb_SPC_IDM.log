@@ -1,0 +1,1514 @@
+========================================
+  SPC-IDM Integration Testbench
+========================================
+
+
+[TEST 1] Sequential Fill with SPC Progression
+========================================
+Scenario: Let SPC drive sequential fills through slots 0, 1
+
+--- Cycle 2: Initial SPC=0x1000, Fill Slot 0 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00001000  next_spc=0x00001010  spc_16=0x00001010          ║
+  ║   EIP=0x00001000  prev_eip=0x00000000                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00000000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 3: Verify Slot 0 Filled, SPC advances to 0x1010 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00001010  next_spc=0x00001020  spc_16=0x00001020          ║
+  ║   EIP=0x00001004  prev_eip=0x00001000                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00000000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa0a1a2a3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 4: Slot 1 Filled, SPC=0x00001020 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00001020  next_spc=0x00001030  spc_16=0x00001030          ║
+  ║   EIP=0x00001004  prev_eip=0x00001004                              ║
+  ║   Current SPC Slot: 2    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00000000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa0a1a2a3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa1a2a3a4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 5: EIP crosses to Slot 1 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00001030  next_spc=0x00001040  spc_16=0x00001040          ║
+  ║   EIP=0x00001010  prev_eip=0x00001004                              ║
+  ║   Current SPC Slot: 3    Current EIP Slot: 1                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00000000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=1  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=1                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 3: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa0a1a2a3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa1a2a3a4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa1a2a3a4                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 6: Verify Slot 0 Invalidated ---
+PASS: Sequential fill with SPC works correctly
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00001040  next_spc=0x00001050  spc_16=0x00001050          ║
+  ║   EIP=0x00001010  prev_eip=0x00001010                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 1                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00000000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa0a1a2a3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa1a2a3a4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa1a2a3a4                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xa2a3a4a5                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+
+[TEST 2] BTB Hit and Branch Taken
+========================================
+Scenario: Fill BTB entry, hit it, take branch, SPC jumps to target
+
+--- Cycle 1: Train BTB (br_eip=0x00002008, target=0x00005000) ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00000000  next_spc=0x00000000  spc_16=0x00000010          ║
+  ║   EIP=0x00000000  prev_eip=0x00000000                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC       br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00001000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=0                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=0  push_success=0                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 2: SPC=0x00002000, Should Hit BTB ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00002000  next_spc=0x00001000  spc_16=0x00002010          ║
+  ║   EIP=0x00002000  prev_eip=0x00000000                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=BTB_TGT   br_target_sel=0  br_target=0x00001000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00001000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=1  br_eip=0x00002008  br_target=0x00001000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [0] tag=0x0000040 eip=0x00002008->0x00001000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+we should now see the x2000 line in the idm with branhc taken
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00001000  next_spc=0x00001010  spc_16=0x00001010          ║
+  ║   EIP=0x00002008  prev_eip=0x00002000                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00001000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=1  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=1                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=1  br_xcl=0                                       ║
+  ║   br_eip=0x00002008  br_target=0x00001000                         ║
+  ║   data[0:3]=0xb0b1b2b3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [0] tag=0x0000040 eip=0x00002008->0x00001000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 4: Verify Branch Taken, Slot Refilled ---
+PASS: BTB hit and branch taken works
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00001010  next_spc=0x00001020  spc_16=0x00001020          ║
+  ║   EIP=0x00001000  prev_eip=0x00001000                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00001000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xc0c1c2c3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [0] tag=0x0000040 eip=0x00002008->0x00001000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+
+[TEST 3] XCL Branch with SPC
+========================================
+Scenario: Train BTB with XCL branch, hit it, SPC goes to +16 then target
+
+--- Cycle 1: Train BTB (XCL branch at 0x3018->0x2020), Start Fill Slot 0 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00003000  next_spc=0x00003010  spc_16=0x00003010          ║
+  ║   EIP=0x00003000  prev_eip=0x00000000                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00002020              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 2: SPC=0x3010, Slot 0 Valid, BTB Hits ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00003010  next_spc=0x00003020  spc_16=0x00003020          ║
+  ║   EIP=0x00003004  prev_eip=0x00003000                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00002020          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00002020              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=1  br_eip=0x00003018  br_target=0x00002020                 ║
+  ║   XCL=1  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xd0d1d2d3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [1] tag=0x0000060 eip=0x00003018->0x00002020 XCL=1 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 3: SPC=0x3020 (XCL +16), Slot 1 Has Branch ---
+DEBUG: sel raw value = 3
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00003020  next_spc=0x00002020  spc_16=0x00003030          ║
+  ║   EIP=0x00003018  prev_eip=0x00003004                              ║
+  ║   Current SPC Slot: 2    Current EIP Slot: 1                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=BTB_TGT   br_target_sel=1  br_target=0x00002020          ║
+  ║   XCL_stall=1  flush_reg=0  br_restore_spc=0x00002020              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=1  will_leave_for_br=1  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=1                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xd0d1d2d3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=1  br_xcl=1                                       ║
+  ║   br_eip=0x00003018  br_target=0x00002020                         ║
+  ║   data[0:3]=0xd1d2d3d4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [1] tag=0x0000060 eip=0x00003018->0x00002020 XCL=1 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 4: EIP at Branch, SPC Jumps to Target 0x2020 ---
+DEBUG: sel raw value = 1
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00002020  next_spc=0x00002030  spc_16=0x00002030          ║
+  ║   EIP=0x00003018  prev_eip=0x00003018                              ║
+  ║   Current SPC Slot: 2    Current EIP Slot: 1                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00002020              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=1  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=1 [1]=1 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xd0d1d2d3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=1  br_xcl=1                                       ║
+  ║   br_eip=0x00003018  br_target=0x00002020                         ║
+  ║   data[0:3]=0xd1d2d3d4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xd2d3d4d5                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [1] tag=0x0000060 eip=0x00003018->0x00002020 XCL=1 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 5: SPC=0x2030, Slot 3 Filled at Target ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00002030  next_spc=0x00002040  spc_16=0x00002040          ║
+  ║   EIP=0x00002020  prev_eip=0x00002020                              ║
+  ║   Current SPC Slot: 3    Current EIP Slot: 2                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00002020              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 3: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xd0d1d2d3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xd1d2d3d4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe0e1e2e3                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [1] tag=0x0000060 eip=0x00003018->0x00002020 XCL=1 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 6: SPC=0x2040, Slot 0 Filled ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00002040  next_spc=0x00002050  spc_16=0x00002050          ║
+  ║   EIP=0x00002024  prev_eip=0x00002020                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 2                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00002020              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xd0d1d2d3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xd1d2d3d4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe0e1e2e3                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe1e2e3e4                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [1] tag=0x0000060 eip=0x00003018->0x00002020 XCL=1 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 7: Final State - SPC=0x2050 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00002050  next_spc=0x00002060  spc_16=0x00002060          ║
+  ║   EIP=0x00002024  prev_eip=0x00002024                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 2                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00002020              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 2: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe1e2e3e4                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xd1d2d3d4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe0e1e2e3                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe1e2e3e4                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [1] tag=0x0000060 eip=0x00003018->0x00002020 XCL=1 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+
+[TEST 4] Branch Misprediction and Flush
+========================================
+Scenario: Take branch, then flush with exe correction
+
+--- Cycle 1: Initial State ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00004000  next_spc=0x00004010  spc_16=0x00004010          ║
+  ║   EIP=0x00004000  prev_eip=0x00000000                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00000000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 3: Fill Slots ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00004010  next_spc=0x00004020  spc_16=0x00004020          ║
+  ║   EIP=0x00004008  prev_eip=0x00004000                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00000000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe0e1e2e3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 4: Apply Flush ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00004020  next_spc=0x00004008  spc_16=0x00004030          ║
+  ║   EIP=0x00004008  prev_eip=0x00004008                              ║
+  ║   Current SPC Slot: 2    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=BR_RST    br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00004008              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=1            ║
+  ║   Invalidations: [3]=1 [2]=1 [1]=1 [0]=1                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=0                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe0e1e2e3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe1e2e3e4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 5: Verify All Slots Invalidated ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00004008  next_spc=0x00004018  spc_16=0x00004018          ║
+  ║   EIP=0x00004008  prev_eip=0x00004008                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00006000          ║
+  ║   XCL_stall=0  flush_reg=1  br_restore_spc=0x00004008              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=1  br_eip=0x00004008  br_target=0x00006000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=0                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe0e1e2e3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe1e2e3e4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [0] tag=0x0000080 eip=0x00004008->0x00006000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+FAIL: Flush behavior incorrect
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00004018  next_spc=0x00004028  spc_16=0x00004028          ║
+  ║   EIP=0x00004008  prev_eip=0x00004008                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00004008              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe1e2e3e4                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xe1e2e3e4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [0] tag=0x0000080 eip=0x00004008->0x00006000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+
+[TEST 5] Wraparound with Branches
+========================================
+Scenario: Fill all slots, take backward branch, wraparound at target
+
+--- Cycle 3: Fill Slot 0 at SPC=0x8000 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00008000  next_spc=0x00008010  spc_16=0x00008010          ║
+  ║   EIP=0x00008000  prev_eip=0x00000000                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00007000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [2] tag=0x0000100 eip=0x00008028->0x00007000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 4: Fill Slot 1 at SPC=0x8010 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00008010  next_spc=0x00008020  spc_16=0x00008020          ║
+  ║   EIP=0x00008004  prev_eip=0x00008000                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00007000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf0f1f2f3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [2] tag=0x0000100 eip=0x00008028->0x00007000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 5: SPC=0x8020, BTB Hits, Jump to 0x7000 (predicted taken) ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00008020  next_spc=0x00007000  spc_16=0x00008030          ║
+  ║   EIP=0x00008020  prev_eip=0x00008004                              ║
+  ║   Current SPC Slot: 2    Current EIP Slot: 2                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=BTB_TGT   br_target_sel=0  br_target=0x00007000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00007000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=1  br_eip=0x00008028  br_target=0x00007000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=1  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=1                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf0f1f2f3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf1f2f3f4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [2] tag=0x0000100 eip=0x00008028->0x00007000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 6: SPC=0x7000, Fill Slot 3 at Target ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00007000  next_spc=0x00007010  spc_16=0x00007010          ║
+  ║   EIP=0x00008024  prev_eip=0x00008020                              ║
+  ║   Current SPC Slot: 0    Current EIP Slot: 2                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC_P16   br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00007000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=1                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=1  ld_meta_data=1  ld_data=1                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf0f1f2f3                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf1f2f3f4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=1  br_valid=1  br_xcl=0                                       ║
+  ║   br_eip=0x00008028  br_target=0x00007000                         ║
+  ║   data[0:3]=0xf2f3f4f5                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [2] tag=0x0000100 eip=0x00008028->0x00007000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 7: SPC=0x7010, EIP at Branch 0x8028 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00007010  next_spc=0x00007010  spc_16=0x00007020          ║
+  ║   EIP=0x00008028  prev_eip=0x00008024                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 2                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC       br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00007000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=1  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=1 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=0                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf3f4f5f6                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf1f2f3f4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=1  br_valid=1  br_xcl=0                                       ║
+  ║   br_eip=0x00008028  br_target=0x00007000                         ║
+  ║   data[0:3]=0xf2f3f4f5                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [2] tag=0x0000100 eip=0x00008028->0x00007000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 8: EIP Jumped to 0x7000, Slots Invalidated ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00007010  next_spc=0x00007010  spc_16=0x00007020          ║
+  ║   EIP=0x00007000  prev_eip=0x00007000                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC       br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00007000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=0                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf3f4f5f6                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf1f2f3f4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf2f3f4f5                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [2] tag=0x0000100 eip=0x00008028->0x00007000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+--- Cycle 9: Wraparound to Slot 0 ---
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00007010  next_spc=0x00007010  spc_16=0x00007020          ║
+  ║   EIP=0x00007004  prev_eip=0x00007000                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC       br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00007000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=0                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf3f4f5f6                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf1f2f3f4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf2f3f4f5                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [2] tag=0x0000100 eip=0x00008028->0x00007000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+PASS: Wraparound with branches works
+  ╔════════════════════════════════════════════════════════════════════════════╗
+  ║                        SPC-IDM SYSTEM STATE                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC & EIP:                                                                 ║
+  ║   SPC=0x00007010  next_spc=0x00007010  spc_16=0x00007020          ║
+  ║   EIP=0x00007004  prev_eip=0x00007004                              ║
+  ║   Current SPC Slot: 1    Current EIP Slot: 0                             ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ SPC Selection Logic:                                                       ║
+  ║   sel=SPC       br_target_sel=0  br_target=0x00000000          ║
+  ║   XCL_stall=0  flush_reg=0  br_restore_spc=0x00007000              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Output:                                                                ║
+  ║   hit=0  br_eip=0x00000000  br_target=0x00000000                 ║
+  ║   XCL=0  br_ucond=0                                                     ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Predictor:                                                                 ║
+  ║   taken=1                                                                  ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ Invalidation Logic:                                                        ║
+  ║   slot_in_use_changed=0  will_leave_for_br=0  no_writes=0            ║
+  ║   Invalidations: [3]=0 [2]=0 [1]=0 [0]=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ ICache:                                                                    ║
+  ║   hit=1  push_success=0                                                ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Requests (from Control Logic):                                        ║
+  ║   Slot 0: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 1: valid=0  ld_meta_data=0  ld_data=0                           ║
+  ║   Slot 2: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ║   Slot 3: valid=0  ld_meta_data=1  ld_data=0                           ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ IDM Slot 0:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf3f4f5f6                                              ║
+  ║ IDM Slot 1:                                                               ║
+  ║   valid=1  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf1f2f3f4                                              ║
+  ║ IDM Slot 2:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0xf2f3f4f5                                              ║
+  ║ IDM Slot 3:                                                               ║
+  ║   valid=0  br_valid=0  br_xcl=0                                       ║
+  ║   data[0:3]=0x00000000                                              ║
+  ╠════════════════════════════════════════════════════════════════════════════╣
+  ║ BTB Contents:                                                              ║
+  ║   [2] tag=0x0000100 eip=0x00008028->0x00007000 XCL=0 ucond=0  ║
+  ╚════════════════════════════════════════════════════════════════════════════╝
+
+
+
+========================================
+  Test Summary
+========================================
+  Passed: 3
+  Failed: 0
+  Total:  3
+  STATUS: ALL TESTS PASSED!
+========================================
+
