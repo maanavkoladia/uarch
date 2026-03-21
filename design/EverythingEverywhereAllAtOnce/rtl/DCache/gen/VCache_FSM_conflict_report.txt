@@ -1,0 +1,24 @@
+# Conflict & coverage report for FSM: VCache_FSM
+
+## Coverage errors (minimisation did not cover ON minterms)
+  None -- all ON-set minterms covered  OK
+
+## Undefined transitions (auto-routed to ERROR state)
+  NOTE: ERROR state was not present in the source CSV and was synthesised automatically.
+  12 transition(s) had no definition and were routed to ERROR with all outputs = 0:
+
+  State 'EVICT' + {'V_Hit_i': '0', 'EB_V_i': '1', 'EB_C_i': '0', 'D$_will_evict_i': '0'}  ->  ERROR  (outputs all 0)
+  State 'EVICT' + {'V_Hit_i': '0', 'EB_V_i': '1', 'EB_C_i': '0', 'D$_will_evict_i': '1'}  ->  ERROR  (outputs all 0)
+  State 'EVICT' + {'V_Hit_i': '0', 'EB_V_i': '1', 'EB_C_i': '1', 'D$_will_evict_i': '0'}  ->  ERROR  (outputs all 0)
+  State 'EVICT' + {'V_Hit_i': '0', 'EB_V_i': '1', 'EB_C_i': '1', 'D$_will_evict_i': '1'}  ->  ERROR  (outputs all 0)
+  State 'EVICT' + {'V_Hit_i': '1', 'EB_V_i': '1', 'EB_C_i': '0', 'D$_will_evict_i': '0'}  ->  ERROR  (outputs all 0)
+  State 'EVICT' + {'V_Hit_i': '1', 'EB_V_i': '1', 'EB_C_i': '0', 'D$_will_evict_i': '1'}  ->  ERROR  (outputs all 0)
+  State 'EVICT' + {'V_Hit_i': '1', 'EB_V_i': '1', 'EB_C_i': '1', 'D$_will_evict_i': '0'}  ->  ERROR  (outputs all 0)
+  State 'EVICT' + {'V_Hit_i': '1', 'EB_V_i': '1', 'EB_C_i': '1', 'D$_will_evict_i': '1'}  ->  ERROR  (outputs all 0)
+  State 'IDLE' + {'V_Hit_i': '0', 'EB_V_i': '0', 'EB_C_i': '0', 'D$_will_evict_i': '0'}  ->  ERROR  (outputs all 0)
+  State 'IDLE' + {'V_Hit_i': '0', 'EB_V_i': '0', 'EB_C_i': '1', 'D$_will_evict_i': '0'}  ->  ERROR  (outputs all 0)
+  State 'IDLE' + {'V_Hit_i': '0', 'EB_V_i': '1', 'EB_C_i': '0', 'D$_will_evict_i': '0'}  ->  ERROR  (outputs all 0)
+  State 'IDLE' + {'V_Hit_i': '0', 'EB_V_i': '1', 'EB_C_i': '1', 'D$_will_evict_i': '0'}  ->  ERROR  (outputs all 0)
+
+## Sink states (states never targeted as next-state, excluding synthesised ERROR)
+  None

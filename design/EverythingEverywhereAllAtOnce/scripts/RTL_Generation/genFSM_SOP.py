@@ -25,13 +25,22 @@ Staged debug pipeline — intermediate files written after every stage:
               -> <stem>_conflict_report.txt
   Stage 8 : Structural SystemVerilog
               -> <output.sv>
+
+ERROR-state policy
+  If no state named ERROR exists in the CSV, one is synthesised automatically.
+  Every (state, input) combination that has no defined transition is routed to
+  ERROR with all outputs driven 0.  The ERROR state itself loops back to ERROR
+  on all inputs (encoded as a single all-don't-care row).
+  The conflict report lists every transition that was undefined and records
+  that it was auto-routed to ERROR.
 """
 
 import sys, os, csv, math, itertools
 from collections import defaultdict
 
 BANNER = "=" * 72
-IDLE_STATE_NAME = "IDLE"
+IDLE_STATE_NAME  = "IDLE"
+ERROR_STATE_NAME = "ERROR"
 
 def log(msg=""):
     print(msg)
@@ -164,11 +173,23 @@ if IDLE_STATE_NAME not in defined_states:
 else:
     log(f"\n  IDLE state found  OK  (will be assigned encoding 0)")
 
+# ── ERROR state check — synthesise if absent ─────────────────────────────────
+error_state_synthesised = False
+if ERROR_STATE_NAME not in defined_states:
+    defined_states = sorted(defined_states + [ERROR_STATE_NAME])
+    error_state_synthesised = True
+    log(f"  ERROR state not found in CSV -- will be synthesised automatically")
+else:
+    log(f"  ERROR state found in CSV  OK")
+
 # Collect all undefined-NS errors before dying
+# (next-states are allowed to reference ERROR even if it wasn't in the CSV,
+#  because we may be about to synthesise it)
+all_valid_states = set(defined_states)
 errors = []
 for lineno, row in enumerate(rows, start=2):
     ns_val = row[ns_col].strip()
-    if ns_val not in defined_states:
+    if ns_val not in all_valid_states:
         errors.append(f"  Row {lineno}: next-state '{ns_val}' (column '{ns_col}') "
                       f"is not a defined state.")
 
@@ -176,11 +197,17 @@ if errors:
     log(f"\n  {len(errors)} undefined next-state reference(s):")
     for e in errors:
         log(e)
-    log(f"\n  Defined states are: {defined_states}")
+    log(f"\n  Defined states are: {sorted(all_valid_states)}")
     die("All next-states must reference a defined current state.")
 
 # Warnings: states never targeted (possible dead-ends)
-sink_states = [s for s in defined_states if s not in ns_values_seen]
+# ERROR is intentionally never a *source* of any user-defined transition, so
+# exclude it from this check only if it was synthesised (user-defined ERROR
+# states should still be checked normally).
+ns_values_for_sink_check = sorted(set(r[ns_col].strip() for r in rows))
+sink_states = [s for s in defined_states
+               if s not in ns_values_for_sink_check
+               and not (s == ERROR_STATE_NAME and error_state_synthesised)]
 if sink_states:
     log(f"\n  WARNING: These states are never a next-state target "
         f"(possible dead-ends): {sink_states}")
@@ -192,11 +219,15 @@ with open(p_state_list, 'w') as f:
     f.write(f"# State list for FSM: {stem}\n")
     f.write(f"# Total states      : {len(defined_states)}\n")
     f.write(f"# State bits needed : {n_bits_preview}\n")
-    f.write(f"# NOTE: IDLE is always assigned encoding 0\n#\n")
+    f.write(f"# NOTE: IDLE is always assigned encoding 0\n")
+    if error_state_synthesised:
+        f.write(f"# NOTE: ERROR state was synthesised (not present in CSV)\n")
+    f.write(f"#\n")
     f.write(f"# {'idx':>4}  {'binary':<{n_bits_preview}}  state_name\n")
     f.write("# " + "-"*50 + "\n")
     for i, s in enumerate(defined_states):
-        f.write(f"  {i:>4}  {format(i, f'0{n_bits_preview}b')}  {s}\n")
+        tag = "  # synthesised" if (s == ERROR_STATE_NAME and error_state_synthesised) else ""
+        f.write(f"  {i:>4}  {format(i, f'0{n_bits_preview}b')}  {s}{tag}\n")
     if sink_states:
         f.write(f"\n# WARNING - states never targeted as next-state:\n")
         for s in sink_states:
@@ -259,6 +290,57 @@ if conflicts:
 else:
     log(f"  No conflicts after expansion  OK")
 
+# ── Synthesise missing transitions -> ERROR ───────────────────────────────────
+# Build the set of (state, input_combo) pairs that exist in the user CSV
+# (using the expanded rows so don't-care patterns are already resolved).
+# For every combination that is absent, inject a synthetic row that drives
+# NS = ERROR and all outputs = 0.  Collect those for reporting.
+
+all_input_combos    = list(itertools.product('01', repeat=len(input_cols)))
+zero_outputs        = tuple('0' for _ in output_cols)
+auto_error_routes   = []   # list of (state, input_combo_dict) for the report
+
+user_defined_states = sorted(s for s in defined_states if s != ERROR_STATE_NAME)
+
+for state in user_defined_states:
+    for combo in all_input_combos:
+        if (state, combo) not in conflict_key:
+            # Record for reporting
+            auto_error_routes.append((state, dict(zip(input_cols, combo))))
+            # Inject into conflict_key so Stage 5 picks it up
+            conflict_key[(state, combo)] = (ERROR_STATE_NAME, zero_outputs, 'AUTO')
+            # Build a synthetic expanded row
+            syn_row = {state_col: state, ns_col: ERROR_STATE_NAME}
+            for col, val in zip(input_cols, combo):
+                syn_row[col] = val
+            for col in output_cols:
+                syn_row[col] = '0'
+            syn_row['_src_row'] = 'AUTO'
+            expanded_rows.append(syn_row)
+
+# ── ERROR self-loop: one all-don't-care row ───────────────────────────────────
+# Add a single row  ERROR + ----... -> ERROR, outputs all 0.
+# We expand it here just like any other row (all 2^n combos).
+error_self_loop_row = {state_col: ERROR_STATE_NAME, ns_col: ERROR_STATE_NAME}
+for col in input_cols:
+    error_self_loop_row[col] = '-'
+for col in output_cols:
+    error_self_loop_row[col] = '0'
+error_self_loop_row['_src_row'] = 'AUTO'
+
+for exp_row in expand_row_inputs(error_self_loop_row, input_cols):
+    exp_row['_src_row'] = 'AUTO'
+    in_tup = tuple(exp_row[c].strip() for c in input_cols)
+    key    = (ERROR_STATE_NAME, in_tup)
+    if key not in conflict_key:
+        conflict_key[key] = (ERROR_STATE_NAME, zero_outputs, 'AUTO')
+    expanded_rows.append(exp_row)
+
+if auto_error_routes:
+    log(f"\n  {len(auto_error_routes)} undefined transition(s) auto-routed to ERROR")
+else:
+    log(f"\n  All transitions explicitly defined -- ERROR state is unreachable trap")
+
 with open(p_expanded_csv, 'w', newline='') as f:
     writer = csv.DictWriter(f, fieldnames=headers, extrasaction='ignore')
     writer.writeheader()
@@ -274,16 +356,23 @@ stage(4, "State enumeration (name -> binary, IDLE always = 0)")
 n_states     = len(defined_states)
 n_state_bits = max(1, math.ceil(math.log2(n_states))) if n_states > 1 else 1
 
-# IDLE is forced to 0; all other states get 1..N-1 in sorted order
-other_states = sorted(s for s in defined_states if s != IDLE_STATE_NAME)
-ordered_states = [IDLE_STATE_NAME] + other_states
-state_enc = {s: i for i, s in enumerate(ordered_states)}
+# IDLE is forced to 0.
+# ERROR gets the last encoding (highest value) so it stands out in waveforms.
+# All other states fill in between in sorted order.
+middle_states  = sorted(s for s in defined_states
+                        if s != IDLE_STATE_NAME and s != ERROR_STATE_NAME)
+ordered_states = [IDLE_STATE_NAME] + middle_states + [ERROR_STATE_NAME]
+state_enc      = {s: i for i, s in enumerate(ordered_states)}
 
 log(f"  States : {n_states}  ->  {n_state_bits} bit(s)")
-log(f"  (IDLE forced to encoding 0)")
+log(f"  (IDLE forced to encoding 0, ERROR gets highest encoding)")
 for s, v in state_enc.items():
-    idle_tag = "  <- IDLE (forced 0)" if s == IDLE_STATE_NAME else ""
-    log(f"    {s:<30}  {format(v, f'0{n_state_bits}b')}  ({v}){idle_tag}")
+    tags = []
+    if s == IDLE_STATE_NAME:  tags.append("IDLE (forced 0)")
+    if s == ERROR_STATE_NAME: tags.append("ERROR (highest encoding)")
+    if error_state_synthesised and s == ERROR_STATE_NAME: tags.append("synthesised")
+    tag_str = "  <- " + ", ".join(tags) if tags else ""
+    log(f"    {s:<30}  {format(v, f'0{n_state_bits}b')}  ({v}){tag_str}")
 
 def state_bit_name(b):  return f"S_{b}"
 def ns_bit_name(b):     return f"NS_{b}"
@@ -294,8 +383,12 @@ ns_bit_names    = [ns_bit_name(b)    for b in range(n_state_bits)]
 enum_headers = state_bit_names + input_cols + ns_bit_names + output_cols
 enum_rows = []
 for exp_row in expanded_rows:
-    s_enc_val  = state_enc[exp_row[state_col].strip()]
-    ns_enc_val = state_enc[exp_row[ns_col].strip()]
+    s_name  = exp_row[state_col].strip()
+    ns_name = exp_row[ns_col].strip()
+    if s_name not in state_enc or ns_name not in state_enc:
+        continue   # safety guard (should never trigger)
+    s_enc_val  = state_enc[s_name]
+    ns_enc_val = state_enc[ns_name]
     s_bits_str  = format(s_enc_val,  f'0{n_state_bits}b')[::-1]
     ns_bits_str = format(ns_enc_val, f'0{n_state_bits}b')[::-1]
     new_row = {}
@@ -318,12 +411,21 @@ log(f"\n  Enumerated CSV written -> {p_enumerated}  OK")
 with open(p_enum_map, 'w') as f:
     f.write(f"# Enumeration map for FSM: {stem}\n")
     f.write(f"# {n_states} states -> {n_state_bits} bit(s)\n")
-    f.write(f"# IDLE is always assigned encoding 0\n#\n")
+    f.write(f"# IDLE is always assigned encoding 0\n")
+    f.write(f"# ERROR is always assigned the highest encoding\n")
+    if error_state_synthesised:
+        f.write(f"# ERROR was synthesised (not present in source CSV)\n")
+    f.write(f"#\n")
     f.write(f"# {'state_name':<30} {'decimal':>8}  binary\n")
     f.write("# " + "-"*50 + "\n")
     for s, v in state_enc.items():
-        idle_tag = "  # IDLE (forced 0)" if s == IDLE_STATE_NAME else ""
-        f.write(f"  {s:<30} {v:>8}  {format(v, f'0{n_state_bits}b')}{idle_tag}\n")
+        tags = []
+        if s == IDLE_STATE_NAME:  tags.append("IDLE (forced 0)")
+        if s == ERROR_STATE_NAME:
+            tags.append("ERROR (highest)")
+            if error_state_synthesised: tags.append("synthesised")
+        tag_str = "  # " + ", ".join(tags) if tags else ""
+        f.write(f"  {s:<30} {v:>8}  {format(v, f'0{n_state_bits}b')}{tag_str}\n")
 
 log(f"  Enumeration map written -> {p_enum_map}  OK")
 
@@ -525,19 +627,10 @@ for oi, oname in enumerate(pla_outputs):
             + "\n".join(snippet)
         )
 
-all_input_combos = list(itertools.product('01', repeat=len(input_cols)))
-missing_transitions = []
-for state in defined_states:
-    for combo in all_input_combos:
-        if (state, combo) not in conflict_key:
-            missing_transitions.append(
-                f"  State '{state}' + "
-                f"{dict(zip(input_cols, combo))} has no transition defined"
-            )
-
 with open(p_conflict, 'w') as f:
     f.write(f"# Conflict & coverage report for FSM: {stem}\n\n")
 
+    # ── Coverage errors ───────────────────────────────────────────────────────
     f.write("## Coverage errors (minimisation did not cover ON minterms)\n")
     if coverage_errors:
         for e in coverage_errors:
@@ -546,24 +639,34 @@ with open(p_conflict, 'w') as f:
         f.write("  None -- all ON-set minterms covered  OK\n")
     f.write("\n")
 
-    f.write("## Missing transitions (state+input combos absent from CSV)\n")
-    if missing_transitions:
-        for m in missing_transitions:
-            f.write(m + "\n")
+    # ── Undefined transitions auto-routed to ERROR ────────────────────────────
+    f.write("## Undefined transitions (auto-routed to ERROR state)\n")
+    if auto_error_routes:
+        if error_state_synthesised:
+            f.write("  NOTE: ERROR state was not present in the source CSV and was "
+                    "synthesised automatically.\n")
+        else:
+            f.write("  NOTE: ERROR state was present in the source CSV.\n")
+        f.write(f"  {len(auto_error_routes)} transition(s) had no definition "
+                f"and were routed to ERROR with all outputs = 0:\n\n")
+        for state, inp_dict in auto_error_routes:
+            f.write(f"  State '{state}' + {inp_dict}  ->  ERROR  (outputs all 0)\n")
     else:
-        f.write("  None -- all state/input combinations defined  OK\n")
+        f.write("  None -- all state/input combinations were explicitly defined  OK\n")
     f.write("\n")
 
-    f.write("## Sink states (states never targeted as next-state)\n")
+    # ── Sink states ───────────────────────────────────────────────────────────
+    f.write("## Sink states (states never targeted as next-state, "
+            "excluding synthesised ERROR)\n")
     if sink_states:
         for s in sink_states:
             f.write(f"  {s}\n")
     else:
         f.write("  None\n")
 
-log(f"  Coverage errors    : {len(coverage_errors)}")
-log(f"  Missing transitions: {len(missing_transitions)}")
-log(f"  Sink states        : {len(sink_states)}")
+log(f"  Coverage errors          : {len(coverage_errors)}")
+log(f"  Undefined -> ERROR routes: {len(auto_error_routes)}")
+log(f"  Sink states              : {len(sink_states)}")
 log(f"  Conflict report written -> {p_conflict}  OK")
 
 if coverage_errors:
@@ -605,14 +708,22 @@ with open(sv_path, 'w') as f:
     f.write(f"// {'='*70}\n")
     f.write(f"// FSM : {stem}\n")
     f.write(f"// Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)\n")
+    if error_state_synthesised:
+        f.write(f"// NOTE: ERROR state was synthesised automatically.\n")
+        f.write(f"//       Any undefined transition lands here (all outputs = 0).\n")
     f.write(f"// {'='*70}\n//\n")
 
     f.write(f"// State Enumeration  ({n_state_bits} bit{'s' if n_state_bits>1 else ''}, "
             f"{n_states} states)\n")
     f.write(f"// {'-'*50}\n")
     for sname, sval in state_enc.items():
-        idle_tag = "  // IDLE (reset state)" if sname == IDLE_STATE_NAME else ""
-        f.write(f"//   {sname:<28}  {format(sval, f'0{n_state_bits}b')}  (decimal {sval}){idle_tag}\n")
+        tags = []
+        if sname == IDLE_STATE_NAME:  tags.append("IDLE (reset state)")
+        if sname == ERROR_STATE_NAME:
+            tags.append("ERROR (trap state)")
+            if error_state_synthesised: tags.append("synthesised")
+        tag_str = "  // " + ", ".join(tags) if tags else ""
+        f.write(f"//   {sname:<28}  {format(sval, f'0{n_state_bits}b')}  (decimal {sval}){tag_str}\n")
     f.write("//\n")
 
     in_hdr, out_hdr, sep = tt_header()
@@ -654,10 +765,15 @@ with open(sv_path, 'w') as f:
         f.write(f"wire {ns_bit_name(b)};\n")
     f.write("\n")
 
-    f.write("// State encoding  (IDLE = 0, guaranteed by tool)\n")
+    f.write("// State encoding  (IDLE = 0, ERROR = highest, guaranteed by tool)\n")
     for sname, sval in state_enc.items():
-        idle_tag = "  // IDLE (reset state)" if sname == IDLE_STATE_NAME else ""
-        f.write(f"//   {sname:<28} = {format(sval, f'0{n_state_bits}b')}  (decimal {sval}){idle_tag}\n")
+        tags = []
+        if sname == IDLE_STATE_NAME:  tags.append("IDLE (reset state)")
+        if sname == ERROR_STATE_NAME:
+            tags.append("ERROR (trap state)")
+            if error_state_synthesised: tags.append("synthesised")
+        tag_str = "  // " + ", ".join(tags) if tags else ""
+        f.write(f"//   {sname:<28} = {format(sval, f'0{n_state_bits}b')}  (decimal {sval}){tag_str}\n")
     f.write("\n")
 
     f.write("// State flip-flops  (reg1b, active-low async reset)\n")

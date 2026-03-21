@@ -1,0 +1,9 @@
+State_s,V_Hit_i,EB_V_i,EB_C_i,D$_will_evict_i,NState_ns,Set_EB_W_o,Set_EB_V_o,LD_EB_o,CLR_D_SWAP_V_o,Read_DSWAP_o,Write_VSWAP_o
+IDLE,1,x,x,x,SWAP,0,0,0,0,0,1
+IDLE,0,0,x,1,EVICT,1,1,1,0,0,0
+IDLE,0,1,0,1,EVICT,1,1,1,0,0,0
+IDLE,0,1,1,1,WAITEVICT,1,1,1,0,0,0
+SWAP,x,x,x,x,IDLE,0,0,0,1,1,0
+EVICT,x,0,x,x,IDLE,0,0,0,1,1,0
+WAITEVICT,x,x,1,x,WAITEVICT,0,0,0,0,0,0
+WAITEVICT,x,x,0,x,EVICT,0,0,0,1,1,0

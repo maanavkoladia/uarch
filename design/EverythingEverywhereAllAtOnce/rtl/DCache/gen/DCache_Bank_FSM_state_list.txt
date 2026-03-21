@@ -1,5 +1,5 @@
-# State list for FSM: ICache_Controller_Logic
-# Total states      : 6
+# State list for FSM: DCache_Bank_FSM
+# Total states      : 8
 # State bits needed : 3
 # NOTE: IDLE is always assigned encoding 0
 # NOTE: ERROR state was synthesised (not present in CSV)
@@ -7,8 +7,10 @@
 #  idx  binary  state_name
 # --------------------------------------------------
      0  000  ERROR  # synthesised
-     1  001  Fill0
-     2  010  Fill1
-     3  011  Fill2
-     4  100  Fill3
-     5  101  IDLE
+     1  001  EVICTING
+     2  010  IDLE
+     3  011  Req0
+     4  100  Req1
+     5  101  Req2
+     6  110  Req3
+     7  111  SWAPPING

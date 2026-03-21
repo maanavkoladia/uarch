@@ -44,6 +44,18 @@
             "run FSM SOP gen": "true"
         },
 
+        "DCache bank fsm" : {
+            "csv" : "rtl/DCache/gen/DCache_Bank_FSM.csv",
+            "outputFilePath" : "rtl/DCache/gen/DCache_Bank_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+
+        "VCache bank fsm" : {
+            "csv" : "rtl/DCache/gen/VCache_FSM.csv",
+            "outputFilePath" : "rtl/DCache/gen/VCache_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+
         "PreDecode MOD LUT" : {
             "csv" : "rtl/core/Decode/structural/gen/MOD_LUT.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/MOD_LUT.v",

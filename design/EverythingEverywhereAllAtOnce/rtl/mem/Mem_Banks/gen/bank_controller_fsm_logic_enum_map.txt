@@ -1,6 +1,8 @@
 # Enumeration map for FSM: bank_controller_fsm_logic
-# 17 states -> 5 bit(s)
+# 18 states -> 5 bit(s)
 # IDLE is always assigned encoding 0
+# ERROR is always assigned the highest encoding
+# ERROR was synthesised (not present in source CSV)
 #
 # state_name                      decimal  binary
 # --------------------------------------------------
@@ -21,3 +23,4 @@
   ST_WRITE_WAIT_3                      14  01110
   ST_WRITE_WAIT_4                      15  01111
   ST_WRITE_WAIT_5                      16  10000
+  ERROR                                17  10001  # ERROR (highest), synthesised
