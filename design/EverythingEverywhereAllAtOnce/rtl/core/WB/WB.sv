@@ -16,6 +16,8 @@ module WB (
     output wb_outputs_t outputs
 );
 
+    //NEED TO DO MMIO!!!!
+    
     bool stall_flop;
     bool stall_flop_next;
 
