@@ -220,9 +220,9 @@ module Fetch (
 
 
     IDM_Ctrl_Logic idm_ctrl_logic (
-        .spc(spc_2_IDM_CTRL),
         .exp_mode(exp_mode_jk),
         .int_mode(int_mode_jk),
+        .spc(spc_2_IDM_CTRL),
         .idm_i(idm_info_i),
         .invalidate_logic_outs_i(idm_invalidate_logic_outs),
         .btb_out_i(btb_outs),

@@ -92,7 +92,7 @@ package core_stage_latches_pkg;
         bool DC_OP;
         bool LD_OP; 
         bool ST_OP;
-        bool MEM_OP //if req to dcache is needed and if dep checking is needed
+        bool MEM_OP; //if req to dcache is needed and if dep checking is needed
     } dc_cs_t;
 
     typedef struct {
@@ -123,7 +123,7 @@ package core_stage_latches_pkg;
 
     typedef struct {
         bool MEM_OP;
-        bool ST_OP
+        bool ST_OP;
     } mem_cs_t;
 
     typedef struct {
@@ -155,7 +155,7 @@ package core_stage_latches_pkg;
 
     typedef struct {
         bool EXE_OP;
-        bool ST_OP
+        bool ST_OP;
         logic [1:0] DATA_SIZE;
         exe_cs_operation_type_e OP_TYPE;
         bool xchg;

@@ -7,11 +7,11 @@ module req_gen_logic(
     input p_address_t ld_addr0,
     input p_address_t ld_addr1,
 
-    output ld_addr_0_V,
-    output ld_addr_1_V,
+    output bool ld_addr_0_V,
+    output bool ld_addr_1_V,
 
-    output ld_addr_0,
-    output ld_addr_1
+    output p_address_t ld_addr_0,
+    output p_address_t ld_addr_1
 
 );
 

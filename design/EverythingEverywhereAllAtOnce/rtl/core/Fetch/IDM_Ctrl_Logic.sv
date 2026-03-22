@@ -3,10 +3,8 @@ import core_common_pkg::*;
 import interconnect_pkg::icache_2_core_t;
 
 module IDM_Ctrl_Logic (
-    input rst,
     input exp_mode,
     input int_mode,
-    input exp_pipe_clear,
     input address_t spc,
     input idm_outputs_t idm_i,
     input idm_invalidate_logic_output_t invalidate_logic_outs_i,
