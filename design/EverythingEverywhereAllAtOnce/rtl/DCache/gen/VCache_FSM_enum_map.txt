@@ -1,5 +1,5 @@
 # Enumeration map for FSM: VCache_FSM
-# 5 states -> 3 bit(s)
+# 6 states -> 3 bit(s)
 # IDLE is always assigned encoding 0
 # ERROR is always assigned the highest encoding
 # ERROR was synthesised (not present in source CSV)
@@ -10,4 +10,5 @@
   EVICT                                 1  001
   SWAP                                  2  010
   WAITEVICT                             3  011
-  ERROR                                 4  100  # ERROR (highest), synthesised
+  WRITE_EB                              4  100
+  ERROR                                 5  101  # ERROR (highest), synthesised

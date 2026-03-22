@@ -5,9 +5,9 @@ module DCache_Bank_TagStore (
     input wire clk,
     input wire rst,  //active low
 
-    input p_addr p_addr_i,
-    input bool   oe_i,
-    input bool   we_i,
+    input p_address_t p_addr_i,
+    input bool oe_i,
+    input bool we_i,
 
     input bool ld_From_V_Swap_i,
     input logic [V_CACHE_TAG_WIDTH - 1 : 0] V_Cache_SwapBuf_Tag,
@@ -36,11 +36,17 @@ module DCache_Bank_TagStore (
     } tag_store_meta_data_t;
 
     //need to create the TagStore
-    tag_store_meta_data_t tagMetaStore[DCACHE_NUM_LINES];
+    tag_store_meta_data_t tagMetaStore[DCACHE_BANK_NUM_LINES];
 
     //not an array on purpose, the datastore should not be bytes addressable
     //this shoudl just be the index bits from the the block req
-    logic [INDEX_WIDTH - 1 : 0] ADDRESS_2_TagStore;
+    logic [DCACHE_BANK_INDEX_WIDTH - 1 : 0] ADDRESS_2_TagStore;
+
+    //there are two cases that i can think of that would require a new tag be
+    //written in.
+    //case 1: ld_ing from the V$ swap buf,
+    //case 2: new data from bus
+    logic WR_2_TagStore;
 
     //din can come from bus, for a ld_req or wr_req and a miss, or from block_req we req st_q req, or v$ swapBuf
     //exact control will be dictacted by oe and we
@@ -69,33 +75,31 @@ module DCache_Bank_TagStore (
     //addrewability
     logic OE_2_TagStore;
 
-    //there are two cases that i can think of that would require a new tag be
-    //written in.
-    //case 1: ld_ing from the V$ swap buf,
-    //case 2: new data from bus
-    logic WR_2_TagStore;
-
     logic [DCACHE_BANK_TAG_WIDTH - 1 : 0] DOUT_2_TagStore;
 
-    p_addr_fields_t p_addr_fields = '{
-        tag    : p_addr_i[TAG_UB:TAG_LB],
-        index  : p_addr_i[INDEX_UB:INDEX_LB],
-        bank   : p_addr_i[BANK_UB:BANK_LB],
-        offset : p_addr_i[OFFSET_UB:OFFSET_LB]
+    p_addr_dcache_fields_t p_addr_fields = '{
+        tag    : p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
+        index  : p_addr_i[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
+        bank   : p_addr_i[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
+        offset : p_addr_i[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
     };
 
     //create the cell for the tag store, there are only 8 tag bits
     ram8b8w$ tag_store_ramCell (
         .A(ADDRESS_2_TagStore),
+        .WR(WR_2_TagStore),
         .DIN(DIN_2_TagStore),
         .OE(OE_2_TagStore),
-        .WR(WR_2_TagStore),
         .DOUT(DOUT_2_TagStore)
     );
 
     //ADDRESS_2_DataStore logic
     always_comb begin
         ADDRESS_2_TagStore = p_addr_fields.index;
+    end
+
+    always_comb begin  //bc active low, chose fill3_i bc it lines up better with valid logic
+        WR_2_TagStore = ld_From_V_Swap_i || fill3_i ? 1'b0 : 1'b1;
     end
 
     //from the comments above, i shoudl always be able to drive this, wr logic
@@ -106,10 +110,6 @@ module DCache_Bank_TagStore (
 
     always_comb begin  //bc active low
         OE_2_TagStore = ((oe_i || we_i) && !bankControllerBusy_i) || write2_Dwap_i ? 1'b0 : 1'b1;
-    end
-
-    always_comb begin  //bc active low, chose fill3_i bc it lines up better with valid logic
-        WR_2_TagStore = ld_From_V_Swap_i || fill3_i ? 1'b0 : 1'b1;
     end
 
     //now to deal with the tag meta store,
@@ -128,7 +128,7 @@ module DCache_Bank_TagStore (
     //
     always_ff @(posedge clk) begin
         if (!rst) begin
-            for (int i = 0; i < DCACHE_NUM_LINES; i++) begin
+            for (int i = 0; i < DCACHE_BANK_NUM_LINES; i++) begin
                 tagMetaStore[i] <= '0;
             end
         end else begin

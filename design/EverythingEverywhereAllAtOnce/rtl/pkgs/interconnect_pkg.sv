@@ -7,7 +7,7 @@ package interconnect_pkg;
 
     localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
 
-    //ICACHE interconnect
+    //ICACHE interconnect/////////////////////////////
     typedef enum {
         ICACHE_IDLE = 0,
         ICACHE_LOW_PRI_REQ = 1,
@@ -21,7 +21,7 @@ package interconnect_pkg;
         bool driveAddrBus;
     } dte_2_icache_t;
 
-    //DCACHE interconnect
+    //DCACHE interconnect/////////////////////////////
     typedef enum {
         DCACHE_IDLE = 0,
         DCACHE_LOW_PRI_REQ = 1,
@@ -38,7 +38,7 @@ package interconnect_pkg;
         bool evictionBuf_PermissionToDriveBus[NUM_DCACHE_PORTS][MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
     } dte_2_dcache_t;
 
-    //MEM interconnect
+    //MEM interconnect//////////////////////////////
     typedef struct {logic writeBuf_V[numWriteBufsInMem];} mem_2_scheduler_t;
     typedef struct {bool mem_Ready;} mem_2_dte_t;
 
@@ -83,7 +83,7 @@ package interconnect_pkg;
         p_address_t address;
         uint16_t bit_vec;
         bool MIO;
-        byte_t data[CACHE_LINES_SIZE_B];
+        byte_t dataLine[CACHE_LINES_SIZE_B];
     } st_q_2_dcache_t;
 
     typedef struct {
@@ -93,18 +93,18 @@ package interconnect_pkg;
         bool ld_addr_1_V;
         p_address_t ld_addr_1;
 
+        bool memStalling;
         //for wb
-        //TODO
-        st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
+        st_q_2_dcache_t stq_info[NUM_WB_ST_QS];
 
     } core_2_dcache_t;
 
     typedef struct {
         //for mem
-        bool   valid_0;
+        //bool   valid_0;
         bool   hit_line_0;
         byte_t line_0[CACHE_LINES_SIZE_B];
-        bool   valid_1;
+        //bool   valid_1;
         bool   hit_line_1;
         byte_t line_1[CACHE_LINES_SIZE_B];
 

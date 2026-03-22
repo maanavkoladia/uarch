@@ -2,9 +2,9 @@ import common_pkg::*;
 import DCache_common_pkg::*;
 
 module DCache_Bank_DataStore (
-    input p_addr p_addr_i,
-    input bool   oe,
-    input bool   we,
+    input p_address_t p_addr_i,
+    input bool oe,
+    input bool we,
 
     input bool ld_From_V_Swap_i,
     input bool fill0_i,
@@ -15,8 +15,9 @@ module DCache_Bank_DataStore (
     input bool bankControllerBusy_i,
 
 
-    input byte_t st_q_data[CACHE_LINES_SIZE_B],
+    input byte_t   st_q_data  [CACHE_LINES_SIZE_B],
     input uint16_t st_data_vec,
+
     input byte_t VCache_SwapBuf_Line_i[CACHE_LINES_SIZE_B],
     input wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_i,
 
@@ -42,11 +43,13 @@ module DCache_Bank_DataStore (
     byte_t DIN_2_DataStore[NUM_CELL_IN_DATA_STORE];
 
     //
-    //active low
+    //active low, intentioanlly made it 1 bit, and not a vecotr,
+    //there is not bytes addressable ld
     //Case 1: output to ld_mem if the controller is not busy,
     //so only when idle
     //case 2: write to D$ swapBuf
-    logic OE_2_DataStore[NUM_CELL_IN_DATA_STORE];
+    //
+    logic OE_2_DataStore;
 
     //can be driven by req with vec and we logic , or fsm fill signals, or all high for a swap
     //active low
@@ -55,19 +58,21 @@ module DCache_Bank_DataStore (
     //DOUT can go to D$ swap buf or up to ld_mem (so D$ output)
     byte_t DOUT_DataStore[NUM_CELL_IN_DATA_STORE];
 
-    p_addr_fields_t p_addr_fields = '{
-        tag    : p_addr_i[TAG_UB:TAG_LB],
-        index  : p_addr_i[INDEX_UB:INDEX_LB],
-        bank   : p_addr_i[BANK_UB:BANK_LB],
-        offset : p_addr_i[OFFSET_UB:OFFSET_LB]
+    p_addr_dcache_fields_t p_addr_fields = '{
+        tag    : p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
+        index  : p_addr_i[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
+        bank   : p_addr_i[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
+        offset : p_addr_i[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
     };
 
     generate
-        for (genvar i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin : g_data_store_ram_cells
-            ram8b8w$ data_store_ramCell (
+        for (
+            genvar i = 0; i < NUM_CELL_IN_DATA_STORE; i++
+        ) begin : g_dcache_bank_data_store_ram_cells
+            ram8b8w$ dcache_bank_data_store_ramCell (
                 .A(ADDRESS_2_DataStore),
                 .DIN(DIN_2_DataStore[i]),
-                .OE(OE_2_DataStore[i]),
+                .OE(OE_2_DataStore),
                 .WR(WR_2_DataStore[i]),
                 .DOUT(DOUT_DataStore[i])
             );
@@ -148,9 +153,7 @@ module DCache_Bank_DataStore (
 
     //OE_2_DataStore logic
     always_comb begin
-        for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
-            OE_2_DataStore[i] = write2_Dwap_i || (oe && !bankControllerBusy_i) ? 1'b0 : 1'b1;
-        end
+        OE_2_DataStore = write2_Dwap_i || (oe && !bankControllerBusy_i) ? 1'b0 : 1'b1;
     end
 
     //WR_2_DataStore logic

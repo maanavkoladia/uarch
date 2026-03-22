@@ -95,19 +95,21 @@ inv1$ inv_mem_valid_i (mem_valid_i_inv, mem_valid_i);
 
 // Next-state and output SOP logic
 
-// NS_0 = (S_0 & !S_1 & !mem_valid_i) | (S_0 & !S_1 & S_2) | (S_0 & !S_2 & !mem_valid_i) | (!S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & !hit_or_miss_i)
+// NS_0 = (S_0 & !S_1 & !mem_valid_i) | (S_0 & !S_1 & S_2) | (S_0 & !S_2 & !mem_valid_i) | (!S_0 & !S_2 & !hit_or_miss_i & mem_valid_i) | (!S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & !hit_or_miss_i)
 wire NS_0_t0;
 wire NS_0_t1;
 wire NS_0_t2;
 wire NS_0_t3;
 wire NS_0_t4;
+wire NS_0_t5;
 
 and3$ NS_0_and0 (NS_0_t0, S_0, S_1_inv, mem_valid_i_inv);
 and3$ NS_0_and1 (NS_0_t1, S_0, S_1_inv, S_2);
 and3$ NS_0_and2 (NS_0_t2, S_0, S_2_inv, mem_valid_i_inv);
-and4$ NS_0_and3 (NS_0_t3, S_0_inv, S_1, S_2_inv, mem_valid_i);
-and4$ NS_0_and4 (NS_0_t4, S_0_inv, S_1_inv, S_2_inv, hit_or_miss_i_inv);
-or5$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4);
+and4$ NS_0_and3 (NS_0_t3, S_0_inv, S_2_inv, hit_or_miss_i_inv, mem_valid_i);
+and4$ NS_0_and4 (NS_0_t4, S_0_inv, S_1, S_2_inv, mem_valid_i);
+and4$ NS_0_and5 (NS_0_t5, S_0_inv, S_1_inv, S_2_inv, hit_or_miss_i_inv);
+or6$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5);
 
 // NS_1 = (S_1 & !S_2 & !mem_valid_i) | (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2 & mem_valid_i)
 wire NS_1_t0;
@@ -119,26 +121,26 @@ and3$ NS_1_and1 (NS_1_t1, S_0_inv, S_1, S_2_inv);
 and4$ NS_1_and2 (NS_1_t2, S_0, S_1_inv, S_2_inv, mem_valid_i);
 or3$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1, NS_1_t2);
 
-// NS_2 = (S_0 & !S_1 & S_2) | (!S_1 & S_2 & !mem_valid_i) | (S_0 & S_1 & !S_2 & mem_valid_i)
+// NS_2 = (!S_1 & S_2 & !mem_valid_i) | (S_0 & !S_1 & S_2) | (S_0 & S_1 & !S_2 & mem_valid_i)
 wire NS_2_t0;
 wire NS_2_t1;
 wire NS_2_t2;
 
-and3$ NS_2_and0 (NS_2_t0, S_0, S_1_inv, S_2);
-and3$ NS_2_and1 (NS_2_t1, S_1_inv, S_2, mem_valid_i_inv);
+and3$ NS_2_and0 (NS_2_t0, S_1_inv, S_2, mem_valid_i_inv);
+and3$ NS_2_and1 (NS_2_t1, S_0, S_1_inv, S_2);
 and4$ NS_2_and2 (NS_2_t2, S_0, S_1, S_2_inv, mem_valid_i);
 or3$  NS_2_or  (NS_2, NS_2_t0, NS_2_t1, NS_2_t2);
 
-// mem_request_o = (!S_2 & hit_or_miss_i) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (S_0 & !S_2)
+// mem_request_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & hit_or_miss_i) | (!S_0 & !S_1 & S_2)
 wire mem_request_o_t0;
 wire mem_request_o_t1;
 wire mem_request_o_t2;
 wire mem_request_o_t3;
 
-and2$ mem_request_o_and0 (mem_request_o_t0, S_2_inv, hit_or_miss_i);
-and2$ mem_request_o_and1 (mem_request_o_t1, S_1, S_2_inv);
-and3$ mem_request_o_and2 (mem_request_o_t2, S_0_inv, S_1_inv, S_2);
-and2$ mem_request_o_and3 (mem_request_o_t3, S_0, S_2_inv);
+and2$ mem_request_o_and0 (mem_request_o_t0, S_1, S_2_inv);
+and2$ mem_request_o_and1 (mem_request_o_t1, S_0, S_2_inv);
+and3$ mem_request_o_and2 (mem_request_o_t2, S_0_inv, S_1_inv, hit_or_miss_i);
+and3$ mem_request_o_and3 (mem_request_o_t3, S_0_inv, S_1_inv, S_2);
 or4$  mem_request_o_or  (mem_request_o, mem_request_o_t0, mem_request_o_t1, mem_request_o_t2, mem_request_o_t3);
 
 // fill0_o = (!S_2 & !mem_valid_i) | (!S_0 & !S_1) | (S_1 & !S_2)
@@ -151,14 +153,14 @@ and2$ fill0_o_and1 (fill0_o_t1, S_0_inv, S_1_inv);
 and2$ fill0_o_and2 (fill0_o_t2, S_1, S_2_inv);
 or3$  fill0_o_or  (fill0_o, fill0_o_t0, fill0_o_t1, fill0_o_t2);
 
-//  fill1_o = (S_0 & !S_2) | (!S_0 & !S_1) | (!S_2 & !mem_valid_i)
+//  fill1_o = (!S_2 & !mem_valid_i) | (!S_0 & !S_1) | (S_0 & !S_2)
 wire  fill1_o_t0;
 wire  fill1_o_t1;
 wire  fill1_o_t2;
 
-and2$  fill1_o_and0 ( fill1_o_t0, S_0, S_2_inv);
+and2$  fill1_o_and0 ( fill1_o_t0, S_2_inv, mem_valid_i_inv);
 and2$  fill1_o_and1 ( fill1_o_t1, S_0_inv, S_1_inv);
-and2$  fill1_o_and2 ( fill1_o_t2, S_2_inv, mem_valid_i_inv);
+and2$  fill1_o_and2 ( fill1_o_t2, S_0, S_2_inv);
 or3$   fill1_o_or  ( fill1_o,  fill1_o_t0,  fill1_o_t1,  fill1_o_t2);
 
 //  fill2_o = (!S_2 & !mem_valid_i) | (!S_0 & !S_1) | (!S_0 & !S_2) | (!S_1 & !S_2)
