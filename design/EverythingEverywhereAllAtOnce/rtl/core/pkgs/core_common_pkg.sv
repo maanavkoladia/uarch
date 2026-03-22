@@ -111,11 +111,11 @@ package core_common_pkg;
     typedef struct {
         bool valid;
         p_address_t address;
-    } st_q_entry_info_t;
+    } mem_dep_check_info_t;
 
     typedef struct {
         //all 4 store queue
-        st_q_entry_info_t entries[NUM_WB_ST_QS * ST_Q_DEPTH];
+        mem_dep_check_info_t entries[NUM_WB_ST_QS * ST_Q_DEPTH];
     } st_q_2_dep_check_outputs_t;
 
     typedef struct {
@@ -130,6 +130,7 @@ package core_common_pkg;
         reg_ids_e DR_1_id;  //
         uint64_t DR_1_data;  //data is supposed to be aligned
 
+        bool st_override[NUM_WB_ST_QS];
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
         st_q_2_dep_check_outputs_t dep_check;
     } wb_outputs_t;

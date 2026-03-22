@@ -82,7 +82,6 @@ package interconnect_pkg;
         bool empty;
         p_address_t address;
         uint16_t bit_vec;
-        bool MIO;
         byte_t data[CACHE_LINES_SIZE_B];
     } st_q_2_dcache_t;
 
@@ -94,7 +93,7 @@ package interconnect_pkg;
         p_address_t ld_addr_1;
 
         //for wb
-        //TODO
+        bool st_override[NUM_WB_ST_QS];
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
 
     } core_2_dcache_t;
@@ -110,7 +109,7 @@ package interconnect_pkg;
 
         //for wb
         bool writeSuccess[NUM_WB_ST_QS];
-        //TODO
+        bool MMIO_write;
         //
     } dcache_2_core_t;
 
