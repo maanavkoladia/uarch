@@ -2,7 +2,7 @@ import common_pkg::*;
 import DCache_pkg::*;
 import interconnect_pkg::*;
 
-module DCache (
+module DCache_TOP (
     input wire clk,
     input wire rst,
 
