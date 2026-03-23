@@ -40,11 +40,11 @@ module DCache_Arbitration (
     // Scheduling Priority (highest → lowest):
     //
     // 1. Store Override Case:
-    //    - If st_override == 1 AND st_q is not empty
+    //    - If st_override == 1
     //    → Schedule store from st_q
     //
     // 2. Load Request:
-    //    - Else if valid ld_req AND matches bank AND !memStalling
+    //    - If valid ld_req AND matches bank AND !memStalling
     //    → Schedule load request
     //
     // 3. Normal Store:
@@ -61,11 +61,8 @@ module DCache_Arbitration (
     // -----------------------------------------------------------------------------
 
     always_ff @(posedge clk_i) begin
-        if (!rst) begin
-            for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-                reqs[i] <= '0;
-            end
-        end else begin
+        if (!rst) reqs <= '0;
+        else begin
             for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
 
                 // Default: clear request every cycle
@@ -76,13 +73,11 @@ module DCache_Arbitration (
 
                     // 1. Store override
                     if (!core_i.stq_info[i].empty && st_override[i]) begin
-                        reqs[i].we     <= 1'b1;
-                        reqs[i].p_addr <= core_i.stq_info[i].p_addr;
-                        reqs[i].vec    <= core_i.stq_info[i].bit_vec;
+                        reqs[i].we        <= 1'b1;
+                        reqs[i].p_addr    <= core_i.stq_info[i].p_addr;
+                        reqs[i].vec       <= core_i.stq_info[i].bit_vec;
 
-                        for (int j = 0; j < CACHE_LINES_SIZE_B; j++) begin
-                            reqs[i].st_q_data[j] <= core_i.stq_info[i].dataLine[j];
-                        end
+                        reqs[i].st_q_data <= core_i.stq_info[i].dataLine;
 
                         // 2. Load req 0
                     end else if (!core_i.memStalling &&

@@ -1,14 +1,12 @@
 # State list for FSM: VCache_FSM
-# Total states      : 6
-# State bits needed : 3
+# Total states      : 4
+# State bits needed : 2
 # NOTE: IDLE is always assigned encoding 0
 # NOTE: ERROR state was synthesised (not present in CSV)
 #
 #  idx  binary  state_name
 # --------------------------------------------------
-     0  000  ERROR  # synthesised
-     1  001  EVICT
-     2  010  IDLE
-     3  011  SWAP
-     4  100  WAITEVICT
-     5  101  WRITE_EB
+     0  00  ERROR  # synthesised
+     1  01  IDLE
+     2  10  RD_DSWAP
+     3  11  WAITEVICT

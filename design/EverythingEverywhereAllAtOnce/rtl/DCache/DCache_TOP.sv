@@ -34,13 +34,15 @@ module DCache_TOP (
         .hit(hitVec),
         .reqs_2_blocks_o(req_2_blocks)
     );
+
     generate
         for (genvar i = 0; i < DCACHE_NUM_BLOCKS; i++) begin : g_dcachc_block
             DCache_Block block (
                 .clk_i(clk),
                 .rst_i(rst),  //active low
                 .block_req_i(req_2_blocks[i]),
-                .mem_Valid_FromDte_i(inFromDTE_i[i]),
+                .mem_Valid_FromDte_i(inFromDTE_i.mem_valid[i]),
+                .evictionBuf_V_clr_FromDTE_i(inFromDTE_i.evictionBuf_V_clr[i]),
                 .dataBus(dataBus),
                 .outputs_o(blockOutputs[i])
             );
@@ -56,7 +58,7 @@ module DCache_TOP (
     //st_q write uccess logic
     always_comb begin
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            if (req_2_blocks[i].we && blockOutputs.hit_o) out2Core_o.writeSuccess[i] = 1;
+            if (req_2_blocks[i].we && blockOutputs[i].hit_o) out2Core_o.writeSuccess[i] = 1;
         end
     end
 

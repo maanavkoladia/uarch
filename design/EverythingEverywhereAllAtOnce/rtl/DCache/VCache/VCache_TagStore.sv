@@ -98,19 +98,20 @@ module VCache_TagStore (
 
     //ADDRESS_2_TagStore
     always_comb begin
-        ADDRESS_2_TagStore = (read_D_SWAP_i  || LD_EB_i) ?
-            DCache_SwapBuf_lineAddr_fields.idx
-            : p_addr_fields.idx;
+        //ADDRESS_2_TagStore = (read_D_SWAP_i  || LD_EB_i) ?
+        //    DCache_SwapBuf_lineAddr_fields.idx
+        //    : p_addr_fields.idx;
+        ADDRESS_2_DataStore = p_addr_fields.idx;
     end
 
     //WR_2_TagStore
     always_comb begin
-        WR_2_TagStore = !Read_DSWAP_i;
+        WR_2_TagStore = read_D_SWAP_i ? 1'b0 : 1'b1;
     end
 
     //DIN_2_TagStore
     always_comb begin
-        DIN_2_TagStore = D_Cache_SwapBuf_Addr[V_CACHE_TAG_UB:V_CACHE_TAG_LB];
+        DIN_2_TagStore = DCache_SwapBuf_lineAddr_fields.tag;
     end
 
     //OE_2_TagStore
@@ -124,17 +125,15 @@ module VCache_TagStore (
     //ff block for tagstore_meta_store
     always_ff @(posedge clk) begin
         if (!rst) begin
-            for (int i = 0; i < VCACHE_NUM_LINES; i++) begin
-                tagstore_meta_store[i].valid <= 0;
-                tagstore_meta_store[i].dirty <= 0;
-            end
+            tagstore_meta_store <= '0;
         end
         begin  //only needs to change when i new line is coming in
             if (Read_DSWAP_i) begin
-                tagstore_meta_store[DCache_SwapBuf_lineAddr_fields.index].valid <= 1;
+                tagstore_meta_store[p_addr_fields.index].valid <= 1;
+                tagstore_meta_store[p_addr_fields.index].dirty <= D_Cache_SwapBuf_DirtyBit;
             end
-            if (Read_DSWAP_i && D_Cache_SwapBuf_DirtyBit) begin
-                tagstore_meta_store[DCache_SwapBuf_lineAddr_fields.index].dirty <= 1;
+            if (writeSuccess) begin
+                tagstore_meta_store[p_addr_fields.index].dirty <= 1;
             end
         end
     end

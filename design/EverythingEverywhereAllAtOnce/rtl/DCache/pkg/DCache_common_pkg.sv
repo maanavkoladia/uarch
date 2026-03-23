@@ -63,31 +63,35 @@ package DCache_common_pkg;
     } block_req_t;
 
     typedef struct {
-        byte_t line[CACHE_LINES_SIZE_B];
-        p_address_t lineAddr;
         bool valid;
         bool dirty;
+        p_address_t lineAddr;
+        byte_t line[CACHE_LINES_SIZE_B];
     } swap_buf_t;
 
     typedef struct {
-        byte_t data_lineOut[CACHE_LINES_SIZE_B];
         bool hit;
-        bool miss;
+        //we fucked up
+        //bool miss;
         swap_buf_t dcache_swapBuf;
+        //not needed
         bool V_Cache_swapBuf_valid_clr;
         bool D_will_evict;
         bool busy;
+        byte_t data_lineOut[CACHE_LINES_SIZE_B];
     } d_cache_bank_outputs_t;
 
     typedef struct {
         //bool valid;  //probably not needed
-        byte_t lineOut[CACHE_LINES_SIZE_B];
         bool hit;
         bool miss;
         swap_buf_t vcache_swapBuf;
         bool D_Cache_swapBuf_valid_clr;
         bool LD_EB;
         bool busy;
+        bool beingBlocked;
+        byte_t lineOut[CACHE_LINES_SIZE_B];
+        p_address_t addrOut;
     } v_cache_outputs_t;
 
     typedef struct {
@@ -99,7 +103,7 @@ package DCache_common_pkg;
     typedef struct {
         byte_t dataLineOut[CACHE_LINES_SIZE_B];
         bool hit_o;
-        byte_t eb_V_o;
+        //byte_t eb_V_o;
         p_address_t eb_addr;
         byte_t eb_line_O[CACHE_LINES_SIZE_B];
         dcache_req_types_2_scheduler_e req_2_sch;
@@ -118,16 +122,14 @@ NUM_DCACHE_BANK_FSM_STATES
         SWAPPING = 6
     } dcache_bank_fsm_states_e;
 
-    localparam NUM_VCACHE_STATES = 6;
+    localparam NUM_VCACHE_STATES = 4;
     typedef enum logic [$clog2(
 NUM_VCACHE_STATES
 ) - 1 : 0] {
         IDLE      = 0,  // IDLE (reset state)
-        EVICT     = 1,
-        SWAP      = 2,
-        WAITEVICT = 3,
-        WRITE_EB  = 4,
-        ERROR     = 5   // ERROR (trap state), synthesised
+        RD_DSWAP  = 1,
+        WAITEVICT = 2,
+        ERROR     = 3   // ERROR (trap state), synthesised
 
     } vcache_fsm_states_e;
 

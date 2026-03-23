@@ -10,7 +10,7 @@ module DCache_Bank_TagStore (
     input bool we_i,
 
     input bool ld_From_V_Swap_i,
-    input logic [V_CACHE_TAG_WIDTH - 1 : 0] V_Cache_SwapBuf_Tag,
+    //input logic [V_CACHE_TAG_WIDTH - 1 : 0] V_Cache_SwapBuf_Tag,
     input bool V_Cache_SwapBuf_DirtyBit,
 
     input bool fill3_i,
@@ -84,7 +84,7 @@ module DCache_Bank_TagStore (
         offset : p_addr_i[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
     };
 
-    //create the cell for the tag store, there are only 8 tag bits
+    //create the cell for the tag store, there are only 6 tag bits
     ram8b8w$ tag_store_ramCell (
         .A(ADDRESS_2_TagStore),
         .WR(WR_2_TagStore),
@@ -105,7 +105,7 @@ module DCache_Bank_TagStore (
     //from the comments above, i shoudl always be able to drive this, wr logic
     //should handle when
     always_comb begin
-        DIN_2_TagStore = ld_From_V_Swap_i ? V_Cache_SwapBuf_Tag[V_CACHE_TAG_WIDTH-1 -: DCACHE_BANK_TAG_WIDTH] : p_addr_fields.tag;
+        DIN_2_TagStore = p_addr_fields.tag;
     end
 
     always_comb begin  //bc active low
@@ -125,17 +125,16 @@ module DCache_Bank_TagStore (
     //signal that top bank needs to send back in, i fucking lied, once
     //a dirty little bit, always a dirty little bit
     //
-    //
     always_ff @(posedge clk) begin
         if (!rst) begin
-            for (int i = 0; i < DCACHE_BANK_NUM_LINES; i++) begin
-                tagMetaStore[i] <= '0;
-            end
+            tagMetaStore <= '0;
         end else begin
             if (fill3_i || ld_From_V_Swap_i) begin
                 tagMetaStore[p_addr_fields.index].valid <= 1'b1;
+                tagMetaStore[p_addr_fields.index].dirty <=
+                    ld_From_V_Swap_i && V_Cache_SwapBuf_DirtyBit;
             end
-            if (writeSuccess || (ld_From_V_Swap_i && V_Cache_SwapBuf_DirtyBit)) begin
+            if (writeSuccess) begin
                 tagMetaStore[p_addr_fields.index].dirty <= 1'b1;
             end
         end

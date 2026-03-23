@@ -30,4 +30,6 @@ package common_pkg;
     localparam int ST_Q_DEPTH = 4;  //needs to be a power of two
     localparam int NUM_IDM_SLOTS = 4;
 
+
+    //
 endpackage
