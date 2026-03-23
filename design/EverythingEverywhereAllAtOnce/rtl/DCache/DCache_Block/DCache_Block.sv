@@ -1,3 +1,7 @@
+import common_pkg::*;
+import DCache_pkg::*;
+import interconnect_pkg::*;
+
 module DCache_Block (
     input wire clk_i,
     input wire rst_i,  //active low

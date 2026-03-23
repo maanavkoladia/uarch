@@ -63,6 +63,30 @@ package DCache_common_pkg;
     } block_req_t;
 
     typedef struct {
+        byte_t dataLineOut[CACHE_LINES_SIZE_B];
+        bool hit_o;
+        //byte_t eb_V_o;
+        p_address_t eb_addr;
+        byte_t eb_line_O[CACHE_LINES_SIZE_B];
+        dcache_req_types_2_scheduler_e req_2_sch;
+    } dcache_block_outputs_t;
+
+    typedef struct {
+        bool oe;  //doing a ld_req,
+        bool we;  //reg sayin were doigng a write at p_addr
+        p_address_t p_addr;
+        byte_t st_q_data[CACHE_LINES_SIZE_B];  //data to write from st_q_head
+    } block_req_mio_t;
+
+    //out 2 core
+    typedef struct {
+        bool writeSuccess;
+        byte_t dataLineOut[CACHE_LINES_SIZE_B];
+        bool hit_o;
+        dcache_req_types_mio_2_scheduler_e req_2_sch;
+    } mio_block_outputs_t;
+
+    typedef struct {
         bool valid;
         bool dirty;
         p_address_t lineAddr;
@@ -99,15 +123,6 @@ package DCache_common_pkg;
         p_address_t addr;
         byte_t lineOut;
     } eb_outputs_t;
-
-    typedef struct {
-        byte_t dataLineOut[CACHE_LINES_SIZE_B];
-        bool hit_o;
-        //byte_t eb_V_o;
-        p_address_t eb_addr;
-        byte_t eb_line_O[CACHE_LINES_SIZE_B];
-        dcache_req_types_2_scheduler_e req_2_sch;
-    } dcache_block_outputs_t;
 
     localparam int NUM_DCACHE_BANK_FSM_STATES = 7;
     typedef enum logic [$clog2(

@@ -58,7 +58,7 @@ package interconnect_pkg;
         //ld from simple, tells the mio block that the data on the bus is the
         //simple IO reg values, this can be strcanlted into a hit signal going
         //to mem stage in core
-        bool memValid_MIO;
+        bool dataOnBus_MIO;
 
         //for st_req
         //drive address and data (4 bytes) onto the bus
@@ -134,7 +134,7 @@ package interconnect_pkg;
         bool ld_addr_MIO_V;
         p_address_t ld_addr_MIO;
         //from WB
-        st_q_2_dcache_t stq_info_dio;
+        st_q_2_dcache_t stq_info_mio;
 
     } core_2_dcache_t;
 
@@ -152,7 +152,7 @@ package interconnect_pkg;
         //TODO
         //
         //for MIO
-        bool   writeSuccess;
+        bool   writeSuccess_MIO;
         bool   hit_line_MIO;
         byte_t line_MIO[CACHE_LINES_SIZE_B];
     } dcache_2_core_t;
