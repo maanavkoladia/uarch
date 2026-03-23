@@ -17,7 +17,8 @@ module WB (
 );
 
     //NEED TO DO MMIO!!!!
-    
+    //Add another store queue to MM and update the STQ to dcache interface 
+
     bool stall_flop;
     bool stall_flop_next;
 
