@@ -26,6 +26,7 @@ module DCache_TOP (
     dcache_block_outputs_t blockOutputs[DCACHE_NUM_BLOCKS];
     bool hitVec[DCACHE_NUM_BLOCKS];
     block_req_t req_2_blocks[DCACHE_NUM_BLOCKS];
+    mio_block_outputs_t mio_block_outputs;
 
     DCache_Arbitration dcache_arbitration (
         .clk_i(clk),
@@ -48,6 +49,21 @@ module DCache_TOP (
             );
         end
     endgenerate
+
+    MIO_Block mio_block_unit (
+        .clk(clk),
+        .rst(rst),  //active low
+        .reqServed_FromDTE_i(inFromDTE_i.reqServed_mio),
+        .PermissionToDriveAddrBus(inFromDTE_i.permissionToDriveAddrBus_mio),
+        .permission2DriveDataBus(inFromDTE_i.permission2DriveDataBus_mio),
+        .ld_addr_MIO_V(inFromCore_i.ld_addr_MIO_V),
+        .ld_addr_MIO(inFromCore_i.ld_addr_MIO),
+        .stq_info_mio(inFromCore_i.stq_info_mio),
+        .memStalling_FromCore(inFromCore_i.memStalling),
+        .address_bus(address_bus),
+        .dataBus(dataBus),
+        .outputs_o(mio_block_outputs)
+    );
 
     //need to add bus arb stuff
     always_comb begin
@@ -139,4 +155,10 @@ module DCache_TOP (
         end
     end
 
+    //mio block out wiring
+    assign out2Core_o.writeSuccess_MIO = mio_block_outputs.writeSuccess;
+    assign out2Core_o.hit_line_MIO = mio_block_outputs.hit_o;
+    assign out2Core_o.writeSuccess_MIO = mio_block_outputs.writeSuccess;
+    assign out2Core_o.req_rejected_mio = mio_block_outputs.req_rejected;
+    assign out2Sch_o.req_mio = mio_block_outputs.req_2_sch;
 endmodule

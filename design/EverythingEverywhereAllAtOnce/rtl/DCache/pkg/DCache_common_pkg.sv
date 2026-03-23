@@ -81,9 +81,10 @@ package DCache_common_pkg;
     //out 2 core
     typedef struct {
         bool writeSuccess;
-        byte_t dataLineOut[CACHE_LINES_SIZE_B];
         bool hit_o;
+        byte_t dataLineOut[CACHE_LINES_SIZE_B];
         dcache_req_types_mio_2_scheduler_e req_2_sch;
+        bool req_rejected;
     } mio_block_outputs_t;
 
     typedef struct {

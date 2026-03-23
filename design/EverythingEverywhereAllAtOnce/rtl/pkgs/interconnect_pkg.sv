@@ -53,20 +53,22 @@ package interconnect_pkg;
         bool evictionBuf_PermissionToDriveDataBus[NUM_DCACHE_PORTS][MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
         bool PermissionToDriveAddrBus[NUM_DCACHE_PORTS];
         bool evictionBuf_V_clr[NUM_DCACHE_PORTS];
+
         //MIO stuff
         //used to crea teh hit signal for mem
         //ld from simple, tells the mio block that the data on the bus is the
         //simple IO reg values, this can be strcanlted into a hit signal going
         //to mem stage in core
-        bool dataOnBus_MIO;
+        //bool dataOnBus_MIO;
 
-        //for st_req
-        //drive address and data (4 bytes) onto the bus
-        bool permission2DriveDataBus_mio;
-        bool PermissionToDriveAddrBus;
         //this says that it is complete, this will be used in write success
         //logic
         bool reqServed_mio;
+
+        //for st_req
+        //drive address and data (4 bytes) onto the bus
+        bool permissionToDriveAddrBus_mio;
+        bool permission2DriveDataBus_mio;
     } dte_2_dcache_t;
 
     //MEM interconnect//////////////////////////////
@@ -142,9 +144,11 @@ package interconnect_pkg;
         //for mem
         //bool   valid_0;
         bool   hit_line_0;
+        bool   req_rejected_0;
         byte_t line_0[CACHE_LINES_SIZE_B];
         //bool   valid_1;
         bool   hit_line_1;
+        bool   req_rejected_1;
         byte_t line_1[CACHE_LINES_SIZE_B];
 
         //for wb
@@ -154,6 +158,7 @@ package interconnect_pkg;
         //for MIO
         bool   writeSuccess_MIO;
         bool   hit_line_MIO;
+        bool   req_rejected_mio;
         byte_t line_MIO[CACHE_LINES_SIZE_B];
     } dcache_2_core_t;
 
