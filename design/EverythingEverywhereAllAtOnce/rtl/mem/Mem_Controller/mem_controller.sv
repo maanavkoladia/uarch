@@ -9,7 +9,7 @@ import mem_common_pkg::*;
 
 module mem_controller (
     input wire clk,
-    input wire rst,
+    input wire rst,//active low
 
     //adress and data bus, shoudl proably just be an input
     inout [PHY_MEM_ADDRESS_SIZE - 1 : 0] address_bus,
@@ -54,7 +54,7 @@ module mem_controller (
 
     typedef struct {
         bool valid;
-        logic [PHY_MEM_ADDRESS_SIZE - 1 : 0] address;
+        logic [(PHY_MEM_ADDRESS_SIZE) - 1 : 0] address;
         //logic lock;
         logic precharge_Status[NUM_BANKS_PER_CHIP];
     } chip_entry_t;
@@ -88,10 +88,14 @@ module mem_controller (
     //bundlede fsm out
     mem_controller_fsm_out_t fsm_outs;
 
+    logic [$clog2(MEM_CONTROLLER_FSM_STATES) - 1 : 0] mem_controller_state_bits;  // packed 5-bit vector
+
+    //writing the structurcal state bits to the sv enum
+    mem_controller_fsm_state_t fsm_state;
+    assign fsm_state = mem_controller_state_bits;
 
     //TODO: WRite this
     logic hit_into_fsm;
-    //assign hit_into_fsm = chipTable[chipTable].address{[14:12],[5:4]} == ;
 
     //instaiate the mem controller fsm module
     mem_controller_fsm u0_Controller (
@@ -100,6 +104,10 @@ module mem_controller (
         .ld_req_i(DTE_i.ld_req),
         .write_req_i(DTE_i.st_req),
         .hit_i(hit_into_fsm),
+        .S_0(mem_controller_state_bits[0]),  // current-state bit 0
+        .S_1(mem_controller_state_bits[1]),  // current-state bit 1
+        .S_2(mem_controller_state_bits[2]),  // current-state bit 2
+        .S_3(mem_controller_state_bits[3]),  // current-state bit 3
         .mem_ready_o(fsm_outs.mem_ready),
         .set_ld_tristate_o(fsm_outs.set_ld_tristate),
         .start_store_o(fsm_outs.start_store),
@@ -130,53 +138,62 @@ module mem_controller (
 
     //seq to drive the chip table
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (!rst) begin
             //we can proabaly cheese here and preload a chunk
-            for (int i = 0; i < NUM_OF_BANK_CHIPS; i++) chipTable[i].valid <= 0;
+            for (int i = 0; i < NUM_OF_BANK_CHIPS; i++) begin
+                chipTable[i].valid <= 1;
+                chipTable[i].address <= 0;
+            end
         end else begin
-            //need to signal each bank that the ld_address has changed
             //need to latch in the new ld address from the address bus coming
             //in
             if (fsm_outs.ld_address_changed) begin
+            `LOG("fsm_outs.ld_address_changed block entered");
                 chipTable[chipNum].valid   <= 1;
-                chipTable[chipNum].address <= address_bus[14:0];
-
+                chipTable[chipNum].address <= address_bus;
             end
         end
     end
 
     //send correct load address
+    //wire the ld_addr to each bank in each chip
     always_comb begin
         //send load address to each bank
         for (int i = 0; i < NUM_OF_BANK_CHIPS; i++) begin
             for (int j = 0; j < NUM_BANKS_PER_CHIP; j++) begin
                 bank_cmds_o[{
                     (i*NUM_BANKS_PER_CHIP)+j
-                }].ld_address = chipTable[i].valid ? chipTable[i].address[14:10] : 0;
+                }].ld_address = chipTable[i].address[14:10];
             end
-        end
+        end 
     end
 
-    //ld_address_changed logic
+    //ld_address_changed logic, by defualt send a 0, then if 
+    //ld_address changed for a chip, then send a ld_address changed
+    //to the banks of that chip
     always_comb begin
-        for (int i = 0; i < NUM_BANKS; i++) begin 
+        // default: clear all
+        for (int i = 0; i < NUM_BANKS; i++) begin
             bank_cmds_o[i].ld_address_change = 0;
         end
+
+        // set only selected chip's banks
         if (fsm_outs.ld_address_changed) begin
-            for (int i = 0; i < NUM_BANKS_PER_CHIP; i++) begin
-                bank_cmds_o[chipNum+i].ld_address_change = 1;
+            for (int j = 0; j < NUM_BANKS_PER_CHIP; j++) begin
+                bank_cmds_o[(chipNum * NUM_BANKS_PER_CHIP) + j].ld_address_change = 1;
             end
         end
     end
 
     //comb to contrlol banks in chip: deal with drive mem logic
+    //allow a single bank the privladege to drive the main memBus
     always_comb begin
         for (int i = 0; i < NUM_BANKS; i++) bank_cmds_o[i].driveMemBus = 0;
         if (fsm_outs.set_ld_tristate) bank_cmds_o[{chipNum, bankBits_InChip}].driveMemBus = 1;
         //send load address to each bank
     end
 
-    //wire the precharge from the banks to each respective chip
+    //wire the precharge from the banks to each respective chip, always
     always_comb begin
         for (int i = 0; i < NUM_OF_BANK_CHIPS; i++) begin
             for (int j = 0; j < NUM_BANKS_PER_CHIP; j++) begin
@@ -198,9 +215,14 @@ module mem_controller (
     //seq logic to drive the bank table, add new entries
     //needs to be decided based on fillX signal
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (!rst) begin
             for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
                 bankGroupTable[i].valid <= 0;
+                bankGroupTable[i].writeBuf_Valid <= 0;
+                bankGroupTable[i].address <= 0;
+                for(int j = 0; j < CACHE_LINES_SIZE_B; j++) begin
+                    bankGroupTable[i].writeBuf[j] <= 0;
+                end
             end
         end else begin
             if (fsm_outs.set_WriteBuf_V) begin
@@ -211,27 +233,27 @@ module mem_controller (
 
             if (fsm_outs.fill0) begin
                 for (int j = 0; j < 4; j++) begin
-                    bankGroupTable[bankGroup].writeBuf[j] <= data_bus[8*j +: 8];
+                    bankGroupTable[bankGroup].writeBuf[j] <= data_bus[8*j+:8];
                 end
             end
 
             if (fsm_outs.fill1) begin
                 for (int j = 0; j < 4; j++) begin
-                    bankGroupTable[bankGroup].writeBuf[4 + j] <= data_bus[8*j +: 8];
+                    bankGroupTable[bankGroup].writeBuf[4+j] <= data_bus[8*j+:8];
                 end
             end
 
             if (fsm_outs.fill2) begin
                 for (int j = 0; j < 4; j++) begin
-                    bankGroupTable[bankGroup].writeBuf[8 + j] <= data_bus[8*j +: 8];
+                    bankGroupTable[bankGroup].writeBuf[8+j] <= data_bus[8*j+:8];
                 end
             end
 
             if (fsm_outs.fill3) begin
                 for (int j = 0; j < 4; j++) begin
-                    bankGroupTable[bankGroup].writeBuf[12 + j] <= data_bus[8*j +: 8];
+                    bankGroupTable[bankGroup].writeBuf[12+j] <= data_bus[8*j+:8];
                 end
-            end            
+            end
 
             for (int i = 0; i < NUM_BANKS; i++) begin
                 if (banks_i[i].clear_writebufV) begin
@@ -251,18 +273,30 @@ module mem_controller (
     end
 
     //handle start_store logic
+    //if the fsm outputs a start_store, then the correct bank needs to get
+    //a start store pulse, this logic is broken i think, this needs to pulse,
+    //might not be broken because the fsm will keep it high for one cycle
     always_comb begin
-        //clear all of them to clear them
-        for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
-            for(int j = 0; j < NUM_BANKS_PER_BANK_GROUP; j++) begin
-                bankGroupTable[i].startStore[j] = 0;
-            end
+        // 1. Default: clear ALL banks
+        for (int i = 0; i < NUM_BANK_GROUPS * NUM_BANKS_PER_BANK_GROUP; i++) begin
+            bank_cmds_o[i].start_store = 0;
         end
 
-        //now assert the correct ones
-        for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
-            if (fsm_outs.start_store) begin  //need to assert the start_store signle for the correct bank
-                bank_cmds_o[{address_bus[9:7], bankGroup}].start_store = 1;
+        // 2. Set the selected bank
+        if (fsm_outs.start_store) begin
+            int idx;
+            idx = {address_bus[9:7], bankGroup}; // make sure this is valid indexing!
+            bank_cmds_o[idx].start_store = 1;
+        end
+    end    
+
+    //send the writebufs to each of the banks
+    always_comb begin
+        for(int i = 0; i < NUM_BANK_GROUPS; i++) begin
+            for (int j = 0; j < NUM_BANKS_PER_BANK_GROUP; j++) begin
+                for(int k = 0; k < CACHE_LINES_SIZE_B; k++) begin
+                    bank_cmds_o[(NUM_BANKS_PER_BANK_GROUP * i) + j].writeBuf[k] = bankGroupTable[i].writeBuf[k];
+                end
             end
         end
     end
@@ -281,10 +315,10 @@ module mem_controller (
 
     //need to do hit logic
     always_comb begin
-        hit_into_fsm = chipTable[chipNum].address[14:10] == address_bus[14:10] && chipTable[chipNum].precharge_Status[bankBits_InChip];
+        hit_into_fsm = 
+            DTE_i.ld_req && 
+            chipTable[chipNum].address[14:10] == address_bus[14:10] && 
+            chipTable[chipNum].precharge_Status[bankBits_InChip];
     end
 
-
 endmodule
-
-

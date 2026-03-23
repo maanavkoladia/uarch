@@ -1,8 +1,0 @@
-# Minimised SOP (Quine-McCluskey) for simple
-.i 2
-.o 1
-.ilb a_i  b_i
-.ob   y_o
-.type f
-11 1
-.e

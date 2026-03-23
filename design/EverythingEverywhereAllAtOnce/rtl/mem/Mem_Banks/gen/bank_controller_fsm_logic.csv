@@ -1,5 +1,5 @@
 State_s,ld_address_change_i,start_store_i,Next_state_ns,st_addr_release_o,OE_o,WE_o,clear_writebufV_o,PreCharged_o
-IDLE,x,0,LD_ADDR_WAIT_0,0,0,1,0,0
+IDLE,x,0,LD_WAIT_0,0,1,1,0,0
 IDLE,x,1,ST_ADDR_WAIT_0,1,1,1,0,0
 ST_ADDR_WAIT_0,x,x,ST_ADDR_WAIT_1,1,1,1,0,0
 ST_ADDR_WAIT_1,x,x,ST_ADDR_WAIT_2,1,1,1,0,0

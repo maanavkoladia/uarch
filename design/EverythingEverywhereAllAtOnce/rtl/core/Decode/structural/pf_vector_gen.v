@@ -16,7 +16,7 @@ module pf_vector_gen (
 
     genvar i;
     generate
-        for(i=0; i<10; i=i+1) begin
+        for(i=0; i<10; i=i+1) begin : g_harish_name_this_3
             or3$ orX(total_pf_vector[i], real_vector0[i], real_vector1[i], real_vector2[i]);
         end
     endgenerate

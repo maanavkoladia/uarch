@@ -13,7 +13,7 @@ COMMON_GATES_LIB = \
 				   $(ROOT)/lib/Common/utils.v 
 
 STD_CELLS_LIB = \
-				$(ROOT)/lib/STDCells/adder4bit.v \
+				$(ROOT)/lib/STDCells/triple_adder.v \
 				$(ROOT)/lib/STDCells/and_N.v \
 				$(ROOT)/lib/STDCells/mux2_10.v \
 				$(ROOT)/lib/STDCells/mux2_3.v \
@@ -21,6 +21,7 @@ STD_CELLS_LIB = \
 				$(ROOT)/lib/STDCells/mux64_8.v \
 				$(ROOT)/lib/STDCells/or_N.v \
 				$(ROOT)/lib/STDCells/reg1b.v \
+				$(ROOT)/lib/STDCells/KoggeStone.v \
 
 LIB_SRC_FILES = \
 				$(UARCH_GATES_LIB) \

@@ -1,0 +1,26 @@
+# State list for FSM: bank_controller_fsm_logic
+# Total states      : 18
+# State bits needed : 5
+# NOTE: IDLE is always assigned encoding 0
+# NOTE: ERROR state was synthesised (not present in CSV)
+#
+#  idx  binary  state_name
+# --------------------------------------------------
+     0  00000  ERROR  # synthesised
+     1  00001  IDLE
+     2  00010  LD_WAIT_0
+     3  00011  LD_WAIT_1
+     4  00100  LD_WAIT_2
+     5  00101  LD_WAIT_3
+     6  00110  LD_WAIT_4
+     7  00111  LD_WAIT_5
+     8  01000  ST_ADDR_WAIT_0
+     9  01001  ST_ADDR_WAIT_1
+    10  01010  ST_ADDR_WAIT_2
+    11  01011  ST_ADDR_WAIT_3
+    12  01100  ST_WRITE_WAIT_0
+    13  01101  ST_WRITE_WAIT_1
+    14  01110  ST_WRITE_WAIT_2
+    15  01111  ST_WRITE_WAIT_3
+    16  10000  ST_WRITE_WAIT_4
+    17  10001  ST_WRITE_WAIT_5

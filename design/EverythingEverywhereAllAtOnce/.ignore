@@ -1,7 +1,15 @@
-venv/
+venv
 
-build/
+build
 
 *.pla
 
 *.out
+
+*.daidir
+
+csrc
+
+hexLoad/
+
+meta/

@@ -1,0 +1,16 @@
+# Enumeration map for FSM: DCache_Bank_FSM
+# 8 states -> 3 bit(s)
+# IDLE is always assigned encoding 0
+# ERROR is always assigned the highest encoding
+# ERROR was synthesised (not present in source CSV)
+#
+# state_name                      decimal  binary
+# --------------------------------------------------
+  IDLE                                  0  000  # IDLE (forced 0)
+  EVICTING                              1  001
+  Req0                                  2  010
+  Req1                                  3  011
+  Req2                                  4  100
+  Req3                                  5  101
+  SWAPPING                              6  110
+  ERROR                                 7  111  # ERROR (highest), synthesised

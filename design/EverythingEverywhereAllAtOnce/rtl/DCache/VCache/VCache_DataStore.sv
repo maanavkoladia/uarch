@@ -1,0 +1,134 @@
+import common_pkg::*;
+import DCache_common_pkg::*;
+
+module VCache_DataStore (
+
+    //from block req
+    input p_address_t p_addr_i,
+    input bool oe,
+    input bool we,
+
+    //from block req
+    input byte_t   st_q_data  [CACHE_LINES_SIZE_B],
+    input uint16_t st_data_vec,
+
+    input p_address_t DCache_SwapBuf_lineAddr,
+    input byte_t DCache_SwapBuf_Line_i[CACHE_LINES_SIZE_B],
+    input bool read_D_SWAP_i,
+    input bool Write_VSWAP_i,
+    input bool busy_i,
+    input bool LD_EB_i,
+
+    input bool tagStore_hit_i,
+
+    output byte_t VCache_DataStore_LineOut_o[CACHE_LINES_SIZE_B]
+);
+
+    localparam int NUM_CELL_IN_DATA_STORE = CACHE_LINES_SIZE_B;
+
+    p_addr_vcache_fields_t DCache_SwapBuf_lineAddr_fields = '{
+        tag    : D_Cache_SwapBuf_Addr[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
+        index  : D_Cache_SwapBuf_Addr[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
+        bank   : D_Cache_SwapBuf_Addr[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
+        offset : D_Cache_SwapBuf_Addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
+    };
+
+    p_addr_vcache_fields_t p_addr_fields = '{
+        tag    : p_addr_i[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
+        index  : p_addr_i[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
+        bank   : p_addr_i[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
+        offset : p_addr_i[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
+    };
+
+    //address can come from 2 places i think
+    //case 1: state is idle, ie not busy, drive the mapped line out
+    //case 2: we are doing a swap from the dcache swap buf, so the address will be in
+    //case 3, were doing an eviction, then we need to use the dcache swapbuf, addr,
+    //there, 
+    //
+    //i think that there is somethig to be metioned st 
+    //now vcache is Drect mapped, i can jsut use the addr in 
+    //the block_req, but just to be consistent, ill use the 
+    //swapbuf addr just to be consistent
+    //
+    logic [INDEX_WIDTH - 1 : 0] ADDRESS_2_DataStore;
+
+    //active low, intentioanlly made it 1 bit, and not a vecotr,
+    //there is not bytes addressable st
+    //case 1: when loading from D$ swabuf
+    //case 2:  not busy doing a write, use the vector
+    logic WR_2_DataStore[NUM_CELL_IN_DATA_STORE];
+
+    //data can only come from the D$ swap buf
+    //i lied
+    //can also come from a write
+    byte_t DIN_2_DataStore[NUM_CELL_IN_DATA_STORE];
+
+    //active low, intentioanlly made it 1 bit, and not a vecotr,
+    //there is not bytes addressable ld
+    //case 1: !busy and oe
+    //case 2: need to output to eb
+    //case 3: write to V$ swapBuf
+    logic OE_2_DataStore;
+
+    //assigned, handled enternally 
+    byte_t DOUT_DataStore[NUM_CELL_IN_DATA_STORE];
+
+    generate
+        for (genvar i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin : g_vcache_data_store_ram_cells
+            ram8b4w$ v_cache_data_store_ramCell (
+                .A(ADDRESS_2_DataStore),
+                .WR(WR_2_DataStore[i]),
+                .DIN(DIN_2_DataStore[i]),
+                .OE(OE_2_DataStore),
+                .DOUT(DOUT_DataStore[i])
+            );
+        end
+    endgenerate
+
+    //ADDRESS_2_DataStore logic
+    always_comb begin
+        ADDRESS_2_DataStore = (read_D_SWAP_i  || LD_EB_i) ?
+            DCache_SwapBuf_lineAddr_fields.idx
+            : p_addr_fields.idx;
+    end
+
+    //WR_2_DataStore, active low
+    always_comb begin
+        //comb completness
+        for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
+            WR_2_DataStore[i] = 1;
+        end
+        if (read_D_SWAP_i) begin
+            for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
+                WR_2_DataStore[i] = 0;
+            end
+        end
+
+        if (!busy && we) begin
+            for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
+                WR_2_DataStore[i] = st_data_vec[i] && tagStore_hit_i ? 1'b0 : 1'b1;
+            end
+        end
+    end
+
+    //DIN_2_DataStore lgoic
+    always_comb begin
+        for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
+            DIN_2_DataStore[i] = read_D_SWAP_i ? DCache_SwapBuf_Line_i : st_q_data[i];
+        end
+    end
+
+    //OE_2_DataStore logic
+    always_comb begin
+        OE_2_DataStore = LD_EB_i || Write_VSWAP_i || (!busy && oe) ? 1'b0 : 1'b1;
+    end
+
+    //deal w outputs
+    always_comb begin
+        for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
+            VCache_DataStore_LineOut_o[i] = DOUT_DataStore[i];
+        end
+    end
+
+endmodule

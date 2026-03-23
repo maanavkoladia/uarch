@@ -49,9 +49,9 @@ initial begin \
   $dumpvars(lvl, moduleName); \
 end
 
-`define GEN_WAVEFORM_VPD(filename) \
+`define GEN_WAVEFORM_VPD(filename, moduleName, lvl) \
 initial begin \
-  $vcdplusfile(filename); \
+  $vcdplusfile(filename, moduleName, lvl); \
   $vcdpluson(0); \
 end
 

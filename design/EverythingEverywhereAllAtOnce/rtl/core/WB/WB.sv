@@ -75,8 +75,7 @@ module WB (
         DR_1_we : reg_wb_logic_outs.dr1_we,
         DR_1_id : reg_wb_logic_outs.dr1_id,
         DR_1_data : reg_wb_logic_outs.dr1_data,
-
-        st_override : st_override_array,
+       // st_override : st_override_array,
         stq_heads : stq_heads,
         dep_check : dc_dep
     };

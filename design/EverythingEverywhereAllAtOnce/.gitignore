@@ -14,3 +14,10 @@ ucli.key
 
 *espresso.out
 
+*.vdb
+
+*.log
+
+memGen/
+
+tests/mem/mainMem/memGen/

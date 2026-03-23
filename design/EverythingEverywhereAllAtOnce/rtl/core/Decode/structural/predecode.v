@@ -4,6 +4,10 @@ module predecode(
     output reg [31:0] EIP,
     output [3:0] inst_length
 );
+
+    initial begin
+        EIP = 32'b0;
+    end
     wire [15:0][7:0] IRbyte; //16 different IR bytes
     wire [3:0][3:0] ppu_inst_length;
     wire [4:0][2:0] ppu_imm_size, ppu_msd_size;
@@ -13,6 +17,7 @@ module predecode(
     wire [15:0] eip_bar_top, eip_bar_bottom;
     wire [8:0] carry;
     wire [31:0] sext_inst_length, NEIP;
+    wire inst_length_cout;
 
     assign carry[0] = 1'b0;
     assign sext_inst_length = {28'b0, inst_length};
@@ -35,25 +40,12 @@ module predecode(
     pf_checker checker0(.IRbyte(IRbyte[0]), .pf(pf0), .pf_vector(pf_vector0));
     pf_checker checker1(.IRbyte(IRbyte[1]), .pf(pf1), .pf_vector(pf_vector1));
     pf_checker checker2(.IRbyte(IRbyte[2]), .pf(pf2), .pf_vector(pf_vector2));
-    pf_gen pf_gen0(pf0, pf1 ,pf2, num_pfs);
+    num_pf_gen num_pf_gen0(pf0, pf1 ,pf2, num_pfs);
     pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2), 
         .total_pf_vector(total_pf_vector));
 
-    genvar i;
-    generate
-        for(i=0; i<8; i=i+1) begin
-            alu4$ alu(
-                .a(EIP[i*4+3:i*4]),
-                .b(sext_inst_length[i*4+3:i*4]),
-                .cin(carry[i]),
-                .m(1'b1),
-                .s(4'd9),
-                .cout(carry[i+1]),
-                .out(NEIP[i*4+3:i*4])
-            );
-        end
-    endgenerate
+    kogge_stone_adder #(.WIDTH(32)) neip_adder (.a(EIP), .b(sext_inst_length), .cin(1'b0), .sum(NEIP), .cout(inst_length_cout));
 
-    dff16$ topword(clk, NEIP[31:16], EIP[31:16], eip_bar_top, rst, 1'b1);
-    dff16$ bottomword(clk, NEIP[15:0], EIP[15:0], eip_bar_bottom, rst, 1'b1);
+    //dff16$ topword(clk, NEIP[31:16], EIP[31:16], eip_bar_top, rst, 1'b1);
+    //dff16$ bottomword(clk, NEIP[15:0], EIP[15:0], eip_bar_bottom, rst, 1'b1);
 endmodule

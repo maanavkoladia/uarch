@@ -7,7 +7,7 @@ module mem_TOP (
 
     //adress and data bus
     inout [ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus,
-    inout [DATA_BUS_WIDTH_BITS - 1 : 0] data_bus,
+    inout [  DATA_BUS_WIDTH_BITS - 1 : 0] data_bus,
 
     //arb stuff
     input dte_2_mem_t inFromDte,
@@ -29,7 +29,9 @@ module mem_TOP (
     genvar i_gen;
     generate
         for (i_gen = 0; i_gen < NUM_BANKS; i_gen++) begin : g_mem_banks
-            mem_bank mem_bank_unit_uX (
+            mem_bank #(
+                .BANK_ID(i_gen)
+            ) mem_bank (
                 .clk(clk),
                 .rst(rst),
                 .controller2bank_i(controller_2_bank_Cmds[i_gen]),
@@ -38,7 +40,7 @@ module mem_TOP (
             );
         end
     endgenerate
-    
+
     //create the controller,
     mem_controller controller (
         .clk(clk),

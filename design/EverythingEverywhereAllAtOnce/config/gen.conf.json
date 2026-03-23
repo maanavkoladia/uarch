@@ -1,12 +1,28 @@
 {
     "script path" : { 
-        "Combinational SOP GEN": "scripts/genCombination_SOP.py",
-        "FSM SOP GEN" : "scripts/genFSM_SOP.py",
-        "Combinational LUT GEN" : "scripts/genTT_LUT.py",
-        "FSM LUT GEN" : "scripts/genFSM_LUT.py"
+        "Combinational SOP GEN": "scripts/RTL_Generation/genCombination_SOP.py",
+        "FSM SOP GEN" : "scripts/RTL_Generation/genFSM_SOP.py",
+        "Combinational LUT GEN" : "scripts/RTL_Generation/genTT_LUT.py",
+        "FSM LUT GEN" : "scripts/RTL_Generation/genFSM_LUT.py"
     },
 
     "genFiles" : {
+
+        "simple" : {
+            "csv": "scripts/RTL_Generation/test/simple.csv",
+            "outputFilePath" : "scripts/RTL_Generation/test/rtl/simple.sv",
+            "run Combinational SOP Gen": "true",
+            "run FSM SOP gen": "false",
+            "run Combinational LUT Gen": "false",
+            "run FSM LUT Gen": "false"
+        },
+
+        "ex1" : {
+            "csv": "scripts/RTL_Generation/test/ex1.csv",
+            "outputFilePath" : "scripts/RTL_Generation/test/rtl/ex1.sv",
+            "run Combinational SOP Gen": "true"
+        },
+
         "bank_controller_fsm_logic" : {
             "csv": "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.csv",
             "outputFilePath" : "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.sv",
@@ -22,33 +38,51 @@
             "run FSM SOP gen": "true"
         },
 
-        "simple" : {
-            "csv": "scripts/test/simple.csv",
-            "outputFilePath" : "scripts/test/rtl/simple.sv",
-            "run Combinational SOP Gen": "true"
-        },
-
-        "ex1" : {
-            "csv": "scripts/test/ex1.csv",
-            "outputFilePath" : "scripts/test/rtl/ex1.sv",
-            "run Combinational SOP Gen": "true"
-        },
-
         "i_Cache_f_controller_fsm_logic" : {
-            "csv" : "rtl/core/ICache/gen/ICache_Controller_Logic.csv",
+            "csv" : "rtl/ICache/gen/ICache_Controller_Logic.csv",
             "outputFilePath" : "rtl/core/ICache/gen/ICache_Controller_Logic.sv",
             "run FSM SOP gen": "true"
         },
 
+        "DCache bank fsm" : {
+            "csv" : "rtl/DCache/gen/DCache_Bank_FSM.csv",
+            "outputFilePath" : "rtl/DCache/gen/DCache_Bank_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+
+        "VCache bank fsm" : {
+            "csv" : "rtl/DCache/gen/VCache_FSM.csv",
+            "outputFilePath" : "rtl/DCache/gen/VCache_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+
         "PreDecode MOD LUT" : {
-            "csv" : "rtl/core/PreDecode/structural/gen/MOD_LUT.csv",
-            "outputFilePath": "rtl/core/PreDecode/structural/gen/MOD_LUT.v",
+            "csv" : "rtl/core/Decode/structural/gen/MOD_LUT.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/MOD_LUT.v",
             "run Combinational SOP Gen": "true"
         },
 
         "Predecode OP LUT" : {
-            "csv" : "rtl/core/PreDecode/structural/gen/OP_LUT.csv",
-            "outputFilePath": "rtl/core/PreDecode/structural/gen/OP_LUT.v",
+            "csv" : "rtl/core/Decode/structural/gen/OP_LUT.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/OP_LUT.v",
+            "run Combinational SOP Gen": "true"
+        },
+
+        "Predecode pf LUT" : {
+            "csv" : "rtl/core/Decode/structural/gen/pf_gen.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/PF_LUT.v",
+            "run Combinational SOP Gen": "true"
+        },
+
+	    "Decode IR logic" : {
+            "csv" : "rtl/core/Decode/structural/gen/ir_logic.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/ir_logic.v",
+            "run Combinational SOP Gen": "true"
+        },
+
+        "Decode threeinput_adder logic" : {
+            "csv" : "rtl/core/Decode/structural/gen/three_input_adder.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/three_input_adder.v",
             "run Combinational SOP Gen": "true"
         }
 

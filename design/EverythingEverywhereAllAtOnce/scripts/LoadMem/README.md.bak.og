@@ -1,0 +1,39 @@
+these scripts are here to help us load main mem with just a sample x86_32 program or hard coded binary
+
+some paramaters: 
+main mem is 32kb, broken into 64 banks, which are each borken in to 4 sepereate memCell modules
+these memCell modules are the ones that will be loaded with .hex files with readmemh calls in a tb
+whats weird about the mem is that it is interleaved so its now sequetial, however it is not interleaved
+at the $line level. cache line is 16B. so $line_0 will be in bank_0 and $line_1 in bank_1, due to the 
+number of banks, $line_63 will be in bank_63 and $line_64 will be in bank_0. Futhermore, there are (2^15/2^4)
+total $lines. with the sizing params given, each bank will have 32 $lines bc 2^11/2^6 bc 64 banks. now, each bank's 
+32 $lines need to split into 4 seperate chunk, st the first 4 bytes of each $line goes into the first memcell, and the 
+subsequently the same for the next three chunks and cell. 
+
+here is the pipeline
+
+first take an x86_32 pogram that will be passed in a json file contains a code and data section, which will look like
+
+.org x1000
+.code 
+{code}
+
+.org x2000
+.data
+{data stuff}
+
+and convert it into a binary, note that all bytes that are not used need to be able to be randomzed to simulate real dram, so if some kind of flag
+is set, then randomize it
+
+then, it needs to be divided up into the interleaved banks
+then it needs to be split into 4 chunks
+
+then each files need to be create kind of like mem_{bankNum}_{chunkNum}.hex
+these files need to be outputed to a output dir that will be passed in throuhg the json file
+
+during this process somethings need to be created to help me debug
+first after the program is "compiled", a human readable hex file needs ot be create of the whole program where the $line numver and starting addr is specifed then the $line is written
+there also needs to be hex file just of code and data section, which also still show the cacheilne number and starting address of the line
+
+note all of this needs to use readmemh and not binary. so the output of the "compile" step will be a big .hex file, then the createing the loadble hex files is also a bunch of .hex files
+split this into two scripts, compile, and genHexMem

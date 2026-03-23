@@ -1,4 +1,4 @@
-lib1
+lib1list
 ====
 
 module  nand2$(out, in0, in1);
