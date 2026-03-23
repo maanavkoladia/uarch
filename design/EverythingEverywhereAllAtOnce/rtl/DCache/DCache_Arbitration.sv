@@ -76,7 +76,6 @@ module DCache_Arbitration (
                         reqs[i].we        <= 1'b1;
                         reqs[i].p_addr    <= core_i.stq_info[i].p_addr;
                         reqs[i].vec       <= core_i.stq_info[i].bit_vec;
-
                         reqs[i].st_q_data <= core_i.stq_info[i].dataLine;
 
                         // 2. Load req 0

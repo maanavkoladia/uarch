@@ -50,7 +50,8 @@ package interconnect_pkg;
 
     typedef struct {
         bool mem_valid[NUM_DCACHE_PORTS];
-        bool evictionBuf_PermissionToDriveBus[NUM_DCACHE_PORTS][MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
+        bool evictionBuf_PermissionToDriveDataBus[NUM_DCACHE_PORTS][MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
+        bool PermissionToDriveAddrBus[NUM_DCACHE_PORTS];
         bool evictionBuf_V_clr[NUM_DCACHE_PORTS];
         //MIO stuff
         //used to crea teh hit signal for mem
@@ -61,7 +62,8 @@ package interconnect_pkg;
 
         //for st_req
         //drive address and data (4 bytes) onto the bus
-        bool permission2DriveBus_mio;
+        bool permission2DriveDataBus_mio;
+        bool PermissionToDriveAddrBus;
         //this says that it is complete, this will be used in write success
         //logic
         bool reqServed_mio;
