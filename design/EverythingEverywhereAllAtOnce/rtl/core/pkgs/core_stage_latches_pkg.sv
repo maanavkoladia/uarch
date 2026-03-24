@@ -66,6 +66,40 @@ package core_stage_latches_pkg;
     } rr_cs_t;
 
     typedef struct {
+        bool DC_OP;
+        bool LD_OP; 
+        bool ST_OP;
+        bool MEM_OP; //if req to dcache is needed and if dep checking is needed
+    } dc_cs_t;
+
+    typedef struct {
+        bool MEM_OP;
+        bool ST_OP;
+        bool LD_OP;
+    } mem_cs_t;
+
+    typedef struct {
+        bool EXE_OP;
+        bool ST_OP;
+        logic [1:0] DATA_SIZE;
+        exe_cs_operation_type_e OP_TYPE;
+        bool xchg;
+        bool cmpxchg;
+        bool cmovc;
+        bool mem_operand;  //if not mem, then sr
+        bool ld_flags;
+        uint32_t flag_modified_vector;
+        bool clear_df;
+        bool set_df;
+    } exe_cs_t;
+
+    typedef struct {
+        bool ST_OP;
+        bool WB_DR;
+        bool WB_SR;
+    } wb_cs_t;
+
+    typedef struct {
         bool valid;
         rr_cs_t cs;
         //added
@@ -93,13 +127,6 @@ package core_stage_latches_pkg;
         rr_latches_general_t rep_latches;
         bool useRep;
     } rr_latches_t;
-
-    typedef struct {
-        bool DC_OP;
-        bool LD_OP; 
-        bool ST_OP;
-        //bool MEM_OP; //if req to dcache is needed and if dep checking is needed
-    } dc_cs_t;
 
     typedef struct {
         bool valid;
@@ -133,12 +160,6 @@ package core_stage_latches_pkg;
     } dc_latches_t;
 
     typedef struct {
-        bool MEM_OP;
-        bool ST_OP;
-        bool LD_OP
-    } mem_cs_t;
-
-    typedef struct {
         bool valid;
         mem_cs_t cs;
         exe_cs_t exe_cs;
@@ -166,20 +187,6 @@ package core_stage_latches_pkg;
 
     } mem_latches_t;
 
-    typedef struct {
-        bool EXE_OP;
-        bool ST_OP;
-        logic [1:0] DATA_SIZE;
-        exe_cs_operation_type_e OP_TYPE;
-        bool xchg;
-        bool cmpxchg;
-        bool cmovc;
-        bool mem_operand;  //if not mem, then sr
-        bool ld_flags;
-        uint32_t flag_modified_vector;
-        bool clear_df;
-        bool set_df;
-    } exe_cs_t;
 
     typedef struct {
         bool valid;
@@ -206,13 +213,6 @@ package core_stage_latches_pkg;
         p_address_t ld_addy;  //not cache aligned. Only use index bits to find start 
 
     } exe_latches_t;
-
-
-    typedef struct {
-        bool ST_OP;
-        bool WB_DR;
-        bool WB_SR;
-    } wb_cs_t;
 
     typedef struct {
         bool valid;
