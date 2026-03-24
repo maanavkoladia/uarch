@@ -8,12 +8,12 @@ package core_common_pkg;
     typedef uint32_t flags_t;
 
     typedef struct {
-        address_t virtual_addr;
+        v_address_t virtual_addr;
         bool write_intention;
     } tlb_inputs_t;
 
     typedef struct {
-        address_t physical_addr;
+        p_address_t physical_addr;
         bool physical_addr_valid;
         bool gp_exp;
         bool pageFault;
