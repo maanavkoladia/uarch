@@ -279,7 +279,6 @@ module Fetch (
         .exp_mode(exp_mode_jk),
         .cs_sb(rr_outs_i.codeSeg_sb),
         .int_mode(int_mode_jk),
-
         .out(icache_en_logic_outs)
     );
 
@@ -289,15 +288,13 @@ module Fetch (
     );
 
     SegmentTranslation seg_Xlation(
-        .clk(clk),
-        .rst(rst),
         .l_addr_i(SPC),
         .data_size_i(1'b0),
-        .segID_i(reg_ids_pkg::CS),
+        .segValue(rr_outs_i.codeSeg_data),
+        .segLimit(rr_outs_i.codeSeg_limit),
         .v_addr_o(seg_xlation_out),
         .gp_fault_o(seg_xlation_gp_fault)
     );
-
 
 
     endmodule
