@@ -8,6 +8,8 @@ UARCH_GATES_LIB = \
 
 #$(ROOT)/lib/Gates/time.v \
 
+STD_CELL_LIB_GEN = $(ROOT)/lib/STDCells/gen/three_input_adder.sv
+
 COMMON_GATES_LIB = \
 				   $(ROOT)/lib/Common/LOG.v \
 				   $(ROOT)/lib/Common/utils.v 
@@ -25,6 +27,7 @@ STD_CELLS_LIB = \
 
 LIB_SRC_FILES = \
 				$(UARCH_GATES_LIB) \
+				$(STD_CELL_LIB_GEN)	\
 				$(COMMON_GATES_LIB)	\
 				$(STD_CELLS_LIB) 
 

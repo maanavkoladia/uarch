@@ -1,7 +1,6 @@
 import common_pkg::*;
 import interconnect_pkg::*;
 import tb_dcache_pkg::*;
-
 module tb_dcache ();
 
     `CLK_INIT(CLK_PERIOD)
@@ -35,15 +34,13 @@ module tb_dcache ();
     DCache_TOP uut0 (
         .clk(clk),
         .rst(rst),
-        .inFromCore_i(),
-        .out2Core_o(),
-        .inFromDTE_i(),
-        .out2Sch_o(),
+        .inFromCore_i(inFromCore),
+        .out2Core_o(out2Core),
+        .inFromDTE_i(inFromDTE),
+        .out2Sch_o(out2Sch),
         .dataBus(dataBus),
         .address_bus(address_bus)
     );
-    //init module to initMem
-    tb_memGen_InitRitual memLoader ();
 
     initial begin
         `LOG("DCache Tb Starting up");

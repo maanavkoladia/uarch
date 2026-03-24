@@ -118,24 +118,6 @@ module DCache_TOP (
         end
     end
 
-    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
-    wire driveAddrBus;
-    assign address_bus = driveAddrBus ? address_bus_fake : 'z;
-
-    //driving bus logic
-    always_comb begin
-        driveAddrBus = 0;
-        address_bus_fake = 0;
-        for (int i = 0; i < NUM_DCACHE_PORTS; i++) begin
-            for (int j = 0; j < MEM_BUS_SIZE / DATA_BUS_WIDTH_BITS; j++) begin
-                if (inFromDTE_i.evictionBuf_PermissionToDriveBus[i][j]) begin
-                    driveAddrBus = 1;
-                    address_bus_fake = blockOutputs[i].eb_addr;
-                end
-            end
-        end
-    end
-
     //mio block out wiring
     assign out2Core_o.writeSuccess_MIO = mio_block_outputs.writeSuccess;
     assign out2Core_o.hit_line_MIO = mio_block_outputs.hit_o;

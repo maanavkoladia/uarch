@@ -18,10 +18,10 @@ module VCache (
     assign vcache_fsm_state = vcache_fsm_state_bits;
 
     p_addr_vcache_fields_t block_req_p_addr_fields = '{
-        tag    : blockReq_i.p_addr_i[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
-        index  : blockReq_i.p_addr_i[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
-        bank   : blockReq_i.p_addr_i[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
-        offset : blockReq_i.p_addr_i[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
+        tag    : blockReq_i.p_addr[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
+        index  : blockReq_i.p_addr[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
+        bank   : blockReq_i.p_addr[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
+        offset : blockReq_i.p_addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
     };
 
     typedef struct {
@@ -124,7 +124,7 @@ module VCache (
                 //bits from tagstore, idx bits, banks bits, then zero out rest,
                 //they dont matter
                 vcache_swapBuf.lineAddr <= {
-                    currTag, block_req_p_addr_fields.idx, block_req_p_addr_fields.bank, 4'b0000
+                    currTag, block_req_p_addr_fields.index, block_req_p_addr_fields.bank, 4'b0000
                 };
                 vcache_swapBuf.line <= vcache_dataStore_Line;
             end
@@ -167,14 +167,14 @@ module VCache (
     always_comb begin
         outputs_o.hit = hit;
         outputs_o.miss = miss;
-        outputs.vcache_swapBuf = vcache_swapBuf;
-        outputs.D_Cache_swapBuf_valid_clr = fsmOuts.CLR_D_SWAP_V;
-        outputs.LD_EB = fsmOuts.LD_EB;
-        outputs.busy = fsmOuts.busy;
-        outputs.beingBlocked = fsmOuts.blocked;
-        outputs.lineOut = vcache_dataStore_Line;
-        outputs.addrOut = {
-            currTag, block_req_p_addr_fields.idx, block_req_p_addr_fields.bank, 4'b0000
+        outputs_o.vcache_swapBuf = vcache_swapBuf;
+        outputs_o.D_Cache_swapBuf_valid_clr = fsmOuts.CLR_D_SWAP_V;
+        outputs_o.LD_EB = fsmOuts.LD_EB;
+        outputs_o.busy = fsmOuts.busy;
+        outputs_o.beingBlocked = fsmOuts.blocked;
+        outputs_o.lineOut = vcache_dataStore_Line;
+        outputs_o.addrOut = {
+            currTag, block_req_p_addr_fields.index, block_req_p_addr_fields.bank, 4'b0000
         };
     end
 

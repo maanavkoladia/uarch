@@ -90,7 +90,7 @@ module VCache_DataStore (
         //ADDRESS_2_DataStore = (read_D_SWAP_i  || LD_EB_i) ?
         //    DCache_SwapBuf_lineAddr_fields.idx
         //    : p_addr_fields.idx;
-        ADDRESS_2_DataStore = p_addr_fields.idx;
+        ADDRESS_2_DataStore = p_addr_fields.index;
     end
 
     //WR_2_DataStore, active low
