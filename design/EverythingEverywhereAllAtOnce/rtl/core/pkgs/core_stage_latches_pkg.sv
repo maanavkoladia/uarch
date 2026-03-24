@@ -53,7 +53,7 @@ package core_stage_latches_pkg;
         bool REG_RD; //are we reading the REG reg, ie are we gonna access the reg file w the id in the latches, check sb 
         bool MOD_RM_RD;  //same as REG reg
         bool SIB_NEEDED;  //are we going to use the SIB byte, 
-        bool SIB_DISP_SIZE;  //for using displacement in sib tranlstion logic
+        bool DISP_NEEDED;  //for using displacement in sib tranlstion logic
         bool WE_REG;  //for makring the sb
         bool WE_MOD_RM;  //
 
@@ -62,6 +62,8 @@ package core_stage_latches_pkg;
 
         bool LD_OP;
         bool ST_OP;
+
+        logic [1:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 
     } rr_cs_t;
 
@@ -76,6 +78,7 @@ package core_stage_latches_pkg;
         reg_ids_e sib_idx_id;
         reg_ids_e sib_base_id;
         uint8_t sib_scale;  //0,2,4,8
+        bool disp_size; //8 or 32, 0 determined by DISP_NEEDED
         uint32_t displacment;
         bool seg_1_valid;  //need two beacuse two segs for movs etc, 
         reg_ids_e seg_0_id;

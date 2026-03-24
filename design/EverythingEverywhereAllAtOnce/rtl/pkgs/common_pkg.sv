@@ -31,5 +31,6 @@ package common_pkg;
     localparam int NUM_IDM_SLOTS = 4;
 
     localparam int MIO_DATA_SIZE_B = 4;
+    localparam int NUM_SBS = 22;
     //
 endpackage
