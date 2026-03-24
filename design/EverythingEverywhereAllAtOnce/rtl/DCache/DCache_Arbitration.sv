@@ -48,14 +48,14 @@ module DCache_Arbitration (
 
                     //store case
                     if (st_override[i] && !core_i.stq_heads[i].empty
-                        || (!core_i.ld_addr_0_V && !core_i.ld_addr_1_V && !core_i.stq_info[i].empty)) begin
+                        || (!core_i.ld_addr_0_V && !core_i.ld_addr_1_V && !core_i.stq_heads[i].empty)) begin
 
                         reqs[i] <= '{
                             oe: 0,
                             we: 1,
                             p_addr : core_i.stq_heads[i].address,
                             vec : core_i.stq_heads[i].bit_vec,
-                            st_q_data : core_i.stq_heads[i].dataLine
+                            st_q_data : core_i.stq_heads[i].data
                         };
 
                     end else  //ld case

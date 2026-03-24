@@ -81,8 +81,8 @@
         },
 
         "Decode threeinput_adder logic" : {
-            "csv" : "rtl/core/Decode/structural/gen/three_input_adder.csv",
-            "outputFilePath": "rtl/core/Decode/structural/gen/three_input_adder.v",
+            "csv" : "lib/STDCells/gen/three_input_adder.csv",
+            "outputFilePath": "lib/STDCells/gen/three_input_adder.sv",
             "run Combinational SOP Gen": "true"
         }
 

@@ -101,7 +101,7 @@ module VCache_TagStore (
         //ADDRESS_2_TagStore = (read_D_SWAP_i  || LD_EB_i) ?
         //    DCache_SwapBuf_lineAddr_fields.idx
         //    : p_addr_fields.idx;
-        ADDRESS_2_TagStore = p_addr_fields.idx;
+        ADDRESS_2_TagStore = p_addr_fields.index;
     end
 
     //WR_2_TagStore

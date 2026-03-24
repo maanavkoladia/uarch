@@ -2,7 +2,6 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import DCache_common_pkg::*;
 
-
 module MIO_Block (
     input wire clk,
     input wire rst,  //active low
@@ -60,7 +59,7 @@ module MIO_Block (
     assign outputs_o.req_rejected = ld_addr_MIO_V && !readyForNewReq;
 
     always_comb begin
-        outputs_o.data_lineOut = '0;  // zero all 16 bytes
+        outputs_o.dataLineOut = '0;  // zero all 16 bytes
 
         for (int i = 0; i < 4; i++) begin
             outputs_o.dataLineOut[i] = dataBus[i*8+:8];
@@ -71,12 +70,12 @@ module MIO_Block (
         unique case ({
             block_req.we, block_req.oe
         })
-            2'b00: outputs_o.block_req_2_sch = DCACHE_MIO_IDLE;
+            2'b00: outputs_o.req_2_sch = DCACHE_MIO_IDLE;
 
-            2'b01: outputs_o.block_req_2_sch = DCACHE_MIO_LD_FROM_SIMPLE;
+            2'b01: outputs_o.req_2_sch  = DCACHE_MIO_LD_FROM_SIMPLE;
 
             2'b10:
-            outputs_o.block_req_2_sch = block_req.p_addr & WE_ADDR_MASK ? 
+            outputs_o.req_2_sch = block_req.p_addr & WE_ADDR_MASK ? 
             DCACHE_MIO_WR_SIMPLE : DCACHE_MIO_WR_COMPLEX;
 
             2'b11: $fatal;
