@@ -28,6 +28,7 @@ module DCache_TOP (
     bool hitVec[DCACHE_NUM_BLOCKS];
     block_req_t req_2_blocks[DCACHE_NUM_BLOCKS];
     mio_block_outputs_t mio_block_outputs;
+    bool arb_st_override_Out[NUM_WB_ST_QS];
 
     DCache_Arbitration dcache_arbitration (
         .clk_i(clk),
@@ -35,7 +36,8 @@ module DCache_TOP (
         .core_i(inFromCore_i),
         .block_hit_i(hitVec),
         .out2Core_o(out2Core_o),
-        .reqs_2_blocks_o(req_2_blocks)
+        .reqs_2_blocks_o(req_2_blocks),
+        .st_override_o(arb_st_override_Out)
     );
 
     generate
@@ -49,6 +51,7 @@ module DCache_TOP (
                 .permissionToDriveDataBus_evictionBuf(permissionToDriveDataBus_evictionBuf[i]),
                 .permissionToDriveAddrBus_Ld(permissionToDriveAddrBus_Ld),
                 .permissionToDriveAddrBus_eb(permissionToDriveAddrBus_eb),
+                .st_override_for_sch_req(arb_st_override_Out),
                 .dataBus(dataBus),
                 .address_bus(address_bus),
                 .outputs_o(blockOutputs[i])

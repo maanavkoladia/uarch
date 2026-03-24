@@ -14,7 +14,8 @@ module DCache_Arbitration (
 
     //for req rejeced signales
     output dcache_2_core_t out2Core_o,
-    output block_req_t reqs_2_blocks_o[DCACHE_NUM_BLOCKS]
+    output block_req_t reqs_2_blocks_o[DCACHE_NUM_BLOCKS],
+    output st_override_o[NUM_WB_ST_QS]
 );
 
     localparam int LD_REQ_BANK_UB = DCACHE_BANK_BANK_UB;
@@ -46,15 +47,15 @@ module DCache_Arbitration (
                 if (readyForNewReq[i]) begin
 
                     //store case
-                    if (st_override[i] && !core_i.stq_info[i].empty
+                    if (st_override[i] && !core_i.stq_heads[i].empty
                         || (!core_i.ld_addr_0_V && !core_i.ld_addr_1_V && !core_i.stq_info[i].empty)) begin
 
                         reqs[i] <= '{
                             oe: 0,
                             we: 1,
-                            p_addr : core_i.stq_info[i].address,
-                            vec : core_i.stq_info[i].bit_vec,
-                            st_q_data : core_i.stq_info[i].dataLine
+                            p_addr : core_i.stq_heads[i].address,
+                            vec : core_i.stq_heads[i].bit_vec,
+                            st_q_data : core_i.stq_heads[i].dataLine
                         };
 
                     end else  //ld case
@@ -73,8 +74,8 @@ module DCache_Arbitration (
         if (!rst) st_override <= 1'b0;
         else begin
             for (int i = 0; i < NUM_WB_ST_QS; i++) begin
-                if (core_i.stq_info[i].full) st_override[i] <= 1'b1;
-                else if (core_i.stq_info[i].empty) st_override[i] <= 1'b0;
+                if (core_i.stq_heads[i].full) st_override[i] <= 1'b1;
+                else if (core_i.stq_heads[i].empty) st_override[i] <= 1'b0;
             end
         end
     end
@@ -106,6 +107,6 @@ module DCache_Arbitration (
     assign reqs_2_blocks_o = reqs;
     assign out2Core_o.req_rejected_0 = core_i.ld_addr_0_V && !readyForNewReq[ld_req_0_bankNum];
     assign out2Core_o.req_rejected_1 = core_i.ld_addr_1_V && !readyForNewReq[ld_req_1_bankNum];
-
+    assign st_override_o = st_override;
 
 endmodule
