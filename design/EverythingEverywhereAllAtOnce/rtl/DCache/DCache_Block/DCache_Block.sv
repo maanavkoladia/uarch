@@ -1,6 +1,6 @@
 import common_pkg::*;
-import DCache_pkg::*;
 import interconnect_pkg::*;
+import DCache_common_pkg::*;
 
 module DCache_Block (
     input wire clk_i,
@@ -41,7 +41,7 @@ module DCache_Block (
     v_cache_outputs_t vcache_outputs;
     eb_outputs_t eb_outputs;
 
-    DCache_Bank dcache_bank (
+    DCache_Bank dcache_bank_unit (
         .clk(clk_i),
         .rst(rst_i),
         .V_Cache_i(vcache_outputs),
@@ -51,7 +51,7 @@ module DCache_Block (
         .outputs_o(dcache_bank_outputs)
     );
 
-    VCache vcache (
+    VCache vcache_unit (
         .clk_i(clk_i),
         .rst_i(rst_i),  //active low
         .blockReq_i(blockReq_i),
@@ -60,7 +60,7 @@ module DCache_Block (
         .outputs_o(vcache_outputs)
     );
 
-    EvictionBuf evictionBuf (
+    EvictionBuf evictionBuf_unit (
         .clk_i(clk_i),
         .rst_i(rst_i),  //active low
         .clr_v_i(evictionBuf_V_clr_FromDTE_i),
@@ -108,8 +108,10 @@ module DCache_Block (
     //addr bus
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
     assign address_bus_fake = permissionToDriveAddrBus_Ld ? block_req_i.p_addr : eb_outputs.addr;
-    assign address_bus = permissionToDriveAddrBus_Ld || permissionToDriveAddrBus_eb ? address_bus_fake ? 'z;
+    assign address_bus = permissionToDriveAddrBus_Ld || permissionToDriveAddrBus_eb ? address_bus_fake : 'z;
 
+    wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
+    assign dataBus = permissionToDriveDataBus_evictionBuf ? dataBus_fake : 'z;
     //data bus
     always_comb begin
         for(int i = 0; i < CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS; i++) begin
@@ -125,7 +127,7 @@ module DCache_Block (
             end
         end
     end
-    assign dataBus = permissionToDriveDataBus_evictionBuf ? dataBus_fake : 'z;
+
 
 
 

@@ -21,4 +21,4 @@ DCACHE_SRC_FILES = \
 
 
 DCACHE_PKGS = \
-			  $(DCACHE_PATH_INTERNAL)/pkg/DCache_pkg.sv
+			  $(DCACHE_PATH_INTERNAL)/pkg/DCache_common_pkg.sv

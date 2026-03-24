@@ -94,10 +94,10 @@ module DCache_Bank (
         .fill0_o(fsmOuts.fill0_o),
         .fill1_o(fsmOuts.fill1_o),
         .fill2_o(fsmOuts.fill2_o),
-        .fill3_o(fsmOuts.fill3_o),
+        .fill3_o(fsmOuts.fill3_o)
     );
 
-    DCache_Bank_DataStore DCache_Bank_DataStore (
+    DCache_Bank_DataStore DCache_Bank_DataStore_unit (
         .p_addr_i(blockReq_i.p_addr),
         .oe(blockReq_i.oe),
         .we(blockReq_i.we),
@@ -119,14 +119,14 @@ module DCache_Bank (
         .lineOut_o(dataStore_Line)
     );
 
-    DCache_Bank_TagStore DCache_Bank_TagStore (
+    DCache_Bank_TagStore DCache_Bank_TagStore_unit (
         .clk(clk),
         .rst(clk),  //active low
         .p_addr_i(blockReq_i.p_addr),
         .oe_i(blockReq_i.oe),
         .we_i(blockReq_i.we_i),
         .ld_From_V_Swap_i(fsmOuts.ld_V_swap_o),
-        .V_Cache_SwapBuf_Tag(V_Cache_i.vcache_swapBuf.lineAddr[V_CACHE_TAG_UB : V_CACHE_TAG_LB]),
+        //.V_Cache_SwapBuf_Tag(V_Cache_i.vcache_swapBuf.lineAddr[V_CACHE_TAG_UB : V_CACHE_TAG_LB]),
         .V_Cache_SwapBuf_DirtyBit(V_Cache_i.vcache_swapBuf.dirty),
         .fill3_i(fsmOuts.fill3_o),
         .write2_Dwap_i(fsmOuts.write_to_dswap_o),

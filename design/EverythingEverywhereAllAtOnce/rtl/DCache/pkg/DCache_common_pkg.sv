@@ -1,11 +1,10 @@
 package DCache_common_pkg;
 
     import common_pkg::*;
+    import interconnect_pkg::*;
 
     localparam int DCACHE_NUM_BLOCKS = 4;
 
-    localparam int DCACHE_BANK_NUM_LINES = 1 << DCACHE_BANK_INDEX_WIDTH;
-    localparam int VCACHE_NUM_LINES = 1 << V_CACHE_IDX_WIDTH;
     // Bit ranges
     localparam int DCACHE_BANK_TAG_UB = 14;
     localparam int DCACHE_BANK_TAG_LB = 9;
@@ -35,6 +34,9 @@ package DCache_common_pkg;
     localparam int V_CACHE_IDX_WIDTH = (V_CACHE_IDX_UB - V_CACHE_IDX_LB + 1);  // = 2
     localparam int V_CACHE_BANK_WIDTH = (V_CACHE_BANK_UB - V_CACHE_BANK_LB + 1);  // = 2
     localparam int V_CACHE_OFFSET_WIDTH = (V_CACHE_OFFSET_UB - V_CACHE_OFFSET_LB + 1);
+
+    localparam int DCACHE_BANK_NUM_LINES = 1 << DCACHE_BANK_INDEX_WIDTH;
+    localparam int VCACHE_NUM_LINES = 1 << V_CACHE_IDX_WIDTH;
 
     typedef struct {
         logic [DCACHE_BANK_TAG_WIDTH-1:0]    tag;
@@ -129,23 +131,23 @@ package DCache_common_pkg;
     typedef enum logic [$clog2(
 NUM_DCACHE_BANK_FSM_STATES
 ) - 1 : 0] {
-        IDLE     = 0,
-        EVICTING = 1,
-        Req0     = 2,
-        Req1     = 3,
-        Req2     = 4,
-        Req3     = 5,
-        SWAPPING = 6
+        DCACHE_BANK_IDLE     = 0,
+        DCACHE_BANK_EVICTING = 1,
+        DCACHE_BANK_Req0     = 2,
+        DCACHE_BANK_Req1     = 3,
+        DCACHE_BANK_Req2     = 4,
+        DCACHE_BANK_Req3     = 5,
+        DCACHE_BANK_SWAPPING = 6
     } dcache_bank_fsm_states_e;
 
     localparam NUM_VCACHE_STATES = 4;
     typedef enum logic [$clog2(
 NUM_VCACHE_STATES
 ) - 1 : 0] {
-        IDLE      = 0,  // IDLE (reset state)
-        RD_DSWAP  = 1,
-        WAITEVICT = 2,
-        ERROR     = 3   // ERROR (trap state), synthesised
+        VCACHE_IDLE      = 0,  // IDLE (reset state)
+        VCACHE_RD_DSWAP  = 1,
+        VCACHE_WAITEVICT = 2,
+        VCACHE_ERROR     = 3   // ERROR (trap state), synthesised
 
     } vcache_fsm_states_e;
 

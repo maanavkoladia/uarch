@@ -17,8 +17,8 @@ module EvictionBuf (
 
     evictionbuf_t eb;
 
-    always_ff @(posedge clk) begin
-        if (!rst) eb <= '0;
+    always_ff @(posedge clk_i) begin
+        if (!rst_i) eb <= '0;
         else begin
             if (vcache_outputs_i.LD_EB && !eb.valid) begin
                 eb.valid <= 1;

@@ -1,6 +1,6 @@
 import common_pkg::*;
-import DCache_pkg::*;
 import interconnect_pkg::*;
+import DCache_common_pkg::*;
 
 
 module MIO_Block (
@@ -35,7 +35,7 @@ module MIO_Block (
     //0x0040 DDR5: write power gating 1 bit 32 bit though
     //0x0050 DDR5: ld temperature value
 
-    block_req_MIO_t block_req;
+    block_req_mio_t block_req;
     bool block_idle = !block_req.oe && !block_req.we;
     bool readyForNewReq = (block_req.we && reqServed_FromDTE_i) || (block_req.oe && reqServed_FromDTE_i && !memStalling_FromCore) || block_idle;
 
@@ -63,7 +63,7 @@ module MIO_Block (
         outputs_o.data_lineOut = '0;  // zero all 16 bytes
 
         for (int i = 0; i < 4; i++) begin
-            outputs_o.data_lineOut[i] = dataBus[i*8+:8];
+            outputs_o.dataLineOut[i] = dataBus[i*8+:8];
         end
     end
 

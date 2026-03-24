@@ -1,4 +1,4 @@
-package tb_mainMem_pkg;
+package tb_dcache_pkg;
 
     // 10 ns
     localparam CLK_PERIOD = 10;

@@ -1,6 +1,6 @@
 import common_pkg::*;
-import DCache_pkg::*;
 import interconnect_pkg::*;
+import DCache_common_pkg::*;
 
 module DCache_Arbitration (
 
@@ -38,7 +38,7 @@ module DCache_Arbitration (
 
     //arb logic
     //
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk_i) begin
         if (!rst) reqs <= '0;
         else begin
             //bool ld_willScedule = 0;
@@ -47,7 +47,7 @@ module DCache_Arbitration (
 
                     //store case
                     if (st_override[i] && !core_i.stq_info[i].empty
-                        || (!ld_addr_0_V && ld_addr_1_V && !core_i.stq_info[i].empty)) begin
+                        || (!core_i.ld_addr_0_V && !core_i.ld_addr_1_V && !core_i.stq_info[i].empty)) begin
 
                         reqs[i] <= '{
                             oe: 0,
@@ -70,7 +70,7 @@ module DCache_Arbitration (
 
     // store override logic
     always_ff @(posedge clk_i) begin
-        if (!rst) st_override[i] <= 1'b0;
+        if (!rst) st_override <= 1'b0;
         else begin
             for (int i = 0; i < NUM_WB_ST_QS; i++) begin
                 if (core_i.stq_info[i].full) st_override[i] <= 1'b1;
@@ -83,7 +83,7 @@ module DCache_Arbitration (
     // bank idleness: no active request
     always_comb begin
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            bank_idleness[i] = !reqs[i].we && !reqs[i].oe;
+            block_idleness[i] = !reqs[i].we && !reqs[i].oe;
         end
     end
 

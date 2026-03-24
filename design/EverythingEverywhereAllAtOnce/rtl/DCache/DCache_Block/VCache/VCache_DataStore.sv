@@ -101,7 +101,7 @@ module VCache_DataStore (
             WR_2_DataStore = '0;
         end
 
-        if (!busy && we) begin
+        if (!busy_i && we) begin
             for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
                 WR_2_DataStore[i] = st_data_vec[i] && tagStore_hit_i ? 1'b0 : 1'b1;
             end
@@ -115,7 +115,7 @@ module VCache_DataStore (
 
     //OE_2_DataStore logic
     always_comb begin
-        OE_2_DataStore = LD_EB_i || Write_VSWAP_i || (!busy && oe) ? 1'b0 : 1'b1;
+        OE_2_DataStore = LD_EB_i || Write_VSWAP_i || (!busy_i && oe) ? 1'b0 : 1'b1;
     end
 
     //deal w outputs

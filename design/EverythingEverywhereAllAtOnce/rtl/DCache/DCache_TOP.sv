@@ -1,6 +1,6 @@
 import common_pkg::*;
-import DCache_pkg::*;
 import interconnect_pkg::*;
+import DCache_common_pkg::*;
 
 module DCache_TOP (
     input wire clk,
@@ -33,13 +33,13 @@ module DCache_TOP (
         .clk_i(clk),
         .rst(rst),  // active low
         .core_i(inFromCore_i),
-        .hit(hitVec),
+        .block_hit_i(hitVec),
         .out2Core_o(out2Core_o),
         .reqs_2_blocks_o(req_2_blocks)
     );
 
     generate
-        for (genvar i = 0; i < DCACHE_NUM_BLOCKS; i++) begin : g_dcachc_block
+        for (genvar i = 0; i < DCACHE_NUM_BLOCKS; i++) begin : g_dcache_block
             DCache_Block block (
                 .clk_i(clk),
                 .rst_i(rst),  //active low
@@ -50,6 +50,7 @@ module DCache_TOP (
                 .permissionToDriveAddrBus_Ld(permissionToDriveAddrBus_Ld),
                 .permissionToDriveAddrBus_eb(permissionToDriveAddrBus_eb),
                 .dataBus(dataBus),
+                .address_bus(address_bus),
                 .outputs_o(blockOutputs[i])
             );
         end

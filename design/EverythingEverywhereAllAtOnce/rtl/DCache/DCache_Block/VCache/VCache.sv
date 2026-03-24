@@ -7,7 +7,7 @@ module VCache (
 
     input block_req_t blockReq_i,
 
-    input eb_cache_outputs_t eb_outs_i,
+    input eb_outputs_t eb_outs_i,
     input d_cache_bank_outputs_t dcache_outs_i,
 
     output v_cache_outputs_t outputs_o
@@ -72,7 +72,7 @@ module VCache (
         .blocked_o(fsmOuts.blocked)
     );
 
-    VCache_DataStore vcache_datastore (
+    VCache_DataStore vcache_datastore_unit (
         .p_addr_i(blockReq_i.p_addr),
         .oe(blockReq_i.oe),
         .we(blockReq_i.we),
@@ -88,7 +88,7 @@ module VCache (
         .VCache_DataStore_LineOut_o(vcache_dataStore_Line)
     );
 
-    VCache_TagStore vcache_tag_store (
+    VCache_TagStore vcache_tag_store_unit (
         .clk_i(clk_i),
         .rst(rst_i),  //active low
         .p_addr_i(blockReq_i.p_addr),
@@ -107,8 +107,8 @@ module VCache (
     );
 
     //vcache_swapBuf LOGIC
-    always_ff @(posedge clk) begin
-        if (!rst) vcache_swapBuf <= '0;
+    always_ff @(posedge clk_i) begin
+        if (!rst_i) vcache_swapBuf <= '0;
         else begin
             unique case ({
                 fsmOuts.Write_VSWAP, dcache_outs_i.V_Cache_swapBuf_valid_clr
@@ -139,7 +139,7 @@ module VCache (
         writeSuccess2TagStore = 0;
         if(
             (currTag == block_req_p_addr_fields.tag)
-            && currLineValid
+            && V_Cache_TagStore_CurrLine_V
             && fsmOuts.busy
             && (blockReq_i.oe || blockReq_i.we)
             )
@@ -148,7 +148,7 @@ module VCache (
         end
 
         if(
-            (currTag != block_req_p_addr_fields.tag || !currLineValid )
+            (currTag != block_req_p_addr_fields.tag || !V_Cache_TagStore_CurrLine_V)
             && (blockReq_i.oe || blockReq_i.we)
             //&& fsmOuts.busy
             ) begin
