@@ -8,12 +8,14 @@ UARCH_GATES_LIB = \
 
 #$(ROOT)/lib/Gates/time.v \
 
+STD_CELL_LIB_GEN =	\
+					$(ROOT)/lib/STDCells/gen/three_input_adder.sv
+
 COMMON_GATES_LIB = \
 				   $(ROOT)/lib/Common/LOG.v \
 				   $(ROOT)/lib/Common/utils.v 
 
 STD_CELLS_LIB = \
-				$(ROOT)/lib/STDCells/triple_adder.v \
 				$(ROOT)/lib/STDCells/and_N.v \
 				$(ROOT)/lib/STDCells/mux2_10.v \
 				$(ROOT)/lib/STDCells/mux2_3.v \
@@ -22,9 +24,11 @@ STD_CELLS_LIB = \
 				$(ROOT)/lib/STDCells/or_N.v \
 				$(ROOT)/lib/STDCells/reg1b.v \
 				$(ROOT)/lib/STDCells/KoggeStone.v \
+				$(ROOT)/lib/STDCells/triple_adder.v \
 
 LIB_SRC_FILES = \
 				$(UARCH_GATES_LIB) \
+				$(STD_CELL_LIB_GEN)	\
 				$(COMMON_GATES_LIB)	\
 				$(STD_CELLS_LIB) 
 

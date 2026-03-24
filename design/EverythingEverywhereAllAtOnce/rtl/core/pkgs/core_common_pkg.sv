@@ -69,7 +69,7 @@ package core_common_pkg;
     typedef struct {
         bool valid;
 
-        bool stall;  //dep stall
+        bool stall;  //dep stall or req rejected
 
         //outputs to D$ arb
         bool ld_addr_0_V;
@@ -77,12 +77,20 @@ package core_common_pkg;
         bool ld_addr_1_V;
         p_address_t ld_addr_1;
 
+        //mio stuf
+        bool ld_addr_MIO_V;
+        p_address_t ld_addr_MIO;
+        st_q_2_dcache_t stq_info_mio;
+
     } dc_outputs_t;
 
     typedef struct {
         bool valid;
         bool stall;  //dep stall
-
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
+        p_address_t ST_PADDR_1;  //cacheline algned
+        bool ST_OP; 
     } mem_outputs_t;
 
     typedef struct {
@@ -95,6 +103,7 @@ package core_common_pkg;
         bool taken;  //this is the correct resolution
         bool br_XCL;  //this is for btb entry
         bool clr_exp_mode;  //for the special exp br in the rom, to clear exp mode in fetch
+        bool br_ucond; //3/17 adding this for btb info on on if branch was unconditional - Jacob
     } exe_br_resolution_outputs_t;
 
     typedef struct {
@@ -105,16 +114,23 @@ package core_common_pkg;
         //for decode for rep engine
         bool  clr_ZF_sb;
         logic ZF;
+
+        //store dep check
+        bool ST_OP;
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
+        p_address_t ST_PADDR_1;  //cacheline algned
+
     } exe_outputs_t;
 
     typedef struct {
         bool valid;
         p_address_t address;
-    } st_q_entry_info_t;
+    } mem_dep_check_info_t;
 
     typedef struct {
         //all 4 store queue
-        st_q_entry_info_t entries[NUM_WB_ST_QS * ST_Q_DEPTH];
+        mem_dep_check_info_t entries[NUM_WB_ST_QS * ST_Q_DEPTH];
     } st_q_2_dep_check_outputs_t;
 
     typedef struct {
@@ -131,6 +147,14 @@ package core_common_pkg;
 
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
         st_q_2_dep_check_outputs_t dep_check;
+
+        //store dep check
+        bool ST_OP;
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline algned
+        p_address_t ST_PADDR_1;  //cacheline algned
+
+
     } wb_outputs_t;
 
 endpackage

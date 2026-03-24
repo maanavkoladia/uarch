@@ -52,10 +52,10 @@ module DCache_Bank (
     swap_buf_t dcache_bank_swapBuf;
 
     p_addr_dcache_fields_t blockReq_p_addr_fields = '{
-        tag    : blockReq_i.p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
-        index  : blockReq_i.p_addr_i[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
-        bank   : blockReq_i.p_addr_i[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
-        offset : blockReq_i.p_addr_i[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
+        tag    : blockReq_i.p_addr[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
+        index  : blockReq_i.p_addr[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
+        bank   : blockReq_i.p_addr[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
+        offset : blockReq_i.p_addr[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
     };
 
     //need to create the hit and miss signals,
@@ -94,10 +94,10 @@ module DCache_Bank (
         .fill0_o(fsmOuts.fill0_o),
         .fill1_o(fsmOuts.fill1_o),
         .fill2_o(fsmOuts.fill2_o),
-        .fill3_o(fsmOuts.fill3_o),
+        .fill3_o(fsmOuts.fill3_o)
     );
 
-    DCache_Bank_DataStore DCache_Bank_DataStore (
+    DCache_Bank_DataStore DCache_Bank_DataStore_unit (
         .p_addr_i(blockReq_i.p_addr),
         .oe(blockReq_i.oe),
         .we(blockReq_i.we),
@@ -119,14 +119,14 @@ module DCache_Bank (
         .lineOut_o(dataStore_Line)
     );
 
-    DCache_Bank_TagStore DCache_Bank_TagStore (
+    DCache_Bank_TagStore DCache_Bank_TagStore_unit (
         .clk(clk),
         .rst(clk),  //active low
         .p_addr_i(blockReq_i.p_addr),
         .oe_i(blockReq_i.oe),
-        .we_i(blockReq_i.we_i),
+        .we_i(blockReq_i.we),
         .ld_From_V_Swap_i(fsmOuts.ld_V_swap_o),
-        .V_Cache_SwapBuf_Tag(V_Cache_i.vcache_swapBuf.lineAddr[V_CACHE_TAG_UB : V_CACHE_TAG_LB]),
+        //.V_Cache_SwapBuf_Tag(V_Cache_i.vcache_swapBuf.lineAddr[V_CACHE_TAG_UB : V_CACHE_TAG_LB]),
         .V_Cache_SwapBuf_DirtyBit(V_Cache_i.vcache_swapBuf.dirty),
         .fill3_i(fsmOuts.fill3_o),
         .write2_Dwap_i(fsmOuts.write_to_dswap_o),
@@ -140,7 +140,7 @@ module DCache_Bank (
     //need to handle dcache swap buf logic
     always_ff @(posedge clk) begin
         if (!rst) begin
-            dcache_bank_swapBuf <= '0;
+            dcache_bank_swapBuf <= '{default: '0};
         end else begin
             //valid bit logic
             unique case ({
@@ -157,7 +157,7 @@ module DCache_Bank (
                 //bits from tagstore, idx bits, banks bits, then zero out rest,
                 //they dont matter
                 dcache_bank_swapBuf.lineAddr <= {
-                    currTag, blockReq_addrFields.idx, blockReq_addrFields.bank, 4'b0000
+                    currTag, blockReq_p_addr_fields.index, blockReq_p_addr_fields.bank, 4'b0000
                 };
                 dcache_bank_swapBuf.line <= dataStore_Line;
             end
@@ -197,13 +197,13 @@ module DCache_Bank (
 
     //need to write to the dache outputs
     always_comb begin
-        outputs.hit = hit;
+        outputs_o.hit = hit;
         //outputs.miss = miss;
-        outputs.dcache_bank_swapBuf = dcache_bank_swapBuf;
-        outputs.V_Cache_swapBuf_valid_clr = fsmOuts.invalidate_v_swap_o;
-        outputs.D_will_evict = fsmOuts.D_will_evict_o;
-        outputs.busy = fsmOuts.busy_o;
-        outputs.data_lineOut = dataStore_Line;
+        outputs_o.dcache_swapBuf = dcache_bank_swapBuf;
+        outputs_o.V_Cache_swapBuf_valid_clr = fsmOuts.invalidate_v_swap_o;
+        outputs_o.D_will_evict = fsmOuts.D_will_evict_o;
+        outputs_o.busy = fsmOuts.busy_o;
+        outputs_o.data_lineOut = dataStore_Line;
     end
 
 endmodule

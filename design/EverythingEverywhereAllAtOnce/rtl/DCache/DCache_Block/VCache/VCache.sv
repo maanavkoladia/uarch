@@ -7,7 +7,7 @@ module VCache (
 
     input block_req_t blockReq_i,
 
-    input eb_cache_outputs_t eb_outs_i,
+    input eb_outputs_t eb_outs_i,
     input d_cache_bank_outputs_t dcache_outs_i,
 
     output v_cache_outputs_t outputs_o
@@ -18,10 +18,10 @@ module VCache (
     assign vcache_fsm_state = vcache_fsm_state_bits;
 
     p_addr_vcache_fields_t block_req_p_addr_fields = '{
-        tag    : blockReq_i.p_addr_i[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
-        index  : blockReq_i.p_addr_i[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
-        bank   : blockReq_i.p_addr_i[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
-        offset : blockReq_i.p_addr_i[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
+        tag    : blockReq_i.p_addr[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
+        index  : blockReq_i.p_addr[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
+        bank   : blockReq_i.p_addr[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
+        offset : blockReq_i.p_addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
     };
 
     typedef struct {
@@ -72,7 +72,7 @@ module VCache (
         .blocked_o(fsmOuts.blocked)
     );
 
-    VCache_DataStore vcache_datastore (
+    VCache_DataStore vcache_datastore_unit (
         .p_addr_i(blockReq_i.p_addr),
         .oe(blockReq_i.oe),
         .we(blockReq_i.we),
@@ -88,7 +88,7 @@ module VCache (
         .VCache_DataStore_LineOut_o(vcache_dataStore_Line)
     );
 
-    VCache_TagStore vcache_tag_store (
+    VCache_TagStore vcache_tag_store_unit (
         .clk_i(clk_i),
         .rst(rst_i),  //active low
         .p_addr_i(blockReq_i.p_addr),
@@ -107,8 +107,8 @@ module VCache (
     );
 
     //vcache_swapBuf LOGIC
-    always_ff @(posedge clk) begin
-        if (!rst) vcache_swapBuf <= '0;
+    always_ff @(posedge clk_i) begin
+        if (!rst_i) vcache_swapBuf <= '{default: '0};
         else begin
             unique case ({
                 fsmOuts.Write_VSWAP, dcache_outs_i.V_Cache_swapBuf_valid_clr
@@ -124,7 +124,7 @@ module VCache (
                 //bits from tagstore, idx bits, banks bits, then zero out rest,
                 //they dont matter
                 vcache_swapBuf.lineAddr <= {
-                    currTag, block_req_p_addr_fields.idx, block_req_p_addr_fields.bank, 4'b0000
+                    currTag, block_req_p_addr_fields.index, block_req_p_addr_fields.bank, 4'b0000
                 };
                 vcache_swapBuf.line <= vcache_dataStore_Line;
             end
@@ -139,7 +139,7 @@ module VCache (
         writeSuccess2TagStore = 0;
         if(
             (currTag == block_req_p_addr_fields.tag)
-            && currLineValid
+            && V_Cache_TagStore_CurrLine_V
             && fsmOuts.busy
             && (blockReq_i.oe || blockReq_i.we)
             )
@@ -148,7 +148,7 @@ module VCache (
         end
 
         if(
-            (currTag != block_req_p_addr_fields.tag || !currLineValid )
+            (currTag != block_req_p_addr_fields.tag || !V_Cache_TagStore_CurrLine_V)
             && (blockReq_i.oe || blockReq_i.we)
             //&& fsmOuts.busy
             ) begin
@@ -167,14 +167,14 @@ module VCache (
     always_comb begin
         outputs_o.hit = hit;
         outputs_o.miss = miss;
-        outputs.vcache_swapBuf = vcache_swapBuf;
-        outputs.D_Cache_swapBuf_valid_clr = fsmOuts.CLR_D_SWAP_V;
-        outputs.LD_EB = fsmOuts.LD_EB;
-        outputs.busy = fsmOuts.busy;
-        outputs.beingBlocked = fsmOuts.blocked;
-        outputs.lineOut = vcache_dataStore_Line;
-        outputs.addrOut = {
-            currTag, block_req_p_addr_fields.idx, block_req_p_addr_fields.bank, 4'b0000
+        outputs_o.vcache_swapBuf = vcache_swapBuf;
+        outputs_o.D_Cache_swapBuf_valid_clr = fsmOuts.CLR_D_SWAP_V;
+        outputs_o.LD_EB = fsmOuts.LD_EB;
+        outputs_o.busy = fsmOuts.busy;
+        outputs_o.beingBlocked = fsmOuts.blocked;
+        outputs_o.lineOut = vcache_dataStore_Line;
+        outputs_o.addrOut = {
+            currTag, block_req_p_addr_fields.index, block_req_p_addr_fields.bank, 4'b0000
         };
     end
 

@@ -1,6 +1,6 @@
 import common_pkg::*;
-import DCache_pkg::*;
 import interconnect_pkg::*;
+import DCache_common_pkg::*;
 
 module DCache_TOP (
     input wire clk,
@@ -23,28 +23,40 @@ module DCache_TOP (
     inout [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus
 
 );
+
     dcache_block_outputs_t blockOutputs[DCACHE_NUM_BLOCKS];
     bool hitVec[DCACHE_NUM_BLOCKS];
     block_req_t req_2_blocks[DCACHE_NUM_BLOCKS];
     mio_block_outputs_t mio_block_outputs;
+    bool arb_st_override_Out[NUM_WB_ST_QS];
+    bool arb_req_rejected_0_out;
+    bool arb_req_rejected_1_out;
 
     DCache_Arbitration dcache_arbitration (
         .clk_i(clk),
         .rst(rst),  // active low
         .core_i(inFromCore_i),
-        .hit(hitVec),
-        .reqs_2_blocks_o(req_2_blocks)
+        .block_hit_i(hitVec),
+        .req_rejected_0_o(arb_req_rejected_0_out),
+        .req_rejected_1_o(arb_req_rejected_1_out),
+        .reqs_2_blocks_o(req_2_blocks),
+        .st_override_o(arb_st_override_Out)
     );
 
     generate
-        for (genvar i = 0; i < DCACHE_NUM_BLOCKS; i++) begin : g_dcachc_block
+        for (genvar i = 0; i < DCACHE_NUM_BLOCKS; i++) begin : g_dcache_block
             DCache_Block block (
                 .clk_i(clk),
                 .rst_i(rst),  //active low
                 .block_req_i(req_2_blocks[i]),
                 .mem_Valid_FromDte_i(inFromDTE_i.mem_valid[i]),
                 .evictionBuf_V_clr_FromDTE_i(inFromDTE_i.evictionBuf_V_clr[i]),
+                .permissionToDriveDataBus_evictionBuf(inFromDTE_i.permissionToDriveDataBus_evictionBuf[i]),
+                .permissionToDriveAddrBus_Ld(inFromDTE_i.permissionToDriveAddrBus_Ld[i]),
+                .permissionToDriveAddrBus_eb(inFromDTE_i.permissionToDriveAddrBus_eb[i]),
+                .st_override_for_sch_req(arb_st_override_Out[i]),
                 .dataBus(dataBus),
+                .address_bus(address_bus),
                 .outputs_o(blockOutputs[i])
             );
         end
@@ -80,21 +92,21 @@ module DCache_TOP (
 
     //line0 line 1 logic
     always_comb begin
-        bool usedLine0 = false;
-        for (int j = 0; j < CACHE_LINES_SIZE_B; j++) begin
-            out2Core_o.line_0[j] = 0;
-            out2Core_o.line_1[j] = 0;
-        end
+        bool usedLine0 = 0;
+        out2Core_o.line_0 = '{default: '0};
+        out2Core_o.hit_line_0 = 0;
+        out2Core_o.line_1 = '{default: '0};
+        out2Core_o.hit_line_1 = 0;
+
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            if (req_2_blocks[i].oe && blockOutputs.hit_o) begin
+            if (req_2_blocks[i].oe && blockOutputs[i].hit_o) begin
                 if (!usedLine0) begin
                     out2Core_o.hit_line_0 = 1;
-                    for (int j = 0; j < CACHE_LINES_SIZE_B; j++)
-                    out2Core_o.line_0[j] = blockOutputs[i].dataLineOut[j];
+                    out2Core_o.line_0 = blockOutputs[i].dataLineOut;
+                    usedLine0 = 1;
                 end else begin
                     out2Core_o.hit_line_1 = 1;
-                    for (int j = 0; j < CACHE_LINES_SIZE_B; j++)
-                    out2Core_o.line_1[j] = blockOutputs[i].dataLineOut[j];
+                    out2Core_o.line_1 = blockOutputs[i].dataLineOut;
                 end
 
             end
@@ -109,56 +121,12 @@ module DCache_TOP (
         end
     end
 
-    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
-    wire driveAddrBus;
-    assign address_bus = driveAddrBus ? address_bus_fake : 'z;
-
-    //driving bus logic
-    always_comb begin
-        driveAddrBus = 0;
-        address_bus_fake = 0;
-        for (int i = 0; i < NUM_DCACHE_PORTS; i++) begin
-            for (int j = 0; j < MEM_BUS_SIZE / DATA_BUS_WIDTH_BITS; j++) begin
-                if (inFromDTE_i.evictionBuf_PermissionToDriveBus[i][j]) begin
-                    driveAddrBus = 1;
-                    address_bus_fake = blockOutputs[i].eb_addr;
-                end
-            end
-        end
-    end
-
-    //driving data bus
-    wire [DATA_BUS_WIDTH_BITS - 1 : 0] data_bus_fake;
-    wire driveDataBus;
-    assign dataBus = driveDataBus ? data_bus_fake : 'z;
-
-    //driving bus logic
-    always_comb begin
-        driveDataBus  = 1'b0;
-        data_bus_fake = '0;
-
-        for (int i = 0; i < NUM_DCACHE_PORTS; i++) begin
-            for (int j = 0; j < MEM_BUS_SIZE / DATA_BUS_WIDTH_BITS; j++) begin
-                if (dte_i.evictionBuf_PermissionToDriveBus[i][j]) begin
-
-                    driveDataBus = 1'b1;
-
-                    data_bus_fake = {
-                        blockOutputs.eb_line_O[i][4*j+3],
-                        blockOutputs.eb_line_O[i][4*j+2],
-                        blockOutputs.eb_line_O[i][4*j+1],
-                        blockOutputs.eb_line_O[i][4*j+0]
-                    };
-
-                end
-            end
-        end
-    end
-
     //mio block out wiring
     assign out2Core_o.writeSuccess_MIO = mio_block_outputs.writeSuccess;
     assign out2Core_o.hit_line_MIO = mio_block_outputs.hit_o;
-    assign out2Core_o.writeSuccess_MIO = mio_block_outputs.writeSuccess;
     assign out2Core_o.req_rejected_mio = mio_block_outputs.req_rejected;
+    assign out2Core_o.req_rejected_0 = arb_req_rejected_0_out;
+    assign out2Core_o.req_rejected_1 = arb_req_rejected_1_out;
     assign out2Sch_o.req_mio = mio_block_outputs.req_2_sch;
 endmodule
+

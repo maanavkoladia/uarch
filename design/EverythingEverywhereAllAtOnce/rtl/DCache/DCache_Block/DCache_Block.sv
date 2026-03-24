@@ -1,16 +1,27 @@
 import common_pkg::*;
-import DCache_pkg::*;
 import interconnect_pkg::*;
+import DCache_common_pkg::*;
 
 module DCache_Block (
     input wire clk_i,
     input wire rst_i,  //active low
 
+    //from dcahce arb
     input block_req_t block_req_i,
+
+    //DTE input
     input bool mem_Valid_FromDte_i,
     input bool evictionBuf_V_clr_FromDTE_i,
-    input wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus,
+    input bool permissionToDriveDataBus_evictionBuf[CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS],
+    input bool permissionToDriveAddrBus_Ld,
+    input bool permissionToDriveAddrBus_eb,
+
+    //for sceduling
     input wire st_override_for_sch_req,
+
+    //
+    inout wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus,
+    inout wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus,
 
     //output byte_t dataLineOut[CACHE_LINES_SIZE_B],
     //output bool   hit_o,
@@ -30,7 +41,7 @@ module DCache_Block (
     v_cache_outputs_t vcache_outputs;
     eb_outputs_t eb_outputs;
 
-    DCache_Bank dcache_bank (
+    DCache_Bank dcache_bank_unit (
         .clk(clk_i),
         .rst(rst_i),
         .V_Cache_i(vcache_outputs),
@@ -40,16 +51,16 @@ module DCache_Block (
         .outputs_o(dcache_bank_outputs)
     );
 
-    VCache vcache (
+    VCache vcache_unit (
         .clk_i(clk_i),
         .rst_i(rst_i),  //active low
-        .blockReq_i(blockReq_i),
+        .blockReq_i(block_req_i),
         .eb_outs_i(eb_outputs),
         .dcache_outs_i(dcache_bank_outputs),
         .outputs_o(vcache_outputs)
     );
 
-    EvictionBuf evictionBuf (
+    EvictionBuf evictionBuf_unit (
         .clk_i(clk_i),
         .rst_i(rst_i),  //active low
         .clr_v_i(evictionBuf_V_clr_FromDTE_i),
@@ -58,7 +69,7 @@ module DCache_Block (
     );
 
     always_comb begin
-        outputs_o.dataLineOut = '0;  // default (or leave if you prefer fail-fast X)
+        outputs_o.dataLineOut = '{default: '0};  // default (or leave if you prefer fail-fast X)
         unique case ({
             dcache_bank_outputs.hit, vcache_outputs.hit
         })
@@ -78,12 +89,12 @@ module DCache_Block (
 
     assign outputs_o.hit_o = dcache_bank_outputs.hit || vcache_outputs.hit;
 
-    //assign outputs_o.eb_V_o = eb_outputs.valid;
     assign outputs_o.eb_addr = eb_outputs.addr;
-    assign outputs_o.eb_line_O = eb_outputs.lineOut;
+    //assign outputs_o.eb_V_o = eb_outputs.valid;
+    //assign outputs_o.eb_line_O = eb_outputs.lineOut;
 
     always_comb begin
-        //outputs_o.req_2_sch = DCACHE_IDLE;
+        outputs_o.req_2_sch = DCACHE_IDLE;
 
         //if (eb_outputs.valid) begin
         //    outputs_o.req_2_sch = DCACHE_LOW_PRI_REQ;
@@ -92,5 +103,42 @@ module DCache_Block (
         //end
         //chat write this
     end
+
+    //bus logic
+    //addr bus
+    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
+    assign address_bus_fake = permissionToDriveAddrBus_Ld ? block_req_i.p_addr : eb_outputs.addr;
+    assign address_bus = permissionToDriveAddrBus_Ld || permissionToDriveAddrBus_eb ? address_bus_fake : 'z;
+    int startingOffset;
+    logic [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
+
+    assign dataBus = 
+        permissionToDriveDataBus_evictionBuf[0] 
+        || permissionToDriveDataBus_evictionBuf[1] 
+        || permissionToDriveDataBus_evictionBuf[2] 
+        || permissionToDriveDataBus_evictionBuf[3]? dataBus_fake : 'z;
+    //data bus
+    always_comb begin
+        startingOffset = 0;
+        for(int i = 0; i < CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS; i++) begin
+            dataBus_fake = '0;
+            if(permissionToDriveDataBus_evictionBuf[i]) begin
+                startingOffset = i * CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS;
+                dataBus_fake = {
+                    eb_outputs.lineOut[startingOffset],
+                    eb_outputs.lineOut[startingOffset + 1],
+                    eb_outputs.lineOut[startingOffset + 2],
+                    eb_outputs.lineOut[startingOffset + 3]
+                };
+            end
+        end
+    end
+
+
+
+
+
+
+
 
 endmodule

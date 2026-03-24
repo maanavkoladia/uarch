@@ -12,7 +12,7 @@ module PreDecode(
     output decode_stage_latches decode_latches
 );
 
-    byte_t IR[CACHE_LINES_SIZE];
+    byte_t IR[CACHE_LINES_SIZE_B];
     logic pf0, pf1, pf2;
     logic[9:0] pf0_vect, pf1_vect, pf2_vect, total_pf_vector;
     logic[1:0] num_pfs;

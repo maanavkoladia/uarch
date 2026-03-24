@@ -3,6 +3,7 @@ package common_pkg;
     //`define true (1'b1)
     //`define false (1'b0)
 
+    
     localparam int CACHE_LINES_SIZE_B = 16;
     localparam int CACHE_LINES_SIZE_Bits = CACHE_LINES_SIZE_B * 8;
     localparam int ADDRESS_BITS = 32;

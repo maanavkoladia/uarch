@@ -15,64 +15,107 @@ module IDM (
     output idm_outputs_t   idm_outs_o
 );
 
-    idm_t q;
+    idm_t idm;
 
-    //// --------------------------------
-    //// Combinational fanout to outputs
-    //// --------------------------------
-    //always_comb begin
-    //    for (int i = 0; i < num_slots; i++) begin
+    always@(posedge clk)begin
+        if(rst | fetch_outs_i.exp_pipe_clear)begin
+            for(int i = 0; i < NUM_IDM_SLOTS; i++)begin
+                idm.slots[i].valid     <= 0;
+                idm.slots[i].br_valid  <= 0;
+                idm.slots[i].br_eip    <= '0;
+                idm.slots[i].br_target <= '0;
+                idm.slots[i].br_xcl    <= 0;
+                idm.slots[i].data      <= '{default: '0};
+            end
+        end
+        else begin
+            for (int i = 0; i < NUM_IDM_SLOTS; i++) begin
+                idm_slot_req_t curReq;
+                curReq = fetch_outs_i.idm_reqs.req[i];
+                if (curReq.ld_meta_data) begin
+                    idm.slots[i].valid <= curReq.valid;
+                    idm.slots[i].br_valid <= curReq.br_valid;
+                    idm.slots[i].br_eip <= curReq.br_eip;
+                    idm.slots[i].br_target <= curReq.br_target;
+                    idm.slots[i].br_xcl <= curReq.br_xcl;
+                end
+                if (curReq.ld_data) begin
+                    for (int j = 0; j < CACHE_LINES_SIZE_B; j++) begin
+                        idm.slots[i].data[j] <= curReq.data[j];
+                    end
+                end
+            end
+        end
+    end
 
-    //        // ----- FETCH OUTPUT -----
-    //        output_2_fetch.slot_info_list[i].valid         = q.slots[i].valid;
-    //        output_2_fetch.slot_info_list[i].br_valid      = q.slots[i].br_valid;
-    //        output_2_fetch.slot_info_list[i].br_eip        = q.slots[i].br_eip;
-    //        output_2_fetch.slot_info_list[i].br_target     = q.slots[i].br_target;
-    //        output_2_fetch.slot_info_list[i].br_xcl        = q.slots[i].br_xcl;
-    //        output_2_fetch.slot_info_list[i].data          = q.slots[i].data;
 
-    //        // ----- PREDECODE OUTPUT -----
-    //        output_2_predecode.slot_info_list[i].valid     = q.slots[i].valid;
-    //        output_2_predecode.slot_info_list[i].br_valid  = q.slots[i].br_valid;
-    //        output_2_predecode.slot_info_list[i].br_eip    = q.slots[i].br_eip;
-    //        output_2_predecode.slot_info_list[i].br_target = q.slots[i].br_target;
-    //        output_2_predecode.slot_info_list[i].br_xcl    = q.slots[i].br_xcl;
-    //        output_2_predecode.slot_info_list[i].data      = q.slots[i].data;
-    //    end
-    //end
+    always_comb begin
+        for (int i = 0; i < NUM_IDM_SLOTS; i++) begin
+            idm_outs_o.idm_slots[i].valid         = idm.slots[i].valid;
+            idm_outs_o.idm_slots[i].br_valid      = idm.slots[i].br_valid;
+            idm_outs_o.idm_slots[i].br_eip        = idm.slots[i].br_eip;
+            idm_outs_o.idm_slots[i].br_btb_target = idm.slots[i].br_target;
+            idm_outs_o.idm_slots[i].br_xcl        = idm.slots[i].br_xcl;
+            idm_outs_o.idm_slots[i].data          = idm.slots[i].data;
+        end
+    end
 
-    //// --------------------------------
-    //// Sequential state update
-    //// --------------------------------
-    //always_ff @(posedge clk or posedge rst) begin
-    //    if (rst) begin
-    //        for (int i = 0; i < num_slots; i++) begin
-    //            q.slots[i].valid     <= 0;
-    //            q.slots[i].br_valid  <= 0;
-    //            q.slots[i].br_eip    <= '0;
-    //            q.slots[i].br_target <= '0;
-    //            q.slots[i].br_xcl    <= 0;
-    //            q.slots[i].data      <= '{default: '0};
-    //        end
-    //    end else begin
-    //        for (int i = 0; i < num_slots; i++) begin
-    //            instruction_slot_req_t curReq = inputs[i];
-    //            if (curReq.ld_meta_data) begin
-    //                q.slots[i] <= '{
-    //                    valid: curReq.valid,
-    //                    br_valid: curReq.br_valid,
-    //                    br_eip: curReq.br_eip,
-    //                    br_target: curReq.br_target,
-    //                    br_xcl: curReq.br_xcl
-    //                };
-    //            end
-    //            if (curReq.ld_data) begin
-    //                for (int j = 0; j < CACHE_LINES_SIZE; j++) begin
-    //                    q.slots[j].data <= '{curReq.data[j]};
-    //                end
-    //            end
-    //        end
-    //    end
-    //end
+/*
 
+    typedef struct {
+        bool valid;
+        bool br_valid;
+        address_t br_eip;
+        address_t br_target;
+        bool br_xcl;
+        byte_t data[CACHE_LINES_SIZE_B];
+
+        // you may add internal-only metadata here later
+        // e.g. age bits, debug tags, etc.
+    } slot_t;
+
+    typedef struct {slot_t slots[NUM_IDM_SLOTS];} idm_t;
+
+    typedef struct {
+        bool valid;
+        //the br was predecited taken in fetch
+        bool br_valid;
+        l_address_t br_eip;
+        l_address_t br_btb_target;  //this is the btbs predicted target, 
+        bool br_xcl;
+        byte_t data[CACHE_LINES_SIZE_B];
+    } idm_slot_info_t;
+
+    typedef struct {idm_slot_info_t idm_slots[NUM_IDM_SLOTS];} idm_outputs_t;
+
+
+        typedef struct {
+        core_2_icache_t fetch_2_icache;
+        fetch_idm_ctrl_2_idm_t idm_reqs;
+        bool exp_pipe_clear;
+    } fetch_outputs_t;
+
+
+
+    typedef struct {
+        bool ld_meta_data;
+        //this is for the cachelines, if not laoding dont want to create a mux or
+        //load in X's
+        bool ld_data;
+
+        bool valid;
+
+        bool br_valid;
+        address_t br_eip;
+        address_t br_target;
+        bool br_xcl;
+        byte_t data[CACHE_LINES_SIZE_B];
+    } idm_slot_req_t;
+
+    typedef struct {idm_slot_req_t req[NUM_IDM_SLOTS];} fetch_idm_ctrl_2_idm_t;
+
+*/
+
+
+    
 endmodule

@@ -86,14 +86,16 @@ module VCache_TagStore (
 
     //assinged, routing handeled externally
     logic [V_CACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore;
+    logic [7:0] DOUT_2_TagStore_extended;
+    assign DOUT_2_TagStore = DOUT_2_TagStore_extended[V_CACHE_TAG_WIDTH - 1 : 0];
 
     //create the memcells for this
-    ram8b8w$ tag_store_ramCell (
+    ram8b4w$ tag_store_ramCell (
         .A(ADDRESS_2_TagStore),
-        .DIN(DIN_2_TagStore),
+        .DIN({1'b0,DIN_2_TagStore}),
         .OE(OE_2_TagStore),
         .WR(WR_2_TagStore),
-        .DOUT(DOUT_2_TagStore)
+        .DOUT(DOUT_2_TagStore_extended)
     );
 
     //ADDRESS_2_TagStore
@@ -101,12 +103,12 @@ module VCache_TagStore (
         //ADDRESS_2_TagStore = (read_D_SWAP_i  || LD_EB_i) ?
         //    DCache_SwapBuf_lineAddr_fields.idx
         //    : p_addr_fields.idx;
-        ADDRESS_2_DataStore = p_addr_fields.idx;
+        ADDRESS_2_TagStore = p_addr_fields.index;
     end
 
     //WR_2_TagStore
     always_comb begin
-        WR_2_TagStore = read_D_SWAP_i ? 1'b0 : 1'b1;
+        WR_2_TagStore = Read_DSWAP_i ? 1'b0 : 1'b1;
     end
 
     //DIN_2_TagStore
@@ -123,24 +125,24 @@ module VCache_TagStore (
     end
 
     //ff block for tagstore_meta_store
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk_i) begin
         if (!rst) begin
-            tagstore_meta_store <= '0;
+            tagMetaStore <= '{default: '0};
         end
         begin  //only needs to change when i new line is coming in
             if (Read_DSWAP_i) begin
-                tagstore_meta_store[p_addr_fields.index].valid <= 1;
-                tagstore_meta_store[p_addr_fields.index].dirty <= D_Cache_SwapBuf_DirtyBit;
+                tagMetaStore [p_addr_fields.index].valid <= 1;
+                tagMetaStore [p_addr_fields.index].dirty <= D_Cache_SwapBuf_DirtyBit;
             end
             if (writeSuccess) begin
-                tagstore_meta_store[p_addr_fields.index].dirty <= 1;
+                tagMetaStore [p_addr_fields.index].dirty <= 1;
             end
         end
     end
 
     //comb outputs or valid and dirty
     assign tagOut_o = DOUT_2_TagStore;
-    assign currLine_V_o = tagstore_meta_store[p_addr_fields.index].valid;
-    assign currLine_Dirty_o = tagstore_meta_store[p_addr_fields.index].dirty;
+    assign currLine_V_o = tagMetaStore [p_addr_fields.index].valid;
+    assign currLine_Dirty_o = tagMetaStore [p_addr_fields.index].dirty;
 
 endmodule

@@ -50,8 +50,11 @@ package interconnect_pkg;
 
     typedef struct {
         bool mem_valid[NUM_DCACHE_PORTS];
-        bool evictionBuf_PermissionToDriveDataBus[NUM_DCACHE_PORTS][MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
-        bool PermissionToDriveAddrBus[NUM_DCACHE_PORTS];
+        bool permissionToDriveDataBus_evictionBuf[NUM_DCACHE_PORTS][CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS];
+        //bool permissionToDriveAddrBus_eb;
+        bool permissionToDriveAddrBus_Ld[NUM_DCACHE_PORTS];
+        bool permissionToDriveAddrBus_eb[NUM_DCACHE_PORTS];
+
         bool evictionBuf_V_clr[NUM_DCACHE_PORTS];
 
         //MIO stuff
@@ -114,8 +117,8 @@ package interconnect_pkg;
         bool empty;
         p_address_t address;
         uint16_t bit_vec;
-        bool MIO;
-        byte_t dataLine[CACHE_LINES_SIZE_B];
+        byte_t data[CACHE_LINES_SIZE_B];
+
     } st_q_2_dcache_t;
 
     typedef struct {
@@ -129,7 +132,7 @@ package interconnect_pkg;
         bool memStalling;
 
         //for wb
-        st_q_2_dcache_t stq_info[NUM_WB_ST_QS];
+        st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
 
         //for MIO
         //from DC
@@ -156,9 +159,9 @@ package interconnect_pkg;
         //TODO
         //
         //for MIO
-        bool   writeSuccess_MIO;
-        bool   hit_line_MIO;
-        bool   req_rejected_mio;
+        bool   writeSuccess_MIO; //for pop MIO
+        bool   hit_line_MIO; //for ld_mem stage 
+        bool   req_rejected_mio; //for dc stage 
         byte_t line_MIO[CACHE_LINES_SIZE_B];
     } dcache_2_core_t;
 

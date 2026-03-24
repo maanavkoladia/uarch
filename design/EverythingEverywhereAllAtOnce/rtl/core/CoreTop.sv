@@ -45,6 +45,10 @@ module CoreTop (
             ld_addr_0 : dc_outputs.ld_addr_0,
             ld_addr_1_V : dc_outputs.ld_addr_1_V,
             ld_addr_1 : dc_outputs.ld_addr_1,
+            ld_addr_MIO_V : dc_outputs.ld_addr_MIO_V,
+            ld_addr_MIO : dc_outputs.ld_addr_MIO,
+            stq_info_mio : dc_outputs.stq_info_mio,
+            memStalling : mem_outputs.stall,
             stq_heads : wb_outputs.stq_heads
         };
 
@@ -142,22 +146,27 @@ module CoreTop (
         .exe_outs_i(exe_outputs),
         .wb_outs_i(wb_outputs),
         .mem_latches_next_o(mem_latches_next),
+        .req_rejected_mio(DCacheIn_i.req_rejected_mio),
+        .req_rejected_0(DCacheIn_i.req_rejected_0),
+        .req_rejected_1(DCacheIn_i.req_rejected_1),
         .dc_outs_o(dc_outputs)
     );
 
     MEM mem_unit (
         .clk(clk),
         .rst(rst),
+
         .latches_i(mem_latches),
         .exe_outs_i(exe_outputs),
         .wb_outs_i(wb_outputs),
-        .valid_0(DCacheIn_i.valid_0),
+
         .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
         .line_0(DCacheIn_i.line_0),
-        .valid_1(DCacheIn_i.valid_1),
         .hit_line_1(DCacheIn_i.hit_line_1),
         .line_1(DCacheIn_i.line_1),
         .exe_latches_next_o(exe_latches_next),
+        .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
+        .line_MMIO(DCacheIn_i.line_MIO),
         .outs_o(mem_outputs)
     );
 
