@@ -3,13 +3,10 @@ include ../../../Make.build
 
 TARGET = dcache
 
-#MEM_GEN_CONF = memGen.conf.json
-#TEST_PROG = testProg.s
 
 TB_FILES = \
-		   tb_mainMem_pkg.sv	\
-		   memLoader.sv	\
-		   tb_mainMem.sv
+		   tb_dcache_pkg.sv	\
+		   tb_dcache.sv	\
 
 PKGS = $(RTL_PKGS)
 
@@ -18,7 +15,7 @@ SRC_FILES = \
 			$(RTL_SRC_FILES) \
 			$(TB_FILES)	\
 
-.PHONY: all run clean see genMem
+.PHONY: all run clean see
 
 all: $(TARGET)
 	
@@ -32,10 +29,6 @@ view: run
 	#./$(TARGET) -gui &
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
 
-#genMem: 
-#	python3.9 ../../../scripts/LoadMem/compile.py $(MEM_GEN_CONF)
-#	python3.9 ../../../scripts/LoadMem/genHexMem.py $(MEM_GEN_CONF)
-#	python3.9 ../../../scripts/LoadMem/genReadMemFile.py $(MEM_GEN_CONF)
 
 see:
 	#@echo $(TIME_FILE)
@@ -51,5 +44,4 @@ clean:
 	rm -f master
 	rm -f *.log
 	rm -f ucli.key
-	rm -r memGen
 
