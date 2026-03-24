@@ -83,7 +83,7 @@ package interconnect_pkg;
         p_address_t address;
         uint16_t bit_vec;
         byte_t data[CACHE_LINES_SIZE_B];
-        bool MIO;
+
     } st_q_2_dcache_t;
 
     typedef struct {
@@ -94,7 +94,7 @@ package interconnect_pkg;
         p_address_t ld_addr_1;
 
         bool memStalling;
-        
+
         //for wb
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
 

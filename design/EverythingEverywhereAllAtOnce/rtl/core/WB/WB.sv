@@ -39,6 +39,7 @@ module WB (
                 address : stq_outputs[i].head_address,
                 bit_vec : stq_outputs[i].bit_vec,
                 data    : stq_outputs[i].data
+                //MIO     : 1'b0  // Store queues never contain MIO ops (filtered in ST_Q_logic)
             };
             st_override_array[i] = stq_outputs[i].st_override;
         end

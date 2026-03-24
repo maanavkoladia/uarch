@@ -107,20 +107,21 @@ module DC (
     );
 
 
-    assign dc_outs_o.valid = latches_i.valid;
-    assign dc_outs_o.stall = dep_stall;
-    assign dc_outs_o.ld_addr_0_V = ld_addr_0_V;
-    assign dc_outs_o.ld_addr_0 = ld_addr_0;
-    assign dc_outs_o.ld_addr_1_V = ld_addr_1_V;
-    assign dc_outs_o.ld_addr_1 = ld_addr_1;
+    assign dc_outs_o = '{
+        valid:       latches_i.valid,
+        stall:       dep_stall,
+        ld_addr_0_V: ld_addr_0_V,
+        ld_addr_0:   ld_addr_0,
+        ld_addr_1_V: ld_addr_1_V,
+        ld_addr_1:   ld_addr_1
+    };
 
     
     assign mem_latches_next_o = '{
         valid:      latches_i.valid & ~dep_stall,  // FIXME: Also need to handle br flush from exe
-        cs:         '{
-            MEM_OP: latches_i.cs.DC_OP,
-            ST_OP:  latches_i.cs.ST_OP
-        },
+        cs:         latches_i.mem_cs,
+        exe_cs:     latches_i.exe_cs,
+        wb_cs:      latches_i.wb_cs,
         br_info:    latches_i.br_info,
         ST_XCL:     latches_i.ST_XCL,
         ST_PADDR_0: latches_i.ST_PADDR_0,

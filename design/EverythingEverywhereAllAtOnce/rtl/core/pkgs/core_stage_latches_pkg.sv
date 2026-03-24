@@ -68,6 +68,12 @@ package core_stage_latches_pkg;
     typedef struct {
         bool valid;
         rr_cs_t cs;
+        //added
+        dc_cs_t dc_cs;
+        mem_cs_t mem_cs;
+        exe_cs_t exe_cs;
+        wb_cs_t wb_cs;
+
         br_info_t br_info;
         l_address_t NEIP;
         uint64_t imm64;
@@ -97,7 +103,12 @@ package core_stage_latches_pkg;
 
     typedef struct {
         bool valid;
+        //this is how we will pass down cs
         dc_cs_t cs;
+        mem_cs_t mem_cs;
+        exe_cs_t exe_cs;
+        wb_cs_t wb_cs;
+        
 
         br_info_t br_info;
 
@@ -124,12 +135,14 @@ package core_stage_latches_pkg;
     typedef struct {
         bool MEM_OP;
         bool ST_OP;
+        bool LD_OP
     } mem_cs_t;
 
     typedef struct {
         bool valid;
         mem_cs_t cs;
-
+        exe_cs_t exe_cs;
+        wb_cs_t wb_cs;
         br_info_t br_info;
 
         bool ST_XCL;  //valid bit or second set of st info if st_op
@@ -171,7 +184,7 @@ package core_stage_latches_pkg;
     typedef struct {
         bool valid;
         exe_cs_t cs;
-
+        wb_cs_t wb_cs;
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t ST_PADDR_1;  //cacheline algned
@@ -190,7 +203,7 @@ package core_stage_latches_pkg;
         reg_ids_e dr_id;
         uint64_t  dr_data;
 
-        v_address_t ld_addy;  //not cache aligned. Only use index bits to find start 
+        p_address_t ld_addy;  //not cache aligned. Only use index bits to find start 
 
     } exe_latches_t;
 
