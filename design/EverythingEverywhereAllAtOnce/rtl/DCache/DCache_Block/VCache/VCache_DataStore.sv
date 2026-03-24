@@ -96,9 +96,9 @@ module VCache_DataStore (
     //WR_2_DataStore, active low
     always_comb begin
         //comb completness
-        WR_2_DataStore = '1;
+        WR_2_DataStore = '{default: '1};
         if (read_D_SWAP_i) begin
-            WR_2_DataStore = '0;
+            WR_2_DataStore = '{default: '0};
         end
 
         if (!busy_i && we) begin

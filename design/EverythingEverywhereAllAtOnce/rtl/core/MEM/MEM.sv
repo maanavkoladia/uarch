@@ -45,7 +45,7 @@ module MEM (
     mem_miss_stall_logic mem_stall(
         .valid(latches_i.valid),
         .LD_XCL(latches_i.LD_XCL),
-        .LD_MEM_OP(latches_i.cs.LD_OP),
+        .LD_OP(latches_i.cs.LD_OP),
         .hit0(hit_line_0),
         .hit1(hit_line_1),
         .hit_MIO(hit_line_MMIO),
@@ -74,7 +74,11 @@ module MEM (
 
     assign outs_o = '{
         valid: latches_i.valid,
-        stall: miss_stall 
+        stall: miss_stall,
+        ST_XCL: latches_i.ST_XCL,  //valid bit or second set of st info if st_op
+        ST_PADDR_0: latches_i.ST_PADDR_0,  //cacheline unalgned, ie actual addr
+        ST_PADDR_1: latches_i.ST_PADDR_1,  //cacheline algned
+        ST_OP: latches_i.cs.ST_OP
     };
 
 

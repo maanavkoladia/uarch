@@ -29,13 +29,16 @@ module DCache_TOP (
     block_req_t req_2_blocks[DCACHE_NUM_BLOCKS];
     mio_block_outputs_t mio_block_outputs;
     bool arb_st_override_Out[NUM_WB_ST_QS];
+    bool arb_req_rejected_0_out;
+    bool arb_req_rejected_1_out;
 
     DCache_Arbitration dcache_arbitration (
         .clk_i(clk),
         .rst(rst),  // active low
         .core_i(inFromCore_i),
         .block_hit_i(hitVec),
-        .out2Core_o(out2Core_o),
+        .req_rejected_0_o(arb_req_rejected_0_out),
+        .req_rejected_1_o(arb_req_rejected_1_out),
         .reqs_2_blocks_o(req_2_blocks),
         .st_override_o(arb_st_override_Out)
     );
@@ -48,10 +51,10 @@ module DCache_TOP (
                 .block_req_i(req_2_blocks[i]),
                 .mem_Valid_FromDte_i(inFromDTE_i.mem_valid[i]),
                 .evictionBuf_V_clr_FromDTE_i(inFromDTE_i.evictionBuf_V_clr[i]),
-                .permissionToDriveDataBus_evictionBuf(permissionToDriveDataBus_evictionBuf[i]),
-                .permissionToDriveAddrBus_Ld(permissionToDriveAddrBus_Ld),
-                .permissionToDriveAddrBus_eb(permissionToDriveAddrBus_eb),
-                .st_override_for_sch_req(arb_st_override_Out),
+                .permissionToDriveDataBus_evictionBuf(inFromDTE_i.permissionToDriveDataBus_evictionBuf[i]),
+                .permissionToDriveAddrBus_Ld(inFromDTE_i.permissionToDriveAddrBus_Ld[i]),
+                .permissionToDriveAddrBus_eb(inFromDTE_i.permissionToDriveAddrBus_eb[i]),
+                .st_override_for_sch_req(arb_st_override_Out[i]),
                 .dataBus(dataBus),
                 .address_bus(address_bus),
                 .outputs_o(blockOutputs[i])
@@ -90,9 +93,9 @@ module DCache_TOP (
     //line0 line 1 logic
     always_comb begin
         bool usedLine0 = 0;
-        out2Core_o.line_0 = 0;
+        out2Core_o.line_0 = '{default: '0};
         out2Core_o.hit_line_0 = 0;
-        out2Core_o.line_1 = 0;
+        out2Core_o.line_1 = '{default: '0};
         out2Core_o.hit_line_1 = 0;
 
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
@@ -121,9 +124,9 @@ module DCache_TOP (
     //mio block out wiring
     assign out2Core_o.writeSuccess_MIO = mio_block_outputs.writeSuccess;
     assign out2Core_o.hit_line_MIO = mio_block_outputs.hit_o;
-    assign out2Core_o.writeSuccess_MIO = mio_block_outputs.writeSuccess;
     assign out2Core_o.req_rejected_mio = mio_block_outputs.req_rejected;
+    assign out2Core_o.req_rejected_0 = arb_req_rejected_0_out;
+    assign out2Core_o.req_rejected_1 = arb_req_rejected_1_out;
     assign out2Sch_o.req_mio = mio_block_outputs.req_2_sch;
-
 endmodule
 

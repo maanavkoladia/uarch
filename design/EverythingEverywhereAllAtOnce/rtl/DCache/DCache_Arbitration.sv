@@ -13,7 +13,10 @@ module DCache_Arbitration (
     input bool block_hit_i[DCACHE_NUM_BLOCKS],
 
     //for req rejeced signales
-    output dcache_2_core_t out2Core_o,
+    output bool req_rejected_0_o,
+
+    output bool req_rejected_1_o,
+
     output block_req_t reqs_2_blocks_o[DCACHE_NUM_BLOCKS],
     output st_override_o[NUM_WB_ST_QS]
 );
@@ -40,7 +43,7 @@ module DCache_Arbitration (
     //arb logic
     //
     always_ff @(posedge clk_i) begin
-        if (!rst) reqs <= '0;
+        if (!rst) reqs <= '{default: '0};
         else begin
             //bool ld_willScedule = 0;
             for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
@@ -60,10 +63,10 @@ module DCache_Arbitration (
 
                     end else  //ld case
                     if (core_i.ld_addr_0_V && ld_req_0_bankNum == i) begin  //bank matches
-                        reqs[i] <= '{oe: 1, we: 0, p_addr : core_i.ld_addr_0_V};
+                        reqs[i] <= '{oe: 1, we: 0, p_addr : core_i.ld_addr_0_V, vec: 0, st_q_data : '{default: '0}};
                     end else if (core_i.ld_addr_1_V && ld_req_1_bankNum == i) begin
-                        reqs[i] <= '{oe: 1, we: 0, p_addr : core_i.ld_addr_1_V};
-                    end else reqs[i] <= '0;
+                        reqs[i] <= '{oe: 1, we: 0, p_addr : core_i.ld_addr_1_V, vec: 0, st_q_data : '{default: '0}};
+                    end else reqs[i] <= '{default: '0};
                 end
             end
         end
@@ -71,7 +74,7 @@ module DCache_Arbitration (
 
     // store override logic
     always_ff @(posedge clk_i) begin
-        if (!rst) st_override <= 1'b0;
+        if (!rst) st_override <= '{default: '0};
         else begin
             for (int i = 0; i < NUM_WB_ST_QS; i++) begin
                 if (core_i.stq_heads[i].full) st_override[i] <= 1'b1;
@@ -105,8 +108,8 @@ module DCache_Arbitration (
 
     // output assignment
     assign reqs_2_blocks_o = reqs;
-    assign out2Core_o.req_rejected_0 = core_i.ld_addr_0_V && !readyForNewReq[ld_req_0_bankNum];
-    assign out2Core_o.req_rejected_1 = core_i.ld_addr_1_V && !readyForNewReq[ld_req_1_bankNum];
+    assign req_rejected_0_o = core_i.ld_addr_0_V && !readyForNewReq[ld_req_0_bankNum];
+    assign req_rejected_1_o = core_i.ld_addr_1_V && !readyForNewReq[ld_req_1_bankNum];
     assign st_override_o = st_override;
 
 endmodule

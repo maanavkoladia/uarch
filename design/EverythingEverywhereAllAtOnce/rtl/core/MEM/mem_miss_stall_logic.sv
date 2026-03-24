@@ -1,7 +1,7 @@
 module mem_miss_stall_logic(
     input valid,
     input bool LD_XCL,
-    input bool LD_MEM_OP,
+    input bool LD_OP,
     input bool hit0,
     input bool hit1,
     input bool hit_MIO,

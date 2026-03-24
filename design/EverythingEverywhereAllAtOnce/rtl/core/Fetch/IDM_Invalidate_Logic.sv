@@ -151,7 +151,7 @@ else begin
                     end
                     else if (~idm_meta.idm_slots[next_slot].valid &&
                              idm_meta.idm_slots[eip_slot_num].br_xcl) begin
-                        /*we need the rest of the branch to be put into the idm before moving to the target
+                        we need the rest of the branch to be put into the idm before moving to the target
                         I dont think this case would be reached since decode would stall anyways
                         so we wouldnt change anything regardless
                         explicitly zero (already zero from default)

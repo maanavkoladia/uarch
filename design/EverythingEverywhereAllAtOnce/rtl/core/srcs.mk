@@ -3,6 +3,7 @@ CORE_PATH_INTERNAL = $(ROOT)/rtl/core/
 include $(CORE_PATH_INTERNAL)/Decode/structural/srcs.mk
 include $(CORE_PATH_INTERNAL)/Fetch/srcs.mk
 include $(CORE_PATH_INTERNAL)/DC/srcs.mk
+include $(CORE_PATH_INTERNAL)/MEM/srcs.mk
 include $(CORE_PATH_INTERNAL)/WB/srcs.mk
 
 
@@ -20,7 +21,7 @@ CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/Decode/Decode.sv \
 				 $(CORE_PATH_INTERNAL)/RR/RR.sv \
 				 $(DC_SRC_FILES) \
-				 $(CORE_PATH_INTERNAL)/MEM/MEM.sv \
+				 $(MEM_STAGE_SRC_FILES) \
 				 $(CORE_PATH_INTERNAL)/EXE/EXE.sv \
 				 $(WB_SRC_FILES) \
 				 $(CORE_PATH_INTERNAL)/StageLatches/DC_Latches.sv \

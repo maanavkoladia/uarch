@@ -8,12 +8,12 @@ package core_common_pkg;
     typedef uint32_t flags_t;
 
     typedef struct {
-        address_t virtual_addr;
+        v_address_t virtual_addr;
         bool write_intention;
     } tlb_inputs_t;
 
     typedef struct {
-        address_t physical_addr;
+        p_address_t physical_addr;
         bool physical_addr_valid;
         bool gp_exp;
         bool pageFault;
@@ -77,6 +77,11 @@ package core_common_pkg;
         bool ld_addr_1_V;
         p_address_t ld_addr_1;
 
+        //mio stuf
+        bool ld_addr_MIO_V;
+        p_address_t ld_addr_MIO;
+        st_q_2_dcache_t stq_info_mio;
+
     } dc_outputs_t;
 
     typedef struct {
@@ -85,8 +90,7 @@ package core_common_pkg;
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t ST_PADDR_1;  //cacheline algned
-        bool ST_OP;
-        
+        bool ST_OP; 
     } mem_outputs_t;
 
     typedef struct {
@@ -111,6 +115,7 @@ package core_common_pkg;
         bool  clr_ZF_sb;
         logic ZF;
 
+        //store dep check
         bool ST_OP;
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
@@ -140,14 +145,15 @@ package core_common_pkg;
         reg_ids_e DR_1_id;  //
         uint64_t DR_1_data;  //data is supposed to be aligned
 
-        bool st_override[NUM_WB_ST_QS];
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
         st_q_2_dep_check_outputs_t dep_check;
 
+        //store dep check
         bool ST_OP;
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline algned
         p_address_t ST_PADDR_1;  //cacheline algned
+
 
     } wb_outputs_t;
 

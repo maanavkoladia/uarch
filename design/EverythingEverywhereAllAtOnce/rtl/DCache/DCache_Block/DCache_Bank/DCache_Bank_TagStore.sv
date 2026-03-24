@@ -76,6 +76,8 @@ module DCache_Bank_TagStore (
     logic OE_2_TagStore;
 
     logic [DCACHE_BANK_TAG_WIDTH - 1 : 0] DOUT_2_TagStore;
+    logic [7:0] DOUT_2_TagStore_extended;
+    assign DOUT_2_TagStore = DOUT_2_TagStore_extended[DCACHE_BANK_TAG_WIDTH - 1 : 0];
 
     p_addr_dcache_fields_t p_addr_fields = '{
         tag    : p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
@@ -88,9 +90,9 @@ module DCache_Bank_TagStore (
     ram8b8w$ tag_store_ramCell (
         .A(ADDRESS_2_TagStore),
         .WR(WR_2_TagStore),
-        .DIN(DIN_2_TagStore),
+        .DIN({2'b00,DIN_2_TagStore}),
         .OE(OE_2_TagStore),
-        .DOUT(DOUT_2_TagStore)
+        .DOUT(DOUT_2_TagStore_extended)
     );
 
     //ADDRESS_2_DataStore logic
@@ -127,7 +129,7 @@ module DCache_Bank_TagStore (
     //
     always_ff @(posedge clk) begin
         if (!rst) begin
-            tagMetaStore <= '0;
+            tagMetaStore <= '{default:'0};
         end else begin
             if (fill3_i || ld_From_V_Swap_i) begin
                 tagMetaStore[p_addr_fields.index].valid <= 1'b1;

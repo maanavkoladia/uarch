@@ -86,14 +86,16 @@ module VCache_TagStore (
 
     //assinged, routing handeled externally
     logic [V_CACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore;
+    logic [7:0] DOUT_2_TagStore_extended;
+    assign DOUT_2_TagStore = DOUT_2_TagStore_extended[V_CACHE_TAG_WIDTH - 1 : 0];
 
     //create the memcells for this
-    ram8b8w$ tag_store_ramCell (
+    ram8b4w$ tag_store_ramCell (
         .A(ADDRESS_2_TagStore),
-        .DIN(DIN_2_TagStore),
+        .DIN({1'b0,DIN_2_TagStore}),
         .OE(OE_2_TagStore),
         .WR(WR_2_TagStore),
-        .DOUT(DOUT_2_TagStore)
+        .DOUT(DOUT_2_TagStore_extended)
     );
 
     //ADDRESS_2_TagStore
@@ -125,7 +127,7 @@ module VCache_TagStore (
     //ff block for tagstore_meta_store
     always_ff @(posedge clk_i) begin
         if (!rst) begin
-            tagMetaStore <= '0;
+            tagMetaStore <= '{default: '0};
         end
         begin  //only needs to change when i new line is coming in
             if (Read_DSWAP_i) begin

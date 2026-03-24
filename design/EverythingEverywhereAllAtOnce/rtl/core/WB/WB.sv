@@ -69,6 +69,7 @@ module WB (
     assign outputs = '{
         valid : wb_latches.valid,
         wb_stall : stall_flop_next,
+
         DR_0_we : reg_wb_logic_outs.dr0_we,
         DR_0_id : reg_wb_logic_outs.dr0_id,
         DR_0_data : reg_wb_logic_outs.dr0_data,
@@ -78,7 +79,12 @@ module WB (
         DR_1_data : reg_wb_logic_outs.dr1_data,
        // st_override : st_override_array,
         stq_heads : stq_heads,
-        dep_check : dc_dep
+        dep_check : dc_dep,
+
+        ST_OP : wb_latches.cs.ST_OP,
+        ST_XCL : wb_latches.ST_XCL,  //valid bit or second set of st info if st_o : ,
+        ST_PADDR_0: wb_latches.ST_PADDR_0,  //cacheline algne : 
+        ST_PADDR_1 : wb_latches.ST_PADDR_1 //cacheline algne : ,
     };
 
     //stall mask logic for SB and wb
