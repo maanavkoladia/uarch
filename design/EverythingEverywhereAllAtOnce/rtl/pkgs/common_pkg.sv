@@ -3,7 +3,7 @@ package common_pkg;
     //`define true (1'b1)
     //`define false (1'b0)
 
-    
+
     localparam int CACHE_LINES_SIZE_B = 16;
     localparam int CACHE_LINES_SIZE_Bits = CACHE_LINES_SIZE_B * 8;
     localparam int ADDRESS_BITS = 32;
@@ -31,7 +31,8 @@ package common_pkg;
     localparam int ST_Q_DEPTH = 4;  //needs to be a power of two
     localparam int NUM_IDM_SLOTS = 4;
 
-    localparam int MIO_DATA_SIZE_B = 4;
     localparam int NUM_SBS = 22;
-    //
+
+    localparam int MIO_DATA_SIZE_B = 4;
+
 endpackage

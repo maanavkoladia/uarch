@@ -90,13 +90,29 @@ package interconnect_pkg;
     typedef struct {bool writeReq;} dma_controller_2_scheduler_t;
 
     typedef struct {
-        bool permission2DriveBus[MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
+        //for driving the DataBus to write to main_mem
+        bool permission2DriveDataBus[MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
+        //for driving the addr bus when writing to main mem for the st_req
+        bool permission2DriveADDRBus;
+        //ste signals the dma that it is about to write to the bus,
+        //only happens if the dma made the req to sch, so the dma cacheline
+        //should be right
         bool start_transaction;
+
+        bool coreValOnBus;
     } dte_2_dma_controller_t;
 
     //DDR5 interconnect if
 
-    typedef struct {bool start_transaction;} dte_2_ddr5_t;
+    typedef struct {
+        //this will be the power gate value from the core
+        bool newPowerGateValueFromCore;
+        //when this goes high, write data onto the bus, the address
+        //on the bus shoudl match the address for the temp reg 
+        //when driving the bus
+        bool start_transaction;
+
+    } dte_2_ddr5_t;
 
     ////////////////////////////////////////////////////////////////
     //core needs create its own internal and manage this w and assign
@@ -155,13 +171,13 @@ package interconnect_pkg;
         byte_t line_1[CACHE_LINES_SIZE_B];
 
         //for wb
-        bool   writeSuccess[NUM_WB_ST_QS];
+        bool writeSuccess[NUM_WB_ST_QS];
         //TODO
         //
         //for MIO
-        bool   writeSuccess_MIO; //for pop MIO
-        bool   hit_line_MIO; //for ld_mem stage 
-        bool   req_rejected_mio; //for dc stage 
+        bool writeSuccess_MIO;  //for pop MIO
+        bool hit_line_MIO;  //for ld_mem stage 
+        bool req_rejected_mio;  //for dc stage 
         byte_t line_MIO[CACHE_LINES_SIZE_B];
     } dcache_2_core_t;
 

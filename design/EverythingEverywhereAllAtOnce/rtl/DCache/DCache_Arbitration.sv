@@ -14,7 +14,6 @@ module DCache_Arbitration (
 
     //for req rejeced signales
     output bool req_rejected_0_o,
-
     output bool req_rejected_1_o,
 
     output block_req_t reqs_2_blocks_o[DCACHE_NUM_BLOCKS],
@@ -26,7 +25,9 @@ module DCache_Arbitration (
     localparam int LD_REQ_BANK_WIDTH = DCACHE_BANK_BANK_WIDTH;
 
     block_req_t reqs[DCACHE_NUM_BLOCKS];
+
     bool block_idleness[DCACHE_NUM_BLOCKS];
+
     bool readyForNewReq[DCACHE_NUM_BLOCKS];
 
     //bool ld_AlreadySceduled;
@@ -37,9 +38,10 @@ module DCache_Arbitration (
     // store override: prioritize stores when queue is full
     bool st_override[NUM_WB_ST_QS];
 
+    bool ldReq_2_BankPresent[DCACHE_NUM_BLOCKS];
+
     assign ld_req_0_bankNum = core_i.ld_addr_0[LD_REQ_BANK_UB:LD_REQ_BANK_LB];
     assign ld_req_1_bankNum = core_i.ld_addr_1[LD_REQ_BANK_UB:LD_REQ_BANK_LB];
-
     //arb logic
     //
     always_ff @(posedge clk_i) begin
@@ -51,7 +53,7 @@ module DCache_Arbitration (
 
                     //store case
                     if (st_override[i] && !core_i.stq_heads[i].empty
-                        || (!core_i.ld_addr_0_V && !core_i.ld_addr_1_V && !core_i.stq_heads[i].empty)) begin
+                        || (!ldReq_2_BankPresent[i] && !core_i.stq_heads[i].empty)) begin
 
                         reqs[i] <= '{
                             oe: 0,
@@ -63,9 +65,21 @@ module DCache_Arbitration (
 
                     end else  //ld case
                     if (core_i.ld_addr_0_V && ld_req_0_bankNum == i) begin  //bank matches
-                        reqs[i] <= '{oe: 1, we: 0, p_addr : core_i.ld_addr_0_V, vec: 0, st_q_data : '{default: '0}};
+                        reqs[i] <= '{
+                            oe: 1,
+                            we: 0,
+                            p_addr : core_i.ld_addr_0_V,
+                            vec: 0,
+                            st_q_data : '{default: '0}
+                        };
                     end else if (core_i.ld_addr_1_V && ld_req_1_bankNum == i) begin
-                        reqs[i] <= '{oe: 1, we: 0, p_addr : core_i.ld_addr_1_V, vec: 0, st_q_data : '{default: '0}};
+                        reqs[i] <= '{
+                            oe: 1,
+                            we: 0,
+                            p_addr : core_i.ld_addr_1_V,
+                            vec: 0,
+                            st_q_data : '{default: '0}
+                        };
                     end else reqs[i] <= '{default: '0};
                 end
             end
@@ -91,11 +105,20 @@ module DCache_Arbitration (
         end
     end
 
+    //possible issues when MEM is not a MEMOP and it stall on down stream
+    //instruction, and DC keeps making the same req
     always_comb begin
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            readyForNewReq[i] = (reqs_2_blocks_o[i].oe && block_hit_i[i]) 
-            || (reqs_2_blocks_o[i].we && block_hit_i[i]) 
+            readyForNewReq[i] = (reqs_2_blocks_o[i].oe && block_hit_i[i] && !core_i.memStalling)
+            || (reqs_2_blocks_o[i].we && block_hit_i[i])
             || block_idleness[i];
+        end
+    end
+
+    always_comb begin
+        if (core_i.ld_addr_0_V && core_i.ld_addr_1_V && ld_req_0_bankNum == ld_req_1_bankNum) $fatal;
+        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
+            ldReq_2_BankPresent[i] = (core_i.ld_addr_0_V && ld_req_0_bankNum == i) || (core_i.ld_addr_1_V && ld_req_1_bankNum == i);
         end
     end
 
