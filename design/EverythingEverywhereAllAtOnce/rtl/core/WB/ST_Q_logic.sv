@@ -13,7 +13,7 @@ module ST_Q_logic(
     input uint16_t bit_vect_1,
     input bool ST_OP,
     input bool ST_XCL,
-    input bool MIO,
+    input bool MIO, 
     input bool write_success[NUM_WB_ST_QS],
 
     output st_q_inputs_t stq_info[NUM_WB_ST_QS]
@@ -79,6 +79,7 @@ module ST_Q_logic(
             stq_info[high_bank_num].data = entry1;
         end
     end
+
 
     //Claude
     // Immediate assertion: Check for bank collision on XCL stores

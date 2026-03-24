@@ -30,7 +30,7 @@ module WB (
     bool st_override_array[NUM_WB_ST_QS];
 
 
-    //stq 2 dcache
+    //stq 2 dcache (non MIO)
     always_comb begin
         for(int i =0; i < NUM_WB_ST_QS; i++)begin
             stq_heads[i] = '{
@@ -45,7 +45,7 @@ module WB (
         end
     end
 
-    //stq to dep check
+    //stq to dep check (no MIO)
     always_comb begin
         for(int num_q = 0; num_q < NUM_WB_ST_QS; num_q++)begin
             for(int i = 0; i < ST_Q_DEPTH; i++)begin
@@ -120,6 +120,8 @@ module WB (
         .stall_flop(stall_flop),
         .outs(reg_wb_logic_outs)
     );
+
+    
 
 
 

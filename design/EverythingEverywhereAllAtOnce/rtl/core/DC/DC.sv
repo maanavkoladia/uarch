@@ -22,6 +22,9 @@ module DC (
     input wb_outputs_t wb_outs_i,
     input wb_latches_t wb_latches_i,    // ADDED: needed for in-flight dependency checking
 
+    input bool req_rejected_mio,
+
+
     output mem_latches_t mem_latches_next_o,
 
     output dc_outputs_t dc_outs_o
@@ -29,27 +32,35 @@ module DC (
 );
 
  
-    wire in_flight_stall;
-    wire stq_stall;
-    wire dep_stall;
+    bool in_flight_stall;
+    bool stq_stall;
+    bool dep_stall;
+    bool arb_stall;
+
     
-    wire ld_addr_0_V;
-    wire ld_addr_1_V;
+    bool ld_addr_0_V;
+    bool ld_addr_1_V;
     p_address_t ld_addr_0;
     p_address_t ld_addr_1;
 
     // Derive ST_OP signals (store operation present)
-    wire dc_ST_OP;
-    wire mem_ST_OP;
-    wire exe_ST_OP;
-    wire wb_ST_OP;
+    bool dc_ST_OP;
+    bool mem_ST_OP;
+    bool exe_ST_OP;
+    bool wb_ST_OP;
 
     assign dc_ST_OP = latches_i.cs.ST_OP;
     assign mem_ST_OP = mem_latches_i.cs.ST_OP;
     assign exe_ST_OP = exe_latches_i.cs.ST_OP;
     assign wb_ST_OP = wb_latches_i.cs.ST_OP;
 
+    //in store flight and stq stall logic accounts for valid bits
     assign dep_stall = in_flight_stall | stq_stall;
+
+    assign arb_stall = ((req_rejected_mio & latches_i.MIO) 
+                            | (req_rejected_0 & latches_i.cs.LD_OP)
+                            | (req_rejected_1 & latches_i.cs.ST_OP)
+                        ) & latches_i.valid;
 
 
 
@@ -59,6 +70,7 @@ module DC (
         .st_paddr_1(latches_i.ST_PADDR_1),
         .ST_XCL(latches_i.ST_XCL),
         .ST_OP(dc_ST_OP),
+        .valid(latches_i.valid),
 
         .mem_st_paddr0(mem_latches_i.ST_PADDR_0),
         .mem_st_paddr1(mem_latches_i.ST_PADDR_1),
@@ -83,6 +95,7 @@ module DC (
 
     // Check for dependencies in store queues
     wb_stq_sb_logic stq_dep_check (
+        .valid(latches_i.valid),
         .st_paddr_0(latches_i.ST_PADDR_0),
         .st_paddr_1(latches_i.ST_PADDR_1),
         .ST_XCL(latches_i.ST_XCL),
@@ -109,7 +122,7 @@ module DC (
 
     assign dc_outs_o = '{
         valid:       latches_i.valid,
-        stall:       dep_stall,
+        stall:       dep_stall | arb_stall,
         ld_addr_0_V: ld_addr_0_V,
         ld_addr_0:   ld_addr_0,
         ld_addr_1_V: ld_addr_1_V,

@@ -69,7 +69,7 @@ package core_common_pkg;
     typedef struct {
         bool valid;
 
-        bool stall;  //dep stall
+        bool stall;  //dep stall or req rejected
 
         //outputs to D$ arb
         bool ld_addr_0_V;

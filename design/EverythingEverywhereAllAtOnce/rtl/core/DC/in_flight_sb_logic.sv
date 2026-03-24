@@ -6,6 +6,7 @@ module in_flight_sb_logic(
     input p_address_t st_paddr_1,
     input bool ST_XCL,
     input bool ST_OP,
+    input valid,
 
     input p_address_t mem_st_paddr0,
     input p_address_t mem_st_paddr1,
@@ -29,31 +30,31 @@ module in_flight_sb_logic(
 );
 
 
-    wire mem_dep0;
-    wire mem_dep1;
-    wire mem_dep_stall;
+    bool mem_dep0;
+    bool mem_dep1;
+    bool mem_dep_stall;
     assign mem_dep0 = (st_paddr_0 == mem_st_paddr0) & mem_ST_OP;
     assign mem_dep1 = (st_paddr_1 == mem_st_paddr1) & mem_ST_OP & mem_ST_XCL;
     assign mem_dep_stall = mem_valid & (mem_dep0 | mem_dep1);
 
 
-    wire exe_dep0;
-    wire exe_dep1;
-    wire exe_dep_stall;
+    bool exe_dep0;
+    bool exe_dep1;
+    bool exe_dep_stall;
     assign exe_dep0 = (st_paddr_0 == exe_st_paddr0) & exe_ST_OP;
     assign exe_dep1 = (st_paddr_1 == exe_st_paddr1) & exe_ST_OP & exe_ST_XCL;
     assign exe_dep_stall = exe_valid & (exe_dep0 | exe_dep1);
 
 
-    wire wb_dep0;
-    wire wb_dep1;
-    wire wb_dep_stall;
+    bool wb_dep0;
+    bool wb_dep1;
+    bool wb_dep_stall;
     assign wb_dep0 = (st_paddr_0 == wb_st_paddr0) & wb_ST_OP;
     assign wb_dep1 = (st_paddr_1 == wb_st_paddr1) & wb_ST_OP & wb_ST_XCL;
     assign wb_dep_stall = wb_valid & (wb_dep0 | wb_dep1);
 
 
-    assign in_flight_mem_stall = mem_dep_stall | exe_dep_stall | wb_dep_stall;
+    assign in_flight_mem_stall = (mem_dep_stall | exe_dep_stall | wb_dep_stall) & valid;
 
 
     /* STRUCTURAL VERSION (claude)

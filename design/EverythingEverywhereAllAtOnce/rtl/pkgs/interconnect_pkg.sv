@@ -159,9 +159,9 @@ package interconnect_pkg;
         //TODO
         //
         //for MIO
-        bool   writeSuccess_MIO;
-        bool   hit_line_MIO;
-        bool   req_rejected_mio;
+        bool   writeSuccess_MIO; //for pop MIO
+        bool   hit_line_MIO; //for ld_mem stage 
+        bool   req_rejected_mio; //for dc stage 
         byte_t line_MIO[CACHE_LINES_SIZE_B];
     } dcache_2_core_t;
 

@@ -30,6 +30,15 @@ package WriteBack_pkg;
         bool st_override;
     } st_q_outputs_t;
 
+    typedef struct{
+        bool full;
+        bool empty;
+        bool valid;
+        p_address_t address;
+        byte_t data[CACHE_LINES_SIZE_B];
+        bool push_fail;
+    }st_q_mio_outputs_t;
+
     typedef struct {
         reg_ids_e dr0_id; //dr in wb_latches
         bool dr0_we;

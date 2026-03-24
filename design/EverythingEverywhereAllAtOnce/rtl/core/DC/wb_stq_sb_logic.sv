@@ -2,12 +2,14 @@ import core_common_pkg::st_q_2_dep_check_outputs_t;
 import common_pkg::*;
 
 module wb_stq_sb_logic(
+    input bool valid,
     input p_address_t st_paddr_0,
     input p_address_t st_paddr_1,
     input bool ST_XCL,
     input bool ST_OP,
     input st_q_2_dep_check_outputs_t stq_info,
     output bool stall
+    //probably need to send MIO queue back once I make it
 );
 
 
