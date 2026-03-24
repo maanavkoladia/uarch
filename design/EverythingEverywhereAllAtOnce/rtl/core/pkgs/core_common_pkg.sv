@@ -82,7 +82,7 @@ package core_common_pkg;
     typedef struct {
         bool valid;
         bool stall;  //dep stall
-
+        
     } mem_outputs_t;
 
     typedef struct {
