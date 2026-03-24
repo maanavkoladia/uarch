@@ -109,6 +109,17 @@ module WB (
         .stq_info(stq_info)
     );
 
+    //st_q_logic for mio
+    STQ_Q_MIO_logic st_q_mio_logic(
+        .wb_valid(wb_valid),
+        .st_paddr_0_mio(s),
+        .res_buf(),
+        .ST_OP(),
+        .MIO(),
+        .write_success_mio(),
+        .stq_info_mio()
+    );
+
     //Store queue gen
     genvar i;
     for(i = 0; i < NUM_WB_ST_QS; i++)begin : gen_st_q

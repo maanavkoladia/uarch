@@ -6,12 +6,12 @@ module STQ_Q_MIO_logic(
     input bool MIO, 
     input bool write_success_mio,
 
-    output st_q_inputs_t stq_info
+    output st_q_inputs_t stq_info_mio
 );
 
     
     //we mio queue will generate 
-    assign stq_info = '{
+    assign stq_info_mio = '{
         data: '{
             valid: wb_valid & MIO & ST_OP,
             address: st_paddr_0_mio,
