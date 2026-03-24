@@ -143,7 +143,9 @@ module CoreTop (
         .exe_outs_i(exe_outputs),
         .wb_outs_i(wb_outputs),
         .mem_latches_next_o(mem_latches_next),
-        .reqs(DCacheIn_i),
+        .req_rejected_mio(DCacheIn_i.req_rejected_mio),
+        .req_rejected_0(DCacheIn_i.req_rejected_0),
+        .req_rejected_1(DCacheIn_i.req_rejected_1),
         .dc_outs_o(dc_outputs)
     );
 

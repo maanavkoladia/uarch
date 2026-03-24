@@ -45,7 +45,7 @@ module MEM (
     mem_miss_stall_logic mem_stall(
         .valid(latches_i.valid),
         .LD_XCL(latches_i.LD_XCL),
-        .LD_MEM_OP(latches_i.cs.LD_OP),
+        .LD_OP(latches_i.cs.LD_OP),
         .hit0(hit_line_0),
         .hit1(hit_line_1),
         .hit_MIO(hit_line_MMIO),

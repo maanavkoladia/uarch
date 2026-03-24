@@ -111,6 +111,7 @@ package core_common_pkg;
         bool  clr_ZF_sb;
         logic ZF;
 
+        //store dep check
         bool ST_OP;
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
@@ -144,10 +145,12 @@ package core_common_pkg;
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
         st_q_2_dep_check_outputs_t dep_check;
 
+        //store dep check
         bool ST_OP;
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline algned
         p_address_t ST_PADDR_1;  //cacheline algned
+
 
     } wb_outputs_t;
 

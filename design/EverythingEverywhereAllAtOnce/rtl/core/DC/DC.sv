@@ -19,7 +19,9 @@ module DC (
     //in flight store addys and stq addys/entries 
     input wb_outputs_t wb_outs_i,
 
-    input dcache_2_core_t reqs,
+    input bool req_rejected_mio,
+    input bool req_rejected_0,
+    input bool req_rejected_1,
 
     output mem_latches_t mem_latches_next_o,
 
@@ -47,15 +49,15 @@ module DC (
 
     assign dc_ST_OP = latches_i.cs.ST_OP;
     assign mem_ST_OP = mem_outs_i.ST_OP;
-    assign exe_ST_OP = exe_outs_i.cs.ST_OP;
-    assign wb_ST_OP = wb_outs_i.cs.ST_OP;
+    assign exe_ST_OP = exe_outs_i.ST_OP;
+    assign wb_ST_OP = wb_outs_i.ST_OP;
 
     //in store flight and stq stall logic accounts for valid bits
     assign dep_stall = in_flight_stall | stq_stall;
 
-    assign arb_stall = ((req.req_rejected_mio & latches_i.MIO) 
-                            | (req.req_rejected_0 & latches_i.cs.LD_OP)
-                            | (req.req_rejected_1 & latches_i.cs.ST_OP)
+    assign arb_stall = ((req_rejected_mio & latches_i.MIO) 
+                            | (req_rejected_0 & latches_i.cs.LD_OP)
+                            | (req_rejected_1 & latches_i.cs.ST_OP)
                         ) & latches_i.valid;
 
 
