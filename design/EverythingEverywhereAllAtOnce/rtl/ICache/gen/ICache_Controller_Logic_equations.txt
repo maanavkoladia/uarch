@@ -2,19 +2,19 @@
 # Input  signal order : ['S_0', 'S_1', 'S_2', 'hit_or_miss_i', 'mem_valid_i']
 # Output signal order : ['NS_0', 'NS_1', 'NS_2', 'mem_request_o', 'fill0_o', ' fill1_o', ' fill2_o', ' fill3_o']
 
-NS_0 = (S_0 & !S_1 & !mem_valid_i) | (S_0 & !S_1 & S_2) | (S_0 & !S_2 & !mem_valid_i) | (!S_0 & !S_2 & !hit_or_miss_i & mem_valid_i) | (!S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & !hit_or_miss_i)
+NS_0 = (S_0 & !S_1 & S_2) | (S_0 & !S_2 & !mem_valid_i) | (!S_0 & !S_1 & !S_2 & !hit_or_miss_i) | (!S_0 & S_1 & !S_2 & mem_valid_i)
 
-NS_1 = (S_1 & !S_2 & !mem_valid_i) | (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2 & mem_valid_i)
+NS_1 = (!S_0 & S_1 & !S_2) | (S_1 & !S_2 & !mem_valid_i) | (S_0 & !S_1 & !S_2 & mem_valid_i)
 
-NS_2 = (!S_1 & S_2 & !mem_valid_i) | (S_0 & !S_1 & S_2) | (S_0 & S_1 & !S_2 & mem_valid_i)
+NS_2 = (S_0 & !S_1 & S_2) | (!S_1 & S_2 & !mem_valid_i) | (S_0 & S_1 & !S_2 & mem_valid_i)
 
-mem_request_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & hit_or_miss_i) | (!S_0 & !S_1 & S_2)
+mem_request_o = (!S_2 & hit_or_miss_i) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (S_0 & !S_2)
 
-fill0_o = (!S_2 & !mem_valid_i) | (!S_0 & !S_1) | (S_1 & !S_2)
+fill0_o = (S_1 & !S_2) | (!S_0 & !S_1) | (!S_2 & !mem_valid_i)
 
- fill1_o = (!S_2 & !mem_valid_i) | (!S_0 & !S_1) | (S_0 & !S_2)
+ fill1_o = (!S_0 & !S_1) | (S_0 & !S_2) | (!S_2 & !mem_valid_i)
 
- fill2_o = (!S_2 & !mem_valid_i) | (!S_0 & !S_1) | (!S_0 & !S_2) | (!S_1 & !S_2)
+ fill2_o = (!S_0 & !S_1) | (!S_2 & !mem_valid_i) | (!S_1 & !S_2) | (!S_0 & !S_2)
 
  fill3_o = !S_2 | (!S_0 & !S_1 & !mem_valid_i)
 

@@ -1,6 +1,6 @@
 import common_pkg::*;
-import DCache_pkg::*;
 import interconnect_pkg::*;
+import DCache_common_pkg::*;
 
 module DCache_Arbitration (
 
@@ -9,8 +9,11 @@ module DCache_Arbitration (
 
     // contains store_q data from WB, and ld_reqs from MEM
     input core_2_dcache_t core_i,
-    input bool hit[DCACHE_NUM_BLOCKS],
 
+    input bool block_hit_i[DCACHE_NUM_BLOCKS],
+
+    //for req rejeced signales
+    output dcache_2_core_t out2Core_o,
     output block_req_t reqs_2_blocks_o[DCACHE_NUM_BLOCKS]
 );
 
@@ -19,7 +22,10 @@ module DCache_Arbitration (
     localparam int LD_REQ_BANK_WIDTH = DCACHE_BANK_BANK_WIDTH;
 
     block_req_t reqs[DCACHE_NUM_BLOCKS];
-    bool bank_idleness[DCACHE_NUM_BLOCKS];
+    bool block_idleness[DCACHE_NUM_BLOCKS];
+    bool readyForNewReq[DCACHE_NUM_BLOCKS];
+
+    //bool ld_AlreadySceduled;
 
     logic [LD_REQ_BANK_WIDTH - 1 : 0] ld_req_0_bankNum;
     logic [LD_REQ_BANK_WIDTH - 1 : 0] ld_req_1_bankNum;
@@ -30,99 +36,42 @@ module DCache_Arbitration (
     assign ld_req_0_bankNum = core_i.ld_addr_0[LD_REQ_BANK_UB:LD_REQ_BANK_LB];
     assign ld_req_1_bankNum = core_i.ld_addr_1[LD_REQ_BANK_UB:LD_REQ_BANK_LB];
 
-    // -----------------------------------------------------------------------------
-    // Request Scheduling (when no request is currently being served)
+    //arb logic
     //
-    // Idle State Definition:
-    // - oe == 0 && we == 0
-    //   → No request is being served in this cycle
-    //
-    // Scheduling Priority (highest → lowest):
-    //
-    // 1. Store Override Case:
-    //    - If st_override == 1 AND st_q is not empty
-    //    → Schedule store from st_q
-    //
-    // 2. Load Request:
-    //    - Else if valid ld_req AND matches bank AND !memStalling
-    //    → Schedule load request
-    //
-    // 3. Normal Store:
-    //    - Else if st_q not empty
-    //    → Schedule store from st_q
-    //
-    // 4. No-op:
-    //    → No request scheduled
-    //
-    // Notes:
-    // - oe and we are mutually exclusive
-    // - default each cycle is cleared (no request)
-    // - requests complete when hit[i] is observed
-    // -----------------------------------------------------------------------------
-
     always_ff @(posedge clk_i) begin
-        if (!rst) begin
+        if (!rst) reqs <= '0;
+        else begin
+            //bool ld_willScedule = 0;
             for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-                reqs[i] <= '0;
-            end
-        end else begin
-            for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
+                if (readyForNewReq[i]) begin
 
-                // Default: clear request every cycle
-                reqs[i].oe <= 1'b0;
-                reqs[i].we <= 1'b0;
+                    //store case
+                    if (st_override[i] && !core_i.stq_info[i].empty
+                        || (!core_i.ld_addr_0_V && !core_i.ld_addr_1_V && !core_i.stq_info[i].empty)) begin
 
-                if (bank_idleness[i]) begin
+                        reqs[i] <= '{
+                            oe: 0,
+                            we: 1,
+                            p_addr : core_i.stq_info[i].address,
+                            vec : core_i.stq_info[i].bit_vec,
+                            st_q_data : core_i.stq_info[i].dataLine
+                        };
 
-                    // 1. Store override
-                    if (!core_i.stq_info[i].empty && st_override[i]) begin
-                        reqs[i].we     <= 1'b1;
-                        reqs[i].p_addr <= core_i.stq_info[i].p_addr;
-                        reqs[i].vec    <= core_i.stq_info[i].bit_vec;
-
-                        for (int j = 0; j < CACHE_LINES_SIZE_B; j++) begin
-                            reqs[i].st_q_data[j] <= core_i.stq_info[i].dataLine[j];
-                        end
-
-                        // 2. Load req 0
-                    end else if (!core_i.memStalling &&
-                                 core_i.ld_addr_0_V &&
-                                 (ld_req_0_bankNum == i)) begin
-
-                        reqs[i].oe     <= 1'b1;
-                        reqs[i].p_addr <= core_i.ld_addr_0;
-
-                        // 3. Load req 1
-                    end else if (!core_i.memStalling &&
-                                 core_i.ld_addr_1_V &&
-                                 (ld_req_1_bankNum == i)) begin
-
-                        reqs[i].oe     <= 1'b1;
-                        reqs[i].p_addr <= core_i.ld_addr_1;
-
-                        // 4. Normal store
-                    end else if (!core_i.stq_info[i].empty) begin
-                        reqs[i].we     <= 1'b1;
-                        reqs[i].p_addr <= core_i.stq_info[i].p_addr;
-                        reqs[i].vec    <= core_i.stq_info[i].bit_vec;
-
-                        for (int j = 0; j < CACHE_LINES_SIZE_B; j++) begin
-                            reqs[i].st_q_data[j] <= core_i.stq_info[i].dataLine[j];
-                        end
-                    end
+                    end else  //ld case
+                    if (core_i.ld_addr_0_V && ld_req_0_bankNum == i) begin  //bank matches
+                        reqs[i] <= '{oe: 1, we: 0, p_addr : core_i.ld_addr_0_V};
+                    end else if (core_i.ld_addr_1_V && ld_req_1_bankNum == i) begin
+                        reqs[i] <= '{oe: 1, we: 0, p_addr : core_i.ld_addr_1_V};
+                    end else reqs[i] <= '0;
                 end
-                // else: not idle → request naturally cleared unless reissued
             end
         end
     end
 
     // store override logic
     always_ff @(posedge clk_i) begin
-        if (!rst) begin
-            for (int i = 0; i < NUM_WB_ST_QS; i++) begin
-                st_override[i] <= 1'b0;
-            end
-        end else begin
+        if (!rst) st_override <= 1'b0;
+        else begin
             for (int i = 0; i < NUM_WB_ST_QS; i++) begin
                 if (core_i.stq_info[i].full) st_override[i] <= 1'b1;
                 else if (core_i.stq_info[i].empty) st_override[i] <= 1'b0;
@@ -130,18 +79,33 @@ module DCache_Arbitration (
         end
     end
 
-    // output assignment
-    always_comb begin
-        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            reqs_2_blocks_o[i] = reqs[i];
-        end
-    end
-
+    ////////////INTENRAL SIGNALS///////////////////////////
     // bank idleness: no active request
     always_comb begin
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            bank_idleness[i] = !reqs[i].we && !reqs[i].oe;
+            block_idleness[i] = !reqs[i].we && !reqs[i].oe;
         end
     end
+
+    always_comb begin
+        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
+            readyForNewReq[i] = (reqs_2_blocks_o[i].oe && block_hit_i[i]) 
+            || (reqs_2_blocks_o[i].we && block_hit_i[i]) 
+            || block_idleness[i];
+        end
+    end
+
+    //always_comb begin
+    //    ld_AlreadySceduled = 0;
+    //    for (int i = 0; i < DCACHE_NUM_BLOCKS; i++)
+    //    ld_AlreadySceduled = ld_AlreadySceduled || reqs[i].oe;
+    //end
+
+
+    // output assignment
+    assign reqs_2_blocks_o = reqs;
+    assign out2Core_o.req_rejected_0 = core_i.ld_addr_0_V && !readyForNewReq[ld_req_0_bankNum];
+    assign out2Core_o.req_rejected_1 = core_i.ld_addr_1_V && !readyForNewReq[ld_req_1_bankNum];
+
 
 endmodule

@@ -7,12 +7,11 @@ module VCache (
 
     input block_req_t blockReq_i,
 
-    input eb_cache_outputs_t eb_outs_i,
+    input eb_outputs_t eb_outs_i,
     input d_cache_bank_outputs_t dcache_outs_i,
 
     output v_cache_outputs_t outputs_o
 );
-
 
     vcache_fsm_states_e vcache_fsm_state;
     logic [$clog2(NUM_VCACHE_STATES) - 1 : 0] vcache_fsm_state_bits;
@@ -31,6 +30,7 @@ module VCache (
         bool Read_DSWAP;
         bool Write_VSWAP;
         bool busy;
+        bool blocked;
     } vcache_fsm_outputs_t;
 
     vcache_fsm_outputs_t fsmOuts;
@@ -58,27 +58,27 @@ module VCache (
     VCache_FSM vcache_fsm (
         .clk(clk_i),
         .rst(rst_i),
-        .V_Hit_i(),  //out from vcache tagstore, not like bank
+        .V_Hit_i(hit),  //out from vcache tagstore, not like bank
         .DC_will_evict_i(dcache_outs_i.D_will_evict),
         .VC_needs_2_evict_i(V_Cache_needs_2_evict),  //if the currline is valid and dirty, i think
         .EB_V_i(eb_outs_i.valid),
         .S_0(vcache_fsm_state_bits[0]),  // current-state bit 0 (LSB)
         .S_1(vcache_fsm_state_bits[1]),  // current-state bit 1 (1)
-        .S_2(vcache_fsm_state_bits[2]),  // current-state bit 2 (MSB)
         .LD_EB_o(fsmOuts.LD_EB),
         .CLR_D_SWAP_V_o(fsmOuts.CLR_D_SWAP_V),
         .Read_DSWAP_o(fsmOuts.Read_DSWAP),
         .Write_VSWAP_o(fsmOuts.Write_VSWAP),
-        .busy_o(fsmOuts.busy)
+        .busy_o(fsmOuts.busy),
+        .blocked_o(fsmOuts.blocked)
     );
 
-    VCache_DataStore vcache_datastore (
+    VCache_DataStore vcache_datastore_unit (
         .p_addr_i(blockReq_i.p_addr),
         .oe(blockReq_i.oe),
-        .we(blockReq_i.oe),
+        .we(blockReq_i.we),
         .st_q_data(blockReq_i.st_q_data),
         .st_data_vec(blockReq_i.vec),
-        .DCache_SwapBuf_lineAddr(dcache_outs_i.dcache_swapBuf.lineAddr),
+        //.DCache_SwapBuf_lineAddr(dcache_outs_i.dcache_swapBuf.lineAddr),
         .DCache_SwapBuf_Line_i(dcache_outs_i.dcache_swapBuf.line),
         .read_D_SWAP_i(fsmOuts.Read_DSWAP),
         .Write_VSWAP_i(fsmOuts.Write_VSWAP),
@@ -88,7 +88,7 @@ module VCache (
         .VCache_DataStore_LineOut_o(vcache_dataStore_Line)
     );
 
-    VCache_TagStore vcache_tag_store (
+    VCache_TagStore vcache_tag_store_unit (
         .clk_i(clk_i),
         .rst(rst_i),  //active low
         .p_addr_i(blockReq_i.p_addr),
@@ -106,6 +106,31 @@ module VCache (
         .currLine_Dirty_o(V_Cache_TagStore_CurrLine_Dirty)
     );
 
+    //vcache_swapBuf LOGIC
+    always_ff @(posedge clk_i) begin
+        if (!rst_i) vcache_swapBuf <= '0;
+        else begin
+            unique case ({
+                fsmOuts.Write_VSWAP, dcache_outs_i.V_Cache_swapBuf_valid_clr
+            })
+                2'b00: vcache_swapBuf.valid <= vcache_swapBuf.valid;
+                2'b01: vcache_swapBuf.valid <= 0;
+                2'b10: vcache_swapBuf.valid <= 1;
+                2'b11: $fatal;
+            endcase
+
+            if (fsmOuts.Write_VSWAP) begin
+                vcache_swapBuf.dirty <= V_Cache_TagStore_CurrLine_Dirty;
+                //bits from tagstore, idx bits, banks bits, then zero out rest,
+                //they dont matter
+                vcache_swapBuf.lineAddr <= {
+                    currTag, block_req_p_addr_fields.idx, block_req_p_addr_fields.bank, 4'b0000
+                };
+                vcache_swapBuf.line <= vcache_dataStore_Line;
+            end
+        end
+    end
+
     //need to do vcache outputs loogic
     always_comb begin
 
@@ -114,30 +139,43 @@ module VCache (
         writeSuccess2TagStore = 0;
         if(
             (currTag == block_req_p_addr_fields.tag)
-            && currLineValid
+            && V_Cache_TagStore_CurrLine_V
             && fsmOuts.busy
             && (blockReq_i.oe || blockReq_i.we)
             )
         begin
             hit = 1;
         end
-        miss = !hit;
+
+        if(
+            (currTag != block_req_p_addr_fields.tag || !V_Cache_TagStore_CurrLine_V)
+            && (blockReq_i.oe || blockReq_i.we)
+            //&& fsmOuts.busy
+            ) begin
+            miss = 1;
+        end
+
+        if (hit && miss) $fatal;
+
         if (hit && blockReq_i.we) begin
             writeSuccess2TagStore = 1;
         end
         V_Cache_needs_2_evict = V_Cache_TagStore_CurrLine_V && V_Cache_TagStore_CurrLine_Dirty;
     end
 
-
     //sassinging the outputs
     always_comb begin
         outputs_o.hit = hit;
         outputs_o.miss = miss;
-        outputs.dcache_swapBuf = vcache_swapBuf;
+        outputs.vcache_swapBuf = vcache_swapBuf;
         outputs.D_Cache_swapBuf_valid_clr = fsmOuts.CLR_D_SWAP_V;
         outputs.LD_EB = fsmOuts.LD_EB;
-        outputs.busy = busy;
-        for (int i = 0; i < CACHE_LINES_SIZE_B; i++) outputs.lineOut = vcache_dataStore_Line[i];
+        outputs.busy = fsmOuts.busy;
+        outputs.beingBlocked = fsmOuts.blocked;
+        outputs.lineOut = vcache_dataStore_Line;
+        outputs.addrOut = {
+            currTag, block_req_p_addr_fields.idx, block_req_p_addr_fields.bank, 4'b0000
+        };
     end
 
 endmodule

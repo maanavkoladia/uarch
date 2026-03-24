@@ -12,12 +12,12 @@ module VCache_DataStore (
     input byte_t   st_q_data  [CACHE_LINES_SIZE_B],
     input uint16_t st_data_vec,
 
-    input p_address_t DCache_SwapBuf_lineAddr,
+    //input p_address_t DCache_SwapBuf_lineAddr,
     input byte_t DCache_SwapBuf_Line_i[CACHE_LINES_SIZE_B],
-    input bool read_D_SWAP_i,
-    input bool Write_VSWAP_i,
-    input bool busy_i,
-    input bool LD_EB_i,
+    input bool   read_D_SWAP_i,
+    input bool   Write_VSWAP_i,
+    input bool   busy_i,
+    input bool   LD_EB_i,
 
     input bool tagStore_hit_i,
 
@@ -26,12 +26,12 @@ module VCache_DataStore (
 
     localparam int NUM_CELL_IN_DATA_STORE = CACHE_LINES_SIZE_B;
 
-    p_addr_vcache_fields_t DCache_SwapBuf_lineAddr_fields = '{
-        tag    : D_Cache_SwapBuf_Addr[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
-        index  : D_Cache_SwapBuf_Addr[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
-        bank   : D_Cache_SwapBuf_Addr[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
-        offset : D_Cache_SwapBuf_Addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
-    };
+    //p_addr_vcache_fields_t DCache_SwapBuf_lineAddr_fields = '{
+    //    tag    : D_Cache_SwapBuf_Addr[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
+    //    index  : D_Cache_SwapBuf_Addr[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
+    //    bank   : D_Cache_SwapBuf_Addr[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
+    //    offset : D_Cache_SwapBuf_Addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
+    //};
 
     p_addr_vcache_fields_t p_addr_fields = '{
         tag    : p_addr_i[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
@@ -49,11 +49,10 @@ module VCache_DataStore (
     //i think that there is somethig to be metioned st 
     //now vcache is Drect mapped, i can jsut use the addr in 
     //the block_req, but just to be consistent, ill use the 
-    //swapbuf addr just to be consistent
+    //swapbuf addr
     //
-    logic [INDEX_WIDTH - 1 : 0] ADDRESS_2_DataStore;
+    logic [V_CACHE_IDX_WIDTH - 1 : 0] ADDRESS_2_DataStore;
 
-    //active low, intentioanlly made it 1 bit, and not a vecotr,
     //there is not bytes addressable st
     //case 1: when loading from D$ swabuf
     //case 2:  not busy doing a write, use the vector
@@ -88,24 +87,21 @@ module VCache_DataStore (
 
     //ADDRESS_2_DataStore logic
     always_comb begin
-        ADDRESS_2_DataStore = (read_D_SWAP_i  || LD_EB_i) ?
-            DCache_SwapBuf_lineAddr_fields.idx
-            : p_addr_fields.idx;
+        //ADDRESS_2_DataStore = (read_D_SWAP_i  || LD_EB_i) ?
+        //    DCache_SwapBuf_lineAddr_fields.idx
+        //    : p_addr_fields.idx;
+        ADDRESS_2_DataStore = p_addr_fields.idx;
     end
 
     //WR_2_DataStore, active low
     always_comb begin
         //comb completness
-        for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
-            WR_2_DataStore[i] = 1;
-        end
+        WR_2_DataStore = '1;
         if (read_D_SWAP_i) begin
-            for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
-                WR_2_DataStore[i] = 0;
-            end
+            WR_2_DataStore = '0;
         end
 
-        if (!busy && we) begin
+        if (!busy_i && we) begin
             for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
                 WR_2_DataStore[i] = st_data_vec[i] && tagStore_hit_i ? 1'b0 : 1'b1;
             end
@@ -114,21 +110,17 @@ module VCache_DataStore (
 
     //DIN_2_DataStore lgoic
     always_comb begin
-        for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
-            DIN_2_DataStore[i] = read_D_SWAP_i ? DCache_SwapBuf_Line_i : st_q_data[i];
-        end
+        DIN_2_DataStore = read_D_SWAP_i ? DCache_SwapBuf_Line_i : st_q_data;
     end
 
     //OE_2_DataStore logic
     always_comb begin
-        OE_2_DataStore = LD_EB_i || Write_VSWAP_i || (!busy && oe) ? 1'b0 : 1'b1;
+        OE_2_DataStore = LD_EB_i || Write_VSWAP_i || (!busy_i && oe) ? 1'b0 : 1'b1;
     end
 
     //deal w outputs
     always_comb begin
-        for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
-            VCache_DataStore_LineOut_o[i] = DOUT_DataStore[i];
-        end
+        VCache_DataStore_LineOut_o = DOUT_DataStore;
     end
 
 endmodule
