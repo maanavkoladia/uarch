@@ -114,12 +114,14 @@ module DCache_Arbitration (
             || block_idleness[i];
         end
     end
+
     always_comb begin
-        if (ld_addr_0_V && ld_addr_1_V && ld_req_0_bankNum == ld_req_1_bankNum) $fatal;
+        if (core_i.ld_addr_0_V && core_i.ld_addr_1_V && ld_req_0_bankNum == ld_req_1_bankNum) $fatal;
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            ldReq_2_BankPresent[i] = (ld_addr_0_V && ld_req_0_bankNum == i) || (ld_addr_1_V && ld_req_1_bankNum == i);
+            ldReq_2_BankPresent[i] = (core_i.ld_addr_0_V && ld_req_0_bankNum == i) || (core_i.ld_addr_1_V && ld_req_1_bankNum == i);
         end
     end
+
     //always_comb begin
     //    ld_AlreadySceduled = 0;
     //    for (int i = 0; i < DCACHE_NUM_BLOCKS; i++)

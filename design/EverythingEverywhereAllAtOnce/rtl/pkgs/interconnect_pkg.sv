@@ -111,6 +111,7 @@ package interconnect_pkg;
         //on the bus shoudl match the address for the temp reg 
         //when driving the bus
         bool start_transaction;
+
     } dte_2_ddr5_t;
 
     ////////////////////////////////////////////////////////////////

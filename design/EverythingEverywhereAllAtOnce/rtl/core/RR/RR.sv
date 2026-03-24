@@ -21,8 +21,8 @@ module RR (
     output rr_outputs_t outs_o
 );
 
-    logic regfile_inputs_t reg_in;
-    logic regfile_outputs_t reg_out;
+    //regfile_inputs_t reg_in;
+    //regfile_outputs_t reg_out;
 
 endmodule
 

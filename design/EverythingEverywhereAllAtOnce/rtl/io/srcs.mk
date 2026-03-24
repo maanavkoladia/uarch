@@ -9,3 +9,5 @@ IO_SRC_FILES = \
 					$(IO_PATH_INTERNAL)/ddr5/ddr5.sv \
 
 IO_PKGS = \
+		  $(IO_PATH_INTERNAL)/pkg/io_common_pkg.sv
+

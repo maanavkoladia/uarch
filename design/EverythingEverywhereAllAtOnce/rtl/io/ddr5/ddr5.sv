@@ -30,12 +30,12 @@ module ddr5 (
 
     always_ff @(posedge clk) begin
         if (!rst) powerGate <= 0;
-        else if (newPowerGateValueFromCore) powerGate <= dataBus[0];  //get new value from bus
+        else if (inFromDTE_i.newPowerGateValueFromCore) powerGate <= dataBus[0];  //get new value from bus
     end
 
     //drive the bus
     logic [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
-    assign dataBus = start_transaction ? dataBus_fake : 'z;
+    assign dataBus = inFromDTE_i.start_transaction ? dataBus_fake : 'z;
     assign dataBus_fake = tempValue;
 
 endmodule
