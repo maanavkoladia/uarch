@@ -143,6 +143,7 @@ module CoreTop (
         .exe_outs_i(exe_outputs),
         .wb_outs_i(wb_outputs),
         .mem_latches_next_o(mem_latches_next),
+        .reqs(DCacheIn_i),
         .dc_outs_o(dc_outputs)
     );
 
@@ -152,10 +153,8 @@ module CoreTop (
         .latches_i(mem_latches),
         .exe_outs_i(exe_outputs),
         .wb_outs_i(wb_outputs),
-        .valid_0(DCacheIn_i.valid_0),
         .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
         .line_0(DCacheIn_i.line_0),
-        .valid_1(DCacheIn_i.valid_1),
         .hit_line_1(DCacheIn_i.hit_line_1),
         .line_1(DCacheIn_i.line_1),
         .exe_latches_next_o(exe_latches_next),

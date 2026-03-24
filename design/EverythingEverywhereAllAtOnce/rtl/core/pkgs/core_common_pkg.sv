@@ -82,6 +82,10 @@ package core_common_pkg;
     typedef struct {
         bool valid;
         bool stall;  //dep stall
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
+        p_address_t ST_PADDR_1;  //cacheline algned
+        bool ST_OP;
         
     } mem_outputs_t;
 
@@ -106,6 +110,12 @@ package core_common_pkg;
         //for decode for rep engine
         bool  clr_ZF_sb;
         logic ZF;
+
+        bool ST_OP;
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
+        p_address_t ST_PADDR_1;  //cacheline algned
+
     } exe_outputs_t;
 
     typedef struct {
@@ -133,6 +143,12 @@ package core_common_pkg;
         bool st_override[NUM_WB_ST_QS];
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
         st_q_2_dep_check_outputs_t dep_check;
+
+        bool ST_OP;
+        bool ST_XCL;  //valid bit or second set of st info if st_op
+        p_address_t ST_PADDR_0;  //cacheline algned
+        p_address_t ST_PADDR_1;  //cacheline algned
+
     } wb_outputs_t;
 
 endpackage

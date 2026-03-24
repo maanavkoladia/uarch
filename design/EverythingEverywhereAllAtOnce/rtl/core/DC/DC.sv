@@ -12,18 +12,14 @@ module DC (
 
     //miss stall and valid, inflight store addys
     input mem_outputs_t mem_outs_i,
-    input mem_latches_t mem_latches_i,  // ADDED: needed for in-flight dependency checking
 
     //br flush and valid, infligh store addy
     input exe_outputs_t exe_outs_i,
-    input exe_latches_t exe_latches_i,  // ADDED: needed for in-flight dependency checking
 
     //in flight store addys and stq addys/entries 
     input wb_outputs_t wb_outs_i,
-    input wb_latches_t wb_latches_i,    // ADDED: needed for in-flight dependency checking
 
-    input bool req_rejected_mio,
-
+    input dcache_2_core_t reqs,
 
     output mem_latches_t mem_latches_next_o,
 
@@ -50,16 +46,16 @@ module DC (
     bool wb_ST_OP;
 
     assign dc_ST_OP = latches_i.cs.ST_OP;
-    assign mem_ST_OP = mem_latches_i.cs.ST_OP;
-    assign exe_ST_OP = exe_latches_i.cs.ST_OP;
-    assign wb_ST_OP = wb_latches_i.cs.ST_OP;
+    assign mem_ST_OP = mem_outs_i.ST_OP;
+    assign exe_ST_OP = exe_outs_i.cs.ST_OP;
+    assign wb_ST_OP = wb_outs_i.cs.ST_OP;
 
     //in store flight and stq stall logic accounts for valid bits
     assign dep_stall = in_flight_stall | stq_stall;
 
-    assign arb_stall = ((req_rejected_mio & latches_i.MIO) 
-                            | (req_rejected_0 & latches_i.cs.LD_OP)
-                            | (req_rejected_1 & latches_i.cs.ST_OP)
+    assign arb_stall = ((req.req_rejected_mio & latches_i.MIO) 
+                            | (req.req_rejected_0 & latches_i.cs.LD_OP)
+                            | (req.req_rejected_1 & latches_i.cs.ST_OP)
                         ) & latches_i.valid;
 
 
@@ -72,23 +68,23 @@ module DC (
         .ST_OP(dc_ST_OP),
         .valid(latches_i.valid),
 
-        .mem_st_paddr0(mem_latches_i.ST_PADDR_0),
-        .mem_st_paddr1(mem_latches_i.ST_PADDR_1),
+        .mem_st_paddr0(mem_outs_i.ST_PADDR_0),
+        .mem_st_paddr1(mem_outs_i.ST_PADDR_1),
         .mem_ST_OP(mem_ST_OP),
-        .mem_ST_XCL(mem_latches_i.ST_XCL),
-        .mem_valid(mem_latches_i.valid),
+        .mem_ST_XCL(mem_outs_i.ST_XCL),
+        .mem_valid(mem_outs_i.valid),
 
-        .exe_st_paddr0(exe_latches_i.ST_PADDR_0),
-        .exe_st_paddr1(exe_latches_i.ST_PADDR_1),
+        .exe_st_paddr0(exe_outs_i.ST_PADDR_0),
+        .exe_st_paddr1(exe_outs_i.ST_PADDR_1),
         .exe_ST_OP(exe_ST_OP),
-        .exe_ST_XCL(exe_latches_i.ST_XCL),
-        .exe_valid(exe_latches_i.valid),
+        .exe_ST_XCL(exe_outs_i.ST_XCL),
+        .exe_valid(exe_outs_i.valid),
 
-        .wb_st_paddr0(wb_latches_i.ST_PADDR_0),
-        .wb_st_paddr1(wb_latches_i.ST_PADDR_1),
+        .wb_st_paddr0(wb_outs_i.ST_PADDR_0),
+        .wb_st_paddr1(wb_outs_i.ST_PADDR_1),
         .wb_ST_OP(wb_ST_OP),
-        .wb_ST_XCL(wb_latches_i.ST_XCL),
-        .wb_valid(wb_latches_i.valid),
+        .wb_ST_XCL(wb_outs_i.ST_XCL),
+        .wb_valid(wb_outs_i.valid),
 
         .in_flight_mem_stall(in_flight_stall)
     );
