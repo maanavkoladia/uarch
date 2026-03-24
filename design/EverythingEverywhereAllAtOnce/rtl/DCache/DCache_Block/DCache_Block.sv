@@ -6,11 +6,22 @@ module DCache_Block (
     input wire clk_i,
     input wire rst_i,  //active low
 
+    //from dcahce arb
     input block_req_t block_req_i,
+
+    //DTE input
     input bool mem_Valid_FromDte_i,
     input bool evictionBuf_V_clr_FromDTE_i,
-    input wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus,
+    input bool permissionToDriveDataBus_evictionBuf[CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS],
+    input bool permissionToDriveAddrBus_Ld,
+    input bool permissionToDriveAddrBus_eb,
+
+    //for sceduling
     input wire st_override_for_sch_req,
+
+    //
+    inout wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus,
+    inout wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus,
 
     //output byte_t dataLineOut[CACHE_LINES_SIZE_B],
     //output bool   hit_o,
@@ -78,12 +89,12 @@ module DCache_Block (
 
     assign outputs_o.hit_o = dcache_bank_outputs.hit || vcache_outputs.hit;
 
-    //assign outputs_o.eb_V_o = eb_outputs.valid;
     assign outputs_o.eb_addr = eb_outputs.addr;
-    assign outputs_o.eb_line_O = eb_outputs.lineOut;
+    //assign outputs_o.eb_V_o = eb_outputs.valid;
+    //assign outputs_o.eb_line_O = eb_outputs.lineOut;
 
     always_comb begin
-        //outputs_o.req_2_sch = DCACHE_IDLE;
+        outputs_o.req_2_sch = DCACHE_IDLE;
 
         //if (eb_outputs.valid) begin
         //    outputs_o.req_2_sch = DCACHE_LOW_PRI_REQ;
@@ -92,5 +103,34 @@ module DCache_Block (
         //end
         //chat write this
     end
+
+    //bus logic
+    //addr bus
+    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
+    assign address_bus_fake = permissionToDriveAddrBus_Ld ? block_req_i.p_addr : eb_outputs.addr;
+    assign address_bus = permissionToDriveAddrBus_Ld || permissionToDriveAddrBus_eb ? address_bus_fake ? 'z;
+
+    //data bus
+    always_comb begin
+        for(int i = 0; i < CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS; i++) begin
+            dataBus_fake = '0;
+            if(permissionToDriveDataBus_evictionBuf[i]) begin
+                int startingOffset = i * CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS;
+                dataBus_fake = {
+                    eb_outputs.lineOut[startingOffset],
+                    eb_outputs.lineOut[startingOffset + 1],
+                    eb_outputs.lineOut[startingOffset + 2],
+                    eb_outputs.lineOut[startingOffset + 3]
+                };
+            end
+        end
+    end
+    assign dataBus = permissionToDriveDataBus_evictionBuf ? dataBus_fake : 'z;
+
+
+
+
+
+
 
 endmodule

@@ -67,7 +67,7 @@ package DCache_common_pkg;
         bool hit_o;
         //byte_t eb_V_o;
         p_address_t eb_addr;
-        byte_t eb_line_O[CACHE_LINES_SIZE_B];
+        //byte_t eb_line_O[CACHE_LINES_SIZE_B];
         dcache_req_types_2_scheduler_e req_2_sch;
     } dcache_block_outputs_t;
 
@@ -122,7 +122,7 @@ package DCache_common_pkg;
     typedef struct {
         bool valid;  //probably not needed, i lied this is fucking needed for vcache fsm, holy shit what was i smkoking
         p_address_t addr;
-        byte_t lineOut;
+        byte_t lineOut[CACHE_LINES_SIZE_B];
     } eb_outputs_t;
 
     localparam int NUM_DCACHE_BANK_FSM_STATES = 7;
