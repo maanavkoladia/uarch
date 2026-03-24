@@ -56,7 +56,7 @@ module TOP (
     );
 
     //dcache
-    DCache dcache_unit (
+    DCache_TOP dcache_unit (
         .clk(clk),
         .rst(rst),
         .inFromCore_i(core2dcache),

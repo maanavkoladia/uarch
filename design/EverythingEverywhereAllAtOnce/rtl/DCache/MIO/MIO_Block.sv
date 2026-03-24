@@ -40,14 +40,14 @@ module MIO_Block (
 
     //arb
     always_ff @(posedge clk) begin
-        if (!rst) block_req <= '0;
+        if (!rst) block_req <= '{default: '0};
         else begin
             if (block_req.oe && block_req.we) $fatal;
             if (readyForNewReq) begin
-                if (ld_addr_MIO_V) block_req <= '{oe: 1, we: 0, p_addr: ld_addr_MIO};
+                if (ld_addr_MIO_V) block_req <= '{oe: 1, we: 0, p_addr: ld_addr_MIO, st_q_data: '{default: '0}};
                 else if (!stq_info_mio.empty)
-                    block_req <= '{oe: 0, we: 1, p_addr: stq_info_mio.address};
-                else block_req <= '0;
+                    block_req <= '{oe: 0, we: 1, p_addr: stq_info_mio.address, st_q_data: '{default: '0}};
+                else block_req <= '{default: '0};
             end
         end
     end
@@ -59,7 +59,7 @@ module MIO_Block (
     assign outputs_o.req_rejected = ld_addr_MIO_V && !readyForNewReq;
 
     always_comb begin
-        outputs_o.dataLineOut = '0;  // zero all 16 bytes
+        outputs_o.dataLineOut = '{default: '0};  // zero all 16 bytes
 
         for (int i = 0; i < 4; i++) begin
             outputs_o.dataLineOut[i] = dataBus[i*8+:8];

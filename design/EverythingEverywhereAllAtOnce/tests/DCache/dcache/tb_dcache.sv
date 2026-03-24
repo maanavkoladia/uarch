@@ -39,16 +39,14 @@ module tb_dcache ();
         .inFromDTE_i(inFromDTE),
         .out2Sch_o(out2Sch),
         .dataBus(dataBus),
-        .address_bus(address_bus)
+        .address_bus(addrBus)
     );
 
     initial begin
         `LOG("DCache Tb Starting up");
         rst = 0;  //actve low
-        inFromCore = '0;
-        out2Core = '0;
-        inFromDTE = '0;
-        out2Sch = '0;
+        inFromCore = '{default: '0};
+        inFromDTE = '{default: '0};
         driveAddrBus = 0;
         driveDataBus = 0;
         addrForBus = 0;

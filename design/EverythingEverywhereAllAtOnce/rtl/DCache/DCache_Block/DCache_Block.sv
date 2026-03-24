@@ -54,7 +54,7 @@ module DCache_Block (
     VCache vcache_unit (
         .clk_i(clk_i),
         .rst_i(rst_i),  //active low
-        .blockReq_i(blockReq_i),
+        .blockReq_i(block_req_i),
         .eb_outs_i(eb_outputs),
         .dcache_outs_i(dcache_bank_outputs),
         .outputs_o(vcache_outputs)
@@ -69,7 +69,7 @@ module DCache_Block (
     );
 
     always_comb begin
-        outputs_o.dataLineOut = '0;  // default (or leave if you prefer fail-fast X)
+        outputs_o.dataLineOut = '{default: '0};  // default (or leave if you prefer fail-fast X)
         unique case ({
             dcache_bank_outputs.hit, vcache_outputs.hit
         })
@@ -109,15 +109,21 @@ module DCache_Block (
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
     assign address_bus_fake = permissionToDriveAddrBus_Ld ? block_req_i.p_addr : eb_outputs.addr;
     assign address_bus = permissionToDriveAddrBus_Ld || permissionToDriveAddrBus_eb ? address_bus_fake : 'z;
+    int startingOffset;
+    logic [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
 
-    wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
-    assign dataBus = permissionToDriveDataBus_evictionBuf ? dataBus_fake : 'z;
+    assign dataBus = 
+        permissionToDriveDataBus_evictionBuf[0] 
+        || permissionToDriveDataBus_evictionBuf[1] 
+        || permissionToDriveDataBus_evictionBuf[2] 
+        || permissionToDriveDataBus_evictionBuf[3]? dataBus_fake : 'z;
     //data bus
     always_comb begin
+        startingOffset = 0;
         for(int i = 0; i < CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS; i++) begin
             dataBus_fake = '0;
             if(permissionToDriveDataBus_evictionBuf[i]) begin
-                int startingOffset = i * CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS;
+                startingOffset = i * CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS;
                 dataBus_fake = {
                     eb_outputs.lineOut[startingOffset],
                     eb_outputs.lineOut[startingOffset + 1],

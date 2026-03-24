@@ -140,7 +140,7 @@ module DCache_Bank (
     //need to handle dcache swap buf logic
     always_ff @(posedge clk) begin
         if (!rst) begin
-            dcache_bank_swapBuf <= '0;
+            dcache_bank_swapBuf <= '{default: '0};
         end else begin
             //valid bit logic
             unique case ({

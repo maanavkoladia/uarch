@@ -13,9 +13,9 @@ RTL_DESIGN_SRC_FILES = \
 					   $(MEM_SRC_FILES)	\
 					   $(BUS_ARB_SRC_FILES)	\
 					   $(IO_SRC_FILES)	\
-					   $(RTL_ROOT_PATH_INTERNAL)/TOP.sv	\
 					   $(CORE_SRC_FILES)	\
-#$(DCACHE_SRC_FILES)
+					   $(DCACHE_SRC_FILES) \
+					   $(RTL_ROOT_PATH_INTERNAL)/TOP.sv	\
 
 RTL_DESIGN_TOP_LEVEL_PKGS = \
 				  $(RTL_ROOT_PATH_INTERNAL)/pkgs/common_pkg.sv \
@@ -30,4 +30,4 @@ RTL_DESIGN_PKGS = \
 				  $(MEM_PKGS) \
 				  $(BUS_ARB_PKGS)	\
 				  $(IO_PKGS)	\
-#$(DCACHE_PKGS)
+				  $(DCACHE_PKGS)

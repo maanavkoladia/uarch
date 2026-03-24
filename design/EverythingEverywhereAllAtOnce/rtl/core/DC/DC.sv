@@ -124,7 +124,10 @@ module DC (
         ld_addr_0_V: ld_addr_0_V,
         ld_addr_0:   ld_addr_0,
         ld_addr_1_V: ld_addr_1_V,
-        ld_addr_1:   ld_addr_1
+        ld_addr_1:   ld_addr_1,
+        ld_addr_MIO_V : 0,
+        ld_addr_MIO : 0,
+        stq_info_mio : '{default:'0}
     };
 
     

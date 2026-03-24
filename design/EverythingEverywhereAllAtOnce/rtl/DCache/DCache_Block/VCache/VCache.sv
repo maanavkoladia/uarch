@@ -108,7 +108,7 @@ module VCache (
 
     //vcache_swapBuf LOGIC
     always_ff @(posedge clk_i) begin
-        if (!rst_i) vcache_swapBuf <= '0;
+        if (!rst_i) vcache_swapBuf <= '{default: '0};
         else begin
             unique case ({
                 fsmOuts.Write_VSWAP, dcache_outs_i.V_Cache_swapBuf_valid_clr

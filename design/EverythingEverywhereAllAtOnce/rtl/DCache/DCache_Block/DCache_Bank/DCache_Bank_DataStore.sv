@@ -93,14 +93,14 @@ module DCache_Bank_DataStore (
     always_comb begin
 
         // default safety (important for combinational completeness)
-        WR_2_DataStore = '1;
+        WR_2_DataStore = '{default: '0};
 
         unique case ({
             ld_From_V_Swap_i, fill0_i, fill1_i, fill2_i, fill3_i
         })
 
             5'b10000: begin  // ld_v_swap, set all low
-                WR_2_DataStore = '0;
+                WR_2_DataStore = '{default: '0};
             end
 
             5'b01000: begin  //low only for first four
@@ -148,7 +148,7 @@ module DCache_Bank_DataStore (
     always_comb begin
 
         // default safety (important for combinational completeness)
-        DIN_2_DataStore = '1;
+        DIN_2_DataStore = '{default: '1};
 
         unique case ({
             ld_From_V_Swap_i, fill0_i, fill1_i, fill2_i, fill3_i
