@@ -1,4 +1,5 @@
 import RegisterRead_pkg::*;
+import reg_ids_pkg::*;
 
 module RegFile (
     input clk, rst,
@@ -13,8 +14,9 @@ module RegFile (
     assign outputs.SIB_IDX_data = ARCH_REGISTERS[inputs.SIB_IDX_ID[2:0]];
     assign outputs.SIB_BASE_data = ARCH_REGISTERS[inputs.SIB_BASE_ID[2:0]];
     assign outputs.ECX_data = ARCH_REGISTERS[ECX[2:0]];
+    assign outputs.CS_data = SEG_REG[CS[2:0]];
     assign outputs.Segment0_data = SEG_REG[inputs.Segment0_ID[2:0]];
-    assign outputs.Segment1_data = SEG_REG[inputs.Segmetn1_ID[2:0]];
+    assign outputs.Segment1_data = SEG_REG[inputs.Segment1_ID[2:0]];
 
     always_comb begin
         //MODRM out
@@ -91,7 +93,7 @@ module RegFile (
                         else begin
                             ARCH_REGISTERS[{1'b0, inputs.DR0_ID[1:0]}]
                                 <= {ARCH_REGISTERS[inputs.DR0_ID[2:0]][31:16], inputs.DR0_data[7:0],
-                                    ARCH_REGISTERS[inputs.DR0_ID[2:0][7:0]]};
+                                    ARCH_REGISTERS[inputs.DR0_ID[2:0]][7:0]};
                         end
                     end
                     2'b01: begin
@@ -102,7 +104,7 @@ module RegFile (
                         ARCH_REGISTERS[inputs.DR0_ID[2:0]] <= inputs.DR0_data[31:0];
                     end
                     2'b11: begin
-                        MMX_REGISTER[inputs.DR0_ID[2:0]] <= inputs.DR0_data;
+                        MMX_REGISTERS[inputs.DR0_ID[2:0]] <= inputs.DR0_data;
                     end
                 endcase
             end
@@ -125,7 +127,7 @@ module RegFile (
                         else begin
                             ARCH_REGISTERS[{1'b0, inputs.DR1_ID[1:0]}]
                                 <= {ARCH_REGISTERS[inputs.DR1_ID[2:0]][31:16], inputs.DR1_data[7:0],
-                                    ARCH_REGISTERS[inputs.DR1_ID[2:0][7:0]]};
+                                    ARCH_REGISTERS[inputs.DR1_ID[2:0]][7:0]};
                         end
                     end
                     2'b01: begin
@@ -136,7 +138,7 @@ module RegFile (
                         ARCH_REGISTERS[inputs.DR1_ID[2:0]] <= inputs.DR1_data[31:0];
                     end
                     2'b11: begin
-                        MMX_REGISTER[inputs.DR1_ID[2:0]] <= inputs.DR1_data;
+                        MMX_REGISTERS[inputs.DR1_ID[2:0]] <= inputs.DR1_data;
                     end
                 endcase
             end

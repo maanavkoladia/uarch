@@ -1,5 +1,6 @@
 package RegisterRead_pkg;
     import common_pkg::*;
+    import reg_ids_pkg::*;
     typedef struct {
         reg_ids_e MODRM_ID;
         reg_ids_e REG_ID;
@@ -22,6 +23,7 @@ package RegisterRead_pkg;
         uint32_t SIB_IDX_data;
         uint32_t SIB_BASE_data;
         uint32_t ECX_data;
+        uint32_t CS_data;
         uint32_t Segment0_data;
         uint32_t Segment1_data;
     } regfile_output_t;

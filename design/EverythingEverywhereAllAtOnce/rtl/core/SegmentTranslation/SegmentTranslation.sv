@@ -3,7 +3,7 @@ import common_pkg::v_address_t;
 import common_pkg::bool;
 import reg_ids_pkg::reg_ids_e;
 import SegmentTranslation_pkg::*;
-//written with Claude 
+
 module SegmentTranslation (
     input l_address_t l_addr_i,
     input logic[1:0] dataSize_i,
