@@ -82,7 +82,12 @@
 
         "Decode threeinput_adder logic" : {
             "csv" : "lib/STDCells/gen/three_input_adder.csv",
-            "outputFilePath": "lib/STDCells/gen/three_input_adder.sv",
+            "outputFilePath": "lib/STDCellsthree_input_adder.sv",
+            "run Combinational SOP Gen": "true"
+        },
+        "4_2 pencoder" : {
+            "csv" : "lib/STDCells/gen/4_2_pendcoder.csv",
+            "outputFilePath" : "lib/STDCells/4_2_pendcoder.sv",
             "run Combinational SOP Gen": "true"
         },
 

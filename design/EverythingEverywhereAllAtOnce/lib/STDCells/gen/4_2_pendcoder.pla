@@ -1,0 +1,8 @@
+.i 4
+.o 2
+.ilb  in3_i in2_i in1_i in0_i
+.ob  out1_o  out0_o
+.type fr
+0000 00
+0001 00
+.e
