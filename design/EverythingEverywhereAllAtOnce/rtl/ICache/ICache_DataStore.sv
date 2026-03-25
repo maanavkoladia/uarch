@@ -1,3 +1,6 @@
+import common_pkg::*;
+import ICache_common_pkg::*;
+
 module ICache_DataStore (
 
     input wire en,  //active high
@@ -17,7 +20,7 @@ module ICache_DataStore (
 
     //rd in ld_From_I_VC_Swap
     input bool ld_From_I_VC_Swap,
-    input swap_buf_t I_VC_SwapBuf_i,
+    input ICache_swap_buf_t I_VC_SwapBuf_i,
 
     input wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus,
     output byte_t currLine_o[CACHE_LINES_SIZE_B]
@@ -46,19 +49,19 @@ module ICache_DataStore (
     logic WR_2_DataStore[LAYERS_OF_CELLS][NUM_CELLS];
 
     always_comb begin
-        WR_2_DataStore = '1;  //active low
+        WR_2_DataStore = '{default: '1};  //active low
         for (int j = 0; j < LAYERS_OF_CELLS; j++) begin
             if (dataLineOutSel == j) begin
                 unique case ({
                     ld_From_I_VC_Swap, fill0_i, fill1_i, fill2_i, fill3_i
                 })
-                    5'b10000: WR_2_DataStore[dataLineOutSel] = '0;
+                    5'b10000: WR_2_DataStore[dataLineOutSel] = '{default: '0};
                     5'b01000: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i] = 0;
                     5'b00100: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+4] = 0;
                     5'b00010: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+8] = 0;
                     5'b00001: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+12] = 0;
-                    5'b00000: WR_2_DataStore[dataLineOutSel] = '1;
-                    default:  $default;
+                    5'b00000: WR_2_DataStore[dataLineOutSel] = '{default: '1};
+                    default:  $fatal;
                 endcase
             end
         end

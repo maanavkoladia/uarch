@@ -1,3 +1,7 @@
+import common_pkg::*;
+import ICache_common_pkg::*;
+
+
 module ICache_TagStore (
     input wire clk,
     input wire rst,
@@ -9,7 +13,7 @@ module ICache_TagStore (
     input bool LD_IC_SWAP_BUF,
     input bool fill3_i,
     input bool busy,
-    input swap_buf_t I_VC_SwapBuf_i,
+    input ICache_swap_buf_t I_VC_SwapBuf_i,
 
     output [ICACHE_TAG_WIDTH - 1:0] currTag_o,
     output bool currLine_V
@@ -47,13 +51,11 @@ module ICache_TagStore (
 
     logic OE_2_TagStore = !busy || LD_IC_SWAP_BUF;
 
-
-    logic [7 : 0] DOUT_2_TagStore_extended[NUM_CELLS];
     logic [7 : 0] DOUT_2_TagStore_extended[2];
     logic [ICACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore = DOUT_2_TagStore_extended[tagCellOutSel][ICACHE_TAG_WIDTH - 1: 0];
 
     // Output assignments
-    assign currTag_o  = DOUT_2_TagStore;
+    assign currTag_o = DOUT_2_TagStore;
     assign currLine_V = validStore[v_addr_i_index];
 
     ram8b8w$ tag_store_ramCell_Lower (
@@ -74,8 +76,10 @@ module ICache_TagStore (
 
     // Valid bit storage - reset when rst is active high
     always_ff @(posedge clk) begin
-        if (rst) validStore <= '0;
-        else if (fill3_i || ld_From_I_VC_Swap) validStore[v_addr_i_index] <= 1;
+        if (rst)
+            validStore <= '{default: '0};
+        else if (fill3_i || ld_From_I_VC_Swap)
+            validStore[v_addr_i_index] <= 1;
     end
 
 endmodule
