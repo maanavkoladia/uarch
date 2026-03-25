@@ -114,7 +114,7 @@ module WB (
 
     //st_q_logic for mio
     ST_Q_MIO_logic st_q_mio_logic(
-        .wb_valid(wb_valid),
+        .wb_valid(wb_latches.valid),
         .st_paddr_0_mio(wb_latches.ST_PADDR_0),
         .res_buf(wb_latches.res_buf),
         .ST_OP(wb_latches.cs.ST_OP),

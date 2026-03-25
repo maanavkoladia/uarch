@@ -1,5 +1,5 @@
 import common_pkg::*;
-import ICache_pkg::*;
+import ICache_common_pkg::*;
 import interconnect_pkg::*;
 
 module ICache (
