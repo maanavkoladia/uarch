@@ -2,7 +2,6 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import io_common_pkg::*;
 
-
 module ddr5 (
     input wire clk,
     input wire rst,  //active low
@@ -30,7 +29,8 @@ module ddr5 (
 
     always_ff @(posedge clk) begin
         if (!rst) powerGate <= 0;
-        else if (inFromDTE_i.newPowerGateValueFromCore) powerGate <= dataBus[0];  //get new value from bus
+        else if (inFromDTE_i.newPowerGateValueFromCore)
+            powerGate <= dataBus[0];  //get new value from bus
     end
 
     //drive the bus

@@ -10,4 +10,21 @@ package io_common_pkg;
     localparam uint32_t DDR5_WRITE_POWERGATE_VAL_ADDRESS = 32'h00000040;
     localparam uint32_t DDR5_WRITE_LD_TEMP_VAL_ADDRESS = 32'h00000050;
 
+    localparam int MIO_DATA_SIZE_B = 4;
+
+    localparam int DISK_SIZE = 8 * PAGE_SIZE;
+    localparam int DELAY = 75;
+
+    localparam int DMA_FSM_NUM_STATES = 5;
+
+    typedef enum logic [$clog2(
+DMA_FSM_NUM_STATES
+) -1 : 0] {
+        IDLE        = 0,
+        LD_BUF      = 1,
+        WAIT_FOR_LD = 2,
+        WAIT_FOR_WR = 3,
+        ERROR       = 4
+    } dma_fsm_states_e;
+
 endpackage
