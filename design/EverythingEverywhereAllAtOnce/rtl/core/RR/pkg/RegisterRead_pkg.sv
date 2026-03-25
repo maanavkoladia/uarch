@@ -22,6 +22,7 @@ package RegisterRead_pkg;
         uint32_t SIB_IDX_data;
         uint32_t SIB_BASE_data;
         uint32_t ECX_data;
+        uint32_t CS_data;
         uint32_t Segment0_data;
         uint32_t Segment1_data;
     } regfile_output_t;

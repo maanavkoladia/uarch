@@ -4,7 +4,7 @@ module AddyX_NeuralNet (
     input bool mem_op,
     input uint32_t seg_data,
     input uint32_t seg_limit,
-    input write_intent,
+    input bool write_intent,
     output neuralnet_outputs_t outputs
 );
 

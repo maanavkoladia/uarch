@@ -11,7 +11,7 @@ package TLB_pkg;
         bool valid;
         bool present;
         bool r_w; // write permission: 1 = writable
-        bool MMIO;  
+        bool MMIO;
     } tlb_entries_t;
 
 endpackage
