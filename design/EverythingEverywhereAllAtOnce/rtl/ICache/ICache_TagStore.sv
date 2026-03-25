@@ -47,7 +47,7 @@ module ICache_TagStore (
     logic OE_2_TagStore = !busy || LD_IC_SWAP_BUF;
 
 
-    logic [7 : 0] DOUT_2_TagStore_extended[2];
+    logic [7 : 0] DOUT_2_TagStore_extended[NUM_CELLS];
     logic [ICACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore = DOUT_2_TagStore_extended[tagCellOutSel][ICACHE_TAG_WIDTH - 1: 0];
 
     ram8b8w$ tag_store_ramCell_Lower (
