@@ -32,7 +32,7 @@ module I_VCache (
         tagstore_entry_t entries[NUM_LINES];
     } tagstore_t;
 
-    typedef struct {byte_t dataLines[NUM_LINES];} datastore_t;
+    typedef struct {byte_t dataLines[NUM_LINES][CACHE_LINES_SIZE_B];} datastore_t;
 
     logic LD_I_VC_SWAP_BUF;
     logic RD_IC_SWAP_BUF;
@@ -42,7 +42,7 @@ module I_VCache (
     swap_buf_t I_VC_swapBuf;
 
     logic [$clog2(NUM_LINES) - 1 : 0] hit_idx;
-    logic [I_VCACHE_TAG_WIDTH -1 : 0] currTag[CACHE_LINES_SIZE_B];
+    logic [I_VCACHE_TAG_WIDTH -1 : 0] currTag;
     bool currTagHit;
     byte_t currDataLine[CACHE_LINES_SIZE_B];
 
@@ -98,21 +98,39 @@ module I_VCache (
     //eviction idx
     //if just doing a regular access, then just update lru to the access index
     always_ff @(posedge clk) begin
+        logic [$clog2(NUM_LINES) - 1 : 0] update_idx;
         if (!rst) begin
             tagStore.entries <= '{default: '0};
+            tagStore.LRU <= '{default: '0};
         end else begin
-            if (RD_IC_SWAP_BUF) begin
-                tagStore.entries[currLRU_IDX].valid <= 1;
-                tagStore.entries[currLRU_IDX].tag <= IC_SwapBuf_i.lineAddr[I_VCACHE_TAG_UB : I_VCACHE_TAG_LB];
-                //update lru
-                tagStore.LRU[LRU_ROOT] <= currLRU_IDX[1];
-                tagStore.LRU[LRU_LEFT_LEAF] = !currLRU_IDX[1] ? currLRU_IDX[0] : tagStore.LRU[LRU_LEFT_LEAF];
-                tagStore.LRU[LRU_RIGHT_LEAF] = currLRU_IDX[1] ? currLRU_IDX[0] : tagStore.LRU[LRU_RIGHT_LEAF];
-            end else if (hit) begin
-                tagStore.LRU[LRU_ROOT] <= hit_idx[1];
-                tagStore.LRU[LRU_LEFT_LEAF] = !hit_idx[1] ? hit_idx[0] : tagStore.LRU[LRU_LEFT_LEAF];
-                tagStore.LRU[LRU_RIGHT_LEAF] = hit_idx[1] ? hit_idx[0] : tagStore.LRU[LRU_RIGHT_LEAF];
-                //update lru
+            if (updateLRU) begin
+                update_idx = hit ? hit_idx : currLRU_IDX;
+                // Update LRU tree to mark accessed way as MRU (bits point toward MRU)
+                case(update_idx)
+                    2'b00: begin // Way 0 accessed - point to left/left
+                        tagStore.LRU[LRU_ROOT] <= 1'b0;       // Point to left subtree
+                        tagStore.LRU[LRU_LEFT_LEAF] <= 1'b0;  // Point to way 0
+                    end
+                    2'b01: begin // Way 1 accessed - point to left/right
+                        tagStore.LRU[LRU_ROOT] <= 1'b0;       // Point to left subtree
+                        tagStore.LRU[LRU_LEFT_LEAF] <= 1'b1;  // Point to way 1
+                    end
+                    2'b10: begin // Way 2 accessed - point to right/left
+                        tagStore.LRU[LRU_ROOT] <= 1'b1;       // Point to right subtree
+                        tagStore.LRU[LRU_RIGHT_LEAF] <= 1'b0; // Point to way 2
+                    end
+                    2'b11: begin // Way 3 accessed - point to right/right
+                        tagStore.LRU[LRU_ROOT] <= 1'b1;       // Point to right subtree
+                        tagStore.LRU[LRU_RIGHT_LEAF] <= 1'b1; // Point to way 3
+                    end
+                endcase
+                
+                // If loading from IC swap buffer, update the evicted line's tag
+                if (RD_IC_SWAP_BUF) begin
+                    tagStore.entries[currLRU_IDX].valid <= 1'b1;
+                    tagStore.entries[currLRU_IDX].tag <= IC_SwapBuf_i.lineAddr[I_VCACHE_TAG_UB : I_VCACHE_TAG_LB];
+                    dataStore.dataLines[currLRU_IDX] <= IC_SwapBuf_i.lines;
+                end
             end
         end
     end
