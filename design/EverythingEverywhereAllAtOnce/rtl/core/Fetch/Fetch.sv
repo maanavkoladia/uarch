@@ -289,7 +289,7 @@ module Fetch (
 
     SegmentTranslation seg_Xlation(
         .l_addr_i(SPC),
-        .data_size_i(1'b0),
+        .dataSize_i('0),
         .segValue(rr_outs_i.codeSeg_data),
         .segLimit(rr_outs_i.codeSeg_limit),
         .v_addr_o(seg_xlation_out),

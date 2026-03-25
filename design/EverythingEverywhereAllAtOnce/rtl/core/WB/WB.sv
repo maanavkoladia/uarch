@@ -11,7 +11,9 @@ module WB (
     input wb_latches_t wb_latches,
 
     //D$ write success for st_qs
-    input bool write_Success[NUM_WB_ST_QS],
+    input bool write_success[NUM_WB_ST_QS],
+
+    input bool write_success_mio,
 
     output wb_outputs_t outputs
 );
@@ -23,6 +25,7 @@ module WB (
     bool stall_flop_next;
 
     st_q_inputs_t stq_info[NUM_WB_ST_QS];
+    st_q_inputs_t stq_info_mio;
     st_q_outputs_t stq_outputs[NUM_WB_ST_QS];
     reg_wb_logic_outputs_t reg_wb_logic_outs;
     st_q_2_dep_check_outputs_t dc_dep;
@@ -104,20 +107,20 @@ module WB (
         .ST_OP(wb_latches.cs.ST_OP),
         .ST_XCL(wb_latches.ST_XCL),
         .MIO(wb_latches.MIO),
-        .write_success(write_Success),
+        .write_success(write_success),
 
         .stq_info(stq_info)
     );
 
     //st_q_logic for mio
-    STQ_Q_MIO_logic st_q_mio_logic(
+    ST_Q_MIO_logic st_q_mio_logic(
         .wb_valid(wb_valid),
-        .st_paddr_0_mio(s),
-        .res_buf(),
-        .ST_OP(),
-        .MIO(),
-        .write_success_mio(),
-        .stq_info_mio()
+        .st_paddr_0_mio(wb_latches.ST_PADDR_0),
+        .res_buf(wb_latches.res_buf),
+        .ST_OP(wb_latches.cs.ST_OP),
+        .MIO(wb_latches.MIO),
+        .write_success_mio(write_success_mio),
+        .stq_info_mio(stq_info_mio)
     );
 
     //Store queue gen
@@ -130,6 +133,8 @@ module WB (
             .outputs(stq_outputs[i])
         );
     end
+
+    
 
     //reg writeback logic
     reg_wb_logic reg_wb(

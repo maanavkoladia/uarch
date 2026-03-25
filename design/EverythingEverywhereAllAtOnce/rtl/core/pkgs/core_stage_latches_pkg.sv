@@ -238,4 +238,4 @@ package core_stage_latches_pkg;
     } wb_latches_t;
 
 endpackage
-;
+
