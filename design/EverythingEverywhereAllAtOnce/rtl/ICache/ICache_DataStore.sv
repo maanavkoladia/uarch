@@ -26,7 +26,7 @@ module ICache_DataStore (
     output byte_t currLine_o[CACHE_LINES_SIZE_B]
 
 );
-
+    
     localparam int LAYERS_OF_CELLS = 2;
     localparam int NUM_CELLS = CACHE_LINES_SIZE_B;
 
