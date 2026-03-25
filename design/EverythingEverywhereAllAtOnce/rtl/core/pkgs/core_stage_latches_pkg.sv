@@ -119,7 +119,7 @@ package core_stage_latches_pkg;
         reg_ids_e sib_base_id;
         uint8_t sib_scale;  //0,2,4,8
         bool disp_size; //8 or 32, 0 determined by DISP_NEEDED
-        uint32_t displacment;
+        uint32_t displacement;
         bool seg_1_valid;  //need two beacuse two segs for movs etc, 
         reg_ids_e seg_0_id;
         reg_ids_e seg_1_id;
