@@ -6,7 +6,7 @@ module I_VCache (
     input bool req_V_i,
 
     input p_address_t p_addr_i,
-    input swap_buf_t  IC_SwapBuf_i,
+    input ICache_swap_buf_t IC_SwapBuf_i,
 
     output swap_buf_t I_VC_SwapBuf_o,
     output bool hit_o,
@@ -39,7 +39,7 @@ module I_VCache (
 
     tagstore_t tagStore;
     datastore_t dataStore;
-    swap_buf_t I_VC_swapBuf;
+    ICache_swap_buf_t I_VC_swapBuf;
 
     logic [$clog2(NUM_LINES) - 1 : 0] hit_idx;
     logic [I_VCACHE_TAG_WIDTH -1 : 0] currTag[CACHE_LINES_SIZE_B];

@@ -45,4 +45,17 @@ package ICache_common_pkg;
         logic [I_VCACHE_OFFSET_WIDTH - 1 : 0] offset;
     } p_addr_ivcache_fields_t;
 
+    localparam int NUM_ICACHE_CONTROLLER_STATES = 7;
+    typedef enum logic [$clog2(
+NUM_ICACHE_CONTROLLER_STATES
+) - 1 : 0] {
+        IDLE  = 0,
+        Fill0 = 1,
+        Fill1 = 2,
+        Fill2 = 3,
+        Fill3 = 4,
+        SWAP  = 5,
+        ERROR = 6
+    } icache_controller_fsm_states_e;
+
 endpackage
