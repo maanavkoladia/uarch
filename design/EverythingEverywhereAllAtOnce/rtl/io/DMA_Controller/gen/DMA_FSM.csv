@@ -1,0 +1,9 @@
+state_s,start_write_i,ld_buf_data_V_i,write_Complete_i,writeBuf_V_i,nextstate_ns,req_ld_o,ld_counter_o,inc_counter_o,ld_writeBuf_o,clr_start_write_bit_o,req_bus_o,busy_o,interrupt_o
+IDLE,0,x,x,x,IDLE,0,0,0,0,0,0,0,0
+IDLE,1,x,x,x,WAIT_FOR_LD,1,0,0,0,0,0,1,0
+WAIT_FOR_LD,x,0,x,x,WAIT_FOR_LD,0,0,0,0,0,0,1,0
+WAIT_FOR_LD,x,1,x,x,LD_BUF,0,1,0,0,0,0,1,0
+LD_BUF,x,x,0,x,WAIT_FOR_WR,0,0,1,1,0,0,1,0
+LD_BUF,x,x,1,x,IDLE,0,0,0,0,1,0,1,1
+WAIT_FOR_WR,x,x,x,1,WAIT_FOR_WR,0,0,0,0,0,1,1,0
+WAIT_FOR_WR,x,x,x,0,LD_BUF,0,0,0,0,0,0,1,0

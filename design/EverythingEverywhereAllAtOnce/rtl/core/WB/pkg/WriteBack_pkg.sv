@@ -17,7 +17,6 @@ package WriteBack_pkg;
         bool pop;
     } st_q_inputs_t;
 
-
     typedef struct {
         bool full;
         bool empty;
@@ -30,14 +29,26 @@ package WriteBack_pkg;
         bool st_override;
     } st_q_outputs_t;
 
-    typedef struct{
-        bool full;
-        bool empty;
+
+    typedef struct {
         bool valid;
         p_address_t address;
         byte_t data[CACHE_LINES_SIZE_B];
+    } mio_entry_t;
+
+    typedef struct {
+        mio_entry_t data;
+        bool push;
+        bool pop;
+    } mio_inputs_t;
+
+    typedef struct {
+        bool full;
+        bool empty;
+        p_address_t address;
+        byte_t data[CACHE_LINES_SIZE_B];
         bool push_fail;
-    }st_q_mio_outputs_t;
+    } mio_outputs_t;
 
     typedef struct {
         reg_ids_e dr0_id; //dr in wb_latches

@@ -8,5 +8,6 @@ WB_PKGS = \
 WB_SRC_FILES = \
 	$(WB_PATH_INTERNAL)/ST_Q.sv \
 	$(WB_PATH_INTERNAL)/ST_Q_logic.sv \
+	$(WB_PATH_INTERNAL)/ST_Q_MIO_logic.sv \
 	$(WB_PATH_INTERNAL)/reg_wb_logic.sv \
 	$(WB_PATH_INTERNAL)/WB.sv \

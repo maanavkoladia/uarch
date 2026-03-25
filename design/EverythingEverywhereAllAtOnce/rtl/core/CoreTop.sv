@@ -183,7 +183,8 @@ module CoreTop (
         .clk(clk),
         .rst(rst),
         .wb_latches(wb_latches),
-        .write_Success(DCacheIn_i.writeSuccess),
+        .write_success(DCacheIn_i.writeSuccess),
+        .write_success_mio(DCacheIn_i.writeSuccess_MIO),
         .outputs(wb_outputs)
     );
 

@@ -64,6 +64,7 @@ package core_common_pkg;
 
         bool codeSeg_sb;  //needed for far brs, the sb will disable the i cache
         uint32_t codeSeg_data;  //used for translation from spc to phyiscial addr
+        uint32_t codeSeg_limit;
     } rr_outputs_t;
 
     typedef struct {
