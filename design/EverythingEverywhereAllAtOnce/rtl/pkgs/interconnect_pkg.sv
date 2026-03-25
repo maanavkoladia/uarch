@@ -97,8 +97,7 @@ package interconnect_pkg;
         //ste signals the dma that it is about to write to the bus,
         //only happens if the dma made the req to sch, so the dma cacheline
         //should be right
-        bool start_transaction;
-
+        bool writeComplete;
         bool coreValOnBus;
     } dte_2_dma_controller_t;
 

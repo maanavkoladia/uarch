@@ -33,6 +33,5 @@ package common_pkg;
 
     localparam int NUM_SBS = 22;
 
-    localparam int MIO_DATA_SIZE_B = 4;
 
 endpackage
