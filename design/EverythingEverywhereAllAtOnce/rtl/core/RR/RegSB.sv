@@ -1,7 +1,7 @@
 module RegSB (
-    input clk, rst,
+    input wire clk, rst,
     input regsb_inputs_t inputs,
-    output dep_stall
+    output bool dep_stall
 );
 
     regsb_entry_t ARCH_SCOREBOARD[8];
@@ -14,7 +14,9 @@ module RegSB (
 
     always_ff @(posedge clk) begin
         //setting scoreboards
-        if(inputs.cs_reg_wr) begin
+        //nned to check and block only if ids match, otherwise should still go through
+        //just wanna check compilation rn have to fix this later
+        if(inputs.cs_reg_wr && !inputs.wb_dr0_we && !inputs.wb_dr1_we) begin
             unique case(inputs.reg_id[4:3])
                 2'b00, 2'b01, 2'b10: begin
                     ARCH_SCOREBOARD[inputs.reg_id[2:0]].counter <=
@@ -27,8 +29,8 @@ module RegSB (
             endcase
         end
 
-        if(inputs.cs_modrm_reg_wr) begin
-            unique case(inputs.modrmreg_id[4:3])
+        if(inputs.cs_modrm_reg_wr && !inputs.wb_dr0_we && !inputs.wb_dr1_we) begin
+            unique case(inputs.modrm_id[4:3])
                 2'b00, 2'b01, 2'b10: begin
                     ARCH_SCOREBOARD[inputs.modrm_id[2:0]].counter <=
                         ARCH_SCOREBOARD[inputs.modrm_id[2:0]].counter + 1;
@@ -39,11 +41,9 @@ module RegSB (
                 end
             endcase
         end
-    end
 
-    always_ff @(posedge clk) begin
         //for clearning, will def need to consolidate multiple driver issue
-        if(inputs.wb_dr0_we) begin
+        if(inputs.wb_dr0_we && !inputs.cs_modrm_reg_wr && !inputs.cs_reg_wr) begin
             unique case(inputs.wb_dr0_id[4:3])
                 2'b00, 2'b01, 2'b10: begin
                     ARCH_SCOREBOARD[inputs.wb_dr0_id[2:0]].counter <=
@@ -56,7 +56,7 @@ module RegSB (
             endcase
         end
 
-        if(inputs.wb_dr1_we) begin
+        if(inputs.wb_dr1_we && !inputs.cs_modrm_reg_wr && !inputs.cs_reg_wr) begin
             unique case(inputs.wb_dr1_id[4:3])
                 2'b00, 2'b01, 2'b10: begin
                     ARCH_SCOREBOARD[inputs.wb_dr1_id[2:0]].counter <=

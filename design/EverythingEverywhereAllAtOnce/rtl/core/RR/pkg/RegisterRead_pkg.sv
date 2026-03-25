@@ -1,5 +1,6 @@
 package RegisterRead_pkg;
     import common_pkg::*;
+    import reg_ids_pkg::*;
     typedef struct {
         reg_ids_e MODRM_ID;
         reg_ids_e REG_ID;

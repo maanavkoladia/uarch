@@ -2,10 +2,10 @@ module AddressGen_Logic (
     input uint32_t register_data,
     input uint32_t SIB_IDX_data,
     input uint32_t SIB_BASE_data,
-    input logic [1:0] SIB_SCALE_val,
+    input uint8_t SIB_SCALE_val,
     input rr_cs_t rr_cs,
-    input uint8_t dispsize,
-    input uint32_t displacemnt,
+    input bool dispsize,
+    input uint32_t displacement,
 
     output l_address_t AddrGen_out
 );
@@ -22,10 +22,10 @@ module AddressGen_Logic (
                 adder_input2 = 32'b0;
             end
             2'b10: begin
-                adder_input2 = (SIB_IDX_data << SIB_SCALE_VAL) + SIB_BASE_data;
+                adder_input2 = (SIB_IDX_data << SIB_SCALE_val) + SIB_BASE_data;
             end
             2'b11: begin
-                adder_input2 = (SIB_IDX_data << SIB_SCALE_VAL) + SIB_BASE_data;
+                adder_input2 = (SIB_IDX_data << SIB_SCALE_val) + SIB_BASE_data;
             end
         endcase
 
