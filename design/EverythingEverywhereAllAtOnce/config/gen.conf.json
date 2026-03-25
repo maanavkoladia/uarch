@@ -38,9 +38,9 @@
             "run FSM SOP gen": "true"
         },
 
-        "i_Cache_f_controller_fsm_logic" : {
+        "i_Cache_controller_fsm_logic" : {
             "csv" : "rtl/ICache/gen/ICache_Controller_Logic.csv",
-            "outputFilePath" : "rtl/core/ICache/gen/ICache_Controller_Logic.sv",
+            "outputFilePath" : "rtl/ICache/gen/ICache_Controller_Logic.sv",
             "run FSM SOP gen": "true"
         },
 

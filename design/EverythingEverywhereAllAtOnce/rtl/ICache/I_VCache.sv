@@ -1,3 +1,6 @@
+import common_pkg::*;
+import ICache_common_pkg::*;
+
 module I_VCache (
     input wire clk,
     input wire rst,  //active low
@@ -8,7 +11,7 @@ module I_VCache (
     input p_address_t p_addr_i,
     input ICache_swap_buf_t IC_SwapBuf_i,
 
-    output swap_buf_t I_VC_SwapBuf_o,
+    output ICache_swap_buf_t I_VC_SwapBuf_o,
     output bool hit_o,
     output bool miss_o,
     output bool busy_o,
@@ -81,7 +84,7 @@ module I_VCache (
         else if (LD_I_VC_SWAP_BUF) begin
             I_VC_swapBuf.valid <= 1;
             I_VC_swapBuf.lineAddr <= {currTag, 4'b0000};
-            I_VC_swapBuf.lines <= currDataLine;
+            I_VC_swapBuf.line <= currDataLine;
         end
     end
 
@@ -129,7 +132,7 @@ module I_VCache (
                 if (RD_IC_SWAP_BUF) begin
                     tagStore.entries[currLRU_IDX].valid <= 1'b1;
                     tagStore.entries[currLRU_IDX].tag <= IC_SwapBuf_i.lineAddr[I_VCACHE_TAG_UB : I_VCACHE_TAG_LB];
-                    dataStore.dataLines[currLRU_IDX] <= IC_SwapBuf_i.lines;
+                    dataStore.dataLines[currLRU_IDX] <= IC_SwapBuf_i.line;
                 end
             end
         end

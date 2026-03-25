@@ -1,6 +1,7 @@
 ICACHE_PATH_INTERNAL = $(ROOT)/rtl/ICache/
 
 ICACHE_GEN_SRC_FILES = \
+					   $(ICACHE_PATH_INTERNAL)/gen/ICache_Controller_Logic.sv
 
 
 ICACHE_SRC_FILES = \

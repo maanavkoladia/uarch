@@ -25,7 +25,7 @@ module ICache (
         bool Fill0EN;
         bool Fill1EN;
         bool Fill2EN;
-        bool Fill3EN_;
+        bool Fill3EN;
         bool MakeReq;
     } fsm_outputs_t;
 
@@ -39,7 +39,7 @@ module ICache (
 
 
     byte_t icache_dataLines[CACHE_LINES_SIZE_B];
-    logic icache_tag[I_VCACHE_TAG_WIDTH - 1 : 0];
+    logic [ICACHE_TAG_WIDTH - 1 : 0] icache_tag;
     logic icache_tag_V;
 
     logic icache_hit, icache_miss;
@@ -59,7 +59,7 @@ module ICache (
         .S_2(controller_fsmState_bits[2]),  // current-state bit 2 (MSB)
         .LD_IC_SWAP_BUF_o(fsmOuts.LD_IC_SWAP_BUF),
         .RD_I_VC_SWAP_BUF_o(fsmOuts.RD_I_VC_SWAP_BUF),
-        .busy_o(fsm.busy),
+        .busy_o(fsmOuts.busy),
         .Fill0EN_o(fsmOuts.Fill0EN),
         .Fill1EN_o(fsmOuts.Fill1EN),
         .Fill2EN_o(fsmOuts.Fill2EN),
@@ -72,12 +72,12 @@ module ICache (
     ICache_TagStore icache_TagStore_unit (
         .clk(clk),
         .rst(rst),
-        .en(en),  //active high
+        .en(inFromCore_i.icache_en),  //active high
         .v_addr_i(inFromCore_i.v_spc_addr_i),
         .p_addr_i(inFromCore_i.p_addr),
         .ld_From_I_VC_Swap(),
         .LD_IC_SWAP_BUF(fsmOuts.LD_IC_SWAP_BUF),
-        .fill3_i(fsmOuts.Fill3EN_o),
+        .fill3_i(fsmOuts.Fill3EN),
         .busy(fsmOuts.busy),
         .I_VC_SwapBuf_i(icache_swapbuf),
         .currTag_o(icache_tag),
@@ -119,7 +119,7 @@ module ICache (
     //do the swapbuf latch logic
     always_ff @(posedge clk) begin
         if (!rst) icache_swapbuf <= '{default: '0};
-        else if (LD_IC_SWAP_BUF) begin
+        else if (fsmOuts.LD_IC_SWAP_BUF) begin
             icache_swapbuf.valid <= 1;
             icache_swapbuf.lineAddr <= {icache_tag, 4'b0000};
             icache_swapbuf.line <= icache_dataLines;
