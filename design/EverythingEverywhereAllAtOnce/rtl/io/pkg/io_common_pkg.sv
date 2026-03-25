@@ -12,7 +12,6 @@ package io_common_pkg;
 
     localparam int MIO_DATA_SIZE_B = 4;
 
-    localparam int PAGE_SIZE = (1 << 12);
     localparam int DISK_SIZE = 8 * PAGE_SIZE;
     localparam int DELAY = 75;
 
@@ -21,11 +20,11 @@ package io_common_pkg;
     typedef enum logic [$clog2(
 DMA_FSM_NUM_STATES
 ) -1 : 0] {
-        IDLE        = 5'd0,
-        LD_BUF      = 5'd1,
-        WAIT_FOR_LD = 5'd2,
-        WAIT_FOR_WR = 5'd3,
-        ERROR       = 5'd4
+        IDLE        = 0,
+        LD_BUF      = 1,
+        WAIT_FOR_LD = 2,
+        WAIT_FOR_WR = 3,
+        ERROR       = 4
     } dma_fsm_states_e;
 
 endpackage
