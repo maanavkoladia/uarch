@@ -13,6 +13,7 @@ package core_stage_latches_pkg;
         bool br_pred_taken;  //if fetch said taken, then high, else low
         l_address_t br_btb_target;  //needed bc target can change if in mem or reg, this is NOT the same as the actual target in EXE res
         l_address_t br_eip;  //for btb entries going back to fetch during br resolution in execute
+        bool br_ucond;
         //neip not needed ready being sent in latches
     } br_info_t;
 

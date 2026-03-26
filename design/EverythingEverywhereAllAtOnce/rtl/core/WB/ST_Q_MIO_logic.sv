@@ -6,16 +6,15 @@ module ST_Q_MIO_logic(
     input bool MIO, 
     input bool write_success_mio,
 
-    output st_q_inputs_t stq_info_mio
+    output mio_inputs_t mio_q_input_o
 );
 
     
     //we mio queue will generate 
-    assign stq_info_mio = '{
+    assign mio_q_input_o = '{
         data: '{
             valid: wb_valid & MIO & ST_OP,
             address: st_paddr_0_mio,
-            bit_vec: '0, //not needed for mio queue
             data: res_buf[0 +: CACHE_LINES_SIZE_B]
         },
         push: wb_valid & MIO & ST_OP, //same as data valid

@@ -43,14 +43,6 @@ package WriteBack_pkg;
     } mio_inputs_t;
 
     typedef struct {
-        bool full;
-        bool empty;
-        p_address_t address;
-        byte_t data[CACHE_LINES_SIZE_B];
-        bool push_fail;
-    } mio_outputs_t;
-
-    typedef struct {
         reg_ids_e dr0_id; //dr in wb_latches
         bool dr0_we;
         uint64_t dr0_data;

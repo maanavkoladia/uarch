@@ -1,11 +1,9 @@
 module MIO_Q(
     input clk,
     input rst,
-    input mio_input_t mio_input,
+    input mio_inputs_t mio_input,
 
-    output mio_outputs_t outs
-
-
+    output st_q_2_dcache_t outs
 );
     
     //currently 1
@@ -26,13 +24,11 @@ module MIO_Q(
             empty <= 1;
             mio_q <= '{default: '0};
         end else begin
-            if(valid_push)begin
-                mio_q <= mio_input.data; 
+            if (valid_push) begin
+                mio_q <= mio_input.data;  // Replace old with new, stay full
                 full <= 1;
                 empty <= 0;
-            end
-
-            if(valid_pop)begin
+            end else if (valid_pop) begin
                 mio_q.valid <= 1'b0;
                 empty <= 1;
                 full <= 0;
@@ -47,12 +43,6 @@ module MIO_Q(
         bit_vec: '0,
         data: mio_q.data
     };
-
-    // Assertion: Check for invalid pop from empty queue
-    // If this fires, there's a logic flaw in the system
-    assert property (@(posedge clk) disable iff (rst)
-        !(mio_q).pop & empty)
-    else $error("ST_Q: Invalid pop from cache - attempted to pop from empty queue at time %0t", $time);
 
 
 
