@@ -1,4 +1,5 @@
 package BusArbitration_common_pkg;
+    import common_pkg::*;
     import interconnect_pkg::*;
 
     localparam int NUM_TRANSACTIONS = 14;
@@ -31,10 +32,10 @@ NUM_TRANSACTIONS
     localparam int NUM_PRI_LEVELS = 4;
 
     typedef struct {
-        reqs_pri_t i_cache_req;
-        reqs_pri_t d_cache_reqs[NUM_DCACHE_PORTS];
-        reqs_pri_t mio_req;
-        reqs_pri_t dma_req;
+        req_2_sch_t i_cache_req;
+        req_2_sch_t d_cache_reqs[NUM_DCACHE_PORTS];
+        req_2_sch_t mio_req;
+        req_2_sch_t dma_req;
 
         p_address_t eb_addr[NUM_DCACHE_PORTS];
         mem_2_scheduler_t writeBuf_V_List[numWriteBufsInMem];

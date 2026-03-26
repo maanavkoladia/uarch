@@ -13,15 +13,15 @@ module Scheduler (
     input mem_2_scheduler_t mem_2_Sch_i,
 
     input dma_controller_2_scheduler_t dma_2_sch_i,
-    output reqs_pri_t bestPick_o,
+    output req_2_sch_t bestPick_o,
     output logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_o
 );
 
     sch_latched_reqs_t sch_latches;
 
     //make the dcache scheduler
-    reqs_pri_t dcache_Best_Pick;
-    reqs_pri_t dcache_Best_Pick_BK_ID;
+    req_2_sch_t dcache_Best_Pick;
+    req_2_sch_t dcache_Best_Pick_BK_ID;
 
 
     Scheduler_DCachePicking dcache_picking_unit (
@@ -59,19 +59,19 @@ module Scheduler (
     end
 
     //dma write to mem cleaning
-    reqs_pri_t dma_req;
+    req_2_sch_t dma_req;
     assign dma_req = mem_2_Sch_i.writeBuf_V[dma_2_sch_i.writeBuf_Address[6 : 4]] ? NO_REQ : dma_2_sch_i.dma_req;
 
     //now doing the final picking
     //I$ and MIO
 
-    reqs_pri_t IC_MIO_Pick;
+    req_2_sch_t IC_MIO_Pick;
     assign IC_MIO_Pick = sch_latches.i_cache_req >= sch_latches.mio_req ? sch_latches.i_cache_req : sch_latches.mio_req;
 
-    reqs_pri_t IC_MIO_DMA_PICK;
+    req_2_sch_t IC_MIO_DMA_PICK;
     assign IC_MIO_DMA_PICK = IC_MIO_Pick >= dma_req ? IC_MIO_Pick : dma_req;
 
-    reqs_pri_t bestPick;
+    req_2_sch_t bestPick;
     assign bestPick = dcache_Best_Pick >= IC_MIO_DMA_PICK ? dcache_Best_Pick : IC_MIO_DMA_PICK;
 
     assign bestPick_o = bestPick;

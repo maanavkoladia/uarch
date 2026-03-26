@@ -7,36 +7,36 @@ package interconnect_pkg;
 
     localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
 
-    localparam int NUM_REQS = 12;
+    localparam int NUM_REQS = 14;
 
     //we can abuse the bit mapping to do fasters cmps
     typedef enum logic [NUM_REQS - 1 : 0] {
 
         // ===== ICACHE (highest) =====
-        ICACHE_HIGH_PRI = 11,
+        ICACHE_HIGH_PRI = 13,
 
         // ===== DCACHE =====
-        DCACHE_EB_BLOCKING_ST_OVERRIDE = 10,
-        DCACHE_EB_BLOCKING_LD = 9,
-        DCACHE_EB_BLOCK_ST = 8,
-        DCACHE_FILL_ST_OVERRIDE = 7,
-        DCACHE_FILL_LD = 7,
+        DCACHE_EB_BLOCKING_ST_OVERRIDE = 12,
+        DCACHE_EB_BLOCKING_LD = 11,
+        DCACHE_EB_BLOCK_ST = 10,
+        DCACHE_FILL_ST_OVERRIDE = 9,
+        DCACHE_FILL_LD = 8,
         DCACHE_FILL_ST = 7,
         DCACHE_EB_WR = 6,
 
         // ===== ICACHE (lower) =====
 
         // ===== MIO / IO =====
-        MIO_LD_FROM_SIMPLE = 4,
-        DCACHE_MIO_WR_COMPLEX = 3,
-        DCACHE_MIO_WR_SIMPLE = 2,
-        DCACHE_MIO_IDLE = 1,
+        DCACHE_MIO_LD_FROM_SIMPLE = 5,
+        DCACHE_MIO_WR_COMPLEX = 4,
+        DCACHE_MIO_WR_SIMPLE = 3,
+        DCACHE_MIO_IDLE = 2,
 
         // ===== No request =====
-        ICACHE_LOW_PRI_REQ = 5,
+        ICACHE_LOW_PRI_REQ = 1,
         NO_REQ = 0
 
-    } reqs_2_sch_t;
+    } req_2_sch_t;
 
     //ICACHE interconnect/////////////////////////////
     //typedef enum {
@@ -45,7 +45,7 @@ package interconnect_pkg;
     //    ICACHE_HIGH_PRI = 2
     //} icache_req_types_2_scheduler_e;
 
-    typedef struct {reqs_2_sch_t req;} icache_2_scheduler_t;
+    typedef struct {req_2_sch_t req;} icache_2_scheduler_t;
 
     typedef struct {
         bool Mem_Valid;
@@ -73,10 +73,10 @@ package interconnect_pkg;
     //} dcache_req_types_mio_2_scheduler_e;
 
     typedef struct {
-        reqs_2_sch_t req[NUM_DCACHE_PORTS];
+        req_2_sch_t req[NUM_DCACHE_PORTS];
         p_address_t  evictionBufAddr[NUM_DCACHE_PORTS];
 
-        reqs_2_sch_t req_mio;
+        req_2_sch_t req_mio;
     } dcache_2_scheduler_t;
 
     typedef struct {
@@ -120,8 +120,8 @@ package interconnect_pkg;
 
     //DMA_Controller interconnect if
     typedef struct {
-        reqs_2_sch_t dma_req;
-        p_addr writeBuf_Address;
+        req_2_sch_t dma_req;
+        p_address_t writeBuf_Address;
     } dma_controller_2_scheduler_t;
 
     typedef struct {

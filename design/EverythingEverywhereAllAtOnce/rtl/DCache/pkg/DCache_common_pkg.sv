@@ -70,7 +70,7 @@ package DCache_common_pkg;
         //byte_t eb_V_o;
         p_address_t eb_addr;
         //byte_t eb_line_O[CACHE_LINES_SIZE_B];
-        dcache_req_types_2_scheduler_e req_2_sch;
+        req_2_sch_t req_2_sch;
         bool MakeReq;
     } dcache_block_outputs_t;
 
@@ -86,7 +86,7 @@ package DCache_common_pkg;
         bool writeSuccess;
         bool hit_o;
         byte_t dataLineOut[CACHE_LINES_SIZE_B];
-        dcache_req_types_mio_2_scheduler_e req_2_sch;
+        req_2_sch_t req_2_sch;
         bool req_rejected;
     } mio_block_outputs_t;
 

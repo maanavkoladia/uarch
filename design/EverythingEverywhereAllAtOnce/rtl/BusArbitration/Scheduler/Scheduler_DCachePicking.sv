@@ -6,15 +6,15 @@ module Scheduler_DCachePicking (
     // For EB addresses
     input dcache_2_scheduler_t d_Cache_eb_addr,
 
-    input reqs_pri_t d_cache_reqs_dirty_i[NUM_DCACHE_PORTS],
+    input req_2_sch_t d_cache_reqs_dirty_i[NUM_DCACHE_PORTS],
     input logic writeBuf_V[numWriteBufsInMem],
 
-    output reqs_pri_t bestPick_o,
+    output req_2_sch_t bestPick_o,
     output logic [$clog2(NUM_DCACHE_PORTS)-1:0] bestPick_BK_ID_o
 );
 
     // Cleaning
-    reqs_pri_t d_cache_req[NUM_DCACHE_PORTS];
+    req_2_sch_t d_cache_req[NUM_DCACHE_PORTS];
 
     always_comb begin
         for (int i = 0; i < NUM_DCACHE_PORTS; i++) begin
@@ -34,7 +34,7 @@ module Scheduler_DCachePicking (
     end
 
     // Pick logic
-    reqs_pri_t d_cache_req_pick_0, d_cache_req_pick_1;
+    req_2_sch_t d_cache_req_pick_0, d_cache_req_pick_1;
     logic [$clog2(NUM_DCACHE_PORTS)-1:0] d_cache_req_pick_bk_0, d_cache_req_pick_bk_1;
 
     assign d_cache_req_pick_0   = (d_cache_req[0] >= d_cache_req[1]) ? d_cache_req[0] : d_cache_req[1];
