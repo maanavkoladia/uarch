@@ -38,7 +38,7 @@ NUM_TRANSACTIONS
         req_2_sch_t dma_req;
 
         p_address_t eb_addr[NUM_DCACHE_PORTS];
-        mem_2_scheduler_t writeBuf_V_List[numWriteBufsInMem];
+        bool writeBuf_V_List[numWriteBufsInMem];
 
     } sch_latched_reqs_t;
 

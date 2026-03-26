@@ -4,7 +4,7 @@ import BusArbitration_common_pkg::*;
 
 module Scheduler_DCachePicking (
     // For EB addresses
-    input dcache_2_scheduler_t d_Cache_eb_addr,
+    input p_address_t d_Cache_eb_addr[NUM_DCACHE_PORTS],
 
     input req_2_sch_t d_cache_reqs_dirty_i[NUM_DCACHE_PORTS],
     input logic writeBuf_V[numWriteBufsInMem],
@@ -26,7 +26,7 @@ module Scheduler_DCachePicking (
                  || (d_cache_reqs_dirty_i[i] == DCACHE_EB_BLOCKING_LD)
                  || (d_cache_reqs_dirty_i[i] == DCACHE_EB_BLOCK_ST)
                  || (d_cache_reqs_dirty_i[i] == DCACHE_EB_WR))
-                && writeBuf_V[d_Cache_eb_addr.evictionBufAddr[i][6:4]]
+                && writeBuf_V[d_Cache_eb_addr[i][6:4]]
             ) begin
                 d_cache_req[i] = NO_REQ;
             end

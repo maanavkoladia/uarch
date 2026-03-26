@@ -71,7 +71,6 @@ package DCache_common_pkg;
         p_address_t eb_addr;
         //byte_t eb_line_O[CACHE_LINES_SIZE_B];
         req_2_sch_t req_2_sch;
-        bool MakeReq;
     } dcache_block_outputs_t;
 
     typedef struct {
@@ -107,6 +106,7 @@ package DCache_common_pkg;
         bool D_will_evict;
         bool busy;
         byte_t data_lineOut[CACHE_LINES_SIZE_B];
+        bool MakeReq;
     } d_cache_bank_outputs_t;
 
     typedef struct {

@@ -106,7 +106,7 @@ package interconnect_pkg;
     } dte_2_dcache_t;
 
     //MEM interconnect//////////////////////////////
-    typedef struct {logic writeBuf_V[numWriteBufsInMem];} mem_2_scheduler_t;
+    typedef struct {bool writeBuf_V[numWriteBufsInMem];} mem_2_scheduler_t;
 
     typedef struct {bool mem_Ready;} mem_2_dte_t;
 

@@ -193,6 +193,7 @@ module DMA_Controller (
     // Outputs
     // =============================
     assign out2Core_o.intOut = fsmOuts.interrupt;
-    assign out2Sch_o.writeReq = fsmOuts.req_bus;
+    assign out2Sch_o.dma_req = fsmOuts.req_bus;
+    assign out2Sch_o.writeBuf_Address = writeBuf_addr;
 
 endmodule

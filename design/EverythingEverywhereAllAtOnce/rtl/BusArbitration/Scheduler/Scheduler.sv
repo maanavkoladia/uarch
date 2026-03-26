@@ -13,6 +13,7 @@ module Scheduler (
     input mem_2_scheduler_t mem_2_Sch_i,
 
     input dma_controller_2_scheduler_t dma_2_sch_i,
+
     output req_2_sch_t bestPick_o,
     output logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_o
 );
@@ -21,7 +22,7 @@ module Scheduler (
 
     //make the dcache scheduler
     req_2_sch_t dcache_Best_Pick;
-    req_2_sch_t dcache_Best_Pick_BK_ID;
+    logic [$clog2(NUM_DCACHE_PORTS) - 1 :0] dcache_Best_Pick_BK_ID;
 
 
     Scheduler_DCachePicking dcache_picking_unit (
@@ -34,7 +35,12 @@ module Scheduler (
 
     always_ff @(posedge clk) begin
         if (!rst) begin
-            sch_latches <= '{default: '0};
+            sch_latches.i_cache_req <= NO_REQ;
+            for(int i = 0; i < NUM_DCACHE_PORTS; i++) sch_latches.d_cache_reqs[i] <= NO_REQ;
+            sch_latches.mio_req <= NO_REQ;
+            sch_latches.dma_req <= NO_REQ;
+            sch_latches.eb_addr <= '{default : '0};
+            sch_latches.writeBuf_V_List <= '{default : '0};
         end else begin
             // ICache
             sch_latches.i_cache_req <= iCache_2_Sch_i.req;
@@ -49,12 +55,10 @@ module Scheduler (
             sch_latches.mio_req <= dCache_2_Sch_i.req_mio;
 
             // DMA
-            sch_latches.dma_req <= dma_2_sch_i;
+            sch_latches.dma_req <= dma_2_sch_i.dma_req;
 
             // MEM write buffer valid list
-            for (int i = 0; i < numWriteBufsInMem; i++) begin
-                sch_latches.writeBuf_V_List[i] <= mem_2_Sch_i.writeBuf_V[i];
-            end
+            sch_latches.writeBuf_V_List <= mem_2_Sch_i.writeBuf_V;
         end
     end
 

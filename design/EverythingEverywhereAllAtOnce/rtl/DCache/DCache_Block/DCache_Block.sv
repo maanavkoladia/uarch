@@ -103,13 +103,13 @@ module DCache_Block (
             outputs_o.req_2_sch = DCACHE_EB_WR;
             if (eb_blocking) begin
                 if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_ST_OVERRIDE;
-                else if (blockReq_i.oe) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_LD;
-                else if (blockReq_i.we) outputs_o.req_2_sch = DCACHE_EB_BLOCK_ST;
+                else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_LD;
+                else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_EB_BLOCK_ST;
             end
         end else if (makeBlockReq) begin
             if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_FILL_ST_OVERRIDE;
-            else if (blockReq_i.oe) outputs_o.req_2_sch = DCACHE_FILL_LD;
-            else if (blockReq_i.we) outputs_o.req_2_sch = DCACHE_FILL_ST;
+            else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_FILL_LD;
+            else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_FILL_ST;
         end
     end
 
