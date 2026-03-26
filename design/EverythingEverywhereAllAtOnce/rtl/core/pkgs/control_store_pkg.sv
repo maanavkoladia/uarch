@@ -1,4 +1,4 @@
-package execute_op_types_pkg;
+package contorl_store_pkg;
 
     typedef enum {
         //----------------------------------------------------------
@@ -86,8 +86,19 @@ package execute_op_types_pkg;
 
         COMPARE8,
         COMPARE16,
-        COMPARE32
+        COMPARE32,
+        PASSA,
+        PASSB
 
     } exe_cs_operation_type_e;
+
+    typedef enum{
+        SR_REGISTER,
+        DR_REGISTER,
+        IMM,
+        BUFFER,
+        NEIP,
+        SEGMENT
+    } source_selector_e;
 
 endpackage

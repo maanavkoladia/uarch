@@ -3,7 +3,7 @@ package core_stage_latches_pkg;
     import common_pkg::*;
     import reg_ids_pkg::*;
     import core_common_pkg::*;
-    import execute_op_types_pkg::exe_cs_operation_type_e;
+    import contorl_store_pkg::*;
 
     localparam int EXE_BUFFER_SIZE = 32;
 
@@ -14,6 +14,7 @@ package core_stage_latches_pkg;
         l_address_t br_btb_target;  //needed bc target can change if in mem or reg, this is NOT the same as the actual target in EXE res
         l_address_t br_eip;  //for btb entries going back to fetch during br resolution in execute
         bool br_ucond;
+        bool br_xcl;
         //neip not needed ready being sent in latches
     } br_info_t;
 
@@ -86,10 +87,14 @@ package core_stage_latches_pkg;
         bool ST_OP;
         logic [1:0] DATA_SIZE;
         exe_cs_operation_type_e OP_TYPE;
+
+        source_selector_e alu_inputA_sel;
+        source_selector_e alu_inputB_sel;
+        source_selector_e branch_target_sel;
+
         bool xchg;
         bool cmpxchg;
         bool cmovc;
-        bool mem_operand;  //if not mem, then sr
         bool ld_flags;
         uint32_t flag_modified_vector;
         bool clear_df;
