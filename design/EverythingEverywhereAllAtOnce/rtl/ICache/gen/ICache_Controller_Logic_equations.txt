@@ -6,13 +6,13 @@ NS_0 = (S_0 & !S_2 & !mem_valid_i) | (!S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 &
 
 NS_1 = (!S_0 & S_1) | (S_1 & !S_2 & !mem_valid_i) | (S_0 & !S_1 & !S_2 & mem_valid_i)
 
-NS_2 = (!S_0 & S_1 & S_2) | (!S_0 & S_2 & !mem_valid_i) | (S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i & !I_VC_Miss_i)
+NS_2 = (!S_0 & S_2 & !mem_valid_i) | (!S_0 & S_1 & S_2) | (S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i & !I_VC_Miss_i)
 
 LD_IC_SWAP_BUF_o = (!S_0 & !S_1 & !S_2 & IC_miss_i)
 
 RD_I_VC_SWAP_BUF_o = (S_0 & !S_1 & S_2) | (!S_0 & !S_1 & !S_2 & IC_miss_i)
 
-busy_o = (!S_2 & IC_miss_i) | (!S_1 & S_2) | (S_0 & !S_2) | (S_1 & !S_2)
+busy_o = (S_1 & !S_2) | (!S_1 & S_2) | (!S_1 & IC_miss_i) | (S_0 & !S_1)
 
 Fill0EN_o = (S_0 & !S_1 & !S_2 & mem_valid_i)
 
