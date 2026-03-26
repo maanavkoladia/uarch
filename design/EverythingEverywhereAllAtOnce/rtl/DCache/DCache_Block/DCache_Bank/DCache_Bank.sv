@@ -36,6 +36,7 @@ module DCache_Bank (
         bool busy_o;
         bool ld_V_swap_o;
         bool invalidate_v_swap_o;
+        bool MakeReq;
         bool fill0_o;
         bool fill1_o;
         bool fill2_o;
@@ -91,6 +92,7 @@ module DCache_Bank (
         .busy_o(fsmOuts.busy_o),
         .ld_V_swap_o(fsmOuts.ld_V_swap_o),
         .invalidate_v_swap_o(fsmOuts.invalidate_v_swap_o),
+        .MakeReq_o(fsmOuts.MakeReq),
         .fill0_o(fsmOuts.fill0_o),
         .fill1_o(fsmOuts.fill1_o),
         .fill2_o(fsmOuts.fill2_o),
@@ -204,6 +206,7 @@ module DCache_Bank (
         outputs_o.D_will_evict = fsmOuts.D_will_evict_o;
         outputs_o.busy = fsmOuts.busy_o;
         outputs_o.data_lineOut = dataStore_Line;
+        outputs_o.MakeReq = fsmOuts.MakeReq;
     end
 
 endmodule

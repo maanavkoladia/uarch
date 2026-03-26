@@ -54,6 +54,7 @@ module DMA_Controller (
     uint32_t counter;
 
     byte_t writeBuf[CACHE_LINES_SIZE_B];
+    p_address_t writeBuf_addr;
     logic writeBuf_V;
 
     logic writeComplete;
@@ -147,14 +148,13 @@ module DMA_Controller (
         if (!rst) begin
             writeBuf_V <= 0;
             for (int i = 0; i < CACHE_LINES_SIZE_B; i++) writeBuf[i] <= '0;
-
         end else if (fsmOuts.ld_writeBuf) begin
             for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
                 if ((counter + i) < dma_Regs.numBytes) writeBuf[i] <= disk_ld_Buffer[counter+i];
                 else writeBuf[i] <= '0;
             end
             writeBuf_V <= 1;
-
+            writeBuf_addr <= dma_Regs.destAddr + counter;
         end else if (inFromDTE_i.writeComplete) begin
             writeBuf_V <= 0;
         end
@@ -193,6 +193,7 @@ module DMA_Controller (
     // Outputs
     // =============================
     assign out2Core_o.intOut = fsmOuts.interrupt;
-    assign out2Sch_o.writeReq = fsmOuts.req_bus;
+    assign out2Sch_o.dma_req = fsmOuts.req_bus;
+    assign out2Sch_o.writeBuf_Address = writeBuf_addr;
 
 endmodule

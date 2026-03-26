@@ -70,7 +70,7 @@ package DCache_common_pkg;
         //byte_t eb_V_o;
         p_address_t eb_addr;
         //byte_t eb_line_O[CACHE_LINES_SIZE_B];
-        dcache_req_types_2_scheduler_e req_2_sch;
+        req_2_sch_t req_2_sch;
     } dcache_block_outputs_t;
 
     typedef struct {
@@ -85,7 +85,7 @@ package DCache_common_pkg;
         bool writeSuccess;
         bool hit_o;
         byte_t dataLineOut[CACHE_LINES_SIZE_B];
-        dcache_req_types_mio_2_scheduler_e req_2_sch;
+        req_2_sch_t req_2_sch;
         bool req_rejected;
     } mio_block_outputs_t;
 
@@ -106,6 +106,7 @@ package DCache_common_pkg;
         bool D_will_evict;
         bool busy;
         byte_t data_lineOut[CACHE_LINES_SIZE_B];
+        bool MakeReq;
     } d_cache_bank_outputs_t;
 
     typedef struct {
@@ -150,6 +151,6 @@ NUM_VCACHE_STATES
         VCACHE_ERROR     = 3   // ERROR (trap state), synthesised
 
     } vcache_fsm_states_e;
-//chat told me that the old enum names "IDLE" etc where used somewhere else or something. honestly dont need to know if you need to change these
+    //chat told me that the old enum names "IDLE" etc where used somewhere else or something. honestly dont need to know if you need to change these
 endpackage
 ;

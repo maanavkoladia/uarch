@@ -146,16 +146,16 @@ and3$ RD_I_VC_SWAP_BUF_o_and0 (RD_I_VC_SWAP_BUF_o_t0, S_0, S_1_inv, S_2);
 and4$ RD_I_VC_SWAP_BUF_o_and1 (RD_I_VC_SWAP_BUF_o_t1, S_0_inv, S_1_inv, S_2_inv, IC_miss_i);
 or2$  RD_I_VC_SWAP_BUF_o_or  (RD_I_VC_SWAP_BUF_o, RD_I_VC_SWAP_BUF_o_t0, RD_I_VC_SWAP_BUF_o_t1);
 
-// busy_o = (S_0 & !S_2) | (!S_1 & S_2) | (S_1 & !S_2) | (!S_2 & IC_miss_i)
+// busy_o = (S_1 & !S_2) | (!S_1 & S_2) | (!S_1 & IC_miss_i) | (S_0 & !S_1)
 wire busy_o_t0;
 wire busy_o_t1;
 wire busy_o_t2;
 wire busy_o_t3;
 
-and2$ busy_o_and0 (busy_o_t0, S_0, S_2_inv);
+and2$ busy_o_and0 (busy_o_t0, S_1, S_2_inv);
 and2$ busy_o_and1 (busy_o_t1, S_1_inv, S_2);
-and2$ busy_o_and2 (busy_o_t2, S_1, S_2_inv);
-and2$ busy_o_and3 (busy_o_t3, S_2_inv, IC_miss_i);
+and2$ busy_o_and2 (busy_o_t2, S_1_inv, IC_miss_i);
+and2$ busy_o_and3 (busy_o_t3, S_0, S_1_inv);
 or4$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2, busy_o_t3);
 
 // Fill0EN_o = (S_0 & !S_1 & !S_2 & mem_valid_i)

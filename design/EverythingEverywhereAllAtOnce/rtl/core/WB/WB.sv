@@ -83,7 +83,7 @@ module WB (
 
         //to DCACHE
         stq_heads : stq_heads,
-        stq_info_mio  : mio_q_input,  
+        mio_head : mio_q_output,  
 
         dep_check : dc_dep,
 

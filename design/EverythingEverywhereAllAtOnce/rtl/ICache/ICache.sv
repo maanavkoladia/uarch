@@ -138,10 +138,10 @@ module ICache (
 
     //need schduler req gen logic, idle means no req
     always_comb begin
-        out2Sch_o.req = ICACHE_IDLE;
+        out2Sch_o.req = NO_REQ;
         if (fsmOuts.MakeReq) begin
             out2Sch_o.req = ICACHE_LOW_PRI_REQ;
-            if (inFromCore_i.numValidIDMSlots) out2Sch_o.req = ICACHE_HIGH_PRI;
+            if (inFromCore_i.numValidIDMSlots < 2) out2Sch_o.req = ICACHE_HIGH_PRI;
         end
     end
 
