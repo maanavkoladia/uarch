@@ -71,6 +71,7 @@ package DCache_common_pkg;
         p_address_t eb_addr;
         //byte_t eb_line_O[CACHE_LINES_SIZE_B];
         dcache_req_types_2_scheduler_e req_2_sch;
+        bool MakeReq;
     } dcache_block_outputs_t;
 
     typedef struct {
@@ -150,6 +151,6 @@ NUM_VCACHE_STATES
         VCACHE_ERROR     = 3   // ERROR (trap state), synthesised
 
     } vcache_fsm_states_e;
-//chat told me that the old enum names "IDLE" etc where used somewhere else or something. honestly dont need to know if you need to change these
+    //chat told me that the old enum names "IDLE" etc where used somewhere else or something. honestly dont need to know if you need to change these
 endpackage
 ;

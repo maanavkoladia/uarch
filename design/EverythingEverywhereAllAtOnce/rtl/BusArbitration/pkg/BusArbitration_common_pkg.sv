@@ -1,4 +1,5 @@
-package BusArbitration_pkg;
+package BusArbitration_common_pkg;
+    import interconnect_pkg::*;
 
     localparam int NUM_TRANSACTIONS = 14;
 
@@ -26,6 +27,18 @@ NUM_TRANSACTIONS
 
     } bus_transaction_e;
 
+    //0 highest pri,NUM_PRI_LEVELS - 1 lowest
+    localparam int NUM_PRI_LEVELS = 4;
 
+    typedef struct {
+        reqs_pri_t i_cache_req;
+        reqs_pri_t d_cache_reqs[NUM_DCACHE_PORTS];
+        reqs_pri_t mio_req;
+        reqs_pri_t dma_req;
+
+        p_address_t eb_addr[NUM_DCACHE_PORTS];
+        mem_2_scheduler_t writeBuf_V_List[numWriteBufsInMem];
+
+    } sch_latched_reqs_t;
 
 endpackage

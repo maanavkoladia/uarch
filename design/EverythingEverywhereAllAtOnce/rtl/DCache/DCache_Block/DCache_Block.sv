@@ -93,15 +93,24 @@ module DCache_Block (
     //assign outputs_o.eb_V_o = eb_outputs.valid;
     //assign outputs_o.eb_line_O = eb_outputs.lineOut;
 
-    always_comb begin
-        outputs_o.req_2_sch = DCACHE_IDLE;
+    assign makeBlockReq = dcache_bank_outputs.MakeReq;
+    assign eb_blocking = vcache_outputs.beingBlocked;
+    assign eb_V = eb_outputs.valid;
 
-        //if (eb_outputs.valid) begin
-        //    outputs_o.req_2_sch = DCACHE_LOW_PRI_REQ;
-        //    if (dcache_bank_outputs.busy || vcache_outputs.busy)
-        //        outputs_o.req_2_sch = DCACHE_HIGH_PRI;
-        //end
-        //chat write this
+    always_comb begin
+        outputs_o.req_2_sch = NO_REQ;
+        if (eb_V) begin
+            outputs_o.req_2_sch = DCACHE_EB_WR;
+            if (eb_blocking) begin
+                if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_ST_OVERRIDE;
+                else if (blockReq_i.oe) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_LD;
+                else if (blockReq_i.we) outputs_o.req_2_sch = DCACHE_EB_BLOCK_ST;
+            end
+        end else if (makeBlockReq) begin
+            if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_FILL_ST_OVERRIDE;
+            else if (blockReq_i.oe) outputs_o.req_2_sch = DCACHE_FILL_LD;
+            else if (blockReq_i.we) outputs_o.req_2_sch = DCACHE_FILL_ST;
+        end
     end
 
     //bus logic
@@ -120,15 +129,15 @@ module DCache_Block (
     //data bus
     always_comb begin
         startingOffset = 0;
-        for(int i = 0; i < CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS; i++) begin
+        for (int i = 0; i < CACHE_LINES_SIZE_Bits / DATA_BUS_WIDTH_BITS; i++) begin
             dataBus_fake = '0;
-            if(permissionToDriveDataBus_evictionBuf[i]) begin
-                startingOffset = i * CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS;
+            if (permissionToDriveDataBus_evictionBuf[i]) begin
+                startingOffset = i * CACHE_LINES_SIZE_Bits / DATA_BUS_WIDTH_BITS;
                 dataBus_fake = {
                     eb_outputs.lineOut[startingOffset],
-                    eb_outputs.lineOut[startingOffset + 1],
-                    eb_outputs.lineOut[startingOffset + 2],
-                    eb_outputs.lineOut[startingOffset + 3]
+                    eb_outputs.lineOut[startingOffset+1],
+                    eb_outputs.lineOut[startingOffset+2],
+                    eb_outputs.lineOut[startingOffset+3]
                 };
             end
         end

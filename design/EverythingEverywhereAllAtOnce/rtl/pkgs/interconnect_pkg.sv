@@ -7,14 +7,45 @@ package interconnect_pkg;
 
     localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
 
-    //ICACHE interconnect/////////////////////////////
-    typedef enum {
-        ICACHE_IDLE = 0,
-        ICACHE_LOW_PRI_REQ = 1,
-        ICACHE_HIGH_PRI = 2
-    } icache_req_types_2_scheduler_e;
+    localparam int NUM_REQS = 12;
 
-    typedef struct {icache_req_types_2_scheduler_e req;} icache_2_scheduler_t;
+    //we can abuse the bit mapping to do fasters cmps
+    typedef enum logic [NUM_REQS - 1 : 0] {
+
+        // ===== ICACHE (highest) =====
+        ICACHE_HIGH_PRI = 11,
+
+        // ===== DCACHE =====
+        DCACHE_EB_BLOCKING_ST_OVERRIDE = 10,
+        DCACHE_EB_BLOCKING_LD = 9,
+        DCACHE_EB_BLOCK_ST = 8,
+        DCACHE_FILL_ST_OVERRIDE = 7,
+        DCACHE_FILL_LD = 7,
+        DCACHE_FILL_ST = 7,
+        DCACHE_EB_WR = 6,
+
+        // ===== ICACHE (lower) =====
+
+        // ===== MIO / IO =====
+        MIO_LD_FROM_SIMPLE = 4,
+        DCACHE_MIO_WR_COMPLEX = 3,
+        DCACHE_MIO_WR_SIMPLE = 2,
+        DCACHE_MIO_IDLE = 1,
+
+        // ===== No request =====
+        ICACHE_LOW_PRI_REQ = 5,
+        NO_REQ = 0
+
+    } reqs_2_sch_t;
+
+    //ICACHE interconnect/////////////////////////////
+    //typedef enum {
+    //    ICACHE_IDLE = 0,
+    //    ICACHE_LOW_PRI_REQ = 1,
+    //    ICACHE_HIGH_PRI = 2
+    //} icache_req_types_2_scheduler_e;
+
+    typedef struct {reqs_2_sch_t req;} icache_2_scheduler_t;
 
     typedef struct {
         bool Mem_Valid;
@@ -22,30 +53,30 @@ package interconnect_pkg;
     } dte_2_icache_t;
 
     //DCACHE interconnect/////////////////////////////
-    typedef enum {
-        DCACHE_IDLE = 0,  //no reqs
-        DCACHE_EVICT,  //only evict, nothing else
-        DCACHE_GET_LINE_FOR_ST,  //st present, not being blocked, causing stall
-        DCACHE_GET_LINE_FOR_ST_BLOCKED,  //st present, blocked by eb, no stall
-        DCACHE_GET_LINE_FOR_LD,  //ld present, cuasing stall, not being lbocked
-        DCACHE_GET_LINE_FOR_ST_OVERRIDE,  //st present, not blocked, cuaing stall
-        DCACHE_GET_LINE_FOR_LD_BLOCKED,  //ld present, cuaisng stall, being blocked by eb
-        DCACHE_GET_LINE_FOR_ST_OVERRIDE_BLOCKED,  //st preesnt, override, being blocked
-        DCACHE_GET_LINE_FOR_LD_OVERRIDE_BLOCKED //ld is present, cuasing stall, and being blocked by eb, there is a st w st ovrrid pedning ,
-    } dcache_req_types_2_scheduler_e;
+    //typedef enum {
+    //    DCACHE_IDLE = 0,  //no reqs
+    //    DCACHE_EVICT,  //only evict, nothing else
+    //    DCACHE_GET_LINE_FOR_ST,  //st present, not being blocked, causing stall
+    //    DCACHE_GET_LINE_FOR_ST_BLOCKED,  //st present, blocked by eb, no stall
+    //    DCACHE_GET_LINE_FOR_LD,  //ld present, cuasing stall, not being lbocked
+    //    DCACHE_GET_LINE_FOR_ST_OVERRIDE,  //st present, not blocked, cuaing stall
+    //    DCACHE_GET_LINE_FOR_LD_BLOCKED,  //ld present, cuaisng stall, being blocked by eb
+    //    DCACHE_GET_LINE_FOR_ST_OVERRIDE_BLOCKED,  //st preesnt, override, being blocked
+    //    DCACHE_GET_LINE_FOR_LD_OVERRIDE_BLOCKED //ld is present, cuasing stall, and being blocked by eb, there is a st w st ovrrid pedning ,
+    //} dcache_req_types_2_scheduler_e;
 
-    typedef enum {
-        DCACHE_MIO_IDLE = 0,
-        DCACHE_MIO_LD_FROM_SIMPLE = 1,
-        DCACHE_MIO_WR_SIMPLE = 2,
-        DCACHE_MIO_WR_COMPLEX = 3
-    } dcache_req_types_mio_2_scheduler_e;
+    //typedef enum {
+    //    DCACHE_MIO_IDLE = 0,
+    //    DCACHE_MIO_LD_FROM_SIMPLE = 1,
+    //    DCACHE_MIO_WR_SIMPLE = 2,
+    //    DCACHE_MIO_WR_COMPLEX = 3
+    //} dcache_req_types_mio_2_scheduler_e;
 
     typedef struct {
-        dcache_req_types_2_scheduler_e req[NUM_DCACHE_PORTS];
-        p_address_t evictionBufAddr[NUM_DCACHE_PORTS];
+        reqs_2_sch_t req[NUM_DCACHE_PORTS];
+        p_address_t  evictionBufAddr[NUM_DCACHE_PORTS];
 
-        dcache_req_types_mio_2_scheduler_e req_mio;
+        reqs_2_sch_t req_mio;
     } dcache_2_scheduler_t;
 
     typedef struct {
@@ -76,6 +107,7 @@ package interconnect_pkg;
 
     //MEM interconnect//////////////////////////////
     typedef struct {logic writeBuf_V[numWriteBufsInMem];} mem_2_scheduler_t;
+
     typedef struct {bool mem_Ready;} mem_2_dte_t;
 
     typedef struct {
@@ -87,7 +119,10 @@ package interconnect_pkg;
 
 
     //DMA_Controller interconnect if
-    typedef struct {bool writeReq;} dma_controller_2_scheduler_t;
+    typedef struct {
+        reqs_2_sch_t dma_req;
+        p_addr writeBuf_Address;
+    } dma_controller_2_scheduler_t;
 
     typedef struct {
         //for driving the DataBus to write to main_mem

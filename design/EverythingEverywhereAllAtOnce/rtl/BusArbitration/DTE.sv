@@ -1,12 +1,15 @@
 import common_pkg::*;
 import interconnect_pkg::*;
-import BusArbitration_pkg::*;
+import BusArbitration_common_pkg::*;
 
 module DTE (
     input wire clk_i,
     input wire rst_i,  //active low
 
-    input bus_transaction_e req_i,
+
+    //input bus_transaction_e req_i,
+    input reqs_pri_t bestPick_i,
+    input logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_i,
 
     //perms, and memvalids
     output dte_2_icache_t dte_out_2_icache_o,
