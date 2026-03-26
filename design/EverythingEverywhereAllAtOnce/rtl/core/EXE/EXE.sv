@@ -12,7 +12,7 @@ module EXE (
 
 );
 
-
+    
     // select from buffer, imm, src
     //if needed align buffer data
     //execute unit
