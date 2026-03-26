@@ -18,18 +18,17 @@ module WB (
     output wb_outputs_t outputs
 );
 
-    //NEED TO DO MMIO!!!!
-    //Add another store queue to MM and update the STQ to dcache interface 
 
     bool stall_flop;
     bool stall_flop_next;
 
     st_q_inputs_t stq_info[NUM_WB_ST_QS];
-    st_q_inputs_t stq_info_mio;
     st_q_outputs_t stq_outputs[NUM_WB_ST_QS];
+    mio_inputs_t mio_q_input;
     reg_wb_logic_outputs_t reg_wb_logic_outs;
     st_q_2_dep_check_outputs_t dc_dep;
     st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
+    st_q_2_dcache_t mio_q_output;
     bool st_override_array[NUM_WB_ST_QS];
 
 
@@ -73,6 +72,7 @@ module WB (
         valid : wb_latches.valid,
         wb_stall : stall_flop_next,
 
+        //for Reg SB
         DR_0_we : reg_wb_logic_outs.dr0_we,
         DR_0_id : reg_wb_logic_outs.dr0_id,
         DR_0_data : reg_wb_logic_outs.dr0_data,
@@ -80,8 +80,11 @@ module WB (
         DR_1_we : reg_wb_logic_outs.dr1_we,
         DR_1_id : reg_wb_logic_outs.dr1_id,
         DR_1_data : reg_wb_logic_outs.dr1_data,
-       // st_override : st_override_array,
+
+        //to DCACHE
         stq_heads : stq_heads,
+        stq_info_mio  : mio_q_input,  
+
         dep_check : dc_dep,
 
         ST_OP : wb_latches.cs.ST_OP,
@@ -120,8 +123,9 @@ module WB (
         .ST_OP(wb_latches.cs.ST_OP),
         .MIO(wb_latches.MIO),
         .write_success_mio(write_success_mio),
-        .stq_info_mio(stq_info_mio)
+        .mio_q_input_o(mio_q_input)
     );
+
 
     //Store queue gen
     genvar i;
@@ -134,7 +138,13 @@ module WB (
         );
     end
 
-    
+    //MIO Queue instantiation
+    MIO_Q mio_q_inst (
+        .clk(clk),
+        .rst(rst),
+        .mio_input(mio_q_input),
+        .outs(mio_q_output)
+    );
 
     //reg writeback logic
     reg_wb_logic reg_wb(

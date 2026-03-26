@@ -138,6 +138,7 @@ package core_common_pkg;
         bool valid;
         bool wb_stall;
 
+        //to RR
         bool DR_0_we;
         reg_ids_e DR_0_id;
         uint64_t DR_0_data;
@@ -146,7 +147,11 @@ package core_common_pkg;
         reg_ids_e DR_1_id;  //
         uint64_t DR_1_data;  //data is supposed to be aligned
 
+        //to dcache
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
+        st_q_2_dcache_t mio_head;
+
+        //to  DC
         st_q_2_dep_check_outputs_t dep_check;
 
         //store dep check
@@ -157,6 +162,7 @@ package core_common_pkg;
 
 
     } wb_outputs_t;
+
 
 endpackage
 

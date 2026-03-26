@@ -47,9 +47,9 @@ module CoreTop (
             ld_addr_1 : dc_outputs.ld_addr_1,
             ld_addr_MIO_V : dc_outputs.ld_addr_MIO_V,
             ld_addr_MIO : dc_outputs.ld_addr_MIO,
-            stq_info_mio : dc_outputs.stq_info_mio,
             memStalling : mem_outputs.stall,
-            stq_heads : wb_outputs.stq_heads
+            stq_heads : wb_outputs.stq_heads,
+            stq_info_mio : wb_outputs.stq_info_mio,
         };
 
 
