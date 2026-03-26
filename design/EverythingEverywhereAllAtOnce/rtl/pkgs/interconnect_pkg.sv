@@ -74,7 +74,7 @@ package interconnect_pkg;
 
     typedef struct {
         req_2_sch_t req[NUM_DCACHE_PORTS];
-        p_address_t  evictionBufAddr[NUM_DCACHE_PORTS];
+        p_address_t evictionBufAddr[NUM_DCACHE_PORTS];
 
         req_2_sch_t req_mio;
     } dcache_2_scheduler_t;
@@ -113,7 +113,7 @@ package interconnect_pkg;
     typedef struct {
         bool ld_req;
         bool st_req;
-        bool start_transaction;
+        //bool start_transaction;
         bool permission2DriveBus[MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
     } dte_2_mem_t;
 
