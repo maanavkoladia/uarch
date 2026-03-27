@@ -93,12 +93,49 @@ package contorl_store_pkg;
     } exe_cs_operation_type_e;
 
     typedef enum{
+        //register 
+        NOP
         SR_REGISTER,
-        DR_REGISTER,
-        IMM,
-        BUFFER,
+        DR_REGISTER, //alu or branch 
+        BUFFER, //128 bits you can use this one for all alu ops
         NEIP,
         SEGMENT
+        SEXT8
+        SEGMENT_NEIP
+        IMM64, //I think for regular ALU ops the operation size is always the same or sign extended
+
+        //I think this would just be for branches. 
+        IMM32, //rel 32
+        ZEXT_IMM16 //rel 16
+        ZEXT_IMM8 //rel8 
+        BUF32 //m32 for branch
+        ZEXT_BUF16 //m16 for branch
+
+    
+    // How source selection works in the ALU input selector:
+    //refined comment with claude so its coherent buddy
+    // 1. All sources first get assigned to a 128-bit wire (srA_128/srB_128)
+    //    - Most sources zero-extend:  srA_128 = {64'd0, dr_data}
+    //    - Immediates zero-extend:    srA_128 = {64'd0, imm64}
+    //    - Buffer uses full width:    srA_128 = res_buf_out  (for IRET's 12-byte data)
+    //    - Sign-extend when needed:   srA_128 = {64'd0, 64'(signed'(imm64[7:0]))}
+    //
+    // 2. For ALU operations: just mask down to the operation size
+    //    - ALU ops always operate on matching-size operands, so we truncate the
+    //      128-bit wire to whatever size we need (8, 16, 32, or 64 bits)
+    //    - Ex: ADD16 uses srA_16 and srB_16 (both are just srX_128[15:0])
+    //
+    // 3. For branches: different story - always work with 32-bit values
+    //    - Branches need 32-bit arithmetic (like NEIP + disp8)
+    //    - So we need IMM8/IMM16/IMM32 to produce 32-bit zero-extended values
+    //    - Ex: IMM8 for branch → br_sel = {24'd0, imm8}, not just imm8[7:0]
+    //    - That way branch resolution can always do a clean 32-bit add
+    //     - basically branches have to be ZERO EXTENDED .. maybe chat made this shi too convoluted 
+    //
+    // Note: We DON'T need separate IMM8/IMM16 for ALU ops since those need
+    // actual 8-bit/16-bit wires, which we get by truncating srX_128
+
+
     } source_selector_e;
 
 endpackage

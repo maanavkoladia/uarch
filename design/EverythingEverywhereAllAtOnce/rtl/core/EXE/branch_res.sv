@@ -1,42 +1,86 @@
 module branch_res(
-    input br_info_t br_info_i;
-    input l_address_t NEIP_i;
-    input uint64_t imm64_i;
-    input exe_cs_t cs_i;
-    input flags_idx_e flags_i;
+    //br_info
+    input bool valid_i,
+    input l_address_t br_eip_i,
+    input bool br_xcl_i,
+    input bool br_pred_taken_i,
+    input l_address_t speculative_target_i,
+
+    //exe_cs
+    input bool br_ucond_i,
+    input bool relative_branch_i,
+    input bool special_br_i,
+    input bool is_far_i,
+    input bool second_flag_needed_i,
+
+    input uint32_t br_source_i,
+    input l_address_t NEIP_i,
+    input bool CF,
+    input bool ZF,
 
     output exe_br_resolution_outputs_t outs_o
 );
 
+    
+    l_address_t br_target;
+    bool taken;
+    bool clr_exp_mode;
+    bool flush;
+    bool miss_prediction;
 
-    assign = '{
-        valid: br_info_i.valid,
-        flush: 
-        miss_prediction:
-        br_eip: br_info_i.br_eip,
-        neip: NEIP_i
-        br_target: 
-        taken:
-        br_XCL: 
-        clr_exp_mode: cs_i.clr_exp_mode,
-        br_ucond: br_info_i.br_ucond
+    bool second_flag_res;
+    bool cond_br_res;
+    bool target_match;
+
+    //taken logic
+    assign second_flag_res = second_flag_needed_i ? ~CF : 1'b1; //mux
+    assign cond_br_res = ~ZF & second_flag_res;
+    assign taken = br_ucond_i || cond_br_res;
+
+    //target logic
+    assign br_target = relative_branch_i ? (NEIP_i + br_source_i) : br_source_i;
+
+    //target match check
+    assign target_match = speculative_target_i == br_target;
+
+    //misprediction logic
+    always_comb begin
+        miss_prediction = 1'b0;
+        flush = 1'b0;
+        if(taken & br_pred_taken_i & target_match) begin
+            miss_prediction = 1'b0;
+            flush = 1'b0;
+        end
+        else if(~taken & ~br_pred_taken_i) begin
+            miss_prediction = 1'b0;
+            flush = 1'b0;
+        end
+        else begin
+            miss_prediction = 1'b1;
+            flush = 1'b1;
+        end
+        
+        if(is_far_i) begin
+            miss_prediction = 1'b1;
+            flush = 1'b1;
+        end
+    end
+
+    assign clr_exp_mode = special_br_i;
+    
+    assign outs_o = '{
+        valid: valid_i,
+        flush: flush, 
+        miss_prediction: miss_prediction,  
+        br_eip: br_eip_i,  
+        neip: NEIP_i, 
+        br_target: br_target, 
+        taken: taken,  
+        br_XCL: br_xcl_i,  
+        clr_exp_mode: clr_exp_mode,  
+        br_ucond: br_ucond_i
     };
 
-
-
-    
-
-/*
-    typedef struct {
-        bool valid;  //we had a br in decode
-        bool isFar;  //need to flush fuck it
-        bool br_pred_taken;  //if fetch said taken, then high, else low
-        l_address_t br_btb_target;  //needed bc target can change if in mem or reg, this is NOT the same as the actual target in EXE res
-        l_address_t br_eip;  //for btb entries going back to fetch during br resolution in execute
-        //neip not needed ready being sent in latches
-    } br_info_t;
-
-*/
 
 
 endmodule

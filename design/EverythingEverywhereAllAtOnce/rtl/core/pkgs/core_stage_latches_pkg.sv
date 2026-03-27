@@ -8,14 +8,16 @@ package core_stage_latches_pkg;
     localparam int EXE_BUFFER_SIZE = 32;
 
     typedef struct {
+    
+        //real info on branch
         bool valid;  //we had a br in decode
-        bool isFar;  //need to flush fuck it
-        bool br_pred_taken;  //if fetch said taken, then high, else low
-        l_address_t br_btb_target;  //needed bc target can change if in mem or reg, this is NOT the same as the actual target in EXE res
         l_address_t br_eip;  //for btb entries going back to fetch during br resolution in execute
-        bool br_ucond;
         bool br_xcl;
-        //neip not needed ready being sent in latches
+ 
+        //specualtive info on branch 
+        bool br_pred_taken;  //if fetch said taken, then high, else low
+        l_address_t specualtive_target;  //needed bc target can change if in mem or reg, this is NOT the same as the actual target in EXE res
+        //rn assuming if br_pred_not taken speculative_target is filled with garbage
     } br_info_t;
 
     typedef struct {
@@ -85,7 +87,7 @@ package core_stage_latches_pkg;
     typedef struct {
         bool EXE_OP;
         bool ST_OP;
-        logic [1:0] DATA_SIZE;
+        logic [1:0] DATA_SIZE; //im assuming this is 8 16 32 64
         exe_cs_operation_type_e OP_TYPE;
 
         source_selector_e alu_inputA_sel;
@@ -99,7 +101,21 @@ package core_stage_latches_pkg;
         uint32_t flag_modified_vector;
         bool clear_df;
         bool set_df;
+
+    //branch cs
+        bool br_ucond;
+        bool relative_branch; //1 indicates I add it to NEIP 0 means Its an absolute jmp
+        bool special_br; //for exp and int        
+        bool is_far;  //need to flush 
+       //I think for most branches its ZF then CF.
+       //I will always assume ZF if second flag is set then ill also use CF
+       //hard coded in br_res logic
+        bool second_flag_needed;
+
+        //branch control signals
+
     } exe_cs_t;
+
 
     typedef struct {
         bool ST_OP;
@@ -209,6 +225,7 @@ package core_stage_latches_pkg;
         br_info_t br_info;
 
         l_address_t NEIP;
+        l_address_t EIP;
 
         uint64_t imm64;
 

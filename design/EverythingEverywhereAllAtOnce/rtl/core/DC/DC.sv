@@ -8,7 +8,7 @@ module DC (
     input wire rst,
 
     //stage latches
-    input dc_latches_t latches_i,
+    input dc_latches_t latches_i, //assumign load input is not cache aligned
 
     //miss stall and valid, inflight store addys
     input mem_outputs_t mem_outs_i,

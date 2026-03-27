@@ -69,7 +69,7 @@ module MEM (
         sr_data: latches_i.sr_data,
         dr_id: latches_i.dr_id,
         dr_data: latches_i.dr_data,
-        ld_addy: latches_i.LD_PADDR_0
+        ld_addy: latches_i.LD_PADDR_0 //rn this I Think is cache unaligned. 
     };
 
     assign outs_o = '{

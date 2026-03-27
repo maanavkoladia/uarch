@@ -13,6 +13,8 @@ module EXE (
 );
 
     
+
+    //making the assumption that a write to the buffer will either line up with the r/m value. so ST offset of the SS offset. 
     // select from buffer, imm, src
     //if needed align buffer data
     //execute unit
