@@ -1,0 +1,10 @@
+# Minimised SOP (Quine-McCluskey) for: 4_2_pendcoder
+.i 4
+.o 2
+.ilb  in3_i in2_i in1_i in0_i
+.ob  out1_o  out0_o
+.type f
+-01- 01
+-1-- 10
+1--- 11
+.e

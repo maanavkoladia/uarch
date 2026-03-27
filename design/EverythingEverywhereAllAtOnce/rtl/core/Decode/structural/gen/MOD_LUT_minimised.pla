@@ -1,0 +1,16 @@
+# Minimised SOP (Quine-McCluskey) for: MOD_LUT
+.i 8
+.o 3
+.ilb input_7_i input_6_i input_5_i input_4_i input_3_i input_2_i input_1_i input_0_i
+.ob  msd_size_2_o msd_size_1_o msd_size_0_o
+.type f
+-0-----1 001
+-0----1- 001
+-0---0-- 001
+-0---100 010
+-0---101 100
+-1---100 001
+01------ 010
+10------ 100
+11------ 001
+.e

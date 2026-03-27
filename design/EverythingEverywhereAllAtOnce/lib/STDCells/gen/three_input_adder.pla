@@ -1,3 +1,4 @@
+# PLA for: three_input_adder
 .i 9
 .o 5
 .ilb in2_2_i in2_1_i in2_0_i in1_2_i in1_1_i in1_0_i in0_2_i in0_1_i in0_0_i

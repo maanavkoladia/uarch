@@ -1,3 +1,4 @@
+# PLA for: MOD_LUT
 .i 8
 .o 3
 .ilb input_7_i input_6_i input_5_i input_4_i input_3_i input_2_i input_1_i input_0_i

@@ -1,3 +1,4 @@
+# PLA for: pf_gen
 .i 3
 .o 2
 .ilb pf_2_i pf_1_i pf_0_i

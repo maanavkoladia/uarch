@@ -1,3 +1,4 @@
+# PLA for: ex1
 .i 5
 .o 3
 .ilb u_i  v_i  w_i  x_i  y_i
