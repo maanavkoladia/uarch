@@ -50,4 +50,5 @@ clean:
 	rm -f *.log
 	rm -f ucli.key
 	rm -r memGen
-
+vim:
+	nvim ../../../

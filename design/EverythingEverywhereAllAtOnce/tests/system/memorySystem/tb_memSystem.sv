@@ -2,10 +2,10 @@ import interconnect_pkg::*;
 import common_pkg::*;
 
 module tb_memSystem ();
-    localparam int CLK_PERIOD = 10;
+    localparam int Clk_PERIOD = 10;
 
     // ================= CLOCK / RESET =================
-    `CLK_INIT(CLK_PERIOD);
+    `CLK_INIT(Clk_PERIOD);
     logic rst;
 
     // ================= BUSSES =================
@@ -13,51 +13,51 @@ module tb_memSystem ();
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus;
 
     //to give the memmodule and addr
-    //p_address_t addrForBus;
-    //bool driveAddrBus;
+    p_address_t addrForBus;
+    bool driveAddrBus;
 
-    //logic [31 : 0] data2Bus;
-    //bool driveDataBus;
+    logic [31 : 0] dataForBus;
+    bool driveDataBus;
 
     //gate the bus
-    //assign dataBus = driveDataBus ? data2Bus : 'z;
-    //assign addrBus = driveAddrBus ? addrForBus : 'z;
+    assign dataBus = driveDataBus ? dataForBus : 'z;
+    assign addrBus = driveAddrBus ? addrForBus : 'z;
+
 
     // ================= ICACHE =================
-    icache_2_scheduler_t         icache_2_sched;
-    dte_2_icache_t               dte_2_icache;
+    //icache_2_scheduler_t         icache_2_sched;
+    //dte_2_icache_t               dte_2_icache;
 
-    core_2_icache_t              core_2_icache;
-    icache_2_core_t              icache_2_core;
+    //core_2_icache_t              core_2_icache;
+    //icache_2_core_t              icache_2_core;
 
-    // ================= DCACHE =================
-    dcache_2_scheduler_t         dcache_2_sched;
-    dte_2_dcache_t               dte_2_dcache;
+    //// ================= DCACHE =================
+    //dcache_2_scheduler_t         dcache_2_sched;
+    //dte_2_dcache_t               dte_2_dcache;
 
-    core_2_dcache_t              core_2_dcache;
-    dcache_2_core_t              dcache_2_core;
+    //core_2_dcache_t              core_2_dcache;
+    //dcache_2_core_t              dcache_2_core;
 
-    // ================= MEMORY =================
+    //// ================= MEMORY =================
     mem_2_scheduler_t            mem_2_sched;
     mem_2_dte_t                  mem_2_dte;
     dte_2_mem_t                  dte_2_mem;
 
-    // ================= DMA =================
-    dma_controller_2_scheduler_t dma_2_sched;
-    dte_2_dma_controller_t       dte_2_dma;
-    dma_controller_2_core_t      dma_2_core;
+    //// ================= DMA =================
+    //dma_controller_2_scheduler_t dma_2_sched;
+    //dte_2_dma_controller_t       dte_2_dma;
+    //dma_controller_2_core_t      dma_2_core;
 
-    // ================= DDR5 =================
-    dte_2_ddr5_t                 dte_2_ddr5;
+    //// ================= DDR5 =================
+    //dte_2_ddr5_t                 dte_2_ddr5;
 
     // ================= (Optional) MEM LOADER =================
     // You didn’t define a struct, so placeholder:
     // logic mem_loader_done;
 
     task automatic DelayClks(input int cycles);
-        #(CLK_PERIOD * cycles);
+        #(Clk_PERIOD * cycles);
     endtask
-
 
     initial begin
         $vcdpluson;
@@ -102,7 +102,7 @@ module tb_memSystem ();
         .out2Sch(mem_2_sched)
     );
 
-    tb_memGen_InitRitual u_memGen();
+    tb_memGen_InitRitual u_memLoader ();
 
 
     // // ================= BUS ARBITER =================
@@ -144,11 +144,76 @@ module tb_memSystem ();
 
     initial begin
         `LOG("Starting mem System TB");
-        rst = 0;
-        core_2_icache = '{default: '0};
-        core_2_dcache = '{default: '0};
-        DelayCLKs(3);
-        rst = 1;
+        dte_2_mem.ld_req = 0;
+        dte_2_mem.st_req = 0;
+
+        //dte_2_mem.start_transaction = 0;
+        dte_2_mem.permission2DriveBus[0] = 0;
+        dte_2_mem.permission2DriveBus[1] = 0;
+        dte_2_mem.permission2DriveBus[2] = 0;
+        dte_2_mem.permission2DriveBus[3] = 0;
+        addrForBus = 32'h1000;
+        dataForBus = 0;
+        //addrForBus = 32'h1290;
+        driveAddrBus = 0;
+        driveDataBus = 0;
+        rst = 0;  //actve low
+
+        DelayClks(5);
+        rst = 1;  //actve low
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        //LD_REQ logic//
+        /////////////////////////////////////////////////////////////////////////////////////
+        
+        DelayClks(20);
+        addrForBus = 32'h1000;
+        driveAddrBus = 1;
+        dte_2_mem.ld_req = 1;
+        @(posedge mem_2_dte.mem_Ready);
+        @(posedge clk);
+        dte_2_mem.ld_req = 0;
+        dte_2_mem.permission2DriveBus[0] = 1;  //lsb onto bus
+        @(posedge clk);
+        dte_2_mem.permission2DriveBus[0] = 0;
+        dte_2_mem.permission2DriveBus[1] = 1;
+        @(posedge clk);
+        dte_2_mem.permission2DriveBus[1] = 0;
+        dte_2_mem.permission2DriveBus[2] = 1;
+        @(posedge clk);
+        dte_2_mem.permission2DriveBus[2] = 0;
+        dte_2_mem.permission2DriveBus[3] = 1;  //msb onto bus
+        @(posedge clk);
+        dte_2_mem.permission2DriveBus[3] = 0;
+        @(posedge clk);
+        driveAddrBus = 0;
+        DelayClks(30);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        //ST_Req
+        /////////////////////////////////////////////////////////////////////////////////////
+        @(negedge clk);
+        addrForBus = 32'h0400;
+        dataForBus = 32'h33221100;  //lsb
+        driveAddrBus = 1;
+        driveDataBus = 1;
+        dte_2_mem.st_req = 1;
+        @(posedge clk);
+        dte_2_mem.st_req = 0;
+        dataForBus = 32'h77665544;  //lsb
+        @(posedge clk);
+        dataForBus = 32'hbbaa9988;  //lsb
+        @(posedge clk);
+        dataForBus = 32'hffeeddcc;  //lsb
+        @(posedge clk);
+        driveAddrBus = 0;
+        driveDataBus = 0;
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        //Extra completion time
+        /////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////////////////////////////
         DelayClks(30);
         $finish;
         `LOG("Finishing mem System TB");
