@@ -103,15 +103,17 @@ inv1$ inv_mem_valid_i (mem_valid_i_inv, mem_valid_i);
 
 // Next-state and output SOP logic
 
-// NS_0 = (S_0 & !S_2 & !mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i) | (!S_0 & S_1 & !S_2 & mem_valid_i)
+// NS_0 = (S_0 & !S_2 & !mem_valid_i) | (!S_0 & !S_2 & IC_miss_i & mem_valid_i) | (!S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i)
 wire NS_0_t0;
 wire NS_0_t1;
 wire NS_0_t2;
+wire NS_0_t3;
 
 and3$ NS_0_and0 (NS_0_t0, S_0, S_2_inv, mem_valid_i_inv);
-and4$ NS_0_and1 (NS_0_t1, S_0_inv, S_1_inv, S_2_inv, IC_miss_i);
+and4$ NS_0_and1 (NS_0_t1, S_0_inv, S_2_inv, IC_miss_i, mem_valid_i);
 and4$ NS_0_and2 (NS_0_t2, S_0_inv, S_1, S_2_inv, mem_valid_i);
-or3$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2);
+and4$ NS_0_and3 (NS_0_t3, S_0_inv, S_1_inv, S_2_inv, IC_miss_i);
+or4$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3);
 
 // NS_1 = (!S_0 & S_1) | (S_1 & !S_2 & !mem_valid_i) | (S_0 & !S_1 & !S_2 & mem_valid_i)
 wire NS_1_t0;
@@ -146,7 +148,7 @@ and3$ RD_I_VC_SWAP_BUF_o_and0 (RD_I_VC_SWAP_BUF_o_t0, S_0, S_1_inv, S_2);
 and4$ RD_I_VC_SWAP_BUF_o_and1 (RD_I_VC_SWAP_BUF_o_t1, S_0_inv, S_1_inv, S_2_inv, IC_miss_i);
 or2$  RD_I_VC_SWAP_BUF_o_or  (RD_I_VC_SWAP_BUF_o, RD_I_VC_SWAP_BUF_o_t0, RD_I_VC_SWAP_BUF_o_t1);
 
-// busy_o = (!S_1 & S_2) | (!S_2 & IC_miss_i) | (S_0 & !S_2) | (S_1 & !S_2)
+// busy_o = (!S_1 & S_2) | (!S_2 & IC_miss_i) | (S_1 & !S_2) | (S_0 & !S_2)
 wire busy_o_t0;
 wire busy_o_t1;
 wire busy_o_t2;
@@ -154,8 +156,8 @@ wire busy_o_t3;
 
 and2$ busy_o_and0 (busy_o_t0, S_1_inv, S_2);
 and2$ busy_o_and1 (busy_o_t1, S_2_inv, IC_miss_i);
-and2$ busy_o_and2 (busy_o_t2, S_0, S_2_inv);
-and2$ busy_o_and3 (busy_o_t3, S_1, S_2_inv);
+and2$ busy_o_and2 (busy_o_t2, S_1, S_2_inv);
+and2$ busy_o_and3 (busy_o_t3, S_0, S_2_inv);
 or4$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2, busy_o_t3);
 
 // Fill0EN_o = (S_0 & !S_1 & !S_2 & mem_valid_i)
