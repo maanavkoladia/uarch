@@ -49,13 +49,13 @@ package ICache_common_pkg;
     typedef enum logic [$clog2(
 NUM_ICACHE_CONTROLLER_STATES
 ) - 1 : 0] {
-        IDLE  = 0,
-        Fill0 = 1,
-        Fill1 = 2,
-        Fill2 = 3,
-        Fill3 = 4,
-        SWAP  = 5,
-        ERROR = 6
+        ICACHE_IDLE  = 0,
+        ICACHE_Fill0 = 1,
+        ICACHE_Fill1 = 2,
+        ICACHE_Fill2 = 3,
+        ICACHE_Fill3 = 4,
+        ICACHE_SWAP  = 5,
+        ICACHE_ERROR = 6
     } icache_controller_fsm_states_e;
 
 endpackage

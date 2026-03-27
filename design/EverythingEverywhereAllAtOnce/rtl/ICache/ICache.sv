@@ -11,7 +11,7 @@ module ICache (
     output icache_2_core_t out2Core_o,
 
     //input from dte drive bus tristate, and memvalid for fsm control
-    input dte_2_icache_t dte_out_i,
+    input dte_2_icache_t inFromDte_i,
     output icache_2_scheduler_t out2Sch_o,
 
     //okay mankey
@@ -51,9 +51,10 @@ module ICache (
     ICache_Controller_Logic icache_contrller_fsm (
         .clk(clk),
         .rst(rst),
-        .IC_miss_i(),
-        .I_VC_Miss_i(),
-        .mem_valid_i(),
+        .IC_miss_i(icache_miss),
+        .I_VC_Miss_i(i_vcache_miss),
+        .mem_valid_i(inFromDte_i.Mem_Valid),
+        .en_i(inFromCore_i.icache_en),
         .S_0(controller_fsmState_bits[0]),  // current-state bit 0 (LSB)
         .S_1(controller_fsmState_bits[1]),  // current-state bit 1 (1)
         .S_2(controller_fsmState_bits[2]),  // current-state bit 2 (MSB)
@@ -145,6 +146,9 @@ module ICache (
             if (inFromCore_i.numValidIDMSlots < 2) out2Sch_o.req = ICACHE_HIGH_PRI;
         end
     end
+
+    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus_drv = inFromCore_i.p_addr;
+    assign addrBus = inFromDte_i.driveAddrBus ? addrBus_drv : 'z;
 
 endmodule
 

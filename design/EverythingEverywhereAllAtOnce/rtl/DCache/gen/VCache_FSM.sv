@@ -84,15 +84,15 @@ inv1$ inv_V_Hit_i (V_Hit_i_inv, V_Hit_i);
 
 // Next-state and output SOP logic
 
-// NS_0 = (S_1 & !EB_V_i) | (S_0 & S_1) | (!S_0 & !S_1 & V_Hit_i) | (!S_0 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & DC_will_evict_i & !VC_needs_2_evict_i)
+// NS_0 = (S_0 & S_1) | (S_1 & !EB_V_i) | (!S_0 & !S_1 & V_Hit_i) | (!S_0 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & DC_will_evict_i & !VC_needs_2_evict_i)
 wire NS_0_t0;
 wire NS_0_t1;
 wire NS_0_t2;
 wire NS_0_t3;
 wire NS_0_t4;
 
-and2$ NS_0_and0 (NS_0_t0, S_1, EB_V_i_inv);
-and2$ NS_0_and1 (NS_0_t1, S_0, S_1);
+and2$ NS_0_and0 (NS_0_t0, S_0, S_1);
+and2$ NS_0_and1 (NS_0_t1, S_1, EB_V_i_inv);
 and3$ NS_0_and2 (NS_0_t2, S_0_inv, S_1_inv, V_Hit_i);
 and3$ NS_0_and3 (NS_0_t3, S_0_inv, DC_will_evict_i, EB_V_i_inv);
 and4$ NS_0_and4 (NS_0_t4, S_0_inv, S_1_inv, DC_will_evict_i, VC_needs_2_evict_i_inv);
@@ -125,7 +125,7 @@ and2$ Read_DSWAP_o_and (Read_DSWAP_o, S_0, S_1_inv);
 // Write_VSWAP_o = (!S_0 & !S_1 & V_Hit_i)
 and3$ Write_VSWAP_o_and (Write_VSWAP_o, S_0_inv, S_1_inv, V_Hit_i);
 
-// busy_o = (S_0 & !S_1) | (!S_0 & V_Hit_i) | (!S_0 & S_1) | (!S_0 & DC_will_evict_i & VC_needs_2_evict_i) | (!S_0 & DC_will_evict_i & !EB_V_i)
+// busy_o = (S_0 & !S_1) | (!S_0 & S_1) | (!S_0 & V_Hit_i) | (!S_0 & DC_will_evict_i & !EB_V_i) | (!S_0 & DC_will_evict_i & VC_needs_2_evict_i)
 wire busy_o_t0;
 wire busy_o_t1;
 wire busy_o_t2;
@@ -133,10 +133,10 @@ wire busy_o_t3;
 wire busy_o_t4;
 
 and2$ busy_o_and0 (busy_o_t0, S_0, S_1_inv);
-and2$ busy_o_and1 (busy_o_t1, S_0_inv, V_Hit_i);
-and2$ busy_o_and2 (busy_o_t2, S_0_inv, S_1);
-and3$ busy_o_and3 (busy_o_t3, S_0_inv, DC_will_evict_i, VC_needs_2_evict_i);
-and3$ busy_o_and4 (busy_o_t4, S_0_inv, DC_will_evict_i, EB_V_i_inv);
+and2$ busy_o_and1 (busy_o_t1, S_0_inv, S_1);
+and2$ busy_o_and2 (busy_o_t2, S_0_inv, V_Hit_i);
+and3$ busy_o_and3 (busy_o_t3, S_0_inv, DC_will_evict_i, EB_V_i_inv);
+and3$ busy_o_and4 (busy_o_t4, S_0_inv, DC_will_evict_i, VC_needs_2_evict_i);
 or5$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2, busy_o_t3, busy_o_t4);
 
 // blocked_o = (!S_0 & S_1 & EB_V_i) | (!S_0 & !V_Hit_i & DC_will_evict_i & VC_needs_2_evict_i & EB_V_i)

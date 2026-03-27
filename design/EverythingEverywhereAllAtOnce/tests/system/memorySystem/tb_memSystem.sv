@@ -25,11 +25,11 @@ module tb_memSystem ();
 
 
     // ================= ICACHE =================
-    //icache_2_scheduler_t         icache_2_sched;
-    //dte_2_icache_t               dte_2_icache;
+    icache_2_scheduler_t icache_2_sched;
+    dte_2_icache_t       dte_2_icache;
 
-    //core_2_icache_t              core_2_icache;
-    //icache_2_core_t              icache_2_core;
+    core_2_icache_t      core_2_icache;
+    icache_2_core_t      icache_2_core;
 
     //// ================= DCACHE =================
     //dcache_2_scheduler_t         dcache_2_sched;
@@ -39,9 +39,9 @@ module tb_memSystem ();
     //dcache_2_core_t              dcache_2_core;
 
     //// ================= MEMORY =================
-    mem_2_scheduler_t            mem_2_sched;
-    mem_2_dte_t                  mem_2_dte;
-    dte_2_mem_t                  dte_2_mem;
+    mem_2_scheduler_t    mem_2_sched;
+    mem_2_dte_t          mem_2_dte;
+    dte_2_mem_t          dte_2_mem;
 
     //// ================= DMA =================
     //dma_controller_2_scheduler_t dma_2_sched;
@@ -92,17 +92,17 @@ module tb_memSystem ();
 
 
     // ================= MEMORY =================
-    mem_TOP u_mem (
-        .clk(clk),
-        .rst(rst),
-        .address_bus(addrBus),
-        .data_bus(dataBus),
-        .inFromDte(dte_2_mem),
-        .out2Dte(mem_2_dte),
-        .out2Sch(mem_2_sched)
-    );
+    //mem_TOP u_mem (
+    //    .clk(clk),
+    //    .rst(rst),
+    //    .address_bus(addrBus),
+    //    .data_bus(dataBus),
+    //    .inFromDte(dte_2_mem),
+    //    .out2Dte(mem_2_dte),
+    //    .out2Sch(mem_2_sched)
+    //);
 
-    tb_memGen_InitRitual u_memLoader ();
+    //tb_memGen_InitRitual u_memLoader ();
 
 
     // // ================= BUS ARBITER =================
@@ -165,7 +165,7 @@ module tb_memSystem ();
         /////////////////////////////////////////////////////////////////////////////////////
         //LD_REQ logic//
         /////////////////////////////////////////////////////////////////////////////////////
-        
+
         DelayClks(20);
         addrForBus = 32'h1000;
         driveAddrBus = 1;
