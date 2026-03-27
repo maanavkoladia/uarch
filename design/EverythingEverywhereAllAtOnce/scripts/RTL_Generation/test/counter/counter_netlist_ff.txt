@@ -1,0 +1,20 @@
+# Full netlist (comb + FF) for counter
+
+  {'kind': 'assign', 'dst': 'timerVal_o', 'src': 'timerVal'}
+  {'kind': 'assign', 'dst': 'interrupt_o', 'src': 'interrupt_bit'}
+  {'kind': 'inst', 'prim': 'eq_10$', 'inst': '_eq10_1', 'ports': {'a': 'timerVal', 'b': 'interrupt_val_i', 'eq': '_eq_0'}}
+  {'kind': 'assign', 'dst': 'conditionMet', 'src': '_eq_0'}
+  {'kind': 'const', 'dst': '_const_2', 'value': 1, 'width': 10, 'raw': '1'}
+  {'kind': 'inst', 'prim': 'add_10$', 'inst': '_add10_5', 'ports': {'a': 'timerVal', 'b': '_const_2', 's': '_add_4', 'cout': '_cout_3'}}
+  {'kind': 'inst', 'prim': 'inv_1$', 'inst': '_inv1_7', 'ports': {'a': 'rst_i', 'y': '_inv_6'}}
+  {'kind': 'const', 'dst': '_const_8', 'value': 0, 'width': 10, 'raw': '0'}
+  {'kind': 'inst', 'prim': 'mux_10$', 'inst': '_mux10_10', 'ports': {'sel': '_inv_6', 'a': '_const_8', 'b': '_add_4', 'y': '_mux_9'}}
+  {'kind': 'inst', 'prim': 'reg_10$', 'inst': '_reg10_11', 'ports': {'clk': 'clk_i', 'rst': "1'b1", 'd': '_mux_9', 'q': 'timerVal'}}
+  {'kind': 'const', 'dst': '_const_12', 'value': 0, 'width': 1, 'raw': '0'}
+  {'kind': 'inst', 'prim': 'mux_1$', 'inst': '_mux1_14', 'ports': {'sel': 'interrupt_clr_i', 'a': '_const_12', 'b': 'interrupt_bit', 'y': '_mux_13'}}
+  {'kind': 'const', 'dst': '_const_15', 'value': 1, 'width': 1, 'raw': '1'}
+  {'kind': 'inst', 'prim': 'mux_1$', 'inst': '_mux1_17', 'ports': {'sel': 'conditionMet', 'a': '_const_15', 'b': '_mux_13', 'y': '_mux_16'}}
+  {'kind': 'inst', 'prim': 'inv_1$', 'inst': '_inv1_19', 'ports': {'a': 'rst_i', 'y': '_inv_18'}}
+  {'kind': 'const', 'dst': '_const_20', 'value': 0, 'width': 1, 'raw': '0'}
+  {'kind': 'inst', 'prim': 'mux_1$', 'inst': '_mux1_22', 'ports': {'sel': '_inv_18', 'a': '_const_20', 'b': '_mux_16', 'y': '_mux_21'}}
+  {'kind': 'inst', 'prim': 'reg_1$', 'inst': '_reg1_23', 'ports': {'clk': 'clk_i', 'rst': "1'b1", 'd': '_mux_21', 'q': 'interrupt_bit'}}

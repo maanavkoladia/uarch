@@ -1,0 +1,13 @@
+# Symbol table for counter
+
+  name                      kind     direction  width
+  -------------------------------------------------------
+  clk_i                     port     input      1
+  rst_i                     port     input      1
+  interrupt_val_i           port     input      10
+  interrupt_clr_i           port     input      1
+  timerVal_o                port     output     10
+  interrupt_o               port     output     1
+  timerVal                  logic    None       10
+  interrupt_bit             logic    None       1
+  conditionMet              logic    None       1

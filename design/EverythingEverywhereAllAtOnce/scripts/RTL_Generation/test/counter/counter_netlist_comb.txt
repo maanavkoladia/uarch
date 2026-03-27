@@ -1,0 +1,6 @@
+# Combinational netlist for counter
+
+  {'kind': 'assign', 'dst': 'timerVal_o', 'src': 'timerVal'}
+  {'kind': 'assign', 'dst': 'interrupt_o', 'src': 'interrupt_bit'}
+  {'kind': 'inst', 'prim': 'eq_10$', 'inst': '_eq10_1', 'ports': {'a': 'timerVal', 'b': 'interrupt_val_i', 'eq': '_eq_0'}}
+  {'kind': 'assign', 'dst': 'conditionMet', 'src': '_eq_0'}
