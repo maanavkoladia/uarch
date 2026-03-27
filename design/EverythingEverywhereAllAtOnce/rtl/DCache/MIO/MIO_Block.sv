@@ -42,7 +42,7 @@ module MIO_Block (
     always_ff @(posedge clk) begin
         if (!rst) block_req <= '{default: '0};
         else begin
-            if (block_req.oe && block_req.we) $fatal;
+            if (block_req.oe && block_req.we && rst) $fatal;
             if (readyForNewReq) begin
                 if (ld_addr_MIO_V)
                     block_req <= '{

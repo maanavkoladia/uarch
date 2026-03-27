@@ -100,6 +100,7 @@ module DCache_Bank (
     );
 
     DCache_Bank_DataStore DCache_Bank_DataStore_unit (
+        .rst(rst),
         .p_addr_i(blockReq_i.p_addr),
         .oe(blockReq_i.oe),
         .we(blockReq_i.we),
@@ -151,7 +152,7 @@ module DCache_Bank (
                 2'b00: dcache_bank_swapBuf.valid <= dcache_bank_swapBuf.valid;
                 2'b01: dcache_bank_swapBuf.valid <= 0;
                 2'b10: dcache_bank_swapBuf.valid <= 1;
-                2'b11: $fatal;
+                2'b11: if(rst) $fatal;
             endcase
 
             if (fsmOuts.write_to_dswap_o) begin
@@ -190,7 +191,7 @@ module DCache_Bank (
             miss = 1;
         end
 
-        if (hit && miss) $fatal;
+        if (hit && miss && rst) $fatal;
 
         if (hit && blockReq_i.we) begin  //dirty bit business
             writeSuccess2TagStore = 1;

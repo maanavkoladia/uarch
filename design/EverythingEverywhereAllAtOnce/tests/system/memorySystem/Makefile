@@ -32,9 +32,9 @@ view: run
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
 
 genMem: 
-	python $(LOAD_MEM_COMPILE_SCRIPT) $(MEM_GEN_CONF)
-	python $(LOAD_MEM_GEN_HEX_MEM_SCRIPT) $(MEM_GEN_CONF)
-	python $(LOAD_MEM_GEN_READ_MEM_FILE) $(MEM_GEN_CONF)
+	python3.9 $(LOAD_MEM_COMPILE_SCRIPT) $(MEM_GEN_CONF)
+	python3.9 $(LOAD_MEM_GEN_HEX_MEM_SCRIPT) $(MEM_GEN_CONF)
+	python3.9 $(LOAD_MEM_GEN_READ_MEM_FILE) $(MEM_GEN_CONF)
 
 see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'	

@@ -3,10 +3,10 @@ import ICache_common_pkg::*;
 
 module ICache_DataStore (
 
+    input wire rst,
     input wire en,  //active high
     input v_address_t v_addr_i,
     input p_address_t p_addr_i,
-
 
     //output the line evition line to write to IC_SWAP_BUF
     input bool LD_IC_SWAP_BUF,

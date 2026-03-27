@@ -20,8 +20,8 @@ module tb_memSystem ();
     //bool driveDataBus;
 
     //gate the bus
-    assign dataBus = driveDataBus ? data2Bus : 'z;
-    assign addrBus = driveAddrBus ? addrForBus : 'z;
+    //assign dataBus = driveDataBus ? data2Bus : 'z;
+    //assign addrBus = driveAddrBus ? addrForBus : 'z;
 
     // ================= ICACHE =================
     icache_2_scheduler_t         icache_2_sched;
@@ -132,8 +132,8 @@ module tb_memSystem ();
     initial begin
         `LOG("Starting mem System TB");
         rst = 0;
-        core_2_icache = 0;
-        core_2_dcache = 0;
+        core_2_icache = '{default: '0};
+        core_2_dcache = '{default: '0};
         DelayClks(30);
         $finish;
         `LOG("Finishing mem System TB");

@@ -2,6 +2,7 @@ import common_pkg::*;
 import DCache_common_pkg::*;
 
 module DCache_Bank_DataStore (
+    input wire rst,
     input p_address_t p_addr_i,
 
     input bool oe,
@@ -137,7 +138,7 @@ module DCache_Bank_DataStore (
             end
 
             default: begin
-                $fatal;
+                if(rst) $fatal;
             end
 
         endcase
@@ -187,7 +188,7 @@ module DCache_Bank_DataStore (
             end
 
             default: begin
-                $fatal;
+                if(rst) $fatal;
             end
 
         endcase

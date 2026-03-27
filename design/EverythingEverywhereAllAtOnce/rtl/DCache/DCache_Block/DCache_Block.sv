@@ -82,7 +82,7 @@ module DCache_Block (
             end
 
             2'b11: begin
-                $fatal;
+                if(rst_i) $fatal;
             end
         endcase
     end
