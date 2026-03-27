@@ -42,11 +42,22 @@ module MIO_Block (
     always_ff @(posedge clk) begin
         if (!rst) block_req <= '{default: '0};
         else begin
-            if (block_req.oe && block_req.we) $fatal;
+            if (block_req.oe && block_req.we && rst) $fatal;
             if (readyForNewReq) begin
-                if (ld_addr_MIO_V) block_req <= '{oe: 1, we: 0, p_addr: ld_addr_MIO, st_q_data: '{default: '0}};
+                if (ld_addr_MIO_V)
+                    block_req <= '{
+                        oe: 1,
+                        we: 0,
+                        p_addr: ld_addr_MIO,
+                        st_q_data: '{default: '0}
+                    };
                 else if (!stq_info_mio.empty)
-                    block_req <= '{oe: 0, we: 1, p_addr: stq_info_mio.address, st_q_data: '{default: '0}};
+                    block_req <= '{
+                        oe: 0,
+                        we: 1,
+                        p_addr: stq_info_mio.address,
+                        st_q_data: '{default: '0}
+                    };
                 else block_req <= '{default: '0};
             end
         end
@@ -70,9 +81,9 @@ module MIO_Block (
         unique case ({
             block_req.we, block_req.oe
         })
-            2'b00: outputs_o.req_2_sch = DCACHE_MIO_IDLE;
+            2'b00: outputs_o.req_2_sch = NO_REQ;
 
-            2'b01: outputs_o.req_2_sch  = DCACHE_MIO_LD_FROM_SIMPLE;
+            2'b01: outputs_o.req_2_sch = DCACHE_MIO_LD_FROM_SIMPLE;
 
             2'b10:
             outputs_o.req_2_sch = block_req.p_addr & WE_ADDR_MASK ? 

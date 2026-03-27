@@ -86,6 +86,7 @@ module ICache (
 
     //create the data store
     ICache_DataStore icache_dataStore_unit (
+        .rst(rst),
         .en(inFromCore_i.icache_en),  //active high
         .v_addr_i(inFromCore_i.v_spc_addr_i),
         .p_addr_i(inFromCore_i.p_addr),

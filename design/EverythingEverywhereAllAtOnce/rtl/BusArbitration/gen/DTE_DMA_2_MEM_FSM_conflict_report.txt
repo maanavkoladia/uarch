@@ -1,0 +1,10 @@
+# Conflict & coverage report for FSM: DTE_DMA_2_MEM_FSM
+
+## Coverage errors (minimisation did not cover ON minterms)
+  None -- all ON-set minterms covered  OK
+
+## Undefined transitions (auto-routed to ERROR state)
+  None -- all state/input combinations were explicitly defined  OK
+
+## Sink states (states never targeted as next-state, excluding synthesised ERROR)
+  None

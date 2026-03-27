@@ -1,0 +1,12 @@
+# FF mux chains for counter
+
+  target=timerVal  clk=clk_i
+    arm[0]: cond=UnaryOp(!, Id(rst_i))  rhs=Num(0=0)
+    default:      rhs=BinOp(+, Id(timerVal), Num(1=1))
+
+  target=interrupt_bit  clk=clk_i
+    arm[0]: cond=UnaryOp(!, Id(rst_i))  rhs=Num(0=0)
+    arm[1]: cond=Id(conditionMet)  rhs=Num(1=1)
+    arm[2]: cond=Id(interrupt_clr_i)  rhs=Num(0=0)
+    default:      rhs=Id(interrupt_bit)
+

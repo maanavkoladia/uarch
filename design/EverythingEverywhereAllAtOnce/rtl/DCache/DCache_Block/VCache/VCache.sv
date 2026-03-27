@@ -116,7 +116,7 @@ module VCache (
                 2'b00: vcache_swapBuf.valid <= vcache_swapBuf.valid;
                 2'b01: vcache_swapBuf.valid <= 0;
                 2'b10: vcache_swapBuf.valid <= 1;
-                2'b11: $fatal;
+                2'b11: if(rst_i) $fatal;
             endcase
 
             if (fsmOuts.Write_VSWAP) begin
@@ -155,7 +155,7 @@ module VCache (
             miss = 1;
         end
 
-        if (hit && miss) $fatal;
+        if (hit && miss && rst_i) $fatal;
 
         if (hit && blockReq_i.we) begin
             writeSuccess2TagStore = 1;

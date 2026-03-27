@@ -36,7 +36,7 @@ CORE_SRC_FILES = \
 #no prodecode pakcages rn that need ot be compiled
 
 CORE_PKGS = \
-			$(CORE_PATH_INTERNAL)/pkgs/execute_op_types_pkg.sv \
+			$(CORE_PATH_INTERNAL)/pkgs/control_store_pkg.sv \
 			$(CORE_PATH_INTERNAL)/pkgs/reg_ids_pkg.sv \
 			$(CORE_PATH_INTERNAL)/pkgs/flag_fields_pkg.sv \
 			$(CORE_PATH_INTERNAL)/pkgs/core_common_pkg.sv \

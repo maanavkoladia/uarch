@@ -1,0 +1,29 @@
+# AST for counter
+
+Module(counter)
+  Port(input clk_i width=None)
+  Port(input rst_i width=None)
+  Port(input interrupt_val_i width=(Number(raw='9', width=32, value=9), Number(raw='0', width=32, value=0)))
+  Port(input interrupt_clr_i width=None)
+  Port(output timerVal_o width=(Number(raw='9', width=32, value=9), Number(raw='0', width=32, value=0)))
+  Port(output interrupt_o width=None)
+  Logic(timerVal width=(Number(raw='9', width=32, value=9), Number(raw='0', width=32, value=0)))
+  Logic(interrupt_bit width=None)
+  Logic(conditionMet width=None)
+  Assign(timerVal_o = Id(timerVal))
+  Assign(interrupt_o = Id(interrupt_bit))
+  Assign(conditionMet = BinOp(==, Id(timerVal), Id(interrupt_val_i)))
+  AlwaysFF(clk=clk_i)
+    IfChain
+      arm cond=UnaryOp(!, Id(rst_i))
+        NB(timerVal <= Num(0=0))
+      else
+        NB(timerVal <= BinOp(+, Id(timerVal), Num(1=1)))
+  AlwaysFF(clk=clk_i)
+    IfChain
+      arm cond=UnaryOp(!, Id(rst_i))
+        NB(interrupt_bit <= Num(0=0))
+      arm cond=Id(conditionMet)
+        NB(interrupt_bit <= Num(1=1))
+      arm cond=Id(interrupt_clr_i)
+        NB(interrupt_bit <= Num(0=0))

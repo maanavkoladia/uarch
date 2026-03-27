@@ -24,16 +24,19 @@ package interconnect_pkg;
         DCACHE_FILL_ST = 7,Ch
         DCACHE_EB_WR = 6,
 
-        // ===== ICACHE (lower) =====
 
         // ===== MIO / IO =====
         DCACHE_MIO_LD_FROM_SIMPLE = 5,
         DCACHE_MIO_WR_COMPLEX = 4,
         DCACHE_MIO_WR_SIMPLE = 3,
-        DCACHE_MIO_IDLE = 2,
+
+        // ===== ICACHE (lower) =====
+        ICACHE_LOW_PRI_REQ = 2,
+
+        //DMA WRite to mem req
+        DMA_WRITE_REQ = 1,
 
         // ===== No request =====
-        ICACHE_LOW_PRI_REQ = 1,
         NO_REQ = 0
 
     } req_2_sch_t;
@@ -144,7 +147,7 @@ package interconnect_pkg;
         //when this goes high, write data onto the bus, the address
         //on the bus shoudl match the address for the temp reg 
         //when driving the bus
-        bool start_transaction;
+        bool driveDataBus;
 
     } dte_2_ddr5_t;
 
