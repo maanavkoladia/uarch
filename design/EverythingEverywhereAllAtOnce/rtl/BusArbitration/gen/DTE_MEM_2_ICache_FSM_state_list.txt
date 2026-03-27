@@ -1,0 +1,14 @@
+# State list for FSM: DTE_MEM_2_ICache_FSM
+# Total states      : 6
+# State bits needed : 3
+# NOTE: IDLE is always assigned encoding 0
+# NOTE: ERROR state was synthesised (not present in CSV)
+#
+#  idx  binary  state_name
+# --------------------------------------------------
+     0  000  ERROR  # synthesised
+     1  001  IDLE
+     2  010  LD0
+     3  011  LD1
+     4  100  LD2
+     5  101  MEM_REQ

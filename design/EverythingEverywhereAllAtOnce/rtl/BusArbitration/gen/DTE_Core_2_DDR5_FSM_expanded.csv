@@ -1,0 +1,14 @@
+State_s,req_hit_i,others_busy_i,NextState_ns,busy_o,reqServed_o,Drive_Addr_Bus_o,Drv_DB_o,newPowerGateValueFromCore_o
+IDLE,0,1,IDLE,0,0,0,0,0
+IDLE,1,1,IDLE,0,0,0,0,0
+IDLE,0,0,IDLE,0,0,0,0,0
+IDLE,0,1,IDLE,0,0,0,0,0
+IDLE,1,0,ST_DDR5,1,0,1,0,0
+ST_DDR5,0,0,IDLE,1,1,1,1,1
+ST_DDR5,0,1,IDLE,1,1,1,1,1
+ST_DDR5,1,0,IDLE,1,1,1,1,1
+ST_DDR5,1,1,IDLE,1,1,1,1,1
+ERROR,0,0,ERROR,0,0,0,0,0
+ERROR,0,1,ERROR,0,0,0,0,0
+ERROR,1,0,ERROR,0,0,0,0,0
+ERROR,1,1,ERROR,0,0,0,0,0

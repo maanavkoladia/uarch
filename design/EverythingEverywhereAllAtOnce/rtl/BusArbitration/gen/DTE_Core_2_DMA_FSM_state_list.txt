@@ -1,0 +1,11 @@
+# State list for FSM: DTE_Core_2_DMA_FSM
+# Total states      : 3
+# State bits needed : 2
+# NOTE: IDLE is always assigned encoding 0
+# NOTE: ERROR state was synthesised (not present in CSV)
+#
+#  idx  binary  state_name
+# --------------------------------------------------
+     0  00  ERROR  # synthesised
+     1  01  IDLE
+     2  10  ST_DMA

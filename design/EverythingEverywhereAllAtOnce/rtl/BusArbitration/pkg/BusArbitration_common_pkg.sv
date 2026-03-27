@@ -42,4 +42,5 @@ NUM_TRANSACTIONS
 
     } sch_latched_reqs_t;
 
+
 endpackage

@@ -95,10 +95,43 @@
             "csv" : "rtl/io/DMA_Controller/gen/DMA_FSM.csv",
             "outputFilePath" : "rtl/io/DMA_Controller/gen/DMA_FSM.sv",
             "run FSM SOP gen": "true"
+        },
+
+        "DTE_MEM_2_ICache_FSM": {
+            "csv": "rtl/BusArbitration/gen/DTE_MEM_2_ICache_FSM.csv",
+            "outputFilePath": "rtl/BusArbitration/gen/DTE_MEM_2_ICache_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+        "DTE_MEM_2_DCache_FSM": {
+            "csv": "rtl/BusArbitration/gen/DTE_MEM_2_DCache_FSM.csv",
+            "outputFilePath": "rtl/BusArbitration/gen/DTE_MEM_2_DCache_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+        "DTE_DCache_2_MEM_FSM": {
+            "csv": "rtl/BusArbitration/gen/DTE_DCache_2_MEM_FSM.csv",
+            "outputFilePath": "rtl/BusArbitration/gen/DTE_DCache_2_MEM_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+        "DTE_DDR5_2_Core_FSM": {
+            "csv": "rtl/BusArbitration/gen/DTE_DDR5_2_Core_FSM.csv",
+            "outputFilePath": "rtl/BusArbitration/gen/DTE_DDR5_2_Core_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+        "DTE_Core_2_DDR5_FSM": {
+            "csv": "rtl/BusArbitration/gen/DTE_Core_2_DDR5_FSM.csv",
+            "outputFilePath": "rtl/BusArbitration/gen/DTE_Core_2_DDR5_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+        "DTE_Core_2_DMA_FSM": {
+            "csv": "rtl/BusArbitration/gen/DTE_Core_2_DMA_FSM.csv",
+            "outputFilePath": "rtl/BusArbitration/gen/DTE_Core_2_DMA_FSM.sv",
+            "run FSM SOP gen": "true"
+        },
+        "DTE_DMA_2_MEM_FSM": {
+            "csv": "rtl/BusArbitration/gen/DTE_DMA_2_MEM_FSM.csv",
+            "outputFilePath": "rtl/BusArbitration/gen/DTE_DMA_2_MEM_FSM.sv",
+            "run FSM SOP gen": "true"
         }
-
-
-
     }
 
 }
