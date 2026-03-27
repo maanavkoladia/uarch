@@ -52,3 +52,8 @@ clean:
 	rm -r memGen
 vim:
 	nvim ../../../
+
+push:
+	git add -A
+	git commit -m "auto make push"
+	git push
