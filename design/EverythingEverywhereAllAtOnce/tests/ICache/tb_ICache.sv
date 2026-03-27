@@ -46,7 +46,7 @@ module tb_ICache ();
         .rst(rst),
         .inFromCore_i(core_2_icache),
         .out2Core_o(icache_2_core),
-        .dte_out_i(dte_2_icache),
+        .inFromDte_i(dte_2_icache),
         .out2Sch_o(icache_2_sched),
         .dataBus(dataBus),
         .addrBus(addrBus)
@@ -66,6 +66,12 @@ module tb_ICache ();
 
         DelayClks(5);
         rst = 1;  //actve low
+        DelayClks(5);
+
+        core_2_icache.numValidIDMSlots = 0;
+        core_2_icache.p_addr = 0;
+        core_2_icache.v_spc_addr_i = 0;
+        core_2_icache.icache_en = 1;
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time

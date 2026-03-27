@@ -1,14 +1,15 @@
 include ../../Make.vars
 include ../../Make.build
 
-TARGET = MemorySystem
+TARGET = ICache_Test
 
 MEM_GEN_CONF = memGen.conf.json
 TEST_PROG = testProg.s
 
+TOP_FILE_NAME = tb_ICache
+
 TB_FILES = \
-		   memLoader.sv	\
-		   tb_memSystem.sv
+		   tb_ICache.sv
 
 PKGS = $(RTL_PKGS)
 
@@ -22,7 +23,7 @@ SRC_FILES = \
 all: $(TARGET)
 	
 $(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES) 2>&1 | tee compile.log
+	$(CC) $(CC_FLAGS) -top $(TOP_FILE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee compile.log
 
 run: $(TARGET)
 	./$< 2>&1| tee sim.log
@@ -49,7 +50,7 @@ clean:
 	rm -f master
 	rm -f *.log
 	rm -f ucli.key
-	rm -r memGen
+
 vim:
 	nvim ../../../
 

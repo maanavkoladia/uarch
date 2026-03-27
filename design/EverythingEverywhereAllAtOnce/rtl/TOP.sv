@@ -73,7 +73,7 @@ module TOP (
         .rst(rst),
         .inFromCore_i(core2icache),
         .out2Core_o(icache2core),
-        .dte_out_i(dte2icache),
+        .inFromDte_i(dte2icache),
         .out2Sch_o(icache2sched),
         .addrBus(addressBus),
         .dataBus(dataBus)
