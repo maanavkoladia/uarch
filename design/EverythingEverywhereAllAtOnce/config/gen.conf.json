@@ -1,6 +1,6 @@
 {
     "script path" : { 
-        "Combinational SOP GEN": "scripts/RTL_Generation/genCombination_SOP.py",
+        "Combinational SOP GEN": "scripts/RTL_Generation/genCombinational_SOP.py",
         "FSM SOP GEN" : "scripts/RTL_Generation/genFSM_SOP.py",
         "Combinational LUT GEN" : "scripts/RTL_Generation/genTT_LUT.py",
         "FSM LUT GEN" : "scripts/RTL_Generation/genFSM_LUT.py"
