@@ -46,42 +46,43 @@ package mem_common_pkg;
     } mem_controller_2_mem_bank_t;
 
     //FSM states for Bank controller FSM
-    localparam int BANK_CONTROLLER_FSM_LOGIC_STATES = 17;
+    localparam int BANK_CONTROLLER_FSM_LOGIC_STATES = 18;
     typedef enum logic [$clog2(
 BANK_CONTROLLER_FSM_LOGIC_STATES
 ) - 1 : 0] {
-        IDLE            = 5'd0,
-        LD_WAIT_0       = 5'd1,
-        LD_WAIT_1       = 5'd2,
-        LD_WAIT_2       = 5'd3,
-        LD_WAIT_3       = 5'd4,
-        LD_WAIT_4       = 5'd5,
-        LD_WAIT_5       = 5'd6,
-        ST_ADDR_WAIT_0  = 5'd7,
-        ST_ADDR_WAIT_1  = 5'd8,
-        ST_ADDR_WAIT_2  = 5'd9,
-        ST_ADDR_WAIT_3  = 5'd10,
-        ST_WRITE_WAIT_0 = 5'd11,
-        ST_WRITE_WAIT_1 = 5'd12,
-        ST_WRITE_WAIT_2 = 5'd13,
-        ST_WRITE_WAIT_3 = 5'd14,
-        ST_WRITE_WAIT_4 = 5'd15,
-        ST_WRITE_WAIT_5 = 5'd16
+        IDLE            = 0,
+        LD_WAIT_0       = 1,
+        LD_WAIT_1       = 2,
+        LD_WAIT_2       = 3,
+        LD_WAIT_3       = 4,
+        LD_WAIT_4       = 5,
+        LD_WAIT_5       = 6,
+        ST_ADDR_WAIT_0  = 7,
+        ST_ADDR_WAIT_1  = 8,
+        ST_ADDR_WAIT_2  = 9,
+        ST_ADDR_WAIT_3  = 10,
+        ST_WRITE_WAIT_0 = 11,
+        ST_WRITE_WAIT_1 = 12,
+        ST_WRITE_WAIT_2 = 13,
+        ST_WRITE_WAIT_3 = 14,
+        ST_WRITE_WAIT_4 = 15,
+        ST_WRITE_WAIT_5 = 16,
+        ERROR           = 17
     } bank_fsm_controller_state_t;
 
     localparam int MEM_CONTROLLER_FSM_STATES = 9;
     typedef enum logic [$clog2(
 MEM_CONTROLLER_FSM_STATES
 ) - 1 : 0] {
-        MEM_CTRLR_IDLE    = 4'd0,  // IDLE (reset state)
-        MEM_CTRLR_ERROR   = 4'd1,
-        MEM_CTRLR_LD_0    = 4'd2,
-        MEM_CTRLR_LD_1    = 4'd3,
-        MEM_CTRLR_LD_HIT  = 4'd4,
-        MEM_CTRLR_LD_MISS = 4'd5,
-        MEM_CTRLR_W0      = 4'd6,
-        MEM_CTRLR_W1      = 4'd7,
-        MEM_CTRLR_W2      = 4'd8
+        IDLE    = 0,
+        LD_0    = 1,
+        LD_1    = 2,
+        LD_HIT  = 3,
+        LD_MISS = 4,
+        W0      = 5,
+        W1      = 6,
+        W2      = 7,
+        ERROR   = 8
     } mem_controller_fsm_state_t;
 
 endpackage
