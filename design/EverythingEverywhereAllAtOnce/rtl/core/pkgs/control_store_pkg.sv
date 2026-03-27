@@ -94,21 +94,21 @@ package contorl_store_pkg;
 
     typedef enum{
         //register 
-        NOP
+        NOP,
         SR_REGISTER,
         DR_REGISTER, //alu or branch 
         BUFFER, //128 bits you can use this one for all alu ops
         NEIP,
-        SEGMENT
-        SEXT8
-        SEGMENT_NEIP
+        SEGMENT,
+        SEXT8,
+        SEGMENT_NEIP,
         IMM64, //I think for regular ALU ops the operation size is always the same or sign extended
 
         //I think this would just be for branches. 
         IMM32, //rel 32
-        ZEXT_IMM16 //rel 16
-        ZEXT_IMM8 //rel8 
-        BUF32 //m32 for branch
+        ZEXT_IMM16, //rel 16
+        ZEXT_IMM8, //rel8 
+        BUF32, //m32 for branch
         ZEXT_BUF16 //m16 for branch
 
     

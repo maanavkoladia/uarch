@@ -30,7 +30,7 @@ module MEM (
     output exe_latches_t exe_latches_next_o,
     output mem_outputs_t outs_o
 );
-
+    byte_t ld_buf[EXE_BUFFER_SIZE];
     byte_t C0[CACHE_LINES_SIZE_B];
     byte_t up_buf[CACHE_LINES_SIZE_B];
     byte_t low_buf[CACHE_LINES_SIZE_B];
@@ -53,6 +53,14 @@ module MEM (
         .miss_stall(miss_stall)
     );
 
+    always_comb begin
+        for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
+            ld_buf[i] = low_buf[i];
+            ld_buf[i + CACHE_LINES_SIZE_B] = up_buf[i];
+        end
+    end
+
+
     assign exe_latches_next_o = '{
         valid: latches_i.valid,  //TODO need to actually create logic here (handle stall/flush)
         cs: latches_i.exe_cs,
@@ -63,8 +71,9 @@ module MEM (
         MIO: latches_i.MIO,
         br_info: latches_i.br_info,
         NEIP: latches_i.NEIP,
+        EIP: latches_i.EIP,
         imm64: latches_i.imm64,
-        ld_buf: {up_buf, low_buf},
+        ld_buf: ld_buf,
         sr_id: latches_i.sr_id,
         sr_data: latches_i.sr_data,
         dr_id: latches_i.dr_id,

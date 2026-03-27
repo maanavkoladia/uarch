@@ -21,7 +21,7 @@ package interconnect_pkg;
         DCACHE_EB_BLOCK_ST = 10,
         DCACHE_FILL_ST_OVERRIDE = 9,
         DCACHE_FILL_LD = 8,
-        DCACHE_FILL_ST = 7,Ch
+        DCACHE_FILL_ST = 7,
         DCACHE_EB_WR = 6,
 
 

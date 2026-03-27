@@ -134,6 +134,8 @@ package core_stage_latches_pkg;
 
         br_info_t br_info;
         l_address_t NEIP;
+        l_address_t EIP;
+
         uint64_t imm64;
         reg_ids_e mod_rm_id;
         reg_ids_e reg_id;
@@ -170,6 +172,7 @@ package core_stage_latches_pkg;
         bool MIO;  //this a write to mem_io
 
         l_address_t NEIP;
+        l_address_t EIP;
 
         uint64_t imm64;
 
@@ -197,6 +200,7 @@ package core_stage_latches_pkg;
         bool MIO;
 
         l_address_t NEIP;
+        l_address_t EIP;
 
         uint64_t imm64;
 

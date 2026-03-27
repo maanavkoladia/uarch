@@ -142,6 +142,7 @@ module DC (
         ST_PADDR_1: latches_i.ST_PADDR_1,
         MIO:        latches_i.MIO,
         NEIP:       latches_i.NEIP,
+        EIP:        latches_i.EIP,
         imm64:      latches_i.imm64,
         sr_id:      latches_i.sr_id,
         sr_data:    latches_i.sr_data,

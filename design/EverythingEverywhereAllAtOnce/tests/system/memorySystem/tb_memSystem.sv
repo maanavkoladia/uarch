@@ -58,29 +58,38 @@ module tb_memSystem ();
         #(CLK_PERIOD * cycles);
     endtask
 
-    // ================= ICACHE =================
-    ICache u_icache (
-        .clk(clk),
-        .rst(rst),
-        .inFromCore_i(core_2_icache),
-        .out2Core_o(icache_2_core),
-        .dte_out_i(dte_2_icache),
-        .out2Sch_o(icache_2_sched),
-        .dataBus(dataBus),
-        .addrBus(addrBus)
-    );
 
-    // ================= DCACHE =================
-    DCache_TOP u_dcache (
-        .clk(clk),
-        .rst(rst),
-        .inFromCore_i(core_2_dcache),
-        .out2Core_o(dcache_2_core),
-        .inFromDTE_i(dte_2_dcache),
-        .out2Sch_o(dcache_2_sched),
-        .dataBus(dataBus),
-        .address_bus(addrBus)
-    );
+    initial begin
+        $vcdpluson;
+        $vcdplusmemon;
+    end
+
+    // // ================= ICACHE =================
+    // ICache u_icache (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .inFromCore_i(core_2_icache),
+    //     .out2Core_o(icache_2_core),
+    //     .dte_out_i(dte_2_icache),
+    //     .out2Sch_o(icache_2_sched),
+    //     .dataBus(dataBus),
+    //     .addrBus(addrBus)
+    // );
+
+    // // ================= DCACHE =================
+    // DCache_TOP u_dcache (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .inFromCore_i(core_2_dcache),
+    //     .out2Core_o(dcache_2_core),
+    //     .inFromDTE_i(dte_2_dcache),
+    //     .out2Sch_o(dcache_2_sched),
+    //     .dataBus(dataBus),
+    //     .address_bus(addrBus)
+    // );
+
+
+
 
     // ================= MEMORY =================
     mem_TOP u_mem (
@@ -93,47 +102,53 @@ module tb_memSystem ();
         .out2Sch(mem_2_sched)
     );
 
-    // ================= BUS ARBITER =================
-    BusArbitration u_arb (
-        .clk(clk),
-        .rst(rst),
-        .iCache_2_Sch_i(icache_2_sched),
-        .dte_out_2_icache_o(dte_2_icache),
-        .dCache_2_Sch_i(dcache_2_sched),
-        .dte_out_2_dcache_o(dte_2_dcache),
-        .mem_2_Sch_i(mem_2_sched),
-        .mem_2_dte_i(mem_2_dte),
-        .dte_2_mem_o(dte_2_mem),
-        .dma_2_sch_i(dma_2_sched),
-        .dte_2_dma_o(dte_2_dma),
-        .dte_2_ddr5_o(dte_2_ddr5)
-    );
+    tb_memGen_InitRitual u_memGen();
 
-    // ================= DMA =================
-    DMA_Controller u_dma (
-        .clk(clk),
-        .rst(rst),
-        .inFromDTE_i(dte_2_dma),
-        .out2Core_o(dma_2_core),
-        .out2Sch_o(dma_2_sched),
-        .dataBus(dataBus),
-        .addrBus(addrBus)
-    );
+
+    // // ================= BUS ARBITER =================
+    // BusArbitration u_arb (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .iCache_2_Sch_i(icache_2_sched),
+    //     .dte_out_2_icache_o(dte_2_icache),
+    //     .dCache_2_Sch_i(dcache_2_sched),
+    //     .dte_out_2_dcache_o(dte_2_dcache),
+    //     .mem_2_Sch_i(mem_2_sched),
+    //     .mem_2_dte_i(mem_2_dte),
+    //     .dte_2_mem_o(dte_2_mem),
+    //     .dma_2_sch_i(dma_2_sched),
+    //     .dte_2_dma_o(dte_2_dma),
+    //     .dte_2_ddr5_o(dte_2_ddr5)
+    // );
+
+    // // ================= DMA =================
+    // DMA_Controller u_dma (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .inFromDTE_i(dte_2_dma),
+    //     .out2Core_o(dma_2_core),
+    //     .out2Sch_o(dma_2_sched),
+    //     .dataBus(dataBus),
+    //     .addrBus(addrBus)
+    // );
+
 
     // ================= DDR5 =================
-    ddr5 u_ddr5 (
-        .clk(clk),
-        .rst(rst),
-        .inFromDTE_i(dte_2_ddr5),
-        .dataBus(dataBus),
-        .addrBus(addrBus)
-    );  //create mem loader
+    // ddr5 u_ddr5 (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .inFromDTE_i(dte_2_ddr5),
+    //     .dataBus(dataBus),
+    //     .addrBus(addrBus)
+    // );  //create mem loader
 
     initial begin
         `LOG("Starting mem System TB");
         rst = 0;
         core_2_icache = '{default: '0};
         core_2_dcache = '{default: '0};
+        DelayCLKs(3);
+        rst = 1;
         DelayClks(30);
         $finish;
         `LOG("Finishing mem System TB");
