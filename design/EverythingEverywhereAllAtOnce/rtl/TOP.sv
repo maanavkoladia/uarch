@@ -29,10 +29,10 @@ module TOP (
     dcache_2_core_t                                               dcache2core;
 
     dma_controller_2_core_t                                       dma2core;
-    
-    wire                        [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;
-    wire                        [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addressBus;
-    
+
+    wire                         [   DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;
+    wire                         [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addressBus;
+
     //core
     CoreTop core_unit (
         .clk(clk),
@@ -92,7 +92,7 @@ module TOP (
         .dte_2_mem_o(dte2mem),
         .dma_2_sch_i(dma2sched),
         .dte_2_dma_o(dte2dma),
-        .dte_2_ddr5_i(dte2ddr5)
+        .dte_2_ddr5_o(dte2ddr5)
     );
 
     //dma
