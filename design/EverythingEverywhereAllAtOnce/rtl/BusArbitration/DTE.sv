@@ -1,12 +1,13 @@
 import common_pkg::*;
 import interconnect_pkg::*;
 import BusArbitration_common_pkg::*;
+import DTE_FSM_gen_pkg::*;
 
 module DTE (
     input wire clk,
     input wire rst,
 
-    input reqs_pri_t bestPick_i,
+    input req_2_sch_t bestPick_i,
     input logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_i,
 
     output dte_2_icache_t dte_out_2_icache_o,
@@ -149,10 +150,12 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
 
     bool ddr5_2_core_driveAddrBus_fsmOut;
     bool core_2_ddr5_driveAddrBus_fsmOut;
+    bool core_2_dma_driveAddrBus_fsmOut;
 
     assign dte_out_2_dcache_o.permissionToDriveAddrBus_mio =
         ddr5_2_core_driveAddrBus_fsmOut |
-        core_2_ddr5_driveAddrBus_fsmOut;
+        core_2_ddr5_driveAddrBus_fsmOut | 
+        core_2_dma_driveAddrBus_fsmOut;
 
     // ----------------------------------------------------------------
     // FIX 6 – driveDataBus (DDR5): driven by ddr5_2_core AND core_2_dma
@@ -227,7 +230,7 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
                 // FIX 7: per-instance busy
                 .busy_o          (mem_2_dcache_fsmout_busy_per[i]),
                 // FIX 8: mem_valid goes to dcache bank i (not icache)
-                .mem_valid_o     (dte_out_2_dcache_o.Mem_Valid[i]),
+                .mem_valid_o     (dte_out_2_dcache_o.mem_valid[i]),
                 // FIX 1: per-instance ld_req wire, OR-reduced above
                 .ld_req_o        (mem_2_dcache_ld_req_fsmOut[i]),
                 .Drive_Addr_Bus_o(dte_out_2_dcache_o.permissionToDriveAddrBus_Ld[i]),
@@ -259,24 +262,24 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     generate
         for (genvar i = 0; i < NUM_DCACHE_PORTS; i++) begin : g_dcache_2_mem_bank_fsms
 
-            DTE_DCACHE_2_MEM_FSM dcache_2_mem_fsm (
+            DTE_DCache_2_MEM_FSM dcache_2_mem_fsm (
                 .clk             (clk),
                 .rst             (rst),
                 .req_hit_i       (dcache_2_mem_req_hit),
                 .bank_hit_i      (dcache_2_mem_bk_hit[i]),
                 .others_busy_i   (DTE_Busy),
-                .s_0             (dte_dcache_2_mem_fsm_state_bits[i][0]),
-                .s_1             (dte_dcache_2_mem_fsm_state_bits[i][1]),
-                .s_2             (dte_dcache_2_mem_fsm_state_bits[i][2]),
+                .S_0             (dte_dcache_2_mem_fsm_state_bits[i][0]),
+                .S_1             (dte_dcache_2_mem_fsm_state_bits[i][1]),
+                .S_2             (dte_dcache_2_mem_fsm_state_bits[i][2]),
                 // FIX 7: per-instance busy
                 .busy_o          (dcache_2_mem_fsmout_busy_per[i]),
                 // FIX 2: per-instance st_req wire, OR-reduced above
                 .st_req_o        (dcache_2_mem_st_req_fsmOut[i]),
-                .drive_addr_bus_o(dte_out_2_dcache_o.permissionToDriveAddrBus_eb[i]),
-                .drv_db_0_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][0]),
-                .drv_db_1_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][1]),
-                .drv_db_2_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][2]),
-                .drv_db_3_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][3])
+                .Drive_Addr_Bus_o(dte_out_2_dcache_o.permissionToDriveAddrBus_eb[i]),
+                .Drv_DB_0_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][0]),
+                .Drv_DB_1_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][1]),
+                .Drv_DB_2_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][2]),
+                .Drv_DB_3_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][3])
             );
 
         end
@@ -342,7 +345,7 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         .busy_o          (core_2_dma_fsmout_busy),
         // FIX 4: intermediate wire, OR-reduced above
         .reqServed_o     (core_2_dma_reqServed_fsmOut),
-        .Drive_Addr_Bus_o(dte_out_2_dcache_o.permissionToDriveAddrBus_mio),
+        .Drive_Addr_Bus_o(core_2_dma_driveAddrBus_fsmOut),
         // FIX 6: intermediate wire, OR-reduced above
         .Drv_DB_o        (core_2_dma_drvDB_fsmOut),
         .coreValOnBus_o  (dte_2_dma_o.coreValOnBus)

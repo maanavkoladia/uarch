@@ -29,7 +29,7 @@ module BusArbitration (
 
     //create the sch
     req_2_sch_t sch_best_pick;
-    logic [$clog(NUM_DCACHE_PORTS) - 1 : 0] sch_best_pick_bk_id;
+    logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] sch_best_pick_bk_id;
 
     Scheduler scheduler_unit (
         .clk(clk),
