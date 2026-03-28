@@ -5,8 +5,8 @@ module ICache_DataStore (
 
     input wire rst,
     input wire en,  //active high
-    input v_address_t v_addr_i,
-    input p_address_t p_addr_i,
+    input v_address_t v_addr_i,  //can be the spc one, or the latched one, top module will decide
+    input p_address_t p_addr_i,  //can be the spc one, or the latched one, top module will decide
 
     //output the line evition line to write to IC_SWAP_BUF
     input bool LD_IC_SWAP_BUF,
@@ -26,7 +26,7 @@ module ICache_DataStore (
     output byte_t currLine_o[CACHE_LINES_SIZE_B]
 
 );
-    
+
     localparam int LAYERS_OF_CELLS = 2;
     localparam int NUM_CELLS = CACHE_LINES_SIZE_B;
 
@@ -61,7 +61,7 @@ module ICache_DataStore (
                     5'b00010: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+8] = 0;
                     5'b00001: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+12] = 0;
                     5'b00000: WR_2_DataStore[dataLineOutSel] = '{default: '1};
-                    default:  $fatal;
+                    default:  if (!rst) $fatal;
                 endcase
             end
         end
@@ -75,9 +75,6 @@ module ICache_DataStore (
         if (ld_From_I_VC_Swap) begin
             DIN_2_DataStore = I_VC_SwapBuf_i.line;
         end else begin
-            // default: map 32-bit dataBus into first 4 bytes
-            DIN_2_DataStore = '{default: 8'b0};  // zero everything first
-
             DIN_2_DataStore[0] = dataBus[7:0];
             DIN_2_DataStore[1] = dataBus[15:8];
             DIN_2_DataStore[2] = dataBus[23:16];

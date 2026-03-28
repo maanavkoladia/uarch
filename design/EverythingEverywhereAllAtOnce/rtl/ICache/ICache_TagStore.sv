@@ -7,8 +7,8 @@ module ICache_TagStore (
     input wire rst,
 
     input wire en,  //active high
-    input v_address_t v_addr_i,
-    input p_address_t p_addr_i,
+    input v_address_t v_addr_i,  //can be the spc one, or the latched one, top module will decide
+    input p_address_t p_addr_i,  //can be the spc one, or the latched one, top module will decide
     input bool ld_From_I_VC_Swap,
     input bool LD_IC_SWAP_BUF,
     input bool fill3_i,
@@ -55,7 +55,7 @@ module ICache_TagStore (
     logic [ICACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore = DOUT_2_TagStore_extended[tagCellOutSel][ICACHE_TAG_WIDTH - 1: 0];
 
     // Output assignments
-    assign currTag_o = DOUT_2_TagStore;
+    assign currTag_o  = DOUT_2_TagStore;
     assign currLine_V = validStore[v_addr_i_index];
 
     ram8b8w$ tag_store_ramCell_Lower (
@@ -76,10 +76,8 @@ module ICache_TagStore (
 
     // Valid bit storage - reset when rst is active high
     always_ff @(posedge clk) begin
-        if (rst)
-            validStore <= '{default: '0};
-        else if (fill3_i || ld_From_I_VC_Swap)
-            validStore[v_addr_i_index] <= 1;
+        if (rst) validStore <= '{default: '0};
+        else if (fill3_i || ld_From_I_VC_Swap) validStore[v_addr_i_index] <= 1;
     end
 
 endmodule
