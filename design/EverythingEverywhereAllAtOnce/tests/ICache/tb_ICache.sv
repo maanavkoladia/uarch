@@ -2,7 +2,7 @@ import interconnect_pkg::*;
 import common_pkg::*;
 
 module tb_ICache ();
-    localparam int Clk_PERIOD = 100;
+    localparam int Clk_PERIOD = 10;
 
     // ================= CLOCK / RESET =================
     `CLK_INIT(Clk_PERIOD);

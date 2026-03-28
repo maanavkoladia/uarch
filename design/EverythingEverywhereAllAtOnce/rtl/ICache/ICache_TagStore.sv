@@ -52,7 +52,8 @@ module ICache_TagStore (
     logic [ICACHE_TAG_WIDTH -1 : 0] DIN_2_TagStore;
     assign DIN_2_TagStore = p_addr_i_tag;
 
-    logic OE_2_TagStore = !busy || LD_IC_SWAP_BUF;
+    logic OE_2_TagStore;
+    assign OE_2_TagStore = !busy || LD_IC_SWAP_BUF;
 
     logic [7 : 0] DOUT_2_TagStore_extended[2];
     logic [ICACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore;
@@ -80,7 +81,7 @@ module ICache_TagStore (
 
     // Valid bit storage - reset when rst is active high
     always_ff @(posedge clk) begin
-        if (rst) validStore <= '{default: '0};
+        if (!rst) validStore <= '{default: '0};
         else if (fill3_i || ld_From_I_VC_Swap) validStore[v_addr_i_index] <= 1;
     end
 
