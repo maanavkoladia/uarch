@@ -70,10 +70,15 @@ module tb_ICache ();
         rst = 1;  //actve low
         DelayClks(5);
 
+        // core_2_icache.numValidIDMSlots = 0;
+        // core_2_icache.p_addr = 0;
+        // core_2_icache.v_spc_addr_i = 0;
+        @(posedge clk)
         core_2_icache.numValidIDMSlots = 0;
         core_2_icache.p_addr = 0;
         core_2_icache.v_spc_addr_i = 0;
-        //core_2_icache.icache_en = 1;
+        core_2_icache.icache_en = 1;
+
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
