@@ -2,6 +2,8 @@
 // Zeroes every ram8b8w$ cell in the ICache at simulation start.
 // All assignments are fully unrolled (no loops) for VCS compatibility.
 
+module icache_loader;
+
 initial begin
 
     #10;
@@ -320,3 +322,5 @@ initial begin
     tb_ICache.u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[<cellNum].dataStore_memCell.mem[7] = 8'h00;
 
 end
+
+endmodule

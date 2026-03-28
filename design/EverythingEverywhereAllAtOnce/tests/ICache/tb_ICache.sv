@@ -52,6 +52,8 @@ module tb_ICache ();
         .addrBus(addrBus)
     );
 
+    icache_loader u_icache_loader();
+
     initial begin
         `LOG("Starting mem System TB");
         dte_2_icache = '{default: '0};
