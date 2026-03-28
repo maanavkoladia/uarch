@@ -83,9 +83,12 @@ def _zero_cell_lines(hier_path: str) -> list[str]:
 
 
 def _resolve(template: str, layer: int, cell: int) -> str:
-    return (template
-            .replace("<cell layer>", str(layer))
-            .replace("<cellNum>", str(cell)))
+    import re
+    result = template.replace("<cell layer>", str(layer))
+    # Handle both [<cellNum>] (correct) and [<cellNum] (missing closing >) from conf.
+    # Replace the entire bracketed placeholder so output is always well-formed [N].
+    result = re.sub(r'\[<cellNum>?\]', f'[{cell}]', result)
+    return result
 
 # ---------------------------------------------------------------------------
 # Top-level generator
