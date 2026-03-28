@@ -6,7 +6,7 @@ module icache_loader;
 
 initial begin
 
-    #10;
+    #300;
 
     // Tag Store – Lower
     tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[0] = 8'h00;
