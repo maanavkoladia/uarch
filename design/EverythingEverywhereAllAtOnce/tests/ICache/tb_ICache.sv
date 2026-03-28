@@ -74,10 +74,52 @@ module tb_ICache ();
         // core_2_icache.p_addr = 0;
         // core_2_icache.v_spc_addr_i = 0;
         @(posedge clk)
-        core_2_icache.numValidIDMSlots = 0;
-        core_2_icache.p_addr = 0;
-        core_2_icache.v_spc_addr_i = 0;
+        core_2_icache.num_valid_IDM_slots = 0;
+        core_2_icache.p_addr = 15'h4020;
+        core_2_icache.v_spc_addr_i = 32'h00004020;
         core_2_icache.icache_en = 1;
+        @(posedge clk)
+        @(posedge clk)
+        @(posedge clk)
+        dte_2_icache.driveAddrBus = 1;
+
+        @(posedge clk)
+        dte_2_icache.Mem_Valid = 1;
+        driveDataBus = 1;
+        dataForBus = 32'h01010101;
+
+
+        @(posedge clk)
+        dte_2_icache.Mem_Valid = 1;
+        driveDataBus = 1;
+        dataForBus = 32'h02020202;
+
+
+        @(posedge clk)
+        dte_2_icache.Mem_Valid = 1;
+        driveDataBus = 1;
+        dataForBus = 32'h03030303;
+
+
+        @(posedge clk)
+        dte_2_icache.Mem_Valid = 1;
+        driveDataBus = 1;
+        dataForBus = 32'h04040404;
+
+        @(posedge clk)
+        driveAddrBus = 0;
+        dte_2_icache.Mem_Valid = 0;
+        driveDataBus = 0;
+
+        @(posedge clk)
+        @(posedge clk)
+
+
+
+        
+
+
+
 
 
         /////////////////////////////////////////////////////////////////////////////////////

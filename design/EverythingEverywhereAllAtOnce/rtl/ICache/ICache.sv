@@ -126,6 +126,7 @@ module ICache (
     I_VCache i_vcache_unit (
         .clk(clk),
         .rst(rst),  //active low
+        .controller_fsmState(controller_fsmState),
         .req_V_i(inFromCore_i.icache_en),  //i think we can ust use the icache en signal, might be a src of problems later
         .p_addr_i(curr_p_addr_to_use),
         .IC_SwapBuf_i(icache_swapbuf),
@@ -141,7 +142,7 @@ module ICache (
     always_ff @(posedge clk) begin
         if (!rst) icache_swapbuf <= '{default: '0};
         else if (fsmOuts.LD_IC_SWAP_BUF) begin
-            icache_swapbuf.valid <= 1;
+            icache_swapbuf.valid <= currLine_V;
             icache_swapbuf.lineAddr <= {icache_tag, 4'b0000};
             icache_swapbuf.line <= icache_dataLines;
         end else if (i_vcache_swapBuf_V_Clr) begin
@@ -152,12 +153,13 @@ module ICache (
     //INTERNAL SIGNALS
     assign icache_hit =
         inFromCore_i.icache_en
-        && !fsmOuts.busy
+        && (controller_fsmState == ICACHE_IDLE)
         && (icache_tag_V
         && (icache_tag == inFromCore_i.p_addr[ICACHE_TAG_UB : ICACHE_TAG_LB]));
+
     assign icache_miss =
         inFromCore_i.icache_en
-        && !fsmOuts.busy
+        && (controller_fsmState == ICACHE_IDLE)
         && (!icache_tag_V
         || (icache_tag != inFromCore_i.p_addr[ICACHE_TAG_UB : ICACHE_TAG_LB]));
 
