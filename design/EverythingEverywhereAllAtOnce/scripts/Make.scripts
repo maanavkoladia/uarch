@@ -1,0 +1,32 @@
+SCRIPT_ROOT_INTERNAL := $(PROJECT_ROOT)/scripts/
+
+
+MASTER_STARTUP_SCRIPT = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/startup_gen_master.py
+
+JSON_CLEAN_SCRIPT = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/createJSON.sh
+
+LOAD_MEM_COMPILE_SCRIPT = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/Mem/compile.py
+LOAD_MEM_GEN_HEX_MEM_SCRIPT = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/Mem/genHexMem.py
+LOAD_MEM_GEN_READ_MEM_FILE = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/Mem/genReadMemFile.py
+
+ICACHE_START_UP_GEN_SCRIPT = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/ICache/ICache_Startup_Gen.py
+
+DCACHE_START_UP_GEN_SCRIPT = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/DCache/DCache_StartUp_Gen.py
+
+TLB_START_UP_GEN_SCRIPT = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/TLB/TLB_StartUp_Gen.py
+
+DISK_START_UP_GEN_SCRIPT = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/Disk/Disk_StartUp_Gen.py
+
+CORE_REGS_START_UP_GEN_SCRIPT = $(SCRIPT_ROOT_INTERNAL)/StartUp_Gen/CoreRegs/CoreRegs_StartUp_Gen.py
+
+MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON = { \
+    "Master_Startup_Script": "$(MASTER_STARTUP_SCRIPT)",    \
+    "Mem_Compile_Path": "$(LOAD_MEM_COMPILE_SCRIPT)",   \
+    "Mem_Gen_Hex_Path": "$(LOAD_MEM_GEN_HEX_MEM_SCRIPT)",   \
+    "Mem_Gen_Readmem_Path": "$(LOAD_MEM_GEN_READ_MEM_FILE)",    \
+    "ICache_Startup_Path": "$(ICACHE_START_UP_GEN_SCRIPT)", \
+    "DCache_Startup_Path": "$(DCACHE_START_UP_GEN_SCRIPT)", \
+    "TLB_Startup_Path": "$(TLB_START_UP_GEN_SCRIPT)",   \
+    "Disk_Startup_Path": "$(DISK_START_UP_GEN_SCRIPT)", \
+    "Core_Regs_Startup_Path": "$(CORE_REGS_START_UP_GEN_SCRIPT)"    \
+}

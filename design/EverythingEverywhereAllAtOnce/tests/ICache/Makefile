@@ -3,13 +3,13 @@ include ../../Make.build
 
 TARGET = ICache_Test
 
-MEM_GEN_CONF = memGen.conf.json
-TEST_PROG = testProg.s
+GEN_CONF = startUpGen.conf.json
 
 TOP_FILE_NAME = tb_ICache
 
 TB_FILES = \
-		   tb_ICache.sv
+		   tb_ICache.sv	\
+		   gen/icache_loader.sv
 
 PKGS = $(RTL_PKGS)
 
@@ -32,10 +32,10 @@ view: run
 	#./$(TARGET) -gui &
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
 
-genMem: 
-	python3.9 $(LOAD_MEM_COMPILE_SCRIPT) $(MEM_GEN_CONF)
-	python3.9 $(LOAD_MEM_GEN_HEX_MEM_SCRIPT) $(MEM_GEN_CONF)
-	python3.9 $(LOAD_MEM_GEN_READ_MEM_FILE) $(MEM_GEN_CONF)
+gen:
+	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
+	@python3 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@rm -f cleaned_scripts.json
 
 see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'	
@@ -50,6 +50,7 @@ clean:
 	rm -f master
 	rm -f *.log
 	rm -f ucli.key
+	rm -rf gen/
 
 vim:
 	nvim ../../../

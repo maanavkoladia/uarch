@@ -82,8 +82,8 @@ module ICache_DataStore (
         end
     end
 
-    logic OE_2_DataStore = !busy || LD_IC_SWAP_BUF;
-
+    logic OE_2_DataStore;
+    assign OE_2_DataStore = !busy || LD_IC_SWAP_BUF;
 
     byte_t DOUT_2_DataStore[LAYERS_OF_CELLS][CACHE_LINES_SIZE_B];
 
