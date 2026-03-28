@@ -171,7 +171,7 @@ module ICache (
         end
     end
 
-    assign curr_b_addr_to_use = fsmOuts.UseSavedAddr ? saved_vAddr : inFromCore_i.v_spc_addr_i;
+    assign curr_v_addr_to_use = fsmOuts.UseSavedAddr ? saved_vAddr : inFromCore_i.v_spc_addr_i;
     assign curr_p_addr_to_use = fsmOuts.UseSavedAddr ? saved_pAddr : inFromCore_i.p_addr;
 
     //MODULE OUTPUT SIGNALS

@@ -62,7 +62,7 @@ module ICache_DataStore (
                     5'b00010: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+8] = 0;
                     5'b00001: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+12] = 0;
                     5'b00000: WR_2_DataStore[dataLineOutSel] = '{default: '1};
-                    default:  if (!rst) $fatal;
+                    default:  if (rst) $fatal;
                 endcase
             end
         end

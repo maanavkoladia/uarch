@@ -2,7 +2,7 @@ import interconnect_pkg::*;
 import common_pkg::*;
 
 module tb_ICache ();
-    localparam int Clk_PERIOD = 100;
+    localparam int Clk_PERIOD = 10;
 
     // ================= CLOCK / RESET =================
     `CLK_INIT(Clk_PERIOD);
@@ -70,7 +70,7 @@ module tb_ICache ();
         rst = 1;  //actve low
         DelayClks(5);
 
-        core_2_icache.numValidIDMSlots = 0;
+        core_2_icache.num_valid_IDM_slots = 0;
         core_2_icache.p_addr = 0;
         core_2_icache.v_spc_addr_i = 0;
         //core_2_icache.icache_en = 1;
