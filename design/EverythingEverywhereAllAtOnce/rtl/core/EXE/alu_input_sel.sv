@@ -45,9 +45,11 @@ module alu_input_sel(
             BUFFER:         srA_64 = res_buf_out[63:0];
             SEGMENT:        srA_64 = {32'd0, segment};
             NEIP:           srA_64 = {32'd0, NEIP};
+            EIP:            srA_64 = {32'b0, EIP};
             SEXT8:          srA_64 = {32'd0, 32'(signed'(imm64[7:0]))};
             NOP:            srA_64 = '0;
             SEGMENT_NEIP:   srA_64 = {NEIP, segment};
+            CMPXCHG:        srA_64 = {sr_data, dr_data};
             default:        $fatal
         endcase
     end
@@ -60,6 +62,7 @@ module alu_input_sel(
             IMM64:          srB_64 = imm64;
             BUFFER:         srB_64 = res_buf_out;
             NEIP:           srB_64 = {32'd0, NEIP};
+            EIP:            srA_64 = {32'b0, EIP};
             SEGMENT:        srB_64 = {32'd0, segment};
             SEXT8:          srB_64 = {32'd0, 32'(signed'(imm64[7:0]))};
             NOP:            srB_64 = '0;
