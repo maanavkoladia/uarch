@@ -49,8 +49,6 @@ module ICache (
     logic i_vcache_hit, i_vcache_miss, i_vcache_busy, i_vcache_swapBuf_V_Clr;
     byte_t i_vcache_dataLines[CACHE_LINES_SIZE_B];
 
-    logic curr_p_addr_to_use;
-    logic curr_v_addr_to_use;
 
     //note that this is latched, so it is one cycle behind actual fetch spc,
     //that is just used when we are changing that state of the icache data.
@@ -61,7 +59,10 @@ module ICache (
     //latched address instead of wires from fetch
 
     p_address_t saved_pAddr;
-    p_address_t saved_vAddr;
+    v_address_t saved_vAddr;
+
+    p_address_t curr_p_addr_to_use;
+    v_address_t  curr_v_addr_to_use;
 
     //create the fsm
     ICache_Controller_Logic icache_contrller_fsm (
@@ -107,8 +108,8 @@ module ICache (
     ICache_DataStore icache_dataStore_unit (
         .rst(rst),
         .en(inFromCore_i.icache_en),  //active high
-        .v_addr_i(inFromCore_i.v_spc_addr_i),
-        .p_addr_i(inFromCore_i.p_addr),
+        .v_addr_i(curr_v_addr_to_use),
+        .p_addr_i(curr_p_addr_to_use),
         .LD_IC_SWAP_BUF(fsmOuts.LD_IC_SWAP_BUF),
         .fill0_i(fsmOuts.Fill0EN),
         .fill1_i(fsmOuts.Fill1EN),
@@ -126,7 +127,7 @@ module ICache (
         .clk(clk),
         .rst(rst),  //active low
         .req_V_i(inFromCore_i.icache_en),  //i think we can ust use the icache en signal, might be a src of problems later
-        .p_addr_i(inFromCore_i.p_addr),
+        .p_addr_i(curr_p_addr_to_use),
         .IC_SwapBuf_i(icache_swapbuf),
         .I_VC_SwapBuf_o(i_vcache_swapBuf),
         .hit_o(i_vcache_hit),
@@ -164,7 +165,7 @@ module ICache (
         if (!rst) begin
             saved_vAddr <= 0;
             saved_pAddr <= 0;
-        end else if (saveAddress) begin
+        end else if (fsmOuts.saveAddress) begin
             saved_pAddr <= inFromCore_i.p_addr;
             saved_vAddr <= inFromCore_i.v_spc_addr_i;
         end
