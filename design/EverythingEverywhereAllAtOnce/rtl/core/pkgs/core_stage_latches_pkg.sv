@@ -67,7 +67,7 @@ package core_stage_latches_pkg;
         bool LD_OP;
         bool ST_OP;
 
-        logic [1:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
+        logic [2:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 
     } rr_cs_t;
 
@@ -87,7 +87,7 @@ package core_stage_latches_pkg;
     typedef struct {
         bool EXE_OP;
         bool ST_OP;
-        logic [1:0] DATA_SIZE; //im assuming this is 8 16 32 64
+        logic [2:0] DATA_SIZE; //im assuming this is 8 16 32 64
         exe_cs_operation_type_e OP_TYPE;
 
         source_selector_e alu_inputA_sel;
