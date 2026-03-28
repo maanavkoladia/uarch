@@ -15,19 +15,10 @@ module alu_input_sel(
 
     //seems weird but I think it will be easier than to mask out everything properly. Best to do it all just here
     //This right now is basically just for Return from interrupt. As of right now we are not making that a rom even tho we probably could 
-    output uintCL_t srA_128;
-    output uintCL_t srB_128;
-
     output uint64_t srA_64;
     output uint64_t srB_64;
 
-    output uint32_t srA_32;
-    output uint32_t srB_32;
 
-    output uint16_t srA_16;
-    output uint16_t srB_16;
-
-    output uint8_t srA_8;
     output uint8_t srB_8;
 
     output uint32_t br_sel;
@@ -48,32 +39,32 @@ module alu_input_sel(
     //logic to determine srA
     always_comb begin
         unique case (alu_inputA_sel)
-            SR_REGISTER:  srA_128 = {64'd0, sr_data};
-            DR_REGISTER:  srA_128 = {64'd0, dr_data};
-            IMM64        :  srA_128 = {64'd0, imm64};
-            BUFFER     :  srA_128 = res_buf_out;
-            SEGMENT    :  srA_128 = {96'd0, segment};
-            NEIP       :  srA_128 = {96'd0, NEIP};
-            SEXT8      :  srA_128 = {64'd0, 64'(signed'(imm64[7:0]))};
-            NOP        :  srA_128 = '0;
-            SEGMENT_NEIP: srA_128 = {64'd0, 12'd0, NEIP, segment};
-            default    :  srA_128 = '0;
+            SR_REGISTER:    srA_64 = {32'd0, sr_data};
+            DR_REGISTER:    srA_64 = {32'd0, dr_data};
+            IMM64:          srA_64 = {32'd0, imm64};
+            BUFFER:         srA_64 = res_buf_out[63:0];
+            SEGMENT:        srA_64 = {32'd0, segment};
+            NEIP:           srA_64 = {32'd0, NEIP};
+            SEXT8:          srA_64 = {32'd0, 32'(signed'(imm64[7:0]))};
+            NOP:            srA_64 = '0;
+            SEGMENT_NEIP:   srA_64 = {NEIP, segment};
+            default:        $fatal
         endcase
     end
 
     //logic for srB
     always_comb begin
         unique case (alu_inputB_sel)
-            SR_REGISTER:  srB_128 = {64'd0, sr_data};
-            DR_REGISTER:  srB_128 = {64'd0, dr_data};
-            IMM64        :  srB_128 = {64'd0, imm64};
-            BUFFER     :  srB_128 = res_buf_out;
-            NEIP       :  srB_128 = {96'd0, NEIP};
-            SEGMENT    :  srB_128 = {96'd0, segment};
-            SEXT8      :  srB_128 = {64'd0, 64'(signed'(imm64[7:0]))};
-            NOP        :  srB_128 = '0;
-            SEGMENT_NEIP: srB_128 = {64'd0, NEIP, segment};
-            default    :  srB_128 = '0;
+            SR_REGISTER:    srB_64 = {32'd0, sr_data};
+            DR_REGISTER:    srB_64 = {32'd0, dr_data};
+            IMM64:          srB_64 = imm64;
+            BUFFER:         srB_64 = res_buf_out;
+            NEIP:           srB_64 = {32'd0, NEIP};
+            SEGMENT:        srB_64 = {32'd0, segment};
+            SEXT8:          srB_64 = {32'd0, 32'(signed'(imm64[7:0]))};
+            NOP:            srB_64 = '0;
+            SEGMENT_NEIP:   srB_64 = {NEIP, segment};
+            default:        $fatal
         endcase
     end
 
@@ -93,16 +84,6 @@ module alu_input_sel(
         endcase
     end
 
-    //outputs - mask down from 128-bit
-    assign srA_64 = srA_128[63:0];
-    assign srA_32 = srA_128[31:0];
-    assign srA_16 = srA_128[15:0];
-    assign srA_8  = srA_128[7:0];
-
-    assign srB_64 = srB_128[63:0];
-    assign srB_32 = srB_128[31:0];
-    assign srB_16 = srB_128[15:0];
-    assign srB_8  = srB_128[7:0];
 
 
 

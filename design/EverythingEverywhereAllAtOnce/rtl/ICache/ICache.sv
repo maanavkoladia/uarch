@@ -188,7 +188,7 @@ module ICache (
         out2Sch_o.req = NO_REQ;
         if (fsmOuts.MakeReq) begin
             out2Sch_o.req = ICACHE_LOW_PRI_REQ;
-            if (inFromCore_i.numValidIDMSlots < 2) out2Sch_o.req = ICACHE_HIGH_PRI;
+            if (inFromCore_i.num_valid_IDM_slots < 2) out2Sch_o.req = ICACHE_HIGH_PRI;
         end
     end
 

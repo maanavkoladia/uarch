@@ -50,7 +50,9 @@ module IDM (
 
 
     always_comb begin
+        idm_outs_o.valid_slots = 0;
         for (int i = 0; i < NUM_IDM_SLOTS; i++) begin
+            idm_outs_o.valid_slots += idm.slots[i].valid;
             idm_outs_o.idm_slots[i].valid         = idm.slots[i].valid;
             idm_outs_o.idm_slots[i].br_valid      = idm.slots[i].br_valid;
             idm_outs_o.idm_slots[i].br_eip        = idm.slots[i].br_eip;

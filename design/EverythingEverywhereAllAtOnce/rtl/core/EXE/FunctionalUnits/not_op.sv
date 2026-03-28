@@ -4,12 +4,11 @@
 
 import common_pkg::*;
 
-module not(
+module not_op(
     input  uint32_t srA,
     input logic[1:0] data_size,
     output uint32_t dr_o,
-    output uint32_t res_buf_o,
-    output uint32_t flags
+    output uintCL_t res_buf_o,
 ); 
 
     bool ld_16;

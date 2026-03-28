@@ -146,7 +146,8 @@ module WB (
         .outs(mio_q_output)
     );
 
-    //reg writeback logic
+
+
     reg_wb_logic reg_wb(
         .reg_info(wb_latches),
         .stall_flop(stall_flop),
