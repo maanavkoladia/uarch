@@ -105,29 +105,30 @@ module I_VCache (
         if (!rst) begin
             tagStore.entries <= '{default: '0};
             tagStore.LRU <= '{default: '0};
+            dataStore <= '{default: '0};
         end else begin
             if (updateLRU) begin
                 update_idx = hit ? hit_idx : currLRU_IDX;
                 // Update LRU tree to mark accessed way as MRU (bits point toward MRU)
-                case(update_idx)
-                    2'b00: begin // Way 0 accessed - point to left/left
-                        tagStore.LRU[LRU_ROOT] <= 1'b0;       // Point to left subtree
+                unique case (update_idx)
+                    2'b00: begin  // Way 0 accessed - point to left/left
+                        tagStore.LRU[LRU_ROOT]      <= 1'b0;  // Point to left subtree
                         tagStore.LRU[LRU_LEFT_LEAF] <= 1'b0;  // Point to way 0
                     end
-                    2'b01: begin // Way 1 accessed - point to left/right
-                        tagStore.LRU[LRU_ROOT] <= 1'b0;       // Point to left subtree
+                    2'b01: begin  // Way 1 accessed - point to left/right
+                        tagStore.LRU[LRU_ROOT]      <= 1'b0;  // Point to left subtree
                         tagStore.LRU[LRU_LEFT_LEAF] <= 1'b1;  // Point to way 1
                     end
-                    2'b10: begin // Way 2 accessed - point to right/left
-                        tagStore.LRU[LRU_ROOT] <= 1'b1;       // Point to right subtree
-                        tagStore.LRU[LRU_RIGHT_LEAF] <= 1'b0; // Point to way 2
+                    2'b10: begin  // Way 2 accessed - point to right/left
+                        tagStore.LRU[LRU_ROOT]       <= 1'b1;  // Point to right subtree
+                        tagStore.LRU[LRU_RIGHT_LEAF] <= 1'b0;  // Point to way 2
                     end
-                    2'b11: begin // Way 3 accessed - point to right/right
-                        tagStore.LRU[LRU_ROOT] <= 1'b1;       // Point to right subtree
-                        tagStore.LRU[LRU_RIGHT_LEAF] <= 1'b1; // Point to way 3
+                    2'b11: begin  // Way 3 accessed - point to right/right
+                        tagStore.LRU[LRU_ROOT]       <= 1'b1;  // Point to right subtree
+                        tagStore.LRU[LRU_RIGHT_LEAF] <= 1'b1;  // Point to way 3
                     end
                 endcase
-                
+
                 // If loading from IC swap buffer, update the evicted line's tag
                 if (RD_IC_SWAP_BUF) begin
                     tagStore.entries[currLRU_IDX].valid <= 1'b1;
