@@ -82,8 +82,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     bool core_2_dma_fsmout_busy;
     bool dma_2_mem_fsmout_busy;
 
-    bool DTE_Busy =
-        mem_2_icache_fsmout_busy  ||
+    bool DTE_Busy;
+    assign  DTE_Busy = mem_2_icache_fsmout_busy  ||
         mem_2_dcache_fsmout_busy  ||
         dcache_2_mem_fsmout_busy  ||
         ddr5_2_core_fsmout_busy   ||
@@ -98,7 +98,7 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
 
     // ld_req
     bool mem_2_icache_ld_req_fsmOut;
-    bool mem_2_dcache_ld_req_fsmOut[NUM_DCACHE_PORTS];
+    bool mem_2_dcache_ld_req_fsmOut [NUM_DCACHE_PORTS];
 
     always_comb begin
         dte_2_mem_o.ld_req = mem_2_icache_ld_req_fsmOut;
@@ -174,8 +174,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     // MEM -> ICache
     // ----------------------------------------------------------------
 
-    bool mem_2_icache_req_hit =
-        (bestPick_i == ICACHE_HIGH_PRI) ||
+    bool mem_2_icache_req_hit;
+    assign mem_2_icache_req_hit = (bestPick_i == ICACHE_HIGH_PRI) ||
         (bestPick_i == ICACHE_LOW_PRI_REQ);
 
     DTE_MEM_2_ICache_FSM DTE_MEM_2_ICache (
@@ -204,7 +204,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     // MEM -> DCache (per-bank)
     // ----------------------------------------------------------------
 
-    bool mem_2_dcache_req_hit =
+    bool mem_2_dcache_req_hit;
+    assign mem_2_dcache_req_hit=
         (bestPick_i == DCACHE_FILL_ST_OVERRIDE) ||
         (bestPick_i == DCACHE_FILL_LD)          ||
         (bestPick_i == DCACHE_FILL_ST);
@@ -248,7 +249,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     // DCache -> MEM (per-bank)
     // ----------------------------------------------------------------
 
-    bool dcache_2_mem_req_hit =
+    bool dcache_2_mem_req_hit;
+    assign dcache_2_mem_req_hit =
         (bestPick_i == DCACHE_EB_BLOCKING_ST_OVERRIDE) ||
         (bestPick_i == DCACHE_EB_BLOCKING_LD)          ||
         (bestPick_i == DCACHE_EB_BLOCK_ST)             ||
@@ -289,7 +291,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     // DDR5 -> Core
     // ----------------------------------------------------------------
 
-    bool ddr5_2_core_req_hit = (bestPick_i == DCACHE_MIO_LD_FROM_SIMPLE);
+    bool ddr5_2_core_req_hit;
+    assign ddr5_2_core_req_hit = (bestPick_i == DCACHE_MIO_LD_FROM_SIMPLE);
 
     DTE_DDR5_2_Core_FSM ddr5_2_core_fsm (
         .clk             (clk),
@@ -311,7 +314,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     // Core -> DDR5
     // ----------------------------------------------------------------
 
-    bool core_2_ddr5_req_hit = (bestPick_i == DCACHE_MIO_WR_SIMPLE);
+    bool core_2_ddr5_req_hit;
+    assign core_2_ddr5_req_hit = (bestPick_i == DCACHE_MIO_WR_SIMPLE);
 
     DTE_Core_2_DDR5_FSM core_2_ddr5_fsm (
         .clk                        (clk),
@@ -333,7 +337,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     // Core -> DMA
     // ----------------------------------------------------------------
 
-    bool core_2_dma_req_hit = (bestPick_i == DCACHE_MIO_WR_COMPLEX);
+    bool core_2_dma_req_hit;
+    assign core_2_dma_req_hit = (bestPick_i == DCACHE_MIO_WR_COMPLEX);
 
     DTE_Core_2_DMA_FSM core_2_dma_fsm (
         .clk             (clk),
@@ -355,7 +360,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     // DMA -> MEM
     // ----------------------------------------------------------------
 
-    bool dma_2_mem_req_hit = (bestPick_i == DMA_WRITE_REQ);
+    bool dma_2_mem_req_hit;
+    assign dma_2_mem_req_hit = (bestPick_i == DMA_WRITE_REQ);
 
     // FIX 9: Drv_DB_* outputs should target permissionToDriveDataBus (not ADDR bus)
     DTE_DMA_2_MEM_FSM dma_2_mem_fsm (
