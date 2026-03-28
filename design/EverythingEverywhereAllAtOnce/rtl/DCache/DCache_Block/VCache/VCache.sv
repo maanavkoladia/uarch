@@ -17,7 +17,8 @@ module VCache (
     logic [$clog2(NUM_VCACHE_STATES) - 1 : 0] vcache_fsm_state_bits;
     assign vcache_fsm_state = vcache_fsm_state_bits;
 
-    p_addr_vcache_fields_t block_req_p_addr_fields = '{
+    p_addr_vcache_fields_t block_req_p_addr_fields;
+    assign block_req_p_addr_fields = '{
         tag    : blockReq_i.p_addr[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
         index  : blockReq_i.p_addr[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
         bank   : blockReq_i.p_addr[V_CACHE_BANK_UB : V_CACHE_BANK_LB],

@@ -22,8 +22,10 @@ module ICache_TagStore (
     localparam int NUM_CELLS = 2;
 
     // VIPT: Virtual address for INDEX, Physical address for TAG
-    logic [ICACHE_INDEX_WIDTH - 1 : 0] v_addr_i_index = v_addr_i[ICACHE_INDEX_UB : ICACHE_INDEX_LB];
-    logic [ICACHE_TAG_WIDTH - 1 : 0] p_addr_i_tag = p_addr_i[ICACHE_TAG_UB : ICACHE_TAG_LB];
+    logic [ICACHE_INDEX_WIDTH - 1 : 0] v_addr_i_index;
+    logic [ICACHE_TAG_WIDTH - 1 : 0] p_addr_i_tag;
+    assign v_addr_i_index = v_addr_i[ICACHE_INDEX_UB : ICACHE_INDEX_LB];
+    assign p_addr_i_tag = p_addr_i[ICACHE_TAG_UB : ICACHE_TAG_LB];
 
     bool validStore[NUM_ICACHE_LINES];
 
@@ -31,7 +33,8 @@ module ICache_TagStore (
     // Lower bits select the RAM cell address, MSB selects which of the 2 RAM cells
     logic [ICACHE_INDEX_WIDTH - 1 - 1 : 0] ADDRESS_2_TagStore;
     assign ADDRESS_2_TagStore = v_addr_i_index[ICACHE_INDEX_WIDTH-1-1 : 0];
-    logic tagCellOutSel = v_addr_i_index[ICACHE_INDEX_WIDTH-1];
+    logic tagCellOutSel;
+    assign tagCellOutSel = v_addr_i_index[ICACHE_INDEX_WIDTH-1];
 
     //comes from p_addr upper index bit
 
@@ -52,7 +55,8 @@ module ICache_TagStore (
     logic OE_2_TagStore = !busy || LD_IC_SWAP_BUF;
 
     logic [7 : 0] DOUT_2_TagStore_extended[2];
-    logic [ICACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore = DOUT_2_TagStore_extended[tagCellOutSel][ICACHE_TAG_WIDTH - 1: 0];
+    logic [ICACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore;
+    assign DOUT_2_TagStore = DOUT_2_TagStore_extended[tagCellOutSel][ICACHE_TAG_WIDTH - 1: 0];
 
     // Output assignments
     assign currTag_o  = DOUT_2_TagStore;

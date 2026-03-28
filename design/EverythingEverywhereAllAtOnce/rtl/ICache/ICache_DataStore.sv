@@ -30,14 +30,15 @@ module ICache_DataStore (
     localparam int LAYERS_OF_CELLS = 2;
     localparam int NUM_CELLS = CACHE_LINES_SIZE_B;
 
-    logic [ICACHE_INDEX_WIDTH - 1 : 0] v_addr_i_index = v_addr_i[ICACHE_INDEX_UB : ICACHE_INDEX_LB];
-
+    logic [ICACHE_INDEX_WIDTH - 1 : 0] v_addr_i_index;
+    assign v_addr_i_index = v_addr_i[ICACHE_INDEX_UB : ICACHE_INDEX_LB];
 
     // Use virtual address for indexing into tag store (VIPT)
     // Lower bits select the RAM cell address, MSB selects which of the 2 RAM cells
     logic [ICACHE_INDEX_WIDTH - 1 - 1 : 0] ADDRESS_2_DataStore;
     assign ADDRESS_2_DataStore = v_addr_i_index[ICACHE_INDEX_WIDTH-1-1 : 0];
-    logic dataLineOutSel = v_addr_i_index[ICACHE_INDEX_WIDTH-1];
+    logic dataLineOutSel;
+    assign dataLineOutSel = v_addr_i_index[ICACHE_INDEX_WIDTH-1];
 
     //comes from p_addr upper index bit
 
