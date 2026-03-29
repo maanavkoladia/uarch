@@ -1,0 +1,46 @@
+Problem:
+It takes 5 nanoseconds to relefect any change on the bus. This means on a posedge it would take 5 nano to put anything on the bus and then
+cache would only have a few nano to write in the data. So dte would have to go thru the logic to set the tristates. Then set the tristate take 5 nano and
+then the data would have to be read into. 
+
+This could be quite the problem if reading in slow which is about 2.4 ~3 + combo logic to get the right address etc. 
+
+Another problem is that the write enable signals bleeds into the next clock cycle which was causing some issues with the correct data being written. 
+This means we would have to delay the signal or cut it off early
+
+two solutions:
+first one is we pulse our write signal between 5ns and 10ns of a clock period where the new data arrives.
+I think a cache write is 2.4 nano and as long as as we have the signals ready before about 5.5 nano or so we can get this done.
+The cons is that it gives us less freedom to either shrink the clock OR just have combinational wiggle room time.
+For all people reading the bus the data is wrong for the first 5 nano.
+
+other solution is to turn scheduler and DTE to negedge and add latches for clock crossings
+This is a sort big overhaul but would allow us to have good data on the data bus for the duration of the clock (all 10 ns)
+Basically any signal that needs to cross clock domain would need to be latched. So that the posedge can sample them normally
+
+This would means less combo logic issues overall and timing bugs. We just would just have to insert those negedge latches that DTE controls
+
+
+Another problem
+MIO and DMA DDR5 etc all are 1 cycle access which causes a scheduling issue with the latches 
+Problem
+suppose of clock 0 MIO sends a request to scheduler 
+start of clock 1 schduler sends to DTE
+start of clock 2 DTE turns on bus tristates for the DDR5 and sends a memserved
+- however at the same time bus scheduler has latched the same data from the mem req so MIO would get served again for nobody
+
+Solution:
+just make DTE idle for an extra cycle while the mem latches update. 
+This means at the start of cycle 3 even tho mio is still latched in scheduler DTE is still busy and doesnt look at this
+Start of cycle 4: mew data has been latched into the mio schduler and DTE can serve it as needed
+
+
+Icache write enable leakage
+- icache write enable leaks over into the next cycle causing wrong data to be latched in (assuming that data bus is changing on posedge clock)
+Actually this chill
+
+- we dont need to we can deassert this we on posedge clock and then buffer it to turn on whenever. 
+
+so we would be active from 5.5 to 10 and then gets reset on the start of the posedge clock 
+so on posedge clk we have WE set to 1 and then after a phase buffer shit it gets set back to 0 (active low)
+
