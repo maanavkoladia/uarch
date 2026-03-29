@@ -91,7 +91,8 @@ module I_VCache (
         end
     end
 
-    bool updateLRU = (hit) || (RD_IC_SWAP_BUF);
+    bool updateLRU;
+    assign updateLRU = (hit) || (RD_IC_SWAP_BUF);
     logic [$clog2(NUM_LINES) - 1 : 0] currLRU_IDX;
 
     always_comb begin

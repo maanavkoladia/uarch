@@ -84,7 +84,7 @@ module ICache_DataStore (
                         5'b00010: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+8] =  0;
                         5'b00001: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+12] = 0;
                         5'b00000: WR_2_DataStore_clk[dataLineOutSel] = '{default: '1};
-                        //default:   //if (rst) $fatal;
+                        default:   WR_2_DataStore_clk[dataLineOutSel] = '{default: '1};
                     endcase
                 end
             end
@@ -107,7 +107,7 @@ module ICache_DataStore (
     end
 
     logic OE_2_DataStore;
-    assign OE_2_DataStore = !busy || LD_IC_SWAP_BUF;
+    assign OE_2_DataStore = (!busy || LD_IC_SWAP_BUF) && rst && en ? 0 : 1;
 
     byte_t DOUT_2_DataStore[LAYERS_OF_CELLS][CACHE_LINES_SIZE_B];
 

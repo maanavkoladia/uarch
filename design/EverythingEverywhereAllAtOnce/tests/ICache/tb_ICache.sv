@@ -66,9 +66,9 @@ module tb_ICache ();
         driveDataBus = 0;
         rst = 0;  //actve low
 
-        DelayClks(5);
+        DelayClks(20);
         rst = 1;  //actve low
-        DelayClks(5);
+        DelayClks(20);
 
         // core_2_icache.numValidIDMSlots = 0;
         // core_2_icache.p_addr = 0;
@@ -78,8 +78,7 @@ module tb_ICache ();
         core_2_icache.p_addr = 15'h4020;
         core_2_icache.v_spc_addr_i = 32'h00004020;
         core_2_icache.icache_en = 1;
-        @(posedge clk)
-        @(posedge clk)
+        DelayClks(20);
         @(posedge clk)
         dte_2_icache.driveAddrBus = 1;
 

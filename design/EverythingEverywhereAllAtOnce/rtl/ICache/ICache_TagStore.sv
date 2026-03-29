@@ -65,7 +65,7 @@ module ICache_TagStore (
     assign DIN_2_TagStore = p_addr_i_tag;
 
     logic OE_2_TagStore;
-    assign OE_2_TagStore = !busy || LD_IC_SWAP_BUF;
+    assign OE_2_TagStore = (!busy || LD_IC_SWAP_BUF) && rst && en ? 0 : 1;
 
     logic [7 : 0] DOUT_2_TagStore_extended[2];
     logic [ICACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore;

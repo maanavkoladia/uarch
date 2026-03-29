@@ -9,23 +9,23 @@ initial begin
     #10;
 
     // Tag Store – Lower
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[0] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[1] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[2] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[3] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[4] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[5] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[6] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[7] = 8'h00;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[0] = 8'h11;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[1] = 8'h22;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[2] = 8'h33;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[3] = 8'h44;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[4] = 8'h55;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[5] = 8'h66;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[6] = 8'h77;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[7] = 8'h88;
 
     // Tag Store – Upper
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[0] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[1] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[2] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[3] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[4] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[5] = 8'h00;
-    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[6] = 8'h00;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[0] = 8'h99;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[1] = 8'hAA;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[2] = 8'hBB;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[3] = 8'hCC;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[4] = 8'hDD;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[5] = 8'hEE;
+    tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[6] = 8'hFF;
     tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[7] = 8'h00;
 
     // Data Store

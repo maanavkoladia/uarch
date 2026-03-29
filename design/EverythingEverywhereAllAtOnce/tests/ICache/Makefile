@@ -50,7 +50,8 @@ clean:
 	rm -f master
 	rm -f *.log
 	rm -f ucli.key
-	rm -rf gen/
+
+	#rm -rf gen/
 
 vim:
 	nvim ../../../
