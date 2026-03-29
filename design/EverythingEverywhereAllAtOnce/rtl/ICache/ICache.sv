@@ -142,7 +142,7 @@ module ICache (
     always_ff @(posedge clk) begin
         if (!rst) icache_swapbuf <= '{default: '0};
         else if (fsmOuts.LD_IC_SWAP_BUF) begin
-            icache_swapbuf.valid <= currLine_V;
+            icache_swapbuf.valid <= 1;
             icache_swapbuf.lineAddr <= {icache_tag, 4'b0000};
             icache_swapbuf.line <= icache_dataLines;
         end else if (i_vcache_swapBuf_V_Clr) begin
