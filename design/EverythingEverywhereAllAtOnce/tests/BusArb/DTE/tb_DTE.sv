@@ -62,6 +62,16 @@ module tb_DTE ();
         bestPick_bk_id_2_dte = 0;
         DelayClks(5);
         rst = 1;
+        DelayClks(5);
+        mem_2_dte.mem_Ready = 0;
+        bestPick_req_2_dte = ICACHE_HIGH_PRI;
+        bestPick_bk_id_2_dte = 0;
+        @(posedge clk)
+        bestPick_req_2_dte = NO_REQ;
+        mem_2_dte.mem_Ready = 1;
+        
+        @(posedge clk)
+
 
         // let it idle for a bit, shoudl countinues to rx no_reqs from
         // sceduler
