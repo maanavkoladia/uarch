@@ -4,24 +4,24 @@ package test_utils_pkg;
     `define ICACHE_PRINT_LINE_LOWER(ROW) \
         $display("Lower Idx: %0d, Tag: %02h | %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h", \
             ROW, \
-            //u_icache.icache_TagStore_unit.validStore[ROW]
-            u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[ROW] \
+            /*u_icache.icache_TagStore_unit.validStore[\ROW]*/ \
+            u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[\ROW], \
+            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[\ROW] \
         );
 
     // UPPER (layer 1)
@@ -51,7 +51,7 @@ package test_utils_pkg;
 
         $display("==== ICache Contents ====");
         $display("Valid Bits:");
-        for(int i = 0; i < 16; i++ ) $display("IDX: %d, V: %d", i, u_icache.icache_TagStore_unit.validStore.[i]);
+        for(int i = 0; i < 16; i++ ) $display("IDX: %d, V: %d", i,u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[i]);
         $display("==========================================================");
             
 
