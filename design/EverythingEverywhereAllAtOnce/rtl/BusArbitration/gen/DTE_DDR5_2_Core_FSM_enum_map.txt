@@ -1,5 +1,5 @@
 # Enumeration map for FSM: DTE_DDR5_2_Core_FSM
-# 3 states -> 2 bit(s)
+# 4 states -> 2 bit(s)
 # IDLE is always assigned encoding 0
 # ERROR is always assigned the highest encoding
 # ERROR was synthesised (not present in source CSV)
@@ -7,5 +7,6 @@
 # state_name                      decimal  binary
 # --------------------------------------------------
   IDLE                                  0  00  # IDLE (forced 0)
-  LD_DDR5                               1  01
-  ERROR                                 2  10  # ERROR (highest), synthesised
+  DELAY                                 1  01
+  LD_DDR5                               2  10
+  ERROR                                 3  11  # ERROR (highest), synthesised
