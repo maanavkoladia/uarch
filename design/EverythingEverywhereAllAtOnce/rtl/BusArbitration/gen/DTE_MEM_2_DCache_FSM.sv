@@ -109,12 +109,12 @@ and3$ NS_0_and1 (NS_0_t1, S_0_inv, S_1, S_2_inv);
 and3$ NS_0_and2 (NS_0_t2, S_1_inv, S_2, mem_ready_i);
 or3$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2);
 
-// NS_1 = (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2)
+// NS_1 = (S_0 & !S_1 & !S_2) | (!S_0 & S_1 & !S_2)
 wire NS_1_t0;
 wire NS_1_t1;
 
-and3$ NS_1_and0 (NS_1_t0, S_0_inv, S_1, S_2_inv);
-and3$ NS_1_and1 (NS_1_t1, S_0, S_1_inv, S_2_inv);
+and3$ NS_1_and0 (NS_1_t0, S_0, S_1_inv, S_2_inv);
+and3$ NS_1_and1 (NS_1_t1, S_0_inv, S_1, S_2_inv);
 or2$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1);
 
 // NS_2 = (S_0 & !S_1 & S_2) | (!S_1 & S_2 & !mem_ready_i) | (!S_0 & !S_1 & !S_2 & req_hit_i & bank_hit_i & !others_busy_i)

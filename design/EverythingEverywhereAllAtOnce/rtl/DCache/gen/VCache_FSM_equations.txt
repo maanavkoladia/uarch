@@ -4,7 +4,7 @@
 
 NS_0 = (S_0 & S_1) | (S_1 & !EB_V_i) | (!S_0 & !S_1 & V_Hit_i) | (!S_0 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & DC_will_evict_i & !VC_needs_2_evict_i)
 
-NS_1 = (S_1 & EB_V_i) | (S_0 & S_1) | (!S_0 & !V_Hit_i & DC_will_evict_i & EB_V_i)
+NS_1 = (S_0 & S_1) | (S_1 & EB_V_i) | (!S_0 & !V_Hit_i & DC_will_evict_i & EB_V_i)
 
 LD_EB_o = (!S_0 & S_1 & !EB_V_i) | (!S_0 & !S_1 & !V_Hit_i & DC_will_evict_i & VC_needs_2_evict_i)
 
@@ -14,7 +14,7 @@ Read_DSWAP_o = (S_0 & !S_1)
 
 Write_VSWAP_o = (!S_0 & !S_1 & V_Hit_i)
 
-busy_o = (!S_0 & V_Hit_i) | (S_0 & !S_1) | (!S_0 & S_1) | (!S_0 & DC_will_evict_i & VC_needs_2_evict_i) | (!S_0 & DC_will_evict_i & !EB_V_i)
+busy_o = (!S_0 & S_1) | (S_0 & !S_1) | (!S_1 & V_Hit_i) | (!S_1 & DC_will_evict_i & !EB_V_i) | (!S_1 & DC_will_evict_i & VC_needs_2_evict_i)
 
 blocked_o = (!S_0 & S_1 & EB_V_i) | (!S_0 & !V_Hit_i & DC_will_evict_i & VC_needs_2_evict_i & EB_V_i)
 
