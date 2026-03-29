@@ -19,7 +19,7 @@ CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/TLB/TLB.sv \
 				 $(CORE_PATH_INTERNAL)/SegmentTranslation/SegmentTranslation.sv \
 				 $(FETCH_SRC_FILES) \
-				 $(CORE_PATH_INTERNAL)/Decode/Decode.sv \
+				 $(DECODE_SRC_FILES) \
 				 $(RR_SRC_FILES) \
 				 $(DC_SRC_FILES) \
 				 $(MEM_STAGE_SRC_FILES) \

@@ -2,7 +2,7 @@ module selection_logic (
     input [63:0][7:0] queue,
     input [31:0] EIP,
     input [3:0] queue_valid,
-    output [15:0][7:0] IRbyte,
+    output [15:0][7:0] IR,
     output [15:0] IR_valid_vect
 );
 
@@ -57,7 +57,7 @@ module selection_logic (
     genvar i;
     generate
         for(i = 0; i < 16; i=i+1) begin : IR_sel_mux
-            mux64_8 sixtyfourmux(.in(queue), .sel(temp[i]), .out(IRbyte[i]));
+            mux64_8 sixtyfourmux(.in(queue), .sel(temp[i]), .out(IR[i]));
         end
     endgenerate
 

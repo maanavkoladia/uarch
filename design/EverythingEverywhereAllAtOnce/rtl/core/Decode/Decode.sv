@@ -21,6 +21,7 @@
     //the br info because exe needs it for br resolution
     //
     //loigc needed for reading from the idm slots, ie invalid stuff, etc
+import reg_ids_pkg::*;
 
 module Decode (
     input wire clk,
@@ -81,15 +82,37 @@ module Decode (
     bool decode_gp;
     rr_latches_general_t temp_rr_latch;
 
+    logic [63:0][7:0] queue;
+    genvar i;
+    generate
+        for (i = 0; i < 4; i++) begin
+            assign queue[i*16 +: 16] = '{
+                idm_outs_i.idm_slots[i].data[15], idm_outs_i.idm_slots[i].data[14], idm_outs_i.idm_slots[i].data[13], idm_outs_i.idm_slots[i].data[12],
+                idm_outs_i.idm_slots[i].data[11], idm_outs_i.idm_slots[i].data[10], idm_outs_i.idm_slots[i].data[9], idm_outs_i.idm_slots[i].data[8],
+                idm_outs_i.idm_slots[i].data[7], idm_outs_i.idm_slots[i].data[6], idm_outs_i.idm_slots[i].data[5], idm_outs_i.idm_slots[i].data[4],
+                idm_outs_i.idm_slots[i].data[3], idm_outs_i.idm_slots[i].data[2], idm_outs_i.idm_slots[i].data[1], idm_outs_i.idm_slots[i].data[0]
+            };
+        end
+    endgenerate
+
     predecode inst_processing(
-        .clk(clk), .rst(rst),
-        .queue({idm_outs_i.idm_slots[0].data, idm_outs_i.idm_slots[1].data,
-                idm_outs_i.idm_slots[2].data, idm_outs_i.idm_slots[3].data}),
-        .queue_valid({idm_outs_i.idm[0].valid, idm_outs_i.idm_slots[1].valid,
-                idm_outs_i.idm_slots[2].valid, idm_outs_i.idm_slots[3].valid}),
-        .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_size(sib_size), .sib_byte(sib_byte),
-        .opcode_byte(opcode_byte), .modrm_byte(modrm_byte),
-        .disp(displacement), .disp_size(disp_size), .imm64(imm64), .total_pf_vector(total_pf_vector),
+        .clk(clk),
+        .rst(rst),
+        .queue(queue),
+        .queue_valid({idm_outs_i.idm_slots[0].valid, idm_outs_i.idm_slots[1].valid,
+                    idm_outs_i.idm_slots[2].valid, idm_outs_i.idm_slots[3].valid}),
+        .EIP(EIP),
+        .NEIP(NEIP),
+        .inst_length(inst_length),
+        .sib_byte(sib_byte),
+        .sib_size(sib_size),
+        .opcode_byte(opcode_byte),
+        .modrm_byte(modrm_byte),
+        .disp(displacement),
+        .disp_size(disp_size),
+        .disp_needed(disp_needed), // Add this missing port
+        .imm64(imm64),
+        .total_pf_vector(total_pf_vector),
         .invalid_inst(invalid_inst)
     );
 
@@ -113,15 +136,15 @@ module Decode (
                             idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP);
     l_address_t predicted_target;
     assign predicted_target = predicted_taken ? idm_outs_i.idm_slots[EIP[5:4]].br_btb_target : 32'b0;
-    br_info_processing(.cs_branch(cs_branch), .eip(EIP), .br_length(inst_length),
-                    .pred_taken(predicted_taken), .pred_target(idm_out), .branch_output(br_info_for_latches));
+    br_info_processing br_info_gen(.cs_branch(cs_branch), .eip(EIP), .br_length(inst_length),
+                    .pred_taken(predicted_taken), .pred_target(predicted_target), .branch_output(br_info_for_latches));
 
     reg_ids_e sibbase, sibidx;
     uint8_t sibscale;
-    sib_processor sib_processing(.sib_byte(sib_byte), .sib_idx_id(sibidx), ,.sib_base_id(sibbase), .sib_scale(sibscale));
+    sib_processor sib_processing(.sib_byte(sib_byte), .sib_idx_id(sibidx), .sib_base_id(sibbase), .sib_scale(sibscale));
 
     reg_ids_e modrmid, regid;
-    modrm_processor(.modrm_byte(modrm_byte), .datasize(temp_rr_cs.datasize), .mod_rm_id(modrmid), .reg_id(regid));
+    modrm_processor modrm_gen_logic(.modrm_byte(modrm_byte), .datasize(temp_rr_cs.datasize), .mod_rm_id(modrmid), .reg_id(regid));
 
     assign outs_o = '{
         valid : !invalid_inst,
@@ -133,13 +156,13 @@ module Decode (
 
     reg_ids_e segment0;
     always_comb begin
-        if(total_pf_vector[9]) segment0 = reg_ids_e.CS; //2e
-        else if (total_pf_vector[8]) segment0 = reg_ids_e.SS;   //36
-        else if (total_pf_vector[7]) segment0 = reg_ids_e.DS;   //3e
-        else if (total_pf_vector[6]) segment0 = reg_ids_e.ES;   //26
-        else if (total_pf_vector[5]) segment0 = reg_ids_e.FS;   //64
-        else if (total_pf_vector[4]) segment0 = reg_ids_e.GS;   //65
-        else segment0 = reg_ids_e.DS;
+        if(total_pf_vector[9]) segment0 = CS; //2e
+        else if (total_pf_vector[8]) segment0 = SS;   //36
+        else if (total_pf_vector[7]) segment0 = DS;   //3e
+        else if (total_pf_vector[6]) segment0 = ES;   //26
+        else if (total_pf_vector[5]) segment0 = FS;   //64
+        else if (total_pf_vector[4]) segment0 = GS;   //65
+        else segment0 = DS;
     end
 
     assign temp_rr_latch = '{
@@ -162,7 +185,7 @@ module Decode (
         displacement    : displacement,
         seg_1_valid     : 1'b0,
         seg_0_id        : segment0,
-        seg_1_id        : reg_ids_e.DS
+        seg_1_id        : DS
     };
 
     assign rr_latches_next = '{
@@ -170,11 +193,6 @@ module Decode (
         rep_latches : temp_rr_latch,
         useRep  : 1'b0
     };
-
-
-    initial begin
-        EIP <= 32'b0;
-    end
 
     always_ff @(posedge clk) begin
         if(!rst) begin

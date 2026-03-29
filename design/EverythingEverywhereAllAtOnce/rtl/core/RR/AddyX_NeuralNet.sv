@@ -2,7 +2,7 @@ import RegisterRead_pkg::*;
 import DCache_common_pkg::*;
 
 module AddyX_NeuralNet (
-    input logic[1:0] data_size,
+    input logic[2:0] data_size,
     input l_address_t addy0,
     input bool mem_op,
     input uint32_t seg_data,
@@ -57,18 +57,18 @@ module AddyX_NeuralNet (
     assign outputs.gp0_exception = tlb0_out.gp_exp || gp0_exp_temp_seg;
     assign outputs.gp1_exception = tlb1_out.gp_exp || gp1_exp_temp_seg;
 
-    SegmentTranslation segx0 (.l_addr_i(addy0), .dataSize_i(2'b00), .segValue(seg_data),
+    SegmentTranslation segx0 (.l_addr_i(addy0), .segValue(seg_data),
         .segLimit(seg_limit), .v_addr_o(vaddy0), .gp_fault_o(gp0_exp_temp_seg));
 
     TLB tlb0 (.inputs(tlb0_in), .outputs(tlb0_out));
 
-    SegmentTranslation segx1 (.l_addr_i(addy1), .dataSize_i(2'b00), .segValue(seg_data),
+    SegmentTranslation segx1 (.l_addr_i(addy1), .segValue(seg_data),
         .segLimit(seg_limit), .v_addr_o(vaddy1), .gp_fault_o(gp1_exp_temp_seg));
 
     TLB RRtlb0 (.inputs(tlb1_in), .outputs(tlb1_out));
 
     always_comb begin
-        unique case(data_size)
+        unique case(data_size[1:0])
             //want to find the last byte of the data being pulled, if 16b access, must add 1 to address
             //if 32b access, must add 3 to address to find address of last byte since byte addressable mem
             2'b00: addy1 = addy0;

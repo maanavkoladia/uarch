@@ -113,6 +113,7 @@ module CoreTop (
     Decode decode_unit (
         .clk(clk),
         .rst(rst),
+        .cs_limit(32'b1),   //need to wire in actual limit register
         .idm_outs_i(idm_outputs),
         .fetch_outs_i(fetch_outputs),
         .rr_outs_i(rr_outputs),

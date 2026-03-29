@@ -17,7 +17,7 @@ module modrm_size (
         .input_3_i(mod_byte[3]),
         .input_2_i(mod_byte[2]),
         .input_1_i(mod_byte[1]),
-        .input_0_i(mod_byte[0]),
+        .input_0_i(mod_byte[0])
     );
 
 endmodule

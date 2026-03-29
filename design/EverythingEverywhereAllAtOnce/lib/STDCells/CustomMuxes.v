@@ -82,7 +82,7 @@ module mux4_64 (
     input sel0, sel1,
     output [63:0] out
 );
-    mux4_64 first32 (.in0(in0[31:0]), .in1(in1[31:0]), .in2(in2[31:0]), .in3(in3[31:0]), .sel0(sel0), .sel1(sel1), .out(out[31:0]));
-    mux4_64 last32 (.in0(in0[63:32]), .in1(in1[63:32]), .in2(in2[63:32]), .in3(in3[63:32]), .sel0(sel0), .sel1(sel1), .out(out[63:32]));
+    mux4_32 first32 (.in0(in0[31:0]), .in1(in1[31:0]), .in2(in2[31:0]), .in3(in3[31:0]), .sel0(sel0), .sel1(sel1), .out(out[31:0]));
+    mux4_32 last32 (.in0(in0[63:32]), .in1(in1[63:32]), .in2(in2[63:32]), .in3(in3[63:32]), .sel0(sel0), .sel1(sel1), .out(out[63:32]));
 
 endmodule

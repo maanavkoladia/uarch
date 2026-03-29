@@ -9,7 +9,7 @@ UARCH_GATES_LIB = \
 #$(ROOT)/lib/Gates/time.v \
 
 STD_CELL_LIB_GEN =	\
-					$(ROOT)/lib/STDCells/gen/three_input_adder.sv
+					$(ROOT)/lib/STDCells/gen/three_input_adder.sv \
 
 COMMON_GATES_LIB = \
 				   $(ROOT)/lib/Common/LOG.v \

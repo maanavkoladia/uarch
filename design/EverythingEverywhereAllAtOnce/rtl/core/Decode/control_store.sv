@@ -10,7 +10,7 @@ module control_store (
     output exe_cs_t exe_cs,
     output wb_cs_t wb_cs
 );
-    uint64_t cs_out[2];
+    wire [63:0] cs_out[2];
     logic [9:0] rom_index = {(total_pf_vector[0] || total_pf_vector[1]), opcode, total_pf_vector[3]};
 
     genvar i;

@@ -6,7 +6,7 @@ module ppu (
     input [2:0] num_pfs_plusone,
     output [3:0] inst_length,
     output [2:0] msd_size,
-    output [3:0] imm_size,
+    output [2:0] imm_size,
     output disp_size,
     output disp_needed,
     output sib_size,
@@ -19,13 +19,12 @@ module ppu (
 
     wire [2:0] imm_size_fake, msd_size_fake;
 
+    wire [3:0] sib_index, imm_index;
     assign sib_index = modrm_index + 1;
     assign imm_index = modrm_index + msd_size;
 
     wire [4:0] extended_instru_len;
     assign inst_length = extended_instru_len[3:0];  //need this cause addition result must be able to be 5 bits but really inst lenght cant be mroe than 15
-
-    wire disp_needed;
 
     wire op_valid, mod_valid, sib_valid;
     wire [3:0] disp_valid;
@@ -46,7 +45,7 @@ module ppu (
 
     //8 bit output mut default to valid if not needed for easier bitwise OR
     sib_finder sibfinder0 (.modrm_index(modrm_index), .IR(IR), .sib_byte(sib_byte));
-    assign sib_valid = sib_needed ? IR_valid_vect[modrm_index + 1'b1] : 1'b1;
+    assign sib_valid = sib_size ? IR_valid_vect[modrm_index + 1'b1] : 1'b1;
 
     //32 bit output
     disp_finder dispfinder0(.sib_index(sib_index), .sib_size(sib_size), .IR(IR), .disp(disp));

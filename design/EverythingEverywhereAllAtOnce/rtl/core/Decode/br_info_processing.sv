@@ -14,6 +14,6 @@ module br_info_processing (
         br_eip : eip,
         br_xcl : (eip[8:4] == branch_end[8:4]) ? 1'b0 : 1'b1,
         br_pred_taken : pred_taken,
-        sepculative_target : pred_target
+        speculative_target : pred_target
     };
 endmodule

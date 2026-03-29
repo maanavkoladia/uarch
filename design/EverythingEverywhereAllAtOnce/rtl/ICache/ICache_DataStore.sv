@@ -51,7 +51,9 @@ module ICache_DataStore (
     logic WR_2_DataStore_Delay[LAYERS_OF_CELLS][NUM_CELLS];
     logic WR_2_DataStore_actual[LAYERS_OF_CELLS][NUM_CELLS];
 
-    assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} :  WR_2_DataStore_clk;
+    //assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} :  WR_2_DataStore_clk;
+    assign WR_2_DataStore_Delay = !rst ? '{default: '1} :  WR_2_DataStore_clk;
+    //VCS yelled at me so I am removing the delay - harish
 
 
     always_comb begin

@@ -16,7 +16,7 @@ package core_stage_latches_pkg;
  
         //specualtive info on branch 
         bool br_pred_taken;  //if fetch said taken, then high, else low
-        l_address_t specualtive_target;  //needed bc target can change if in mem or reg, this is NOT the same as the actual target in EXE res
+        l_address_t speculative_target;  //needed bc target can change if in mem or reg, this is NOT the same as the actual target in EXE res
         //rn assuming if br_pred_not taken speculative_target is filled with garbage
     } br_info_t;
 
