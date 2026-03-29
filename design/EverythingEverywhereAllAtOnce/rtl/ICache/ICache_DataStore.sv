@@ -47,23 +47,46 @@ module ICache_DataStore (
     //reading from swap buf,
     //or from bus, in which case the
     //address comes from p_addr
-    logic WR_2_DataStore[LAYERS_OF_CELLS][NUM_CELLS];
+    logic WR_2_DataStore_clk[LAYERS_OF_CELLS][NUM_CELLS];
+    logic WR_2_DataStore_Delay[LAYERS_OF_CELLS][NUM_CELLS];
+    logic WR_2_DataStore_actual[LAYERS_OF_CELLS][NUM_CELLS];
+
+    assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} :  WR_2_DataStore_clk;
+
 
     always_comb begin
-        WR_2_DataStore = '{default: '1};  //active low
-        for (int j = 0; j < LAYERS_OF_CELLS; j++) begin
-            if (dataLineOutSel == j) begin
-                unique case ({
-                    ld_From_I_VC_Swap, fill0_i, fill1_i, fill2_i, fill3_i
-                })
-                    5'b10000: WR_2_DataStore[dataLineOutSel] = '{default: '0};
-                    5'b01000: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i] = 0;
-                    5'b00100: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+4] = 0;
-                    5'b00010: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+8] = 0;
-                    5'b00001: for (int i = 0; i < 4; i++) WR_2_DataStore[dataLineOutSel][i+12] = 0;
-                    5'b00000: WR_2_DataStore[dataLineOutSel] = '{default: '1};
-                    //default:   //if (rst) $fatal;
-                endcase
+        if(!rst)begin
+            WR_2_DataStore_actual = '{default : '1};
+        end
+        else begin
+            for(int i = 0; i < LAYERS_OF_CELLS; i++)begin
+                for(int j = 0 ; j < NUM_CELLS; j++)begin
+                    WR_2_DataStore_actual[i][j] = (WR_2_DataStore_Delay[i][j] == 0) && (WR_2_DataStore_clk[i][j] == 0) ? 0 : 1;
+                end
+            end
+        end
+    end
+
+    always_comb begin
+        if(!rst)begin
+            WR_2_DataStore_clk = '{default: '1};  //active low
+        end
+        else begin
+            WR_2_DataStore_clk = '{default: '1};  //active low
+            for (int j = 0; j < LAYERS_OF_CELLS; j++) begin
+                if (dataLineOutSel == j) begin
+                    unique case ({
+                        ld_From_I_VC_Swap, fill0_i, fill1_i, fill2_i, fill3_i
+                    })
+                        5'b10000: WR_2_DataStore_clk[dataLineOutSel] = '{default: '0};
+                        5'b01000: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i] =  0;
+                        5'b00100: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+4] =  0;
+                        5'b00010: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+8] =  0;
+                        5'b00001: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+12] = 0;
+                        5'b00000: WR_2_DataStore_clk[dataLineOutSel] = '{default: '1};
+                        //default:   //if (rst) $fatal;
+                    endcase
+                end
             end
         end
     end
@@ -93,7 +116,7 @@ module ICache_DataStore (
             for (genvar j = 0; j < NUM_CELLS; j++) begin : g_memCells
                 ram8b8w$ dataStore_memCell (
                     .A(ADDRESS_2_DataStore),
-                    .WR(WR_2_DataStore[i][j]),
+                    .WR(WR_2_DataStore_actual[i][j]),
                     .DIN(DIN_2_DataStore[j]),
                     .OE(OE_2_DataStore),
                     .DOUT(DOUT_2_DataStore[i][j])

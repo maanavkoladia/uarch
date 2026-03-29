@@ -43,9 +43,21 @@ module ICache_TagStore (
     //reading from swap buf,
     //or from bus, in which case the
     //address comes from p_addr
-    logic WR_2_TagStore[NUM_CELLS];
-    assign WR_2_TagStore[0] = !tagCellOutSel && (fill3_i || ld_From_I_VC_Swap) && en ? 0 : 1;
-    assign WR_2_TagStore[1] = tagCellOutSel && (fill3_i || ld_From_I_VC_Swap) && en ? 0 : 1;
+    logic WR_2_TagStore_clk[NUM_CELLS];
+    logic WR_2_TagStore_Delay[NUM_CELLS];
+    logic WR_2_TagStore_actual[NUM_CELLS];
+
+
+    assign WR_2_TagStore_clk[0] = !rst ? 1 : (!tagCellOutSel && (fill3_i || ld_From_I_VC_Swap) && en ? 0 : 1);
+    assign WR_2_TagStore_clk[1] = !rst ? 1 : (tagCellOutSel && (fill3_i || ld_From_I_VC_Swap) && en ? 0 : 1);
+
+    assign #2 WR_2_TagStore_Delay[0] = !rst ? 1 : WR_2_TagStore_clk[0];
+    assign #2 WR_2_TagStore_Delay[1] = !rst ? 1 : WR_2_TagStore_clk[1];
+
+    assign WR_2_TagStore_actual[0] = (WR_2_TagStore_Delay[0] == 0) && (WR_2_TagStore_clk[0] == 0) ? 0 : 1;
+    assign WR_2_TagStore_actual[1] = (WR_2_TagStore_Delay[1] == 0) && (WR_2_TagStore_clk[1] == 0) ? 0 : 1;
+
+
 
     // Tag input: always use physical address tag (VIPT)
     // Swap buffer only provides data, not the tag - tag comes from current p_addr_i
@@ -65,7 +77,7 @@ module ICache_TagStore (
 
     ram8b8w$ tag_store_ramCell_Lower (
         .A(ADDRESS_2_TagStore),
-        .WR(WR_2_TagStore[0]),
+        .WR(WR_2_TagStore_actual[0]),
         .DIN({1'b0, DIN_2_TagStore}),
         .OE(OE_2_TagStore),
         .DOUT(DOUT_2_TagStore_extended[0])
@@ -73,7 +85,7 @@ module ICache_TagStore (
 
     ram8b8w$ tag_store_ramCell_Upper (
         .A(ADDRESS_2_TagStore),
-        .WR(WR_2_TagStore[1]),
+        .WR(WR_2_TagStore_actual[1]),
         .DIN({1'b0, DIN_2_TagStore}),
         .OE(OE_2_TagStore),
         .DOUT(DOUT_2_TagStore_extended[1])
