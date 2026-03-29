@@ -57,8 +57,26 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     // ----------------------------------------------------------------
     // Per-FSM busy outputs  (one signal per FSM/instance)
     // ----------------------------------------------------------------
+    //there should not be any "mealy" combo loops here 
+    //bc we dont assert the busy signal until the fsm is 
+    //actaully busy, similar to dcache and icache busy business
+    //ie no ahead
+    bool DTE_Busy;
+    assign  DTE_Busy = 
+        mem_2_icache_fsmout_busy  ||
+        mem_2_dcache_fsmout_busy  ||
+        dcache_2_mem_fsmout_busy  ||
+        ddr5_2_core_fsmout_busy   ||
+        core_2_ddr5_fsmout_busy   ||
+        core_2_dma_fsmout_busy    ||
+        dma_2_mem_fsmout_busy;
 
+    bool ddr5_2_core_fsmout_busy;
+    bool core_2_ddr5_fsmout_busy;
+    bool core_2_dma_fsmout_busy;
+    bool dma_2_mem_fsmout_busy;
     bool mem_2_icache_fsmout_busy;
+
 
     // FIX 7: one busy wire per bank instance, OR-reduced to a single flag
     bool mem_2_dcache_fsmout_busy_per[NUM_DCACHE_PORTS];
@@ -76,20 +94,6 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         for (int i = 0; i < NUM_DCACHE_PORTS; i++)
         dcache_2_mem_fsmout_busy |= dcache_2_mem_fsmout_busy_per[i];
     end
-
-    bool ddr5_2_core_fsmout_busy;
-    bool core_2_ddr5_fsmout_busy;
-    bool core_2_dma_fsmout_busy;
-    bool dma_2_mem_fsmout_busy;
-
-    bool DTE_Busy;
-    assign  DTE_Busy = mem_2_icache_fsmout_busy  ||
-        mem_2_dcache_fsmout_busy  ||
-        dcache_2_mem_fsmout_busy  ||
-        ddr5_2_core_fsmout_busy   ||
-        core_2_ddr5_fsmout_busy   ||
-        core_2_dma_fsmout_busy    ||
-        dma_2_mem_fsmout_busy;
 
     // ----------------------------------------------------------------
     // FIX 1 & 3 – ld_req / permission2DriveBus: collect per-FSM outputs,
@@ -161,10 +165,10 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     // FIX 6 – driveDataBus (DDR5): driven by ddr5_2_core AND core_2_dma
     // ----------------------------------------------------------------
 
-    bool ddr5_2_core_drvDB_fsmOut;
+    bool core_2_ddr5_drvDB_fsmOut;
     bool core_2_dma_drvDB_fsmOut;
-
-    assign dte_2_ddr5_o.driveDataBus = ddr5_2_core_drvDB_fsmOut | core_2_dma_drvDB_fsmOut;
+    assign dte_out_2_dcache_o.permission2DriveDataBus_mio = core_2_ddr5_drvDB_fsmOut | core_2_dma_drvDB_fsmOut;
+    //assign dte_2_ddr5_o.driveDataBus = ddr5_2_core_drvDB_fsmOut | core_2_dma_drvDB_fsmOut;
 
     // ================================================================
     // FSM instantiations
@@ -193,7 +197,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         .ld_req_o        (mem_2_icache_ld_req_fsmOut),
         // FIX 8: icache drives addr bus
         .Drive_Addr_Bus_o(dte_out_2_icache_o.driveAddrBus),
-        // FIX 3: route to intermediate wires, OR-reduced above
+        // FIX 3: route to intermediate wires, OR-reduced above, mem drives
+        // data to the icache in this case
         .Drv_DB_0_o      (mem_2_icache_drv_db_fsmOut[0]),
         .Drv_DB_1_o      (mem_2_icache_drv_db_fsmOut[1]),
         .Drv_DB_2_o      (mem_2_icache_drv_db_fsmOut[2]),
@@ -281,7 +286,8 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
                 .Drv_DB_0_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][0]),
                 .Drv_DB_1_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][1]),
                 .Drv_DB_2_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][2]),
-                .Drv_DB_3_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][3])
+                .Drv_DB_3_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][3]),
+                .eb_V_clr(dte_out_2_dcache_o.evictionBuf_V_clr[i])
             );
 
         end
@@ -307,7 +313,7 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         // FIX 5: intermediate wire, OR-reduced above
         .Drive_Addr_Bus_o(ddr5_2_core_driveAddrBus_fsmOut),
         // FIX 6: intermediate wire, OR-reduced above
-        .Drv_DB_o        (ddr5_2_core_drvDB_fsmOut)
+        .Drv_DB_o        (dte_2_ddr5_o.driveDataBus)
     );
 
     // ----------------------------------------------------------------
@@ -324,12 +330,13 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         .others_busy_i              (DTE_Busy),
         .S_0                        (dte_core_2_ddr5_fsm_state_bits[0]),
         .S_1                        (dte_core_2_ddr5_fsm_state_bits[1]),
+
         .busy_o                     (core_2_ddr5_fsmout_busy),
         // FIX 4: intermediate wire, OR-reduced above
         .reqServed_o                (core_2_ddr5_reqServed_fsmOut),
         // FIX 5: intermediate wire, OR-reduced above
         .Drive_Addr_Bus_o           (core_2_ddr5_driveAddrBus_fsmOut),
-        .Drv_DB_o                   (dte_out_2_dcache_o.permission2DriveDataBus_mio),
+        .Drv_DB_o                   (core_2_ddr5_drvDB_fsmOut),
         .newPowerGateValueFromCore_o(dte_2_ddr5_o.newPowerGateValueFromCore)
     );
 
@@ -345,8 +352,10 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         .rst             (rst),
         .req_hit_i       (core_2_dma_req_hit),
         .others_busy_i   (DTE_Busy),
+
         .S_0             (dte_core_2_dma_fsm_state_bits[0]),
         .S_1             (dte_core_2_dma_fsm_state_bits[1]),
+
         .busy_o          (core_2_dma_fsmout_busy),
         // FIX 4: intermediate wire, OR-reduced above
         .reqServed_o     (core_2_dma_reqServed_fsmOut),
@@ -369,10 +378,13 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         .rst             (rst),
         .req_hit_i       (dma_2_mem_req_hit),
         .others_busy_i   (DTE_Busy),
+
         .S_0             (dte_dma_2_mem_fsm_state_bits[0]),
         .S_1             (dte_dma_2_mem_fsm_state_bits[1]),
         .S_2             (dte_dma_2_mem_fsm_state_bits[2]),
+
         .busy_o          (dma_2_mem_fsmout_busy),
+
         // FIX 2: intermediate wire, OR-reduced above
         .st_req_o        (dma_2_mem_st_req_fsmOut),
         .WriteComplete_o (dte_2_dma_o.writeComplete),
