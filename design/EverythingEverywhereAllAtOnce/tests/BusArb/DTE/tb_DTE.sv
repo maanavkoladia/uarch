@@ -1,7 +1,7 @@
 import interconnect_pkg::*;
 import common_pkg::*;
 
-module tb_memSystem ();
+module tb_DTE ();
     localparam int Clk_PERIOD = 10;
 
     initial begin
@@ -11,34 +11,27 @@ module tb_memSystem ();
 
     // ================= CLOCK / RESET =================
     `CLK_INIT(Clk_PERIOD);
-    logic                                                       rst;
+    logic                                                      rst;
 
     // ================= ICACHE =================
-    dte_2_icache_t                                              dte_2_icache;
-
-    core_2_icache_t                                             core_2_icache;
-    icache_2_core_t                                             icache_2_core;
+    dte_2_icache_t                                             dte_2_icache;
 
     // ================= DCACHE =================
-    dte_2_dcache_t                                              dte_2_dcache;
-
-    core_2_dcache_t                                             core_2_dcache;
-    dcache_2_core_t                                             dcache_2_core;
+    dte_2_dcache_t                                             dte_2_dcache;
 
     // ================= MEMORY =================
-    mem_2_dte_t                                                 mem_2_dte;
-    dte_2_mem_t                                                 dte_2_mem;
+    mem_2_dte_t                                                mem_2_dte;
+    dte_2_mem_t                                                dte_2_mem;
 
     // ================= DMA =================
-    dte_2_dma_controller_t                                      dte_2_dma;
-    dma_controller_2_core_t                                     dma_2_core;
+    dte_2_dma_controller_t                                     dte_2_dma;
 
     // ================= DDR5 =================
-    dte_2_ddr5_t                                                dte_2_ddr5;
+    dte_2_ddr5_t                                               dte_2_ddr5;
 
     //sch pick signals
-    req_2_sch_t                                                 bestPick_req_2_dte;
-    logic                   [$clog2(NNUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_2_dte;
+    req_2_sch_t                                                bestPick_req_2_dte;
+    logic                  [$clog2(NNUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_2_dte;
 
 
     task automatic DelayClks(input int cycles);

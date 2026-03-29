@@ -1,14 +1,14 @@
 include ../../Make.vars
 include ../../Make.build
 
-TARGET = DTE_Test
+TARGET = Scheduler_Test
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_FILE_NAME = tb_DTE
+TOP_FILE_NAME = tb_Scheduler 
 
 TB_FILES = \
-		   tb_DTE.sv \
+		   tb_Scheduler.sv \
 
 PKGS = $(RTL_PKGS)
 
