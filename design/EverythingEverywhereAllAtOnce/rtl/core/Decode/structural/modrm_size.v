@@ -1,6 +1,9 @@
 module modrm_size (
     input [7:0] mod_byte,
-    output [2:0] msd_size
+    output [2:0] msd_size,
+    output sib_needed,
+    output disp_needed,
+    output disp_size
 );
 
     MOD_LUT modlut(
@@ -14,7 +17,7 @@ module modrm_size (
         .input_3_i(mod_byte[3]),
         .input_2_i(mod_byte[2]),
         .input_1_i(mod_byte[1]),
-        .input_0_i(mod_byte[0])
+        .input_0_i(mod_byte[0]),
     );
-    
+
 endmodule

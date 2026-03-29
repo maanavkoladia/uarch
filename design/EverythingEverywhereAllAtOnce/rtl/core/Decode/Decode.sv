@@ -1,6 +1,32 @@
+    //prefix stuff(ppu s), 
+    //invalid instruciton logic (i think we dciessed that this needs a bit to redcue critaoth back into exp logic in fetch),
+    //modrm LUT, 
+    //opcode LUT (CS stuff)
+    //instuciton len adding
+    //sib logic
+    //displacment logic
+    //immedatite logic
+    //segment id gen ()
+    //all regs use internal reg_Id_t in the core pkgs
+    //
+    //rep controller (takes ecx, set/clr zf_sb, zf flag, ecx sb, CS_signal for
+    //rep(sthild not be apassed forward is internal to decode)
+    //
+    //needs to send a gp to rr (eip, preveip, prev instruciton len logic to
+    //gen a gp and send it forward to rr to tell it that its corrent
+    //isntrucitoni s invlaid and it needs to throw a gp, ie gp not thrown here,
+    //it is intdicated to rr that it needs to throw one)
+    //
+    //br logic so taken info comes from idm not taken still needs to populate
+    //the br info because exe needs it for br resolution
+    //
+    //loigc needed for reading from the idm slots, ie invalid stuff, etc
+
 module Decode (
     input wire clk,
     input wire rst,
+
+    input uint32_t cs_limit,
 
     //for decoding instructions coming in from fetch
     input idm_outputs_t idm_outs_i,
@@ -30,29 +56,148 @@ module Decode (
     output decode_outputs_t outs_o
 
 );
-
-    //prefix stuff(ppu s), 
-    //invalid instruciton logic (i think we dciessed that this needs a bit to redcue critaoth back into exp logic in fetch),
-    //modrm LUT, 
-    //opcode LUT (CS stuff)
-    //instuciton len adding
-    //sib logic
-    //displacment logic
-    //immedatite logic
-    //segment id gen ()
-    //all regs use internal reg_Id_t in the core pkgs
-    //
     //rep controller (takes ecx, set/clr zf_sb, zf flag, ecx sb, CS_signal for
     //rep(sthild not be apassed forward is internal to decode)
-    //
-    //needs to send a gp to rr (eip, preveip, prev instruciton len logic to
-    //gen a gp and send it forward to rr to tell it that its corrent
-    //isntrucitoni s invlaid and it needs to throw a gp, ie gp not thrown here,
-    //it is intdicated to rr that it needs to throw one)
-    //
-    //br logic so taken info comes from idm not taken still needs to populate
-    //the br info because exe needs it for br resolution
-    //
-    //loigc needed for reading from the idm slots, ie invalid stuff, etc
+
+
+    uint32_t PrevEIP;
+    uint32_t EIP;
+    uint32_t NEIP;
+    logic [3:0] inst_length;
+    logic [3:0] PrevLength;
+    uint8_t sib_byte;
+    bool sib_size;
+    uint32_t displacement;
+    bool disp_size;
+    uint64_t imm64;
+    logic [9:0] total_pf_vector;
+    bool invalid_inst;
+    uint8_t opcode_byte, modrm_byte;
+    rr_cs_t temp_rr_cs;
+    dc_cs_t temp_dc_cs;
+    mem_cs_t temp_mem_cs;
+    exe_cs_t temp_exe_cs;
+    wb_cs_t temp_wb_cs;
+    bool decode_gp;
+    rr_latches_general_t temp_rr_latch;
+
+    predecode inst_processing(
+        .clk(clk), .rst(rst),
+        .queue({idm_outs_i.idm_slots[0].data, idm_outs_i.idm_slots[1].data,
+                idm_outs_i.idm_slots[2].data, idm_outs_i.idm_slots[3].data}),
+        .queue_valid({idm_outs_i.idm[0].valid, idm_outs_i.idm_slots[1].valid,
+                idm_outs_i.idm_slots[2].valid, idm_outs_i.idm_slots[3].valid}),
+        .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_size(sib_size), .sib_byte(sib_byte),
+        .opcode_byte(opcode_byte), .modrm_byte(modrm_byte),
+        .disp(displacement), .disp_size(disp_size), .imm64(imm64), .total_pf_vector(total_pf_vector),
+        .invalid_inst(invalid_inst)
+    );
+
+    bool cs_rep, cs_branch;
+    control_store cs(
+        .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .rep(cs_rep), .branch(cs_branch),
+        .rr_cs(temp_rr_cs),
+        .dc_cs(temp_dc_cs),
+        .mem_cs(temp_mem_cs),
+        .exe_cs(temp_exe_cs),
+        .wb_cs(temp_wb_cs)
+    );
+
+    decode_gp_gen gp_gen_decode(.prev_eip(PrevEIP), .prev_length(PrevLength), .segValue(rr_outs_i.codeSeg_data), 
+                    .segLimit(cs_limit), .gp_fault_o(decode_gp));
+
+    br_info_t br_info_for_latches;
+    bool predicted_taken;
+    assign predicted_taken = (idm_outs_i.idm_slots[EIP[5:4]].valid && 
+                            idm_outs_i.idm_slots[EIP[5:4]].br_valid && 
+                            idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP);
+    l_address_t predicted_target;
+    assign predicted_target = predicted_taken ? idm_outs_i.idm_slots[EIP[5:4]].br_btb_target : 32'b0;
+    br_info_processing(.cs_branch(cs_branch), .eip(EIP), .br_length(inst_length),
+                    .pred_taken(predicted_taken), .pred_target(idm_out), .branch_output(br_info_for_latches));
+
+    reg_ids_e sibbase, sibidx;
+    uint8_t sibscale;
+    sib_processor sib_processing(.sib_byte(sib_byte), .sib_idx_id(sibidx), ,.sib_base_id(sibbase), .sib_scale(sibscale));
+
+    reg_ids_e modrmid, regid;
+    modrm_processor(.modrm_byte(modrm_byte), .datasize(temp_rr_cs.datasize), .mod_rm_id(modrmid), .reg_id(regid));
+
+    assign outs_o = '{
+        valid : !invalid_inst,
+        stall : invalid_inst || rr_outs_i.stall,
+        eip : EIP,
+        invalid_instruction : invalid_inst,
+        decode_gp : decode_gp
+    };
+
+    reg_ids_e segment0;
+    always_comb begin
+        if(total_pf_vector[9]) segment0 = reg_ids_e.CS; //2e
+        else if (total_pf_vector[8]) segment0 = reg_ids_e.SS;   //36
+        else if (total_pf_vector[7]) segment0 = reg_ids_e.DS;   //3e
+        else if (total_pf_vector[6]) segment0 = reg_ids_e.ES;   //26
+        else if (total_pf_vector[5]) segment0 = reg_ids_e.FS;   //64
+        else if (total_pf_vector[4]) segment0 = reg_ids_e.GS;   //65
+        else segment0 = reg_ids_e.DS;
+    end
+
+    assign temp_rr_latch = '{
+        valid           : !invalid_inst,
+        cs              : temp_rr_cs,
+        dc_cs           : temp_dc_cs,
+        mem_cs          : temp_mem_cs,
+        exe_cs          : temp_exe_cs,
+        wb_cs           : temp_wb_cs,
+        br_info         : br_info_for_latches,
+        NEIP            : NEIP,
+        EIP             : EIP,
+        imm64           : imm64,
+        mod_rm_id       : modrmid,
+        reg_id          : regid,
+        sib_idx_id      : sibidx,
+        sib_base_id     : sibbase,
+        sib_scale       : sibscale,
+        disp_size       : disp_size,
+        displacement    : displacement,
+        seg_1_valid     : 1'b0,
+        seg_0_id        : segment0,
+        seg_1_id        : reg_ids_e.DS
+    };
+
+    assign rr_latches_next = '{
+        normal_latches : temp_rr_latch,
+        rep_latches : temp_rr_latch,
+        useRep  : 1'b0
+    };
+
+
+    initial begin
+        EIP <= 32'b0;
+    end
+
+    always_ff @(posedge clk) begin
+        if(!rst) begin
+            EIP <= 32'b0;
+            PrevEIP <= 32'b0;
+            PrevLength <= inst_length;
+        end
+        else begin
+            PrevEIP <= EIP;
+            PrevLength <= inst_length;
+
+            if(exe_outs_i.br_res_out.valid && exe_outs_i.br_res_out.flush) EIP <= exe_outs_i.br_res_out.br_target;
+            else begin
+                if(idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP && idm_outs_i.idm_slots[EIP[5:4]].valid && idm_outs_i.idm_slots[EIP[5:4]].br_valid) begin
+                    EIP <= idm_outs_i.idm_slots[EIP[5:4]].br_btb_target;
+                end
+                else begin
+                    if(!invalid_inst) EIP <= NEIP;
+                    else EIP <= EIP;
+                end
+            end
+        end
+    end
+
 
 endmodule

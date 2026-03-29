@@ -3,7 +3,7 @@
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/pkg/system_bus_ifs_pkg.sv
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/pkg/types_pkg.sv
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/pkg/mem_common_pkg.sv
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/pkgs/execute_op_types_pkg.sv
+/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/pkgs/contorl_store_pkg.sv
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/pkgs/core_common_pkg.sv
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/pkgs/core_stage_latches_pkg.sv
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/core/pkgs/segment_table_pkg.sv

@@ -70,7 +70,7 @@ package core_stage_latches_pkg;
         bool LD_OP;
         bool ST_OP;
 
-        logic [1:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
+        logic [2:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 
     } rr_cs_t;
 
@@ -90,7 +90,7 @@ package core_stage_latches_pkg;
     typedef struct {
         bool EXE_OP;
         bool ST_OP;
-        logic [1:0] DATA_SIZE; //im assuming this is 8 16 32 64
+        logic [2:0] DATA_SIZE; //im assuming this is 8 16 32 64
         exe_cs_operation_type_e OP_TYPE;
 
         source_selector_e alu_inputA_sel;
@@ -108,8 +108,8 @@ package core_stage_latches_pkg;
     //branch cs
         bool br_ucond;
         bool relative_branch; //1 indicates I add it to NEIP 0 means Its an absolute jmp
-        bool special_br; //for exp and int        
-        bool is_far;  //need to flush 
+        bool special_br; //for exp and int
+        bool is_far;  //need to flush
        //I think for most branches its ZF then CF.
        //I will always assume ZF if second flag is set then ill also use CF
        //hard coded in br_res logic
