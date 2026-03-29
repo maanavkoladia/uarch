@@ -1,5 +1,5 @@
-import interconnect_pkg::*;
 import common_pkg::*;
+import interconnect_pkg::*;
 
 module tb_DTE ();
     localparam int Clk_PERIOD = 10;
@@ -8,6 +8,11 @@ module tb_DTE ();
         $vcdpluson;
         $vcdplusmemon;
     end
+
+    task automatic DelayClks(input int cycles);
+        #(Clk_PERIOD * cycles);
+    endtask
+
 
     // ================= CLOCK / RESET =================
     `CLK_INIT(Clk_PERIOD);
@@ -31,18 +36,14 @@ module tb_DTE ();
 
     //sch pick signals
     req_2_sch_t                                                bestPick_req_2_dte;
-    logic                  [$clog2(NNUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_2_dte;
+    logic                  [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_2_dte;
 
 
-    task automatic DelayClks(input int cycles);
-        #(Clk_PERIOD * cycles);
-    endtask
-
-    DTE uut_DTE (
+    DTE uut0_DTE (
         .clk(clk),
         .rst(rst),
-        .bestPick_i(req_2_dte),
-        .bestPick_bk_id_i(req_hit_bk_id_2_dte),
+        .bestPick_i(bestPick_req_2_dte),
+        .bestPick_bk_id_i(bestPick_bk_id_2_dte),
         .dte_out_2_icache_o(dte_2_icache),
         .dte_out_2_dcache_o(dte_2_dcache),
         .mem_2_dte_i(mem_2_dte),

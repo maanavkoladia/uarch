@@ -29,14 +29,14 @@ module tb_Scheduler ();
 
     //===================sch pick signals
     req_2_sch_t                                                      bestPick_req;
-    logic                        [$clog2(NNUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_i;
+    logic                        [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_i;
 
 
     task automatic DelayClks(input int cycles);
         #(Clk_PERIOD * cycles);
     endtask
 
-    module Scheduler (
+    Scheduler uut0_scheduler (
         .clk(clk),
         .rst(rst),  //active low
         .iCache_2_Sch_i(icache_2_sched),

@@ -61,16 +61,6 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     //bc we dont assert the busy signal until the fsm is 
     //actaully busy, similar to dcache and icache busy business
     //ie no ahead
-    bool DTE_Busy;
-    assign  DTE_Busy = 
-        mem_2_icache_fsmout_busy  ||
-        mem_2_dcache_fsmout_busy  ||
-        dcache_2_mem_fsmout_busy  ||
-        ddr5_2_core_fsmout_busy   ||
-        core_2_ddr5_fsmout_busy   ||
-        core_2_dma_fsmout_busy    ||
-        dma_2_mem_fsmout_busy;
-
     bool ddr5_2_core_fsmout_busy;
     bool core_2_ddr5_fsmout_busy;
     bool core_2_dma_fsmout_busy;
@@ -94,6 +84,16 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         for (int i = 0; i < NUM_DCACHE_PORTS; i++)
         dcache_2_mem_fsmout_busy |= dcache_2_mem_fsmout_busy_per[i];
     end
+
+    bool DTE_Busy;
+    assign  DTE_Busy = 
+        mem_2_icache_fsmout_busy  ||
+        mem_2_dcache_fsmout_busy  ||
+        dcache_2_mem_fsmout_busy  ||
+        ddr5_2_core_fsmout_busy   ||
+        core_2_ddr5_fsmout_busy   ||
+        core_2_dma_fsmout_busy    ||
+        dma_2_mem_fsmout_busy;
 
     // ----------------------------------------------------------------
     // FIX 1 & 3 – ld_req / permission2DriveBus: collect per-FSM outputs,
@@ -287,7 +287,7 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
                 .Drv_DB_1_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][1]),
                 .Drv_DB_2_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][2]),
                 .Drv_DB_3_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][3]),
-                .eb_V_clr(dte_out_2_dcache_o.evictionBuf_V_clr[i])
+                .eb_V_clr_o(dte_out_2_dcache_o.evictionBuf_V_clr[i])
             );
 
         end

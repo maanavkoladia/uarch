@@ -1,5 +1,6 @@
-State_s,req_hit_i,others_busy_i,,NextState_ns,busy_o,reqServed_o,Drive_Addr_Bus_o,Drv_DB_o,coreValOnBus_o
-IDLE,x,1,,IDLE,0,0,0,0,0
-IDLE,0,x,,IDLE,0,0,0,0,0
-IDLE,1,0,,ST_DMA,1,0,1,0,0
-ST_DMA,x,x,,IDLE,1,1,1,1,1
+State_s,req_hit_i,others_busy_i,NextState_ns,busy_o,reqServed_o,Drive_Addr_Bus_o,Drv_DB_o,coreValOnBus_o
+IDLE,x,1,IDLE,0,0,0,0,0
+IDLE,0,x,IDLE,0,0,0,0,0
+IDLE,1,0,ST_DMA,0,0,1,0,0
+ST_DMA,x,x,DELAY,1,1,1,1,1
+DELAY,x,x,IDLE,1,0,0,0,0
