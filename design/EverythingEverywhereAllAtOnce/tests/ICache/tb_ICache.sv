@@ -1,8 +1,9 @@
 import interconnect_pkg::*;
 import common_pkg::*;
+import test_utils_pkg::display_icache_contents;
 
 module tb_ICache ();
-    localparam int Clk_PERIOD = 100;
+    localparam int Clk_PERIOD = 10;
 
     // ================= CLOCK / RESET =================
     `CLK_INIT(Clk_PERIOD);
@@ -66,14 +67,58 @@ module tb_ICache ();
         driveDataBus = 0;
         rst = 0;  //actve low
 
-        DelayClks(5);
+        DelayClks(20);
         rst = 1;  //actve low
-        DelayClks(5);
+        DelayClks(20);
 
-        core_2_icache.numValidIDMSlots = 0;
-        core_2_icache.p_addr = 0;
-        core_2_icache.v_spc_addr_i = 0;
-        //core_2_icache.icache_en = 1;
+ 
+        // core_2_icache.p_addr = 0;
+        // core_2_icache.v_spc_addr_i = 0;
+        @(posedge clk)
+        core_2_icache.num_valid_IDM_slots = 0;
+        core_2_icache.p_addr = 15'h4020;
+        core_2_icache.v_spc_addr_i = 32'h00004020;
+        core_2_icache.icache_en = 1;
+
+        DelayClks(20);
+        @(posedge clk)
+        dte_2_icache.driveAddrBus = 1;
+
+        @(posedge clk)
+        dte_2_icache.Mem_Valid = 1;
+        driveDataBus = 1;
+        dataForBus = 32'h01010101;
+        display_icache_contents();
+
+
+        @(posedge clk)
+        dte_2_icache.Mem_Valid = 1;
+        driveDataBus = 1;
+        dataForBus = 32'h02020202;
+        display_icache_contents();
+
+        @(posedge clk)
+        dte_2_icache.Mem_Valid = 1;
+        driveDataBus = 1;
+        dataForBus = 32'h03030303;
+        display_icache_contents();
+
+
+        @(posedge clk)
+        dte_2_icache.Mem_Valid = 1;
+        driveDataBus = 1;
+        dataForBus = 32'h04040404;
+        display_icache_contents();
+
+        @(posedge clk)
+        driveAddrBus = 0;
+        dte_2_icache.Mem_Valid = 0;
+        driveDataBus = 0;
+        display_icache_contents();
+
+        @(posedge clk)
+        @(posedge clk)
+
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
@@ -83,4 +128,13 @@ module tb_ICache ();
         $finish;
         `LOG("Finishing mem System TB");
     end
+
+
+       // core_2_icache.numValidIDMSlots = 0;
+        // Task to display ICache and Tag Store contents in hex
+        // change this so that it looks like a i cache picture, ie realy easy
+        // for me to look at
+        // so there are 16 lines, split between upper and lower, do lower
+        // first then upper
+        // <index> <tag> <dataline>
 endmodule

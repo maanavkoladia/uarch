@@ -37,14 +37,16 @@ module VCache_TagStore (
 
     tag_store_meta_data_t tagMetaStore[VCACHE_NUM_LINES];
 
-    p_addr_vcache_fields_t p_addr_fields = '{
+    p_addr_vcache_fields_t p_addr_fields;
+    assign p_addr_fields = '{
         tag    : p_addr_i[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
         index  : p_addr_i[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
         bank   : p_addr_i[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
         offset : p_addr_i[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
     };
 
-    p_addr_vcache_fields_t DCache_SwapBuf_lineAddr_fields = '{
+    p_addr_vcache_fields_t DCache_SwapBuf_lineAddr_fields;
+    assign DCache_SwapBuf_lineAddr_fields = '{
         tag    : D_Cache_SwapBuf_Addr[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
         index  : D_Cache_SwapBuf_Addr[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
         bank   : D_Cache_SwapBuf_Addr[V_CACHE_BANK_UB : V_CACHE_BANK_LB],

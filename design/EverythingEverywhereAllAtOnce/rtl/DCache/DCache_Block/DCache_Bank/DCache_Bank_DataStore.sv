@@ -64,7 +64,8 @@ module DCache_Bank_DataStore (
     //DOUT can go to D$ swap buf or up to ld_mem (so D$ output)
     byte_t DOUT_DataStore[NUM_CELL_IN_DATA_STORE];
 
-    p_addr_dcache_fields_t p_addr_fields = '{
+    p_addr_dcache_fields_t p_addr_fields;
+    assign p_addr_fields = '{
         tag    : p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
         index  : p_addr_i[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
         bank   : p_addr_i[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],

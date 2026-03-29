@@ -882,7 +882,7 @@ module tb_Fetch();
         display_state();
 
         // Cache should be disabled
-        if (dut.icache_en_logic_outs.en_icache == 0) begin
+        if (dut.en_icache == 0) begin
             $fdisplay(log_file, "  Cache disabled by cs_sb: CORRECT");
         end else begin
             $fdisplay(log_file, "  FAIL: Cache not disabled");
@@ -906,7 +906,7 @@ module tb_Fetch();
         display_state();
 
         // Cache should re-enable
-        if (dut.icache_en_logic_outs.en_icache == 1) begin
+        if (dut.en_icache == 1) begin
             $fdisplay(log_file,
                 "PASS: Cache re-enabled after cs_sb cleared");
             passed++;
@@ -1736,7 +1736,7 @@ module tb_Fetch();
         $fdisplay(log_file, "  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $fdisplay(log_file, "  ║ ICache Enable Logic:                                                         ║");
         $fdisplay(log_file, "  ║   en_icache=%0b  (exp_mode=%0b  int_mode=%0b  cs_sb=%0b)                        ║",
-                  dut.icache_en_logic_outs.en_icache, dut.exp_mode_jk, dut.int_mode_jk, rr_outs_i.codeSeg_sb);
+                  dut.en_icache, dut.exp_mode_jk, dut.int_mode_jk, rr_outs_i.codeSeg_sb);
         $fdisplay(log_file, "  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $fdisplay(log_file, "  ║ Exception Logic:                                                             ║");
         $fdisplay(log_file, "  ║   exp_pipe_clear=%0b  int_pipe_clear=%0b                                      ║",

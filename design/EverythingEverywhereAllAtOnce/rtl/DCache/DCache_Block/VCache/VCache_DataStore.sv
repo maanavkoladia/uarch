@@ -33,7 +33,8 @@ module VCache_DataStore (
     //    offset : D_Cache_SwapBuf_Addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
     //};
 
-    p_addr_vcache_fields_t p_addr_fields = '{
+    p_addr_vcache_fields_t p_addr_fields;
+    assign  p_addr_fields = '{
         tag    : p_addr_i[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
         index  : p_addr_i[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
         bank   : p_addr_i[V_CACHE_BANK_UB : V_CACHE_BANK_LB],

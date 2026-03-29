@@ -79,7 +79,8 @@ module DCache_Bank_TagStore (
     logic [7:0] DOUT_2_TagStore_extended;
     assign DOUT_2_TagStore = DOUT_2_TagStore_extended[DCACHE_BANK_TAG_WIDTH - 1 : 0];
 
-    p_addr_dcache_fields_t p_addr_fields = '{
+    p_addr_dcache_fields_t p_addr_fields;
+    assign p_addr_fields = '{
         tag    : p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
         index  : p_addr_i[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
         bank   : p_addr_i[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],

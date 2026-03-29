@@ -52,7 +52,8 @@ module DCache_Bank (
     //nned to create the dcache swap buffer
     swap_buf_t dcache_bank_swapBuf;
 
-    p_addr_dcache_fields_t blockReq_p_addr_fields = '{
+    p_addr_dcache_fields_t blockReq_p_addr_fields;
+    assign blockReq_p_addr_fields = '{
         tag    : blockReq_i.p_addr[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
         index  : blockReq_i.p_addr[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
         bank   : blockReq_i.p_addr[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],

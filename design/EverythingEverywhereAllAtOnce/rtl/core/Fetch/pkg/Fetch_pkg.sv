@@ -78,8 +78,5 @@ package Fetch_pkg;
         bool flush_reg; //honestly only outputted for debugging and masking branch info (techincally not needed)
     } spc_sel_logic_output_t;
 
-    typedef struct {
-        bool en_icache;
-    } icache_en_logic_output_t;
 
 endpackage

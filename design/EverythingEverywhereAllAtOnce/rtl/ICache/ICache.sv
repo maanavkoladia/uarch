@@ -126,6 +126,7 @@ module ICache (
     I_VCache i_vcache_unit (
         .clk(clk),
         .rst(rst),  //active low
+        .controller_fsmState(controller_fsmState),
         .req_V_i(inFromCore_i.icache_en),  //i think we can ust use the icache en signal, might be a src of problems later
         .p_addr_i(curr_p_addr_to_use),
         .IC_SwapBuf_i(icache_swapbuf),
@@ -152,12 +153,13 @@ module ICache (
     //INTERNAL SIGNALS
     assign icache_hit =
         inFromCore_i.icache_en
-        && !fsmOuts.busy
+        && (controller_fsmState == ICACHE_IDLE)
         && (icache_tag_V
         && (icache_tag == inFromCore_i.p_addr[ICACHE_TAG_UB : ICACHE_TAG_LB]));
+
     assign icache_miss =
         inFromCore_i.icache_en
-        && !fsmOuts.busy
+        && (controller_fsmState == ICACHE_IDLE)
         && (!icache_tag_V
         || (icache_tag != inFromCore_i.p_addr[ICACHE_TAG_UB : ICACHE_TAG_LB]));
 
@@ -171,7 +173,7 @@ module ICache (
         end
     end
 
-    assign curr_b_addr_to_use = fsmOuts.UseSavedAddr ? saved_vAddr : inFromCore_i.v_spc_addr_i;
+    assign curr_v_addr_to_use = fsmOuts.UseSavedAddr ? saved_vAddr : inFromCore_i.v_spc_addr_i;
     assign curr_p_addr_to_use = fsmOuts.UseSavedAddr ? saved_pAddr : inFromCore_i.p_addr;
 
     //MODULE OUTPUT SIGNALS
@@ -188,7 +190,7 @@ module ICache (
         out2Sch_o.req = NO_REQ;
         if (fsmOuts.MakeReq) begin
             out2Sch_o.req = ICACHE_LOW_PRI_REQ;
-            if (inFromCore_i.numValidIDMSlots < 2) out2Sch_o.req = ICACHE_HIGH_PRI;
+            if (inFromCore_i.num_valid_IDM_slots < 2) out2Sch_o.req = ICACHE_HIGH_PRI;
         end
     end
 

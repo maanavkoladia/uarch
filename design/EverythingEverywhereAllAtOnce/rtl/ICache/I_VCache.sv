@@ -4,6 +4,8 @@ import ICache_common_pkg::*;
 module I_VCache (
     input wire clk,
     input wire rst,  //active low
+    input icache_controller_fsm_states_e controller_fsmState,
+
 
     //for updaing LRU
     input bool req_V_i,
@@ -75,8 +77,9 @@ module I_VCache (
     assign currDataLine = dataStore.dataLines[hit_idx];
 
     //hit miss logic
-    assign hit = req_V_i && currTagHit;
-    assign miss = req_V_i && !(currTagHit);
+    assign hit = req_V_i && currTagHit && (controller_fsmState == ICACHE_IDLE);
+;
+    assign miss = req_V_i && !(currTagHit) && (controller_fsmState == ICACHE_IDLE);
 
     //swapBuf Logic
     always_ff @(posedge clk) begin
@@ -88,7 +91,8 @@ module I_VCache (
         end
     end
 
-    bool updateLRU = (hit) || (RD_IC_SWAP_BUF);
+    bool updateLRU;
+    assign updateLRU = (hit) || (RD_IC_SWAP_BUF);
     logic [$clog2(NUM_LINES) - 1 : 0] currLRU_IDX;
 
     always_comb begin

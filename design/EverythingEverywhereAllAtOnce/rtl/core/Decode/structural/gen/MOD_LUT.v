@@ -310,15 +310,15 @@ and2$ msd_size_1_o_and0 (msd_size_1_o_t0, input_7_i_inv, input_6_i);
 and4$ msd_size_1_o_and1 (msd_size_1_o_t1, input_6_i_inv, input_2_i, input_1_i_inv, input_0_i_inv);
 or2$  msd_size_1_o_or  (msd_size_1_o, msd_size_1_o_t0, msd_size_1_o_t1);
 
-// msd_size_0_o = (input_7_i & input_6_i) | (!input_6_i & !input_2_i) | (!input_6_i & input_0_i) | (!input_6_i & input_1_i) | (input_6_i & input_2_i & !input_1_i & !input_0_i)
+// msd_size_0_o = (!input_6_i & !input_2_i) | (input_7_i & input_6_i) | (!input_6_i & input_0_i) | (!input_6_i & input_1_i) | (input_6_i & input_2_i & !input_1_i & !input_0_i)
 wire msd_size_0_o_t0;
 wire msd_size_0_o_t1;
 wire msd_size_0_o_t2;
 wire msd_size_0_o_t3;
 wire msd_size_0_o_t4;
 
-and2$ msd_size_0_o_and0 (msd_size_0_o_t0, input_7_i, input_6_i);
-and2$ msd_size_0_o_and1 (msd_size_0_o_t1, input_6_i_inv, input_2_i_inv);
+and2$ msd_size_0_o_and0 (msd_size_0_o_t0, input_6_i_inv, input_2_i_inv);
+and2$ msd_size_0_o_and1 (msd_size_0_o_t1, input_7_i, input_6_i);
 and2$ msd_size_0_o_and2 (msd_size_0_o_t2, input_6_i_inv, input_0_i);
 and2$ msd_size_0_o_and3 (msd_size_0_o_t3, input_6_i_inv, input_1_i);
 and4$ msd_size_0_o_and4 (msd_size_0_o_t4, input_6_i, input_2_i, input_1_i_inv, input_0_i_inv);

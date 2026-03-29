@@ -67,20 +67,20 @@ module Fetch (
     predictor_output_t predictor_outs;
     idm_ctrl_logic_output_t idm_ctrl_logic_outs;
     idm_invalidate_logic_output_t idm_invalidate_logic_outs;
-    icache_en_logic_output_t icache_en_logic_outs;
+    bool en_icache;
     tlb_outputs_t tlb_outs;
     exp_set_logic_output_t exp_set_logic_outs;
 
     //gate logic
 
     always_comb begin
-        outs_o.fetch_2_icache = '{default: '0};
         outs_o.idm_reqs = idm_ctrl_logic_outs.idm_input;
-        outs_o.exp_pipe_clear = exp_set_logic_outs.exp_pipe_clear
-                                | exp_set_logic_outs.int_pipe_clear;
+        outs_o.exp_pipe_clear = exp_set_logic_outs.exp_pipe_clear | exp_set_logic_outs.int_pipe_clear;
+        outs_o.fetch_2_icache.icache_en =  en_icache;
+        outs_o.fetch_2_icache.p_addr = tlb_outs.physical_addr;
+        outs_o.fetch_2_icache.v_spc_addr_i = seg_xlation_out;
+        outs_o.fetch_2_icache.num_valid_IDM_slots = idm_info_i.valid_slots;
     end
-
-
 
     assign f_exp = (tlb_outs.gp_exp | tlb_outs.pageFault) & ~exp_mode_jk;
 
@@ -279,7 +279,7 @@ module Fetch (
         .exp_mode(exp_mode_jk),
         .cs_sb(rr_outs_i.codeSeg_sb),
         .int_mode(int_mode_jk),
-        .out(icache_en_logic_outs)
+        .out(en_icache)
     );
 
     TLB tlb(
