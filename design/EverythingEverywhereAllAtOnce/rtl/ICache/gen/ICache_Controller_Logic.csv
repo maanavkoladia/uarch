@@ -1,8 +1,8 @@
 State_s,IC_miss_i,I_VC_Miss_i,mem_valid_i,en_i,Next_state_ns,LD_IC_SWAP_BUF_o,RD_I_VC_SWAP_BUF_o,busy_o,saveAddress_o,UseSavedAddr_o,MakeReq_o,Fill0EN_o,Fill1EN_o,Fill2EN_o,Fill3EN_o
 IDLE,x,x,x,0,IDLE,0,0,0,1,0,0,0,0,0,0
 IDLE,0,x,x,1,IDLE,0,0,0,1,0,0,0,0,0,0
-IDLE,1,1,x,1,Fill0,0,0,1,1,0,0,0,0,0,0
-IDLE,1,0,x,1,SWAP,1,1,1,1,0,0,0,0,0,0
+IDLE,1,1,x,1,Fill0,0,0,0,1,0,0,0,0,0,0
+IDLE,1,0,x,1,SWAP,1,0,0,1,0,0,0,0,0,0
 SWAP,x,x,x,x,IDLE,0,1,1,0,1,0,0,0,0,0
 Fill0,x,x,0,x,Fill0,0,0,1,0,1,1,0,0,0,0
 Fill0,x,x,1,x,Fill1,0,0,1,0,1,0,1,0,0,0
