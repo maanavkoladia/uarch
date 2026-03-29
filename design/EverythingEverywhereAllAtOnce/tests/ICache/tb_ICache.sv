@@ -131,6 +131,11 @@ module tb_ICache ();
 
        // core_2_icache.numValidIDMSlots = 0;
         // Task to display ICache and Tag Store contents in hex
+        // change this so that it looks like a i cache picture, ie realy easy
+        // for me to look at
+        // so there are 16 lines, split between upper and lower, do lower
+        // first then upper
+        // <index> <tag> <dataline>
     task automatic display_icache_contents();
         int i, cell_idx;
         $display("==== Tag Store Lower ====");
