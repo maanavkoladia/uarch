@@ -17,10 +17,7 @@ COMMON_GATES_LIB = \
 
 STD_CELLS_LIB = \
 				$(ROOT)/lib/STDCells/and_N.v \
-				$(ROOT)/lib/STDCells/mux2_10.v \
-				$(ROOT)/lib/STDCells/mux2_3.v \
-				$(ROOT)/lib/STDCells/mux4_4.v \
-				$(ROOT)/lib/STDCells/mux64_8.v \
+				$(ROOT)/lib/STDCells/CustomMuxes.v \
 				$(ROOT)/lib/STDCells/or_N.v \
 				$(ROOT)/lib/STDCells/reg1b.v \
 				$(ROOT)/lib/STDCells/KoggeStone.v \
