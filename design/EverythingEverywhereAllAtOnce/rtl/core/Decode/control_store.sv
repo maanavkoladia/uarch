@@ -2,6 +2,8 @@ module control_store (
     input logic [9:0] total_pf_vector,
     input byte_t opcode,
     input byte_t modrm,
+    output bool rep,
+    output bool branch,
     output rr_cs_t rr_cs,
     output dc_cs_t dc_cs,
     output mem_cs_t mem_cs,
@@ -27,7 +29,9 @@ module control_store (
         end
     endgenerate
 
-
+    assign rep = 1'b1;
+    assign branch = 1'b1;           //will have ot implement these
+    
     assign rr_cs = '{
         RR_OP       : cs_out[0][0],
         REG_RD      : cs_out[0][1],

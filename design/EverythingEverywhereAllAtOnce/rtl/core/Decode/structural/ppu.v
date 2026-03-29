@@ -7,7 +7,8 @@ module ppu (
     output [3:0] inst_length,
     output [2:0] msd_size,
     output [3:0] imm_size,
-    output [1:0] disp_size,
+    output disp_size,
+    output disp_needed,
     output sib_size,
     output needrm,
     output [7:0] sib_byte,
@@ -24,7 +25,7 @@ module ppu (
     wire [4:0] extended_instru_len;
     assign inst_length = extended_instru_len[3:0];  //need this cause addition result must be able to be 5 bits but really inst lenght cant be mroe than 15
 
-    wire disp_needed, disp_size;
+    wire disp_needed;
 
     wire op_valid, mod_valid, sib_valid;
     wire [3:0] disp_valid;

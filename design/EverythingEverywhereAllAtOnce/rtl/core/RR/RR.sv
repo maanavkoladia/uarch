@@ -31,7 +31,7 @@ module RR (
 
     uint32_t addygen_input_addy =
         (latches_i.normal_latches.cs.DR_SEL) ? reg_out.MODRM_data[31:0] : reg_out.REG_data[31:0];
-    
+
     l_address_t addygen_out;
 
     l_address_t staddyX_neuralnet_addy;

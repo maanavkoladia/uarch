@@ -6,8 +6,6 @@ import SegmentTranslation_pkg::*;
 
 module SegmentTranslation (
     input l_address_t l_addr_i,
-    input logic[1:0] dataSize_i,
-
     input uint32_t segValue,
     input uint32_t segLimit,
 
