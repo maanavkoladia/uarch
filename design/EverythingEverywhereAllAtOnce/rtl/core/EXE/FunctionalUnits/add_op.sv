@@ -42,27 +42,36 @@ module add_op(
         // Default
         OF = 0;
         CF = 0;
+
         case (data_size)
-            2'b00: begin
-                ZF = (merged_result[7:0] == 8'h0);
-                SF = merged_result[7];
-                PF = ~^merged_result[7:0];
+            2'b00: begin // 8-bit
+                ZF = (add_result[7:0] == 8'h0);
+                SF = add_result[7];
+                PF = ~^add_result[7:0];
+
                 CF = sum32[8];
-                OF = (^srA[7] & ^srB[7] & merged_result[7]) | (srA[7] & srB[7] & ~merged_result[7]);
+
+                OF = (~(srA[7] ^ srB[7])) & (srA[7] ^ add_result[7]);
             end
-            2'b01: begin
-                ZF = (merged_result[15:0] == 16'h0);
-                SF = merged_result[15];
-                PF = ~^merged_result[7:0];
+
+            2'b01: begin // 16-bit
+                ZF = (add_result[15:0] == 16'h0);
+                SF = add_result[15];
+                PF = ~^add_result[7:0];
+
                 CF = sum32[16];
-                OF = (^srA[15] & ^srB[15] & merged_result[15]) | (srA[15] & srB[15] & ~merged_result[15]);
+
+                OF = (~(srA[15] ^ srB[15])) & (srA[15] ^ add_result[15]);
             end
-            default: begin
-                ZF = (merged_result[31:0] == 32'h0);
-                SF = merged_result[31];
-                PF = ~^merged_result[7:0];
+
+            default: begin // 32-bit
+                ZF = (add_result[31:0] == 32'h0);
+                SF = add_result[31];
+                PF = ~^add_result[7:0];
+
                 CF = sum32[32];
-                OF = (^srA[31] & ^srB[31] & merged_result[31]) | (srA[31] & srB[31] & ~merged_result[31]);
+
+                OF = (~(srA[31] ^ srB[31])) & (srA[31] ^ add_result[31]);
             end
         endcase
     end

@@ -22,6 +22,8 @@ module add_w_c (
     logic [16:0] sum16;
     logic [32:0] sum32;
     logic carry_in;
+
+    logic [32:0] merged_result;
     
     always_comb begin
         carry_in = CF_in ? 1'b1 : 1'b0;
@@ -34,6 +36,7 @@ module add_w_c (
         ZF = 1'b0;
         SF = 1'b0;
         OF = 1'b0;
+
         
         case (data_size)
             2'b00: begin  // 8-bit ADC
