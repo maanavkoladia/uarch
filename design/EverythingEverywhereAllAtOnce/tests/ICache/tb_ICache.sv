@@ -147,7 +147,7 @@ module tb_ICache ();
         rst = 1;  //actve low
         DelayClks(20);
 
-        display_icache_contents();
+        //display_icache_contents();
 
  
         // core_2_icache.p_addr = 0;
@@ -159,14 +159,17 @@ module tb_ICache ();
         core_2_icache.icache_en = 1;
 
         DelayClks(20);
-        display_icache_contents();
+        //display_icache_contents();
         @(posedge clk)
         dte_2_icache.driveAddrBus = 1;
 
         @(posedge clk)
         dte_2_icache.Mem_Valid = 1;
+        #5
         driveDataBus = 1;
         dataForBus = 32'h01010101;
+        #5
+        driveDataBus = 0;
         // display_icache_contents();
 
 
@@ -187,6 +190,7 @@ module tb_ICache ();
         dte_2_icache.Mem_Valid = 1;
         driveDataBus = 1;
         dataForBus = 32'h04040404;
+        driveAddrBus = 0;
         // display_icache_contents();
 
         @(posedge clk)

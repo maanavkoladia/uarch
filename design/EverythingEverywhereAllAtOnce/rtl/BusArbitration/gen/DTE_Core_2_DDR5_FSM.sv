@@ -5,11 +5,12 @@
 //       Any undefined transition lands here (all outputs = 0).
 // ======================================================================
 //
-// State Enumeration  (2 bits, 3 states)
+// State Enumeration  (2 bits, 4 states)
 // --------------------------------------------------
 //   IDLE                          00  (decimal 0)  // IDLE (reset state)
-//   ST_DDR5                       01  (decimal 1)
-//   ERROR                         10  (decimal 2)  // ERROR (trap state), synthesised
+//   DELAY                         01  (decimal 1)
+//   ST_DDR5                       10  (decimal 2)
+//   ERROR                         11  (decimal 3)  // ERROR (trap state), synthesised
 //
 // Truth Table (pre-expansion, original CSV rows)
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -17,8 +18,9 @@
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //           0           0           x           1  |           0           0           0           0           0           0           0   IDLE -> IDLE
 //           0           0           0           x  |           0           0           0           0           0           0           0   IDLE -> IDLE
-//           0           0           1           0  |           1           0           1           0           1           0           0   IDLE -> ST_DDR5
-//           1           0           x           x  |           0           0           1           1           1           1           1   ST_DDR5 -> IDLE
+//           0           0           1           0  |           0           1           0           0           1           0           0   IDLE -> ST_DDR5
+//           0           1           x           x  |           1           0           1           1           1           1           1   ST_DDR5 -> DELAY
+//           1           0           x           x  |           0           0           1           0           0           0           0   DELAY -> IDLE
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //
 
@@ -42,8 +44,9 @@ wire NS_1;
 
 // State encoding  (IDLE = 0, ERROR = highest, guaranteed by tool)
 //   IDLE                         = 00  (decimal 0)  // IDLE (reset state)
-//   ST_DDR5                      = 01  (decimal 1)
-//   ERROR                        = 10  (decimal 2)  // ERROR (trap state), synthesised
+//   DELAY                        = 01  (decimal 1)
+//   ST_DDR5                      = 10  (decimal 2)
+//   ERROR                        = 11  (decimal 3)  // ERROR (trap state), synthesised
 
 // State flip-flops  (reg1b, active-low async reset)
 // Reset drives all state bits to 0, which is IDLE by construction.
@@ -71,35 +74,40 @@ inv1$ inv_others_busy_i (others_busy_i_inv, others_busy_i);
 
 // Next-state and output SOP logic
 
-// NS_0 = (!S_0 & !S_1 & req_hit_i & !others_busy_i)
-and4$ NS_0_and (NS_0, S_0_inv, S_1_inv, req_hit_i, others_busy_i_inv);
+// NS_0 = S_1
+buffer$ NS_0_buf (NS_0, S_1);
 
-// NS_1 = (!S_0 & S_1)
-and2$ NS_1_and (NS_1, S_0_inv, S_1);
+// NS_1 = (S_0 & S_1) | (!S_0 & !S_1 & req_hit_i & !others_busy_i)
+wire NS_1_t0;
+wire NS_1_t1;
 
-// busy_o = (S_0 & !S_1) | (!S_1 & req_hit_i & !others_busy_i)
+and2$ NS_1_and0 (NS_1_t0, S_0, S_1);
+and4$ NS_1_and1 (NS_1_t1, S_0_inv, S_1_inv, req_hit_i, others_busy_i_inv);
+or2$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1);
+
+// busy_o = (!S_0 & S_1) | (S_0 & !S_1)
 wire busy_o_t0;
 wire busy_o_t1;
 
-and2$ busy_o_and0 (busy_o_t0, S_0, S_1_inv);
-and3$ busy_o_and1 (busy_o_t1, S_1_inv, req_hit_i, others_busy_i_inv);
+and2$ busy_o_and0 (busy_o_t0, S_0_inv, S_1);
+and2$ busy_o_and1 (busy_o_t1, S_0, S_1_inv);
 or2$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1);
 
-// reqServed_o = (S_0 & !S_1)
-and2$ reqServed_o_and (reqServed_o, S_0, S_1_inv);
+// reqServed_o = (!S_0 & S_1)
+and2$ reqServed_o_and (reqServed_o, S_0_inv, S_1);
 
-// Drive_Addr_Bus_o = (S_0 & !S_1) | (!S_1 & req_hit_i & !others_busy_i)
+// Drive_Addr_Bus_o = (!S_0 & S_1) | (!S_0 & req_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_t0;
 wire Drive_Addr_Bus_o_t1;
 
-and2$ Drive_Addr_Bus_o_and0 (Drive_Addr_Bus_o_t0, S_0, S_1_inv);
-and3$ Drive_Addr_Bus_o_and1 (Drive_Addr_Bus_o_t1, S_1_inv, req_hit_i, others_busy_i_inv);
+and2$ Drive_Addr_Bus_o_and0 (Drive_Addr_Bus_o_t0, S_0_inv, S_1);
+and3$ Drive_Addr_Bus_o_and1 (Drive_Addr_Bus_o_t1, S_0_inv, req_hit_i, others_busy_i_inv);
 or2$  Drive_Addr_Bus_o_or  (Drive_Addr_Bus_o, Drive_Addr_Bus_o_t0, Drive_Addr_Bus_o_t1);
 
-// Drv_DB_o = (S_0 & !S_1)
-and2$ Drv_DB_o_and (Drv_DB_o, S_0, S_1_inv);
+// Drv_DB_o = (!S_0 & S_1)
+and2$ Drv_DB_o_and (Drv_DB_o, S_0_inv, S_1);
 
-// newPowerGateValueFromCore_o = (S_0 & !S_1)
-and2$ newPowerGateValueFromCore_o_and (newPowerGateValueFromCore_o, S_0, S_1_inv);
+// newPowerGateValueFromCore_o = (!S_0 & S_1)
+and2$ newPowerGateValueFromCore_o_and (newPowerGateValueFromCore_o, S_0_inv, S_1);
 
 endmodule

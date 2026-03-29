@@ -4,8 +4,10 @@
 .ilb S_0 S_1 req_hit_i others_busy_i
 .ob  NS_0 NS_1 busy_o reqServed_o Drive_Addr_Bus_o Drv_DB_o newPowerGateValueFromCore_o
 .type f
--010 0010100
-0010 1000000
-01-- 0100000
-10-- 0011111
+-1-- 1000000
+0-10 0000100
+0010 0100000
+01-- 0011111
+10-- 0010000
+11-- 0100000
 .e
