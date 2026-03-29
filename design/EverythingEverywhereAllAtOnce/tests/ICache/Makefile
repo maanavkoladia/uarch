@@ -10,7 +10,6 @@ TOP_FILE_NAME = tb_ICache
 TB_FILES = \
 		   tb_ICache.sv	\
 		   gen/icache_loader.sv	\
-		   ../utils/tb_utils_pkg.sv
 
 PKGS = $(RTL_PKGS)
 
