@@ -145,27 +145,27 @@ and6$ LD_IC_SWAP_BUF_o_and (LD_IC_SWAP_BUF_o, S_0_inv, S_1_inv, S_2_inv, IC_miss
 // RD_I_VC_SWAP_BUF_o = (S_0 & !S_1 & S_2)
 and3$ RD_I_VC_SWAP_BUF_o_and (RD_I_VC_SWAP_BUF_o, S_0, S_1_inv, S_2);
 
-// busy_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2)
+// busy_o = (S_1 & !S_2) | (!S_1 & S_2) | (S_0 & !S_1)
 wire busy_o_t0;
 wire busy_o_t1;
 wire busy_o_t2;
 
-and2$ busy_o_and0 (busy_o_t0, S_0, S_1_inv);
-and2$ busy_o_and1 (busy_o_t1, S_1, S_2_inv);
-and2$ busy_o_and2 (busy_o_t2, S_1_inv, S_2);
+and2$ busy_o_and0 (busy_o_t0, S_1, S_2_inv);
+and2$ busy_o_and1 (busy_o_t1, S_1_inv, S_2);
+and2$ busy_o_and2 (busy_o_t2, S_0, S_1_inv);
 or3$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2);
 
 // saveAddress_o = (!S_0 & !S_1 & !S_2)
 and3$ saveAddress_o_and (saveAddress_o, S_0_inv, S_1_inv, S_2_inv);
 
-// UseSavedAddr_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2)
+// UseSavedAddr_o = (S_1 & !S_2) | (!S_1 & S_2) | (S_0 & !S_1)
 wire UseSavedAddr_o_t0;
 wire UseSavedAddr_o_t1;
 wire UseSavedAddr_o_t2;
 
-and2$ UseSavedAddr_o_and0 (UseSavedAddr_o_t0, S_0, S_1_inv);
-and2$ UseSavedAddr_o_and1 (UseSavedAddr_o_t1, S_1, S_2_inv);
-and2$ UseSavedAddr_o_and2 (UseSavedAddr_o_t2, S_1_inv, S_2);
+and2$ UseSavedAddr_o_and0 (UseSavedAddr_o_t0, S_1, S_2_inv);
+and2$ UseSavedAddr_o_and1 (UseSavedAddr_o_t1, S_1_inv, S_2);
+and2$ UseSavedAddr_o_and2 (UseSavedAddr_o_t2, S_0, S_1_inv);
 or3$  UseSavedAddr_o_or  (UseSavedAddr_o, UseSavedAddr_o_t0, UseSavedAddr_o_t1, UseSavedAddr_o_t2);
 
 // MakeReq_o = (S_0 & !S_1 & !S_2 & !mem_valid_i)

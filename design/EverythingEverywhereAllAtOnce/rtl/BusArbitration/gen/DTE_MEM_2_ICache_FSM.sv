@@ -22,7 +22,7 @@
 //           0           0           0           0           x           x  |           0           0           0           0           0           0           0           0           0           0           0   IDLE -> IDLE
 //           0           0           0           1           0           x  |           0           0           1           0           0           0           1           0           0           0           0   IDLE -> MEM_REQ
 //           0           0           1           x           x           0  |           0           0           1           1           0           1           1           0           0           0           0   MEM_REQ -> MEM_REQ
-//           0           0           1           x           x           1  |           1           0           0           1           1           0           1           1           0           0           0   MEM_REQ -> LD0
+//           0           0           1           x           x           1  |           1           0           0           1           1           1           1           1           0           0           0   MEM_REQ -> LD0
 //           1           0           0           x           x           x  |           0           1           0           1           1           0           1           0           1           0           0   LD0 -> LD1
 //           0           1           0           x           x           x  |           1           1           0           1           1           0           1           0           0           1           0   LD1 -> LD2
 //           1           1           0           x           x           x  |           0           0           0           1           1           0           1           0           0           0           1   LD2 -> IDLE
@@ -115,13 +115,13 @@ and3$ NS_1_and0 (NS_1_t0, S_0_inv, S_1, S_2_inv);
 and3$ NS_1_and1 (NS_1_t1, S_0, S_1_inv, S_2_inv);
 or2$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1);
 
-// NS_2 = (!S_1 & S_2 & !mem_ready_i) | (S_0 & !S_1 & S_2) | (!S_0 & !S_1 & !S_2 & req_hit_i & !others_busy_i)
+// NS_2 = (S_0 & !S_1 & S_2) | (!S_1 & S_2 & !mem_ready_i) | (!S_0 & !S_1 & !S_2 & req_hit_i & !others_busy_i)
 wire NS_2_t0;
 wire NS_2_t1;
 wire NS_2_t2;
 
-and3$ NS_2_and0 (NS_2_t0, S_1_inv, S_2, mem_ready_i_inv);
-and3$ NS_2_and1 (NS_2_t1, S_0, S_1_inv, S_2);
+and3$ NS_2_and0 (NS_2_t0, S_0, S_1_inv, S_2);
+and3$ NS_2_and1 (NS_2_t1, S_1_inv, S_2, mem_ready_i_inv);
 and5$ NS_2_and2 (NS_2_t2, S_0_inv, S_1_inv, S_2_inv, req_hit_i, others_busy_i_inv);
 or3$  NS_2_or  (NS_2, NS_2_t0, NS_2_t1, NS_2_t2);
 
@@ -145,8 +145,8 @@ and2$ mem_valid_o_and1 (mem_valid_o_t1, S_0, S_2_inv);
 and4$ mem_valid_o_and2 (mem_valid_o_t2, S_0_inv, S_1_inv, S_2, mem_ready_i);
 or3$  mem_valid_o_or  (mem_valid_o, mem_valid_o_t0, mem_valid_o_t1, mem_valid_o_t2);
 
-// ld_req_o = (!S_0 & !S_1 & S_2 & !mem_ready_i)
-and4$ ld_req_o_and (ld_req_o, S_0_inv, S_1_inv, S_2, mem_ready_i_inv);
+// ld_req_o = (!S_0 & !S_1 & S_2)
+and3$ ld_req_o_and (ld_req_o, S_0_inv, S_1_inv, S_2);
 
 // Drive_Addr_Bus_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_t0;
