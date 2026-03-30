@@ -84,12 +84,12 @@ and2$ NS_1_and0 (NS_1_t0, S_0, S_1);
 and4$ NS_1_and1 (NS_1_t1, S_0_inv, S_1_inv, req_hit_i, others_busy_i_inv);
 or2$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1);
 
-// busy_o = (S_0 & !S_1) | (!S_0 & S_1)
+// busy_o = (!S_0 & S_1) | (S_0 & !S_1)
 wire busy_o_t0;
 wire busy_o_t1;
 
-and2$ busy_o_and0 (busy_o_t0, S_0, S_1_inv);
-and2$ busy_o_and1 (busy_o_t1, S_0_inv, S_1);
+and2$ busy_o_and0 (busy_o_t0, S_0_inv, S_1);
+and2$ busy_o_and1 (busy_o_t1, S_0, S_1_inv);
 or2$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1);
 
 // reqServed_o = (!S_0 & S_1)

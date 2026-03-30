@@ -135,7 +135,7 @@ inv1$ inv_V_Miss_i (V_Miss_i_inv, V_Miss_i);
 
 // Next-state and output SOP logic
 
-// NS_0 = (S_0 & !S_1 & S_2 & !S_3 & !DTE_Mem_valid_i) | (S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i & !D_Swap_valid_i) | (!S_0 & !S_1 & S_2 & !S_3 & DTE_Mem_valid_i) | (S_0 & !S_1 & !S_2 & !S_3 & !EB_Hit_i) | (S_0 & S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & S_1 & !S_2 & !S_3 & !D_Swap_valid_i) | (!S_0 & !S_1 & !S_2 & !S_3 & D_Miss_i & !V_Miss_i & Line_valid_i) | (!S_0 & !S_1 & !S_2 & !S_3 & D_Miss_i & V_Miss_i & EB_Hit_i) | (!S_0 & !S_1 & !S_2 & !S_3 & D_Miss_i & V_Miss_i & !Line_valid_i)
+// NS_0 = (!S_0 & !S_1 & S_2 & !S_3 & DTE_Mem_valid_i) | (S_0 & !S_1 & !S_3 & !EB_Hit_i & !DTE_Mem_valid_i) | (S_0 & S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & S_1 & !S_2 & !S_3 & !D_Swap_valid_i) | (S_0 & !S_1 & S_2 & !S_3 & !DTE_Mem_valid_i) | (S_0 & !S_1 & !S_2 & !S_3 & !EB_Hit_i) | (!S_0 & !S_1 & !S_2 & !S_3 & D_Miss_i & !V_Miss_i & Line_valid_i) | (!S_0 & !S_1 & !S_2 & !S_3 & D_Miss_i & V_Miss_i & EB_Hit_i) | (!S_0 & !S_1 & !S_2 & !S_3 & D_Miss_i & V_Miss_i & !Line_valid_i)
 wire NS_0_t0;
 wire NS_0_t1;
 wire NS_0_t2;
@@ -146,12 +146,12 @@ wire NS_0_t6;
 wire NS_0_t7;
 wire NS_0_t8;
 
-and5$ NS_0_and0 (NS_0_t0, S_0, S_1_inv, S_2, S_3_inv, DTE_Mem_valid_i_inv);
-and5$ NS_0_and1 (NS_0_t1, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i_inv, D_Swap_valid_i_inv);
-and5$ NS_0_and2 (NS_0_t2, S_0_inv, S_1_inv, S_2, S_3_inv, DTE_Mem_valid_i);
-and5$ NS_0_and3 (NS_0_t3, S_0, S_1_inv, S_2_inv, S_3_inv, EB_Hit_i_inv);
-and5$ NS_0_and4 (NS_0_t4, S_0, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i_inv);
-and5$ NS_0_and5 (NS_0_t5, S_0_inv, S_1, S_2_inv, S_3_inv, D_Swap_valid_i_inv);
+and5$ NS_0_and0 (NS_0_t0, S_0_inv, S_1_inv, S_2, S_3_inv, DTE_Mem_valid_i);
+and5$ NS_0_and1 (NS_0_t1, S_0, S_1_inv, S_3_inv, EB_Hit_i_inv, DTE_Mem_valid_i_inv);
+and5$ NS_0_and2 (NS_0_t2, S_0, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i_inv);
+and5$ NS_0_and3 (NS_0_t3, S_0_inv, S_1, S_2_inv, S_3_inv, D_Swap_valid_i_inv);
+and5$ NS_0_and4 (NS_0_t4, S_0, S_1_inv, S_2, S_3_inv, DTE_Mem_valid_i_inv);
+and5$ NS_0_and5 (NS_0_t5, S_0, S_1_inv, S_2_inv, S_3_inv, EB_Hit_i_inv);
 and7$ NS_0_and6 (NS_0_t6, S_0_inv, S_1_inv, S_2_inv, S_3_inv, D_Miss_i, V_Miss_i_inv, Line_valid_i);
 and7$ NS_0_and7 (NS_0_t7, S_0_inv, S_1_inv, S_2_inv, S_3_inv, D_Miss_i, V_Miss_i, EB_Hit_i);
 and7$ NS_0_and8 (NS_0_t8, S_0_inv, S_1_inv, S_2_inv, S_3_inv, D_Miss_i, V_Miss_i, Line_valid_i_inv);
@@ -206,14 +206,14 @@ or2$  write_to_dswap_o_or  (write_to_dswap_o, write_to_dswap_o_t0, write_to_dswa
 // D_will_evict_o = (!S_0 & !S_1 & !S_2 & !S_3 & D_Miss_i & V_Miss_i & !EB_Hit_i & Line_valid_i)
 and8$ D_will_evict_o_and (D_will_evict_o, S_0_inv, S_1_inv, S_2_inv, S_3_inv, D_Miss_i, V_Miss_i, EB_Hit_i_inv, Line_valid_i);
 
-// busy_o = (S_0 & !S_3) | (S_1 & !S_3) | (S_2 & !S_3)
+// busy_o = (S_2 & !S_3) | (S_1 & !S_3) | (S_0 & !S_3)
 wire busy_o_t0;
 wire busy_o_t1;
 wire busy_o_t2;
 
-and2$ busy_o_and0 (busy_o_t0, S_0, S_3_inv);
+and2$ busy_o_and0 (busy_o_t0, S_2, S_3_inv);
 and2$ busy_o_and1 (busy_o_t1, S_1, S_3_inv);
-and2$ busy_o_and2 (busy_o_t2, S_2, S_3_inv);
+and2$ busy_o_and2 (busy_o_t2, S_0, S_3_inv);
 or3$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2);
 
 // ld_V_swap_o = (S_0 & S_1 & S_2 & !S_3)
