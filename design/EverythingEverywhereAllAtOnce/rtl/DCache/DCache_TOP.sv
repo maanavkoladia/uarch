@@ -50,7 +50,8 @@ module DCache_TOP (
                 .rst_i(rst),  //active low
                 .block_req_i(req_2_blocks[i]),
                 .mem_Valid_FromDte_i(inFromDTE_i.mem_valid[i]),
-                .evictionBuf_V_clr_FromDTE_i(inFromDTE_i.evictionBuf_V_clr[i]),
+                .evictionBuf_clr_FromDTE_i(inFromDTE_i.evictionBuf_clr[i]),
+                .evictionBuf_setCommiting_FromDTE_i(inFromDTE_i.evictionBuf_setCommiting[i]),
                 .permissionToDriveDataBus_evictionBuf(inFromDTE_i.permissionToDriveDataBus_evictionBuf[i]),
                 .permissionToDriveAddrBus_Ld(inFromDTE_i.permissionToDriveAddrBus_Ld[i]),
                 .permissionToDriveAddrBus_eb(inFromDTE_i.permissionToDriveAddrBus_eb[i]),

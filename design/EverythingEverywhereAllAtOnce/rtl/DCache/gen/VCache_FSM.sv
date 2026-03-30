@@ -84,27 +84,27 @@ inv1$ inv_V_Hit_i (V_Hit_i_inv, V_Hit_i);
 
 // Next-state and output SOP logic
 
-// NS_0 = (S_1 & !EB_V_i) | (S_0 & S_1) | (!S_0 & !S_1 & V_Hit_i) | (!S_0 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & DC_will_evict_i & !VC_needs_2_evict_i)
+// NS_0 = (S_0 & S_1) | (S_1 & !EB_V_i) | (!S_0 & !S_1 & V_Hit_i) | (!S_0 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & DC_will_evict_i & !VC_needs_2_evict_i)
 wire NS_0_t0;
 wire NS_0_t1;
 wire NS_0_t2;
 wire NS_0_t3;
 wire NS_0_t4;
 
-and2$ NS_0_and0 (NS_0_t0, S_1, EB_V_i_inv);
-and2$ NS_0_and1 (NS_0_t1, S_0, S_1);
+and2$ NS_0_and0 (NS_0_t0, S_0, S_1);
+and2$ NS_0_and1 (NS_0_t1, S_1, EB_V_i_inv);
 and3$ NS_0_and2 (NS_0_t2, S_0_inv, S_1_inv, V_Hit_i);
 and3$ NS_0_and3 (NS_0_t3, S_0_inv, DC_will_evict_i, EB_V_i_inv);
 and4$ NS_0_and4 (NS_0_t4, S_0_inv, S_1_inv, DC_will_evict_i, VC_needs_2_evict_i_inv);
 or5$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4);
 
-// NS_1 = (S_1 & EB_V_i) | (S_0 & S_1) | (!S_0 & !V_Hit_i & DC_will_evict_i & EB_V_i)
+// NS_1 = (S_0 & S_1) | (S_1 & EB_V_i) | (!S_0 & !V_Hit_i & DC_will_evict_i & EB_V_i)
 wire NS_1_t0;
 wire NS_1_t1;
 wire NS_1_t2;
 
-and2$ NS_1_and0 (NS_1_t0, S_1, EB_V_i);
-and2$ NS_1_and1 (NS_1_t1, S_0, S_1);
+and2$ NS_1_and0 (NS_1_t0, S_0, S_1);
+and2$ NS_1_and1 (NS_1_t1, S_1, EB_V_i);
 and4$ NS_1_and2 (NS_1_t2, S_0_inv, V_Hit_i_inv, DC_will_evict_i, EB_V_i);
 or3$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1, NS_1_t2);
 

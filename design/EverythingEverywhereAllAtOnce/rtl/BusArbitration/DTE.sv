@@ -282,12 +282,13 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
                 .busy_o          (dcache_2_mem_fsmout_busy_per[i]),
                 // FIX 2: per-instance st_req wire, OR-reduced above
                 .st_req_o        (dcache_2_mem_st_req_fsmOut[i]),
+                .eb_clear_o      (dte_out_2_dcache_o.evictionBuf_clr[i]),
+                .set_eb_commit_o (dte_out_2_dcache_o.evictionBuf_setCommiting[i]),
                 .Drive_Addr_Bus_o(dte_out_2_dcache_o.permissionToDriveAddrBus_eb[i]),
                 .Drv_DB_0_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][0]),
                 .Drv_DB_1_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][1]),
                 .Drv_DB_2_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][2]),
-                .Drv_DB_3_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][3]),
-                .eb_V_clr_o(dte_out_2_dcache_o.evictionBuf_V_clr[i])
+                .Drv_DB_3_o      (dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][3])
             );
 
         end
@@ -324,12 +325,12 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     assign core_2_ddr5_req_hit = (bestPick_i == DCACHE_MIO_WR_SIMPLE);
 
     DTE_Core_2_DDR5_FSM core_2_ddr5_fsm (
-        .clk                        (clk),
-        .rst                        (rst),
-        .req_hit_i                  (core_2_ddr5_req_hit),
-        .others_busy_i              (DTE_Busy),
-        .S_0                        (dte_core_2_ddr5_fsm_state_bits[0]),
-        .S_1                        (dte_core_2_ddr5_fsm_state_bits[1]),
+        .clk          (clk),
+        .rst          (rst),
+        .req_hit_i    (core_2_ddr5_req_hit),
+        .others_busy_i(DTE_Busy),
+        .S_0          (dte_core_2_ddr5_fsm_state_bits[0]),
+        .S_1          (dte_core_2_ddr5_fsm_state_bits[1]),
 
         .busy_o                     (core_2_ddr5_fsmout_busy),
         // FIX 4: intermediate wire, OR-reduced above
@@ -348,13 +349,13 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
     assign core_2_dma_req_hit = (bestPick_i == DCACHE_MIO_WR_COMPLEX);
 
     DTE_Core_2_DMA_FSM core_2_dma_fsm (
-        .clk             (clk),
-        .rst             (rst),
-        .req_hit_i       (core_2_dma_req_hit),
-        .others_busy_i   (DTE_Busy),
+        .clk          (clk),
+        .rst          (rst),
+        .req_hit_i    (core_2_dma_req_hit),
+        .others_busy_i(DTE_Busy),
 
-        .S_0             (dte_core_2_dma_fsm_state_bits[0]),
-        .S_1             (dte_core_2_dma_fsm_state_bits[1]),
+        .S_0(dte_core_2_dma_fsm_state_bits[0]),
+        .S_1(dte_core_2_dma_fsm_state_bits[1]),
 
         .busy_o          (core_2_dma_fsmout_busy),
         // FIX 4: intermediate wire, OR-reduced above
@@ -374,16 +375,16 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
 
     // FIX 9: Drv_DB_* outputs should target permissionToDriveDataBus (not ADDR bus)
     DTE_DMA_2_MEM_FSM dma_2_mem_fsm (
-        .clk             (clk),
-        .rst             (rst),
-        .req_hit_i       (dma_2_mem_req_hit),
-        .others_busy_i   (DTE_Busy),
+        .clk          (clk),
+        .rst          (rst),
+        .req_hit_i    (dma_2_mem_req_hit),
+        .others_busy_i(DTE_Busy),
 
-        .S_0             (dte_dma_2_mem_fsm_state_bits[0]),
-        .S_1             (dte_dma_2_mem_fsm_state_bits[1]),
-        .S_2             (dte_dma_2_mem_fsm_state_bits[2]),
+        .S_0(dte_dma_2_mem_fsm_state_bits[0]),
+        .S_1(dte_dma_2_mem_fsm_state_bits[1]),
+        .S_2(dte_dma_2_mem_fsm_state_bits[2]),
 
-        .busy_o          (dma_2_mem_fsmout_busy),
+        .busy_o(dma_2_mem_fsmout_busy),
 
         // FIX 2: intermediate wire, OR-reduced above
         .st_req_o        (dma_2_mem_st_req_fsmOut),

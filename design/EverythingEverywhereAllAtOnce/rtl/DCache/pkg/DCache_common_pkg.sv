@@ -107,6 +107,7 @@ package DCache_common_pkg;
         bool busy;
         byte_t data_lineOut[CACHE_LINES_SIZE_B];
         bool MakeReq;
+        bool eb_stalling;
     } d_cache_bank_outputs_t;
 
     typedef struct {
@@ -124,21 +125,26 @@ package DCache_common_pkg;
 
     typedef struct {
         bool valid;  //probably not needed, i lied this is fucking needed for vcache fsm, holy shit what was i smkoking
+        bool commiting;
         p_address_t addr;
         byte_t lineOut[CACHE_LINES_SIZE_B];
+        bool reqHit;
     } eb_outputs_t;
 
-    localparam int NUM_DCACHE_BANK_FSM_STATES = 7;
+    localparam int NUM_DCACHE_BANK_FSM_STATES = 9;
+
     typedef enum logic [$clog2(
 NUM_DCACHE_BANK_FSM_STATES
-) - 1 : 0] {
-        DCACHE_BANK_IDLE     = 0,
-        DCACHE_BANK_EVICTING = 1,
-        DCACHE_BANK_Req0     = 2,
-        DCACHE_BANK_Req1     = 3,
-        DCACHE_BANK_Req2     = 4,
-        DCACHE_BANK_Req3     = 5,
-        DCACHE_BANK_SWAPPING = 6
+)-1:0] {
+        DCACHE_BANK_IDLE        = 0,
+        DCACHE_BANK_EB_BLOCKING = 1,
+        DCACHE_BANK_EVICTING    = 2,
+        DCACHE_BANK_REQ0        = 3,
+        DCACHE_BANK_REQ1        = 4,
+        DCACHE_BANK_REQ2        = 5,
+        DCACHE_BANK_REQ3        = 6,
+        DCACHE_BANK_SWAPPING    = 7,
+        DCACHE_BANK_ERROR       = 8
     } dcache_bank_fsm_states_e;
 
     localparam NUM_VCACHE_STATES = 4;
