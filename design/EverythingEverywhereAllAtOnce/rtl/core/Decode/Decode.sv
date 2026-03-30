@@ -1,26 +1,3 @@
-    //prefix stuff(ppu s), 
-    //invalid instruciton logic (i think we dciessed that this needs a bit to redcue critaoth back into exp logic in fetch),
-    //modrm LUT, 
-    //opcode LUT (CS stuff)
-    //instuciton len adding
-    //sib logic
-    //displacment logic
-    //immedatite logic
-    //segment id gen ()
-    //all regs use internal reg_Id_t in the core pkgs
-    //
-    //rep controller (takes ecx, set/clr zf_sb, zf flag, ecx sb, CS_signal for
-    //rep(sthild not be apassed forward is internal to decode)
-    //
-    //needs to send a gp to rr (eip, preveip, prev instruciton len logic to
-    //gen a gp and send it forward to rr to tell it that its corrent
-    //isntrucitoni s invlaid and it needs to throw a gp, ie gp not thrown here,
-    //it is intdicated to rr that it needs to throw one)
-    //
-    //br logic so taken info comes from idm not taken still needs to populate
-    //the br info because exe needs it for br resolution
-    //
-    //loigc needed for reading from the idm slots, ie invalid stuff, etc
 import reg_ids_pkg::*;
 
 module Decode (
@@ -57,9 +34,6 @@ module Decode (
     output decode_outputs_t outs_o
 
 );
-    //rep controller (takes ecx, set/clr zf_sb, zf flag, ecx sb, CS_signal for
-    //rep(sthild not be apassed forward is internal to decode)
-
 
     uint32_t PrevEIP;
     uint32_t EIP;
@@ -71,7 +45,7 @@ module Decode (
     uint32_t displacement;
     bool disp_size;
     uint64_t imm64;
-    logic [9:0] total_pf_vector;
+    logic [9:0] total_pf_vector;  //MSB --> 2e, 36, 3e, 26, 64, 65, 66, 67, 0f, f3  <-- LSB vector
     bool invalid_inst;
     uint8_t opcode_byte, modrm_byte;
     rr_cs_t temp_rr_cs;
@@ -81,6 +55,11 @@ module Decode (
     wb_cs_t temp_wb_cs;
     bool decode_gp;
     rr_latches_general_t temp_rr_latch;
+    bool flush, stall;
+    logic REP_MOV_LATCH, REP_CMP_LATCH;
+
+    assign flush = exe_outs_i.br_res_out.flush;
+    assign stall = rr_outs_i.valid && rr_outs_i.stall;
 
     logic [63:0][7:0] queue;
     genvar i;
@@ -96,38 +75,23 @@ module Decode (
     endgenerate
 
     predecode inst_processing(
-        .clk(clk),
-        .rst(rst),
-        .queue(queue),
+        .clk(clk), .rst(rst), .queue(queue),
         .queue_valid({idm_outs_i.idm_slots[0].valid, idm_outs_i.idm_slots[1].valid,
                     idm_outs_i.idm_slots[2].valid, idm_outs_i.idm_slots[3].valid}),
-        .EIP(EIP),
-        .NEIP(NEIP),
-        .inst_length(inst_length),
-        .sib_byte(sib_byte),
-        .sib_size(sib_size),
-        .opcode_byte(opcode_byte),
-        .modrm_byte(modrm_byte),
-        .disp(displacement),
-        .disp_size(disp_size),
-        .disp_needed(disp_needed), // Add this missing port
-        .imm64(imm64),
-        .total_pf_vector(total_pf_vector),
-        .invalid_inst(invalid_inst)
+        .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_byte(sib_byte), .sib_size(sib_size),
+        .opcode_byte(opcode_byte), .modrm_byte(modrm_byte), .disp(displacement), .disp_size(disp_size),
+        .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector(total_pf_vector), .invalid_inst(invalid_inst)
     );
 
-    bool cs_rep, cs_branch;
+    bool cs_rep_mov, cs_rep_cmp, cs_branch;
     control_store cs(
-        .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .rep(cs_rep), .branch(cs_branch),
-        .rr_cs(temp_rr_cs),
-        .dc_cs(temp_dc_cs),
-        .mem_cs(temp_mem_cs),
-        .exe_cs(temp_exe_cs),
-        .wb_cs(temp_wb_cs)
+        .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .rep_mov(cs_rep_mov), .rep_cmp(cs_rep_mov), .branch(cs_branch),
+        .rr_cs(temp_rr_cs), .dc_cs(temp_dc_cs), .mem_cs(temp_mem_cs), .exe_cs(temp_exe_cs), .wb_cs(temp_wb_cs)
     );
 
     decode_gp_gen gp_gen_decode(.prev_eip(PrevEIP), .prev_length(PrevLength), .segValue(rr_outs_i.codeSeg_data), 
-                    .segLimit(cs_limit), .gp_fault_o(decode_gp));
+        .segLimit(cs_limit), .gp_fault_o(decode_gp)
+    );
 
     br_info_t br_info_for_latches;
     bool predicted_taken;
@@ -137,7 +101,8 @@ module Decode (
     l_address_t predicted_target;
     assign predicted_target = predicted_taken ? idm_outs_i.idm_slots[EIP[5:4]].br_btb_target : 32'b0;
     br_info_processing br_info_gen(.cs_branch(cs_branch), .eip(EIP), .br_length(inst_length),
-                    .pred_taken(predicted_taken), .pred_target(predicted_target), .branch_output(br_info_for_latches));
+        .pred_taken(predicted_taken), .pred_target(predicted_target), .branch_output(br_info_for_latches)
+    );
 
     reg_ids_e sibbase, sibidx;
     uint8_t sibscale;
@@ -145,6 +110,14 @@ module Decode (
 
     reg_ids_e modrmid, regid;
     modrm_processor modrm_gen_logic(.modrm_byte(modrm_byte), .datasize(temp_rr_cs.datasize), .mod_rm_id(modrmid), .reg_id(regid));
+
+    rr_latches_general_t rep_latch_holder;
+    bool rep_reg_value;
+    rep_controller piece_of_shit_rep_controller (.clk(clk), .rst(rst), .rep_prefix(total_pf_vector[0]),
+        .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb), .set_zf(rr_outs_i.set_ZF_sb), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
+        .zf_flag(exe_outs_i.ZF), .stall(stall), .flush(flush), .rep_latches(rep_latch_holder), .rep_register(rep_reg_value)
+    );
+
 
     assign outs_o = '{
         valid : !invalid_inst,
@@ -190,8 +163,8 @@ module Decode (
 
     assign rr_latches_next = '{
         normal_latches : temp_rr_latch,
-        rep_latches : temp_rr_latch,
-        useRep  : 1'b0
+        rep_latches : rep_latch_holder,
+        useRep  : rep_reg_value
     };
 
     always_ff @(posedge clk) begin
@@ -199,18 +172,22 @@ module Decode (
             EIP <= 32'b0;
             PrevEIP <= 32'b0;
             PrevLength <= inst_length;
+            REP_MOV_LATCH <= 1'b0;
+            REP_CMP_LATCH <= 1'b0;
         end
         else begin
             PrevEIP <= EIP;
             PrevLength <= inst_length;
+            REP_MOV_LATCH <= cs_rep_mov;
+            REP_CMP_LATCH <= cs_rep_cmp;
 
-            if(exe_outs_i.br_res_out.valid && exe_outs_i.br_res_out.flush) EIP <= exe_outs_i.br_res_out.br_target;
+            if(exe_outs_i.br_res_out.valid && flush) EIP <= exe_outs_i.br_res_out.br_target;
             else begin
                 if(idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP && idm_outs_i.idm_slots[EIP[5:4]].valid && idm_outs_i.idm_slots[EIP[5:4]].br_valid) begin
                     EIP <= idm_outs_i.idm_slots[EIP[5:4]].br_btb_target;
                 end
                 else begin
-                    if(!invalid_inst) EIP <= NEIP;
+                    if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
                     else EIP <= EIP;
                 end
             end
@@ -219,3 +196,28 @@ module Decode (
 
 
 endmodule
+
+
+    //prefix stuff(ppu s), 
+    //invalid instruciton logic (i think we dciessed that this needs a bit to redcue critaoth back into exp logic in fetch),
+    //modrm LUT, 
+    //opcode LUT (CS stuff)
+    //instuciton len adding
+    //sib logic
+    //displacment logic
+    //immedatite logic
+    //segment id gen ()
+    //all regs use internal reg_Id_t in the core pkgs
+    //
+    //rep controller (takes ecx, set/clr zf_sb, zf flag, ecx sb, CS_signal for
+    //rep(sthild not be apassed forward is internal to decode)
+    //
+    //needs to send a gp to rr (eip, preveip, prev instruciton len logic to
+    //gen a gp and send it forward to rr to tell it that its corrent
+    //isntrucitoni s invlaid and it needs to throw a gp, ie gp not thrown here,
+    //it is intdicated to rr that it needs to throw one)
+    //
+    //br logic so taken info comes from idm not taken still needs to populate
+    //the br info because exe needs it for br resolution
+    //
+    //loigc needed for reading from the idm slots, ie invalid stuff, etc

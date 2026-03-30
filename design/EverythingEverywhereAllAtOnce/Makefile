@@ -1,4 +1,4 @@
-PYTHON = python
+PYTHON = python3
 LOG_FILE = gen.log
 
 .PHONY: clean all gen_dry gen
