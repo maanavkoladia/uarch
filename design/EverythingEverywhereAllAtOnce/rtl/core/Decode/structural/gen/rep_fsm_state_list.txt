@@ -1,0 +1,23 @@
+# State list for FSM: rep_fsm
+# Total states      : 15
+# State bits needed : 4
+# NOTE: IDLE is always assigned encoding 0
+# NOTE: ERROR state was synthesised (not present in CSV)
+#
+#  idx  binary  state_name
+# --------------------------------------------------
+     0  0000  CMP
+     1  0001  CMP0
+     2  0010  CMP1
+     3  0011  CMP2
+     4  0100  CMP3
+     5  0101  CMP4
+     6  0110  ERROR  # synthesised
+     7  0111  FUCK_ME
+     8  1000  IDLE
+     9  1001  MOV0
+    10  1010  MOV1
+    11  1011  MOV2
+    12  1100  MOV3
+    13  1101  MOVS
+    14  1110  WAIT

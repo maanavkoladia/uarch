@@ -1,9 +1,9 @@
-State_s,ECX_SB_i,ECX_is_zero_i,ZF_SB_i,ZF_is_zero_i,rep_prefix,cs_mov_i,cs_cmp_i,stall_i,NState_ns,set_rep_o,clear_rep_o,select_line3_o,select_line2_o,select_line1_o,select_line0_o
+State_s,ECX_SB_i,ECX_is_zero_i,ZF_SB_i,ZF_is_zero_i,rep_prefix_i,cs_mov_i,cs_cmp_i,stall_i,NState_ns,set_rep_o,clear_rep_o,select_line3_o,select_line2_o,select_line1_o,select_line0_o
 IDLE,x,x,x,x,0,x,x,0,IDLE,0,0,0,0,0,0
 IDLE,x,x,x,x,1,x,x,0,WAIT,1,0,0,0,0,0
 WAIT,x,x,x,x,x,0,0,0,FUCK_ME,0,0,0,0,0,0
 WAIT,x,x,x,x,x,0,1,0,CMP,0,0,0,0,0,0
-WAIT,x,x,x,x,x,1,0,0,MOV,0,0,0,0,0,0
+WAIT,x,x,x,x,x,1,0,0,MOVS,0,0,0,0,0,0
 WAIT,x,x,x,x,x,1,1,0,FUCK_ME,0,0,0,0,0,0
 MOVS,0,1,x,x,x,x,x,0,MOV0,0,0,0,0,0,1
 MOVS,0,0,x,x,x,x,x,0,IDLE,0,1,0,0,0,0
@@ -35,3 +35,4 @@ CMP1,x,x,x,x,x,x,x,1,CMP1,0,0,0,0,0,0
 CMP2,x,x,x,x,x,x,x,1,CMP2,0,0,0,0,0,0
 CMP3,x,x,x,x,x,x,x,1,CMP3,0,0,0,0,0,0
 CMP4,x,x,x,x,x,x,x,1,CMP4,0,0,0,0,0,0
+WAIT,x,x,x,x,x,x,x,1,WAIT,0,0,0,0,0,0
