@@ -2,6 +2,7 @@ include ../../../Make.vars
 include ../../../Make.build
 
 TARGET = mainMem
+TOP = tb_mainMem
 
 GEN_CONF = startUp_gen.conf.json
 
@@ -23,7 +24,7 @@ SRC_FILES = \
 all: $(TARGET)
 	
 $(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES) 2>&1 | tee compile.log
+	$(CC) $(CC_FLAGS) -top $(TOP) -o $@ $(SRC_FILES) 2>&1 | tee compile.log
 
 run: $(TARGET)
 	./$< 2>&1| tee sim.log
@@ -51,5 +52,4 @@ clean:
 	rm -f master
 	rm -f *.log
 	rm -f ucli.key
-	rm -r memGen
 
