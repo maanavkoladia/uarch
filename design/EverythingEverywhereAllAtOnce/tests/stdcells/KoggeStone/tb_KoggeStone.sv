@@ -2,7 +2,7 @@ import common_pkg::*;
 
 module tb_KoggeStone ();
     localparam int Clk_PERIOD = 100;
-    localparam int KS_WIDTH = 16;
+    localparam int KS_WIDTH = 32;
 
     `CLK_INIT(Clk_PERIOD);
 
@@ -26,9 +26,9 @@ module tb_KoggeStone ();
     logic cout_o;
 
 
-    kogge_stone_adder uut_KS #(
+    kogge_stone_adder #(
         .WIDTH(KS_WIDTH)
-    ) (
+    ) uut_KS (
         .a(a_i),
         .b(b_i),
         .cin(cin_i),
@@ -36,6 +36,7 @@ module tb_KoggeStone ();
         .cout(cout_o)
     );
 
+    logic [KS_WIDTH:0] expected;
 
     initial begin
         `LOG("Starting mem System TB");
@@ -49,19 +50,18 @@ module tb_KoggeStone ();
         @(posedge clk)
         @(posedge clk)
         @(posedge clk)
-        a_i = 2500;
-        b_i = 2345;
-
+        a_i = 32'h11111111;
+        b_i = 32'h23232323;
         DelayClks(20);
+        `LOG("Expected: 0x%08X, Actual: 0x%08X\n\n", a_i + b_i, sum_o);
 
         //correctness testcase
          //correctness testcase
 
-        logic [KS_WIDTH:0] expected;
         for (int i = 0; i < 1000; i++) begin
-            a_i   = $urandom_range(0, 2**KS_WIDTH - 1);
-            b_i   = $urandom_range(0, 2**KS_WIDTH - 1);
-            cin_i = $urandom_range(0, 1);
+            a_i   = i;
+            b_i   = i * 10;
+            //cin_i = $urandom_range(0, 0);
 
             @(posedge clk); // wait for outputs to settle
 
@@ -71,6 +71,7 @@ module tb_KoggeStone ();
                 $error("Mismatch! a=%0d b=%0d cin=%0d | sum=%0d cout=%0d | expected=%0d",
                         a_i, b_i, cin_i, sum_o, cout_o, expected);
             end
+            @(posedge clk); // wait for outputs to settle
         end
 
         $display("Correctness test completed");

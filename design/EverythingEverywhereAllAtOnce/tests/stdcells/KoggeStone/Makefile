@@ -9,7 +9,7 @@ TOP_FILE_NAME = tb_KoggeStone
 
 
 TB_FILES = \
-		   gen/tb_KoggeStone.sv
+		   tb_KoggeStone.sv
 
 PKGS = $(RTL_PKGS)
 
