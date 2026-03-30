@@ -1,18 +1,15 @@
 include ../../../Make.vars
 include ../../../Make.build
 
-TARGET = DTE_Test
+TARGET = KoogeStone_Test
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_FILE_NAME = tb_DTE
+TOP_FILE_NAME = tb_KoggeStone 
 
-STARTUP_FILES = \
-				gen/icache_loader.sv	\
-				gen/memLoader.sv	\
 
 TB_FILES = \
-		   tb_DTE.sv \
+		   gen/tb_KoggeStone.sv
 
 PKGS = $(RTL_PKGS)
 

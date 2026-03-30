@@ -1,9 +1,10 @@
 import common_pkg::*;
-import interconnect_pkg::*;
-import DTE_FSM_gen_pkg::*;
 
-module tb_DTE ();
-    localparam int Clk_PERIOD = 10;
+module tb_KoggeStone ();
+    localparam int Clk_PERIOD = 100;
+    localparam int KS_WIDTH = 16;
+
+    `CLK_INIT(Clk_PERIOD);
 
     initial begin
         $vcdpluson;
@@ -14,112 +15,66 @@ module tb_DTE ();
         #(Clk_PERIOD * cycles);
     endtask
 
-
     // ================= CLOCK / RESET =================
-    `CLK_INIT(Clk_PERIOD);
-    logic                                                     rst;
-    wire                   [   ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
-    wire                   [     DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
-    // ================= ICACHE =================
-    dte_2_icache_t                                            dte_2_icache;
 
-    // ================= DCACHE =================
-    dte_2_dcache_t                                            dte_2_dcache;
+    logic rst;
 
-    // ================= MEMORY =================
-    mem_2_dte_t                                               mem_2_dte;
-    dte_2_mem_t                                               dte_2_mem;
-
-    // ================= DMA =================
-    dte_2_dma_controller_t                                    dte_2_dma;
-
-    // ================= DDR5 =================
-    dte_2_ddr5_t                                              dte_2_ddr5;
-
-    //sch pick signals
-    req_2_sch_t                                               bestPick_req_2_dte;
-    logic                  [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_2_dte;
+    logic [KS_WIDTH - 1 : 0] a_i;
+    logic [KS_WIDTH - 1 : 0] b_i;
+    logic cin_i;
+    logic [KS_WIDTH - 1 : 0] sum_o;
+    logic cout_o;
 
 
-    DTE uut0_DTE (
-        .clk(clk),
-        .rst(rst),
-        .bestPick_i(bestPick_req_2_dte),
-        .bestPick_bk_id_i(bestPick_bk_id_2_dte),
-        .dte_out_2_icache_o(dte_2_icache),
-        .dte_out_2_dcache_o(dte_2_dcache),
-        .mem_2_dte_i(mem_2_dte),
-        .dte_2_mem_o(dte_2_mem),
-        .dte_2_dma_o(dte_2_dma),
-        .dte_2_ddr5_o(dte_2_ddr5)
+    kogge_stone_adder uut_KS #(
+        .WIDTH(KS_WIDTH)
+    ) (
+        .a(a_i),
+        .b(b_i),
+        .cin(cin_i),
+        .sum(sum_o),
+        .cout(cout_o)
     );
 
-    mem_TOP uut1_mem (
-        .clk(clk),
-        .rst(rst),
-        //adress and data bus
-        .address_bus(address_bus),
-        .data_bus(data_bus),
-        //arb stuff
-        .inFromDte(dte_2_mem),
-        .out2Dte(mem_2_dte),
-        .out2Sch()
-    );
 
     initial begin
         `LOG("Starting mem System TB");
-        //drive all signals going into dte to 0, shoudl just be memvalid right?
-        //also need to give it a scheudler pick, no_req in this case
-        rst = 0;  //active low
-        mem_2_dte.mem_Ready = 0;
-        bestPick_req_2_dte = NO_REQ;
-        bestPick_bk_id_2_dte = 0;
-        DelayClks(5);
-        rst = 1;
-        DelayClks(5);
-        @(posedge clk) mem_2_dte.mem_Ready = 0;
-        bestPick_req_2_dte   = ICACHE_HIGH_PRI;
-        bestPick_bk_id_2_dte = 0;
-        @(posedge clk) bestPick_req_2_dte = NO_REQ;
-        mem_2_dte.mem_Ready = 1;  //ld0 - MEMREQ
-        @(posedge clk)  //ICACHE_LD0
-        @(posedge clk)  //ICACHE_LD1
-        @(posedge clk)  //ICACHE_LD2
-        @(posedge clk)
-        @(negedge clk)
-        assert (uut0_DTE.dte_mem_2_icache_fsm_state == DTE_MEM_2_ICACHE_IDLE)
-        else $error("Assert fail: Icache transation should be complete: should be IDLE \
-                     GOT: %d ", uut0_DTE.dte_mem_2_icache_fsm_state);
-
-        mem_2_dte.mem_Ready  = 0;
-        bestPick_req_2_dte   = DCACHE_FILL_LD;
-        bestPick_bk_id_2_dte = 1;
-        @(posedge clk) bestPick_req_2_dte = ICACHE_LOW_PRI_REQ;
-        @(posedge clk) @(posedge clk) @(posedge clk) bestPick_req_2_dte = DCACHE_EB_BLOCKING_LD;
-        bestPick_bk_id_2_dte = 3;
-        mem_2_dte.mem_Ready  = 1;
-        @(posedge clk)
-        @(posedge clk)
-        @(posedge clk)
-        @(posedge clk)
-        @(negedge clk)
-        assert (uut0_DTE.dte_mem_2_dcache_fsm_state[1] == DTE_MEM_2_DCACHE_IDLE)
-        else $error("Assert fail: dcache_2_mem should be IDLE");
+        DelayClks(20);
+        //timing test case
+        a_i = 0;
+        b_i = 0;
+        cin_i = 0;
 
         @(posedge clk)
-        //should see store req
         @(posedge clk)
         @(posedge clk)
         @(posedge clk)
+        a_i = 2500;
+        b_i = 2345;
 
+        DelayClks(20);
 
-        // let it idle for a bit, shoudl countinues to rx no_reqs from
-        // sceduler
-        DelayClks(
-            20);
-        //now give it a pick ...
-        //need to test all the picks and getting new picks while one fsm is
-        //running to enure that another dte fsm doesnt startup
+        //correctness testcase
+         //correctness testcase
+
+        logic [KS_WIDTH:0] expected;
+        for (int i = 0; i < 1000; i++) begin
+            a_i   = $urandom_range(0, 2**KS_WIDTH - 1);
+            b_i   = $urandom_range(0, 2**KS_WIDTH - 1);
+            cin_i = $urandom_range(0, 1);
+
+            @(posedge clk); // wait for outputs to settle
+
+            expected = a_i + b_i + cin_i;
+
+            if ({cout_o, sum_o} !== expected) begin
+                $error("Mismatch! a=%0d b=%0d cin=%0d | sum=%0d cout=%0d | expected=%0d",
+                        a_i, b_i, cin_i, sum_o, cout_o, expected);
+            end
+        end
+
+        $display("Correctness test completed");
+
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
