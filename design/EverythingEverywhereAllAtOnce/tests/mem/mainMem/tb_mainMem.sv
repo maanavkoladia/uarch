@@ -29,6 +29,10 @@ module tb_mainMem ();
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
 
+    task automatic DelayCLKs(input int cycles);
+        #(CLK_PERIOD * cycles);
+    endtask
+
     logic rst;
     wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus;

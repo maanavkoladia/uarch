@@ -3,12 +3,12 @@ include ../../../Make.build
 
 TARGET = mainMem
 
-MEM_GEN_CONF = memGen.conf.json
+GEN_CONF = startUp_gen.conf.json
+
 TEST_PROG = testProg.s
 
 TB_FILES = \
-		   tb_mainMem_pkg.sv	\
-		   memLoader.sv	\
+		   ./gen/memLoader.sv \
 		   tb_mainMem.sv
 
 PKGS = $(RTL_PKGS)
@@ -18,7 +18,7 @@ SRC_FILES = \
 			$(RTL_SRC_FILES) \
 			$(TB_FILES)	\
 
-.PHONY: all run clean see genMem
+.PHONY: all run clean see gen view
 
 all: $(TARGET)
 	
@@ -32,10 +32,10 @@ view: run
 	#./$(TARGET) -gui &
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
 
-genMem: 
-	python3.9 $(LOAD_MEM_COMPILE_SCRIPT) $(MEM_GEN_CONF)
-	python3.9 $(LOAD_MEM_GEN_HEX_MEM_SCRIPT) $(MEM_GEN_CONF)
-	python3.9 $(LOAD_MEM_GEN_READ_MEM_FILE) $(MEM_GEN_CONF)
+gen:
+	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
+	@python3 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@rm -f cleaned_scripts.json
 
 see:
 	#@echo $(TIME_FILE)
