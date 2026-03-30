@@ -6,7 +6,7 @@
 module tb_memGen_InitRitual ();
 
     initial begin
-        #(3);
+        #(30);
         $readmemh("memGen/hexLoad/mem_0_0.hex", tb_mainMem.uut0.g_mem_banks[0].mem_bank.g_sram_cells[0].mem_cell.mem);
         $readmemh("memGen/hexLoad/mem_0_1.hex", tb_mainMem.uut0.g_mem_banks[0].mem_bank.g_sram_cells[1].mem_cell.mem);
         $readmemh("memGen/hexLoad/mem_0_2.hex", tb_mainMem.uut0.g_mem_banks[0].mem_bank.g_sram_cells[2].mem_cell.mem);

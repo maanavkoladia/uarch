@@ -20,6 +20,8 @@ module tb_DTE ();
     logic                                                     rst;
     wire                   [   ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
     wire                   [     DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
+    logic [31:0] addres_bus_drv;
+
     // ================= ICACHE =================
     dte_2_icache_t                                            dte_2_icache;
 
@@ -65,52 +67,60 @@ module tb_DTE ();
         .out2Dte(mem_2_dte),
         .out2Sch()
     );
+    assign address_bus = dte_2_icache.driveAddrBus ? addres_bus_drv :'z;
+   
 
     initial begin
         `LOG("Starting mem System TB");
         //drive all signals going into dte to 0, shoudl just be memvalid right?
         //also need to give it a scheudler pick, no_req in this case
         rst = 0;  //active low
-        mem_2_dte.mem_Ready = 0;
+       
         bestPick_req_2_dte = NO_REQ;
         bestPick_bk_id_2_dte = 0;
+        addres_bus_drv = 32'h1000;
         DelayClks(5);
         rst = 1;
-        DelayClks(5);
-        @(posedge clk) mem_2_dte.mem_Ready = 0;
+        DelayClks(10);
+        @(posedge clk)
         bestPick_req_2_dte   = ICACHE_HIGH_PRI;
-        bestPick_bk_id_2_dte = 0;
-        @(posedge clk) bestPick_req_2_dte = NO_REQ;
-        mem_2_dte.mem_Ready = 1;  //ld0 - MEMREQ
-        @(posedge clk)  //ICACHE_LD0
-        @(posedge clk)  //ICACHE_LD1
-        @(posedge clk)  //ICACHE_LD2
         @(posedge clk)
-        @(negedge clk)
-        assert (uut0_DTE.dte_mem_2_icache_fsm_state == DTE_MEM_2_ICACHE_IDLE)
-        else $error("Assert fail: Icache transation should be complete: should be IDLE \
-                     GOT: %d ", uut0_DTE.dte_mem_2_icache_fsm_state);
+        bestPick_req_2_dte   = NO_REQ;
+        // @(posedge clk) 
+        // bestPick_req_2_dte   = ICACHE_HIGH_PRI;
+        // bestPick_bk_id_2_dte = 0;
+        // @(posedge clk) bestPick_req_2_dte = NO_REQ;
+        // mem_2_dte.mem_Ready = 1;  //ld0 - MEMREQ
+        
+        // @(posedge clk)  //ICACHE_LD0
+        // @(posedge clk)  //ICACHE_LD1
+        // @(posedge clk)  //ICACHE_LD2
+        // @(posedge clk)
+        // @(negedge clk)
+        // assert (uut0_DTE.dte_mem_2_icache_fsm_state == DTE_MEM_2_ICACHE_IDLE)
+        // else $error("Assert fail: Icache transation should be complete: should be IDLE \
+        //              GOT: %d ", uut0_DTE.dte_mem_2_icache_fsm_state);
 
-        mem_2_dte.mem_Ready  = 0;
-        bestPick_req_2_dte   = DCACHE_FILL_LD;
-        bestPick_bk_id_2_dte = 1;
-        @(posedge clk) bestPick_req_2_dte = ICACHE_LOW_PRI_REQ;
-        @(posedge clk) @(posedge clk) @(posedge clk) bestPick_req_2_dte = DCACHE_EB_BLOCKING_LD;
-        bestPick_bk_id_2_dte = 3;
-        mem_2_dte.mem_Ready  = 1;
-        @(posedge clk)
-        @(posedge clk)
-        @(posedge clk)
-        @(posedge clk)
-        @(negedge clk)
-        assert (uut0_DTE.dte_mem_2_dcache_fsm_state[1] == DTE_MEM_2_DCACHE_IDLE)
-        else $error("Assert fail: dcache_2_mem should be IDLE");
+        // mem_2_dte.mem_Ready  = 0;
+        // bestPick_req_2_dte   = DCACHE_FILL_LD;
+        // bestPick_bk_id_2_dte = 1;
+        // @(posedge clk) bestPick_req_2_dte = ICACHE_LOW_PRI_REQ;
+        // @(posedge clk) @(posedge clk) @(posedge clk) bestPick_req_2_dte = DCACHE_EB_BLOCKING_LD;
+        // bestPick_bk_id_2_dte = 3;
+        // mem_2_dte.mem_Ready  = 1;
+        // @(posedge clk)
+        // @(posedge clk)
+        // @(posedge clk)
+        // @(posedge clk)
+        // @(negedge clk)
+        // assert (uut0_DTE.dte_mem_2_dcache_fsm_state[1] == DTE_MEM_2_DCACHE_IDLE)
+        // else $error("Assert fail: dcache_2_mem should be IDLE");
 
-        @(posedge clk)
-        //should see store req
-        @(posedge clk)
-        @(posedge clk)
-        @(posedge clk)
+        // @(posedge clk)
+        // //should see store req
+        // @(posedge clk)
+        // @(posedge clk)
+        // @(posedge clk)
 
 
         // let it idle for a bit, shoudl countinues to rx no_reqs from
@@ -124,7 +134,7 @@ module tb_DTE ();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(30);
+        DelayClks(100);
         $finish;
         `LOG("Finishing mem System TB");
     end

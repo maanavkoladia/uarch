@@ -259,6 +259,7 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         (bestPick_i == DCACHE_EB_BLOCKING_ST_OVERRIDE) ||
         (bestPick_i == DCACHE_EB_BLOCKING_LD)          ||
         (bestPick_i == DCACHE_EB_BLOCK_ST)             ||
+        (bestPick_i == DCACHE_EB_BLOCKING_BANK)        ||
         (bestPick_i == DCACHE_EB_WR);
 
     bool dcache_2_mem_bk_hit[NUM_DCACHE_PORTS];
