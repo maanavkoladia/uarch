@@ -79,10 +79,10 @@ module kogge_stone_adder #(
     generate
         for (i = 0; i < WIDTH; i = i + 1) begin : gen_pg
             pg_cell u_pg (
-                .a (a[i]),
-                .b (b[i]),
-                .g (g_arr[i]),   // stage-0, bit-i generate
-                .p (p_arr[i])    // stage-0, bit-i propagate
+                .a(a[i]),
+                .b(b[i]),
+                .g(g_arr[i]),  // stage-0, bit-i generate
+                .p(p_arr[i])   // stage-0, bit-i propagate
             );
         end
     endgenerate
@@ -102,40 +102,40 @@ module kogge_stone_adder #(
         for (s = 1; s <= STAGES; s = s + 1) begin : gen_stage
             for (i = 0; i < WIDTH; i = i + 1) begin : gen_bit
 
-                if (i >= (1 << (s-1))) begin : g_active
+                if (i >= (1 << (s - 1))) begin : g_active
 
                     //if (s < STAGES) begin : g_black ///// bug here, s will never be stages until end of loop, need to build this part myself
-                    if(i >= (1 << s)) begin : g_black
+                    if (i >= (1 << s)) begin : g_black
                         // ---- Black Cell ----------------------------------------
                         black_cell u_black (
-                            .g_hi  (g_arr[(s-1)*WIDTH + i]),
-                            .p_hi  (p_arr[(s-1)*WIDTH + i]),
-                            .g_lo  (g_arr[(s-1)*WIDTH + i - (1 << (s-1))]),
-                            .p_lo  (p_arr[(s-1)*WIDTH + i - (1 << (s-1))]),
-                            .g_out (g_arr[s*WIDTH + i]),
-                            .p_out (p_arr[s*WIDTH + i])
+                            .g_hi (g_arr[(s-1)*WIDTH+i]),
+                            .p_hi (p_arr[(s-1)*WIDTH+i]),
+                            .g_lo (g_arr[(s-1)*WIDTH+i-(1<<(s-1))]),
+                            .p_lo (p_arr[(s-1)*WIDTH+i-(1<<(s-1))]),
+                            .g_out(g_arr[s*WIDTH+i]),
+                            .p_out(p_arr[s*WIDTH+i])
                         );
                     end else begin : g_gray
                         // ---- Gray Cell (final stage — G only) ------------------
                         gray_cell u_gray (
-                            .g_hi  (g_arr[(s-1)*WIDTH + i]),
-                            .p_hi  (p_arr[(s-1)*WIDTH + i]),
-                            .g_lo  (g_arr[(s-1)*WIDTH + i - (1 << (s-1))]),
-                            .g_out (g_arr[s*WIDTH + i])
+                            .g_hi (g_arr[(s-1)*WIDTH+i]),
+                            .p_hi (p_arr[(s-1)*WIDTH+i]),
+                            .g_lo (g_arr[(s-1)*WIDTH+i-(1<<(s-1))]),
+                            .g_out(g_arr[s*WIDTH+i])
                         );
                         // P is not consumed after the last stage; tie off to
                         // avoid undriven-wire warnings in simulation.
-                        assign p_arr[s*WIDTH + i] = 1'b0;
+                        assign p_arr[s*WIDTH+i] = 1'b0;
                     end
 
                 end else begin : g_passthrough
                     // ---- Wire pass-through (bit not yet reached by this step) --
-                    assign g_arr[s*WIDTH + i] = g_arr[(s-1)*WIDTH + i];
-                    assign p_arr[s*WIDTH + i] = p_arr[(s-1)*WIDTH + i];
+                    assign g_arr[s*WIDTH+i] = g_arr[(s-1)*WIDTH+i];
+                    assign p_arr[s*WIDTH+i] = p_arr[(s-1)*WIDTH+i];
                 end
 
-            end // gen_bit
-        end // gen_stage
+            end  // gen_bit
+        end  // gen_stage
     endgenerate
 
     // ----------------------------------------------------------
@@ -151,17 +151,17 @@ module kogge_stone_adder #(
     generate
         // Bit 0 — driven by external carry-in
         sum_cell u_sum_lsb (
-            .p    (p_arr[0]),
-            .c_in (cin),
-            .sum  (sum[0])
+            .p   (p_arr[0]),
+            .c_in(cin),
+            .sum (sum[0])
         );
 
         // Bits 1 .. WIDTH-1 — driven by prefix-tree carry
         for (i = 1; i < WIDTH; i = i + 1) begin : gen_sum
             sum_cell u_sum (
-                .p    (p_arr[i]),
-                .c_in (g_arr[STAGES*WIDTH + i - 1]),
-                .sum  (sum[i])
+                .p   (p_arr[i]),
+                .c_in(g_arr[STAGES*WIDTH+i-1]),
+                .sum (sum[i])
             );
         end
     endgenerate
@@ -169,7 +169,7 @@ module kogge_stone_adder #(
     // ----------------------------------------------------------
     //  Carry-out — group generate spanning all WIDTH bits
     // ----------------------------------------------------------
-    assign cout = g_arr[STAGES*WIDTH + WIDTH - 1];
+    assign cout = g_arr[STAGES*WIDTH+WIDTH-1];
 
 endmodule
 
@@ -186,8 +186,16 @@ module pg_cell (
     output wire g,
     output wire p
 );
-    and2$ u_gen(g, a, b);
-    xor2$ u_prop(p, a, b);
+    and2$ u_gen (
+        g,
+        a,
+        b
+    );
+    xor2$ u_prop (
+        p,
+        a,
+        b
+    );
 endmodule
 
 
@@ -211,9 +219,21 @@ module black_cell (
     output wire p_out
 );
     wire p_and_g;
-    and2$ u_and1 (p_and_g, p_hi, g_lo);   // P_hi & G_lo
-    or2$  u_or   (g_out,   g_hi, p_and_g); // G_hi | (P_hi & G_lo)
-    and2$ u_and2 (p_out,   p_hi, p_lo);    // P_hi & P_lo
+    and2$ u_and1 (
+        p_and_g,
+        p_hi,
+        g_lo
+    );  // P_hi & G_lo
+    or2$ u_or (
+        g_out,
+        g_hi,
+        p_and_g
+    );  // G_hi | (P_hi & G_lo)
+    and2$ u_and2 (
+        p_out,
+        p_hi,
+        p_lo
+    );  // P_hi & P_lo
 endmodule
 
 
@@ -232,8 +252,16 @@ module gray_cell (
     output wire g_out
 );
     wire p_and_g;
-    and2$ u_and (p_and_g, p_hi, g_lo);    // P_hi & G_lo
-    or2$  u_or  (g_out,   g_hi, p_and_g); // G_hi | (P_hi & G_lo)
+    and2$ u_and (
+        p_and_g,
+        p_hi,
+        g_lo
+    );  // P_hi & G_lo
+    or2$ u_or (
+        g_out,
+        g_hi,
+        p_and_g
+    );  // G_hi | (P_hi & G_lo)
 endmodule
 
 
@@ -249,5 +277,9 @@ module sum_cell (
     input  wire c_in,
     output wire sum
 );
-    xor2$ u_xor (sum, p, c_in);
+    xor2$ u_xor (
+        sum,
+        p,
+        c_in
+    );
 endmodule

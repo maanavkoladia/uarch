@@ -26,7 +26,7 @@ module tb_KoggeStone ();
     logic cout_o;
 
 
-    kogge_stone_adder uut_KS #(
+    kogge_stone_adder  uut_KS #(
         .WIDTH(KS_WIDTH)
     ) (
         .a(a_i),

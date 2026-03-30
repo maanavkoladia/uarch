@@ -17,5 +17,7 @@
     "readmemFilePath"         : "memLoader.sv",
     "memCellPath"             : "tb_memSystem.u_mem.g_mem_banks[<bankNum>].mem_bank.g_sram_cells[<cellNum>].mem_cell.mem",
     "startUpDelay"            : "30",
-    "pkg_Name"                : "memGen/tb_mainMem_pkg.sv"
+    "pkg_Name"                : "memGen/tb_mainMem_pkg.sv",
+
+    "LoggerName" : "memLogger.sv"
 }
