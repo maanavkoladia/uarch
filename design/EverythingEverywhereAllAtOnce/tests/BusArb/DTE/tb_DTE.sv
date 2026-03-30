@@ -1,5 +1,6 @@
 import common_pkg::*;
 import interconnect_pkg::*;
+import DTE_FSM_gen_pkg::*;
 
 module tb_DTE ();
     localparam int Clk_PERIOD = 10;
@@ -63,13 +64,45 @@ module tb_DTE ();
         DelayClks(5);
         rst = 1;
         DelayClks(5);
+        @(posedge clk)
         mem_2_dte.mem_Ready = 0;
         bestPick_req_2_dte = ICACHE_HIGH_PRI;
         bestPick_bk_id_2_dte = 0;
         @(posedge clk)
         bestPick_req_2_dte = NO_REQ;
+        mem_2_dte.mem_Ready = 1; //ld0 - MEMREQ
+        @(posedge clk) //ICACHE_LD0
+        @(posedge clk) //ICACHE_LD1
+        @(posedge clk) //ICACHE_LD2
+        @(posedge clk)
+        @(negedge clk)
+        assert(uut0_DTE.dte_mem_2_icache_fsm_state == DTE_MEM_2_ICACHE_IDLE)
+        else $error("Assert fail: Icache transation should be complete: should be IDLE \
+                     GOT: %d ", uut0_DTE.dte_mem_2_icache_fsm_state);
+
+        mem_2_dte.mem_Ready = 0;
+        bestPick_req_2_dte = DCACHE_FILL_LD;
+        bestPick_bk_id_2_dte = 1;
+        @(posedge clk)
+        bestPick_req_2_dte = ICACHE_LOW_PRI_REQ;
+        @(posedge clk)
+        @(posedge clk)
+        @(posedge clk)
+        bestPick_req_2_dte = DCACHE_EB_BLOCKING_LD;
+        bestPick_bk_id_2_dte = 3;
         mem_2_dte.mem_Ready = 1;
-        
+        @(posedge clk)
+        @(posedge clk)
+        @(posedge clk)
+        @(posedge clk)
+        @(negedge clk)
+        assert(uut0_DTE.dte_mem_2_dcache_fsm_state[1] == DTE_MEM_2_DCACHE_IDLE)
+        else $error("Assert fail: dcache_2_mem should be IDLE");
+
+        @(posedge clk)
+        //should see store req
+        @(posedge clk)
+        @(posedge clk)
         @(posedge clk)
 
 
