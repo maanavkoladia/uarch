@@ -5,7 +5,8 @@ module af_flag_sel(
 	input bool adc_af,
 	input bool cmp_af,
 	input bool sbb_op_af,
-	// Add more as needed if new functional units affect AF
+	
+    input bool curr_af_flag,
 	output bool af_flag_o
 );
 
