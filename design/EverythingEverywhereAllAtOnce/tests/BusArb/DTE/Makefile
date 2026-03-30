@@ -8,7 +8,9 @@ GEN_CONF = startUpGen.conf.json
 TOP_FILE_NAME = tb_DTE
 
 STARTUP_FILES = \
+				gen/print_icache.sv \
 				gen/memLoader.sv	\
+				gen/icache_loader.sv \
 
 TB_FILES = \
 		   $(STARTUP_FILES)	\

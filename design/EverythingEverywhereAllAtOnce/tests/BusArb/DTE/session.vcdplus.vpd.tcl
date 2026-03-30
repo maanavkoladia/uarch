@@ -1,22 +1,20 @@
 # Begin_DVE_Session_Save_Info
 # DVE full session
-# Saved on Mon Mar 30 01:30:45 2026
+# Saved on Mon Mar 30 03:01:20 2026
 # Designs open: 1
 #   V1: vcdplus.vpd
 # Toplevel windows open: 2
 # 	TopLevel.1
 # 	TopLevel.2
-#   Source.1: tb_DTE.uut0_DTE
-#   Wave.1: 720 signals
-#   Group count = 22
-#   Group tb_DTE signal count = 12
-#   Group Group1 signal count = 14
-#   Group tb_DTE_1 signal count = 16
-#   Group uut0_DTE signal count = 57
-#   Group uut1_mem signal count = 13
-#   Group uut0_DTE_1 signal count = 58
-#   Group DTE_MEM_2_ICache signal count = 43
+#   Source.1: tb_DTE
+#   Wave.1: 125 signals
+#   Group count = 6
+#   Group tb_DTE signal count = 3
 #   Group controller signal count = 20
+#   Group tb_DTE_1 signal count = 17
+#   Group uut1_mem signal count = 13
+#   Group uut0_DTE signal count = 58
+#   Group g_mem_banks[0].mem_bank signal count = 17
 # End_DVE_Session_Save_Info
 
 # DVE version: T-2022.06_Full64
@@ -217,7 +215,7 @@ gui_sync_global -id ${TopLevel.2} -option true
 # MDI window settings
 set Wave.1 [gui_create_window -type {Wave}  -parent ${TopLevel.2}]
 gui_show_window -window ${Wave.1} -show_state maximized
-gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 542} {child_wave_right 1319} {child_wave_colname 288} {child_wave_colvalue 250} {child_wave_col1 0} {child_wave_col2 1}}
+gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 565} {child_wave_right 1296} {child_wave_colname 299} {child_wave_colvalue 262} {child_wave_col1 0} {child_wave_col2 1}}
 
 # End MDI window settings
 
@@ -256,200 +254,54 @@ gui_set_time_units 1ns
 # Global: Signal Compare
 
 # Global: Signal Groups
-gui_load_child_values {tb_DTE.uut0_DTE.core_2_ddr5_fsm}
-gui_load_child_values {tb_DTE.uut0_DTE.dma_2_mem_fsm}
-gui_load_child_values {tb_DTE.uut0_DTE.ddr5_2_core_fsm}
+gui_load_child_values {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank}
 gui_load_child_values {tb_DTE.uut0_DTE}
 gui_load_child_values {tb_DTE.uut1_mem.controller}
-gui_load_child_values {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm}
-gui_load_child_values {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm}
-gui_load_child_values {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm}
-gui_load_child_values {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm}
-gui_load_child_values {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm}
-gui_load_child_values {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm}
-gui_load_child_values {tb_DTE.uut0_DTE.core_2_dma_fsm}
 gui_load_child_values {tb_DTE.uut1_mem}
-gui_load_child_values {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm}
-gui_load_child_values {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm}
 gui_load_child_values {tb_DTE}
-gui_load_child_values {tb_DTE.uut0_DTE.DTE_MEM_2_ICache}
 
 
-set _session_group_161 tb_DTE
-gui_sg_create "$_session_group_161"
-set tb_DTE "$_session_group_161"
+set _session_group_622 tb_DTE
+gui_sg_create "$_session_group_622"
+set tb_DTE "$_session_group_622"
 
-gui_sg_addsignal -group "$_session_group_161" { {tb_DTE.$unit} tb_DTE.rst tb_DTE.clk tb_DTE.bestPick_req_2_dte tb_DTE.bestPick_bk_id_2_dte tb_DTE.Clk_PERIOD tb_DTE.dte_2_icache tb_DTE.dte_2_dcache tb_DTE.mem_2_dte tb_DTE.dte_2_mem tb_DTE.dte_2_dma tb_DTE.dte_2_ddr5 }
+gui_sg_addsignal -group "$_session_group_622" { {tb_DTE.$unit} tb_DTE.rst tb_DTE.clk }
+
+set _session_group_623 controller
+gui_sg_create "$_session_group_623"
+set controller "$_session_group_623"
+
+gui_sg_addsignal -group "$_session_group_623" { {tb_DTE.uut1_mem.controller.$unit} tb_DTE.uut1_mem.controller.DTE_i tb_DTE.uut1_mem.controller.ToDTE_o tb_DTE.uut1_mem.controller.ToScheduler_o tb_DTE.uut1_mem.controller.address_bus tb_DTE.uut1_mem.controller.bankBits_InChip tb_DTE.uut1_mem.controller.bankGroupTable tb_DTE.uut1_mem.controller.bankGroup tb_DTE.uut1_mem.controller.bank_cmds_o tb_DTE.uut1_mem.controller.banks_i tb_DTE.uut1_mem.controller.chipNum tb_DTE.uut1_mem.controller.chipTable tb_DTE.uut1_mem.controller.clk tb_DTE.uut1_mem.controller.data_bus tb_DTE.uut1_mem.controller.fsm_outs tb_DTE.uut1_mem.controller.fsm_state tb_DTE.uut1_mem.controller.hit_into_fsm tb_DTE.uut1_mem.controller.mem_controller_state_bits tb_DTE.uut1_mem.controller.rowBitFromChipAddress tb_DTE.uut1_mem.controller.rst }
+
+set _session_group_624 tb_DTE_1
+gui_sg_create "$_session_group_624"
+set tb_DTE_1 "$_session_group_624"
+
+gui_sg_addsignal -group "$_session_group_624" { {tb_DTE.$unit} tb_DTE.Clk_PERIOD tb_DTE.addres_bus_drv tb_DTE.address_bus tb_DTE.bestPick_bk_id_2_dte tb_DTE.bestPick_req_2_dte tb_DTE.clk tb_DTE.data_bus tb_DTE.data_bus_drv tb_DTE.dte_2_dcache tb_DTE.dte_2_ddr5 tb_DTE.dte_2_dma tb_DTE.dte_2_icache tb_DTE.dte_2_mem tb_DTE.mem_2_dte tb_DTE.mem_2_sch tb_DTE.rst }
 gui_set_radix -radix {decimal} -signals {V1:tb_DTE.Clk_PERIOD}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_DTE.Clk_PERIOD}
 
-set _session_group_162 Group1
-gui_sg_create "$_session_group_162"
-set Group1 "$_session_group_162"
+set _session_group_625 uut1_mem
+gui_sg_create "$_session_group_625"
+set uut1_mem "$_session_group_625"
 
-gui_sg_addsignal -group "$_session_group_162" { }
+gui_sg_addsignal -group "$_session_group_625" { {tb_DTE.uut1_mem.$unit} tb_DTE.uut1_mem.address_bus tb_DTE.uut1_mem.bank_out_2_controller tb_DTE.uut1_mem.clk tb_DTE.uut1_mem.controller_2_bank_Cmds tb_DTE.uut1_mem.dataToDrive tb_DTE.uut1_mem.data_bus tb_DTE.uut1_mem.drive_Data_Bus tb_DTE.uut1_mem.inFromDte tb_DTE.uut1_mem.mem_bus tb_DTE.uut1_mem.out2Dte tb_DTE.uut1_mem.out2Sch tb_DTE.uut1_mem.rst }
 
-set _session_group_163 $_session_group_162|
-append _session_group_163 uut0_DTE
-gui_sg_create "$_session_group_163"
-set Group1|uut0_DTE "$_session_group_163"
+set _session_group_626 uut0_DTE
+gui_sg_create "$_session_group_626"
+set uut0_DTE "$_session_group_626"
 
-gui_sg_addsignal -group "$_session_group_163" { {tb_DTE.uut0_DTE.$unit} tb_DTE.uut0_DTE.clk tb_DTE.uut0_DTE.DTE_Busy tb_DTE.uut0_DTE.bestPick_bk_id_i tb_DTE.uut0_DTE.bestPick_i tb_DTE.uut0_DTE.core_2_ddr5_driveAddrBus_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_drvDB_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_reqServed_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_req_hit tb_DTE.uut0_DTE.core_2_dma_driveAddrBus_fsmOut tb_DTE.uut0_DTE.core_2_dma_drvDB_fsmOut tb_DTE.uut0_DTE.core_2_dma_reqServed_fsmOut tb_DTE.uut0_DTE.core_2_dma_req_hit tb_DTE.uut0_DTE.dcache_2_mem_bk_hit tb_DTE.uut0_DTE.dcache_2_mem_fsmout_busy_per tb_DTE.uut0_DTE.dcache_2_mem_req_hit tb_DTE.uut0_DTE.dcache_2_mem_st_req_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_driveAddrBus_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_reqServed_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_req_hit tb_DTE.uut0_DTE.dma_2_mem_req_hit tb_DTE.uut0_DTE.dma_2_mem_st_req_fsmOut tb_DTE.uut0_DTE.dte_2_ddr5_o tb_DTE.uut0_DTE.dte_2_dma_o tb_DTE.uut0_DTE.dte_2_mem_o tb_DTE.uut0_DTE.dte_dcache_2_mem_fsm_state tb_DTE.uut0_DTE.dte_mem_2_dcache_fsm_state tb_DTE.uut0_DTE.dte_mem_2_icache_fsm_state tb_DTE.uut0_DTE.dte_out_2_dcache_o tb_DTE.uut0_DTE.dte_out_2_icache_o tb_DTE.uut0_DTE.mem_2_dcache_bk_hit tb_DTE.uut0_DTE.mem_2_dcache_drv_db_fsmOut tb_DTE.uut0_DTE.mem_2_dcache_fsmout_busy_per tb_DTE.uut0_DTE.mem_2_dcache_ld_req_fsmOut tb_DTE.uut0_DTE.mem_2_dcache_req_hit tb_DTE.uut0_DTE.mem_2_dte_i tb_DTE.uut0_DTE.mem_2_icache_drv_db_fsmOut tb_DTE.uut0_DTE.mem_2_icache_ld_req_fsmOut tb_DTE.uut0_DTE.mem_2_icache_req_hit tb_DTE.uut0_DTE.rst }
+gui_sg_addsignal -group "$_session_group_626" { {tb_DTE.uut0_DTE.$unit} tb_DTE.uut0_DTE.DTE_Busy tb_DTE.uut0_DTE.bestPick_bk_id_i tb_DTE.uut0_DTE.bestPick_i tb_DTE.uut0_DTE.clk tb_DTE.uut0_DTE.core_2_ddr5_driveAddrBus_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_drvDB_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_fsmout_busy tb_DTE.uut0_DTE.core_2_ddr5_reqServed_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_req_hit tb_DTE.uut0_DTE.core_2_dma_driveAddrBus_fsmOut tb_DTE.uut0_DTE.core_2_dma_drvDB_fsmOut tb_DTE.uut0_DTE.core_2_dma_fsmout_busy tb_DTE.uut0_DTE.core_2_dma_reqServed_fsmOut tb_DTE.uut0_DTE.core_2_dma_req_hit tb_DTE.uut0_DTE.dcache_2_mem_bk_hit tb_DTE.uut0_DTE.dcache_2_mem_fsmout_busy tb_DTE.uut0_DTE.dcache_2_mem_fsmout_busy_per tb_DTE.uut0_DTE.dcache_2_mem_req_hit tb_DTE.uut0_DTE.dcache_2_mem_st_req_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_driveAddrBus_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_fsmout_busy tb_DTE.uut0_DTE.ddr5_2_core_reqServed_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_req_hit tb_DTE.uut0_DTE.dma_2_mem_fsmout_busy tb_DTE.uut0_DTE.dma_2_mem_req_hit tb_DTE.uut0_DTE.dma_2_mem_st_req_fsmOut tb_DTE.uut0_DTE.dte_2_ddr5_o tb_DTE.uut0_DTE.dte_2_dma_o tb_DTE.uut0_DTE.dte_2_mem_o tb_DTE.uut0_DTE.dte_core_2_ddr5_fsm_state tb_DTE.uut0_DTE.dte_core_2_ddr5_fsm_state_bits tb_DTE.uut0_DTE.dte_core_2_dma_fsm_state tb_DTE.uut0_DTE.dte_core_2_dma_fsm_state_bits tb_DTE.uut0_DTE.dte_dcache_2_mem_fsm_state tb_DTE.uut0_DTE.dte_dcache_2_mem_fsm_state_bits tb_DTE.uut0_DTE.dte_ddr5_2_core_fsm_state tb_DTE.uut0_DTE.dte_ddr5_2_core_fsm_state_bits tb_DTE.uut0_DTE.dte_dma_2_mem_fsm_state tb_DTE.uut0_DTE.dte_dma_2_mem_fsm_state_bits tb_DTE.uut0_DTE.dte_mem_2_dcache_fsm_state tb_DTE.uut0_DTE.dte_mem_2_dcache_fsm_state_bits tb_DTE.uut0_DTE.dte_mem_2_icache_fsm_state tb_DTE.uut0_DTE.dte_mem_2_icache_fsm_state_bits tb_DTE.uut0_DTE.dte_out_2_dcache_o tb_DTE.uut0_DTE.dte_out_2_icache_o tb_DTE.uut0_DTE.mem_2_dcache_bk_hit tb_DTE.uut0_DTE.mem_2_dcache_drv_db_fsmOut tb_DTE.uut0_DTE.mem_2_dcache_fsmout_busy tb_DTE.uut0_DTE.mem_2_dcache_fsmout_busy_per tb_DTE.uut0_DTE.mem_2_dcache_ld_req_fsmOut tb_DTE.uut0_DTE.mem_2_dcache_req_hit tb_DTE.uut0_DTE.mem_2_dte_i tb_DTE.uut0_DTE.mem_2_icache_drv_db_fsmOut tb_DTE.uut0_DTE.mem_2_icache_fsmout_busy tb_DTE.uut0_DTE.mem_2_icache_ld_req_fsmOut tb_DTE.uut0_DTE.mem_2_icache_req_hit tb_DTE.uut0_DTE.rst }
 
-gui_sg_move "$_session_group_163" -after "$_session_group_162" -pos 10 
+set _session_group_627 {g_mem_banks[0].mem_bank}
+gui_sg_create "$_session_group_627"
+set {g_mem_banks[0].mem_bank} "$_session_group_627"
 
-set _session_group_164 $_session_group_162|
-append _session_group_164 DTE_MEM_2_ICache
-gui_sg_create "$_session_group_164"
-set Group1|DTE_MEM_2_ICache "$_session_group_164"
-
-gui_sg_addsignal -group "$_session_group_164" { {tb_DTE.uut0_DTE.DTE_MEM_2_ICache.$unit} tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o_t3 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drv_DB_0_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drv_DB_1_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drv_DB_2_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drv_DB_3_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_0_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_0_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_0_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_1_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_1_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_2_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_2_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_2_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.S_0_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.S_1_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.S_2_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.busy_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.busy_o_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.busy_o_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.busy_o_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.clk tb_DTE.uut0_DTE.DTE_MEM_2_ICache.ld_req_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_ready_i tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_ready_i_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_valid_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_valid_o_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_valid_o_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_valid_o_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.others_busy_i tb_DTE.uut0_DTE.DTE_MEM_2_ICache.others_busy_i_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.req_hit_i tb_DTE.uut0_DTE.DTE_MEM_2_ICache.rst }
-
-gui_sg_move "$_session_group_164" -after "$_session_group_162" -pos 9 
-
-set _session_group_165 $_session_group_162|
-append _session_group_165 core_2_ddr5_fsm
-gui_sg_create "$_session_group_165"
-set Group1|core_2_ddr5_fsm "$_session_group_165"
-
-gui_sg_addsignal -group "$_session_group_165" { {tb_DTE.uut0_DTE.core_2_ddr5_fsm.$unit} tb_DTE.uut0_DTE.core_2_ddr5_fsm.Drive_Addr_Bus_o tb_DTE.uut0_DTE.core_2_ddr5_fsm.Drive_Addr_Bus_o_t0 tb_DTE.uut0_DTE.core_2_ddr5_fsm.Drive_Addr_Bus_o_t1 tb_DTE.uut0_DTE.core_2_ddr5_fsm.Drv_DB_o tb_DTE.uut0_DTE.core_2_ddr5_fsm.NS_0 tb_DTE.uut0_DTE.core_2_ddr5_fsm.NS_1 tb_DTE.uut0_DTE.core_2_ddr5_fsm.NS_1_t0 tb_DTE.uut0_DTE.core_2_ddr5_fsm.NS_1_t1 tb_DTE.uut0_DTE.core_2_ddr5_fsm.S_0 tb_DTE.uut0_DTE.core_2_ddr5_fsm.S_0_inv tb_DTE.uut0_DTE.core_2_ddr5_fsm.S_1 tb_DTE.uut0_DTE.core_2_ddr5_fsm.S_1_inv tb_DTE.uut0_DTE.core_2_ddr5_fsm.busy_o tb_DTE.uut0_DTE.core_2_ddr5_fsm.busy_o_t0 tb_DTE.uut0_DTE.core_2_ddr5_fsm.busy_o_t1 tb_DTE.uut0_DTE.core_2_ddr5_fsm.clk tb_DTE.uut0_DTE.core_2_ddr5_fsm.newPowerGateValueFromCore_o tb_DTE.uut0_DTE.core_2_ddr5_fsm.others_busy_i tb_DTE.uut0_DTE.core_2_ddr5_fsm.others_busy_i_inv tb_DTE.uut0_DTE.core_2_ddr5_fsm.reqServed_o tb_DTE.uut0_DTE.core_2_ddr5_fsm.req_hit_i tb_DTE.uut0_DTE.core_2_ddr5_fsm.rst }
-
-gui_sg_move "$_session_group_165" -after "$_session_group_162" -pos 8 
-
-set _session_group_166 $_session_group_162|
-append _session_group_166 core_2_dma_fsm
-gui_sg_create "$_session_group_166"
-set Group1|core_2_dma_fsm "$_session_group_166"
-
-gui_sg_addsignal -group "$_session_group_166" { {tb_DTE.uut0_DTE.core_2_dma_fsm.$unit} tb_DTE.uut0_DTE.core_2_dma_fsm.Drive_Addr_Bus_o tb_DTE.uut0_DTE.core_2_dma_fsm.Drive_Addr_Bus_o_t0 tb_DTE.uut0_DTE.core_2_dma_fsm.Drive_Addr_Bus_o_t1 tb_DTE.uut0_DTE.core_2_dma_fsm.Drv_DB_o tb_DTE.uut0_DTE.core_2_dma_fsm.NS_0 tb_DTE.uut0_DTE.core_2_dma_fsm.NS_1 tb_DTE.uut0_DTE.core_2_dma_fsm.NS_1_t0 tb_DTE.uut0_DTE.core_2_dma_fsm.NS_1_t1 tb_DTE.uut0_DTE.core_2_dma_fsm.S_0 tb_DTE.uut0_DTE.core_2_dma_fsm.S_0_inv tb_DTE.uut0_DTE.core_2_dma_fsm.S_1 tb_DTE.uut0_DTE.core_2_dma_fsm.S_1_inv tb_DTE.uut0_DTE.core_2_dma_fsm.busy_o tb_DTE.uut0_DTE.core_2_dma_fsm.busy_o_t0 tb_DTE.uut0_DTE.core_2_dma_fsm.busy_o_t1 tb_DTE.uut0_DTE.core_2_dma_fsm.clk tb_DTE.uut0_DTE.core_2_dma_fsm.coreValOnBus_o tb_DTE.uut0_DTE.core_2_dma_fsm.others_busy_i tb_DTE.uut0_DTE.core_2_dma_fsm.others_busy_i_inv tb_DTE.uut0_DTE.core_2_dma_fsm.reqServed_o tb_DTE.uut0_DTE.core_2_dma_fsm.req_hit_i tb_DTE.uut0_DTE.core_2_dma_fsm.rst }
-
-gui_sg_move "$_session_group_166" -after "$_session_group_162" -pos 7 
-
-set _session_group_167 $_session_group_162|
-append _session_group_167 ddr5_2_core_fsm
-gui_sg_create "$_session_group_167"
-set Group1|ddr5_2_core_fsm "$_session_group_167"
-
-gui_sg_addsignal -group "$_session_group_167" { {tb_DTE.uut0_DTE.ddr5_2_core_fsm.$unit} tb_DTE.uut0_DTE.ddr5_2_core_fsm.Drive_Addr_Bus_o tb_DTE.uut0_DTE.ddr5_2_core_fsm.Drive_Addr_Bus_o_t0 tb_DTE.uut0_DTE.ddr5_2_core_fsm.Drive_Addr_Bus_o_t1 tb_DTE.uut0_DTE.ddr5_2_core_fsm.Drv_DB_o tb_DTE.uut0_DTE.ddr5_2_core_fsm.NS_0 tb_DTE.uut0_DTE.ddr5_2_core_fsm.NS_1 tb_DTE.uut0_DTE.ddr5_2_core_fsm.NS_1_t0 tb_DTE.uut0_DTE.ddr5_2_core_fsm.NS_1_t1 tb_DTE.uut0_DTE.ddr5_2_core_fsm.S_0 tb_DTE.uut0_DTE.ddr5_2_core_fsm.S_0_inv tb_DTE.uut0_DTE.ddr5_2_core_fsm.S_1 tb_DTE.uut0_DTE.ddr5_2_core_fsm.S_1_inv tb_DTE.uut0_DTE.ddr5_2_core_fsm.busy_o tb_DTE.uut0_DTE.ddr5_2_core_fsm.busy_o_t0 tb_DTE.uut0_DTE.ddr5_2_core_fsm.busy_o_t1 tb_DTE.uut0_DTE.ddr5_2_core_fsm.clk tb_DTE.uut0_DTE.ddr5_2_core_fsm.others_busy_i tb_DTE.uut0_DTE.ddr5_2_core_fsm.others_busy_i_inv tb_DTE.uut0_DTE.ddr5_2_core_fsm.reqServed_o tb_DTE.uut0_DTE.ddr5_2_core_fsm.req_hit_i tb_DTE.uut0_DTE.ddr5_2_core_fsm.rst }
-
-gui_sg_move "$_session_group_167" -after "$_session_group_162" -pos 6 
-
-set _session_group_168 $_session_group_162|
-append _session_group_168 dma_2_mem_fsm
-gui_sg_create "$_session_group_168"
-set Group1|dma_2_mem_fsm "$_session_group_168"
-
-gui_sg_addsignal -group "$_session_group_168" { {tb_DTE.uut0_DTE.dma_2_mem_fsm.$unit} tb_DTE.uut0_DTE.dma_2_mem_fsm.Drive_Addr_Bus_o tb_DTE.uut0_DTE.dma_2_mem_fsm.Drive_Addr_Bus_o_t0 tb_DTE.uut0_DTE.dma_2_mem_fsm.Drive_Addr_Bus_o_t1 tb_DTE.uut0_DTE.dma_2_mem_fsm.Drive_Addr_Bus_o_t2 tb_DTE.uut0_DTE.dma_2_mem_fsm.Drive_Addr_Bus_o_t3 tb_DTE.uut0_DTE.dma_2_mem_fsm.Drv_DB_0_o tb_DTE.uut0_DTE.dma_2_mem_fsm.Drv_DB_1_o tb_DTE.uut0_DTE.dma_2_mem_fsm.Drv_DB_2_o tb_DTE.uut0_DTE.dma_2_mem_fsm.Drv_DB_3_o tb_DTE.uut0_DTE.dma_2_mem_fsm.NS_0 tb_DTE.uut0_DTE.dma_2_mem_fsm.NS_0_t0 tb_DTE.uut0_DTE.dma_2_mem_fsm.NS_0_t1 tb_DTE.uut0_DTE.dma_2_mem_fsm.NS_1 tb_DTE.uut0_DTE.dma_2_mem_fsm.NS_1_t0 tb_DTE.uut0_DTE.dma_2_mem_fsm.NS_1_t1 tb_DTE.uut0_DTE.dma_2_mem_fsm.NS_2 tb_DTE.uut0_DTE.dma_2_mem_fsm.NS_2_t0 tb_DTE.uut0_DTE.dma_2_mem_fsm.NS_2_t1 tb_DTE.uut0_DTE.dma_2_mem_fsm.S_0 tb_DTE.uut0_DTE.dma_2_mem_fsm.S_0_inv tb_DTE.uut0_DTE.dma_2_mem_fsm.S_1 tb_DTE.uut0_DTE.dma_2_mem_fsm.S_1_inv tb_DTE.uut0_DTE.dma_2_mem_fsm.S_2 tb_DTE.uut0_DTE.dma_2_mem_fsm.S_2_inv tb_DTE.uut0_DTE.dma_2_mem_fsm.WriteComplete_o tb_DTE.uut0_DTE.dma_2_mem_fsm.busy_o tb_DTE.uut0_DTE.dma_2_mem_fsm.busy_o_t0 tb_DTE.uut0_DTE.dma_2_mem_fsm.busy_o_t1 tb_DTE.uut0_DTE.dma_2_mem_fsm.busy_o_t2 tb_DTE.uut0_DTE.dma_2_mem_fsm.busy_o_t3 tb_DTE.uut0_DTE.dma_2_mem_fsm.clk tb_DTE.uut0_DTE.dma_2_mem_fsm.others_busy_i tb_DTE.uut0_DTE.dma_2_mem_fsm.others_busy_i_inv tb_DTE.uut0_DTE.dma_2_mem_fsm.req_hit_i tb_DTE.uut0_DTE.dma_2_mem_fsm.rst tb_DTE.uut0_DTE.dma_2_mem_fsm.st_req_o }
-
-gui_sg_move "$_session_group_168" -after "$_session_group_162" -pos 5 
-
-set _session_group_169 $_session_group_162|
-append _session_group_169 {g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm}
-gui_sg_create "$_session_group_169"
-set {Group1|g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm} "$_session_group_169"
-
-gui_sg_addsignal -group "$_session_group_169" { {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.$unit} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.Drive_Addr_Bus_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.Drive_Addr_Bus_o_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.Drive_Addr_Bus_o_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.Drive_Addr_Bus_o_t2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.Drive_Addr_Bus_o_t3} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.Drv_DB_0_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.Drv_DB_1_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.Drv_DB_2_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.Drv_DB_3_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.NS_0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.NS_0_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.NS_0_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.NS_1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.NS_1_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.NS_1_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.NS_2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.NS_2_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.NS_2_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.S_0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.S_0_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.S_1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.S_1_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.S_2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.S_2_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.bank_hit_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.busy_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.busy_o_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.busy_o_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.busy_o_t2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.clk} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.eb_clear_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.others_busy_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.others_busy_i_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.req_hit_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.rst} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.set_eb_commit_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm.st_req_o} }
-
-gui_sg_move "$_session_group_169" -after "$_session_group_162" -pos 13 
-
-set _session_group_170 $_session_group_162|
-append _session_group_170 {g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm}
-gui_sg_create "$_session_group_170"
-set {Group1|g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm} "$_session_group_170"
-
-gui_sg_addsignal -group "$_session_group_170" { {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.$unit} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.Drive_Addr_Bus_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.Drive_Addr_Bus_o_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.Drive_Addr_Bus_o_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.Drive_Addr_Bus_o_t2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.Drive_Addr_Bus_o_t3} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.Drv_DB_0_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.Drv_DB_1_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.Drv_DB_2_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.Drv_DB_3_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.NS_0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.NS_0_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.NS_0_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.NS_1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.NS_1_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.NS_1_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.NS_2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.NS_2_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.NS_2_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.S_0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.S_0_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.S_1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.S_1_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.S_2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.S_2_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.bank_hit_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.busy_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.busy_o_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.busy_o_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.busy_o_t2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.clk} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.eb_clear_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.others_busy_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.others_busy_i_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.req_hit_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.rst} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.set_eb_commit_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm.st_req_o} }
-
-gui_sg_move "$_session_group_170" -after "$_session_group_162" -pos 12 
-
-set _session_group_171 $_session_group_162|
-append _session_group_171 {g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm}
-gui_sg_create "$_session_group_171"
-set {Group1|g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm} "$_session_group_171"
-
-gui_sg_addsignal -group "$_session_group_171" { {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.$unit} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.Drive_Addr_Bus_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.Drive_Addr_Bus_o_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.Drive_Addr_Bus_o_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.Drive_Addr_Bus_o_t2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.Drive_Addr_Bus_o_t3} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.Drv_DB_0_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.Drv_DB_1_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.Drv_DB_2_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.Drv_DB_3_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.NS_0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.NS_0_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.NS_0_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.NS_1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.NS_1_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.NS_1_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.NS_2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.NS_2_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.NS_2_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.S_0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.S_0_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.S_1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.S_1_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.S_2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.S_2_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.bank_hit_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.busy_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.busy_o_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.busy_o_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.busy_o_t2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.clk} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.eb_clear_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.others_busy_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.others_busy_i_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.req_hit_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.rst} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.set_eb_commit_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm.st_req_o} }
-
-gui_sg_move "$_session_group_171" -after "$_session_group_162" -pos 4 
-
-set _session_group_172 $_session_group_162|
-append _session_group_172 {g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm}
-gui_sg_create "$_session_group_172"
-set {Group1|g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm} "$_session_group_172"
-
-gui_sg_addsignal -group "$_session_group_172" { {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.$unit} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.Drive_Addr_Bus_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.Drive_Addr_Bus_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.Drive_Addr_Bus_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.Drive_Addr_Bus_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.Drive_Addr_Bus_o_t3} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.Drv_DB_0_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.Drv_DB_1_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.Drv_DB_2_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.Drv_DB_3_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_0_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_0_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_0_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_1_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_1_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_2_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_2_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.NS_2_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.S_0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.S_0_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.S_1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.S_1_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.S_2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.S_2_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.bank_hit_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.busy_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.busy_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.busy_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.busy_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.clk} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.ld_req_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.mem_ready_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.mem_ready_i_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.mem_valid_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.mem_valid_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.mem_valid_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.mem_valid_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.others_busy_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.others_busy_i_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.req_hit_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm.rst} }
-
-gui_sg_move "$_session_group_172" -after "$_session_group_162" -pos 3 
-
-set _session_group_173 $_session_group_162|
-append _session_group_173 {g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm}
-gui_sg_create "$_session_group_173"
-set {Group1|g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm} "$_session_group_173"
-
-gui_sg_addsignal -group "$_session_group_173" { {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.$unit} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.Drive_Addr_Bus_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.Drive_Addr_Bus_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.Drive_Addr_Bus_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.Drive_Addr_Bus_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.Drive_Addr_Bus_o_t3} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.Drv_DB_0_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.Drv_DB_1_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.Drv_DB_2_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.Drv_DB_3_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_0_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_0_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_0_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_1_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_1_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_2_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_2_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.NS_2_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.S_0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.S_0_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.S_1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.S_1_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.S_2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.S_2_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.bank_hit_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.busy_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.busy_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.busy_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.busy_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.clk} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.ld_req_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.mem_ready_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.mem_ready_i_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.mem_valid_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.mem_valid_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.mem_valid_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.mem_valid_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.others_busy_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.others_busy_i_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.req_hit_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm.rst} }
-
-gui_sg_move "$_session_group_173" -after "$_session_group_162" -pos 2 
-
-set _session_group_174 $_session_group_162|
-append _session_group_174 {g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm}
-gui_sg_create "$_session_group_174"
-set {Group1|g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm} "$_session_group_174"
-
-gui_sg_addsignal -group "$_session_group_174" { {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.$unit} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.Drive_Addr_Bus_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.Drive_Addr_Bus_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.Drive_Addr_Bus_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.Drive_Addr_Bus_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.Drive_Addr_Bus_o_t3} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.Drv_DB_0_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.Drv_DB_1_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.Drv_DB_2_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.Drv_DB_3_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_0_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_0_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_0_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_1_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_1_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_2_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_2_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.NS_2_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.S_0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.S_0_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.S_1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.S_1_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.S_2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.S_2_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.bank_hit_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.busy_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.busy_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.busy_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.busy_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.clk} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.ld_req_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.mem_ready_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.mem_ready_i_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.mem_valid_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.mem_valid_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.mem_valid_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.mem_valid_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.others_busy_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.others_busy_i_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.req_hit_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm.rst} }
-
-gui_sg_move "$_session_group_174" -after "$_session_group_162" -pos 1 
-
-set _session_group_175 $_session_group_162|
-append _session_group_175 {g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm}
-gui_sg_create "$_session_group_175"
-set {Group1|g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm} "$_session_group_175"
-
-gui_sg_addsignal -group "$_session_group_175" { {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.$unit} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.Drive_Addr_Bus_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.Drive_Addr_Bus_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.Drive_Addr_Bus_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.Drive_Addr_Bus_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.Drive_Addr_Bus_o_t3} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.Drv_DB_0_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.Drv_DB_1_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.Drv_DB_2_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.Drv_DB_3_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_0_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_0_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_0_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_1_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_1_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_2_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_2_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.NS_2_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.S_0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.S_0_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.S_1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.S_1_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.S_2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.S_2_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.bank_hit_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.busy_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.busy_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.busy_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.busy_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.clk} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.ld_req_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.mem_ready_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.mem_ready_i_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.mem_valid_o} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.mem_valid_o_t0} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.mem_valid_o_t1} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.mem_valid_o_t2} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.others_busy_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.others_busy_i_inv} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.req_hit_i} {tb_DTE.uut0_DTE.g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm.rst} }
-
-set _session_group_176 $_session_group_162|
-append _session_group_176 {g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm}
-gui_sg_create "$_session_group_176"
-set {Group1|g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm} "$_session_group_176"
-
-gui_sg_addsignal -group "$_session_group_176" { {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.$unit} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.Drive_Addr_Bus_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.Drive_Addr_Bus_o_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.Drive_Addr_Bus_o_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.Drive_Addr_Bus_o_t2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.Drive_Addr_Bus_o_t3} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.Drv_DB_0_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.Drv_DB_1_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.Drv_DB_2_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.Drv_DB_3_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.NS_0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.NS_0_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.NS_0_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.NS_1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.NS_1_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.NS_1_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.NS_2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.NS_2_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.NS_2_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.S_0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.S_0_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.S_1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.S_1_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.S_2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.S_2_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.bank_hit_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.busy_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.busy_o_t0} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.busy_o_t1} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.busy_o_t2} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.clk} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.eb_clear_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.others_busy_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.others_busy_i_inv} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.req_hit_i} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.rst} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.set_eb_commit_o} {tb_DTE.uut0_DTE.g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm.st_req_o} }
-
-gui_sg_move "$_session_group_176" -after "$_session_group_162" -pos 11 
-
-set _session_group_177 tb_DTE_1
-gui_sg_create "$_session_group_177"
-set tb_DTE_1 "$_session_group_177"
-
-gui_sg_addsignal -group "$_session_group_177" { {tb_DTE.$unit} tb_DTE.Clk_PERIOD tb_DTE.addres_bus_drv tb_DTE.address_bus tb_DTE.bestPick_bk_id_2_dte tb_DTE.uut0_DTE.dte_mem_2_icache_fsm_state tb_DTE.bestPick_req_2_dte tb_DTE.clk tb_DTE.data_bus tb_DTE.dte_2_dcache tb_DTE.dte_2_ddr5 tb_DTE.dte_2_dma tb_DTE.dte_2_icache tb_DTE.dte_2_mem tb_DTE.mem_2_dte tb_DTE.rst }
-gui_set_radix -radix {decimal} -signals {V1:tb_DTE.Clk_PERIOD}
-gui_set_radix -radix {twosComplement} -signals {V1:tb_DTE.Clk_PERIOD}
-
-set _session_group_178 uut0_DTE
-gui_sg_create "$_session_group_178"
-set uut0_DTE "$_session_group_178"
-
-gui_sg_addsignal -group "$_session_group_178" { {tb_DTE.uut0_DTE.$unit} tb_DTE.uut0_DTE.DTE_Busy tb_DTE.uut0_DTE.bestPick_bk_id_i tb_DTE.uut0_DTE.bestPick_i tb_DTE.uut0_DTE.clk tb_DTE.uut0_DTE.core_2_ddr5_driveAddrBus_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_drvDB_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_fsmout_busy tb_DTE.uut0_DTE.core_2_ddr5_reqServed_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_req_hit tb_DTE.uut0_DTE.core_2_dma_driveAddrBus_fsmOut tb_DTE.uut0_DTE.core_2_dma_drvDB_fsmOut tb_DTE.uut0_DTE.core_2_dma_fsmout_busy tb_DTE.uut0_DTE.core_2_dma_reqServed_fsmOut tb_DTE.uut0_DTE.core_2_dma_req_hit tb_DTE.uut0_DTE.dcache_2_mem_bk_hit tb_DTE.uut0_DTE.dcache_2_mem_fsmout_busy tb_DTE.uut0_DTE.dcache_2_mem_fsmout_busy_per tb_DTE.uut0_DTE.dcache_2_mem_req_hit tb_DTE.uut0_DTE.dcache_2_mem_st_req_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_driveAddrBus_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_fsmout_busy tb_DTE.uut0_DTE.ddr5_2_core_reqServed_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_req_hit tb_DTE.uut0_DTE.dma_2_mem_fsmout_busy tb_DTE.uut0_DTE.dma_2_mem_req_hit tb_DTE.uut0_DTE.dma_2_mem_st_req_fsmOut tb_DTE.uut0_DTE.dte_2_ddr5_o tb_DTE.uut0_DTE.dte_2_dma_o tb_DTE.uut0_DTE.dte_2_mem_o tb_DTE.uut0_DTE.dte_core_2_ddr5_fsm_state tb_DTE.uut0_DTE.dte_core_2_ddr5_fsm_state_bits tb_DTE.uut0_DTE.dte_core_2_dma_fsm_state tb_DTE.uut0_DTE.dte_core_2_dma_fsm_state_bits tb_DTE.uut0_DTE.dte_dcache_2_mem_fsm_state tb_DTE.uut0_DTE.dte_dcache_2_mem_fsm_state_bits tb_DTE.uut0_DTE.dte_ddr5_2_core_fsm_state tb_DTE.uut0_DTE.dte_ddr5_2_core_fsm_state_bits tb_DTE.uut0_DTE.dte_dma_2_mem_fsm_state tb_DTE.uut0_DTE.dte_dma_2_mem_fsm_state_bits tb_DTE.uut0_DTE.dte_mem_2_dcache_fsm_state tb_DTE.uut0_DTE.dte_mem_2_dcache_fsm_state_bits tb_DTE.uut0_DTE.dte_mem_2_icache_fsm_state_bits tb_DTE.uut0_DTE.dte_out_2_dcache_o tb_DTE.uut0_DTE.dte_out_2_icache_o tb_DTE.uut0_DTE.mem_2_dcache_bk_hit tb_DTE.uut0_DTE.mem_2_dcache_drv_db_fsmOut tb_DTE.uut0_DTE.mem_2_dcache_fsmout_busy tb_DTE.uut0_DTE.mem_2_dcache_fsmout_busy_per tb_DTE.uut0_DTE.mem_2_dcache_ld_req_fsmOut tb_DTE.uut0_DTE.mem_2_dcache_req_hit tb_DTE.uut0_DTE.mem_2_dte_i tb_DTE.uut0_DTE.mem_2_icache_drv_db_fsmOut tb_DTE.uut0_DTE.mem_2_icache_fsmout_busy tb_DTE.uut0_DTE.mem_2_icache_ld_req_fsmOut tb_DTE.uut0_DTE.mem_2_icache_req_hit tb_DTE.uut0_DTE.rst }
-
-set _session_group_179 uut1_mem
-gui_sg_create "$_session_group_179"
-set uut1_mem "$_session_group_179"
-
-gui_sg_addsignal -group "$_session_group_179" { {tb_DTE.uut1_mem.$unit} tb_DTE.uut1_mem.address_bus tb_DTE.uut1_mem.bank_out_2_controller tb_DTE.uut1_mem.clk tb_DTE.uut1_mem.controller_2_bank_Cmds tb_DTE.uut1_mem.dataToDrive tb_DTE.uut1_mem.data_bus tb_DTE.uut1_mem.drive_Data_Bus tb_DTE.uut1_mem.inFromDte tb_DTE.uut1_mem.mem_bus tb_DTE.uut1_mem.out2Dte tb_DTE.uut1_mem.out2Sch tb_DTE.uut1_mem.rst }
-
-set _session_group_180 uut0_DTE_1
-gui_sg_create "$_session_group_180"
-set uut0_DTE_1 "$_session_group_180"
-
-gui_sg_addsignal -group "$_session_group_180" { {tb_DTE.uut0_DTE.$unit} tb_DTE.uut0_DTE.DTE_Busy tb_DTE.uut0_DTE.bestPick_bk_id_i tb_DTE.uut0_DTE.bestPick_i tb_DTE.uut0_DTE.clk tb_DTE.uut0_DTE.core_2_ddr5_driveAddrBus_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_drvDB_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_fsmout_busy tb_DTE.uut0_DTE.core_2_ddr5_reqServed_fsmOut tb_DTE.uut0_DTE.core_2_ddr5_req_hit tb_DTE.uut0_DTE.core_2_dma_driveAddrBus_fsmOut tb_DTE.uut0_DTE.core_2_dma_drvDB_fsmOut tb_DTE.uut0_DTE.core_2_dma_fsmout_busy tb_DTE.uut0_DTE.core_2_dma_reqServed_fsmOut tb_DTE.uut0_DTE.core_2_dma_req_hit tb_DTE.uut0_DTE.dcache_2_mem_bk_hit tb_DTE.uut0_DTE.dcache_2_mem_fsmout_busy tb_DTE.uut0_DTE.dcache_2_mem_fsmout_busy_per tb_DTE.uut0_DTE.dcache_2_mem_req_hit tb_DTE.uut0_DTE.dcache_2_mem_st_req_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_driveAddrBus_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_fsmout_busy tb_DTE.uut0_DTE.ddr5_2_core_reqServed_fsmOut tb_DTE.uut0_DTE.ddr5_2_core_req_hit tb_DTE.uut0_DTE.dma_2_mem_fsmout_busy tb_DTE.uut0_DTE.dma_2_mem_req_hit tb_DTE.uut0_DTE.dma_2_mem_st_req_fsmOut tb_DTE.uut0_DTE.dte_2_ddr5_o tb_DTE.uut0_DTE.dte_2_dma_o tb_DTE.uut0_DTE.dte_2_mem_o tb_DTE.uut0_DTE.dte_core_2_ddr5_fsm_state tb_DTE.uut0_DTE.dte_core_2_ddr5_fsm_state_bits tb_DTE.uut0_DTE.dte_core_2_dma_fsm_state tb_DTE.uut0_DTE.dte_core_2_dma_fsm_state_bits tb_DTE.uut0_DTE.dte_dcache_2_mem_fsm_state tb_DTE.uut0_DTE.dte_dcache_2_mem_fsm_state_bits tb_DTE.uut0_DTE.dte_ddr5_2_core_fsm_state tb_DTE.uut0_DTE.dte_ddr5_2_core_fsm_state_bits tb_DTE.uut0_DTE.dte_dma_2_mem_fsm_state tb_DTE.uut0_DTE.dte_dma_2_mem_fsm_state_bits tb_DTE.uut0_DTE.dte_mem_2_dcache_fsm_state tb_DTE.uut0_DTE.dte_mem_2_dcache_fsm_state_bits tb_DTE.uut0_DTE.dte_mem_2_icache_fsm_state tb_DTE.uut0_DTE.dte_mem_2_icache_fsm_state_bits tb_DTE.uut0_DTE.dte_out_2_dcache_o tb_DTE.uut0_DTE.dte_out_2_icache_o tb_DTE.uut0_DTE.mem_2_dcache_bk_hit tb_DTE.uut0_DTE.mem_2_dcache_drv_db_fsmOut tb_DTE.uut0_DTE.mem_2_dcache_fsmout_busy tb_DTE.uut0_DTE.mem_2_dcache_fsmout_busy_per tb_DTE.uut0_DTE.mem_2_dcache_ld_req_fsmOut tb_DTE.uut0_DTE.mem_2_dcache_req_hit tb_DTE.uut0_DTE.mem_2_dte_i tb_DTE.uut0_DTE.mem_2_icache_drv_db_fsmOut tb_DTE.uut0_DTE.mem_2_icache_fsmout_busy tb_DTE.uut0_DTE.mem_2_icache_ld_req_fsmOut tb_DTE.uut0_DTE.mem_2_icache_req_hit tb_DTE.uut0_DTE.rst }
-
-set _session_group_181 DTE_MEM_2_ICache
-gui_sg_create "$_session_group_181"
-set DTE_MEM_2_ICache "$_session_group_181"
-
-gui_sg_addsignal -group "$_session_group_181" { {tb_DTE.uut0_DTE.DTE_MEM_2_ICache.$unit} tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drive_Addr_Bus_o_t3 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drv_DB_0_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drv_DB_1_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drv_DB_2_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.Drv_DB_3_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_0_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_0_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_0_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_1_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_1_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_2_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_2_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.NS_2_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.S_0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.S_0_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.S_1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.S_1_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.S_2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.S_2_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.busy_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.busy_o_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.busy_o_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.busy_o_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.clk tb_DTE.uut0_DTE.DTE_MEM_2_ICache.ld_req_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_ready_i tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_ready_i_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_valid_o tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_valid_o_t0 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_valid_o_t1 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.mem_valid_o_t2 tb_DTE.uut0_DTE.DTE_MEM_2_ICache.others_busy_i tb_DTE.uut0_DTE.DTE_MEM_2_ICache.others_busy_i_inv tb_DTE.uut0_DTE.DTE_MEM_2_ICache.req_hit_i tb_DTE.uut0_DTE.DTE_MEM_2_ICache.rst }
-
-set _session_group_182 controller
-gui_sg_create "$_session_group_182"
-set controller "$_session_group_182"
-
-gui_sg_addsignal -group "$_session_group_182" { {tb_DTE.uut1_mem.controller.$unit} tb_DTE.uut1_mem.controller.DTE_i tb_DTE.uut1_mem.controller.ToDTE_o tb_DTE.uut1_mem.controller.ToScheduler_o tb_DTE.uut1_mem.controller.address_bus tb_DTE.uut1_mem.controller.bankBits_InChip tb_DTE.uut1_mem.controller.bankGroupTable tb_DTE.uut1_mem.controller.bankGroup tb_DTE.uut1_mem.controller.bank_cmds_o tb_DTE.uut1_mem.controller.banks_i tb_DTE.uut1_mem.controller.chipNum tb_DTE.uut1_mem.controller.chipTable tb_DTE.uut1_mem.controller.clk tb_DTE.uut1_mem.controller.data_bus tb_DTE.uut1_mem.controller.fsm_outs tb_DTE.uut1_mem.controller.fsm_state tb_DTE.uut1_mem.controller.hit_into_fsm tb_DTE.uut1_mem.controller.mem_controller_state_bits tb_DTE.uut1_mem.controller.rowBitFromChipAddress tb_DTE.uut1_mem.controller.rst }
+gui_sg_addsignal -group "$_session_group_627" { {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.$unit} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.BANK_ID} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.NUM_SRAM_CELLS} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.bank_address_i} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.bank_bus} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.bank_write_data} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.clk} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.controller2bank_i} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.fsm_state} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.mem_bank_controller_oe} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.mem_bank_controller_send_store_address} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.mem_bank_controller_send_store_address_delayed} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.mem_bank_controller_states_bits} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.mem_bank_controller_we} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.mem_bus} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.outputs} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.rst} }
+gui_set_radix -radix {decimal} -signals {{V1:tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.BANK_ID}}
+gui_set_radix -radix {twosComplement} -signals {{V1:tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.BANK_ID}}
+gui_set_radix -radix {decimal} -signals {{V1:tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.NUM_SRAM_CELLS}}
+gui_set_radix -radix {twosComplement} -signals {{V1:tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.NUM_SRAM_CELLS}}
 
 # Global: Highlighting
 
@@ -459,7 +311,7 @@ gui_change_stack_mode -mode list
 # Post database loading setting...
 
 # Restore C1 time
-gui_set_time -C1_only 155.7
+gui_set_time -C1_only 387.23
 
 
 
@@ -488,24 +340,24 @@ gui_hier_list_init -id ${Hier.1}
 gui_change_design -id ${Hier.1} -design V1
 catch {gui_list_expand -id ${Hier.1} tb_DTE}
 catch {gui_list_expand -id ${Hier.1} tb_DTE.uut1_mem}
-catch {gui_list_select -id ${Hier.1} {tb_DTE.uut1_mem.controller}}
-gui_view_scroll -id ${Hier.1} -vertical -set 1174
+catch {gui_list_select -id ${Hier.1} {{tb_DTE.uut1_mem.g_mem_banks[0].mem_bank}}}
+gui_view_scroll -id ${Hier.1} -vertical -set 1194
 gui_view_scroll -id ${Hier.1} -horizontal -set 0
 
 # Data 'Data.1'
 gui_list_set_filter -id ${Data.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {LowPower 1} {Parameter 1} {All 1} {Aggregate 1} {LibBaseMember 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {BaseMembers 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Data.1} -text {*}
-gui_list_show_data -id ${Data.1} {tb_DTE.uut1_mem.controller}
+gui_list_show_data -id ${Data.1} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank}
 gui_view_scroll -id ${Data.1} -vertical -set 0
 gui_view_scroll -id ${Data.1} -horizontal -set 0
-gui_view_scroll -id ${Hier.1} -vertical -set 1174
+gui_view_scroll -id ${Hier.1} -vertical -set 1194
 gui_view_scroll -id ${Hier.1} -horizontal -set 0
 
 # Source 'Source.1'
 gui_src_value_annotate -id ${Source.1} -switch false
 gui_set_env TOGGLE::VALUEANNOTATE 0
-gui_open_source -id ${Source.1}  -replace -active tb_DTE.uut0_DTE /home/ecelrc/students/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/BusArbitration/DTE.sv
-gui_view_scroll -id ${Source.1} -vertical -set 1350
+gui_open_source -id ${Source.1}  -replace -active tb_DTE /home/ecelrc/students/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/BusArbitration/DTE.sv
+gui_view_scroll -id ${Source.1} -vertical -set 0
 gui_src_set_reusable -id ${Source.1}
 
 # View 'Wave.1'
@@ -517,50 +369,19 @@ gui_list_set_height -id Wave -height 25
 set origGroupCreationState [gui_list_create_group_when_add -wave]
 gui_list_create_group_when_add -wave -disable
 gui_marker_set_ref -id ${Wave.1}  C1
-gui_wv_zoom_timerange -id ${Wave.1} 121.697 207.01
-gui_list_add_group -id ${Wave.1} -after {New Group} {Group1}
-gui_list_add_group -id ${Wave.1}  -after Group1 {{Group1|g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm}}
-gui_list_add_group -id ${Wave.1} -after {{Group1|g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm}} {{Group1|g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm}}
-gui_list_add_group -id ${Wave.1} -after {{Group1|g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm}} {{Group1|g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm}}
-gui_list_add_group -id ${Wave.1} -after {{Group1|g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm}} {{Group1|g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm}}
-gui_list_add_group -id ${Wave.1} -after {{Group1|g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm}} {{Group1|g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm}}
-gui_list_add_group -id ${Wave.1} -after {{Group1|g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm}} {Group1|dma_2_mem_fsm}
-gui_list_add_group -id ${Wave.1} -after Group1|dma_2_mem_fsm {Group1|ddr5_2_core_fsm}
-gui_list_add_group -id ${Wave.1} -after Group1|ddr5_2_core_fsm {Group1|core_2_dma_fsm}
-gui_list_add_group -id ${Wave.1} -after Group1|core_2_dma_fsm {Group1|core_2_ddr5_fsm}
-gui_list_add_group -id ${Wave.1} -after Group1|core_2_ddr5_fsm {Group1|DTE_MEM_2_ICache}
-gui_list_add_group -id ${Wave.1} -after Group1|DTE_MEM_2_ICache {Group1|uut0_DTE}
-gui_list_add_group -id ${Wave.1} -after Group1|uut0_DTE {{Group1|g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm}}
-gui_list_add_group -id ${Wave.1} -after {{Group1|g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm}} {{Group1|g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm}}
-gui_list_add_group -id ${Wave.1} -after {{Group1|g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm}} {{Group1|g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm}}
+gui_wv_zoom_timerange -id ${Wave.1} 342.284 494.093
 gui_list_add_group -id ${Wave.1} -after {New Group} {tb_DTE_1}
-gui_list_add_group -id ${Wave.1} -after {New Group} {uut0_DTE}
-gui_list_add_group -id ${Wave.1} -after {New Group} {uut1_mem}
-gui_list_add_group -id ${Wave.1} -after {New Group} {uut0_DTE_1}
-gui_list_add_group -id ${Wave.1} -after {New Group} {DTE_MEM_2_ICache}
 gui_list_add_group -id ${Wave.1} -after {New Group} {controller}
-gui_list_collapse -id ${Wave.1} Group1
-gui_list_collapse -id ${Wave.1} {Group1|g_mem_2_dcache_bank_fsms[3].mem_2_dcache_fsm}
-gui_list_collapse -id ${Wave.1} {Group1|g_mem_2_dcache_bank_fsms[2].mem_2_dcache_fsm}
-gui_list_collapse -id ${Wave.1} {Group1|g_mem_2_dcache_bank_fsms[1].mem_2_dcache_fsm}
-gui_list_collapse -id ${Wave.1} {Group1|g_mem_2_dcache_bank_fsms[0].mem_2_dcache_fsm}
-gui_list_collapse -id ${Wave.1} {Group1|g_dcache_2_mem_bank_fsms[3].dcache_2_mem_fsm}
-gui_list_collapse -id ${Wave.1} Group1|dma_2_mem_fsm
-gui_list_collapse -id ${Wave.1} Group1|ddr5_2_core_fsm
-gui_list_collapse -id ${Wave.1} Group1|core_2_dma_fsm
-gui_list_collapse -id ${Wave.1} Group1|core_2_ddr5_fsm
-gui_list_collapse -id ${Wave.1} Group1|DTE_MEM_2_ICache
-gui_list_collapse -id ${Wave.1} Group1|uut0_DTE
-gui_list_collapse -id ${Wave.1} {Group1|g_dcache_2_mem_bank_fsms[1].dcache_2_mem_fsm}
-gui_list_collapse -id ${Wave.1} {Group1|g_dcache_2_mem_bank_fsms[2].dcache_2_mem_fsm}
-gui_list_collapse -id ${Wave.1} {Group1|g_dcache_2_mem_bank_fsms[0].dcache_2_mem_fsm}
-gui_list_collapse -id ${Wave.1} tb_DTE_1
-gui_list_collapse -id ${Wave.1} uut0_DTE
+gui_list_add_group -id ${Wave.1} -after {New Group} {uut1_mem}
+gui_list_add_group -id ${Wave.1} -after {New Group} {uut0_DTE}
+gui_list_add_group -id ${Wave.1} -after {New Group} {{g_mem_banks[0].mem_bank}}
+gui_list_collapse -id ${Wave.1} controller
 gui_list_collapse -id ${Wave.1} uut1_mem
-gui_list_collapse -id ${Wave.1} uut0_DTE_1
-gui_list_collapse -id ${Wave.1} DTE_MEM_2_ICache
-gui_list_expand -id ${Wave.1} tb_DTE.uut1_mem.controller.DTE_i
-gui_list_select -id ${Wave.1} {tb_DTE.uut1_mem.controller.DTE_i.ld_req }
+gui_list_collapse -id ${Wave.1} uut0_DTE
+gui_list_expand -id ${Wave.1} tb_DTE.dte_2_icache
+gui_list_expand -id ${Wave.1} tb_DTE.mem_2_dte
+gui_list_expand -id ${Wave.1} {tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.outputs}
+gui_list_select -id ${Wave.1} {{tb_DTE.uut1_mem.g_mem_banks[0].mem_bank.mem_bank_controller_oe} }
 gui_seek_criteria -id ${Wave.1} {Any Edge}
 
 
@@ -576,10 +397,10 @@ if { $groupExD } {
 }
 gui_list_set_filter -id ${Wave.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {Parameter 1} {All 1} {Aggregate 1} {LibBaseMember 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {BaseMembers 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Wave.1} -text {*}
-gui_list_set_insertion_bar  -id ${Wave.1} -group controller  -position in
+gui_list_set_insertion_bar  -id ${Wave.1} -group {g_mem_banks[0].mem_bank}  -position in
 
-gui_marker_move -id ${Wave.1} {C1} 155.7
-gui_view_scroll -id ${Wave.1} -vertical -set 0
+gui_marker_move -id ${Wave.1} {C1} 387.23
+gui_view_scroll -id ${Wave.1} -vertical -set 109
 gui_show_grid -id ${Wave.1} -enable false
 # Restore toplevel window zorder
 # The toplevel window could be closed if it has no view/pane

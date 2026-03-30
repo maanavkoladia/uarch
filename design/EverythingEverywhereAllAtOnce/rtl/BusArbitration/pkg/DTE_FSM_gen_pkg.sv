@@ -1,6 +1,6 @@
 package DTE_FSM_gen_pkg;
 
-    localparam int DTE_MEM_2_ICACHE_FSM_NUM_STATES = 6;
+    localparam int DTE_MEM_2_ICACHE_FSM_NUM_STATES = 7;
 
     typedef enum logic [$clog2(
 DTE_MEM_2_ICACHE_FSM_NUM_STATES
@@ -9,8 +9,9 @@ DTE_MEM_2_ICACHE_FSM_NUM_STATES
         DTE_MEM_2_ICACHE_LD0     = 1,
         DTE_MEM_2_ICACHE_LD1     = 2,
         DTE_MEM_2_ICACHE_LD2     = 3,
-        DTE_MEM_2_ICACHE_MEM_REQ = 4,
-        DTE_MEM_2_ICACHE_ERROR   = 5
+        DTE_MEM_2_ICACHE_LD3     = 4,
+        DTE_MEM_2_ICACHE_MEM_REQ = 5,
+        DTE_MEM_2_ICACHE_ERROR   = 6
     } DTE_MEM_2_ICache_FSM_State_e;
 
 

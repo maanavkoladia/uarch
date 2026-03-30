@@ -70,19 +70,20 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
         BANK_CONTROLLER_ERROR           = 17
     } bank_fsm_controller_state_t;
 
-    localparam int MEM_CONTROLLER_FSM_STATES = 9;
+    localparam int MEM_CONTROLLER_FSM_STATES = 10;
     typedef enum logic [$clog2(
 MEM_CONTROLLER_FSM_STATES
 ) - 1 : 0] {
         MEM_CONTROLLER_IDLE    = 0,
         MEM_CONTROLLER_LD_0    = 1,
         MEM_CONTROLLER_LD_1    = 2,
-        MEM_CONTROLLER_LD_HIT  = 3,
-        MEM_CONTROLLER_LD_MISS = 4,
-        MEM_CONTROLLER_W0      = 5,
-        MEM_CONTROLLER_W1      = 6,
-        MEM_CONTROLLER_W2      = 7,
-        MEM_CONTROLLER_ERROR   = 8
+        MEM_CONTROLLER_LD_2    = 3,
+        MEM_CONTROLLER_LD_HIT  = 4,
+        MEM_CONTROLLER_LD_MISS = 5,
+        MEM_CONTROLLER_W0      = 6,
+        MEM_CONTROLLER_W1      = 7,
+        MEM_CONTROLLER_W2      = 8,
+        MEM_CONTROLLER_ERROR   = 9
     } mem_controller_fsm_state_t;
 
 endpackage
