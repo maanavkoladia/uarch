@@ -7,7 +7,12 @@ GEN_CONF = startUpGen.conf.json
 
 TOP_FILE_NAME = tb_DTE
 
+STARTUP_FILES = \
+				gen/icache_loader.sv	\
+				gen/memLoader.sv	\
+
 TB_FILES = \
+		   $(STARTUP_FILES)	\
 		   tb_DTE.sv \
 
 PKGS = $(RTL_PKGS)
@@ -17,7 +22,7 @@ SRC_FILES = \
 			$(RTL_SRC_FILES) \
 			$(TB_FILES)	\
 
-.PHONY: all run clean see genMem
+.PHONY: all run clean see gen
 
 all: $(TARGET)
 	
@@ -33,7 +38,7 @@ view: run
 
 gen:
 	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
-	@python3.9 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@python3 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
 	@rm -f cleaned_scripts.json
 
 see:

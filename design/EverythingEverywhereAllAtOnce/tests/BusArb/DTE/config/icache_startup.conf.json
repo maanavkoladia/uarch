@@ -1,0 +1,15 @@
+{
+    "readmemFilePath" : "icache_loader.sv",
+
+    "TagStoreCellPath_Lower" : "tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower",
+    "TagStoreCellPath_Upper" : "tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper ",
+
+    "numDataStore_CellLayers": "2",
+    "numDataStoreCells": "16",
+    "dataStoreCellPath" : "tb_ICache.u_icache.icache_dataStore_unit.g_mem_layer[<cell layer>].g_memCells[<cellNum].dataStore_memCell",
+    "startUpDelay" : "10",
+
+
+    "outputPath" : "gen/"
+
+}
