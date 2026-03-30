@@ -3,7 +3,7 @@ module control_store (
     input byte_t opcode,
     input byte_t modrm,
     output bool rep_mov,
-    output bol rep_cmp,
+    output bool rep_cmp,
     output bool branch,
     output rr_cs_t rr_cs,
     output dc_cs_t dc_cs,

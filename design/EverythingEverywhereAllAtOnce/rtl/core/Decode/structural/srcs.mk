@@ -5,6 +5,7 @@ GEN_DECODE_SRC_FILES = \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/OP_LUT.v	\
 						  $(DECODE_PATH_INTERNAL)/structural/gen/PF_LUT.v \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/ir_logic.v \
+						  $(DECODE_PATH_INTERNAL)/structural/gen/rep_fsm.sv \
 
 DECODE_SRC_FILES_STRUCTURAL = \
 								$(DECODE_PATH_INTERNAL)/structural/disp_finder.v \
@@ -25,6 +26,7 @@ DECODE_SRC_FILES = \
 						$(DECODE_PATH_INTERNAL)/decode_gp_gen.sv \
 						$(DECODE_PATH_INTERNAL)/modrm_processor.sv \
 						$(DECODE_PATH_INTERNAL)/sib_processor.sv \
+						$(DECODE_PATH_INTERNAL)/rep_controller.sv \
 						$(DECODE_PATH_INTERNAL)/Decode.sv \
 
 

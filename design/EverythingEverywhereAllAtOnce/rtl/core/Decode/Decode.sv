@@ -85,7 +85,7 @@ module Decode (
 
     bool cs_rep_mov, cs_rep_cmp, cs_branch;
     control_store cs(
-        .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .rep_mov(cs_rep_mov), .rep_cmp(cs_rep_mov), .branch(cs_branch),
+        .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .rep_mov(cs_rep_mov), .rep_cmp(cs_rep_cmp), .branch(cs_branch),
         .rr_cs(temp_rr_cs), .dc_cs(temp_dc_cs), .mem_cs(temp_mem_cs), .exe_cs(temp_exe_cs), .wb_cs(temp_wb_cs)
     );
 

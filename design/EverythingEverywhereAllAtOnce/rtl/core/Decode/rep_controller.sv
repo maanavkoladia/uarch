@@ -1,3 +1,4 @@
+import RegisterRead_pkg::*;
 module rep_controller (
     input wire clk, rst,
     input bool rep_prefix,
@@ -50,15 +51,15 @@ module rep_controller (
 
     always_ff @(posedge clk) begin
         if(!rst) begin
-            zf_sb <= '0;
+            zf_sb.counter <= 8'b0;
         end
         else begin
-            if(flush) zf_sb <= '0;
+            if(flush) zf_sb.counter <= 8'b0;
             else begin
                 unique case ({set_zf, clear_zf})
                     2'b00: zf_sb <= zf_sb;
                     2'b01: zf_sb.counter <= (zf_sb.counter == 0) ? zf_sb.counter : zf_sb.counter - 1;
-                    2'b10: zf_sb.counter <= (zf_sb == '1) ? zf_sb.counter : zf_sb.counter + 1;
+                    2'b10: zf_sb.counter <= (zf_sb.counter == 8'hFF) ? zf_sb.counter : zf_sb.counter + 1;
                     2'b11: zf_sb <= zf_sb;
                 endcase
             end
