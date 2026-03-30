@@ -131,6 +131,11 @@
             "csv": "rtl/BusArbitration/gen/DTE_DMA_2_MEM_FSM.csv",
             "outputFilePath": "rtl/BusArbitration/gen/DTE_DMA_2_MEM_FSM.sv",
             "run FSM SOP gen": "true"
+        },
+        "REP_FSM": {
+            "csv": "rtl/core/Decode/structural/gen/rep_fsm.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/rep_fsm.sv",
+            "run FSM SOP gen": "true"
         }
     }
 
