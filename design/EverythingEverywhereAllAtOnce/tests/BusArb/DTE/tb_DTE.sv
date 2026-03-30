@@ -18,7 +18,8 @@ module tb_DTE ();
     // ================= CLOCK / RESET =================
     `CLK_INIT(Clk_PERIOD);
     logic                                                      rst;
-
+    wire [ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
+    wire [  DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
     // ================= ICACHE =================
     dte_2_icache_t                                             dte_2_icache;
 
@@ -51,6 +52,18 @@ module tb_DTE ();
         .dte_2_mem_o(dte_2_mem),
         .dte_2_dma_o(dte_2_dma),
         .dte_2_ddr5_o(dte_2_ddr5)
+    );
+
+    module mem_TOP (
+        .clk(clk),
+        .rst(rst),
+        //adress and data bus
+        .address_bus(address_bus),
+        .data_bus(data_bus),
+        //arb stuff
+        .inFromDte(dte_2_mem),
+        .out2Dte(mem_2_dte),
+        .out2Sch()
     );
 
     initial begin

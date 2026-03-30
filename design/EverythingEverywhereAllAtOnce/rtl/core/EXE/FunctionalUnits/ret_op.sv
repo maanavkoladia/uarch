@@ -1,4 +1,4 @@
-module RET_op{
+module ret_op{
     input uint64_t stack_ptr,
     output uint64_t stack_ptr_o
 };
@@ -6,4 +6,4 @@ module RET_op{
     assign stack_ptr_o = stack_ptr + 4;
 
 
-endmodule
+endmodule   

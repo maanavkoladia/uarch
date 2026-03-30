@@ -1,4 +1,4 @@
-module sub_w_b (
+module sbb_op (
     input  uint64_t operand1,
     input  uint64_t operand2,
     input  bool     CF_in,

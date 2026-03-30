@@ -3,7 +3,7 @@
 
 import common_pkg::*;
 
-module add_w_c (
+module adc_op (
     input  uint64_t operand1,
     input  uint64_t operand2,
     input  bool     CF_in,       // Input carry flag
