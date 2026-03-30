@@ -57,12 +57,12 @@ package core_stage_latches_pkg;
     typedef struct {
         bool RR_OP;  //r we doing an rr op, this one might be trivial be fick it
 
-        bool REG_RD; //are we reading the REG reg, ie are we gonna access the reg file w the id in the latches, check sb 
-        bool MOD_RM_RD;  //same as REG reg
+        bool DR_RD; //are we reading the REG reg, ie are we gonna access the reg file w the id in the latches, check sb 
+        bool SR_RD;  //same as REG reg
         bool SIB_NEEDED;  //are we going to use the SIB byte, 
         bool DISP_NEEDED;  //for using displacement in sib tranlstion logic
-        bool WE_REG;  //for makring the sb
-        bool WE_MOD_RM;  //
+        bool DR_WR;  //for makring the sb
+        bool SR_WR;  //
 
         bool ST_SEL;//this is for selecting addr gen out or for slection between reg data or mod rm data
         bool DR_SEL;  //this doe sthe sel between mod_rm dr, or reg dr
@@ -71,6 +71,9 @@ package core_stage_latches_pkg;
         bool ST_OP;
 
         logic [2:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
+
+        bool ld_flags;
+        uint32_t flag_modified_vector;
 
     } rr_cs_t;
 
@@ -140,8 +143,8 @@ package core_stage_latches_pkg;
         l_address_t EIP;
 
         uint64_t imm64;
-        reg_ids_e mod_rm_id;
-        reg_ids_e reg_id;
+        reg_ids_e dr_id;
+        reg_ids_e sr_id;
         reg_ids_e sib_idx_id;
         reg_ids_e sib_base_id;
         uint8_t sib_scale;  //0,2,4,8
@@ -150,6 +153,11 @@ package core_stage_latches_pkg;
         bool seg_1_valid;  //need two beacuse two segs for movs etc, 
         reg_ids_e seg_0_id;
         reg_ids_e seg_1_id;
+
+        //i think we need for push ES for example
+        bool read_seg_reg;
+        reg_ids_e read_seg_reg_id;
+
     } rr_latches_general_t;
 
     typedef struct {

@@ -2,24 +2,24 @@ package RegisterRead_pkg;
     import common_pkg::*;
     import reg_ids_pkg::*;
     typedef struct {
-        reg_ids_e MODRM_ID;
-        reg_ids_e REG_ID;
+        reg_ids_e DR_ID;
+        reg_ids_e SR_ID;
         reg_ids_e SIB_IDX_ID;
         reg_ids_e SIB_BASE_ID;
-        uint64_t DR0_data;
-        uint64_t DR1_data;
-        reg_ids_e DR0_ID;
-        reg_ids_e DR1_ID;
-        bool DR0_we;
-        bool DR1_we;
+        uint64_t WB_DR0_data;
+        uint64_t WB_DR1_data;
+        reg_ids_e WB_DR0_ID;
+        reg_ids_e WB_DR1_ID;
+        bool WB_DR0_we;
+        bool WB_DR1_we;
 
         reg_ids_e Segment0_ID;
         reg_ids_e Segment1_ID;
     } regfile_input_t;
 
     typedef struct {
-        uint64_t MODRM_data;
-        uint64_t REG_data;
+        uint64_t DR_data;
+        uint64_t SR_data;
         uint32_t SIB_IDX_data;
         uint32_t SIB_BASE_data;
         uint32_t ECX_data;
@@ -41,8 +41,8 @@ package RegisterRead_pkg;
     } neuralnet_outputs_t;
 
     typedef struct {
-        reg_ids_e reg_id;
-        reg_ids_e modrm_id;
+        reg_ids_e dr_id;
+        reg_ids_e sr_id;
         reg_ids_e sib_base_id;
         reg_ids_e sib_idx_id;
 
@@ -58,9 +58,9 @@ package RegisterRead_pkg;
 
         bool cs_reg_wr;
         bool cs_modrm_reg_wr;
-        //reg_ids_e Segment0_ID;
-        //reg_ids_e Segment1_ID;
-        //bool Segment1_valid;
+        reg_ids_e Segment0_ID;
+        reg_ids_e Segment1_ID;
+        bool Segment1_valid;
     } regsb_inputs_t;
 
     typedef struct{

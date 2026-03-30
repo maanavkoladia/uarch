@@ -122,30 +122,41 @@ module RR (
         SEGMENT_LIMITS = '{6{'1}};
     end
 
-    always_comb begin
-        dc_latches_next = '{
-            valid       : 1'b1, //need ot do valid logic
-            cs          : latches_i.normal_latches.dc_cs,
-            mem_cs      : latches_i.normal_latches.mem_cs,
-            exe_cs      : latches_i.normal_latches.exe_cs,
-            wb_cs       : latches_i.normal_latches.wb_cs,
-            br_info     : latches_i.normal_latches.br_info,
-            ST_XCL      : st_neuralnet.xcl,
-            ST_PADDR_0  : st_neuralnet.paddy,
-            ST_PADDR_1  : st_neuralnet.paddy_aligned,
-            MIO         : 1'b0,  //need to figure out where this signal comes from
-            NEIP        : latches_i.normal_latches.NEIP,
-            EIP         : latches_i.normal_latches.EIP,
-            imm64       : latches_i.normal_latches.imm64,
-            LD_XCL      : ld_neuralnet.xcl,
-            LD_PADDR_0  : ld_neuralnet.paddy,
-            LD_PADDR_1  : ld_neuralnet.paddy_aligned,
-            swapLines   : ld_neuralnet.bank_hi,
-            sr_id       : !(latches_i.normal_latches.cs.DR_SEL) ? reg_in.MODRM_ID : reg_in.REG_ID,
-            sr_data     : !(latches_i.normal_latches.cs.DR_SEL) ? reg_out.MODRM_data[31:0] : reg_out.REG_data[31:0],
-            dr_id       : (latches_i.normal_latches.cs.DR_SEL) ? reg_in.MODRM_ID : reg_in.REG_ID,
-            dr_data     : (latches_i.normal_latches.cs.DR_SEL) ? reg_out.MODRM_data[31:0] : reg_out.REG_data[31:0]
-        };
-    end
+    assign dc_latches_next = '{
+        valid       : 1'b1, //need ot do valid logic
+        cs          : latches_i.normal_latches.dc_cs,
+        mem_cs      : latches_i.normal_latches.mem_cs,
+        exe_cs      : latches_i.normal_latches.exe_cs,
+        wb_cs       : latches_i.normal_latches.wb_cs,
+        br_info     : latches_i.normal_latches.br_info,
+        ST_XCL      : st_neuralnet.xcl,
+        ST_PADDR_0  : st_neuralnet.paddy,
+        ST_PADDR_1  : st_neuralnet.paddy_aligned,
+        MIO         : 1'b0,  //need to figure out where this signal comes from
+        NEIP        : latches_i.normal_latches.NEIP,
+        EIP         : latches_i.normal_latches.EIP,
+        imm64       : latches_i.normal_latches.imm64,
+        LD_XCL      : ld_neuralnet.xcl,
+        LD_PADDR_0  : ld_neuralnet.paddy,
+        LD_PADDR_1  : ld_neuralnet.paddy_aligned,
+        swapLines   : ld_neuralnet.bank_hi,
+        sr_id       : !(latches_i.normal_latches.cs.DR_SEL) ? reg_in.MODRM_ID : reg_in.REG_ID,
+        sr_data     : !(latches_i.normal_latches.cs.DR_SEL) ? reg_out.MODRM_data[31:0] : reg_out.REG_data[31:0],
+        dr_id       : (latches_i.normal_latches.cs.DR_SEL) ? reg_in.MODRM_ID : reg_in.REG_ID,
+        dr_data     : (latches_i.normal_latches.cs.DR_SEL) ? reg_out.MODRM_data[31:0] : reg_out.REG_data[31:0]
+    };
+
+    assign outs_o = '{
+        valid   :   1'b1,
+        stall   :   latches_i.normal_latches.valid && (dep_stall || (RR_PF || RR_GP)),
+        exp_present : RR_PF || RR_GP,
+        exp_pf  : RR_PF,
+        ecx_sb : 
+        ecx     : reg_out.ECX_data,
+        set_ZF_sb   :   
+        codeSeg_sb  :
+        codeSeg_data  : reg_out.CS_data,
+        codeSeg_limit   :
+    }
 
 endmodule

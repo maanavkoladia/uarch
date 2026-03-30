@@ -83,24 +83,28 @@ module Decode (
         .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector(total_pf_vector), .invalid_inst(invalid_inst)
     );
 
-    bool cs_rep_mov, cs_rep_cmp, cs_branch;
+    bool cs_rep_mov, cs_rep_cmp, cs_branch, cs_hardcoded_register_read;
+    reg_ids_e cs_hardcoded_register_id;
     control_store cs(
         .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .rep_mov(cs_rep_mov), .rep_cmp(cs_rep_cmp), .branch(cs_branch),
-        .rr_cs(temp_rr_cs), .dc_cs(temp_dc_cs), .mem_cs(temp_mem_cs), .exe_cs(temp_exe_cs), .wb_cs(temp_wb_cs)
+        .rr_cs(temp_rr_cs), .dc_cs(temp_dc_cs), .mem_cs(temp_mem_cs), .exe_cs(temp_exe_cs), .wb_cs(temp_wb_cs), .hardcoded_register_read(cs_hardcoded_register_read),
+        .hardcoded_register_read_id(cs_hardcoded_register_id),
     );
 
-    decode_gp_gen gp_gen_decode(.prev_eip(PrevEIP), .prev_length(PrevLength), .segValue(rr_outs_i.codeSeg_data), 
-        .segLimit(cs_limit), .gp_fault_o(decode_gp)
+    decode_gp_gen gp_gen_decode(
+        .prev_eip(PrevEIP), .prev_length(PrevLength), .segValue(rr_outs_i.codeSeg_data), 
+        .seg_sb(rr_outs_i.codeSeg_sb), .segLimit(rr_outs_i.codeSeg_limit), .gp_fault_o(decode_gp)
     );
 
     br_info_t br_info_for_latches;
     bool predicted_taken;
-    assign predicted_taken = (idm_outs_i.idm_slots[EIP[5:4]].valid && 
-                            idm_outs_i.idm_slots[EIP[5:4]].br_valid && 
+    assign predicted_taken = (idm_outs_i.idm_slots[EIP[5:4]].valid &&
+                            idm_outs_i.idm_slots[EIP[5:4]].br_valid &&
                             idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP);
     l_address_t predicted_target;
     assign predicted_target = predicted_taken ? idm_outs_i.idm_slots[EIP[5:4]].br_btb_target : 32'b0;
-    br_info_processing br_info_gen(.cs_branch(cs_branch), .eip(EIP), .br_length(inst_length),
+    br_info_processing br_info_gen(
+        .cs_branch(cs_branch), .eip(EIP), .br_length(inst_length),
         .pred_taken(predicted_taken), .pred_target(predicted_target), .branch_output(br_info_for_latches)
     );
 
@@ -113,7 +117,8 @@ module Decode (
 
     rr_latches_general_t rep_latch_holder;
     bool rep_reg_value;
-    rep_controller piece_of_shit_rep_controller (.clk(clk), .rst(rst), .rep_prefix(total_pf_vector[0]),
+    rep_controller piece_of_shit_rep_controller (
+        .clk(clk), .rst(rst), .rep_prefix(total_pf_vector[0]),
         .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb), .set_zf(rr_outs_i.set_ZF_sb), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
         .zf_flag(exe_outs_i.ZF), .stall(stall), .flush(flush), .rep_latches(rep_latch_holder), .rep_register(rep_reg_value)
     );
@@ -149,9 +154,10 @@ module Decode (
         NEIP            : NEIP,
         EIP             : EIP,
         imm64           : imm64,
-        mod_rm_id       : modrmid,
-        reg_id          : regid,
-        sib_idx_id      : sibidx,
+        dr_id           : (cs_hardcoded_register_read) ?
+                            cs_hardcoded_register_id :
+                            ((temp_rr_cs.DR_SEL) ? modrmid : regid),
+        sr_id           : (!(temp_rr_cs.DR_SEL) ? modrmid : regid),
         sib_base_id     : sibbase,
         sib_scale       : sibscale,
         disp_size       : disp_size,

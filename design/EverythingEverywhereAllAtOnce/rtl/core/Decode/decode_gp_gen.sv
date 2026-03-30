@@ -2,6 +2,7 @@ module decode_gp_gen (
     input uint32_t prev_eip,
     input logic [3:0] prev_length,
     input uint32_t segValue,
+    input bool seg_sb,
     input uint32_t segLimit,
 
     output bool gp_fault_o

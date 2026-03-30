@@ -5,6 +5,8 @@ module control_store (
     output bool rep_mov,
     output bool rep_cmp,
     output bool branch,
+    output bool hardcoded_register_read,
+    output reg_ids_e hardcoded_register_read_id,
     output rr_cs_t rr_cs,
     output dc_cs_t dc_cs,
     output mem_cs_t mem_cs,
@@ -33,6 +35,8 @@ module control_store (
     assign rep_mov = 1'b0;
     assign rep_cmp = 1'b0;
     assign branch = 1'b0;           //will have ot implement these
+    assign hardcoded_register_read = 1'b0;
+    assign hardcoded_register_read_id = EAX;
 
     assign rr_cs = '{
         RR_OP       : cs_out[0][0],
