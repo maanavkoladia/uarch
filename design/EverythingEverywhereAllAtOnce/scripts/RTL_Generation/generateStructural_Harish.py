@@ -145,7 +145,7 @@ def main():
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            universal_newlines=True
         )
 
         for line in result.stdout.strip().splitlines():
