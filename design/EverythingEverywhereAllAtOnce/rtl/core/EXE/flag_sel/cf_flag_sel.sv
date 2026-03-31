@@ -1,4 +1,7 @@
 // Carry Flag Selection Module
+import common_pkg::*;
+import contorl_store_pkg::*;
+
 module cf_flag_sel(
 	input bool aaa_cf,
 	input bool adc_cf,

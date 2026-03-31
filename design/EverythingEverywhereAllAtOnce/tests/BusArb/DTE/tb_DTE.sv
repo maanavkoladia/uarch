@@ -204,6 +204,16 @@ module tb_DTE ();
         .idm_outs_o(idm_info_i)
     );
 
+    Scheduler uut0_scheduler (
+        .clk(clk),
+        .rst(rst),  //active low
+        .iCache_2_Sch_i(icache_2_scheduler),
+        .dCache_2_Sch_i('{default : '0}),
+        .mem_2_Sch_i(mem_2_sch),
+        .dma_2_sch_i('{default : '0}),
+        .bestPick_o(bestPick_req_2_dte),
+        .bestPick_bk_id_o(bestPick_bk_id_2_dte)
+    );
 
     assign decode_outs_i = '{
         valid: 0,
@@ -232,7 +242,7 @@ module tb_DTE ();
     // assign data_bus = data_bus_drv;
     // assign data_bus_drv = 'z;
     // assign address_bus = dte_2_icache.driveAddrBus ? 32'h1000 : 'z;
-    assign bestPick_req_2_dte   =  icache_2_scheduler.req;
+  
 
     initial begin
         `LOG("Starting mem System TB");
@@ -243,7 +253,6 @@ module tb_DTE ();
 
 
         // bestPick_req_2_dte = NO_REQ;
-        bestPick_bk_id_2_dte = 0;
         DelayClks(20);
         @(posedge clk)
        // bestPick_req_2_dte   = ICACHE_HIGH_PRI;

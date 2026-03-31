@@ -1,15 +1,18 @@
 include ../../../Make.vars
 include ../../../Make.build
 
-TARGET = Scheduler_Test
+TARGET = DTE_Test
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_FILE_NAME = tb_Scheduler 
+TOP_FILE_NAME = tb_dcache
+
+STARTUP_FILES = \
+				gen/dcache_loader.sv
 
 TB_FILES = \
-		   tb_Scheduler.sv \
-		   Scheduler_Golden.sv \
+		   $(STARTUP_FILES)	\
+		   tb_dcache.sv \
 
 PKGS = $(RTL_PKGS)
 
@@ -18,7 +21,7 @@ SRC_FILES = \
 			$(RTL_SRC_FILES) \
 			$(TB_FILES)	\
 
-.PHONY: all run clean see genMem
+.PHONY: all run clean see gen
 
 all: $(TARGET)
 	
