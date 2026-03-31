@@ -128,7 +128,7 @@ module DCache_Bank (
 
     DCache_Bank_TagStore DCache_Bank_TagStore_unit (
         .clk(clk),
-        .rst(clk),  //active low
+        .rst(rst),  //active low
         .p_addr_i(blockReq_i.p_addr),
         .oe_i(blockReq_i.oe),
         .we_i(blockReq_i.we),

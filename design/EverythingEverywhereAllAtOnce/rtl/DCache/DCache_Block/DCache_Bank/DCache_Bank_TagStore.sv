@@ -130,7 +130,9 @@ module DCache_Bank_TagStore (
     //
     always_ff @(posedge clk) begin
         if (!rst) begin
-            tagMetaStore <= '{default:'0};
+            for(int i = 0; i < DCACHE_BANK_NUM_LINES; i++) begin
+                tagMetaStore[i] <= '{default:'0};
+            end
         end else begin
             if (fill3_i || ld_From_V_Swap_i) begin
                 tagMetaStore[p_addr_fields.index].valid <= 1'b1;

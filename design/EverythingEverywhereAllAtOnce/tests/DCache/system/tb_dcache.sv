@@ -29,6 +29,9 @@ module tb_dcache ();
     dte_2_dcache_t inFromDTE;
     dcache_2_scheduler_t out2Sch;
 
+    block_req_t block_req;
+    dte_2_dcache_t dte_2_dcache;
+
     initial begin
         $vcdpluson;
         $vcdplusmemon;
@@ -37,18 +40,31 @@ module tb_dcache ();
     assign dataBus = driveDataBus ? dataForBus : 'z;
     assign addrBus = driveAddrBus ? addrForBus : 'z;
 
-    DCache_TOP uut0_dcache (
-        .clk(clk),
-        .rst(rst),
-        .inFromCore_i(inFromCore),
-        .out2Core_o(out2Core),
-        .inFromDTE_i(inFromDTE),
-        .out2Sch_o(out2Sch),
+    
+
+    DCache_Block u_DCache_Block (
+        .clk_i(clk),
+        .rst_i(rst),
+
+        .block_req_i(block_req),
+
+        .mem_Valid_FromDte_i(dte_2_dcache.mem_valid[0]),
+        .evictionBuf_clr_FromDTE_i(dte_2_dcache.evictionBuf_clr[0]),
+        .evictionBuf_setCommiting_FromDTE_i(dte_2_dcache.evictionBuf_setCommiting[0]),
+        .permissionToDriveDataBus_evictionBuf(dte_2_dcache.permissionToDriveDataBus_evictionBuf[0]),
+        .permissionToDriveAddrBus_Ld(dte_2_dcache.permissionToDriveAddrBus_Ld[0]),
+        .permissionToDriveAddrBus_eb(dte_2_dcache.permissionToDriveAddrBus_eb[0]),
+
+        .st_override_for_sch_req(0),
+
         .dataBus(dataBus),
-        .address_bus(addrBus)
+        .address_bus(addrBus),
+
+        .outputs_o()
     );
 
-    //0ing the dcache on startup
+    
+
     dcache_loader dcache_loader_unit ();
 
     initial begin
@@ -60,10 +76,18 @@ module tb_dcache ();
         driveDataBus = 0;
         addrForBus = 0;
         dataForBus = 0;
+        dte_2_dcache = '{default : '0};
+        
 
-        DelayCLKs(5);
+        @(posedge clk)
         rst = 1;  //actve low
-
+        DelayCLKs(10);
+        @(posedge clk)
+        block_req.oe = 1;
+        block_req.we = 0;
+        block_req.p_addr = 15'h2000;
+        block_req.vec = 0;
+        block_req.st_q_data = '{default: '0};
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
