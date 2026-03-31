@@ -70,7 +70,7 @@ module Scheduler (
 
     //dma write to mem cleaning
     req_2_sch_t dma_req;
-    assign dma_req = sch_latches.writeBuf_V_List[sch_latches.eb_addr[MEM_BANKGROUP_BITS_UB : MEM_BANKGROUP_BITS_LD]] ? NO_REQ : sch_latches.dma_req;
+    assign dma_req = sch_latches.writeBuf_V_List[sch_latches.dma_write_addr[MEM_BANKGROUP_BITS_UB : MEM_BANKGROUP_BITS_LD]] ? NO_REQ : sch_latches.dma_req;
 
     //now doing the final picking
     //I$ and MIO

@@ -9,6 +9,7 @@ TOP_FILE_NAME = tb_Scheduler
 
 TB_FILES = \
 		   tb_Scheduler.sv \
+		   Scheduler_Golden.sv \
 
 PKGS = $(RTL_PKGS)
 

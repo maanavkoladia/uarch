@@ -40,6 +40,9 @@ module tb_Scheduler ();
     req_2_sch_t bestPick_req;
     logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_i;
 
+    req_2_sch_t bestPick_req_golden;
+    logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_i_golden;
+
 
     task automatic DelayClks(input int cycles);
         #(Clk_PERIOD * cycles);
@@ -63,8 +66,8 @@ module tb_Scheduler ();
         .dCache_2_Sch_i(dcache_2_sched),
         .mem_2_Sch_i(mem_2_sched),
         .dma_2_sch_i(dma_2_sched),
-        .bestPick_o(bestPick_req),
-        .bestPick_bk_id_o(bestPick_bk_i)
+        .bestPick_o(bestPick_req_golden),
+        .bestPick_bk_id_o(bestPick_bk_i_golden)
     );
 
     initial begin
@@ -72,18 +75,32 @@ module tb_Scheduler ();
         rst = 0;  //active low
         icache_2_sched.req = NO_REQ;  //for lds from mem
         for (int i = 0; i < NUM_DCACHE_PORTS; i++) begin
-            dcache_2_sched.req = NO_REQ;
-            dcache_2_sched.evictionBufAddr = NO_REQ;
+            dcache_2_sched.req[i] = NO_REQ;
+            dcache_2_sched.evictionBufAddr[i] = 0;
         end  //for ld and store to mem and io
         mem_2_sched = '{default: '0};  //write buf status
         dma_2_sched.dma_req = NO_REQ;
-        dma_2_sched.dma_req = 0;
+        dma_2_sched.writeBuf_Address = 0;
+        
+        dcache_2_sched.req_mio = 0;
 
         DelayClks(5);
+
+
         rst = 1;
 
         // sceduler
-        DelayClks(20);
+        DelayClks(5);
+        @(negedge clk)
+        dcache_2_sched.req[0] = DCACHE_EB_BLOCKING_LD;
+        
+        icache_2_sched.req = ICACHE_HIGH_PRI;
+        @(posedge clk)
+        @(posedge clk)
+        @(posedge clk)
+        @(posedge clk)
+        icache_2_sched.req = ICACHE_LOW_PRI_REQ;
+        
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
