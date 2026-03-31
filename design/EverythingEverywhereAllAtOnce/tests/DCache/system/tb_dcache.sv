@@ -1,6 +1,5 @@
 import common_pkg::*;
 import interconnect_pkg::*;
-import tb_dcache_pkg::*;
 
 module tb_dcache ();
 

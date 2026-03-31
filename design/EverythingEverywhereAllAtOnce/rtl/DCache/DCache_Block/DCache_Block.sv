@@ -66,8 +66,9 @@ module DCache_Block (
         .clk_i(clk_i),
         .rst_i(rst_i),  //active low
         .eb_clr_i(evictionBuf_clr_FromDTE_i),
-        .vcache_outputs_i(vcache_outputs),
         .set_commiting(evictionBuf_setCommiting_FromDTE_i),
+        .vcache_outputs_i(vcache_outputs),
+        .blockReq_i(block_req_i),
         .outputs_o(eb_outputs)
     );
 
