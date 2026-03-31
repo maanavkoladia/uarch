@@ -1,7 +1,14 @@
 import common_pkg::*;
 import interconnect_pkg::*;
 import tb_dcache_pkg::*;
+
 module tb_dcache ();
+
+    localparam CLK_PERIOD = 10;
+
+    task automatic DelayCLKs(input int cycles);
+        #(CLK_PERIOD * cycles);
+    endtask
 
     `CLK_INIT(CLK_PERIOD)
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
@@ -31,7 +38,7 @@ module tb_dcache ();
     assign dataBus = driveDataBus ? dataForBus : 'z;
     assign addrBus = driveAddrBus ? addrForBus : 'z;
 
-    DCache_TOP uut0 (
+    DCache_TOP uut0_dcache (
         .clk(clk),
         .rst(rst),
         .inFromCore_i(inFromCore),
@@ -41,6 +48,9 @@ module tb_dcache ();
         .dataBus(dataBus),
         .address_bus(addrBus)
     );
+
+    //0ing the dcache on startup
+    dcache_loader dcache_loader_unit ();
 
     initial begin
         `LOG("DCache Tb Starting up");
