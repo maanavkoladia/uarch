@@ -32,7 +32,7 @@ package core_stage_latches_pkg;
 
     typedef struct {
         idm_slot_info_t idm_slots[NUM_IDM_SLOTS];
-        logic [1:0] valid_slots;
+        logic [2:0] valid_slots;
     } idm_outputs_t;
 
     //typedef struct {

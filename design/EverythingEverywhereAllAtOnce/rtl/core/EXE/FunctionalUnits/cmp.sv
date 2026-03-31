@@ -4,11 +4,12 @@ module cmp (
     input  logic [1:0] data_size,  // 00=8bit, 01=16bit, 10=32bit
     
     output bool CF,
-    output bool PF,
-    output bool AF,
-    output bool ZF,
+    output bool OF,
     output bool SF,
-    output bool OF
+    output bool ZF,
+    output bool AF,
+    output bool PF
+
 );
 
     logic [32:0] diff32;
