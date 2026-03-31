@@ -28,16 +28,18 @@ NUM_TRANSACTIONS
 
     } bus_transaction_e;
 
-    //0 highest pri,NUM_PRI_LEVELS - 1 lowest
 
     typedef struct {
         req_2_sch_t i_cache_req;
-        req_2_sch_t d_cache_reqs[NUM_DCACHE_PORTS];
-        req_2_sch_t mio_req;
-        req_2_sch_t dma_req;
 
+        req_2_sch_t d_cache_reqs[NUM_DCACHE_PORTS];
         p_address_t eb_addr[NUM_DCACHE_PORTS];
+
+        req_2_sch_t mio_req;
+
+        req_2_sch_t dma_req;
         p_address_t dma_write_addr;
+
         bool writeBuf_V_List[numWriteBufsInMem];
 
     } sch_latched_reqs_t;

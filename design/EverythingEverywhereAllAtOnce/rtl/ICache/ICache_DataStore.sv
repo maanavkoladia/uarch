@@ -54,7 +54,7 @@ module ICache_DataStore (
     //assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} :  WR_2_DataStore_clk;
     //VCS yelled at me so I am removing the delay - harish, this is irrevalt
     //after the merge
-    assign #6 WR_2_DataStore_Delay = !rst ? '{default: '1} : WR_2_DataStore_clk;
+    assign #6 WR_2_DataStore_Delay = !rst ? '0 : WR_2_DataStore_clk;
 
 
     always_comb begin
