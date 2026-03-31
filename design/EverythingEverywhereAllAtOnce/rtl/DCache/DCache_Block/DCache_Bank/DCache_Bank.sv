@@ -87,6 +87,7 @@ module DCache_Bank (
         .S_0(bankState_bits[0]),  // current-state bit 0 (LSB)
         .S_1(bankState_bits[1]),  // current-state bit 1 (1)
         .S_2(bankState_bits[2]),  // current-state bit 2 (MSB)
+        .S_3(bankState_bits[3]),
 
         .write_to_dswap_o(fsmOuts.write_to_dswap_o),
         .D_will_evict_o(fsmOuts.D_will_evict_o),
