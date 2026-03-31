@@ -22,11 +22,12 @@ module Scheduler_DCachePicking (
             d_cache_req[i] = d_cache_reqs_dirty_i[i];
 
             if (
-                ((d_cache_reqs_dirty_i[i] == DCACHE_EB_BLOCKING_ST_OVERRIDE)
+                ((d_cache_reqs_dirty_i[i] == DCACHE_EB_BLOCKING_BANK )
+                 || (d_cache_reqs_dirty_i[i] == DCACHE_EB_BLOCKING_ST_OVERRIDE)
                  || (d_cache_reqs_dirty_i[i] == DCACHE_EB_BLOCKING_LD)
                  || (d_cache_reqs_dirty_i[i] == DCACHE_EB_BLOCK_ST)
                  || (d_cache_reqs_dirty_i[i] == DCACHE_EB_WR))
-                && writeBuf_V[d_Cache_eb_addr[i][6:4]]
+                && writeBuf_V[d_Cache_eb_addr[i][MEM_BANKGROUP_BITS_UB : MEM_BANKGROUP_BITS_LD]]
             ) begin
                 d_cache_req[i] = NO_REQ;
             end

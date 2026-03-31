@@ -17,6 +17,11 @@ package mem_common_pkg;
     localparam int MEM_SIZE = 1 << 15;
     localparam int PHY_MEM_ADDRESS_SIZE = $clog2(MEM_SIZE);
 
+    localparam int MEM_BANKGROUP_BITS_UB = 6;
+    localparam int MEM_BANKGROUP_BITS_LD = 4;
+
+    localparam int MEM_CHIP_BITS_UB = 9;
+    localparam int MEM_CHIP_BITS_LD = 6;
 
     //need to figure out later
     //bank outputs
