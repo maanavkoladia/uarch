@@ -4,6 +4,13 @@ module imm_finder (
     output [7:0][7:0] imm64
 );
     wire [3:0] idx1, idx2, idx3, idx4, idx5, idx6, idx7;
+    assign idx1 = imm_index + 4'd1;
+    assign idx2 = imm_index + 4'd2;
+    assign idx3 = imm_index + 4'd3;
+    assign idx4 = imm_index + 4'd4;
+    assign idx5 = imm_index + 4'd5;
+    assign idx6 = imm_index + 4'd6;
+    assign idx7 = imm_index + 4'd7;
 
 assign imm64 = {
     IR[imm_index], IR[idx1], IR[idx2], IR[idx3],

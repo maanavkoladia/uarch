@@ -7,25 +7,6 @@ module selection_logic (
 );
 
     wire [15:0][5:0] temp;
-    assign temp[0] = EIP[5:0];
-    assign temp[1] = EIP[5:0] + 6'd1;
-    assign temp[2] = EIP[5:0] + 6'd2;
-    assign temp[3] = EIP[5:0] + 6'd3;
-
-    assign temp[4] = EIP[5:0] + 6'd4;
-    assign temp[5] = EIP[5:0] + 6'd5;
-    assign temp[6] = EIP[5:0] + 6'd6;
-    assign temp[7] = EIP[5:0] + 6'd7;
-
-    assign temp[8] = EIP[5:0] + 6'd8;
-    assign temp[9] = EIP[5:0] + 6'd9;
-    assign temp[10] = EIP[5:0] + 6'd10;
-    assign temp[11] = EIP[5:0] + 6'd11;
-
-    assign temp[12] = EIP[5:0] + 6'd12;
-    assign temp[13] = EIP[5:0] + 6'd13;
-    assign temp[14] = EIP[5:0] + 6'd14;
-    assign temp[15] = EIP[5:0] + 6'd15;
 
     ir_logic ir_logic_module(
         .o0_5_o(temp[0][5]), .o0_4_o(temp[0][4]), .o0_3_o(temp[0][3]), .o0_2_o(temp[0][2]), .o0_1_o(temp[0][1]), .o0_0_o(temp[0][0]),
