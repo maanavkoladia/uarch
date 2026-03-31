@@ -4,9 +4,9 @@
 
 NS_0 = (!S_1 & S_2 & mem_ready_i) | (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & S_2)
 
-NS_1 = (S_0 & !S_1 & !S_2) | (!S_0 & S_1 & !S_2)
+NS_1 = (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2)
 
-NS_2 = (S_0 & !S_1 & S_2) | (!S_1 & S_2 & !mem_ready_i) | (!S_0 & !S_1 & !S_2 & req_hit_i & !others_busy_i)
+NS_2 = (!S_1 & S_2 & !mem_ready_i) | (S_0 & !S_1 & S_2) | (!S_0 & !S_1 & !S_2 & req_hit_i & !others_busy_i)
 
 busy_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & !others_busy_i)
 

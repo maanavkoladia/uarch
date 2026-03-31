@@ -99,13 +99,13 @@ inv1$ inv_others_busy_i (others_busy_i_inv, others_busy_i);
 
 // Next-state and output SOP logic
 
-// NS_0 = (!S_0 & S_1 & !S_2) | (!S_1 & S_2 & mem_ready_i) | (S_0 & !S_1 & S_2)
+// NS_0 = (!S_1 & S_2 & mem_ready_i) | (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & S_2)
 wire NS_0_t0;
 wire NS_0_t1;
 wire NS_0_t2;
 
-and3$ NS_0_and0 (NS_0_t0, S_0_inv, S_1, S_2_inv);
-and3$ NS_0_and1 (NS_0_t1, S_1_inv, S_2, mem_ready_i);
+and3$ NS_0_and0 (NS_0_t0, S_1_inv, S_2, mem_ready_i);
+and3$ NS_0_and1 (NS_0_t1, S_0_inv, S_1, S_2_inv);
 and3$ NS_0_and2 (NS_0_t2, S_0, S_1_inv, S_2);
 or3$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2);
 

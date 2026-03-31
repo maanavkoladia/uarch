@@ -1,3 +1,4 @@
+import reg_ids_pkg::*;
 module control_store (
     input logic [9:0] total_pf_vector,
     input byte_t opcode,
@@ -40,17 +41,19 @@ module control_store (
 
     assign rr_cs = '{
         RR_OP       : cs_out[0][0],
-        REG_RD      : cs_out[0][1],
-        MOD_RM_RD   : cs_out[0][2],
+        DR_RD      : cs_out[0][1],
+        SR_RD   : cs_out[0][2],
         SIB_NEEDED  : cs_out[0][3],
         DISP_NEEDED : cs_out[0][4],
-        WE_REG      : cs_out[0][5],
-        WE_MOD_RM   : cs_out[0][6],
+        DR_WR       : cs_out[0][5],
+        SR_WR       : cs_out[0][6],
         ST_SEL      : cs_out[0][7],
         DR_SEL      : cs_out[0][8],
         LD_OP       : cs_out[0][9],
         ST_OP       : cs_out[0][10],
-        datasize    : cs_out[0][11 +: 3]
+        datasize    : cs_out[0][11 +: 3],
+        ld_flags    : 1'b0,                 //need to fill out
+        flag_modified_vector : 32'b0       //need to fill out
     };
 
     assign dc_cs = '{

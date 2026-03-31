@@ -2,9 +2,9 @@
 # Input  signal order : ['S_0', 'S_1', 'V_Hit_i', 'DC_will_evict_i', 'VC_needs_2_evict_i', 'EB_V_i']
 # Output signal order : ['NS_0', 'NS_1', 'LD_EB_o', 'CLR_D_SWAP_V_o', 'Read_DSWAP_o', 'Write_VSWAP_o', 'busy_o', 'blocked_o']
 
-NS_0 = (S_0 & S_1) | (S_1 & !EB_V_i) | (!S_0 & !S_1 & V_Hit_i) | (!S_0 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & DC_will_evict_i & !VC_needs_2_evict_i)
+NS_0 = (S_1 & !EB_V_i) | (S_0 & S_1) | (!S_0 & !S_1 & V_Hit_i) | (!S_0 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & DC_will_evict_i & !VC_needs_2_evict_i)
 
-NS_1 = (S_1 & EB_V_i) | (S_0 & S_1) | (!S_0 & !V_Hit_i & DC_will_evict_i & EB_V_i)
+NS_1 = (S_0 & S_1) | (S_1 & EB_V_i) | (!S_0 & !V_Hit_i & DC_will_evict_i & EB_V_i)
 
 LD_EB_o = (!S_0 & S_1 & !EB_V_i) | (!S_0 & !S_1 & !V_Hit_i & DC_will_evict_i & VC_needs_2_evict_i)
 
@@ -14,7 +14,7 @@ Read_DSWAP_o = (S_0 & !S_1)
 
 Write_VSWAP_o = (!S_0 & !S_1 & V_Hit_i)
 
-busy_o = (!S_0 & V_Hit_i) | (S_0 & !S_1) | (!S_0 & S_1) | (!S_0 & DC_will_evict_i & !EB_V_i) | (!S_0 & DC_will_evict_i & VC_needs_2_evict_i)
+busy_o = (!S_1 & V_Hit_i) | (!S_0 & S_1) | (S_0 & !S_1) | (!S_1 & DC_will_evict_i & !EB_V_i) | (!S_1 & DC_will_evict_i & VC_needs_2_evict_i)
 
 blocked_o = (!S_0 & S_1 & EB_V_i) | (!S_0 & !V_Hit_i & DC_will_evict_i & VC_needs_2_evict_i & EB_V_i)
 

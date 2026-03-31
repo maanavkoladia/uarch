@@ -53,14 +53,14 @@ package RegisterRead_pkg;
 
         bool cs_sib_size;
 
-        bool cs_reg_rd;
-        bool cs_modrm_rd;
+        bool cs_sr_rd;
+        bool cs_dr_rd;
 
-        bool cs_reg_wr;
-        bool cs_modrm_reg_wr;
+        bool cs_sr_wr;
+        bool cs_dr_wr;
         reg_ids_e Segment0_ID;
-        reg_ids_e Segment1_ID;
-        bool Segment1_valid;
+        reg_ids_e Segment1_ID;      
+        bool Segment1_valid;        //need to implement sb checking for segments
     } regsb_inputs_t;
 
     typedef struct{

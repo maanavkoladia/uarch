@@ -88,7 +88,7 @@ module Decode (
     control_store cs(
         .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .rep_mov(cs_rep_mov), .rep_cmp(cs_rep_cmp), .branch(cs_branch),
         .rr_cs(temp_rr_cs), .dc_cs(temp_dc_cs), .mem_cs(temp_mem_cs), .exe_cs(temp_exe_cs), .wb_cs(temp_wb_cs), .hardcoded_register_read(cs_hardcoded_register_read),
-        .hardcoded_register_read_id(cs_hardcoded_register_id),
+        .hardcoded_register_read_id(cs_hardcoded_register_id)
     );
 
     decode_gp_gen gp_gen_decode(
@@ -146,25 +146,31 @@ module Decode (
     assign temp_rr_latch = '{
         valid           : !invalid_inst,
         cs              : temp_rr_cs,
+
         dc_cs           : temp_dc_cs,
         mem_cs          : temp_mem_cs,
         exe_cs          : temp_exe_cs,
         wb_cs           : temp_wb_cs,
+
         br_info         : br_info_for_latches,
         NEIP            : NEIP,
         EIP             : EIP,
+
         imm64           : imm64,
         dr_id           : (cs_hardcoded_register_read) ?
                             cs_hardcoded_register_id :
                             ((temp_rr_cs.DR_SEL) ? modrmid : regid),
         sr_id           : (!(temp_rr_cs.DR_SEL) ? modrmid : regid),
+        sib_idx_id      : sibidx,
         sib_base_id     : sibbase,
         sib_scale       : sibscale,
         disp_size       : disp_size,
         displacement    : displacement,
         seg_1_valid     : 1'b0,
         seg_0_id        : segment0,
-        seg_1_id        : DS
+        seg_1_id        : DS,
+        read_seg_reg    : 1'b0,     //will have to get this info from control store
+        read_seg_reg_id : DS
     };
 
     assign rr_latches_next = '{
