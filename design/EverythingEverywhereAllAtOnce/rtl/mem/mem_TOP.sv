@@ -60,14 +60,14 @@ module mem_TOP (
 
     bool drive_Data_Bus;
     logic [DATA_BUS_WIDTH_BITS-1:0] dataToDrive;
-    assign data_bus = drive_Data_Bus ? dataToDrive : 'z;
+    assign #5 data_bus = drive_Data_Bus ? dataToDrive : 'z;
 
     //actually drive the bus, data should inyl reach this point if
     //DTE want to do a trnafser and the controller has given permission
     //to a bank to drive the mem_bus, idk about the write logic
     always_comb begin
         drive_Data_Bus = 0;
-        dataToDrive = '0;
+        dataToDrive = 'z;
         for (int i = 0; i < MEM_BUS_SIZE / DATA_BUS_WIDTH_BITS; i++) begin
             if (inFromDte.permission2DriveBus[i]) begin
                 dataToDrive = mem_bus[i*DATA_BUS_WIDTH_BITS+:DATA_BUS_WIDTH_BITS];

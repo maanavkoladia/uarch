@@ -1,53 +1,52 @@
 import interconnect_pkg::*;
 import common_pkg::*;
 
+// LOWER (layer 0)
+`define ICACHE_PRINT_LINE_LOWER(ROW) \
+$display("Lower Idx: %0d, Tag: %02h | %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h", \
+    ROW, \
+    /*u_icache.icache_TagStore_unit.validStore[ROW]*/ \
+    u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[ROW] \
+);
 
-    // LOWER (layer 0)
-    `define ICACHE_PRINT_LINE_LOWER(ROW) \
-        $display("Lower Idx: %0d, Tag: %02h | %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h", \
-            ROW, \
-            /*u_icache.icache_TagStore_unit.validStore[ROW]*/ \
-            u_icache.icache_TagStore_unit.tag_store_ramCell_Lower.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[ROW] \
-        );
-
-    // UPPER (layer 1)
-    `define ICACHE_PRINT_LINE_UPPER(ROW) \
-        $display("Upper Idx: %0d, Tag: %02h | %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h", \
-            ROW, \
-            u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[ROW], \
-            u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[ROW] \
-        );
+// UPPER (layer 1)
+`define ICACHE_PRINT_LINE_UPPER(ROW) \
+$display("Upper Idx: %0d, Tag: %02h | %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h %02h", \
+    ROW, \
+    u_icache.icache_TagStore_unit.tag_store_ramCell_Upper.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[ROW], \
+    u_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[ROW] \
+);
 
 module tb_ICache ();
     localparam int Clk_PERIOD = 10;
@@ -87,9 +86,10 @@ module tb_ICache ();
 
         $display("==== ICache Contents ====");
         $display("Valid Bits:");
-        for(int i = 0; i < 16; i++ ) $display("IDX: %2d, V: %0d", i, u_icache.icache_TagStore_unit.validStore[i]);
+        for (int i = 0; i < 16; i++)
+            $display("IDX: %2d, V: %0d", i, u_icache.icache_TagStore_unit.validStore[i]);
         $display("==========================================================");
-            
+
 
         // Lower (0–7)
         `ICACHE_PRINT_LINE_LOWER(0)
@@ -130,7 +130,7 @@ module tb_ICache ();
         .addrBus(addrBus)
     );
 
-    icache_loader u_icache_loader();
+    icache_loader u_icache_loader ();
 
     initial begin
         `LOG("Starting mem System TB");
@@ -150,48 +150,40 @@ module tb_ICache ();
 
         display_icache_contents();
 
- 
+
         // core_2_icache.p_addr = 0;
         // core_2_icache.v_spc_addr_i = 0;
-        @(posedge clk)
-        core_2_icache.num_valid_IDM_slots = 0;
+        @(posedge clk) core_2_icache.num_valid_IDM_slots = 0;
         core_2_icache.p_addr = 15'h4020;
         core_2_icache.v_spc_addr_i = 32'h00004020;
         core_2_icache.icache_en = 1;
 
         DelayClks(20);
         display_icache_contents();
-        @(posedge clk)
-        dte_2_icache.driveAddrBus = 1;
+        @(posedge clk) dte_2_icache.driveAddrBus = 1;
 
-        @(posedge clk)
-        dte_2_icache.Mem_Valid = 1;
-        driveDataBus = 1;
+        @(posedge clk) dte_2_icache.Mem_Valid = 1;
+        #5 driveDataBus = 1;
         dataForBus = 32'h01010101;
-        // display_icache_contents();
+        #5 driveDataBus = 0;
 
 
-        @(posedge clk)
-        dte_2_icache.Mem_Valid = 1;
+        @(posedge clk) dte_2_icache.Mem_Valid = 1;
         driveDataBus = 1;
-        dataForBus = 32'h02020202;
+        dataForBus   = 32'h02020202;
         // display_icache_contents();
 
-        @(posedge clk)
-        dte_2_icache.Mem_Valid = 1;
+        @(posedge clk) dte_2_icache.Mem_Valid = 1;
         driveDataBus = 1;
-        dataForBus = 32'h03030303;
+        dataForBus   = 32'h03030303;
         // display_icache_contents();
 
 
-        @(posedge clk)
-        dte_2_icache.Mem_Valid = 1;
+        @(posedge clk) dte_2_icache.Mem_Valid = 1;
         driveDataBus = 1;
-        dataForBus = 32'h04040404;
-        // display_icache_contents();
+        dataForBus   = 32'h04040404;
 
-        @(posedge clk)
-        driveAddrBus = 0;
+        @(posedge clk) driveAddrBus = 0;
         dte_2_icache.Mem_Valid = 0;
         driveDataBus = 0;
         display_icache_contents();
@@ -205,17 +197,18 @@ module tb_ICache ();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(30);
+        DelayClks(
+            30);
         $finish;
         `LOG("Finishing mem System TB");
     end
 
 
-       // core_2_icache.numValidIDMSlots = 0;
-        // Task to display ICache and Tag Store contents in hex
-        // change this so that it looks like a i cache picture, ie realy easy
-        // for me to look at
-        // so there are 16 lines, split between upper and lower, do lower
-        // first then upper
-        // <index> <tag> <dataline>
+    // core_2_icache.numValidIDMSlots = 0;
+    // Task to display ICache and Tag Store contents in hex
+    // change this so that it looks like a i cache picture, ie realy easy
+    // for me to look at
+    // so there are 16 lines, split between upper and lower, do lower
+    // first then upper
+    // <index> <tag> <dataline>
 endmodule

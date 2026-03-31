@@ -36,23 +36,25 @@ module or_op(
     assign res_buf_o = {32'd0, merged_result[31:0]}; // Only lower 32 bits to res_buf_o
 
     always_comb begin
+        // CF and OF are always cleared for OR
         OF = 0;
         CF = 0;
+        
+        // PF always reflects parity of the lowest 8 bits, regardless of data_size
+        PF = ~^merged_result[7:0];
+
         case (data_size)
-            2'b00: begin
+            2'b00: begin // 8-bit
                 ZF = (merged_result[7:0] == 8'h0);
                 SF = merged_result[7];
-                PF = ~^merged_result[7:0];
             end
-            2'b01: begin
+            2'b01: begin // 16-bit
                 ZF = (merged_result[15:0] == 16'h0);
                 SF = merged_result[15];
-                PF = ~^merged_result[7:0];
             end
-            default: begin
+            default: begin // 32-bit
                 ZF = (merged_result[31:0] == 32'h0);
                 SF = merged_result[31];
-                PF = ~^merged_result[7:0];
             end
         endcase
     end

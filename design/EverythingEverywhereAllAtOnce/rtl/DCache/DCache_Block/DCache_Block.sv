@@ -11,7 +11,8 @@ module DCache_Block (
 
     //DTE input
     input bool mem_Valid_FromDte_i,
-    input bool evictionBuf_V_clr_FromDTE_i,
+    input bool evictionBuf_clr_FromDTE_i,
+    input bool evictionBuf_setCommiting_FromDTE_i,
     input bool permissionToDriveDataBus_evictionBuf[CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS],
     input bool permissionToDriveAddrBus_Ld,
     input bool permissionToDriveAddrBus_eb,
@@ -45,6 +46,7 @@ module DCache_Block (
         .clk(clk_i),
         .rst(rst_i),
         .V_Cache_i(vcache_outputs),
+        .eb_i(eb_outputs),
         .mem_Valid_FromDte_i(mem_Valid_FromDte_i),
         .blockReq_i(block_req_i),
         .dataBus(dataBus),
@@ -63,8 +65,9 @@ module DCache_Block (
     EvictionBuf evictionBuf_unit (
         .clk_i(clk_i),
         .rst_i(rst_i),  //active low
-        .clr_v_i(evictionBuf_V_clr_FromDTE_i),
+        .eb_clr_i(evictionBuf_clr_FromDTE_i),
         .vcache_outputs_i(vcache_outputs),
+        .set_commiting(evictionBuf_setCommiting_FromDTE_i),
         .outputs_o(eb_outputs)
     );
 
@@ -82,7 +85,7 @@ module DCache_Block (
             end
 
             2'b11: begin
-                if(rst_i) $fatal;
+                if (rst_i) $fatal;
             end
         endcase
     end
@@ -94,17 +97,27 @@ module DCache_Block (
     //assign outputs_o.eb_line_O = eb_outputs.lineOut;
 
     assign makeBlockReq = dcache_bank_outputs.MakeReq;
-    assign eb_blocking = vcache_outputs.beingBlocked;
+    assign eb_blockingVCache = vcache_outputs.beingBlocked;
     assign eb_V = eb_outputs.valid;
+    assign eb_curr_commiting = eb_outputs.commiting;
+    assign eb_blocking_Bank = dcache_bank_outputs.eb_stalling;
 
+    //need to add support for DCACHE_EB_BLOCKING_BANK
     always_comb begin
         outputs_o.req_2_sch = NO_REQ;
         if (eb_V) begin
-            outputs_o.req_2_sch = DCACHE_EB_WR;
-            if (eb_blocking) begin
+            if (eb_blocking_Bank && !eb_curr_commiting) begin
+                outputs_o.req_2_sch = DCACHE_EB_BLOCKING_BANK;
+            end else if (eb_blockingVCache && !eb_curr_commiting) begin  //blocking
                 if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_ST_OVERRIDE;
                 else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_LD;
                 else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_EB_BLOCK_ST;
+            end else if (eb_blockingVCache && eb_curr_commiting) begin
+                if (st_override_for_sch_req) outputs_o.req_2_sch = NO_REQ;
+                else if (block_req_i.oe) outputs_o.req_2_sch = NO_REQ;
+                else if (block_req_i.we) outputs_o.req_2_sch = NO_REQ;
+            end else if (!eb_curr_commiting) begin
+                outputs_o.req_2_sch = DCACHE_EB_WR;
             end
         end else if (makeBlockReq) begin
             if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_FILL_ST_OVERRIDE;
@@ -121,10 +134,10 @@ module DCache_Block (
     int startingOffset;
     logic [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
 
-    assign dataBus = 
-        permissionToDriveDataBus_evictionBuf[0] 
-        || permissionToDriveDataBus_evictionBuf[1] 
-        || permissionToDriveDataBus_evictionBuf[2] 
+    assign dataBus =
+        permissionToDriveDataBus_evictionBuf[0]
+        || permissionToDriveDataBus_evictionBuf[1]
+        || permissionToDriveDataBus_evictionBuf[2]
         || permissionToDriveDataBus_evictionBuf[3]? dataBus_fake : 'z;
     //data bus
     always_comb begin
@@ -142,12 +155,5 @@ module DCache_Block (
             end
         end
     end
-
-
-
-
-
-
-
 
 endmodule

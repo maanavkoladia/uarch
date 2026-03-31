@@ -1,6 +1,7 @@
 // AAA - ASCII Adjust AL after Addition
 // Adjusts AL register after unpacked BCD addition
 
+//100% claude
 import common_pkg::*;
 
 module aaa (

@@ -22,7 +22,7 @@ module Scheduler (
 
     //make the dcache scheduler
     req_2_sch_t dcache_Best_Pick;
-    logic [$clog2(NUM_DCACHE_PORTS) - 1 :0] dcache_Best_Pick_BK_ID;
+    logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] dcache_Best_Pick_BK_ID;
 
 
     Scheduler_DCachePicking dcache_picking_unit (
@@ -36,11 +36,11 @@ module Scheduler (
     always_ff @(posedge clk) begin
         if (!rst) begin
             sch_latches.i_cache_req <= NO_REQ;
-            for(int i = 0; i < NUM_DCACHE_PORTS; i++) sch_latches.d_cache_reqs[i] <= NO_REQ;
+            for (int i = 0; i < NUM_DCACHE_PORTS; i++) sch_latches.d_cache_reqs[i] <= NO_REQ;
             sch_latches.mio_req <= NO_REQ;
             sch_latches.dma_req <= NO_REQ;
-            sch_latches.eb_addr <= '{default : '0};
-            sch_latches.writeBuf_V_List <= '{default : '0};
+            sch_latches.eb_addr <= '{default: '0};
+            sch_latches.writeBuf_V_List <= '{default: '0};
         end else begin
             // ICache
             sch_latches.i_cache_req <= iCache_2_Sch_i.req;
@@ -64,7 +64,7 @@ module Scheduler (
 
     //dma write to mem cleaning
     req_2_sch_t dma_req;
-    assign dma_req = mem_2_Sch_i.writeBuf_V[dma_2_sch_i.writeBuf_Address[6 : 4]] ? NO_REQ : dma_2_sch_i.dma_req;
+    assign dma_req = mem_2_Sch_i.writeBuf_V[dma_2_sch_i.writeBuf_Address[MEM_BANKGROUP_BITS_UB : MEM_BANKGROUP_BITS_LD]] ? NO_REQ : dma_2_sch_i.dma_req;
 
     //now doing the final picking
     //I$ and MIO

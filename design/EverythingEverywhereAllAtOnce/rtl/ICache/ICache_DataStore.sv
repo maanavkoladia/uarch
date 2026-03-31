@@ -52,17 +52,17 @@ module ICache_DataStore (
     logic WR_2_DataStore_actual[LAYERS_OF_CELLS][NUM_CELLS];
 
     //assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} :  WR_2_DataStore_clk;
-    assign WR_2_DataStore_Delay = !rst ? '{default: '1} :  WR_2_DataStore_clk;
-    //VCS yelled at me so I am removing the delay - harish
+    //VCS yelled at me so I am removing the delay - harish, this is irrevalt
+    //after the merge
+    assign #6 WR_2_DataStore_Delay = !rst ? '{default: '1} : WR_2_DataStore_clk;
 
 
     always_comb begin
-        if(!rst)begin
-            WR_2_DataStore_actual = '{default : '1};
-        end
-        else begin
-            for(int i = 0; i < LAYERS_OF_CELLS; i++)begin
-                for(int j = 0 ; j < NUM_CELLS; j++)begin
+        if (!rst) begin
+            WR_2_DataStore_actual = '{default: '1};
+        end else begin
+            for (int i = 0; i < LAYERS_OF_CELLS; i++) begin
+                for (int j = 0; j < NUM_CELLS; j++) begin
                     WR_2_DataStore_actual[i][j] = (WR_2_DataStore_Delay[i][j] == 0) && (WR_2_DataStore_clk[i][j] == 0) ? 0 : 1;
                 end
             end
@@ -70,10 +70,9 @@ module ICache_DataStore (
     end
 
     always_comb begin
-        if(!rst)begin
+        if (!rst) begin
             WR_2_DataStore_clk = '{default: '1};  //active low
-        end
-        else begin
+        end else begin
             WR_2_DataStore_clk = '{default: '1};  //active low
             for (int j = 0; j < LAYERS_OF_CELLS; j++) begin
                 if (dataLineOutSel == j) begin
@@ -81,12 +80,16 @@ module ICache_DataStore (
                         ld_From_I_VC_Swap, fill0_i, fill1_i, fill2_i, fill3_i
                     })
                         5'b10000: WR_2_DataStore_clk[dataLineOutSel] = '{default: '0};
-                        5'b01000: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i] =  0;
-                        5'b00100: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+4] =  0;
-                        5'b00010: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+8] =  0;
-                        5'b00001: for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+12] = 0;
+                        5'b01000:
+                        for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i] = 0;
+                        5'b00100:
+                        for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+4] = 0;
+                        5'b00010:
+                        for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+8] = 0;
+                        5'b00001:
+                        for (int i = 0; i < 4; i++) WR_2_DataStore_clk[dataLineOutSel][i+12] = 0;
                         5'b00000: WR_2_DataStore_clk[dataLineOutSel] = '{default: '1};
-                        default:   WR_2_DataStore_clk[dataLineOutSel] = '{default: '1};
+                        default: WR_2_DataStore_clk[dataLineOutSel] = '{default: '1};
                     endcase
                 end
             end
@@ -101,10 +104,40 @@ module ICache_DataStore (
         if (ld_From_I_VC_Swap) begin
             DIN_2_DataStore = I_VC_SwapBuf_i.line;
         end else begin
-            DIN_2_DataStore[0] = dataBus[7:0];
-            DIN_2_DataStore[1] = dataBus[15:8];
-            DIN_2_DataStore[2] = dataBus[23:16];
-            DIN_2_DataStore[3] = dataBus[31:24];
+            // DIN_2_DataStore[0] = dataBus[7:0];
+            // DIN_2_DataStore[1] = dataBus[15:8];
+            // DIN_2_DataStore[2] = dataBus[23:16];
+            // DIN_2_DataStore[3] = dataBus[31:24];
+            // DIN_2_DataStore[4] = dataBus[7:0];
+            // DIN_2_DataStore[5] = dataBus[15:8];
+            // DIN_2_DataStore[6] = dataBus[23:16];
+            // DIN_2_DataStore[7] = dataBus[31:24];
+            // DIN_2_DataStore[8] = dataBus[7:0];
+            // DIN_2_DataStore[9] = dataBus[15:8];
+            // DIN_2_DataStore[10] = dataBus[23:16];
+            // DIN_2_DataStore[11] = dataBus[31:24];
+            // DIN_2_DataStore[12] = dataBus[7:0];
+            // DIN_2_DataStore[13] = dataBus[15:8];
+            // DIN_2_DataStore[14] = dataBus[23:16];
+            // DIN_2_DataStore[15] = dataBus[31:24];
+
+            DIN_2_DataStore[3]  = dataBus[7:0];
+            DIN_2_DataStore[2]  = dataBus[15:8];
+            DIN_2_DataStore[1]  = dataBus[23:16];
+            DIN_2_DataStore[0]  = dataBus[31:24];
+            DIN_2_DataStore[7]  = dataBus[7:0];
+            DIN_2_DataStore[6]  = dataBus[15:8];
+            DIN_2_DataStore[5]  = dataBus[23:16];
+            DIN_2_DataStore[4]  = dataBus[31:24];
+            DIN_2_DataStore[11] = dataBus[7:0];
+            DIN_2_DataStore[10] = dataBus[15:8];
+            DIN_2_DataStore[9]  = dataBus[23:16];
+            DIN_2_DataStore[8]  = dataBus[31:24];
+            DIN_2_DataStore[15] = dataBus[7:0];
+            DIN_2_DataStore[14] = dataBus[15:8];
+            DIN_2_DataStore[13] = dataBus[23:16];
+            DIN_2_DataStore[12] = dataBus[31:24];
+
         end
     end
 

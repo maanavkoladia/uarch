@@ -1,7 +1,6 @@
 import common_pkg::*;
 import interconnect_pkg::*;
 import mem_common_pkg::*;
-import tb_mainMem_pkg::*;
 
 /*
 typedef struct {
@@ -25,9 +24,14 @@ typedef struct {
 
 module tb_mainMem ();
 
+    localparam int CLK_PERIOD = 10;
     `CLK_INIT(CLK_PERIOD)
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
+
+    task automatic DelayCLKs(input int cycles);
+        #(CLK_PERIOD * cycles);
+    endtask
 
     logic rst;
     wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;

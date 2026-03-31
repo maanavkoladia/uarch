@@ -1,5 +1,5 @@
 # Enumeration map for FSM: mem_controller_fsm
-# 9 states -> 4 bit(s)
+# 10 states -> 4 bit(s)
 # IDLE is always assigned encoding 0
 # ERROR is always assigned the highest encoding
 #
@@ -8,9 +8,10 @@
   IDLE                                  0  0000  # IDLE (forced 0)
   LD_0                                  1  0001
   LD_1                                  2  0010
-  LD_HIT                                3  0011
-  LD_MISS                               4  0100
-  W0                                    5  0101
-  W1                                    6  0110
-  W2                                    7  0111
-  ERROR                                 8  1000  # ERROR (highest)
+  LD_2                                  3  0011
+  LD_HIT                                4  0100
+  LD_MISS                               5  0101
+  W0                                    6  0110
+  W1                                    7  0111
+  W2                                    8  1000
+  ERROR                                 9  1001  # ERROR (highest)

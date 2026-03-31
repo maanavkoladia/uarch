@@ -13,9 +13,10 @@ package interconnect_pkg;
     typedef enum logic [NUM_REQS - 1 : 0] {
 
         // ===== ICACHE (highest) =====
-        ICACHE_HIGH_PRI = 13,
+        ICACHE_HIGH_PRI = 14,
 
         // ===== DCACHE =====
+        DCACHE_EB_BLOCKING_BANK = 13,
         DCACHE_EB_BLOCKING_ST_OVERRIDE = 12,
         DCACHE_EB_BLOCKING_LD = 11,
         DCACHE_EB_BLOCK_ST = 10,
@@ -88,8 +89,8 @@ package interconnect_pkg;
         //bool permissionToDriveAddrBus_eb;
         bool permissionToDriveAddrBus_Ld[NUM_DCACHE_PORTS];
         bool permissionToDriveAddrBus_eb[NUM_DCACHE_PORTS];
-
-        bool evictionBuf_V_clr[NUM_DCACHE_PORTS];
+        bool evictionBuf_clr[NUM_DCACHE_PORTS];
+        bool evictionBuf_setCommiting[NUM_DCACHE_PORTS];
 
         //MIO stuff
         //used to crea teh hit signal for mem
@@ -162,7 +163,7 @@ package interconnect_pkg;
         bool icache_en;
         p_address_t p_addr;
         v_address_t v_spc_addr_i;
-        logic[$clog2(NUM_IDM_SLOTS) -1 :0] num_valid_IDM_slots;
+        logic [$clog2(NUM_IDM_SLOTS) : 0] num_valid_IDM_slots;
     } core_2_icache_t;
 
     typedef struct {

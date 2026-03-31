@@ -4,76 +4,78 @@ package contorl_store_pkg;
         //----------------------------------------------------------
         // AAA — ASCII Adjust AL after Addition (aaa.sv)
         //----------------------------------------------------------
-        AAA_OP,
+        AAA,
 
         //----------------------------------------------------------
         // ADD — Addition (add.sv)
         //  Plain variants:  full-width immediate or register
         //  Sign  variants:  imm8 sign-extended to the target width
         //----------------------------------------------------------
-        ADD8,       // ADD r/m8,  imm8 / r8
-        ADD16,      // ADD r/m16, imm16 / r16
-        ADD16sign,  // ADD r/m16, imm8 (sign-extended)
-        ADD32,      // ADD r/m32, imm32 / r32
-        ADD32sign,  // ADD r/m32, imm8 (sign-extended)
+        // ADD8,       // ADD r/m8,  imm8 / r8
+        // ADD16,      // ADD r/m16, imm16 / r16
+        // ADD16sign,  // ADD r/m16, imm8 (sign-extended)
+        // ADD32,      // ADD r/m32, imm32 / r32
+        // ADD32sign,  // ADD r/m32, imm8 (sign-extended)
+        ADD,
 
         //----------------------------------------------------------
         // ADC — Add with Carry (add_w_c.sv)
         //----------------------------------------------------------
-        ADC32,     // ADC r/m32, imm32 / r32
-        ADC32sign, // ADC r/m32, imm8 (sign-extended)
+        // ADC32,     // ADC r/m32, imm32 / r32
+        // ADC32sign, // ADC r/m32, imm8 (sign-extended)
+        ADC,
 
         //----------------------------------------------------------
         // AND — Bitwise AND (and.sv)
         //----------------------------------------------------------
-        AND8,       // AND r/m8,  imm8 / r8
-        AND16,      // AND r/m16, imm16 / r16
-        AND16sign,  // AND r/m16, imm8 (sign-extended)
-        AND32,      // AND r/m32, imm32 / r32
-        AND32sign,  // AND r/m32, imm8 (sign-extended)
-
+        // AND8,       // AND r/m8,  imm8 / r8
+        // AND16,      // AND r/m16, imm16 / r16
+        // AND16sign,  // AND r/m16, imm8 (sign-extended)
+        // AND32,      // AND r/m32, imm32 / r32
+        // AND32sign,  // AND r/m32, imm8 (sign-extended)
+        AND,
         //----------------------------------------------------------
         // NOT — Bitwise NOT (not.sv)
         //----------------------------------------------------------
-        NOT8,   // NOT r/m8
-        NOT16,  // NOT r/m16
-        NOT32,  // NOT r/m32
-
+        // NOT8,   // NOT r/m8
+        // NOT16,  // NOT r/m16
+        // NOT32,  // NOT r/m32
+        NOT,
         //----------------------------------------------------------
         // OR — Bitwise OR (or.sv)
         //----------------------------------------------------------
-        OR8,       // OR r/m8,  imm8 / r8
-        OR16,      // OR r/m16, imm16 / r16
-        OR16sign,  // OR r/m16, imm8 (sign-extended)
-        OR32,      // OR r/m32, imm32 / r32
-        OR32sign,  // OR r/m32, imm8 (sign-extended)
-
+        // OR8,       // OR r/m8,  imm8 / r8
+        // OR16,      // OR r/m16, imm16 / r16
+        // OR16sign,  // OR r/m16, imm8 (sign-extended)
+        // OR32,      // OR r/m32, imm32 / r32
+        // OR32sign,  // OR r/m32, imm8 (sign-extended)
+        OR,
         //----------------------------------------------------------
         // SAL — Shift Arithmetic Left (sal.sv)
         //----------------------------------------------------------
-        SAL8,   // SAL r/m8,  1 / CL / imm8
-        SAL16,  // SAL r/m16, 1 / CL / imm8
-        SAL32,  // SAL r/m32, 1 / CL / imm8
-
+        // SAL8,   // SAL r/m8,  1 / CL / imm8
+        // SAL16,  // SAL r/m16, 1 / CL / imm8
+        // SAL32,  // SAL r/m32, 1 / CL / imm8
+        SAL,
         //----------------------------------------------------------
         // SAR — Shift Arithmetic Right (sar.sv)
         //----------------------------------------------------------
-        SAR8,   // SAR r/m8,  1 / CL / imm8
-        SAR16,  // SAR r/m16, 1 / CL / imm8
-        SAR32,  // SAR r/m32, 1 / CL / imm8
-
+        // SAR8,   // SAR r/m8,  1 / CL / imm8
+        // SAR16,  // SAR r/m16, 1 / CL / imm8
+        // SAR32,  // SAR r/m32, 1 / CL / imm8
+        SAR,
         //----------------------------------------------------------
         // SBB — Subtract with Borrow (sub_w_b.sv)
         //----------------------------------------------------------
-        SBB32,     // SBB r/m32, imm32 / r32
-        SBB32sign, // SBB r/m32, imm8 (sign-extended)
-
+        // SBB32,     // SBB r/m32, imm32 / r32
+        // SBB32sign, // SBB r/m32, imm8 (sign-extended)
+        SBB,
         //----------------------------------------------------------
         // BSF — Bit Scan Forward (bsf.sv)
         //----------------------------------------------------------
-        BSF16,  // BSF r16, r/m16
-        BSF32,  // BSF r32, r/m32
-
+        // BSF16,  // BSF r16, r/m16
+        // BSF32,  // BSF r32, r/m32
+        BSF,
         //----------------------------------------------------------
         // SIMD — Packed / MMX operations (simd.sv)
         //----------------------------------------------------------
@@ -84,9 +86,25 @@ package contorl_store_pkg;
         PACKSSWB,  // Pack 4×i16 → 8×i8  with signed saturation
         PACKSSDW,  // Pack 2×i32 → 4×i16 with signed saturation
 
-        COMPARE8,
-        COMPARE16,
-        COMPARE32,
+        // COMPARE8,
+        // COMPARE16,
+        // COMPARE32,
+        CMP,
+
+        //NONE ALU OPERATIONS
+        CALL,
+        FAR_CALL,
+        CMPXCHG,
+        IRETD,
+        MOV,
+        POP,
+        PUSH,
+        RET,
+        RET_IMM,
+        RET_FAR,
+        RET_FAR_IMM,
+        XCHG,
+
         PASSA,
         PASSB
 

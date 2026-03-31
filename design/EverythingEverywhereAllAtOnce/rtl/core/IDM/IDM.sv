@@ -18,7 +18,7 @@ module IDM (
     idm_t idm;
 
     always@(posedge clk)begin
-        if(rst | fetch_outs_i.exp_pipe_clear)begin
+        if(!rst | fetch_outs_i.exp_pipe_clear)begin
             for(int i = 0; i < NUM_IDM_SLOTS; i++)begin
                 idm.slots[i].valid     <= 0;
                 idm.slots[i].br_valid  <= 0;

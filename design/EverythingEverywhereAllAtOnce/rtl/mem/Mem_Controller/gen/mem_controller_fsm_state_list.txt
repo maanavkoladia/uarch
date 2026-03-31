@@ -1,5 +1,5 @@
 # State list for FSM: mem_controller_fsm
-# Total states      : 9
+# Total states      : 10
 # State bits needed : 4
 # NOTE: IDLE is always assigned encoding 0
 #
@@ -9,8 +9,9 @@
      1  0001  IDLE
      2  0010  LD_0
      3  0011  LD_1
-     4  0100  LD_HIT
-     5  0101  LD_MISS
-     6  0110  W0
-     7  0111  W1
-     8  1000  W2
+     4  0100  LD_2
+     5  0101  LD_HIT
+     6  0110  LD_MISS
+     7  0111  W0
+     8  1000  W1
+     9  1001  W2

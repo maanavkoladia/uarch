@@ -1,8 +1,8 @@
-State_s,req_hit_i,others_busy_i,NextState_ns,busy_o,st_req_o,WriteComplete_o,Drive_Addr_Bus_o,Drv_DB_0_o,Drv_DB_1_o,Drv_DB_2_o,Drv_DB_3_o
-IDLE,x,1,IDLE,0,0,0,0,0,0,0,0
-IDLE,0,x,IDLE,0,0,0,0,0,0,0,0
-IDLE,1,0,ST_REQ,1,0,0,1,0,0,0,0
-ST_REQ,x,x,ST0,1,1,0,1,1,0,0,0
-ST0,x,x,ST1,1,0,0,1,0,1,0,0
-ST1,x,x,ST2,1,0,0,1,0,0,1,0
-ST2,x,x,IDLE,1,0,1,1,0,0,0,1
+State_s,req_hit_i,others_busy_i,,NextState_ns,busy_o,st_req_o,WriteComplete_o,Drive_Addr_Bus_o,Drv_DB_0_o,Drv_DB_1_o,Drv_DB_2_o,Drv_DB_3_o
+IDLE,x,1,,IDLE,0,0,0,0,0,0,0,0
+IDLE,0,x,,IDLE,0,0,0,0,0,0,0,0
+IDLE,1,0,,ST_REQ,1,0,0,1,0,0,0,0
+ST_REQ,x,x,,ST0,1,1,0,1,1,0,0,0
+ST0,x,x,,ST1,1,0,0,1,0,1,0,0
+ST1,x,x,,ST2,1,0,0,1,0,0,1,0
+ST2,x,x,,IDLE,1,0,1,1,0,0,0,1

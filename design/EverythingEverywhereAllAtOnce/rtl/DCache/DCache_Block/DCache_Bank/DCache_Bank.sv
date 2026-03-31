@@ -15,7 +15,7 @@ module DCache_Bank (
     //for the miss signals, not needed naymore,
     //no forwarding from EB, bc writes proably
     //get hairy
-    //input eb_cache_outputs_t EB_i,
+    input eb_outputs_t eb_i,
 
     //for memvalid for the fsm, from dte
     input bool mem_Valid_FromDte_i,
@@ -32,11 +32,11 @@ module DCache_Bank (
     typedef struct {
         bool write_to_dswap_o;
         bool D_will_evict_o;
-        bool mem_req_o;
         bool busy_o;
         bool ld_V_swap_o;
         bool invalidate_v_swap_o;
         bool MakeReq;
+        bool Blocked;
         bool fill0_o;
         bool fill1_o;
         bool fill2_o;
@@ -54,11 +54,11 @@ module DCache_Bank (
 
     p_addr_dcache_fields_t blockReq_p_addr_fields;
     assign blockReq_p_addr_fields = '{
-        tag    : blockReq_i.p_addr[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
-        index  : blockReq_i.p_addr[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
-        bank   : blockReq_i.p_addr[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
-        offset : blockReq_i.p_addr[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
-    };
+            tag    : blockReq_i.p_addr[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
+            index  : blockReq_i.p_addr[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
+            bank   : blockReq_i.p_addr[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
+            offset : blockReq_i.p_addr[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
+        };
 
     //need to create the hit and miss signals,
     //need to create the tagstore hit signal, same as hit
@@ -79,6 +79,7 @@ module DCache_Bank (
         .rst(rst),
         .D_Miss_i(miss),
         .V_Miss_i(V_Cache_i.miss),
+        .EB_Hit_i(eb_i.reqHit),
         .Line_valid_i(currLineValid),
         .DTE_Mem_valid_i(mem_Valid_FromDte_i),
         .D_Swap_valid_i(dcache_bank_swapBuf.valid),
@@ -89,11 +90,12 @@ module DCache_Bank (
 
         .write_to_dswap_o(fsmOuts.write_to_dswap_o),
         .D_will_evict_o(fsmOuts.D_will_evict_o),
-        .mem_req_o(fsmOuts.mem_req_o),
+        //.mem_req_o(fsmOuts.mem_req_o),
         .busy_o(fsmOuts.busy_o),
         .ld_V_swap_o(fsmOuts.ld_V_swap_o),
         .invalidate_v_swap_o(fsmOuts.invalidate_v_swap_o),
         .MakeReq_o(fsmOuts.MakeReq),
+        .Blocked_o(fsmOuts.Blocked),
         .fill0_o(fsmOuts.fill0_o),
         .fill1_o(fsmOuts.fill1_o),
         .fill2_o(fsmOuts.fill2_o),
@@ -153,7 +155,7 @@ module DCache_Bank (
                 2'b00: dcache_bank_swapBuf.valid <= dcache_bank_swapBuf.valid;
                 2'b01: dcache_bank_swapBuf.valid <= 0;
                 2'b10: dcache_bank_swapBuf.valid <= 1;
-                2'b11: if(rst) $fatal;
+                2'b11: if (rst) $fatal;
             endcase
 
             if (fsmOuts.write_to_dswap_o) begin
@@ -209,6 +211,7 @@ module DCache_Bank (
         outputs_o.busy = fsmOuts.busy_o;
         outputs_o.data_lineOut = dataStore_Line;
         outputs_o.MakeReq = fsmOuts.MakeReq;
+        outputs_o.eb_stalling = fsmOuts.Blocked;
     end
 
 endmodule

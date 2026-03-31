@@ -128,8 +128,8 @@ module Fetch (
 
     
     //DMA JK
-    always_ff@(posedge clk or posedge rst) begin
-        if(rst)
+    always_ff@(posedge clk) begin
+        if(!rst)
             DMA_int_jk <= 0;
         else begin
             case({dma_int, exe_outs_i.br_res_out.clr_exp_mode})
@@ -144,8 +144,8 @@ module Fetch (
 
     
 // exp_mode JK
-    always_ff@(posedge clk or posedge rst) begin
-        if(rst)
+    always_ff@(posedge clk) begin
+        if(!rst)
             exp_mode_jk <= 0;
         else begin
             case({exp_set_logic_outs.exp_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
@@ -159,8 +159,8 @@ module Fetch (
     end
 
 //int JK
-    always_ff@(posedge clk or posedge rst) begin
-        if(rst)
+    always_ff@(posedge clk) begin
+        if(!rst)
             int_mode_jk <= 0;
         else begin
             case({exp_set_logic_outs.int_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
@@ -174,8 +174,8 @@ module Fetch (
     end
 
     //SPC flop
-    always_ff@(posedge clk or posedge rst)begin
-        if(rst) SPC <= 0;
+    always_ff@(posedge clk)begin
+        if(!rst) SPC <= 0;
         else begin
             SPC <= next_spc;
         end
@@ -187,7 +187,7 @@ module Fetch (
     // This prevents exception handler branches from polluting user BTB entries
     BTB btb(
         .clk(clk),
-        .reset(rst),
+        .reset(!rst),
         .spc(SPC), //address
 
         .exe_br_valid(exe_outs_i.br_res_out.valid), //bool
@@ -205,7 +205,7 @@ module Fetch (
 
     SPC_Sel_Logic spc_sel_logic(
         .clk(clk),
-        .rst(rst),
+        .rst(!rst),
         .flush(exe_outs_i.br_res_out.flush),
 
         //probably not needed
@@ -236,7 +236,7 @@ module Fetch (
 
     IDM_Invalidate_Logic idm_invalidate_logic(
         .clk(clk),
-        .rst(rst),
+        .rst(!rst),
         .eip(decode_outs_i.eip),
         .flush(exe_outs_i.br_res_out.flush),
         .exp_pipeclear(exp_set_logic_outs.exp_pipe_clear),

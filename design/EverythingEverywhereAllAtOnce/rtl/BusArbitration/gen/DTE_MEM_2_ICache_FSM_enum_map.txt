@@ -1,5 +1,5 @@
 # Enumeration map for FSM: DTE_MEM_2_ICache_FSM
-# 6 states -> 3 bit(s)
+# 7 states -> 3 bit(s)
 # IDLE is always assigned encoding 0
 # ERROR is always assigned the highest encoding
 # ERROR was synthesised (not present in source CSV)
@@ -10,5 +10,6 @@
   LD0                                   1  001
   LD1                                   2  010
   LD2                                   3  011
-  MEM_REQ                               4  100
-  ERROR                                 5  101  # ERROR (highest), synthesised
+  LD3                                   4  100
+  MEM_REQ                               5  101
+  ERROR                                 6  110  # ERROR (highest), synthesised

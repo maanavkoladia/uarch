@@ -1,18 +1,30 @@
 # Human-readable SOP equations for FSM: DTE_DCache_2_MEM_FSM
 # Input  signal order : ['S_0', 'S_1', 'S_2', 'req_hit_i', 'bank_hit_i', 'others_busy_i']
-# Output signal order : ['NS_0', 'NS_1', 'NS_2', 'busy_o', 'st_req_o', 'Drive_Addr_Bus_o', 'Drv_DB_0_o', 'Drv_DB_1_o', 'Drv_DB_2_o', 'Drv_DB_3_o']
+# Output signal order : ['NS_0', 'NS_1', 'NS_2', 'busy_o', 'st_req_o', 'eb_clear_o', 'set_eb_commit_o', 'Drive_Addr_Bus_o', 'Drv_DB_0_o', 'Drv_DB_1_o', 'Drv_DB_2_o', 'Drv_DB_3_o']
 
 NS_0 = (!S_1 & S_2) | (!S_0 & S_1 & !S_2)
 
-NS_1 = (S_0 & !S_1 & !S_2) | (!S_0 & S_1 & !S_2)
+NS_1 = (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2)
 
 NS_2 = (S_0 & !S_1 & S_2) | (!S_0 & !S_1 & !S_2 & req_hit_i & bank_hit_i & !others_busy_i)
 
+<<<<<<< HEAD
 busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
 
 st_req_o = (!S_0 & !S_1 & S_2)
 
 Drive_Addr_Bus_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
+=======
+busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2)
+
+st_req_o = (!S_0 & !S_1 & S_2)
+
+eb_clear_o = (S_0 & S_1 & !S_2)
+
+set_eb_commit_o = (!S_0 & !S_1 & S_2)
+
+Drive_Addr_Bus_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
+>>>>>>> icache-debuggin-branch
 
 Drv_DB_0_o = (!S_0 & !S_1 & S_2)
 

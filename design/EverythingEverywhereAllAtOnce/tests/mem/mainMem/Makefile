@@ -2,13 +2,14 @@ include ../../../Make.vars
 include ../../../Make.build
 
 TARGET = mainMem
+TOP = tb_mainMem
 
-MEM_GEN_CONF = memGen.conf.json
+GEN_CONF = startUp_gen.conf.json
+
 TEST_PROG = testProg.s
 
 TB_FILES = \
-		   tb_mainMem_pkg.sv	\
-		   memLoader.sv	\
+		   ./gen/memLoader.sv \
 		   tb_mainMem.sv
 
 PKGS = $(RTL_PKGS)
@@ -18,12 +19,12 @@ SRC_FILES = \
 			$(RTL_SRC_FILES) \
 			$(TB_FILES)	\
 
-.PHONY: all run clean see genMem
+.PHONY: all run clean see gen view
 
 all: $(TARGET)
 	
 $(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES) 2>&1 | tee compile.log
+	$(CC) $(CC_FLAGS) -top $(TOP) -o $@ $(SRC_FILES) 2>&1 | tee compile.log
 
 run: $(TARGET)
 	./$< 2>&1| tee sim.log
@@ -32,10 +33,10 @@ view: run
 	#./$(TARGET) -gui &
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
 
-genMem: 
-	python3.9 $(LOAD_MEM_COMPILE_SCRIPT) $(MEM_GEN_CONF)
-	python3.9 $(LOAD_MEM_GEN_HEX_MEM_SCRIPT) $(MEM_GEN_CONF)
-	python3.9 $(LOAD_MEM_GEN_READ_MEM_FILE) $(MEM_GEN_CONF)
+gen:
+	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
+	@python3 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@rm -f cleaned_scripts.json
 
 see:
 	#@echo $(TIME_FILE)
@@ -51,5 +52,4 @@ clean:
 	rm -f master
 	rm -f *.log
 	rm -f ucli.key
-	rm -r memGen
 
