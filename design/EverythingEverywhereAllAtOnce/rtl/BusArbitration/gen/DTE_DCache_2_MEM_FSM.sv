@@ -120,11 +120,7 @@ and3$ NS_2_and0 (NS_2_t0, S_0, S_1_inv, S_2);
 and6$ NS_2_and1 (NS_2_t1, S_0_inv, S_1_inv, S_2_inv, req_hit_i, bank_hit_i, others_busy_i_inv);
 or2$  NS_2_or  (NS_2, NS_2_t0, NS_2_t1);
 
-<<<<<<< HEAD
-// busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
-=======
 // busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2)
->>>>>>> icache-debuggin-branch
 wire busy_o_t0;
 wire busy_o_t1;
 wire busy_o_t2;
@@ -137,9 +133,6 @@ or3$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2);
 // st_req_o = (!S_0 & !S_1 & S_2)
 and3$ st_req_o_and (st_req_o, S_0_inv, S_1_inv, S_2);
 
-<<<<<<< HEAD
-// Drive_Addr_Bus_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
-=======
 // eb_clear_o = (S_0 & S_1 & !S_2)
 and3$ eb_clear_o_and (eb_clear_o, S_0, S_1, S_2_inv);
 
@@ -147,14 +140,13 @@ and3$ eb_clear_o_and (eb_clear_o, S_0, S_1, S_2_inv);
 and3$ set_eb_commit_o_and (set_eb_commit_o, S_0_inv, S_1_inv, S_2);
 
 // Drive_Addr_Bus_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
->>>>>>> icache-debuggin-branch
 wire Drive_Addr_Bus_o_t0;
 wire Drive_Addr_Bus_o_t1;
 wire Drive_Addr_Bus_o_t2;
 wire Drive_Addr_Bus_o_t3;
 
-and2$ Drive_Addr_Bus_o_and0 (Drive_Addr_Bus_o_t0, S_0, S_2_inv);
-and2$ Drive_Addr_Bus_o_and1 (Drive_Addr_Bus_o_t1, S_1, S_2_inv);
+and2$ Drive_Addr_Bus_o_and0 (Drive_Addr_Bus_o_t0, S_1, S_2_inv);
+and2$ Drive_Addr_Bus_o_and1 (Drive_Addr_Bus_o_t1, S_0, S_2_inv);
 and3$ Drive_Addr_Bus_o_and2 (Drive_Addr_Bus_o_t2, S_0_inv, S_1_inv, S_2);
 and4$ Drive_Addr_Bus_o_and3 (Drive_Addr_Bus_o_t3, S_2_inv, req_hit_i, bank_hit_i, others_busy_i_inv);
 or4$  Drive_Addr_Bus_o_or  (Drive_Addr_Bus_o, Drive_Addr_Bus_o_t0, Drive_Addr_Bus_o_t1, Drive_Addr_Bus_o_t2, Drive_Addr_Bus_o_t3);
