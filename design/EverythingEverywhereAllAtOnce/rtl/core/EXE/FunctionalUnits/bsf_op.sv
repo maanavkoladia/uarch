@@ -8,6 +8,7 @@ module bsf (
     input  uint64_t operand,
     input  logic [3:0] data_size,    // 01=16bit, 10=32bit
     output uint64_t dr_o,      // Index of first set bit
+    output uint64_t res_buf_o,
     output bool     ZF           // Zero flag (set if operand is 0)
 );
 
@@ -61,6 +62,7 @@ module bsf (
 
     // Mux result based on data_size
     assign dr_o = (data_size[2]) ? result32 : result16;
+    assign res_buf_o = (data_size[2]) ? result32 : result16;
     assign ZF   = (data_size[2]) ? ZF32 : ZF16;
 
 endmodule

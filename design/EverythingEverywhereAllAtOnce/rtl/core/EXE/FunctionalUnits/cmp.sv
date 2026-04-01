@@ -1,6 +1,6 @@
-module cmp32_structural_mux (
-    input  uint64_t operand1,
-    input  uint64_t operand2,
+module cmp32 (
+    input  uint64_t srA,
+    input  uint64_t srB,
     input  logic [3:0] data_size,  // bottom 3 bits used: data_size[2:0]
     
     output bool CF,
@@ -15,7 +15,7 @@ module cmp32_structural_mux (
     logic [32:0] diff32;   // 32-bit result + carry
     logic [31:0] result32;
 
-    assign diff32  = {1'b0, operand1[31:0]} - {1'b0, operand2[31:0]};
+    assign diff32  = {1'b0, srA[31:0]} - {1'b0, srB[31:0]};
     assign result32 = diff32[31:0];
 
     // Signals for different ranges
@@ -35,8 +35,8 @@ module cmp32_structural_mux (
                 PF = ~^lower8;
 
                 CF = diff32[8];
-                AF = (operand1[3:0] < operand2[3:0]);
-                OF = (operand1[7] ^ operand2[7]) & (operand1[7] ^ lower8[7]);
+                AF = (srA[3:0] < srB[3:0]);
+                OF = (srA[7] ^ srB[7]) & (srA[7] ^ lower8[7]);
             end
 
             3'b010: begin // upper 8 bits
@@ -45,8 +45,8 @@ module cmp32_structural_mux (
                 PF = ~^upper8;
 
                 CF = diff32[16];
-                AF = (operand1[11:8] < operand2[11:8]);
-                OF = (operand1[15] ^ operand2[15]) & (operand1[15] ^ upper8[7]);
+                AF = (srA[11:8] < srB[11:8]);
+                OF = (srA[15] ^ srB[15]) & (srA[15] ^ upper8[7]);
             end
 
             3'b011: begin // lower 16 bits
@@ -55,8 +55,8 @@ module cmp32_structural_mux (
                 PF = ~^lower16[7:0];
 
                 CF = diff32[16];
-                AF = (operand1[3:0] < operand2[3:0]);
-                OF = (operand1[15] ^ operand2[15]) & (operand1[15] ^ lower16[15]);
+                AF = (srA[3:0] < srB[3:0]);
+                OF = (srA[15] ^ srB[15]) & (srA[15] ^ lower16[15]);
             end
 
             3'b111: begin // full 32 bits
@@ -65,8 +65,8 @@ module cmp32_structural_mux (
                 PF = ~^full32[7:0];
 
                 CF = diff32[32];
-                AF = (operand1[3:0] < operand2[3:0]);
-                OF = (operand1[31] ^ operand2[31]) & (operand1[31] ^ full32[31]);
+                AF = (srA[3:0] < srB[3:0]);
+                OF = (srA[31] ^ srB[31]) & (srA[31] ^ full32[31]);
             end
 
             default: begin

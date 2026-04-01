@@ -190,13 +190,12 @@ logic iretd_cf_o, iretd_pf_o, iretd_af_o, iretd_zf_o, iretd_sf_o, iretd_of_o;
     //=============================FUNCTIONAL UNITS===================
 
     aaa u_aaa (
-        .AL_in (),
+        .EAX_in (),
         .AF_in (),
 
-        .AL_out(),
-        .AH_out(),
-        .CF    (),
-        .AF    ()
+        .EAX_out(),    // 64-bit output (ready to write to EAX)
+        .CF(),         // Carry flag
+        .AF()          // Auxiliary flag
     );
 
     adc_op u_adc_op (

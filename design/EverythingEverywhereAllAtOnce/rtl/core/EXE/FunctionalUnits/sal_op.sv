@@ -1,13 +1,14 @@
 module sal_op(
-    input  logic [63:0] value_i,
-    input  logic [63:0] shift_amt_i,
+    input  uint64_t value_i,
+    input  uint64_t shift_amt_i,
     input  logic [3:0]  data_size, 
-    input  logic        shift_by_one,
+    input  bool        shift_by_one,
     
     // Inputs for previous flag states
-    input  logic prev_ZF, prev_SF, prev_PF, prev_CF, prev_OF,
+   
 
-    output logic [63:0] dr_o,
+    output uint64_t dr_o,
+    output uint64_t res_buf_o,
     output logic ZF, SF, PF, OF, CF
 );
 
@@ -17,8 +18,8 @@ module sal_op(
     always_comb begin
         // Defaults
         dr_o = value_i;
-        ZF = prev_ZF; SF = prev_SF; PF = prev_PF; 
-        CF = prev_CF; OF = prev_OF;
+        ZF = 0; SF = 0; PF = 0; 
+        CF = 0; OF = 0;
 
         if (count > 0) begin
             case (data_size)

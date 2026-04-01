@@ -10,7 +10,7 @@ module sbb_op (
     input  bool     CF_in,         // Borrow-in
     input  logic [1:0] data_size,  // 00=8bit, 01=16bit, 10=32bit
     
-    output uint64_t result,        // Merged 64-bit result (dr_o)
+    output uint64_t dr_o,        // Merged 64-bit result (dr_o)
     output uint64_t res_buf_o,    // Lower 32 bits (zero extended)
     output bool CF,
     output bool PF,
@@ -24,6 +24,7 @@ module sbb_op (
     logic [31:0] res_val;
     logic        bin;
 
+    uint64_t result,
     assign bin = CF_in;
 
     always_comb begin
@@ -62,6 +63,7 @@ module sbb_op (
 
         // res_buf_o is always the lower 32 bits zero-extended
         res_buf_o = {32'd0, result[31:0]};
+        dr_o = {32'd0, result[31:0]};
 
         // PF always reflects parity of the lowest 8 bits
         PF = ~^res_val[7:0];
