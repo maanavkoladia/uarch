@@ -93,20 +93,20 @@ package core_stage_latches_pkg;
     typedef struct {
         bool EXE_OP;
         bool ST_OP;
-        logic [2:0] DATA_SIZE; //im assuming this is 8 16 32 64
+        logic [3:0] DATA_SIZE; //im assuming this is 8 16 32 64
         exe_cs_operation_type_e OP_TYPE;
 
         source_selector_e alu_inputA_sel;
         source_selector_e alu_inputB_sel;
         source_selector_e branch_target_sel;
 
-        bool xchg;
-        bool cmpxchg;
-        bool cmovc;
-        bool ld_flags;
-        uint32_t flag_modified_vector;
-        bool clear_df;
-        bool set_df;
+        bool shift_by_one; //for sal
+        // bool xchg;
+        // bool cmpxchg;
+        // bool cmovc;
+        // bool ld_flags;
+        // bool clear_df;
+        // bool set_df;
 
     //branch cs
         bool br_ucond;
@@ -266,7 +266,7 @@ package core_stage_latches_pkg;
         uint16_t ST_BIT_VEC_1;  //where to write
         bool MIO;
 
-        byte_t res_buf[32];  //32 byte buf
+        byte_t res_buf[CACHE_LINES_SIZE_B*2];  //32 byte buf
 
         reg_ids_e sr_id;
         uint64_t  sr_data;

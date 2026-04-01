@@ -5,11 +5,11 @@
 import common_pkg::*;
 
 module bsf (
-    input  uint64_t operand,
+    input  uint64_t srA,
     input  logic [3:0] data_size,    // 01=16bit, 10=32bit
     output uint64_t dr_o,      // Index of first set bit
     output uint64_t res_buf_o,
-    output bool     ZF           // Zero flag (set if operand is 0)
+    output bool     ZF           // Zero flag (set if srA is 0)
 );
 
     logic [31:0] op32;
@@ -22,7 +22,7 @@ module bsf (
 
     // 32-bit BSF
     always_comb begin
-        op32 = operand[31:0];
+        op32 = srA[31:0];
         found32 = 1'b0;
         index32 = 6'd0;
         if (op32 == 32'h0) begin
@@ -42,7 +42,7 @@ module bsf (
 
     // 16-bit BSF
     always_comb begin
-        op16 = operand[15:0];
+        op16 = srA[15:0];
         found16 = 1'b0;
         index16 = 5'd0;
         if (op16 == 16'h0) begin

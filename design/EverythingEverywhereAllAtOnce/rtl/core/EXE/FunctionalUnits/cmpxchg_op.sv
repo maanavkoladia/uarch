@@ -2,7 +2,7 @@ module cmpxchg_op (
     input  uint32_t EAX, //passed in from EAX latch
     input  uint32_t rm,  //passed in from DR/BUF
     input  uint32_t r,  //passed in through SR
-    input  logic [1:0] data_size,  // 2'b00=8b, 2'b01=16b, 2'b10=32b
+    input  logic [3:0] data_size,  // 2'b00=8b, 2'b01=16b, 2'b10=32b
     output uint64_t dr_o, 
     output uint64_t sr_o,  
     output uint64_t res_buf,

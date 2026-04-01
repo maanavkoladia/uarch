@@ -1,8 +1,8 @@
-module aaa (
+module aaa_op(
     input  uint64_t EAX_in,     // Full 64-bit input
     input  bool     AF_flag_in, // Input Auxiliary Flag
 
-    output uint64_t EAX_out,    // 64-bit output (ready to write to EAX)
+    output uint64_t dr_o,    // 64-bit output (ready to write to EAX)
     output bool     CF,         // Carry flag
     output bool     AF          // Auxiliary flag
 );
@@ -34,7 +34,7 @@ module aaa (
 
         // Build 64-bit output: upper 32 bits zeroed, preserve EAX[31:16]
         // EAX_out = {upper32=0, old_EAX[31:16], new_AX}
-        EAX_out = {32'h0, EAX_in[31:16], AX_new};
+        dr_o = {32'h0, EAX_in[31:16], AX_new};
     end
 
 endmodule

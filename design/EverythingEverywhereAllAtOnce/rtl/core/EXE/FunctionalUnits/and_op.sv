@@ -7,7 +7,7 @@ import common_pkg::*;
 module and_op(
     input  uint64_t srA,
     input  uint64_t srB,
-    input  logic [1:0] data_size, // 00=8b, 01=16b, 10=32b
+    input  logic [3:0] data_size, // 00=8b, 01=16b, 10=32b
     output uint64_t dr_o,
     output uint64_t res_buf_o,
     output bool ZF,

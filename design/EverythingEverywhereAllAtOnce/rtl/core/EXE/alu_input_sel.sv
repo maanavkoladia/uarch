@@ -8,6 +8,7 @@ module alu_input_sel(
     input uint32_t EAX,
     input uint32_t NEIP,
     input uin32_t EIP,
+    input uint32_t flags,
     input source_selector_e alu_inputA_sel,
     input source_selector_e alu_inputB_sel,
     
@@ -45,10 +46,12 @@ module alu_input_sel(
             EIP:            srA_64 = {32'b0, EIP};
             SEXT8:          srA_64 = {32'd0, 32'(signed'(imm64[7:0]))};
             NOP:            srA_64 = 0;
-            SEGMENT_NEIP:   srA_64 = {NEIP, segment}; 
-            SEGMENT_EIP:    srA_64 = {EIP, segment}; //not sure when this needs to be used
+            SEGMENT_NEIP:   srA_64 = {segment, NEIP}; 
+            SEGMENT_EIP:    srA_64 = {segment, EIP}; //not sure when this needs to be used
             EAX:            srA    = {32'd0, EAX}; //cmpxchg
             CMPXCHG:        srA_64 = {sr_data, dr_data}; 
+            IRETD:          srA_64 = res_buf_out[95:32];
+            FLAGS:          srA_64 = {32'd0, flags};
             default:        $fatal
         endcase
     end
@@ -68,6 +71,8 @@ module alu_input_sel(
             SEGMENT_EIP:    srAB_64 = {EIP, segment}; //not sure when this needs to be used
             EAX:            srAB    = {32'd0, EAX}; //send forward EAX
             CMPXCHG:        srAB_64 = {sr_data, dr_data}; //rm32 r32 on cmpxchg 
+            IRETD:          srA_64 = res_buf_out[95:32];
+            FLAGS:          srA_64 = {32'd0, flags};
             default:        $fatal
         endcase
     end

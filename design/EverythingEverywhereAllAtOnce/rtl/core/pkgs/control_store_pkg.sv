@@ -104,7 +104,8 @@ typedef enum {
     RET_IMM      = 26,
     RET_FAR      = 27,
     RET_FAR_IMM  = 28,
-    XCHG         = 29
+    XCHG         = 29,
+    CLD          = 30
 
 } exe_cs_operation_type_e;
 
