@@ -1,52 +1,66 @@
 module sal_op(
-    input  uint64_t value_i,
-    input  uint64_t shift_amt_i,
-    input  logic [1:0] data_size, 
-    input  bool shift_by_one,
-    // Inputs for previous flag states (required because count=0 must not change them)
-    input  bool prev_ZF, prev_SF, prev_PF, prev_CF, prev_OF,
+    input  logic [63:0] value_i,
+    input  logic [63:0] shift_amt_i,
+    input  logic [3:0]  data_size, 
+    input  logic        shift_by_one,
+    
+    // Inputs for previous flag states
+    input  logic prev_ZF, prev_SF, prev_PF, prev_CF, prev_OF,
 
-    output uint64_t dr_o,
-    output bool ZF, SF, PF, OF, CF
+    output logic [63:0] dr_o,
+    output logic ZF, SF, PF, OF, CF
 );
 
-    logic [4:0] count; // Masked to 5 bits per x86 spec
+    logic [4:0] count;
     assign count = shift_by_one ? 5'd1 : shift_amt_i[4:0];
 
     always_comb begin
-        // Initialize with previous values
+        // Defaults
         dr_o = value_i;
         ZF = prev_ZF; SF = prev_SF; PF = prev_PF; 
         CF = prev_CF; OF = prev_OF;
 
         if (count > 0) begin
             case (data_size)
-                2'b00: begin // 8-bit
+                4'b0001: begin // AL (8-bit lower)
                     dr_o[7:0] = value_i[7:0] << count;
                     CF = (count <= 8) ? value_i[8 - count] : 0;
-                    ZF = (dr_o[7:0] == 8'h0);
                     SF = dr_o[7];
-                    // OF is only defined for 1-bit shifts
+                    ZF = (dr_o[7:0] == 8'h0);
+                    PF = ~^dr_o[7:0];
                     if (count == 1) OF = dr_o[7] ^ CF;
                 end
                 
-                2'b01: begin // 16-bit
-                    dr_o[15:0] = value_i[15:0] << count;
-                    CF = (count <= 16) ? value_i[16 - count] : 0;
-                    ZF = (dr_o[15:0] == 16'h0);
+                4'b0010: begin // AH (8-bit upper)
+                    dr_o[15:8] = value_i[15:8] << count;
+                    CF = (count <= 8) ? value_i[16 - count] : 0;
                     SF = dr_o[15];
+                    ZF = (dr_o[15:8] == 8'h0);
+                    PF = ~^dr_o[15:8]; // PF usually reflects low 8 bits of result
                     if (count == 1) OF = dr_o[15] ^ CF;
                 end
                 
-                default: begin // 32-bit
+                4'b0011: begin // AX (16-bit)
+                    dr_o[15:0] = value_i[15:0] << count;
+                    CF = (count <= 16) ? value_i[16 - count] : 0;
+                    SF = dr_o[15];
+                    ZF = (dr_o[15:0] == 16'h0);
+                    PF = ~^dr_o[7:0];
+                    if (count == 1) OF = dr_o[15] ^ CF;
+                end
+                
+                4'b0111: begin // EAX (32-bit)
                     dr_o[31:0] = value_i[31:0] << count;
-                    CF = value_i[32 - count]; // count is max 31, so this is safe
-                    ZF = (dr_o[31:0] == 32'h0);
+                    // For 32-bit, if count > 0, CF is bit 32-count
+                    CF = value_i[32 - count]; 
                     SF = dr_o[31];
+                    ZF = (dr_o[31:0] == 32'h0);
+                    PF = ~^dr_o[7:0];
                     if (count == 1) OF = dr_o[31] ^ CF;
                 end
+                
+                default: ; // Do nothing
             endcase
-            PF = ~^dr_o[7:0];
         end
     end
 endmodule

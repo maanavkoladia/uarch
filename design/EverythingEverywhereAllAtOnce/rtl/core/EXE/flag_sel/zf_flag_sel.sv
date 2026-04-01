@@ -12,6 +12,8 @@ module zf_flag_sel(
     input bool sal_zf,
     input bool sar_zf,
     input bool sbb_zf,
+	input bool iretd_zf,
+
 
     input bool curr_z_flag,
 	input exe_cs_operation_type_e op_type,
@@ -31,6 +33,7 @@ module zf_flag_sel(
 			SAL:      zf_flag_o = sal_zf;
 			SAR:      zf_flag_o = sar_zf;
 			SBB:      zf_flag_o = sbb_zf;
+			IRETD:	  zf_flag_o = iretd_zf;
 			default:  zf_flag_o = curr_zf_flag;
 		endcase
 	end

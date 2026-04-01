@@ -22,11 +22,13 @@ module and_op(
     bool ld_32;
 
     assign and_result = srA & srB;
-    assign ld_16 = data_size[0] | data_size[1];
-    assign ld_32 = data_size[1];
+
+    assign ld_8 = data_size[0]
+    assign ld_16 = data_size[1] 
+    assign ld_32 = data_size[2];
 
     // Only update lower 8/16/32 bits, upper 32 bits remain from srA
-    assign merged_result[7:0]    = and_result[7:0];
+    assign merged_result[7:0]    = ld_8 ? and_result[7:0] : srA[7:0];
     assign merged_result[15:8]   = ld_16 ? and_result[15:8] : srA[15:8];
     assign merged_result[31:16]  = ld_32 ? and_result[31:16] : srA[31:16];
     assign merged_result[63:32]  = srA[63:32];

@@ -1,39 +1,40 @@
-// AAA - ASCII Adjust AL after Addition
-// Adjusts AL register after unpacked BCD addition
-
-//100% claude
-import common_pkg::*;
-
 module aaa (
-    input  uint64_t AL_in,   // Input AL register (only [7:0] used)
-    input  bool     AF_in,   // Input Auxiliary Flag
-    
-    output uint64_t AL_out,  // Output AL register
-    output uint64_t AH_out,  // Output AH register (increment if adjust)
-    output bool     CF,      // Carry flag
-    output bool     AF       // Auxiliary flag
+    input  uint64_t EAX_in,     // Full 64-bit input
+    input  bool     AF_flag_in, // Input Auxiliary Flag
+
+    output uint64_t EAX_out,    // 64-bit output (ready to write to EAX)
+    output bool     CF,         // Carry flag
+    output bool     AF          // Auxiliary flag
 );
 
     logic adjust;
-    logic [7:0] al_val;
-    
+    logic [7:0] AL, AH;
+    logic [15:0] AX_new;
+
     always_comb begin
-        al_val = AL_in[7:0];
-        
-        // Check if adjustment is needed
-        adjust = ((al_val & 8'h0F) > 8'h09) || AF_in;
-        
+        // Extract AX from EAX
+        AL = EAX_in[7:0];
+        AH = EAX_in[15:8];
+
+        // Determine if adjustment is needed
+        adjust = ((AL & 8'h0F) > 8'h09) || AF_flag_in;
+
         if (adjust) begin
-            AL_out = {56'h0, (al_val + 8'h06) & 8'h0F};
-            AH_out = 64'h01;  // Increment AH
+            AL = AL + 8'h06;
+            AH = AH + 1;
             CF = 1'b1;
             AF = 1'b1;
         end else begin
-            AL_out = {56'h0, al_val & 8'h0F};
-            AH_out = 64'h00;
             CF = 1'b0;
             AF = 1'b0;
         end
+
+        // Recombine AL/AH into AX
+        AX_new = {AH, AL};
+
+        // Build 64-bit output: upper 32 bits zeroed, preserve EAX[31:16]
+        // EAX_out = {upper32=0, old_EAX[31:16], new_AX}
+        EAX_out = {32'h0, EAX_in[31:16], AX_new};
     end
 
 endmodule

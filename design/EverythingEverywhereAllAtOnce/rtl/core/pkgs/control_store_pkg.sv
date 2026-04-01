@@ -1,134 +1,131 @@
 package contorl_store_pkg;
 
+
     typedef enum {
-        //----------------------------------------------------------
-        // AAA — ASCII Adjust AL after Addition (aaa.sv)
-        //----------------------------------------------------------
-        AAA,
+        CF_IDX   = 0,   // Carry Flag
+        PF_IDX   = 2,   // Parity Flag
+        AF_IDX   = 4,   // Auxiliary Carry Flag
+        ZF_IDX   = 6,   // Zero Flag
+        SF_IDX   = 7,   // Sign Flag
+        //TF_IDX   = 8,   // Trap Flag
+        //IF_IDX   = 9,   // Interrupt Enable Flag
+        DF_IDX   = 10,  // Direction Flag
+        OF_IDX   = 11,  // Overflow Flag
+        // IOPL_IDX = 12,  // I/O Privilege Level (2 bits: 12-13)
+        // NT_IDX   = 14,  // Nested Task
+        // RF_IDX   = 16,  // Resume Flag
+        // VM_IDX   = 17,  // Virtual-8086 Mode
+        // AC_IDX   = 18,  // Alignment Check
+        // VIF_IDX  = 19,  // Virtual Interrupt Flag
+        // VIP_IDX  = 20,  // Virtual Interrupt Pending
+        // ID_IDX   = 21   // ID Flag (CPUID instruction support)
+    } flags_idx_e;
+    
+typedef enum {
+    //----------------------------------------------------------
+    // AAA — ASCII Adjust AL after Addition (aaa.sv)
+    //----------------------------------------------------------
+    AAA          = 0,
 
-        //----------------------------------------------------------
-        // ADD — Addition (add.sv)
-        //  Plain variants:  full-width immediate or register
-        //  Sign  variants:  imm8 sign-extended to the target width
-        //----------------------------------------------------------
-        // ADD8,       // ADD r/m8,  imm8 / r8
-        // ADD16,      // ADD r/m16, imm16 / r16
-        // ADD16sign,  // ADD r/m16, imm8 (sign-extended)
-        // ADD32,      // ADD r/m32, imm32 / r32
-        // ADD32sign,  // ADD r/m32, imm8 (sign-extended)
-        ADD,
+    //----------------------------------------------------------
+    // ADD — Addition (add.sv)
+    //  Plain variants:  full-width immediate or register
+    //  Sign  variants:  imm8 sign-extended to the target width
+    //----------------------------------------------------------
+    ADD          = 1,
 
-        //----------------------------------------------------------
-        // ADC — Add with Carry (add_w_c.sv)
-        //----------------------------------------------------------
-        // ADC32,     // ADC r/m32, imm32 / r32
-        // ADC32sign, // ADC r/m32, imm8 (sign-extended)
-        ADC,
+    //----------------------------------------------------------
+    // ADC — Add with Carry (add_w_c.sv)
+    //----------------------------------------------------------
+    ADC          = 2,
 
-        //----------------------------------------------------------
-        // AND — Bitwise AND (and.sv)
-        //----------------------------------------------------------
-        // AND8,       // AND r/m8,  imm8 / r8
-        // AND16,      // AND r/m16, imm16 / r16
-        // AND16sign,  // AND r/m16, imm8 (sign-extended)
-        // AND32,      // AND r/m32, imm32 / r32
-        // AND32sign,  // AND r/m32, imm8 (sign-extended)
-        AND,
-        //----------------------------------------------------------
-        // NOT — Bitwise NOT (not.sv)
-        //----------------------------------------------------------
-        // NOT8,   // NOT r/m8
-        // NOT16,  // NOT r/m16
-        // NOT32,  // NOT r/m32
-        NOT,
-        //----------------------------------------------------------
-        // OR — Bitwise OR (or.sv)
-        //----------------------------------------------------------
-        // OR8,       // OR r/m8,  imm8 / r8
-        // OR16,      // OR r/m16, imm16 / r16
-        // OR16sign,  // OR r/m16, imm8 (sign-extended)
-        // OR32,      // OR r/m32, imm32 / r32
-        // OR32sign,  // OR r/m32, imm8 (sign-extended)
-        OR,
-        //----------------------------------------------------------
-        // SAL — Shift Arithmetic Left (sal.sv)
-        //----------------------------------------------------------
-        // SAL8,   // SAL r/m8,  1 / CL / imm8
-        // SAL16,  // SAL r/m16, 1 / CL / imm8
-        // SAL32,  // SAL r/m32, 1 / CL / imm8
-        SAL,
-        //----------------------------------------------------------
-        // SAR — Shift Arithmetic Right (sar.sv)
-        //----------------------------------------------------------
-        // SAR8,   // SAR r/m8,  1 / CL / imm8
-        // SAR16,  // SAR r/m16, 1 / CL / imm8
-        // SAR32,  // SAR r/m32, 1 / CL / imm8
-        SAR,
-        //----------------------------------------------------------
-        // SBB — Subtract with Borrow (sub_w_b.sv)
-        //----------------------------------------------------------
-        // SBB32,     // SBB r/m32, imm32 / r32
-        // SBB32sign, // SBB r/m32, imm8 (sign-extended)
-        SBB,
-        //----------------------------------------------------------
-        // BSF — Bit Scan Forward (bsf.sv)
-        //----------------------------------------------------------
-        // BSF16,  // BSF r16, r/m16
-        // BSF32,  // BSF r32, r/m32
-        BSF,
-        //----------------------------------------------------------
-        // SIMD — Packed / MMX operations (simd.sv)
-        //----------------------------------------------------------
-        PADDW,     // Add packed word integers      (mm + mm/m64, 16-bit lanes)
-        PADDD,     // Add packed dword integers     (mm + mm/m64, 32-bit lanes)
-        PAVGB,     // Average packed unsigned bytes (mm + mm/m64,  8-bit lanes)
-        PAVGW,     // Average packed unsigned words (mm + mm/m64, 16-bit lanes)
-        PACKSSWB,  // Pack 4×i16 → 8×i8  with signed saturation
-        PACKSSDW,  // Pack 2×i32 → 4×i16 with signed saturation
+    //----------------------------------------------------------
+    // AND — Bitwise AND (and.sv)
+    //----------------------------------------------------------
+    AND          = 3,
 
-        // COMPARE8,
-        // COMPARE16,
-        // COMPARE32,
-        CMP,
+    //----------------------------------------------------------
+    // NOT — Bitwise NOT (not.sv)
+    //----------------------------------------------------------
+    NOT          = 4,
 
-        //NONE ALU OPERATIONS
-        CALL,
-        FAR_CALL,
-        CMPXCHG,
-        IRETD,
-        MOV,
-        POP,
-        PUSH,
-        RET,
-        RET_IMM,
-        RET_FAR,
-        RET_FAR_IMM,
-        XCHG,
+    //----------------------------------------------------------
+    // OR — Bitwise OR (or.sv)
+    //----------------------------------------------------------
+    OR           = 5,
 
-        PASSA,
-        PASSB
+    //----------------------------------------------------------
+    // SAL — Shift Arithmetic Left (sal.sv)
+    //----------------------------------------------------------
+    SAL          = 6,
 
-    } exe_cs_operation_type_e;
+    //----------------------------------------------------------
+    // SAR — Shift Arithmetic Right (sar.sv)
+    //----------------------------------------------------------
+    SAR          = 7,
+
+    //----------------------------------------------------------
+    // SBB — Subtract with Borrow (sub_w_b.sv)
+    //----------------------------------------------------------
+    SBB          = 8,
+
+    //----------------------------------------------------------
+    // BSF — Bit Scan Forward (bsf.sv)
+    //----------------------------------------------------------
+    BSF          = 9,
+
+    //----------------------------------------------------------
+    // SIMD — Packed / MMX operations (simd.sv)
+    //----------------------------------------------------------
+    PADDW        = 10,  // Add packed word integers      (mm + mm/m64, 16-bit lanes)
+    PADDD        = 11,  // Add packed dword integers     (mm + mm/m64, 32-bit lanes)
+    PAVGB        = 12,  // Average packed unsigned bytes (mm + mm/m64,  8-bit lanes)
+    PAVGW        = 13,  // Average packed unsigned words (mm + mm/m64, 16-bit lanes)
+    PACKSSWB     = 14,  // Pack 4×i16 → 8×i8  with signed saturation
+    PACKSSDW     = 15,  // Pack 2×i32 → 4×i16 with signed saturation
+
+    //----------------------------------------------------------
+    // CMP — Compare (cmp.sv)
+    //----------------------------------------------------------
+    CMP          = 16,
+
+    //----------------------------------------------------------
+    // Non-ALU / Control Flow Operations
+    //----------------------------------------------------------
+    STD          = 17,
+    CALL         = 18,
+    FAR_CALL     = 19,
+    CMPXCHG      = 20,
+    IRETD        = 21,
+    MOV          = 22,
+    POP          = 23,
+    PUSH         = 24,
+    RET          = 25,
+    RET_IMM      = 26,
+    RET_FAR      = 27,
+    RET_FAR_IMM  = 28,
+    XCHG         = 29
+
+} exe_cs_operation_type_e;
 
     typedef enum{
         //register 
-        NOP,
-        SR_REGISTER,
-        DR_REGISTER, //alu or branch 
-        BUFFER, //128 bits you can use this one for all alu ops
-        NEIP,
-        SEGMENT,
-        SEXT8,
-        SEGMENT_NEIP,
-        IMM64, //I think for regular ALU ops the operation size is always the same or sign extended
+        NOP = 0,
+        SR_REGISTER = 1,
+        DR_REGISTER = 2,    //alu or branch 
+        BUFFER = 3,         //128 bits you can use this one for all alu ops
+        NEIP = 4,           //PUSH and POP stuff and JMP
+        EAX = 5,            //CMPXCHG
+        SEXT8 = 6,          //SIGN extended alu ops
+        SEGMENT_NEIP =7 ,   //Far calls 
+        IMM64 = 8,          //I think for regular ALU ops the operation size is always the same or sign extended
 
-        //I think this would just be for branches. 
-        IMM32, //rel 32
-        ZEXT_IMM16, //rel 16
-        ZEXT_IMM8, //rel8 
-        BUF32, //m32 for branch
-        ZEXT_BUF16 //m16 for branch
-
+        //BRANCHES
+        IMM32 = 9,          //rel 32
+        ZEXT_IMM8 = 10,     //rel8 
+        BUF32 = 11,         //m32 for branch
+        ZEXT_BUF16 = 12     //m16 for branch
+        ZEXT_IMM16 = 13,    //rel 16 for branch
     
     // How source selection works in the ALU input selector:
     //refined comment with claude so its coherent buddy

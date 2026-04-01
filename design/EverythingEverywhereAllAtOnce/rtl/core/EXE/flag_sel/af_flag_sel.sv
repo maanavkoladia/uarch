@@ -6,7 +6,8 @@ module af_flag_sel(
 
 	input bool cmp_af,
 	input bool cmpxchg_af,
-	input bool sbb_op_af,
+	input bool sbb_af,
+	input bool iretd_af,
 	
     input bool curr_af_flag,
 
@@ -26,6 +27,7 @@ module af_flag_sel(
 			CMP:      af_flag_o = cmp_af;
 			CMPXCHG:  af_flag_o = cmpxchg_af;
 			SBB:      af_flag_o = sbb_op_af;
+			IRETD:	  af_flag_o = iretd_af;
 			default:  af_flag_o = curr_af_flag;
 		endcase
 	end

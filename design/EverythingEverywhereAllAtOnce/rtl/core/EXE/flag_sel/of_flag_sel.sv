@@ -13,6 +13,8 @@ module of_flag_sel(
 	input bool sal_of,
 	input bool sar_of,
 	input bool sbb_of,
+	input bool iretd_of,
+
 	// Add more as needed if new functional units affect OF
 	input exe_cs_operation_type_e op_type,
 	input bool curr_of_flag,
@@ -33,6 +35,7 @@ module of_flag_sel(
 			SAL:      of_flag_o = sal_of;
 			SAR:      of_flag_o = sar_of;
 			SBB:      of_flag_o = sbb_of;
+			IRETD:	  of_flag_o = iretd_of;
 			default:  of_flag_o = curr_of_flag;
 		endcase
 	end

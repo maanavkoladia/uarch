@@ -5,21 +5,18 @@ module alu_input_sel(
     input uint64_t imm64,
     input uint64_t sr_data,
     input uint64_t dr_data,
-    input uint32_t segment,
+    input uint32_t EAX,
     input uint32_t NEIP,
+    input uin32_t EIP,
     input source_selector_e alu_inputA_sel,
     input source_selector_e alu_inputB_sel,
+    
     input source_selector_e br_input_sel,
-    input logic[1:0] data_size,
 
 
-    //seems weird but I think it will be easier than to mask out everything properly. Best to do it all just here
-    //This right now is basically just for Return from interrupt. As of right now we are not making that a rom even tho we probably could 
+    //
     output uint64_t srA_64;
     output uint64_t srB_64;
-
-
-    output uint8_t srB_8;
 
     output uint32_t br_sel;
 
@@ -39,17 +36,19 @@ module alu_input_sel(
     //logic to determine srA
     always_comb begin
         unique case (alu_inputA_sel)
-            SR_REGISTER:    srA_64 = {32'd0, sr_data};
-            DR_REGISTER:    srA_64 = {32'd0, dr_data};
-            IMM64:          srA_64 = {32'd0, imm64};
+            SR_REGISTER:    srA_64 = sr_data;
+            DR_REGISTER:    srA_64 = dr_data;
+            IMM64:          srA_64 = imm64;
             BUFFER:         srA_64 = res_buf_out[63:0];
             SEGMENT:        srA_64 = {32'd0, segment};
             NEIP:           srA_64 = {32'd0, NEIP};
             EIP:            srA_64 = {32'b0, EIP};
             SEXT8:          srA_64 = {32'd0, 32'(signed'(imm64[7:0]))};
-            NOP:            srA_64 = '0;
-            SEGMENT_NEIP:   srA_64 = {NEIP, segment};
-            CMPXCHG:        srA_64 = {sr_data, dr_data};
+            NOP:            srA_64 = 0;
+            SEGMENT_NEIP:   srA_64 = {NEIP, segment}; 
+            SEGMENT_EIP:    srA_64 = {EIP, segment}; //not sure when this needs to be used
+            EAX:            srA    = {32'd0, EAX}; //cmpxchg
+            CMPXCHG:        srA_64 = {sr_data, dr_data}; 
             default:        $fatal
         endcase
     end
@@ -57,16 +56,18 @@ module alu_input_sel(
     //logic for srB
     always_comb begin
         unique case (alu_inputB_sel)
-            SR_REGISTER:    srB_64 = {32'd0, sr_data};
-            DR_REGISTER:    srB_64 = {32'd0, dr_data};
-            IMM64:          srB_64 = imm64;
-            BUFFER:         srB_64 = res_buf_out;
-            NEIP:           srB_64 = {32'd0, NEIP};
-            EIP:            srA_64 = {32'b0, EIP};
-            SEGMENT:        srB_64 = {32'd0, segment};
-            SEXT8:          srB_64 = {32'd0, 32'(signed'(imm64[7:0]))};
-            NOP:            srB_64 = '0;
-            SEGMENT_NEIP:   srB_64 = {NEIP, segment};
+            SR_REGISTER:    srAB_64 = sr_data;
+            DR_REGISTER:    srAB_64 = dr_data;
+            IMM64:          srAB_64 = imm64;
+            BUFFER:         srAB_64 = res_buf_out[63:0];
+            NEIP:           srAB_64 = {32'd0, NEIP};
+            EIP:            srAB_64 = {32'b0, EIP};
+            SEXT8:          srAB_64 = {32'd0, 32'(signed'(imm64[7:0]))};
+            NOP:            srAB_64 = 0;
+            SEGMENT_NEIP:   srAB_64 = {NEIP, segment}; 
+            SEGMENT_EIP:    srAB_64 = {EIP, segment}; //not sure when this needs to be used
+            EAX:            srAB    = {32'd0, EAX}; //send forward EAX
+            CMPXCHG:        srAB_64 = {sr_data, dr_data}; //rm32 r32 on cmpxchg 
             default:        $fatal
         endcase
     end
@@ -83,7 +84,7 @@ module alu_input_sel(
 
             //stack grows toward lower mem addresses. EIP always pushed last so its at lowest address always bottom 32 bits 
             BUF32     : br_sel = res_buf_out[31:0]; 
-            ZEX_BUF16 : br_sel = {16'd0, res_buf_out[15:0]};
+            ZEXT_BUF16 : br_sel = {16'd0, res_buf_out[15:0]};
         endcase
     end
 

@@ -12,6 +12,8 @@ module cf_flag_sel(
 	input bool sal_cf,
 	input bool sar_cf,
 	input bool sbb_cf,
+	input bool iretd_cf,
+
 	// Add more as needed if new functional units affect CF
 	input curr_cf_flag,
 	input exe_cs_operation_type_e op_type;
@@ -30,6 +32,7 @@ module cf_flag_sel(
 			SAL:      cf_flag_o = sal_cf;
 			SAR:      cf_flag_o = sar_cf;
 			SBB:      cf_flag_o = sbb_cf;
+			IRETD:	  cf_flag_o = iretd_cf;
 			default:  cf_flag_o = curr_cf_flag;
 		endcase
 	end

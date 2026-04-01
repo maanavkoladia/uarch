@@ -9,6 +9,8 @@ module sf_flag_sel(
 	input bool sal_sf,
 	input bool sar_sf,
 	input bool sbb_sf,
+	input bool iretd_sf,
+
 	// Add more as needed if new functional units affect SF
 	input exe_cs_operation_type_e op_type,
 	input bool curr_sf_flag,
@@ -28,6 +30,7 @@ module sf_flag_sel(
 			SAL:      sf_flag_o = sal_sf;
 			SAR:      sf_flag_o = sar_sf;
 			SBB:      sf_flag_o = sbb_sf;
+			IRETD:	  sf_flag_o = iretd_sf;
 			default:  sf_flag_o = curr_sf_flag;
 		endcase
 	end

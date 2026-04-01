@@ -8,6 +8,8 @@ module pf_flag_sel(
 	input bool sal_pf,
 	input bool sar_pf,
 	input bool sbb_pf,
+	input bool iretd_pf,
+
 
 	input exe_cs_operation_type_e op_type,
 	input bool curr_pf_flag,
@@ -26,6 +28,7 @@ always_comb begin
         SAL:      pf_flag_o = sal_pf;
         SAR:      pf_flag_o = sar_pf;
         SBB:      pf_flag_o = sbb_pf;
+		IRETD:	  pf_flag_o = iretd_pf;
         default:  pf_flag_o = curr_pf_flag;
     endcase
 end

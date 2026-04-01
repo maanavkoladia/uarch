@@ -1,10 +1,14 @@
-module cmpxchg_op(
-    input  uint64_t lock_i,        // Accumulator (AL/AX/EAX)
-    input  uint64_t new_lock_i,    // Source (r32)
-    input  uint64_t compare_val_i, // Destination (r/m)
-    input  logic [1:0] data_size,  // 00=8b, 01=16b, 10=32b
-    output uint64_t lock_result_o, 
-    output uint64_t acc_result_o,  
+module cmpxchg_op (
+    input  uint32_t EAX, //passed in from EAX latch
+    input  uint32_t rm,  //passed in from DR/BUF
+    input  uint32_t r,  //passed in through SR
+    input  logic [1:0] data_size,  // 2'b00=8b, 2'b01=16b, 2'b10=32b
+    output uint64_t dr_o, 
+    output uint64_t sr_o,  
+    output uint64_t res_buf,
+    output bool cancel_sr_we,
+    output bool cancel_store,
+    output bool cancel_dr_we,
     output bool ZF,
     output bool SF,
     output bool PF,
@@ -13,67 +17,42 @@ module cmpxchg_op(
     output bool AF
 );
 
-    logic [32:0] sub_res;
-    logic [31:0] opA, opB;
+    // Flags from CMP module
+    logic cmp_ZF, cmp_SF, cmp_PF, cmp_CF, cmp_OF, cmp_AF;
+    logic [63:0] lock_res, acc_res;
 
-    always_comb begin
-        // Internal operands for flag calculation
-        opA = lock_i[31:0];
-        opB = compare_val_i[31:0];
-        
-        // Single subtraction to derive flags (A - B)
-        sub_res = {1'b0, opA} - {1'b0, opB};
+    // Instantiate CMP for flag calculation
+    cmp u_cmp (
+        .operand1(EAX),
+        .operand2(rm),
+        .data_size(data_size),
+        .CF(cmp_CF),
+        .AF(cmp_AF),
+        .ZF(cmp_ZF),
+        .SF(cmp_SF),
+        .PF(cmp_PF),
+        .OF(cmp_OF)
+    );
 
-        // AF is the borrow from bit 3 to bit 4
-        AF = (opA[4] ^ opB[4]) ^ sub_res[4];
-        // PF is based on the low 8 bits of the subtraction result
-        PF = ~^sub_res[7:0];
+    assign cancel_sr_we = cmp_ZF;
+    assign cancel_store = ~cmp_ZF;
+    assign cancel_dr_we = ~cmp_ZF;
 
-        case (data_size)
-            2'b00: begin // 8-bit
-                ZF = (opA[7:0] == opB[7:0]);
-                SF = sub_res[7];
-                CF = (opA[7:0] < opB[7:0]);
-                OF = (opA[7] ^ opB[7]) & (opA[7] ^ sub_res[7]);
-                
-                if (ZF) begin
-                    lock_result_o = {compare_val_i[63:8], new_lock_i[7:0]};
-                    acc_result_o  = lock_i;
-                end else begin
-                    lock_result_o = compare_val_i;
-                    acc_result_o  = {lock_i[63:8], compare_val_i[7:0]};
-                end
-            end
+    uint32_t next_EAX;
+    assign next_EAX[7:0] = data_size[0] ? rm[7:0] : EAX[7:0];
+    assign next_EAX[15:8] = data_size[1] ? rm[15:8] : EAX[15:8];
+    assign next_EAX[31:16] = data_size[2] ? rm[31:16]: EAX[31:16];
+    assign next_EAX[63:32] = 32'0;
 
-            2'b01: begin // 16-bit
-                ZF = (opA[15:0] == opB[15:0]);
-                SF = sub_res[15];
-                CF = (opA[15:0] < opB[15:0]);
-                OF = (opA[15] ^ opB[15]) & (opA[15] ^ sub_res[15]);
+    assign dr_o = r; //write to RM
+    assign sr_o = next_EAX; //EAX write back
+    // CMPXCHG semantics
 
-                if (ZF) begin
-                    lock_result_o = {compare_val_i[63:16], new_lock_i[15:0]};
-                    acc_result_o  = lock_i;
-                end else begin
-                    lock_result_o = compare_val_i;
-                    acc_result_o  = {lock_i[63:16], compare_val_i[15:0]};
-                end
-            end
-
-            default: begin // 32-bit (10)
-                ZF = (opA[31:0] == opB[31:0]);
-                SF = sub_res[31];
-                CF = sub_res[32];
-                OF = (opA[31] ^ opB[31]) & (opA[31] ^ sub_res[31]);
-
-                if (ZF) begin
-                    lock_result_o = {compare_val_i[63:32], new_lock_i[31:0]};
-                    acc_result_o  = lock_i;
-                end else begin
-                    lock_result_o = compare_val_i;
-                    acc_result_o  = {lock_i[63:32], compare_val_i[31:0]};
-                end
-            end
-        endcase
-    end
+    assign ZF = cmp_ZF;
+    assign SF = cmp_SF;
+    assign PF = cmp_PF;
+    assign CF = cmp_CF;
+    assign OF = cmp_OF;
+    assign AF = cmp_AF; 
+  
 endmodule
