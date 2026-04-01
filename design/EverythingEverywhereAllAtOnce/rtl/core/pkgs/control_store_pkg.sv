@@ -1,5 +1,4 @@
-package contorl_store_pkg;
-
+package control_store_pkg;
 
     typedef enum {
         CF_IDX   = 0,   // Carry Flag

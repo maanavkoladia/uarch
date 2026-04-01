@@ -12,7 +12,7 @@ import Predictor_pkg::*;
     localparam SAT_COUNT_SIZE = 2;
 
     logic [BHR-1: 0] BHR_SPEC, BHR_REAL;
-    logic[SAT_COUNT_SIZE -1: 0] PHT[1<<BHR_SIZE]
+    logic[SAT_COUNT_SIZE -1: 0] PHT[1<<BHR_SIZE];
 
 
 
