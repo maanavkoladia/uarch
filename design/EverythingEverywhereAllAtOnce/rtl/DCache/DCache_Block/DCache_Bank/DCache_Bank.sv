@@ -29,35 +29,36 @@ module DCache_Bank (
     output d_cache_bank_outputs_t outputs_o
 );
 
-    typedef struct {
-        bool write_to_dswap_o;
-        bool D_will_evict_o;
-        bool busy_o;
-        bool ld_V_swap_o;
-        bool invalidate_v_swap_o;
-        bool MakeReq;
-        bool Blocked;
-        bool fill0_o;
-        bool fill1_o;
-        bool fill2_o;
-        bool fill3_o;
+    typedef struct packed {
+        logic write_to_dswap_o;
+        logic D_will_evict_o;
+        logic ldFrom_V_swap_o;
+        logic clr_v_swap_o;
+        logic MakeReq_o;
+        logic saveReq_o;
+        logic useSaved_Req_o;
+        logic Blocked_o;
+        logic busy_o;
+        logic fill0_o;
+        logic fill1_o;
+        logic fill2_o;
+        logic fill3_o;
     } dcache_fsm_outputs_t;
-
     dcache_fsm_outputs_t fsmOuts;
 
-    dcache_bank_fsm_states_e bankState;
-    logic [$clog2(NUM_DCACHE_BANK_FSM_STATES) - 1 : 0] bankState_bits;
-    assign bankState = bankState_bits;
+    dcache_bank_fsm_states_e dcache_bank_State;
+    logic [$clog2(NUM_DCACHE_BANK_FSM_STATES) - 1 : 0] dcache_bank_State_bits;
+    assign dcache_bank_State = dcache_bank_State_bits;
 
     //nned to create the dcache swap buffer
     swap_buf_t dcache_bank_swapBuf;
 
     p_addr_dcache_fields_t blockReq_p_addr_fields;
     assign blockReq_p_addr_fields = '{
-            tag    : blockReq_i.p_addr[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
-            index  : blockReq_i.p_addr[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
-            bank   : blockReq_i.p_addr[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
-            offset : blockReq_i.p_addr[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
+            tag    : reqInUse.p_addr[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
+            index  : reqInUse.p_addr[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
+            bank   : reqInUse.p_addr[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
+            offset : reqInUse.p_addr[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
         };
 
     //need to create the hit and miss signals,
@@ -66,15 +67,19 @@ module DCache_Bank (
     //need to create the tagOutPut signal for the comparsion
     logic [DCACHE_BANK_TAG_WIDTH - 1 : 0] currTag;
 
+    //need to create the line valid signal from the tagstore
+    logic currLineValid, currLineDirty;
+
     byte_t dataStore_Line[CACHE_LINES_SIZE_B];
 
     //need to create the tagstore writeSuccess signal
     logic writeSuccess2TagStore;
 
-    //need to create the line valid signal from the tagstore
-    logic currLineValid, currLineDirty;
 
-    DCache_Bank_FSM bank_unit (
+    block_req_t savedReq;
+    block_req_t reqInUse = fsmOuts.useSaved_Req_o ? savedReq : blockReq_i;
+
+    DCache_Bank_FSM dcache_bank_fsm_unit (
         .clk(clk),
         .rst(rst),
         .D_Miss_i(miss),
@@ -82,21 +87,23 @@ module DCache_Bank (
         .EB_Hit_i(eb_i.reqHit),
         .Line_valid_i(currLineValid),
         .DTE_Mem_valid_i(mem_Valid_FromDte_i),
-        .D_Swap_valid_i(dcache_bank_swapBuf.valid),
+        .D_Swap_valid_i(),
+        .we_i(reqInUse.we),
 
-        .S_0(bankState_bits[0]),  // current-state bit 0 (LSB)
-        .S_1(bankState_bits[1]),  // current-state bit 1 (1)
-        .S_2(bankState_bits[2]),  // current-state bit 2 (MSB)
-        .S_3(bankState_bits[3]),
+        .S_0(dcache_bank_State_bits[0]),  // current-state bit 0 (LSB)
+        .S_1(dcache_bank_State_bits[1]),  // current-state bit 1 (1)
+        .S_2(dcache_bank_State_bits[2]),  // current-state bit 2 (2)
+        .S_3(dcache_bank_State_bits[3]),  // current-state bit 3 (MSB)
 
         .write_to_dswap_o(fsmOuts.write_to_dswap_o),
         .D_will_evict_o(fsmOuts.D_will_evict_o),
-        //.mem_req_o(fsmOuts.mem_req_o),
+        .ldFrom_V_swap_o(fsmOuts.ldFrom_V_swap_o),
+        .clr_v_swap_o(fsmOuts.clr_v_swap_o),
+        .MakeReq_o(fsmOuts.MakeReq_o),
+        .saveReq_o(fsmOuts.saveReq_o),
+        .useSaved_Req_o(fsmOuts.useSaved_Req_o),
+        .Blocked_o(fsmOuts.Blocked_o),
         .busy_o(fsmOuts.busy_o),
-        .ld_V_swap_o(fsmOuts.ld_V_swap_o),
-        .invalidate_v_swap_o(fsmOuts.invalidate_v_swap_o),
-        .MakeReq_o(fsmOuts.MakeReq),
-        .Blocked_o(fsmOuts.Blocked),
         .fill0_o(fsmOuts.fill0_o),
         .fill1_o(fsmOuts.fill1_o),
         .fill2_o(fsmOuts.fill2_o),
@@ -105,9 +112,9 @@ module DCache_Bank (
 
     DCache_Bank_DataStore DCache_Bank_DataStore_unit (
         .rst(rst),
-        .p_addr_i(blockReq_i.p_addr),
-        .oe(blockReq_i.oe),
-        .we(blockReq_i.we),
+        .p_addr_i(reqInUse.p_addr),
+        .oe(reqInUse.oe),
+        .we(reqInUse.we),
         .ld_From_V_Swap_i(fsmOuts.ld_V_swap_o),
 
         .fill0_i(fsmOuts.fill0_o),
@@ -117,8 +124,8 @@ module DCache_Bank (
 
         .write2_Dwap_i(fsmOuts.write_to_dswap_o),
         .bankControllerBusy_i(fsmOuts.busy_o),
-        .st_q_data(blockReq_i.st_q_data),
-        .st_data_vec(blockReq_i.vec),
+        .st_q_data(reqInUse.st_q_data),
+        .st_data_vec(reqInUse.vec),
         .VCache_SwapBuf_Line_i(V_Cache_i.vcache_swapBuf.line),
         .dataBus_i(dataBus),
         .tagStore_hit_i(hit),
@@ -129,9 +136,9 @@ module DCache_Bank (
     DCache_Bank_TagStore DCache_Bank_TagStore_unit (
         .clk(clk),
         .rst(rst),  //active low
-        .p_addr_i(blockReq_i.p_addr),
-        .oe_i(blockReq_i.oe),
-        .we_i(blockReq_i.we),
+        .p_addr_i(reqInUse_i.p_addr),
+        .oe_i(reqInUse_i.oe),
+        .we_i(reqInUse_i.we),
         .ld_From_V_Swap_i(fsmOuts.ld_V_swap_o),
         //.V_Cache_SwapBuf_Tag(V_Cache_i.vcache_swapBuf.lineAddr[V_CACHE_TAG_UB : V_CACHE_TAG_LB]),
         .V_Cache_SwapBuf_DirtyBit(V_Cache_i.vcache_swapBuf.dirty),
@@ -150,16 +157,18 @@ module DCache_Bank (
             dcache_bank_swapBuf <= '{default: '0};
         end else begin
             //valid bit logic
-            unique case ({
-                fsmOuts.write_to_dswap_o, V_Cache_i.D_Cache_swapBuf_valid_clr
-            })
-                2'b00: dcache_bank_swapBuf.valid <= dcache_bank_swapBuf.valid;
-                2'b01: dcache_bank_swapBuf.valid <= 0;
-                2'b10: dcache_bank_swapBuf.valid <= 1;
-                2'b11: if (rst) $fatal;
-            endcase
+            //unique case ({
+            //    fsmOuts.write_to_dswap_o, V_Cache_i.D_Cache_swapBuf_valid_clr
+            //})
+            //    2'b00: dcache_bank_swapBuf.valid <= dcache_bank_swapBuf.valid;
+            //    2'b01: dcache_bank_swapBuf.valid <= 0;
+            //    2'b10: dcache_bank_swapBuf.valid <= 1;
+            //    2'b11: if (rst) $fatal;
+            //endcase
 
+            if (fsmOuts.D_Cache_swapBuf_valid_clr) dcache_bank_swapBuf.valid <= 0;
             if (fsmOuts.write_to_dswap_o) begin
+                dcache_bank_swapBuf.valid <= 1;
                 dcache_bank_swapBuf.dirty <= currLineDirty;
                 //bits from tagstore, idx bits, banks bits, then zero out rest,
                 //they dont matter
@@ -172,32 +181,31 @@ module DCache_Bank (
         end
     end
 
+    //address feeding logic
+
+    always_ff @(posedge clk) begin
+        if (!rst) savedReq <= 0;
+        else if (fsmOuts.saveReq_o) savedReq <= blockReq_i;
+    end
+
+
+    bool doAccess;
+    assign doAccess = !fsmOuts.busy_o && (reqInUse.oe || reqInUse.we);
     //need to do hit/miss logic
     always_comb begin
         miss = 0;
         hit = 0;
         writeSuccess2TagStore = 0;
 
-        if (
-            currTag == blockReq_p_addr_fields.tag
-            && currLineValid
-            && !fsmOuts.busy_o
-            && (blockReq_i.oe || blockReq_i.we))
-        begin
+        if (currTag == blockReq_p_addr_fields.tag && currLineValid && doAccess) begin
             hit = 1;
         end
 
-        if (
-            (currTag != blockReq_p_addr_fields.tag || !currLineValid)
-            && (blockReq_i.oe || blockReq_i.we))
-            //&& !fsmOuts.busy_o
-        begin
-            miss = 1;
-        end
+        if (doAccess && !hit) miss = 1;
 
         if (hit && miss && rst) $fatal;
 
-        if (hit && blockReq_i.we) begin  //dirty bit business
+        if (hit && reqInUse.we) begin  //dirty bit business
             writeSuccess2TagStore = 1;
         end
     end
@@ -207,7 +215,7 @@ module DCache_Bank (
         outputs_o.hit = hit;
         //outputs.miss = miss;
         outputs_o.dcache_swapBuf = dcache_bank_swapBuf;
-        outputs_o.V_Cache_swapBuf_valid_clr = fsmOuts.invalidate_v_swap_o;
+        outputs_o.V_Cache_swapBuf_valid_clr = fsmOuts.clr_v_swap_o;
         outputs_o.D_will_evict = fsmOuts.D_will_evict_o;
         outputs_o.busy = fsmOuts.busy_o;
         outputs_o.data_lineOut = dataStore_Line;

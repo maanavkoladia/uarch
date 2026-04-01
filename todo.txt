@@ -1,19 +1,5 @@
 TODO:
 
-+ finish the core
-    - set up scoreboards, reg and mem
-    - segX
-    - implementing EIP logic for segX, prev inst length, prevEIP, etc., and trhowing gps in seg segX
-    - deal with far call CS changing dependency
-    - need to deal with invalidate logic in fetch, ie need to deal with stall in possible stage coming back
-    - valid bit logic per stage
+update the dcache startup gen to support the new vache tag store geometry
 
-+ DTE and scheduler
-    - create interface
-    - priority setting
-    - DTE fsm into excel
-    - 
-+ DMA
-
-+ Simple IO
-    - Data Display Register
+update the mem bank startup loading to reverse where msb goes into lower index cells within a bank
