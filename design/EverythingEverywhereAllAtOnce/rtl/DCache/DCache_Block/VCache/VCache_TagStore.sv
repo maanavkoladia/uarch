@@ -158,7 +158,7 @@ module VCache_TagStore (
 
     //WR_2_TagStore,
     always_comb begin
-        WR_2_TagStore = '1;
+        WR_2_TagStore = '{default: '1};
         WR_2_TagStore_idx = use_savedSwapIDX ? saved_SwapIDX : currLRU_IDX;
         WR_2_TagStore[WR_2_TagStore_idx] = Read_DSWAP_i ? 0 : 1;
     end
@@ -189,9 +189,9 @@ module VCache_TagStore (
     logic OE_2_TagStore[VCACHE_NUM_LINES];
     logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] OE_2_TagStore_idx;
     always_comb begin
-        OE_2_TagStore = '1;
+        OE_2_TagStore = '{default: '1};
         OE_2_TagStore_idx = use_savedSwapIDX ? saved_SwapIDX : currLRU_IDX;
-        if (doAccess) OE_2_TagStore = '0;
+        if (doAccess) OE_2_TagStore = '{default: '0};
         else if (LD_EB_i) begin  //use lru idx
             OE_2_TagStore[currLRU_IDX] = 0;
         end else if (Write_VSWAP_i) begin
@@ -205,7 +205,7 @@ module VCache_TagStore (
 
     always_comb begin
         for (int i = 0; i < VCACHE_NUM_LINES; i++) begin
-            DOUT_of_TagStore[i] = {DOUT_of_TagStore_Net[i][1][8], DOUT_of_TagStore_Net[i][0]};
+            DOUT_of_TagStore[i] = {DOUT_of_TagStore_Net[i][1][0], DOUT_of_TagStore_Net[i][0]};
         end
     end
 
@@ -235,7 +235,7 @@ module VCache_TagStore (
     generate
         for (genvar i = 0; i < VCACHE_NUM_LINES; i++) begin : g_tagStore_Entry
             for (genvar j = 0; j < NUM_CELLS_NEEDED; j++) begin : g_tagStoreCell
-                ram8b4w tagStoreCell (
+                ram8b4w$ tagStoreCell (
                     .A(2'b0),
                     .WR(WR_2_TagStore[i]),
                     .DIN(DIN_2_TagStore_net[j]),
@@ -270,6 +270,9 @@ module VCache_TagStore (
     end
 
 
+    logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] currLine_Dirty_idx;
+    assign currLine_Dirty_idx = use_savedSwapIDX ? saved_SwapIDX : hitIdx;
+
     //comb outputs or valid and dirty
     ///////////////////////////////???MODULE OUTPUTS///////////////////////////////
 
@@ -277,6 +280,7 @@ module VCache_TagStore (
         tagOut_o = '0;  //zeroing for now, shoudl stop zs from going out
         if (hit) tagOut_o = DOUT_of_TagStore[hitIdx];
     end
+
     assign hit_o = hit;
     assign miss_o = miss;
 
@@ -284,7 +288,7 @@ module VCache_TagStore (
     assign evictionIDX_o = currLRU_IDX;
     assign savedSwapIDX_o = saved_SwapIDX;
 
-    assign currLine_Dirty_o = tagMetaStore[use_savedSwapIDX?saved_SwapIDX : hitIdx].dirty;//for swapping, so hit idx or swap idx
-    assign VC_Will_Need_ToEvict_o = tagMetaStore[currLRU_IDX].dirty && tagMetaStore[currLRU_IDX].valid;//for evciton so lru
+    assign currLine_Dirty_o = tagMetaStore.tag_line_metaStore[currLine_Dirty_idx].dirty;//for swapping, so hit idx or swap idx
+    assign VC_Will_Need_ToEvict_o = tagMetaStore.tag_line_metaStore[currLRU_IDX].dirty && tagMetaStore.tag_line_metaStore[currLRU_IDX].valid;//for evciton so lru
 
 endmodule
