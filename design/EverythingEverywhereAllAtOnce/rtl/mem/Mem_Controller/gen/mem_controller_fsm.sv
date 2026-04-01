@@ -179,17 +179,17 @@ and5$ mem_ready_o_and0 (mem_ready_o_t0, S_0, S_1_inv, S_2, S_3_inv, hit_i);
 and7$ mem_ready_o_and1 (mem_ready_o_t1, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i);
 or2$  mem_ready_o_or  (mem_ready_o, mem_ready_o_t0, mem_ready_o_t1);
 
-// set_ld_tristate_o = (S_0 & !S_2 & !S_3) | (S_1 & !S_2 & !S_3) | (!S_0 & !S_1 & S_2 & !S_3) | (!S_1 & S_2 & !S_3 & hit_i) | (!S_1 & !S_3 & ld_req_i & !write_req_i & hit_i)
+// set_ld_tristate_o = (S_1 & !S_2 & !S_3) | (S_0 & !S_2 & !S_3) | (!S_1 & S_2 & !S_3 & hit_i) | (!S_0 & !S_1 & S_2 & !S_3) | (!S_1 & !S_3 & ld_req_i & !write_req_i & hit_i)
 wire set_ld_tristate_o_t0;
 wire set_ld_tristate_o_t1;
 wire set_ld_tristate_o_t2;
 wire set_ld_tristate_o_t3;
 wire set_ld_tristate_o_t4;
 
-and3$ set_ld_tristate_o_and0 (set_ld_tristate_o_t0, S_0, S_2_inv, S_3_inv);
-and3$ set_ld_tristate_o_and1 (set_ld_tristate_o_t1, S_1, S_2_inv, S_3_inv);
-and4$ set_ld_tristate_o_and2 (set_ld_tristate_o_t2, S_0_inv, S_1_inv, S_2, S_3_inv);
-and4$ set_ld_tristate_o_and3 (set_ld_tristate_o_t3, S_1_inv, S_2, S_3_inv, hit_i);
+and3$ set_ld_tristate_o_and0 (set_ld_tristate_o_t0, S_1, S_2_inv, S_3_inv);
+and3$ set_ld_tristate_o_and1 (set_ld_tristate_o_t1, S_0, S_2_inv, S_3_inv);
+and4$ set_ld_tristate_o_and2 (set_ld_tristate_o_t2, S_1_inv, S_2, S_3_inv, hit_i);
+and4$ set_ld_tristate_o_and3 (set_ld_tristate_o_t3, S_0_inv, S_1_inv, S_2, S_3_inv);
 and5$ set_ld_tristate_o_and4 (set_ld_tristate_o_t4, S_1_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i);
 or5$  set_ld_tristate_o_or  (set_ld_tristate_o, set_ld_tristate_o_t0, set_ld_tristate_o_t1, set_ld_tristate_o_t2, set_ld_tristate_o_t3, set_ld_tristate_o_t4);
 

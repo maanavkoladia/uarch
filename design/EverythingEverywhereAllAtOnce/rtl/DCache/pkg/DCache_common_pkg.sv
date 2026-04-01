@@ -108,8 +108,8 @@ package DCache_common_pkg;
 
     typedef struct {
         //bool valid;  //probably not needed
-        bool hit;
-        bool miss;
+        bool hit;   // needed for block 
+        bool miss;  //needed for d$ fsm
 
         swap_buf_t vcache_swapBuf;
 
@@ -118,7 +118,7 @@ package DCache_common_pkg;
         bool busy;
         bool beingBlocked;
         byte_t lineOut[CACHE_LINES_SIZE_B];
-        p_address_t addrOut;
+        p_address_t addrOut;  //for eb
     } v_cache_outputs_t;
 
     typedef struct {
@@ -129,32 +129,42 @@ package DCache_common_pkg;
         bool reqHit;
     } eb_outputs_t;
 
-    localparam int NUM_DCACHE_BANK_FSM_STATES = 9;
 
+    // Total number of states = 10
+    localparam int NUM_DCACHE_BANK_FSM_STATES = 10;
+
+    // 4 bits needed to encode 10 states
     typedef enum logic [$clog2(
 NUM_DCACHE_BANK_FSM_STATES
 )-1:0] {
-        DCACHE_BANK_IDLE        = 0,
-        DCACHE_BANK_EB_BLOCKING = 1,
-        DCACHE_BANK_EVICTING    = 2,
-        DCACHE_BANK_REQ0        = 3,
-        DCACHE_BANK_REQ1        = 4,
-        DCACHE_BANK_REQ2        = 5,
-        DCACHE_BANK_REQ3        = 6,
-        DCACHE_BANK_SWAPPING    = 7,
-        DCACHE_BANK_ERROR       = 8
+        DCACHE_BANK_IDLE         = 4'd0,  // 0000
+        DCACHE_BANK_EB_BLOCKING  = 4'd1,  // 0001
+        DCACHE_BANK_EVICTING     = 4'd2,  // 0010
+        DCACHE_BANK_REQ0         = 4'd3,  // 0011
+        DCACHE_BANK_REQ1         = 4'd4,  // 0100
+        DCACHE_BANK_REQ2         = 4'd5,  // 0101
+        DCACHE_BANK_REQ3         = 4'd6,  // 0110
+        DCACHE_BANK_SWAPPING_LD  = 4'd7,  // 0111
+        DCACHE_BANK_SWAPPING_ST0 = 4'd8,  // 1000
+        DCACHE_BANK_ERROR        = 4'd9   // 1001
     } dcache_bank_fsm_states_e;
 
-    localparam NUM_VCACHE_STATES = 4;
+
+
+    // Total number of states = 6
+    localparam int NUM_VCACHE_STATES = 6;
+
+    // 3 bits required (matches spec)
     typedef enum logic [$clog2(
 NUM_VCACHE_STATES
-) - 1 : 0] {
-        VCACHE_IDLE      = 0,  // IDLE (reset state)
-        VCACHE_RD_DSWAP  = 1,
-        VCACHE_WAITEVICT = 2,
-        VCACHE_ERROR     = 3   // ERROR (trap state), synthesised
-
+)-1:0] {
+        VCACHE_IDLE            = 3'd0,  // 000
+        VCACHE_LD_VC_SWAP      = 3'd1,  // 001
+        VCACHE_WAITEVICT       = 3'd2,  // 010
+        VCACHE_WRITE_2_HIT_IDX = 3'd3,  // 011
+        VCACHE_WRITE_2_LRU     = 3'd4,  // 100
+        VCACHE_ERROR           = 3'd5   // 101
     } vcache_fsm_states_e;
-    //chat told me that the old enum names "IDLE" etc where used somewhere else or something. honestly dont need to know if you need to change these
+
 endpackage
-;
+

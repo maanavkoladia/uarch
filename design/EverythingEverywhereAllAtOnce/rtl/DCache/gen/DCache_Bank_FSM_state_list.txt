@@ -1,5 +1,5 @@
 # State list for FSM: DCache_Bank_FSM
-# Total states      : 9
+# Total states      : 10
 # State bits needed : 4
 # NOTE: IDLE is always assigned encoding 0
 # NOTE: ERROR state was synthesised (not present in CSV)
@@ -14,4 +14,5 @@
      5  0101  Req1
      6  0110  Req2
      7  0111  Req3
-     8  1000  SWAPPING
+     8  1000  SWAPPING_LD
+     9  1001  SWAPPING_ST0
