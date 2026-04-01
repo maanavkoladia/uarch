@@ -21,7 +21,6 @@ module VCache (
     p_addr_vcache_fields_t block_req_p_addr_fields;
     assign block_req_p_addr_fields = '{
             tag    : blockReq_i.p_addr[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
-            index  : blockReq_i.p_addr[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
             bank   : blockReq_i.p_addr[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
             offset : blockReq_i.p_addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
         };
@@ -57,7 +56,7 @@ module VCache (
     logic hit;
     logic miss;
     logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] hitIDX, evictionIDX, savedSwapIDX;
-    logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] hitIDX;
+
     logic V_Cache_needs_2_evict;  //out of tagstore
     logic V_Cache_TagStore_CurrLine_Dirty;
     //logic writeSuccess2TagStore;  //needs to mark the line dirty, holy fuck, what have we created

@@ -82,6 +82,9 @@ module VCache_TagStore (
     bool writeSuccess;
     bool noHit;
 
+    logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] hitIdx;
+    logic [VCACHE_NUM_LINES - 1 : 0] hitIdx_onehot;
+
     //i think that swap needs to save the idx to overwrite, bc this info will
     //be lost when swap is actully happening
     //ff block for saved addr
@@ -112,6 +115,7 @@ module VCache_TagStore (
 
     bool newLRU[NUM_LRU_BITS];
     //mru 0 left, lru 0 right
+    logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] update_idx;
     always_comb begin
         //no latches, update on hit, not on swap bc redudant with hit, this
         //comes from hit idx
@@ -246,8 +250,6 @@ module VCache_TagStore (
 
     //hit logic, if there is a oe or we and we are not busy, then give the hit
     //miss logic opposite, write success logic
-    logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] hitIdx;
-    logic [VCACHE_NUM_LINES - 1 : 0] hitIdx_onehot;
 
     always_comb begin
         hit = 0;
@@ -259,7 +261,7 @@ module VCache_TagStore (
                 if (DOUT_of_TagStore[i] == p_addr_fields.tag && tagMetaStore.tag_line_metaStore[i].valid) begin
                     hit = 1;
                     hitIdx = i;
-                    hitIdx_onehot = 1 << hitidx;
+                    hitIdx_onehot = 1 << hitIdx;
                 end
             end
         end
