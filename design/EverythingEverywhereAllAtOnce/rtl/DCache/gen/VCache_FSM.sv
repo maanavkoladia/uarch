@@ -151,20 +151,20 @@ and3$ WR_2_EB_o_and0 (WR_2_EB_o_t0, S_0_inv, S_1, S_2_inv);
 and5$ WR_2_EB_o_and1 (WR_2_EB_o_t1, S_0_inv, S_2_inv, V_Hit_i_inv, DC_will_evict_i, VC_needs_2_evict_i);
 or2$  WR_2_EB_o_or  (WR_2_EB_o, WR_2_EB_o_t0, WR_2_EB_o_t1);
 
-// CLR_D_SWAP_V_o = (!S_0 & !S_1 & S_2) | (S_0 & S_1 & !S_2)
+// CLR_D_SWAP_V_o = (S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2)
 wire CLR_D_SWAP_V_o_t0;
 wire CLR_D_SWAP_V_o_t1;
 
-and3$ CLR_D_SWAP_V_o_and0 (CLR_D_SWAP_V_o_t0, S_0_inv, S_1_inv, S_2);
-and3$ CLR_D_SWAP_V_o_and1 (CLR_D_SWAP_V_o_t1, S_0, S_1, S_2_inv);
+and3$ CLR_D_SWAP_V_o_and0 (CLR_D_SWAP_V_o_t0, S_0, S_1, S_2_inv);
+and3$ CLR_D_SWAP_V_o_and1 (CLR_D_SWAP_V_o_t1, S_0_inv, S_1_inv, S_2);
 or2$  CLR_D_SWAP_V_o_or  (CLR_D_SWAP_V_o, CLR_D_SWAP_V_o_t0, CLR_D_SWAP_V_o_t1);
 
-// Read_DSWAP_o = (!S_0 & !S_1 & S_2) | (S_0 & S_1 & !S_2)
+// Read_DSWAP_o = (S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2)
 wire Read_DSWAP_o_t0;
 wire Read_DSWAP_o_t1;
 
-and3$ Read_DSWAP_o_and0 (Read_DSWAP_o_t0, S_0_inv, S_1_inv, S_2);
-and3$ Read_DSWAP_o_and1 (Read_DSWAP_o_t1, S_0, S_1, S_2_inv);
+and3$ Read_DSWAP_o_and0 (Read_DSWAP_o_t0, S_0, S_1, S_2_inv);
+and3$ Read_DSWAP_o_and1 (Read_DSWAP_o_t1, S_0_inv, S_1_inv, S_2);
 or2$  Read_DSWAP_o_or  (Read_DSWAP_o, Read_DSWAP_o_t0, Read_DSWAP_o_t1);
 
 // Write_VSWAP_o = (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i)
@@ -175,14 +175,14 @@ and3$ Write_VSWAP_o_and0 (Write_VSWAP_o_t0, S_0, S_1_inv, S_2_inv);
 and4$ Write_VSWAP_o_and1 (Write_VSWAP_o_t1, S_1_inv, S_2_inv, V_Hit_i, we_i_inv);
 or2$  Write_VSWAP_o_or  (Write_VSWAP_o, Write_VSWAP_o_t0, Write_VSWAP_o_t1);
 
-// Update_LRU_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i)
+// Update_LRU_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i)
 wire Update_LRU_o_t0;
 wire Update_LRU_o_t1;
 wire Update_LRU_o_t2;
 
 and4$ Update_LRU_o_and0 (Update_LRU_o_t0, S_0_inv, S_1_inv, S_2_inv, V_Hit_i);
-and5$ Update_LRU_o_and1 (Update_LRU_o_t1, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, VC_needs_2_evict_i);
-and5$ Update_LRU_o_and2 (Update_LRU_o_t2, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, EB_V_i_inv);
+and5$ Update_LRU_o_and1 (Update_LRU_o_t1, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, EB_V_i_inv);
+and5$ Update_LRU_o_and2 (Update_LRU_o_t2, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, VC_needs_2_evict_i);
 or3$  Update_LRU_o_or  (Update_LRU_o, Update_LRU_o_t0, Update_LRU_o_t1, Update_LRU_o_t2);
 
 // saveSwapIDX_o = (!S_0 & !S_1 & !S_2 & V_Hit_i)
@@ -194,33 +194,33 @@ and2$ use_savedSwapIDX_o_and (use_savedSwapIDX_o, S_0, S_2_inv);
 // blocked_o = (!S_0 & S_1 & !S_2 & EB_V_i)
 and4$ blocked_o_and (blocked_o, S_0_inv, S_1, S_2_inv, EB_V_i);
 
-// busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2)
+// busy_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
 wire busy_o_t0;
 wire busy_o_t1;
 wire busy_o_t2;
 
-and2$ busy_o_and0 (busy_o_t0, S_0, S_2_inv);
-and2$ busy_o_and1 (busy_o_t1, S_1, S_2_inv);
+and2$ busy_o_and0 (busy_o_t0, S_1, S_2_inv);
+and2$ busy_o_and1 (busy_o_t1, S_0, S_2_inv);
 and3$ busy_o_and2 (busy_o_t2, S_0_inv, S_1_inv, S_2);
 or3$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2);
 
-// saveReq_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i)
+// saveReq_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i)
 wire saveReq_o_t0;
 wire saveReq_o_t1;
 wire saveReq_o_t2;
 
 and4$ saveReq_o_and0 (saveReq_o_t0, S_0_inv, S_1_inv, S_2_inv, V_Hit_i);
-and5$ saveReq_o_and1 (saveReq_o_t1, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, VC_needs_2_evict_i);
-and5$ saveReq_o_and2 (saveReq_o_t2, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, EB_V_i_inv);
+and5$ saveReq_o_and1 (saveReq_o_t1, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, EB_V_i_inv);
+and5$ saveReq_o_and2 (saveReq_o_t2, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, VC_needs_2_evict_i);
 or3$  saveReq_o_or  (saveReq_o, saveReq_o_t0, saveReq_o_t1, saveReq_o_t2);
 
-// useSavedReq_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2)
+// useSavedReq_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
 wire useSavedReq_o_t0;
 wire useSavedReq_o_t1;
 wire useSavedReq_o_t2;
 
-and2$ useSavedReq_o_and0 (useSavedReq_o_t0, S_0, S_2_inv);
-and2$ useSavedReq_o_and1 (useSavedReq_o_t1, S_1, S_2_inv);
+and2$ useSavedReq_o_and0 (useSavedReq_o_t0, S_1, S_2_inv);
+and2$ useSavedReq_o_and1 (useSavedReq_o_t1, S_0, S_2_inv);
 and3$ useSavedReq_o_and2 (useSavedReq_o_t2, S_0_inv, S_1_inv, S_2);
 or3$  useSavedReq_o_or  (useSavedReq_o, useSavedReq_o_t0, useSavedReq_o_t1, useSavedReq_o_t2);
 
