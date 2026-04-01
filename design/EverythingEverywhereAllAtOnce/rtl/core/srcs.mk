@@ -31,7 +31,7 @@ CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/StageLatches/MEM_Latches.sv \
 				 $(CORE_PATH_INTERNAL)/StageLatches/RR_Latches.sv \
 				 $(CORE_PATH_INTERNAL)/StageLatches/WB_Latches.sv \
-				 $(CORE_PATH_INTERNAL)/CoreTop.sv \
+				 $(CORE_PATH_INTERNAL)/EveryThing_TOP.sv \
 
 
 #no prodecode pakcages rn that need ot be compiled

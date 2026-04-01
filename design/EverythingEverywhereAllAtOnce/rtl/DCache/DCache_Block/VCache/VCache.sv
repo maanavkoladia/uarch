@@ -14,9 +14,27 @@ module VCache (
     output v_cache_outputs_t outputs_o
 );
 
+    typedef struct {
+        logic WR_2_EB;
+        logic CLR_D_SWAP_V;
+        logic Read_DSWAP;
+        logic Write_VSWAP;
+        logic Update_LRU;
+        logic saveSwapIDX;
+        logic use_savedSwapIDX;
+        logic blocked;
+        logic busy;
+        logic saveReq;
+        logic useSavedReq;
+    } vcache_fsm_outputs_t;
+    vcache_fsm_outputs_t fsmOuts;
+
     vcache_fsm_states_e vcache_fsm_state;
     logic [$clog2(NUM_VCACHE_STATES) - 1 : 0] vcache_fsm_state_bits;
     assign vcache_fsm_state = vcache_fsm_state_bits;
+
+    block_req_t savedReq;
+    block_req_t reqInUse = fsmOuts.useSavedReq ? savedReq : blockReq_i;
 
     p_addr_vcache_fields_t block_req_p_addr_fields;
     assign block_req_p_addr_fields = '{
@@ -25,29 +43,12 @@ module VCache (
             offset : blockReq_i.p_addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
         };
 
-    typedef struct {
-        logic WR_2_EB_o;
-        logic CLR_D_SWAP_V_o;
-        logic Read_DSWAP_o;
-        logic Write_VSWAP_o;
-        logic Update_LRU_o;
-        logic saveSwapIDX_o;
-        logic use_savedSwapIDX_o;
-        logic blocked_o;
-        logic busy_o;
-        logic saveReq_o;
-        logic useSavedReq_o;
-    } vcache_fsm_outputs_t;
-
-    vcache_fsm_outputs_t fsmOuts;
 
     //this has to be correct tag on a write to v_swap, bbut
     //maybe not for a idle hit
 
     swap_buf_t vcache_swapBuf;
 
-    block_req_t savedReq;
-    block_req_t reqInUse = fsmOuts.useSavedReq_o ? savedReq : blockReq_i;
 
     //means that the currline is valid and dirty, so it cant be over written,
     //needs to be evicted
@@ -61,8 +62,8 @@ module VCache (
     logic V_Cache_TagStore_CurrLine_Dirty;
     //logic writeSuccess2TagStore;  //needs to mark the line dirty, holy fuck, what have we created
 
-
     byte_t vcache_dataStore_Line[CACHE_LINES_SIZE_B];
+
     VCache_FSM vcache_fsm_unit (
         .clk(clk),
         .rst(rst),
@@ -74,7 +75,7 @@ module VCache (
         .S_0(vcache_fsm_state_bits[0]),  // current-state bit 0 (LSB)
         .S_1(vcache_fsm_state_bits[1]),  // current-state bit 1 (1)
         .S_2(vcache_fsm_state_bits[2]),  // current-state bit 2 (MSB)
-        .WR_2_EB_o(fsmOuts.WR_2_EB_o),
+        .WR_2_EB_o(fsmOuts.WR_2_EB),
         .CLR_D_SWAP_V_o(fsmOuts.CLR_D_SWAP_V),
         .Read_DSWAP_o(fsmOuts.Read_DSWAP),
         .Write_VSWAP_o(fsmOuts.Write_VSWAP),
@@ -93,16 +94,16 @@ module VCache (
         .p_addr_i(reqInUse.p_addr),
         .oe_i(reqInUse.oe),
         .we_i(reqInUse.we),
-        .Read_DSWAP_i(fsmOuts.Read_DSWAP_o),
+        .Read_DSWAP_i(fsmOuts.Read_DSWAP),
         .D_Cache_SwapBuf_Addr(dcache_outs_i.dcache_swapBuf.lineAddr),
         .D_Cache_SwapBuf_DirtyBit(dcache_outs_i.dcache_swapBuf.dirty),
         .DCache_Will_Evict_i(dcache_outs_i.D_will_evict),
-        .saveSwapIDX(fsmOuts.saveSwapIDX_o),
-        .use_savedSwapIDX(fsmOuts.use_savedSwapIDX_o),
+        .saveSwapIDX(fsmOuts.saveSwapIDX),
+        .use_savedSwapIDX(fsmOuts.use_savedSwapIDX),
         .bankControllerBusy_i(fsmOuts.busy),
-        .LD_EB_i(fsmOuts.WR_2_EB_o),
-        .Write_VSWAP_i(fsmOuts.Write_VSWAP_o),
-        .Update_LRU(fsmOuts.Update_LRU_o),
+        .LD_EB_i(fsmOuts.WR_2_EB),
+        .Write_VSWAP_i(fsmOuts.Write_VSWAP),
+        .Update_LRU(fsmOuts.Update_LRU),
         .tagOut_o(currTag),
         .hit_o(hit),
         .miss_o(miss),
@@ -111,6 +112,25 @@ module VCache (
         .savedSwapIDX_o(savedSwapIDX),  //for swapping
         .currLine_Dirty_o(V_Cache_TagStore_CurrLine_Dirty),  //will be the hit idx for the swap buf
         .VC_Will_Need_ToEvict_o(V_Cache_needs_2_evict)  //for the fsm, based off the curr LRU
+    );
+    
+    VCache_DataStore vcache_datastore_unit (
+        .p_addr_i(reqInUse.p_addr),
+        .oe_i(reqInUse.oe),
+        .we_i(reqInUse.we),
+        .st_q_data_i(reqInUse.st_q_data),
+        .st_data_vec_i(reqInUse.vec),
+        .DCache_SwapBuf_Line_i(dcache_outs_i.dcache_swapBuf.line),
+        .read_D_SWAP_i(fsmOuts.Read_DSWAP),  //for writing
+        .Write_VSWAP_i(fsmOuts.Write_VSWAP),  //for reading
+        .busy_i(fsmOuts.busy),  //do access logic
+        .LD_EB_i(fsmOuts.WR_2_EB),  //oe logic
+        .tagStore_hit_i(hit),
+        .use_savedSwapIDX_i(fsmOuts.use_savedSwapIDX),
+        .hitIDX_i(hitIDX),  //for drving the datastore
+        .evictionIDX_i(evictionIDX),  //for evivtions from vcach
+        .savedSwapIDX_i(savedSwapIDX),  //for swapping
+        .VCache_DataStore_LineOut_o(vcache_dataStore_Line)
     );
 
     //vcache_swapBuf LOGIC
@@ -126,7 +146,7 @@ module VCache (
                 //bits from tagstore, idx bits, banks bits, then zero out rest,
                 //they dont matter
                 vcache_swapBuf.lineAddr <= {
-                    currTag, block_req_p_addr_fields.index, block_req_p_addr_fields.bank, 4'b0000
+                    currTag, block_req_p_addr_fields.bank, 4'b0000
                 };
                 vcache_swapBuf.line <= vcache_dataStore_Line;
             end
@@ -140,12 +160,12 @@ module VCache (
         outputs_o.miss = miss;
         outputs_o.vcache_swapBuf = vcache_swapBuf;
         outputs_o.D_Cache_swapBuf_valid_clr = fsmOuts.CLR_D_SWAP_V;
-        outputs_o.LD_EB = fsmOuts.WR_2_EB_o;
+        outputs_o.LD_EB = fsmOuts.WR_2_EB;
         outputs_o.busy = fsmOuts.busy;
         outputs_o.beingBlocked = fsmOuts.blocked;
         outputs_o.lineOut = vcache_dataStore_Line;
         outputs_o.addrOut = {
-            currTag, block_req_p_addr_fields.index, block_req_p_addr_fields.bank, 4'b0000
+            currTag, block_req_p_addr_fields.bank, 4'b0000
         };
     end
 

@@ -29,20 +29,20 @@ module DCache_Bank (
     output d_cache_bank_outputs_t outputs_o
 );
 
-    typedef struct packed {
-        logic write_to_dswap_o;
-        logic D_will_evict_o;
-        logic ldFrom_V_swap_o;
-        logic clr_v_swap_o;
-        logic MakeReq_o;
-        logic saveReq_o;
-        logic useSaved_Req_o;
-        logic Blocked_o;
-        logic busy_o;
-        logic fill0_o;
-        logic fill1_o;
-        logic fill2_o;
-        logic fill3_o;
+    typedef struct {
+        logic write_to_dswap;
+        logic D_will_evict;
+        logic ldFrom_V_swap;
+        logic clr_v_swap;
+        logic MakeReq;
+        logic saveReq;
+        logic useSaved_Req;
+        logic Blocked;
+        logic busy;
+        logic fill0;
+        logic fill1;
+        logic fill2;
+        logic fill3;
     } dcache_fsm_outputs_t;
     dcache_fsm_outputs_t fsmOuts;
 
@@ -52,6 +52,9 @@ module DCache_Bank (
 
     //nned to create the dcache swap buffer
     swap_buf_t dcache_bank_swapBuf;
+
+    block_req_t savedReq;
+    block_req_t reqInUse = fsmOuts.useSaved_Req ? savedReq : blockReq_i;
 
     p_addr_dcache_fields_t blockReq_p_addr_fields;
     assign blockReq_p_addr_fields = '{
@@ -76,8 +79,6 @@ module DCache_Bank (
     logic writeSuccess2TagStore;
 
 
-    block_req_t savedReq;
-    block_req_t reqInUse = fsmOuts.useSaved_Req_o ? savedReq : blockReq_i;
 
     DCache_Bank_FSM dcache_bank_fsm_unit (
         .clk(clk),
@@ -95,19 +96,19 @@ module DCache_Bank (
         .S_2(dcache_bank_State_bits[2]),  // current-state bit 2 (2)
         .S_3(dcache_bank_State_bits[3]),  // current-state bit 3 (MSB)
 
-        .write_to_dswap_o(fsmOuts.write_to_dswap_o),
-        .D_will_evict_o(fsmOuts.D_will_evict_o),
-        .ldFrom_V_swap_o(fsmOuts.ldFrom_V_swap_o),
-        .clr_v_swap_o(fsmOuts.clr_v_swap_o),
-        .MakeReq_o(fsmOuts.MakeReq_o),
-        .saveReq_o(fsmOuts.saveReq_o),
-        .useSaved_Req_o(fsmOuts.useSaved_Req_o),
-        .Blocked_o(fsmOuts.Blocked_o),
-        .busy_o(fsmOuts.busy_o),
-        .fill0_o(fsmOuts.fill0_o),
-        .fill1_o(fsmOuts.fill1_o),
-        .fill2_o(fsmOuts.fill2_o),
-        .fill3_o(fsmOuts.fill3_o)
+        .write_to_dswap_o(fsmOuts.write_to_dswap),
+        .D_will_evict_o(fsmOuts.D_will_evict),
+        .ldFrom_V_swap_o(fsmOuts.ldFrom_V_swap),
+        .clr_v_swap_o(fsmOuts.clr_v_swap),
+        .MakeReq_o(fsmOuts.MakeReq),
+        .saveReq_o(fsmOuts.saveReq),
+        .useSaved_Req_o(fsmOuts.useSaved_Req),
+        .Blocked_o(fsmOuts.Blocked),
+        .busy_o(fsmOuts.busy),
+        .fill0_o(fsmOuts.fill0),
+        .fill1_o(fsmOuts.fill1),
+        .fill2_o(fsmOuts.fill2),
+        .fill3_o(fsmOuts.fill3)
     );
 
     DCache_Bank_DataStore DCache_Bank_DataStore_unit (
@@ -115,15 +116,15 @@ module DCache_Bank (
         .p_addr_i(reqInUse.p_addr),
         .oe(reqInUse.oe),
         .we(reqInUse.we),
-        .ld_From_V_Swap_i(fsmOuts.ld_V_swap_o),
+        .ld_From_V_Swap_i(fsmOuts.ldFrom_V_swap),
 
-        .fill0_i(fsmOuts.fill0_o),
-        .fill1_i(fsmOuts.fill1_o),
-        .fill2_i(fsmOuts.fill2_o),
-        .fill3_i(fsmOuts.fill3_o),
+        .fill0_i(fsmOuts.fill0),
+        .fill1_i(fsmOuts.fill1),
+        .fill2_i(fsmOuts.fill2),
+        .fill3_i(fsmOuts.fill3),
 
-        .write2_Dwap_i(fsmOuts.write_to_dswap_o),
-        .bankControllerBusy_i(fsmOuts.busy_o),
+        .write2_Dwap_i(fsmOuts.write_to_dswap),
+        .bankControllerBusy_i(fsmOuts.busy),
         .st_q_data(reqInUse.st_q_data),
         .st_data_vec(reqInUse.vec),
         .VCache_SwapBuf_Line_i(V_Cache_i.vcache_swapBuf.line),
@@ -136,15 +137,15 @@ module DCache_Bank (
     DCache_Bank_TagStore DCache_Bank_TagStore_unit (
         .clk(clk),
         .rst(rst),  //active low
-        .p_addr_i(reqInUse_i.p_addr),
-        .oe_i(reqInUse_i.oe),
-        .we_i(reqInUse_i.we),
-        .ld_From_V_Swap_i(fsmOuts.ld_V_swap_o),
+        .p_addr_i(reqInUse.p_addr),
+        .oe_i(reqInUse.oe),
+        .we_i(reqInUse.we),
+        .ld_From_V_Swap_i(fsmOuts.ldFrom_V_swap),
         //.V_Cache_SwapBuf_Tag(V_Cache_i.vcache_swapBuf.lineAddr[V_CACHE_TAG_UB : V_CACHE_TAG_LB]),
         .V_Cache_SwapBuf_DirtyBit(V_Cache_i.vcache_swapBuf.dirty),
-        .fill3_i(fsmOuts.fill3_o),
-        .write2_Dwap_i(fsmOuts.write_to_dswap_o),
-        .bankControllerBusy_i(fsmOuts.busy_o),
+        .fill3_i(fsmOuts.fill3),
+        .write2_Dwap_i(fsmOuts.write_to_dswap),
+        .bankControllerBusy_i(fsmOuts.busy),
         .writeSuccess(writeSuccess2TagStore),  //
         .tagOut_o(currTag),
         .currLine_V_o(currLineValid),
@@ -166,8 +167,8 @@ module DCache_Bank (
             //    2'b11: if (rst) $fatal;
             //endcase
 
-            if (fsmOuts.D_Cache_swapBuf_valid_clr) dcache_bank_swapBuf.valid <= 0;
-            if (fsmOuts.write_to_dswap_o) begin
+            if (V_Cache_i.D_Cache_swapBuf_valid_clr) dcache_bank_swapBuf.valid <= 0;
+            if (fsmOuts.write_to_dswap) begin
                 dcache_bank_swapBuf.valid <= 1;
                 dcache_bank_swapBuf.dirty <= currLineDirty;
                 //bits from tagstore, idx bits, banks bits, then zero out rest,
@@ -184,13 +185,13 @@ module DCache_Bank (
     //address feeding logic
 
     always_ff @(posedge clk) begin
-        if (!rst) savedReq <= 0;
-        else if (fsmOuts.saveReq_o) savedReq <= blockReq_i;
+        if (!rst) savedReq <= '{default: '0};
+        else if (fsmOuts.saveReq) savedReq <= blockReq_i;
     end
 
 
     bool doAccess;
-    assign doAccess = !fsmOuts.busy_o && (reqInUse.oe || reqInUse.we);
+    assign doAccess = !fsmOuts.busy && (reqInUse.oe || reqInUse.we);
     //need to do hit/miss logic
     always_comb begin
         miss = 0;
@@ -215,9 +216,9 @@ module DCache_Bank (
         outputs_o.hit = hit;
         //outputs.miss = miss;
         outputs_o.dcache_swapBuf = dcache_bank_swapBuf;
-        outputs_o.V_Cache_swapBuf_valid_clr = fsmOuts.clr_v_swap_o;
-        outputs_o.D_will_evict = fsmOuts.D_will_evict_o;
-        outputs_o.busy = fsmOuts.busy_o;
+        outputs_o.V_Cache_swapBuf_valid_clr = fsmOuts.clr_v_swap;
+        outputs_o.D_will_evict = fsmOuts.D_will_evict;
+        outputs_o.busy = fsmOuts.busy;
         outputs_o.data_lineOut = dataStore_Line;
         outputs_o.MakeReq = fsmOuts.MakeReq;
         outputs_o.eb_stalling = fsmOuts.Blocked;

@@ -23,8 +23,6 @@ module VCache_DataStore (
     input bool tagStore_hit_i,
     input bool use_savedSwapIDX_i,
 
-    input bool hit_o,
-
     input logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] hitIDX_i,  //for drving the datastore
     input logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] evictionIDX_i,  //for evivtions from vcach
     input logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] savedSwapIDX_i,  //for swapping

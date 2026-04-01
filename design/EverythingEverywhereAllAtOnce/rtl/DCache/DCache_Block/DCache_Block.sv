@@ -54,8 +54,8 @@ module DCache_Block (
     );
 
     VCache vcache_unit (
-        .clk_i(clk_i),
-        .rst_i(rst_i),  //active low
+        .clk(clk_i),
+        .rst(rst_i),  //active low
         .blockReq_i(block_req_i),
         .eb_outs_i(eb_outputs),
         .dcache_outs_i(dcache_bank_outputs),
