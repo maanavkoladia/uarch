@@ -12,6 +12,7 @@ module EXE (
     output exe_outputs_t outs_o
 );
 
+
     //==========================================================================
     // SIGNAL DECLARATIONS
     //==========================================================================
@@ -49,6 +50,153 @@ module EXE (
     bool cancel_sr_we;
     bool cancel_store;
 
+
+    //==========================================================================
+    // FUNCTIONAL UNIT OUTPUT WIRES
+    //==========================================================================
+    
+    // AAA Outputs
+    uint64_t aaa_dr_o;
+
+    // ADC Outputs
+    uint64_t adc_dr_o;
+    uint64_t adc_res_buf_o;
+
+    // ADD Outputs
+    uint64_t add_dr_o;
+    uint64_t add_res_buf_o;
+
+    // AND Outputs
+    uint64_t and_dr_o;
+    uint64_t and_res_buf_o;
+
+    // BSF Outputs
+    uint64_t bsf_dr_o;
+
+    // CALL Outputs
+    uint64_t call_dr_o;
+    uint64_t call_res_buf;
+
+    // CMPXCHG Outputs
+    uint64_t cmpxchg_sr_o;
+    uint64_t cmpxchg_dr_o;
+    uint64_t cmpxchg_buf_o;
+
+    // FAR_CALL Outputs
+    uint64_t far_call_dr_o;
+    uint64_t far_call_res_buf;
+
+    // IRETD Outputs
+    uint32_t iretd_cs_o;
+    uint64_t iretd_stack_ptr_o;
+
+    // MOV Outputs
+    uint64_t mov_dr_o;
+    uint64_t mov_res_buf_o;
+
+    // NOT Outputs
+    uint64_t not_dr_o;
+    uint64_t not_res_buf_o;
+
+    // OR Outputs
+    uint64_t or_dr_o;
+    uint64_t or_res_buf_o;
+
+    // PACKSSDW Outputs
+    uint64_t packssdw_dr_o;
+
+    // PACKSSWB Outputs
+    uint64_t packsswb_dr_o;
+
+    // PADDD Outputs
+    uint64_t paddd_dr_o;
+
+    // PADDW Outputs
+    uint64_t paddw_dr_o;
+
+    // PAVGB Outputs
+    uint64_t pavgb_dr_o;
+
+    // PAVGW Outputs
+    uint64_t pavgw_dr_o;
+
+    // POP Outputs
+    uint64_t pop_dr_o;
+    uint64_t pop_sr_o;
+
+    // PUSH Outputs
+    uint64_t push_res_buf;
+    uint64_t push_sr_o;
+
+    // RET_FAR_IMM Outputs
+    uint64_t ret_far_imm_dr_o;
+    uint64_t ret_far_imm_sr_o;
+
+    // RET_FAR Outputs
+    uint32_t ret_far_cs_o;
+    uint64_t ret_far_next_ptr_o;
+
+    // RET_IMM Outputs
+    uint64_t ret_imm_sr_o;
+
+    // RET Outputs
+    uint64_t ret_sr_o;
+
+    // SAL Outputs
+    uint64_t sal_dr_o;
+
+    // SAR Outputs
+    uint64_t sar_dr_o;
+    uint64_t sar_res_buf_o;
+
+    // SBB Outputs
+    uint64_t sbb_dr_o;
+    uint64_t sbb_res_buf_o;
+
+    // XCHG Outputs
+    uint64_t xchg_dr_o;
+    uint64_t xchg_sr_o;
+    uint64_t xchg_res_buf;
+
+    //==========================================================================
+    // FUNCTIONAL UNIT FLAG OUTPUTS
+    //==========================================================================
+    
+    // AAA Flags
+    logic aaa_af_o, aaa_cf_o;
+
+    // ADC Flags
+    logic adc_af_o, adc_cf_o, adc_of_o, adc_pf_o, adc_sf_o, adc_zf_o;
+
+    // ADD Flags
+    logic add_af_o, add_cf_o, add_of_o, add_pf_o, add_sf_o, add_zf_o;
+
+    // AND Flags
+    logic and_of_o, and_pf_o, and_sf_o, and_zf_o;
+
+    // BSF Flags
+    logic bsf_zf_o;
+
+    // CMP Flags
+    logic cmp_cf_o, cmp_pf_o, cmp_af_o, cmp_zf_o, cmp_sf_o, cmp_of_o;
+
+    // CMPXCHG Flags
+    logic cmpxchg_cf_o, cmpxchg_pf_o, cmpxchg_af_o, cmpxchg_zf_o, cmpxchg_sf_o, cmpxchg_of_o;
+
+    // OR Flags
+    logic or_cf_o, or_pf_o, or_zf_o, or_sf_o, or_of_o;
+
+    // SAL Flags
+    logic sal_cf_o, sal_pf_o, sal_zf_o, sal_sf_o, sal_of_o;
+
+    // SAR Flags
+    logic sar_cf_o, sar_pf_o, sar_zf_o, sar_sf_o, sar_of_o;
+
+    // SBB Flags
+    logic sbb_cf_o, sbb_pf_o, sbb_af_o, sbb_zf_o, sbb_sf_o, sbb_of_o;
+
+    // IRETD Flags
+    logic iretd_cf_o, iretd_pf_o, iretd_af_o, iretd_zf_o, iretd_sf_o, iretd_of_o;
 
     //==========================================================================
     // CONTROL SIGNAL ASSIGNMENTS
@@ -252,47 +400,6 @@ module EXE (
 
 
     //==========================================================================
-    // FUNCTIONAL UNIT FLAG OUTPUTS
-    //==========================================================================
-    
-    // AAA Flags
-    logic aaa_af_o, aaa_cf_o;
-
-    // ADC Flags
-    logic adc_af_o, adc_cf_o, adc_of_o, adc_pf_o, adc_sf_o, adc_zf_o;
-
-    // ADD Flags
-    logic add_af_o, add_cf_o, add_of_o, add_pf_o, add_sf_o, add_zf_o;
-
-    // AND Flags
-    logic and_of_o, and_pf_o, and_sf_o, and_zf_o;
-
-    // BSF Flags
-    logic bsf_zf_o;
-
-    // CMP Flags
-    logic cmp_cf_o, cmp_pf_o, cmp_af_o, cmp_zf_o, cmp_sf_o, cmp_of_o;
-
-    // CMPXCHG Flags
-    logic cmpxchg_cf_o, cmpxchg_pf_o, cmpxchg_af_o, cmpxchg_zf_o, cmpxchg_sf_o, cmpxchg_of_o;
-
-    // OR Flags
-    logic or_cf_o, or_pf_o, or_zf_o, or_sf_o, or_of_o;
-
-    // SAL Flags
-    logic sal_cf_o, sal_pf_o, sal_zf_o, sal_sf_o, sal_of_o;
-
-    // SAR Flags
-    logic sar_cf_o, sar_pf_o, sar_zf_o, sar_sf_o, sar_of_o;
-
-    // SBB Flags
-    logic sbb_cf_o, sbb_pf_o, sbb_af_o, sbb_zf_o, sbb_sf_o, sbb_of_o;
-
-    // IRETD Flags
-    logic iretd_cf_o, iretd_pf_o, iretd_af_o, iretd_zf_o, iretd_sf_o, iretd_of_o;
-
-
-    //==========================================================================
     // FLAG SELECTION LOGIC
     //==========================================================================
     
@@ -396,113 +503,6 @@ module EXE (
         .zf_flag_o   (zf_flag_o)
     );
 
-
-    //==========================================================================
-    // FUNCTIONAL UNIT OUTPUT WIRES
-    //==========================================================================
-    
-    // AAA Outputs
-    uint64_t aaa_dr_o;
-
-    // ADC Outputs
-    uint64_t adc_dr_o;
-    uint64_t adc_res_buf_o;
-
-    // ADD Outputs
-    uint64_t add_dr_o;
-    uint64_t add_res_buf_o;
-
-    // AND Outputs
-    uint64_t and_dr_o;
-    uint64_t and_res_buf_o;
-
-    // BSF Outputs
-    uint64_t bsf_dr_o;
-
-    // CALL Outputs
-    uint64_t call_dr_o;
-    uint64_t call_res_buf;
-
-    // CMPXCHG Outputs
-    uint64_t cmpxchg_sr_o;
-    uint64_t cmpxchg_dr_o;
-    uint64_t cmpxchg_buf_o;
-
-    // FAR_CALL Outputs
-    uint64_t far_call_dr_o;
-    uint64_t far_call_res_buf;
-
-    // IRETD Outputs
-    uint32_t iretd_cs_o;
-    uint64_t iretd_stack_ptr_o;
-
-    // MOV Outputs
-    uint64_t mov_dr_o;
-    uint64_t mov_res_buf_o;
-
-    // NOT Outputs
-    uint64_t not_dr_o;
-    uint64_t not_res_buf_o;
-
-    // OR Outputs
-    uint64_t or_dr_o;
-    uint64_t or_res_buf_o;
-
-    // PACKSSDW Outputs
-    uint64_t packssdw_dr_o;
-
-    // PACKSSWB Outputs
-    uint64_t packsswb_dr_o;
-
-    // PADDD Outputs
-    uint64_t paddd_dr_o;
-
-    // PADDW Outputs
-    uint64_t paddw_dr_o;
-
-    // PAVGB Outputs
-    uint64_t pavgb_dr_o;
-
-    // PAVGW Outputs
-    uint64_t pavgw_dr_o;
-
-    // POP Outputs
-    uint64_t pop_dr_o;
-    uint64_t pop_sr_o;
-
-    // PUSH Outputs
-    uint64_t push_res_buf;
-    uint64_t push_sr_o;
-
-    // RET_FAR_IMM Outputs
-    uint64_t ret_far_imm_dr_o;
-    uint64_t ret_far_imm_sr_o;
-
-    // RET_FAR Outputs
-    uint32_t ret_far_cs_o;
-    uint64_t ret_far_next_ptr_o;
-
-    // RET_IMM Outputs
-    uint64_t ret_imm_sr_o;
-
-    // RET Outputs
-    uint64_t ret_sr_o;
-
-    // SAL Outputs
-    uint64_t sal_dr_o;
-
-    // SAR Outputs
-    uint64_t sar_dr_o;
-    uint64_t sar_res_buf_o;
-
-    // SBB Outputs
-    uint64_t sbb_dr_o;
-    uint64_t sbb_res_buf_o;
-
-    // XCHG Outputs
-    uint64_t xchg_dr_o;
-    uint64_t xchg_sr_o;
-    uint64_t xchg_res_buf;
 
 
     //==========================================================================
