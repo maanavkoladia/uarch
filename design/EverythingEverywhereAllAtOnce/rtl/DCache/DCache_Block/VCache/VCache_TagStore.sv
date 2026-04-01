@@ -77,35 +77,10 @@ module VCache_TagStore (
             offset : D_Cache_SwapBuf_Addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
         };
 
-
     bool doAccess;
-    assign doAccess = (we_i || oe_i) && !bankControllerBusy_i;
-
-    //hit logic, if there is a oe or we and we are not busy, then give the hit
-    //miss logic opposite, write success logic
     bool hit, miss;
-    logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] hitIdx;
-    logic [VCACHE_NUM_LINES - 1 : 0] hitIdx_onehot;
     bool writeSuccess;
     bool noHit;
-
-    always_comb begin
-        hit = 0;
-        miss = 0;
-        hitIdx = 0;
-
-        if (doAccess) begin
-            for (int i = 0; i < VCACHE_NUM_LINES; i++) begin
-                if (DOUT_of_TagStore[i] == p_addr_fields.tag && tagMetaStore.tag_line_metaStore[i].valid) begin
-                    hit = 1;
-                    hitIdx = i;
-                    hitIdx_onehot = 1 << hitidx;
-                end
-            end
-        end
-        if (doAccess && !hit) miss = 1;
-        if (hit && we_i) writeSuccess = 1;
-    end
 
     //i think that swap needs to save the idx to overwrite, bc this info will
     //be lost when swap is actully happening
@@ -266,6 +241,31 @@ module VCache_TagStore (
             end
         end
     endgenerate
+
+    assign doAccess = (we_i || oe_i) && !bankControllerBusy_i;
+
+    //hit logic, if there is a oe or we and we are not busy, then give the hit
+    //miss logic opposite, write success logic
+    logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] hitIdx;
+    logic [VCACHE_NUM_LINES - 1 : 0] hitIdx_onehot;
+
+    always_comb begin
+        hit = 0;
+        miss = 0;
+        hitIdx = 0;
+
+        if (doAccess) begin
+            for (int i = 0; i < VCACHE_NUM_LINES; i++) begin
+                if (DOUT_of_TagStore[i] == p_addr_fields.tag && tagMetaStore.tag_line_metaStore[i].valid) begin
+                    hit = 1;
+                    hitIdx = i;
+                    hitIdx_onehot = 1 << hitidx;
+                end
+            end
+        end
+        if (doAccess && !hit) miss = 1;
+        if (hit && we_i) writeSuccess = 1;
+    end
 
 
     //comb outputs or valid and dirty

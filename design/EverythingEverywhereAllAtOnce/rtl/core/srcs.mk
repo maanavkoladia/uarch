@@ -38,7 +38,6 @@ CORE_SRC_FILES = \
 CORE_PKGS = \
 			$(CORE_PATH_INTERNAL)/pkgs/control_store_pkg.sv \
 			$(CORE_PATH_INTERNAL)/pkgs/reg_ids_pkg.sv \
-			$(CORE_PATH_INTERNAL)/pkgs/flag_fields_pkg.sv \
 			$(CORE_PATH_INTERNAL)/pkgs/core_common_pkg.sv \
 			$(CORE_PATH_INTERNAL)/pkgs/core_stage_latches_pkg.sv \
 			$(CORE_PATH_INTERNAL)/IDM/pkg/IDM_pkg.sv	\
@@ -48,3 +47,6 @@ CORE_PKGS = \
 			$(RR_PKGS)	\
 			$(DC_PKGS) \
 			$(WB_PKGS) \
+
+
+

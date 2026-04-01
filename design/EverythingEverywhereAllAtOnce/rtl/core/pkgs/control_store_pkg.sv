@@ -10,7 +10,7 @@ package contorl_store_pkg;
         //TF_IDX   = 8,   // Trap Flag
         //IF_IDX   = 9,   // Interrupt Enable Flag
         DF_IDX   = 10,  // Direction Flag
-        OF_IDX   = 11,  // Overflow Flag
+        OF_IDX   = 11  // Overflow Flag
         // IOPL_IDX = 12,  // I/O Privilege Level (2 bits: 12-13)
         // NT_IDX   = 14,  // Nested Task
         // RF_IDX   = 16,  // Resume Flag
@@ -125,8 +125,8 @@ typedef enum {
         IMM32 = 9,          //rel 32
         ZEXT_IMM8 = 10,     //rel8 
         BUF32 = 11,         //m32 for branch
-        ZEXT_BUF16 = 12     //m16 for branch
-        ZEXT_IMM16 = 13,    //rel 16 for branch
+        ZEXT_BUF16 = 12,     //m16 for branch,
+        ZEXT_IMM16 = 13    //rel 16 for branch
     
     // How source selection works in the ALU input selector:
     //refined comment with claude so its coherent buddy

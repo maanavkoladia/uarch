@@ -45,7 +45,7 @@ module VCache_DataStore (
     //the block_req, but just to be consistent, ill use the 
     //swapbuf addr
     //
-    logic [V_CACHE_IDX_WIDTH - 1 : 0] ADDRESS_2_DataStore;
+    logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] ADDRESS_2_DataStore;
 
     //there is not bytes addressable st
     //case 1: when loading from D$ swabuf
