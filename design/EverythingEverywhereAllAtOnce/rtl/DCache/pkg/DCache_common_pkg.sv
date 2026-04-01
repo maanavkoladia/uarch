@@ -22,21 +22,18 @@ package DCache_common_pkg;
     localparam int DCACHE_BANK_OFFSET_WIDTH = (DCACHE_BANK_OFFSET_UB - DCACHE_BANK_OFFSET_LB + 1);
 
     localparam int V_CACHE_TAG_UB = 14;
-    localparam int V_CACHE_TAG_LB = 8;
-    localparam int V_CACHE_IDX_UB = 7;
-    localparam int V_CACHE_IDX_LB = 6;
+    localparam int V_CACHE_TAG_LB = 6;
     localparam int V_CACHE_BANK_UB = 5;
     localparam int V_CACHE_BANK_LB = 4;
     localparam int V_CACHE_OFFSET_UB = 3;
     localparam int V_CACHE_OFFSET_LB = 0;
 
     localparam int V_CACHE_TAG_WIDTH = (V_CACHE_TAG_UB - V_CACHE_TAG_LB + 1);  // = 7
-    localparam int V_CACHE_IDX_WIDTH = (V_CACHE_IDX_UB - V_CACHE_IDX_LB + 1);  // = 2
     localparam int V_CACHE_BANK_WIDTH = (V_CACHE_BANK_UB - V_CACHE_BANK_LB + 1);  // = 2
     localparam int V_CACHE_OFFSET_WIDTH = (V_CACHE_OFFSET_UB - V_CACHE_OFFSET_LB + 1);
 
     localparam int DCACHE_BANK_NUM_LINES = 1 << DCACHE_BANK_INDEX_WIDTH;
-    localparam int VCACHE_NUM_LINES = 1 << V_CACHE_IDX_WIDTH;
+    localparam int VCACHE_NUM_LINES = 4;
 
     typedef struct {
         logic [DCACHE_BANK_TAG_WIDTH-1:0]    tag;
@@ -47,7 +44,6 @@ package DCache_common_pkg;
 
     typedef struct {
         logic [V_CACHE_TAG_WIDTH-1:0]    tag;
-        logic [V_CACHE_IDX_WIDTH-1:0]  index;
         logic [V_CACHE_BANK_WIDTH-1:0]   bank;
         logic [V_CACHE_OFFSET_WIDTH-1:0] offset;
     } p_addr_vcache_fields_t;
@@ -114,7 +110,9 @@ package DCache_common_pkg;
         //bool valid;  //probably not needed
         bool hit;
         bool miss;
+
         swap_buf_t vcache_swapBuf;
+
         bool D_Cache_swapBuf_valid_clr;
         bool LD_EB;
         bool busy;
