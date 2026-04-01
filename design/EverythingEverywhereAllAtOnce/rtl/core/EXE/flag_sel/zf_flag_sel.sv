@@ -1,4 +1,6 @@
 //warning. this was a really dumb way of doing this 
+import control_store_pkg::*;
+import common_pkg::*;
 
 module zf_flag_sel(
     input bool adc_zf,
@@ -7,15 +9,15 @@ module zf_flag_sel(
     input bool bsf_zf,
     input bool cmp_zf,
     input bool cmpxchg_zf,
-    input bool iretd_zf,
     input bool or_zf,
     input bool sal_zf,
     input bool sar_zf,
     input bool sbb_zf,
-	input bool iretd_zf,
+    input bool iretd_zf,
 
 
-    input bool curr_z_flag,
+
+    input bool curr_zf_flag,
 	input exe_cs_operation_type_e op_type,
     output bool zf_flag_o
 );

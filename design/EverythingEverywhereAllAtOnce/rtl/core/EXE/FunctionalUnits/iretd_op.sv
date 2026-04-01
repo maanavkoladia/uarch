@@ -13,7 +13,7 @@ module iretd_op(
     output bool AF,
     output bool ZF,
     output bool SF,
-    output bool OF,
+    output bool OF
     
 );
 

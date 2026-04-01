@@ -1,4 +1,7 @@
 // Auxiliary Carry Flag Selection Module
+import control_store_pkg::*;
+import common_pkg::*;
+
 module af_flag_sel(
 	input bool aaa_af,
 	input bool adc_af,
@@ -11,7 +14,7 @@ module af_flag_sel(
 	
     input bool curr_af_flag,
 
-	input exe_cs_operation_type_e op_type;
+	input exe_cs_operation_type_e op_type,
 
 	output bool af_flag_o
 );
@@ -26,7 +29,7 @@ module af_flag_sel(
 			ADD:      af_flag_o = add_op_af;
 			CMP:      af_flag_o = cmp_af;
 			CMPXCHG:  af_flag_o = cmpxchg_af;
-			SBB:      af_flag_o = sbb_op_af;
+			SBB:      af_flag_o = sbb_af;
 			IRETD:	  af_flag_o = iretd_af;
 			default:  af_flag_o = curr_af_flag;
 		endcase

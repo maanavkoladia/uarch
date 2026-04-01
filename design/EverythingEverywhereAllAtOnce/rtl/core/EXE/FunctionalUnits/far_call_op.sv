@@ -1,6 +1,6 @@
 module far_call_op(
     input uint32_t neip,
-    input uint32_t segment //should be the neip_segment thing 
+    input uint32_t segment, //should be the neip_segment thing 
     input uint32_t stack_ptr, //stack pointer 
     output uint64_t res_buf,
     output uint64_t dr_o

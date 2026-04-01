@@ -1,4 +1,5 @@
-import common_pkg::*
+import common_pkg::*;
+
 
 module paddw (
     input  uint64_t [63:0] srA,

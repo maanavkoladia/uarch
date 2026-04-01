@@ -4,6 +4,7 @@ include $(CORE_PATH_INTERNAL)/Decode/structural/srcs.mk
 include $(CORE_PATH_INTERNAL)/Fetch/srcs.mk
 include $(CORE_PATH_INTERNAL)/RR/srcs.mk
 include $(CORE_PATH_INTERNAL)/DC/srcs.mk
+include $(CORE_PATH_INTERNAL)/EXE/srcs.mk
 include $(CORE_PATH_INTERNAL)/MEM/srcs.mk
 include $(CORE_PATH_INTERNAL)/WB/srcs.mk
 
@@ -23,7 +24,7 @@ CORE_SRC_FILES = \
 				 $(RR_SRC_FILES) \
 				 $(DC_SRC_FILES) \
 				 $(MEM_STAGE_SRC_FILES) \
-				 $(CORE_PATH_INTERNAL)/EXE/EXE.sv \
+				 $(EXE_SRC_FILES)\
 				 $(WB_SRC_FILES) \
 				 $(CORE_PATH_INTERNAL)/StageLatches/DC_Latches.sv \
 				 $(CORE_PATH_INTERNAL)/StageLatches/EXE_Latches.sv \

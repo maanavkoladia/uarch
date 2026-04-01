@@ -104,13 +104,14 @@ typedef enum {
     RET_FAR      = 27,
     RET_FAR_IMM  = 28,
     XCHG         = 29,
-    CLD          = 30
+    CLD          = 30,
+    CMOVC        = 31
 
 } exe_cs_operation_type_e;
 
     typedef enum{
         //register 
-        NOP = 0,
+        NO_EXE = 0,
         SR_REGISTER = 1,
         DR_REGISTER = 2,    //alu or branch 
         BUFFER = 3,         //128 bits you can use this one for all alu ops
@@ -125,8 +126,9 @@ typedef enum {
         ZEXT_IMM8 = 10,     //rel8 
         BUF32 = 11,         //m32 for branch
         ZEXT_BUF16 = 12,     //m16 for branch,
-        ZEXT_IMM16 = 13    //rel 16 for branch
-    
+        ZEXT_IMM16 = 13,    //rel 16 for branch
+        SEGMENT_EIP = 14,
+        FLAGS = 15  
     // How source selection works in the ALU input selector:
     //refined comment with claude so its coherent buddy
     // 1. All sources first get assigned to a 128-bit wire (srA_128/srB_128)
