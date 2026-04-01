@@ -78,7 +78,7 @@ module I_VCache (
 
     //hit miss logic
     assign hit = req_V_i && currTagHit && (controller_fsmState == ICACHE_IDLE);
-;
+
     assign miss = req_V_i && !(currTagHit) && (controller_fsmState == ICACHE_IDLE);
 
     //swapBuf Logic
@@ -104,8 +104,8 @@ module I_VCache (
     //if reading from IC swap buf, then write to LRU and update LRU, to the
     //eviction idx
     //if just doing a regular access, then just update lru to the access index
+    logic [$clog2(NUM_LINES) - 1 : 0] update_idx;
     always_ff @(posedge clk) begin
-        logic [$clog2(NUM_LINES) - 1 : 0] update_idx;
         if (!rst) begin
             tagStore.entries <= '{default: '0};
             tagStore.LRU <= '{default: '0};

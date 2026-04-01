@@ -5,41 +5,34 @@ module VCache_DataStore (
 
     //from block req
     input p_address_t p_addr_i,
-    input bool oe,
-    input bool we,
+    input bool oe_i,
+    input bool we_i,
 
     //from block req
-    input byte_t   st_q_data  [CACHE_LINES_SIZE_B],
-    input uint16_t st_data_vec,
+    input byte_t   st_q_data_i  [CACHE_LINES_SIZE_B],
+    input uint16_t st_data_vec_i,
 
-    //input p_address_t DCache_SwapBuf_lineAddr,
     input byte_t DCache_SwapBuf_Line_i[CACHE_LINES_SIZE_B],
-    input bool   read_D_SWAP_i,
-    input bool   Write_VSWAP_i,
-    input bool   busy_i,
-    input bool   LD_EB_i,
+
+    //fsm
+    input bool read_D_SWAP_i,  //for writing
+    input bool Write_VSWAP_i,  //for reading
+    input bool busy_i,  //do access logic
+    input bool LD_EB_i,  //oe logic
 
     input bool tagStore_hit_i,
+    input bool use_savedSwapIDX_i,
+
+    input bool hit_o,
+
+    input logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] hitIDX_i,  //for drving the datastore
+    input logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] evictionIDX_i,  //for evivtions from vcach
+    input logic [$clog2(VCACHE_NUM_LINES ) - 1 : 0] savedSwapIDX_i,  //for swapping
 
     output byte_t VCache_DataStore_LineOut_o[CACHE_LINES_SIZE_B]
 );
 
     localparam int NUM_CELL_IN_DATA_STORE = CACHE_LINES_SIZE_B;
-
-    //p_addr_vcache_fields_t DCache_SwapBuf_lineAddr_fields = '{
-    //    tag    : D_Cache_SwapBuf_Addr[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
-    //    index  : D_Cache_SwapBuf_Addr[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
-    //    bank   : D_Cache_SwapBuf_Addr[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
-    //    offset : D_Cache_SwapBuf_Addr[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
-    //};
-
-    p_addr_vcache_fields_t p_addr_fields;
-    assign  p_addr_fields = '{
-        tag    : p_addr_i[V_CACHE_TAG_UB : V_CACHE_TAG_LB],
-        index  : p_addr_i[V_CACHE_IDX_UB : V_CACHE_IDX_LB],
-        bank   : p_addr_i[V_CACHE_BANK_UB : V_CACHE_BANK_LB],
-        offset : p_addr_i[V_CACHE_OFFSET_UB : V_CACHE_OFFSET_LB]
-    };
 
     //address can come from 2 places i think
     //case 1: state is idle, ie not busy, drive the mapped line out
@@ -86,12 +79,12 @@ module VCache_DataStore (
         end
     endgenerate
 
-    //ADDRESS_2_DataStore logic
+    //ADDRESS_2_DataStore logic, comes from either the saved swapBuf idx,
+    //hitidx, or eviction lru idx
     always_comb begin
-        //ADDRESS_2_DataStore = (read_D_SWAP_i  || LD_EB_i) ?
-        //    DCache_SwapBuf_lineAddr_fields.idx
-        //    : p_addr_fields.idx;
-        ADDRESS_2_DataStore = p_addr_fields.index;
+        ADDRESS_2_DataStore = hitIDX_i;
+        if (use_savedSwapIDX_i) ADDRESS_2_DataStore = savedSwapIDX_i;
+        if (LD_EB_i) ADDRESS_2_DataStore = evictionIDX_i;
     end
 
     //WR_2_DataStore, active low
@@ -102,21 +95,21 @@ module VCache_DataStore (
             WR_2_DataStore = '{default: '0};
         end
 
-        if (!busy_i && we) begin
+        if (!busy_i && we_i) begin
             for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
-                WR_2_DataStore[i] = st_data_vec[i] && tagStore_hit_i ? 1'b0 : 1'b1;
+                WR_2_DataStore[i] = st_data_vec_i[i] && tagStore_hit_i ? 1'b0 : 1'b1;
             end
         end
     end
 
     //DIN_2_DataStore lgoic
     always_comb begin
-        DIN_2_DataStore = read_D_SWAP_i ? DCache_SwapBuf_Line_i : st_q_data;
+        DIN_2_DataStore = read_D_SWAP_i ? DCache_SwapBuf_Line_i : st_q_data_i;
     end
 
     //OE_2_DataStore logic
     always_comb begin
-        OE_2_DataStore = LD_EB_i || Write_VSWAP_i || (!busy_i && oe) ? 1'b0 : 1'b1;
+        OE_2_DataStore = LD_EB_i || Write_VSWAP_i || (!busy_i && oe_i) ? 1'b0 : 1'b1;
     end
 
     //deal w outputs
