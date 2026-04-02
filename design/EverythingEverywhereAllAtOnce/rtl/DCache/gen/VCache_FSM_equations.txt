@@ -16,7 +16,7 @@ Read_DSWAP_o = (S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2)
 
 Write_VSWAP_o = (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i)
 
-Update_LRU_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i)
+Update_LRU_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i)
 
 saveSwapIDX_o = (!S_0 & !S_1 & !S_2 & V_Hit_i)
 
@@ -26,7 +26,7 @@ blocked_o = (!S_0 & S_1 & !S_2 & EB_V_i)
 
 busy_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
 
-saveReq_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i)
+saveReq_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i)
 
 useSavedReq_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
 

@@ -81,7 +81,7 @@ module DCache_Bank_DataStore (
         ) begin : g_dcache_bank_data_store_ram_cells
             ram8b8w$ dcache_bank_data_store_ramCell (
                 .A(ADDRESS_2_DataStore),
-                .WR(WR_2_DataStore[i]),
+                .WR(WR_2_DataStore_actual[i]),
                 .DIN(DIN_2_DataStore[i]),
                 .OE(OE_2_DataStore),
                 .DOUT(DOUT_DataStore[i])
@@ -98,43 +98,43 @@ module DCache_Bank_DataStore (
     always_comb begin
 
         // default safety (important for combinational completeness)
-        WR_2_DataStore = '{default: '0};
+        WR_2_DataStore_clk = '{default: '1};
 
         unique case ({
             ld_From_V_Swap_i, fill0_i, fill1_i, fill2_i, fill3_i
         })
 
             5'b10000: begin  // ld_v_swap, set all low
-                WR_2_DataStore = '{default: '0};
+                WR_2_DataStore_clk = '{default: '0};
             end
 
             5'b01000: begin  //low only for first four
                 for (int i = 0; i < 4; i++) begin
-                    WR_2_DataStore[i] = 1'b0;
+                    WR_2_DataStore_clk[i] = 1'b0;
                 end
             end
 
             5'b00100: begin
                 for (int i = 0; i < 4; i++) begin
-                    WR_2_DataStore[i+4] = 1'b0;
+                    WR_2_DataStore_clk[i+4] = 1'b0;
                 end
             end
 
             5'b00010: begin
                 for (int i = 0; i < 4; i++) begin
-                    WR_2_DataStore[i+8] = 1'b0;
+                    WR_2_DataStore_clk[i+8] = 1'b0;
                 end
             end
 
             5'b00001: begin
                 for (int i = 0; i < 4; i++) begin
-                    WR_2_DataStore[i+12] = 1'b0;
+                    WR_2_DataStore_clk[i+12] = 1'b0;
                 end
             end
 
             5'b00000: begin  // default fill from request, needs to be anded with vec and we and banks is not busy, need to add some kind of hit logic before doing a write
                 for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
-                    WR_2_DataStore[i] = st_data_vec[i]
+                    WR_2_DataStore_clk[i] = st_data_vec[i]
                     && we
                     && !bankControllerBusy_i
                     && tagStore_hit_i ? 1'b0 : 1'b1;
