@@ -19,1153 +19,287 @@ initial begin
     // =========================================================
 
     // Block [0] – Bank Tag Store
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[0] = 8'h3B;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[1] = 8'h3B;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[2] = 8'hF8;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[3] = 8'h62;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[4] = 8'h6E;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[5] = 8'h77;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[6] = 8'hB7;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[7] = 8'h00;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[0] = 8'h3B;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[1] = 8'h3B;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[2] = 8'hF8;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[3] = 8'h62;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[4] = 8'h6E;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[5] = 8'h77;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[6] = 8'hB7;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[7] = 8'h00;
 
     // Block [0] – Bank Data Store
     // g_dcache_bank_data_store_ram_cells[0]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[0] = 8'hE3;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[1] = 8'hCE;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[2] = 8'hC6;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[3] = 8'h0C;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[4] = 8'hFD;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[5] = 8'hC0;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[6] = 8'h64;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[7] = 8'hD7;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[0] = 8'hE3;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[1] = 8'hCE;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[2] = 8'hC6;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[3] = 8'h0C;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[4] = 8'hFD;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[5] = 8'hC0;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[6] = 8'h64;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[7] = 8'hD7;
     // g_dcache_bank_data_store_ram_cells[1]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[0] = 8'h70;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[1] = 8'h89;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[2] = 8'h4A;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[3] = 8'h59;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[4] = 8'h09;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[5] = 8'hBF;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[6] = 8'h0A;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[7] = 8'hF9;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[0] = 8'h70;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[1] = 8'h89;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[2] = 8'h4A;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[3] = 8'h59;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[4] = 8'h09;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[5] = 8'hBF;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[6] = 8'h0A;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[7] = 8'hF9;
     // g_dcache_bank_data_store_ram_cells[2]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[0] = 8'h24;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[1] = 8'h35;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[2] = 8'h43;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[3] = 8'h97;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[4] = 8'h82;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[5] = 8'hE2;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[6] = 8'hB5;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[7] = 8'h39;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[0] = 8'h24;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[1] = 8'h35;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[2] = 8'h43;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[3] = 8'h97;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[4] = 8'h82;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[5] = 8'hE2;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[6] = 8'hB5;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[7] = 8'h39;
     // g_dcache_bank_data_store_ram_cells[3]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[0] = 8'h12;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[1] = 8'h10;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[2] = 8'hA8;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[3] = 8'h75;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[4] = 8'h89;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[5] = 8'h8B;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[6] = 8'h96;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[7] = 8'h29;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[0] = 8'h12;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[1] = 8'h10;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[2] = 8'hA8;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[3] = 8'h75;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[4] = 8'h89;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[5] = 8'h8B;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[6] = 8'h96;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[7] = 8'h29;
     // g_dcache_bank_data_store_ram_cells[4]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[0] = 8'hF5;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[1] = 8'h11;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[2] = 8'hE6;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[3] = 8'h96;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[4] = 8'hC7;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[5] = 8'hF3;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[6] = 8'h40;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[7] = 8'h55;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[0] = 8'hF5;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[1] = 8'h11;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[2] = 8'hE6;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[3] = 8'h96;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[4] = 8'hC7;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[5] = 8'hF3;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[6] = 8'h40;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[7] = 8'h55;
     // g_dcache_bank_data_store_ram_cells[5]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[0] = 8'hFA;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[1] = 8'h72;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[2] = 8'h63;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[3] = 8'h9F;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[4] = 8'h8B;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[5] = 8'hB4;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[6] = 8'h2B;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[7] = 8'h17;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[0] = 8'hFA;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[1] = 8'h72;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[2] = 8'h63;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[3] = 8'h9F;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[4] = 8'h8B;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[5] = 8'hB4;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[6] = 8'h2B;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[7] = 8'h17;
     // g_dcache_bank_data_store_ram_cells[6]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[0] = 8'h1F;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[1] = 8'hB4;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[2] = 8'h61;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[3] = 8'hE1;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[4] = 8'hC0;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[5] = 8'h9F;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[6] = 8'h78;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[7] = 8'h2B;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[0] = 8'h1F;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[1] = 8'hB4;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[2] = 8'h61;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[3] = 8'hE1;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[4] = 8'hC0;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[5] = 8'h9F;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[6] = 8'h78;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[7] = 8'h2B;
     // g_dcache_bank_data_store_ram_cells[7]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[0] = 8'h9A;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[1] = 8'h22;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[2] = 8'hB2;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[3] = 8'h2A;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[4] = 8'hF9;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[5] = 8'h60;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[6] = 8'hFC;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[7] = 8'hAA;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[0] = 8'h9A;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[1] = 8'h22;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[2] = 8'hB2;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[3] = 8'h2A;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[4] = 8'hF9;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[5] = 8'h60;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[6] = 8'hFC;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[7] = 8'hAA;
     // g_dcache_bank_data_store_ram_cells[8]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[0] = 8'hD0;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[1] = 8'hAD;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[2] = 8'hDB;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[3] = 8'h77;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[4] = 8'h1E;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[5] = 8'h04;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[6] = 8'h48;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[7] = 8'h30;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[0] = 8'hD0;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[1] = 8'hAD;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[2] = 8'hDB;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[3] = 8'h77;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[4] = 8'h1E;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[5] = 8'h04;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[6] = 8'h48;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[7] = 8'h30;
     // g_dcache_bank_data_store_ram_cells[9]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[0] = 8'hD7;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[1] = 8'hA6;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[2] = 8'hE7;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[3] = 8'h03;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[4] = 8'hD0;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[5] = 8'h2C;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[6] = 8'h26;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[7] = 8'h17;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[0] = 8'hD7;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[1] = 8'hA6;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[2] = 8'hE7;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[3] = 8'h03;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[4] = 8'hD0;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[5] = 8'h2C;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[6] = 8'h26;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[7] = 8'h17;
     // g_dcache_bank_data_store_ram_cells[10]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[0] = 8'hF6;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[1] = 8'h2E;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[2] = 8'h90;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[3] = 8'hA6;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[4] = 8'hBF;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[5] = 8'h12;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[6] = 8'h06;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[7] = 8'h99;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[0] = 8'hF6;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[1] = 8'h2E;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[2] = 8'h90;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[3] = 8'hA6;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[4] = 8'hBF;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[5] = 8'h12;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[6] = 8'h06;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[7] = 8'h99;
     // g_dcache_bank_data_store_ram_cells[11]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[0] = 8'h71;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[1] = 8'h20;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[2] = 8'hB7;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[3] = 8'h63;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[4] = 8'h38;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[5] = 8'h40;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[6] = 8'h24;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[7] = 8'h2A;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[0] = 8'h71;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[1] = 8'h20;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[2] = 8'hB7;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[3] = 8'h63;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[4] = 8'h38;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[5] = 8'h40;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[6] = 8'h24;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[7] = 8'h2A;
     // g_dcache_bank_data_store_ram_cells[12]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[0] = 8'hDA;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[1] = 8'hF7;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[2] = 8'h69;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[3] = 8'hEE;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[4] = 8'h2C;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[5] = 8'h62;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[6] = 8'hC5;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[7] = 8'h44;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[0] = 8'hDA;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[1] = 8'hF7;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[2] = 8'h69;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[3] = 8'hEE;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[4] = 8'h2C;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[5] = 8'h62;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[6] = 8'hC5;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[7] = 8'h44;
     // g_dcache_bank_data_store_ram_cells[13]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[0] = 8'h9B;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[1] = 8'h5A;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[2] = 8'h30;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[3] = 8'h07;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[4] = 8'h03;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[5] = 8'hCE;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[6] = 8'h3F;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[7] = 8'hF0;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[0] = 8'h9B;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[1] = 8'h5A;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[2] = 8'h30;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[3] = 8'h07;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[4] = 8'h03;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[5] = 8'hCE;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[6] = 8'h3F;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[7] = 8'hF0;
     // g_dcache_bank_data_store_ram_cells[14]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[0] = 8'h67;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[1] = 8'h29;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[2] = 8'hAA;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[3] = 8'hF8;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[4] = 8'h6F;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[5] = 8'hB6;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[6] = 8'h20;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[7] = 8'h05;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[0] = 8'h67;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[1] = 8'h29;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[2] = 8'hAA;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[3] = 8'hF8;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[4] = 8'h6F;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[5] = 8'hB6;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[6] = 8'h20;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[7] = 8'h05;
     // g_dcache_bank_data_store_ram_cells[15]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[0] = 8'h98;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[1] = 8'h63;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[2] = 8'h75;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[3] = 8'hE5;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[4] = 8'hCB;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[5] = 8'h98;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[6] = 8'h79;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[7] = 8'h5F;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[0] = 8'h98;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[1] = 8'h63;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[2] = 8'h75;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[3] = 8'hE5;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[4] = 8'hCB;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[5] = 8'h98;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[6] = 8'h79;
+    tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[7] = 8'h5F;
 
     // Block [0] – VCache Tag Store
     // g_tagStore_Entry[0]
     // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h6D;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'hB0;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h3E;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'h44;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h6D;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'hB0;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h3E;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'h44;
     // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h36;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h11;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'hCD;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hC6;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h36;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h11;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'hCD;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hC6;
     // g_tagStore_Entry[1]
     // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'hDE;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h4E;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h18;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hD1;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'hDE;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h4E;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h18;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hD1;
     // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'hE8;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h74;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h26;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hBF;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'hE8;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h74;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h26;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hBF;
     // g_tagStore_Entry[2]
     // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'hF9;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h14;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h93;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hAF;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'hF9;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h14;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h93;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hAF;
     // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h9B;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'hB6;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h47;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hE5;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h9B;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'hB6;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h47;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hE5;
     // g_tagStore_Entry[3]
     // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h57;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h91;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'hEC;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'h72;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h57;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h91;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'hEC;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'h72;
     // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h2A;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'hC3;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'hC5;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h84;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h2A;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'hC3;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'hC5;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h84;
 
     // Block [0] – VCache Data Store
     // g_vcache_data_store_ram_cells[0]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[0] = 8'hCE;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[1] = 8'h96;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[2] = 8'hE9;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[3] = 8'hB4;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[0] = 8'hCE;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[1] = 8'h96;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[2] = 8'hE9;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[3] = 8'hB4;
     // g_vcache_data_store_ram_cells[1]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[0] = 8'h06;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[1] = 8'hDB;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[2] = 8'h39;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[3] = 8'h29;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[0] = 8'h06;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[1] = 8'hDB;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[2] = 8'h39;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[3] = 8'h29;
     // g_vcache_data_store_ram_cells[2]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[0] = 8'h3D;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[1] = 8'hC9;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[2] = 8'h11;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[3] = 8'h97;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[0] = 8'h3D;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[1] = 8'hC9;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[2] = 8'h11;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[3] = 8'h97;
     // g_vcache_data_store_ram_cells[3]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[0] = 8'h74;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[1] = 8'h10;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[2] = 8'hF3;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[3] = 8'h06;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[0] = 8'h74;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[1] = 8'h10;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[2] = 8'hF3;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[3] = 8'h06;
     // g_vcache_data_store_ram_cells[4]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[0] = 8'hD9;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[1] = 8'h6D;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[2] = 8'h9C;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[3] = 8'hF5;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[0] = 8'hD9;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[1] = 8'h6D;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[2] = 8'h9C;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[3] = 8'hF5;
     // g_vcache_data_store_ram_cells[5]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[0] = 8'h93;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[1] = 8'h89;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[2] = 8'h1A;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[3] = 8'hF1;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[0] = 8'h93;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[1] = 8'h89;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[2] = 8'h1A;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[3] = 8'hF1;
     // g_vcache_data_store_ram_cells[6]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[0] = 8'hA0;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[1] = 8'h61;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[2] = 8'h87;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[3] = 8'h79;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[0] = 8'hA0;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[1] = 8'h61;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[2] = 8'h87;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[3] = 8'h79;
     // g_vcache_data_store_ram_cells[7]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[0] = 8'hAF;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[1] = 8'h67;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[2] = 8'h82;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[3] = 8'hB1;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[0] = 8'hAF;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[1] = 8'h67;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[2] = 8'h82;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[3] = 8'hB1;
     // g_vcache_data_store_ram_cells[8]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[0] = 8'h44;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[1] = 8'hFE;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[2] = 8'hCB;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[3] = 8'hDC;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[0] = 8'h44;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[1] = 8'hFE;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[2] = 8'hCB;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[3] = 8'hDC;
     // g_vcache_data_store_ram_cells[9]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[0] = 8'h42;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[1] = 8'h81;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[2] = 8'hFD;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[3] = 8'hD4;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[0] = 8'h42;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[1] = 8'h81;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[2] = 8'hFD;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[3] = 8'hD4;
     // g_vcache_data_store_ram_cells[10]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[0] = 8'h31;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[1] = 8'h4F;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[2] = 8'h87;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[3] = 8'hD1;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[0] = 8'h31;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[1] = 8'h4F;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[2] = 8'h87;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[3] = 8'hD1;
     // g_vcache_data_store_ram_cells[11]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[0] = 8'hA1;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[1] = 8'h8E;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[2] = 8'hC2;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[3] = 8'h54;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[0] = 8'hA1;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[1] = 8'h8E;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[2] = 8'hC2;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[3] = 8'h54;
     // g_vcache_data_store_ram_cells[12]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[0] = 8'h4E;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[1] = 8'hF5;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[2] = 8'h2F;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[3] = 8'h54;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[0] = 8'h4E;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[1] = 8'hF5;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[2] = 8'h2F;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[3] = 8'h54;
     // g_vcache_data_store_ram_cells[13]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[0] = 8'hA1;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[1] = 8'h4D;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[2] = 8'hCD;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[3] = 8'h00;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[0] = 8'hA1;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[1] = 8'h4D;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[2] = 8'hCD;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[3] = 8'h00;
     // g_vcache_data_store_ram_cells[14]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[0] = 8'h3D;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[1] = 8'h32;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[2] = 8'hA1;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[3] = 8'h63;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[0] = 8'h3D;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[1] = 8'h32;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[2] = 8'hA1;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[3] = 8'h63;
     // g_vcache_data_store_ram_cells[15]
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[0] = 8'h68;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[1] = 8'h26;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[2] = 8'hD5;
-    tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[3] = 8'hA7;
-
-    // =========================================================
-    // Block [1]
-    // =========================================================
-
-    // Block [1] – Bank Tag Store
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[0] = 8'hEF;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[1] = 8'h26;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[2] = 8'hEC;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[3] = 8'hA7;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[4] = 8'h3E;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[5] = 8'h14;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[6] = 8'h78;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[7] = 8'h70;
-
-    // Block [1] – Bank Data Store
-    // g_dcache_bank_data_store_ram_cells[0]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[0] = 8'h01;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[1] = 8'hF5;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[2] = 8'h67;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[3] = 8'h90;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[4] = 8'h8E;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[5] = 8'h14;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[6] = 8'h88;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[7] = 8'hDB;
-    // g_dcache_bank_data_store_ram_cells[1]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[0] = 8'h9F;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[1] = 8'hF3;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[2] = 8'hF6;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[3] = 8'hD2;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[4] = 8'hF0;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[5] = 8'h14;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[6] = 8'h11;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[7] = 8'h63;
-    // g_dcache_bank_data_store_ram_cells[2]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[0] = 8'h97;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[1] = 8'h32;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[2] = 8'h51;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[3] = 8'hD0;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[4] = 8'h01;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[5] = 8'h47;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[6] = 8'hC0;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[7] = 8'hE1;
-    // g_dcache_bank_data_store_ram_cells[3]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[0] = 8'hC3;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[1] = 8'hBF;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[2] = 8'h0B;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[3] = 8'h3F;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[4] = 8'h32;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[5] = 8'h48;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[6] = 8'h3D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[7] = 8'h53;
-    // g_dcache_bank_data_store_ram_cells[4]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[0] = 8'h61;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[1] = 8'hB2;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[2] = 8'h3B;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[3] = 8'h7A;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[4] = 8'h3F;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[5] = 8'hE4;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[6] = 8'hE3;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[7] = 8'hA6;
-    // g_dcache_bank_data_store_ram_cells[5]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[0] = 8'h0E;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[1] = 8'h64;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[2] = 8'hA0;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[3] = 8'h64;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[4] = 8'hD9;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[5] = 8'h5D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[6] = 8'hC7;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[7] = 8'h1C;
-    // g_dcache_bank_data_store_ram_cells[6]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[0] = 8'hC0;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[1] = 8'hB8;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[2] = 8'hC4;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[3] = 8'hB9;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[4] = 8'h9B;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[5] = 8'h6A;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[6] = 8'h14;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[7] = 8'hC6;
-    // g_dcache_bank_data_store_ram_cells[7]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[0] = 8'hB3;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[1] = 8'h33;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[2] = 8'h25;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[3] = 8'h70;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[4] = 8'h0F;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[5] = 8'h6F;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[6] = 8'h77;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[7] = 8'h29;
-    // g_dcache_bank_data_store_ram_cells[8]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[0] = 8'hF3;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[1] = 8'hA4;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[2] = 8'h15;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[3] = 8'h85;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[4] = 8'h4A;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[5] = 8'h6F;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[6] = 8'hF2;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[7] = 8'hB8;
-    // g_dcache_bank_data_store_ram_cells[9]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[0] = 8'h4E;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[1] = 8'h73;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[2] = 8'h03;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[3] = 8'h24;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[4] = 8'h55;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[5] = 8'h7D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[6] = 8'hD9;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[7] = 8'hDF;
-    // g_dcache_bank_data_store_ram_cells[10]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[0] = 8'hC5;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[1] = 8'h24;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[2] = 8'h93;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[3] = 8'h4A;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[4] = 8'h67;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[5] = 8'hE3;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[6] = 8'h9D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[7] = 8'hA7;
-    // g_dcache_bank_data_store_ram_cells[11]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[0] = 8'h91;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[1] = 8'hAD;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[2] = 8'hA0;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[3] = 8'h60;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[4] = 8'h49;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[5] = 8'h67;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[6] = 8'h64;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[7] = 8'hAE;
-    // g_dcache_bank_data_store_ram_cells[12]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[0] = 8'hE0;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[1] = 8'h2D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[2] = 8'hBD;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[3] = 8'h43;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[4] = 8'hCD;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[5] = 8'h35;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[6] = 8'h64;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[7] = 8'h80;
-    // g_dcache_bank_data_store_ram_cells[13]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[0] = 8'h9C;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[1] = 8'hC8;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[2] = 8'h79;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[3] = 8'h76;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[4] = 8'h7B;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[5] = 8'hAA;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[6] = 8'hB4;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[7] = 8'h6C;
-    // g_dcache_bank_data_store_ram_cells[14]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[0] = 8'h7E;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[1] = 8'h7C;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[2] = 8'h52;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[3] = 8'h01;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[4] = 8'h9C;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[5] = 8'hE8;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[6] = 8'hAF;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[7] = 8'h6F;
-    // g_dcache_bank_data_store_ram_cells[15]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[0] = 8'h74;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[1] = 8'hBB;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[2] = 8'hBF;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[3] = 8'h38;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[4] = 8'h15;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[5] = 8'h5A;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[6] = 8'h37;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[7] = 8'hAF;
-
-    // Block [1] – VCache Tag Store
-    // g_tagStore_Entry[0]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h02;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'hE3;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h60;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hA9;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h0D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'hC5;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h36;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h95;
-    // g_tagStore_Entry[1]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h5D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'hEC;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'hCA;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'h0A;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h5E;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h1D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h87;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h21;
-    // g_tagStore_Entry[2]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h8D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'hD3;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'hD4;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hB8;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'hB4;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h48;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'hFC;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h97;
-    // g_tagStore_Entry[3]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h9F;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h0F;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'hC0;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hA8;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h98;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h56;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h50;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h9F;
-
-    // Block [1] – VCache Data Store
-    // g_vcache_data_store_ram_cells[0]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[0] = 8'hB1;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[1] = 8'h36;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[2] = 8'h04;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[3] = 8'h6F;
-    // g_vcache_data_store_ram_cells[1]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[0] = 8'hB2;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[1] = 8'h64;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[2] = 8'h6E;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[3] = 8'hB9;
-    // g_vcache_data_store_ram_cells[2]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[0] = 8'h0A;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[1] = 8'hDD;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[2] = 8'h2E;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[3] = 8'h84;
-    // g_vcache_data_store_ram_cells[3]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[0] = 8'hE1;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[1] = 8'h10;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[2] = 8'h2C;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[3] = 8'hBB;
-    // g_vcache_data_store_ram_cells[4]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[0] = 8'hA2;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[1] = 8'h8A;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[2] = 8'h7C;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[3] = 8'h25;
-    // g_vcache_data_store_ram_cells[5]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[0] = 8'h24;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[1] = 8'h07;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[2] = 8'h4B;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[3] = 8'h2B;
-    // g_vcache_data_store_ram_cells[6]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[0] = 8'h49;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[1] = 8'h29;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[2] = 8'h00;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[3] = 8'h47;
-    // g_vcache_data_store_ram_cells[7]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[0] = 8'h1A;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[1] = 8'h68;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[2] = 8'h39;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[3] = 8'hE6;
-    // g_vcache_data_store_ram_cells[8]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[0] = 8'h52;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[1] = 8'h44;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[2] = 8'hBD;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[3] = 8'h70;
-    // g_vcache_data_store_ram_cells[9]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[0] = 8'h5D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[1] = 8'h34;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[2] = 8'hE2;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[3] = 8'h70;
-    // g_vcache_data_store_ram_cells[10]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[0] = 8'h87;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[1] = 8'h08;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[2] = 8'h5A;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[3] = 8'h6E;
-    // g_vcache_data_store_ram_cells[11]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[0] = 8'h78;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[1] = 8'h13;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[2] = 8'hC5;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[3] = 8'hBA;
-    // g_vcache_data_store_ram_cells[12]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[0] = 8'h0D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[1] = 8'h78;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[2] = 8'h34;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[3] = 8'h11;
-    // g_vcache_data_store_ram_cells[13]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[0] = 8'h6E;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[1] = 8'hCE;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[2] = 8'h93;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[3] = 8'h54;
-    // g_vcache_data_store_ram_cells[14]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[0] = 8'h0B;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[1] = 8'h36;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[2] = 8'h86;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[3] = 8'h5F;
-    // g_vcache_data_store_ram_cells[15]
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[0] = 8'h1D;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[1] = 8'h74;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[2] = 8'h39;
-    tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[3] = 8'h96;
-
-    // =========================================================
-    // Block [2]
-    // =========================================================
-
-    // Block [2] – Bank Tag Store
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[0] = 8'h40;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[1] = 8'h99;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[2] = 8'h1C;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[3] = 8'h90;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[4] = 8'h44;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[5] = 8'hA0;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[6] = 8'h9F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[7] = 8'hFF;
-
-    // Block [2] – Bank Data Store
-    // g_dcache_bank_data_store_ram_cells[0]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[0] = 8'hB1;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[1] = 8'h63;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[2] = 8'h2F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[3] = 8'h0F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[4] = 8'h45;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[5] = 8'h86;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[6] = 8'h2A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[7] = 8'h4C;
-    // g_dcache_bank_data_store_ram_cells[1]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[0] = 8'h42;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[1] = 8'hCD;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[2] = 8'h6A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[3] = 8'h30;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[4] = 8'hF8;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[5] = 8'h5B;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[6] = 8'hCE;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[7] = 8'h34;
-    // g_dcache_bank_data_store_ram_cells[2]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[0] = 8'h37;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[1] = 8'h2F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[2] = 8'h14;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[3] = 8'hDC;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[4] = 8'h88;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[5] = 8'h52;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[6] = 8'h72;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[7] = 8'h77;
-    // g_dcache_bank_data_store_ram_cells[3]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[0] = 8'h12;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[1] = 8'h7A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[2] = 8'h81;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[3] = 8'h6D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[4] = 8'h8E;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[5] = 8'hDF;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[6] = 8'h78;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[7] = 8'h77;
-    // g_dcache_bank_data_store_ram_cells[4]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[0] = 8'hBF;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[1] = 8'hB0;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[2] = 8'hD3;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[3] = 8'h0F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[4] = 8'h14;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[5] = 8'h4B;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[6] = 8'h01;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[7] = 8'h76;
-    // g_dcache_bank_data_store_ram_cells[5]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[0] = 8'hC0;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[1] = 8'h76;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[2] = 8'h90;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[3] = 8'h8C;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[4] = 8'h61;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[5] = 8'h3D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[6] = 8'hB9;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[7] = 8'h52;
-    // g_dcache_bank_data_store_ram_cells[6]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[0] = 8'h07;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[1] = 8'hE4;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[2] = 8'h06;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[3] = 8'h3F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[4] = 8'hBE;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[5] = 8'h90;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[6] = 8'h5E;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[7] = 8'h60;
-    // g_dcache_bank_data_store_ram_cells[7]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[0] = 8'h08;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[1] = 8'h09;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[2] = 8'h14;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[3] = 8'h3F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[4] = 8'h8C;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[5] = 8'h6D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[6] = 8'hF2;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[7] = 8'h6B;
-    // g_dcache_bank_data_store_ram_cells[8]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[0] = 8'h1F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[1] = 8'hBC;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[2] = 8'h96;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[3] = 8'hFA;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[4] = 8'h8E;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[5] = 8'hD9;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[6] = 8'h6A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[7] = 8'h23;
-    // g_dcache_bank_data_store_ram_cells[9]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[0] = 8'h0C;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[1] = 8'hC8;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[2] = 8'hFB;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[3] = 8'h21;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[4] = 8'h9F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[5] = 8'hBE;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[6] = 8'hC4;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[7] = 8'h15;
-    // g_dcache_bank_data_store_ram_cells[10]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[0] = 8'h27;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[1] = 8'hAA;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[2] = 8'h82;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[3] = 8'hA2;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[4] = 8'hEA;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[5] = 8'h7F;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[6] = 8'h5E;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[7] = 8'h91;
-    // g_dcache_bank_data_store_ram_cells[11]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[0] = 8'hB7;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[1] = 8'h82;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[2] = 8'hA8;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[3] = 8'h75;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[4] = 8'h33;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[5] = 8'hA8;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[6] = 8'h12;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[7] = 8'h1E;
-    // g_dcache_bank_data_store_ram_cells[12]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[0] = 8'hFB;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[1] = 8'h25;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[2] = 8'hD7;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[3] = 8'hCE;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[4] = 8'h2B;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[5] = 8'h36;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[6] = 8'h87;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[7] = 8'hC6;
-    // g_dcache_bank_data_store_ram_cells[13]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[0] = 8'hC8;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[1] = 8'hF7;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[2] = 8'hE3;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[3] = 8'h39;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[4] = 8'hFF;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[5] = 8'h4D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[6] = 8'h9D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[7] = 8'h3C;
-    // g_dcache_bank_data_store_ram_cells[14]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[0] = 8'h6D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[1] = 8'h00;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[2] = 8'h84;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[3] = 8'hCA;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[4] = 8'h15;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[5] = 8'h27;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[6] = 8'hEF;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[7] = 8'h73;
-    // g_dcache_bank_data_store_ram_cells[15]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[0] = 8'h03;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[1] = 8'hF9;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[2] = 8'h2D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[3] = 8'hA4;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[4] = 8'hEF;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[5] = 8'hA1;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[6] = 8'h17;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[7] = 8'hF2;
-
-    // Block [2] – VCache Tag Store
-    // g_tagStore_Entry[0]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'hFC;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h53;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h37;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hED;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h6A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h1E;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h12;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h82;
-    // g_tagStore_Entry[1]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h10;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h17;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h12;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'h06;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h85;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'hD7;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'hC2;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h43;
-    // g_tagStore_Entry[2]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'hC1;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h06;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'hB8;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hE0;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h4C;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h82;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h19;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hCC;
-    // g_tagStore_Entry[3]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'hFA;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h4E;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'hD1;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'h75;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h15;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h7D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h28;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hBD;
-
-    // Block [2] – VCache Data Store
-    // g_vcache_data_store_ram_cells[0]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[0] = 8'h47;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[1] = 8'h66;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[2] = 8'h3A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[3] = 8'h9A;
-    // g_vcache_data_store_ram_cells[1]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[0] = 8'h9B;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[1] = 8'h0E;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[2] = 8'h68;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[3] = 8'hC8;
-    // g_vcache_data_store_ram_cells[2]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[0] = 8'h18;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[1] = 8'h2C;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[2] = 8'h24;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[3] = 8'hFA;
-    // g_vcache_data_store_ram_cells[3]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[0] = 8'h5D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[1] = 8'hC2;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[2] = 8'h06;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[3] = 8'h57;
-    // g_vcache_data_store_ram_cells[4]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[0] = 8'h78;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[1] = 8'hB2;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[2] = 8'hED;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[3] = 8'hFD;
-    // g_vcache_data_store_ram_cells[5]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[0] = 8'h21;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[1] = 8'hD6;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[2] = 8'h43;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[3] = 8'hB1;
-    // g_vcache_data_store_ram_cells[6]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[0] = 8'hA3;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[1] = 8'h0D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[2] = 8'h30;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[3] = 8'h79;
-    // g_vcache_data_store_ram_cells[7]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[0] = 8'h47;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[1] = 8'h8C;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[2] = 8'h44;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[3] = 8'h97;
-    // g_vcache_data_store_ram_cells[8]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[0] = 8'h3B;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[1] = 8'h2D;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[2] = 8'hD0;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[3] = 8'h69;
-    // g_vcache_data_store_ram_cells[9]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[0] = 8'hDD;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[1] = 8'h2A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[2] = 8'h57;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[3] = 8'h36;
-    // g_vcache_data_store_ram_cells[10]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[0] = 8'hE7;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[1] = 8'h90;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[2] = 8'h69;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[3] = 8'h07;
-    // g_vcache_data_store_ram_cells[11]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[0] = 8'h85;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[1] = 8'h33;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[2] = 8'h1A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[3] = 8'h6F;
-    // g_vcache_data_store_ram_cells[12]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[0] = 8'hE4;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[1] = 8'h3E;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[2] = 8'hF7;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[3] = 8'h9D;
-    // g_vcache_data_store_ram_cells[13]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[0] = 8'h5A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[1] = 8'hBB;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[2] = 8'h1B;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[3] = 8'hDD;
-    // g_vcache_data_store_ram_cells[14]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[0] = 8'h8A;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[1] = 8'h24;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[2] = 8'hF4;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[3] = 8'h42;
-    // g_vcache_data_store_ram_cells[15]
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[0] = 8'hE3;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[1] = 8'hD9;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[2] = 8'hC9;
-    tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[3] = 8'hCE;
-
-    // =========================================================
-    // Block [3]
-    // =========================================================
-
-    // Block [3] – Bank Tag Store
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[0] = 8'h2E;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[1] = 8'hD7;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[2] = 8'h9D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[3] = 8'h38;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[4] = 8'h59;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[5] = 8'h83;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[6] = 8'h05;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell.mem[7] = 8'h69;
-
-    // Block [3] – Bank Data Store
-    // g_dcache_bank_data_store_ram_cells[0]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[0] = 8'h92;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[1] = 8'h50;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[2] = 8'h8D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[3] = 8'h8E;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[4] = 8'h60;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[5] = 8'hDB;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[6] = 8'h65;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[0].dcache_bank_data_store_ramCell.mem[7] = 8'hC7;
-    // g_dcache_bank_data_store_ram_cells[1]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[0] = 8'hE2;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[1] = 8'h58;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[2] = 8'h7B;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[3] = 8'h16;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[4] = 8'hEE;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[5] = 8'h39;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[6] = 8'hE4;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[1].dcache_bank_data_store_ramCell.mem[7] = 8'hFF;
-    // g_dcache_bank_data_store_ram_cells[2]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[0] = 8'h7A;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[1] = 8'h5C;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[2] = 8'h2C;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[3] = 8'h45;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[4] = 8'hBD;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[5] = 8'h70;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[6] = 8'h1D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[2].dcache_bank_data_store_ramCell.mem[7] = 8'h1F;
-    // g_dcache_bank_data_store_ram_cells[3]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[0] = 8'h6F;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[1] = 8'hDE;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[2] = 8'hED;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[3] = 8'hF0;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[4] = 8'hB0;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[5] = 8'hE0;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[6] = 8'h82;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[3].dcache_bank_data_store_ramCell.mem[7] = 8'h3F;
-    // g_dcache_bank_data_store_ram_cells[4]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[0] = 8'hCF;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[1] = 8'h7B;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[2] = 8'h75;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[3] = 8'h92;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[4] = 8'hC0;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[5] = 8'h6E;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[6] = 8'hF2;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[4].dcache_bank_data_store_ramCell.mem[7] = 8'h46;
-    // g_dcache_bank_data_store_ram_cells[5]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[0] = 8'h99;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[1] = 8'h02;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[2] = 8'hF6;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[3] = 8'hE2;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[4] = 8'h1F;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[5] = 8'h80;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[6] = 8'h36;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[5].dcache_bank_data_store_ramCell.mem[7] = 8'hEB;
-    // g_dcache_bank_data_store_ram_cells[6]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[0] = 8'hB2;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[1] = 8'h51;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[2] = 8'h03;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[3] = 8'h91;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[4] = 8'h2B;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[5] = 8'hBC;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[6] = 8'hE9;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[6].dcache_bank_data_store_ramCell.mem[7] = 8'hE8;
-    // g_dcache_bank_data_store_ram_cells[7]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[0] = 8'hBA;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[1] = 8'h93;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[2] = 8'hA9;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[3] = 8'hAD;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[4] = 8'hBF;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[5] = 8'h9E;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[6] = 8'h5D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[7].dcache_bank_data_store_ramCell.mem[7] = 8'h04;
-    // g_dcache_bank_data_store_ram_cells[8]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[0] = 8'h53;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[1] = 8'h44;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[2] = 8'h67;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[3] = 8'hB2;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[4] = 8'hAF;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[5] = 8'hAC;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[6] = 8'h3F;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[8].dcache_bank_data_store_ramCell.mem[7] = 8'hF3;
-    // g_dcache_bank_data_store_ram_cells[9]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[0] = 8'h4D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[1] = 8'h4B;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[2] = 8'h13;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[3] = 8'hC5;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[4] = 8'hF8;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[5] = 8'h9C;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[6] = 8'hB8;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[9].dcache_bank_data_store_ramCell.mem[7] = 8'hD0;
-    // g_dcache_bank_data_store_ram_cells[10]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[0] = 8'h85;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[1] = 8'h8B;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[2] = 8'hD5;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[3] = 8'h76;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[4] = 8'h49;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[5] = 8'h04;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[6] = 8'hB6;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[10].dcache_bank_data_store_ramCell.mem[7] = 8'h19;
-    // g_dcache_bank_data_store_ram_cells[11]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[0] = 8'hCC;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[1] = 8'h34;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[2] = 8'hA3;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[3] = 8'h71;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[4] = 8'h21;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[5] = 8'h4E;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[6] = 8'hE8;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[11].dcache_bank_data_store_ramCell.mem[7] = 8'h4F;
-    // g_dcache_bank_data_store_ram_cells[12]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[0] = 8'hEE;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[1] = 8'h81;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[2] = 8'h4D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[3] = 8'hB9;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[4] = 8'h1A;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[5] = 8'h9A;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[6] = 8'h15;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[12].dcache_bank_data_store_ramCell.mem[7] = 8'hB6;
-    // g_dcache_bank_data_store_ram_cells[13]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[0] = 8'h94;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[1] = 8'hE7;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[2] = 8'hCD;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[3] = 8'hA1;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[4] = 8'h5E;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[5] = 8'hD1;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[6] = 8'h50;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[13].dcache_bank_data_store_ramCell.mem[7] = 8'hF2;
-    // g_dcache_bank_data_store_ram_cells[14]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[0] = 8'h4E;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[1] = 8'h78;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[2] = 8'h1F;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[3] = 8'h8A;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[4] = 8'h88;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[5] = 8'h5B;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[6] = 8'hDD;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[14].dcache_bank_data_store_ramCell.mem[7] = 8'h9F;
-    // g_dcache_bank_data_store_ram_cells[15]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[0] = 8'h8F;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[1] = 8'h4D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[2] = 8'hF8;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[3] = 8'h8F;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[4] = 8'h65;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[5] = 8'hF0;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[6] = 8'h3B;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[15].dcache_bank_data_store_ramCell.mem[7] = 8'h96;
-
-    // Block [3] – VCache Tag Store
-    // g_tagStore_Entry[0]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h01;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h5C;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h62;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'h42;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'hB3;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h15;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h3C;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[0].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hDA;
-    // g_tagStore_Entry[1]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h63;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h08;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h28;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hBD;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'h73;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'hB5;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h88;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[1].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h68;
-    // g_tagStore_Entry[2]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'h05;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h8D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'h31;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'h0A;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'hE6;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'h59;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h49;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[2].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'hFE;
-    // g_tagStore_Entry[3]
-    // g_tagStoreCell[0]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[0] = 8'hB1;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[1] = 8'h45;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[2] = 8'hA8;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[0].tagStoreCell.mem[3] = 8'hBB;
-    // g_tagStoreCell[1]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[0] = 8'hC1;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[1] = 8'hC6;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[2] = 8'h84;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[3].g_tagStoreCell[1].tagStoreCell.mem[3] = 8'h54;
-
-    // Block [3] – VCache Data Store
-    // g_vcache_data_store_ram_cells[0]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[0] = 8'hA3;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[1] = 8'h16;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[2] = 8'h8E;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[0].v_cache_data_store_ramCell.mem[3] = 8'h02;
-    // g_vcache_data_store_ram_cells[1]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[0] = 8'hC7;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[1] = 8'h0B;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[2] = 8'h80;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[1].v_cache_data_store_ramCell.mem[3] = 8'h35;
-    // g_vcache_data_store_ram_cells[2]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[0] = 8'hF8;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[1] = 8'h92;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[2] = 8'hD6;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[2].v_cache_data_store_ramCell.mem[3] = 8'hFD;
-    // g_vcache_data_store_ram_cells[3]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[0] = 8'hF4;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[1] = 8'hCB;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[2] = 8'hB3;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[3].v_cache_data_store_ramCell.mem[3] = 8'h49;
-    // g_vcache_data_store_ram_cells[4]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[0] = 8'h17;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[1] = 8'h1C;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[2] = 8'h57;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[4].v_cache_data_store_ramCell.mem[3] = 8'hD7;
-    // g_vcache_data_store_ram_cells[5]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[0] = 8'hB3;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[1] = 8'h84;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[2] = 8'h61;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[5].v_cache_data_store_ramCell.mem[3] = 8'h79;
-    // g_vcache_data_store_ram_cells[6]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[0] = 8'h65;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[1] = 8'h35;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[2] = 8'h93;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[6].v_cache_data_store_ramCell.mem[3] = 8'h95;
-    // g_vcache_data_store_ram_cells[7]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[0] = 8'h77;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[1] = 8'h30;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[2] = 8'hE2;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[7].v_cache_data_store_ramCell.mem[3] = 8'hEF;
-    // g_vcache_data_store_ram_cells[8]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[0] = 8'h1F;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[1] = 8'h2C;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[2] = 8'h06;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[8].v_cache_data_store_ramCell.mem[3] = 8'h11;
-    // g_vcache_data_store_ram_cells[9]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[0] = 8'hD5;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[1] = 8'h43;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[2] = 8'h24;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[9].v_cache_data_store_ramCell.mem[3] = 8'h67;
-    // g_vcache_data_store_ram_cells[10]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[0] = 8'hB8;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[1] = 8'h31;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[2] = 8'h04;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[10].v_cache_data_store_ramCell.mem[3] = 8'hEB;
-    // g_vcache_data_store_ram_cells[11]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[0] = 8'h33;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[1] = 8'h76;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[2] = 8'h7C;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[11].v_cache_data_store_ramCell.mem[3] = 8'hF9;
-    // g_vcache_data_store_ram_cells[12]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[0] = 8'h81;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[1] = 8'h6D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[2] = 8'hE2;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[12].v_cache_data_store_ramCell.mem[3] = 8'hA2;
-    // g_vcache_data_store_ram_cells[13]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[0] = 8'hEF;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[1] = 8'hB7;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[2] = 8'h82;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[13].v_cache_data_store_ramCell.mem[3] = 8'h3F;
-    // g_vcache_data_store_ram_cells[14]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[0] = 8'h24;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[1] = 8'h86;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[2] = 8'h4D;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[14].v_cache_data_store_ramCell.mem[3] = 8'hDF;
-    // g_vcache_data_store_ram_cells[15]
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[0] = 8'hB4;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[1] = 8'h93;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[2] = 8'hD3;
-    tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[3] = 8'h53;
-
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[0] = 8'h68;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[1] = 8'h26;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[2] = 8'hD5;
+    tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[15].v_cache_data_store_ramCell.mem[3] = 8'hA7;
 end
-
 endmodule
