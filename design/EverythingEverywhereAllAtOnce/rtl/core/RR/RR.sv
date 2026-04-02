@@ -31,7 +31,7 @@ module RR (
     bool RR_GP, RR_PF;
 
     uint32_t addygen_input_addy =
-        (latches_i.normal_latches.cs.DR_SEL) ? reg_out.DR_data[31:0] : reg_out.SR_data[31:0];
+        (latches_i.normal_latches.cs.MODRM_NEEDED && latches_i.normal_latches.cs.RM_IS_DR) ? reg_out.DR_data[31:0] : reg_out.SR_data[31:0];
 
     l_address_t addygen_out;
 
@@ -47,8 +47,8 @@ module RR (
     neuralnet_outputs_t ld_neuralnet;
     neuralnet_outputs_t st_neuralnet;
     regfile_input_t reg_in = '{
-        DR_ID       : latches_i.normal_latches.dr_id,
-        SR_ID         : latches_i.normal_latches.sr_id,
+        DR_ID       : latches_i.normal_latches.cs.dr_id,
+        SR_ID         : latches_i.normal_latches.cs.sr_id,
         SIB_IDX_ID     : latches_i.normal_latches.sib_idx_id,
         SIB_BASE_ID    : latches_i.normal_latches.sib_base_id,
         WB_DR0_data       : wb_outs_i.DR_0_data,
@@ -61,19 +61,19 @@ module RR (
         Segment1_ID    : latches_i.normal_latches.seg_1_id
     };
     regsb_inputs_t regsb_in = '{
-        sr_id           : latches_i.normal_latches.sr_id,
-        dr_id           : latches_i.normal_latches.dr_id,
+        sr_id           : latches_i.normal_latches.cs.sr_id,
+        dr_id           : latches_i.normal_latches.cs.dr_id,
         sib_base_id     : latches_i.normal_latches.sib_base_id,
         sib_idx_id      : latches_i.normal_latches.sib_idx_id,
         wb_dr0_id       : wb_outs_i.DR_0_id,
         wb_dr0_we       : wb_outs_i.DR_0_we,
         wb_dr1_id       : wb_outs_i.DR_1_id,
         wb_dr1_we       : wb_outs_i.DR_1_id,
-        cs_sib_size     : latches_i.normal_latches.cs.SIB_NEEDED,
-        cs_sr_rd        : latches_i.normal_latches.cs.SR_RD,
-        cs_dr_rd        : latches_i.normal_latches.cs.DR_RD,
-        cs_sr_wr        : latches_i.normal_latches.cs.SR_WR,
-        cs_dr_wr        : latches_i.normal_latches.cs.DR_WR,
+        cs_sib_size     : latches_i.normal_latches.sib_needed,
+        cs_sr_rd        : latches_i.normal_latches.cs.sr_rd,
+        cs_dr_rd        : latches_i.normal_latches.cs.dr_rd,
+        cs_sr_wr        : latches_i.normal_latches.cs.sr_wr,
+        cs_dr_wr        : latches_i.normal_latches.cs.dr_wr,
         Segment0_ID     : latches_i.normal_latches.seg_0_id,
         Segment1_ID     : latches_i.normal_latches.seg_1_id,
         Segment1_valid  : 1'b0
@@ -158,7 +158,7 @@ module RR (
         exp_pf  : RR_PF,
         ecx_sb : ecx_sb,
         ecx     : reg_out.ECX_data,
-        set_ZF_sb   : latches_i.normal_latches.cs.flag_modified_vector[ZF_IDX],
+        set_ZF_sb   : latches_i.normal_latches.cs.will_mod_ZF,
         codeSeg_sb  : cs_sb,
         codeSeg_data  : reg_out.CS_data,
         codeSeg_limit  : '1

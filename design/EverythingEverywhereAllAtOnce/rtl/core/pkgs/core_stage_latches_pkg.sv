@@ -54,34 +54,48 @@ package core_stage_latches_pkg;
     //    bool sib_size;
     //} decode_stage_latches_t;
 
+    typedef struct{
+        bool REP;
+        bool MODRM_NEEDED;
+        bool RM_IS_DR;
+        bool REG_IS_DR;
+        bool HARD_CODED_DR;
+        reg_ids_e HARD_CODED_DR_ID;
+        bool HARD_CODED_SR;
+        bool HARD_CODED_SR_ID;      //ik this is a bool rn, but cs has it as bool rn, will hcnage later
+        bool OP_IN_MODRM;
+        reg_ids_e dr_id;
+        reg_ids_e sr_id;
+        logic [2:0] DATA_SIZE;
+    } decode_cs_t;
+
     typedef struct {
-        bool RR_OP;  //r we doing an rr op, this one might be trivial be fick it
-
-        bool DR_RD; //are we reading the REG reg, ie are we gonna access the reg file w the id in the latches, check sb 
-        bool SR_RD;  //same as REG reg
-        bool SIB_NEEDED;  //are we going to use the SIB byte, 
-        bool DISP_NEEDED;  //for using displacement in sib tranlstion logic
-        bool DR_WR;  //for makring the sb
-        bool SR_WR;  //
-
-        bool ST_SEL;//this is for selecting addr gen out or for slection between reg data or mod rm data
-        bool DR_SEL;  //this doe sthe sel between mod_rm dr, or reg dr
-
+        bool RR_OP;
+        bool HARDCODED_DR_RD;
+        bool HARDCODED_SR_RD;
+        bool ST_SEL;
+        bool MODRM_NEEDED;
+        bool RM_IS_DR;
         bool LD_OP;
         bool ST_OP;
+        reg_ids_e dr_id;
+        reg_ids_e sr_id;
+        bool dr_rd;
+        bool sr_rd;
+        bool dr_wr;
+        bool sr_wr;
+        bool st_op;
+        bool ld_op;
 
         logic [2:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 
-        bool ld_flags;
-        uint32_t flag_modified_vector;
-
+        bool will_mod_zf;       //need this for zf scoreboard to check during rep instructions
     } rr_cs_t;
 
     typedef struct {
         bool DC_OP;
-        bool LD_OP; 
+        bool LD_OP;
         bool ST_OP;
-        bool MEM_OP; //if req to dcache is needed and if dep checking is needed
     } dc_cs_t;
 
     typedef struct {
@@ -100,15 +114,7 @@ package core_stage_latches_pkg;
         source_selector_e alu_inputB_sel;
         source_selector_e branch_target_sel;
 
-        bool shift_by_one; //for sal
-        // bool xchg;
-        // bool cmpxchg;
-        // bool cmovc;
-        // bool ld_flags;
-        // bool clear_df;
-        // bool set_df;
-
-    //branch cs
+        //branch cs
         bool br_ucond;
         bool relative_branch; //1 indicates I add it to NEIP 0 means Its an absolute jmp
         bool special_br; //for exp and int
@@ -117,13 +123,11 @@ package core_stage_latches_pkg;
        //I will always assume ZF if second flag is set then ill also use CF
        //hard coded in br_res logic
         bool second_flag_needed;
-
-        //branch control signals
-
     } exe_cs_t;
 
 
     typedef struct {
+        bool WB_OP;
         bool ST_OP;
         bool WB_DR;
         bool WB_SR;
@@ -143,21 +147,15 @@ package core_stage_latches_pkg;
         l_address_t EIP;
 
         uint64_t imm64;
-        reg_ids_e dr_id;
-        reg_ids_e sr_id;
         reg_ids_e sib_idx_id;
         reg_ids_e sib_base_id;
+        bool sib_needed;
         uint8_t sib_scale;  //0,2,4,8
         bool disp_size; //8 or 32, 0 determined by DISP_NEEDED
         uint32_t displacement;
         bool seg_1_valid;  //need two beacuse two segs for movs etc, 
         reg_ids_e seg_0_id;
         reg_ids_e seg_1_id;
-
-        //i think we need for push ES for example
-        bool read_seg_reg;
-        reg_ids_e read_seg_reg_id;
-
     } rr_latches_general_t;
 
     typedef struct {
@@ -173,7 +171,6 @@ package core_stage_latches_pkg;
         mem_cs_t mem_cs;
         exe_cs_t exe_cs;
         wb_cs_t wb_cs;
-        
 
         br_info_t br_info;
 

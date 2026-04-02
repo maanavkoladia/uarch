@@ -3,8 +3,7 @@ import reg_ids_pkg::*;
 module modrm_processor (
     input byte_t modrm_byte,
     input logic [2:0] datasize,
-    output reg_ids_e mod_rm_id,
-    output reg_ids_e reg_id
+    output modrm_processor_outs_t outputs
 );
     reg_ids_e dr_id;
     reg_ids_e sr_id;
@@ -12,9 +11,12 @@ module modrm_processor (
     bool sr_rd;
     bool dr_wr;
     bool sr_wr;
+    bool ld_op;
+    bool st_op;
+    bool rm_reg_is_dr = (MODRM_NEEDED && RM_IS_DR && !REG_IS_DR);
+    bool reg_is_dr = (MODRM_NEEDED && !RM_IS_DR && REG_IS_DR);
 
     always_comb begin
-
         //dr reg setting
         if(MODRM_NEEDED && RM_IS_DR && !REG_IS_DR) begin
             unique case(modrm_byte[2:0])    //rm id
@@ -45,7 +47,7 @@ module modrm_processor (
         end
         else dr_id = ERROR;
 
-        dr_rd = 1'b1
+        dr_rd = 1'b1;
         dr_wr = (reg_is_dr) || (rm_id_dr && modrm_byte[7:6] == 2'b11);
 
 
@@ -83,11 +85,21 @@ module modrm_processor (
 
 
         //st/ld op setting
-        rm_reg_is_dr = (MODRM_NEEDED && RM_IS_DR && !REG_IS_DR);
-        reg_is_dr = (MODRM_NEEDED && !RM_IS_DR && REG_IS_DR);
         ld_op = modrm_byte[7:6] != 2'b11;
-        sr_op = (rm_reg_is_dr && (modrm_byte[7:6] != 2'b11));
+        st_op = (rm_reg_is_dr && (modrm_byte[7:6] != 2'b11));
     end
+
+
+    assign outputs = '{
+        dr_id   : dr_id,
+        sr_id   : sr_id,
+        dr_rd   : dr_rd,
+        sr_rd   : sr_rd,
+        dr_wr   : dr_wr,
+        sr_wr   : sr_wr,
+        st_op   : st_op,
+        ld_op   : ld_op
+    };
 
 
 endmodule
