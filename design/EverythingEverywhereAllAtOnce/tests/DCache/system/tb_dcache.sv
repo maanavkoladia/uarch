@@ -43,12 +43,10 @@ module tb_dcache ();
 
     
 
-    DCache_Block u_DCache_Block (
+    DCache_Block uut0_dcache (
         .clk_i(clk),
         .rst_i(rst),
-
         .block_req_i(block_req),
-
         .mem_Valid_FromDte_i(dte_2_dcache.mem_valid[0]),
         .evictionBuf_clr_FromDTE_i(dte_2_dcache.evictionBuf_clr[0]),
         .evictionBuf_setCommiting_FromDTE_i(dte_2_dcache.evictionBuf_setCommiting[0]),

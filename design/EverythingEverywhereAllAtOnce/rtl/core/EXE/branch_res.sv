@@ -1,3 +1,8 @@
+import common_pkg::*;
+import core_common_pkg::*;
+import core_stage_latches_pkg::*;
+import control_store_pkg::*;
+
 module branch_res(
     //br_info
     input bool valid_i,

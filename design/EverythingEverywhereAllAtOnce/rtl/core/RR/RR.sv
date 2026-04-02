@@ -138,6 +138,7 @@ module RR (
         MIO         : 1'b0,  //need to figure out where this signal comes from
         NEIP        : latches_i.normal_latches.NEIP,
         EIP         : latches_i.normal_latches.EIP,
+        EAX         : latches_i.normal_latches.EAX,
         imm64       : latches_i.normal_latches.imm64,
         LD_XCL      : ld_neuralnet.xcl,
         LD_PADDR_0  : ld_neuralnet.paddy,

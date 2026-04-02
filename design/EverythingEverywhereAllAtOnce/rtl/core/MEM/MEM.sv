@@ -72,6 +72,7 @@ module MEM (
         br_info: latches_i.br_info,
         NEIP: latches_i.NEIP,
         EIP: latches_i.EIP,
+        EAX: latches_i.EAX,
         imm64: latches_i.imm64,
         ld_buf: ld_buf,
         sr_id: latches_i.sr_id,

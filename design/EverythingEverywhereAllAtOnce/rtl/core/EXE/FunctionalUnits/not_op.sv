@@ -5,10 +5,10 @@
 import common_pkg::*;
 
 module not_op(
-    input  uint32_t srA,
+    input  uint64_t srA,
     input logic[3:0] data_size,
-    output uint32_t dr_o,
-    output uintCL_t res_buf_o,
+    output uint64_t dr_o,
+    output uint64_t res_buf_o
 ); 
 
 

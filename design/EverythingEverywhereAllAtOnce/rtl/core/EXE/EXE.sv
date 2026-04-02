@@ -1,3 +1,5 @@
+import core_common_pkg::*;
+import core_stage_latches_pkg::*;
 import common_pkg::*;
 import control_store_pkg::*;
 
@@ -72,6 +74,7 @@ module EXE (
 
     // BSF Outputs
     uint64_t bsf_dr_o;
+    uint64_t bsf_res_buf_o;
 
     // CALL Outputs
     uint64_t call_dr_o;
@@ -87,7 +90,7 @@ module EXE (
     uint64_t far_call_res_buf;
 
     // IRETD Outputs
-    uint32_t iretd_cs_o;
+    uint64_t iretd_cs_o;
     uint64_t iretd_stack_ptr_o;
 
     // MOV Outputs
@@ -133,7 +136,7 @@ module EXE (
     uint64_t ret_far_imm_sr_o;
 
     // RET_FAR Outputs
-    uint32_t ret_far_cs_o;
+    uint64_t ret_far_cs_o;
     uint64_t ret_far_next_ptr_o;
 
     // RET_IMM Outputs
@@ -144,6 +147,7 @@ module EXE (
 
     // SAL Outputs
     uint64_t sal_dr_o;
+    uint64_t sal_res_buf_o;
 
     // SAR Outputs
     uint64_t sar_dr_o;
@@ -216,6 +220,7 @@ module EXE (
         ST_XCL:       latches_i.ST_XCL,
         ST_PADDR_0:   latches_i.ST_PADDR_0,
         ST_BIT_VEC_0: bit_vec_0_next,
+        ST_PADDR_1:   latches_i.ST_PADDR_1,
         ST_BIT_VEC_1: bit_vec_1_next,
         MIO:          latches_i.MIO,
         res_buf:      res_buf_next,
@@ -236,10 +241,13 @@ module EXE (
         .imm64          (latches_i.imm64),
         .sr_data        (latches_i.sr_data),
         .dr_data        (latches_i.dr_data),
+        .EAX            (latches_i.EAX),
+        .EIP            (latches_i.EIP),
         .NEIP           (latches_i.NEIP),
+        .flags          (flags_reg),
         .alu_inputA_sel (latches_i.cs.alu_inputA_sel),
         .alu_inputB_sel (latches_i.cs.alu_inputB_sel),
-        .br_input_sel   (latches_i.cs.br_input_sel),
+        .br_input_sel   (latches_i.cs.branch_target_sel),
         .srA_64         (srA),
         .srB_64         (srB),
         .br_sel         (br_sel)
@@ -276,7 +284,7 @@ module EXE (
 
     bit_vec_logic u_bit_vec_logic (
         .st_addr_0  (latches_i.ST_PADDR_0),
-        .ST_XCL     (latches_i.STX_XCL),
+        .ST_XCL     (latches_i.ST_XCL),
         .data_size  (data_size), 
         .st_vec0    (bit_vec_0_next),
         .st_vec1    (bit_vec_1_next)
@@ -498,7 +506,7 @@ module EXE (
         .sal_zf      (sal_zf_o),
         .sar_zf      (sar_zf_o),
         .sbb_zf      (sbb_zf_o),
-        .curr_z_flag (flags_reg[ZF_IDX]),
+        .curr_zf_flag (flags_reg[ZF_IDX]),
         .op_type     (op_type),
         .zf_flag_o   (zf_flag_o)
     );
@@ -510,9 +518,9 @@ module EXE (
     //==========================================================================
     
     // --- AAA: ASCII Adjust After Addition ---
-    aaa u_aaa (
+    aaa_op u_aaa (
         .EAX_in (srA),
-        .AF_in  (flags_reg[AF_IDX]),
+        .AF_flag_in  (flags_reg[AF_IDX]),
         .dr_o   (aaa_dr_o),
         .CF     (aaa_cf_o),
         .AF     (aaa_af_o)
@@ -566,10 +574,11 @@ module EXE (
     );
 
     // --- BSF: Bit Scan Forward ---
-    bsf u_bsf (
+    bsf_op u_bsf (
         .srA(srB), //SR_REG/MEM
         .data_size(data_size),
         .dr_o    (bsf_dr_o),
+        .res_buf_o (bsf_res_buf_o),
         .ZF      (bsf_zf_o)
     );
 
@@ -637,6 +646,7 @@ module EXE (
         .data_size    (data_size),
         .shift_by_one (latches_i.cs.shift_by_one),
         .dr_o         (sal_dr_o),
+        .res_buf_o    (sal_res_buf_o),
         .ZF           (sal_zf_o),
         .SF           (sal_sf_o),
         .PF           (sal_pf_o),
@@ -724,10 +734,10 @@ module EXE (
     // --- IRETD: Interrupt Return ---
     iretd_op u_iretd_op (
         .cs          (srA[31:0]),
-        .flags       (srB[63:31]),
+        .flags       (srA[63:32]),
         .stack_ptr   (srB),
-        .cs_o        (iretd_cs_o),
-        .stack_ptr_o (iretd_stack_ptr_o),
+        .dr_o        (iretd_cs_o),
+        .sr_o (iretd_stack_ptr_o),
         .CF          (iretd_cf_o),
         .PF          (iretd_pf_o),
         .AF          (iretd_af_o),
@@ -751,10 +761,10 @@ module EXE (
 
     // --- RET_FAR: Far Return ---
     ret_far_op u_ret_far_op (
-        .cs         (srA),
+        .cs         (srA[63:32]),
         .stack_ptr  (srB),
-        .cs_o       (ret_far_cs_o),
-        .next_ptr_o (ret_far_next_ptr_o)
+        .dr_o       (ret_far_cs_o),
+        .sr_o (ret_far_next_ptr_o)
     );
 
     // --- RET_FAR_IMM: Far Return with Immediate ---

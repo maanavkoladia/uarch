@@ -1,6 +1,6 @@
 // Overflow Flag Selection Module
 import common_pkg::*;
-import contorl_store_pkg::*;
+import control_store_pkg::*;
 
 
 module of_flag_sel(

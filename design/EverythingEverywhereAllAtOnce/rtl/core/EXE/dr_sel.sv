@@ -35,29 +35,29 @@ module dr_sel (
 
     always_comb begin
         case (op_type)
-            AAA_OP:      dr_o = aaa_dr_i;
-            ADC_OP:      dr_o = adc_dr_i;
-            ADD_OP:      dr_o = add_dr_i;
-            AND_OP:      dr_o = and_dr_i;
-            BSF_OP:      dr_o = bsf_dr_i;
-            CALL_OP:     dr_o = call_dr_i;
-            CMPXCHG_OP:  dr_o = cmpxchg_dr_i;
-            FAR_CALL_OP: dr_o = far_call_dr_i;
-            MOV_OP:      dr_o = mov_dr_i;
-            NOT_OP:      dr_o = not_dr_i;
-            OR_OP:       dr_o = or_dr_i;
-            PACKSSDW_OP: dr_o = packssdw_dr_i;
-            PACKSSWB_OP: dr_o = packsswb_dr_i;
-            PADDD_OP:    dr_o = paddd_dr_i;
-            PADDW_OP:    dr_o = paddw_dr_i;
-            PAVGB_OP:    dr_o = pavgb_dr_i;
-            PAVGW_OP:    dr_o = pavgw_dr_i;
-            POP_OP:      dr_o = pop_dr_i;
-            RET_FAR_IMM_OP: dr_o = ret_far_imm_dr_i;
-            SAL_OP:      dr_o = sal_dr_i;
-            SAR_OP:      dr_o = sar_dr_i;
-            SBB_OP:      dr_o = sbb_dr_i;
-            XCHG_OP:     dr_o = xchg_dr_i;
+            AAA:      dr_o = aaa_dr_i;
+            ADC:      dr_o = adc_dr_i;
+            ADD:      dr_o = add_dr_i;
+            AND:      dr_o = and_dr_i;
+            BSF:      dr_o = bsf_dr_i;
+            CALL:     dr_o = call_dr_i;
+            CMPXCHG:  dr_o = cmpxchg_dr_i;
+            FAR_CALL: dr_o = far_call_dr_i;
+            MOV:      dr_o = mov_dr_i;
+            NOT:      dr_o = not_dr_i;
+            OR:       dr_o = or_dr_i;
+            PACKSSDW: dr_o = packssdw_dr_i;
+            PACKSSWB: dr_o = packsswb_dr_i;
+            PADDD:    dr_o = paddd_dr_i;
+            PADDW:    dr_o = paddw_dr_i;
+            PAVGB:    dr_o = pavgb_dr_i;
+            PAVGW:    dr_o = pavgw_dr_i;
+            POP:      dr_o = pop_dr_i;
+            RET_FAR_IMM: dr_o = ret_far_imm_dr_i;
+            SAL:      dr_o = sal_dr_i;
+            SAR:      dr_o = sar_dr_i;
+            SBB:      dr_o = sbb_dr_i;
+            XCHG:     dr_o = xchg_dr_i;
             default:     dr_o = 64'h0;
         endcase
     end

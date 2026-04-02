@@ -3,7 +3,7 @@ import interconnect_pkg::*;
 import core_common_pkg::*;
 import core_stage_latches_pkg::*;
 
-module CoreTop (
+module EveryThing_TOP (
     input wire clk,
     input wire rst,
 
@@ -113,7 +113,7 @@ module CoreTop (
     Decode decode_unit (
         .clk(clk),
         .rst(rst),
-        .cs_limit(32'b1),   //need to wire in actual limit register
+        .cs_limit(32'b1),  //need to wire in actual limit register
         .idm_outs_i(idm_outputs),
         .fetch_outs_i(fetch_outputs),
         .rr_outs_i(rr_outputs),
@@ -157,9 +157,9 @@ module CoreTop (
         .clk(clk),
         .rst(rst),
 
-        .latches_i(mem_latches),
+        .latches_i (mem_latches),
         .exe_outs_i(exe_outputs),
-        .wb_outs_i(wb_outputs),
+        .wb_outs_i (wb_outputs),
 
         .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
         .line_0(DCacheIn_i.line_0),

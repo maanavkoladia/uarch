@@ -1,19 +1,19 @@
 {
     "readmemFilePath" : "dcache_loader.sv",
-    "startUpDelay" : "30",
+    "startUpDelay" : "10",
 
     "numBlocks" : "4",
     "numDataStoreCells" : "16",
     "numBankLines" : "8",
     "numVCacheLines" : "4",
-
-
+    "numCellsNeeded" : "2",
 
     "Bank_TagStorePath" : "tb_dcache.uut0_dcache.g_dcache_block[<blockNum>].block.dcache_bank_unit.DCache_Bank_TagStore_unit.tag_store_ramCell",
     "Bank_DataStorePath" : "tb_dcache.uut0_dcache.g_dcache_block[<blockNum>].block.dcache_bank_unit.DCache_Bank_DataStore_unit.g_dcache_bank_data_store_ram_cells[<cellNum>].dcache_bank_data_store_ramCell",
-    "VCache_TagStorePath" : "tb_dcache.uut0_dcache.g_dcache_block[<blockNum>].block.vcache_unit.vcache_tag_store_unit.tag_store_ramCell",
+
+    "VCache_TagStorePath" : "tb_dcache.uut0_dcache.g_dcache_block[<blockNum>].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[<numVCacheLines>].g_tagStoreCell[<numCellsNeeded>].tagStoreCell",
     "VCache_DataStorePath" : "tb_dcache.uut0_dcache.g_dcache_block[<blockNum>].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[<cellNum>].v_cache_data_store_ramCell",
-    "loadRandomData" : "false",
+    "loadRandomData" : "true",
 
     "outputPath" : "gen/"
 

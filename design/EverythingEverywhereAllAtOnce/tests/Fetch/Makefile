@@ -1,7 +1,7 @@
 include ../../Make.vars
 include ../../Make.build
 
-TARGET = test_Fetcj
+TARGET = test_Fetch
 
 
 TB_FILES = \

@@ -40,7 +40,7 @@ module adc_op (
             result[7:0]  = sum[7:0];  // AL Case
 
         assign dr_o = result;
-        assign res_buf_o = result
+        assign res_buf_o = result;
         // 4. Flag Logic based on msb_ptr
         CF = sum[msb_ptr + 1];
         SF = sum[msb_ptr];
