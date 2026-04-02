@@ -50,7 +50,10 @@ package reg_ids_pkg;
         GS = 37,
 
         //tmep reg for rep mov cmp
-        ETR = 38
+        ETR = 38,
+
+        //error reg, sending here if sometjings wrong, for debugging only
+        ERROR = 39
 
     } reg_ids_e;
 
