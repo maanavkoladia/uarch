@@ -88,6 +88,7 @@ module DCache_Block (
             2'b11: begin
                 if (rst_i) $fatal;
             end
+            default: if(rst_i) $fatal;
         endcase
     end
 

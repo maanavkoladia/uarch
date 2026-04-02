@@ -45,7 +45,11 @@ module DCache_Bank_DataStore (
 
     //can be driven by req with vec and we logic , or fsm fill signals, or all high for a swap
     //active low
-    logic WR_2_DataStore[NUM_CELL_IN_DATA_STORE];
+    logic WR_2_DataStore_clk[NUM_CELL_IN_DATA_STORE];
+    logic WR_2_DataStore_Delay[NUM_CELL_IN_DATA_STORE];
+    logic WR_2_DataStore_actual[NUM_CELL_IN_DATA_STORE];
+    
+    assign #6 WR_2_DataStore_Delay = !rst ? '{default: '1} : WR_2_DataStore_clk;
 
     //din can come from bus, for a ld_req or wr_req and a miss, or from block_req we req st_q req, or v$ swapBuf
     //exact control will be dictacted by oe and we
@@ -139,7 +143,7 @@ module DCache_Bank_DataStore (
             end
 
             default: begin
-                if(rst) $fatal;
+                
             end
 
         endcase
@@ -189,7 +193,7 @@ module DCache_Bank_DataStore (
             end
 
             default: begin
-                if(rst) $fatal;
+            
             end
 
         endcase

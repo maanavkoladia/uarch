@@ -32,7 +32,7 @@ module tb_dcache ();
     block_req_t block_req;
     dte_2_dcache_t dte_2_dcache;
     
-    bool st_ovveride_fromArb;
+    bool st_overide_fromArb;
     initial begin
         $vcdpluson;
         $vcdplusmemon;
@@ -54,7 +54,7 @@ module tb_dcache ();
         .permissionToDriveAddrBus_Ld(dte_2_dcache.permissionToDriveAddrBus_Ld[0]),
         .permissionToDriveAddrBus_eb(dte_2_dcache.permissionToDriveAddrBus_eb[0]),
 
-        .st_override_for_sch_req(st_ovveride_fromArb),
+        .st_override_for_sch_req(st_overide_fromArb),
 
         .dataBus(dataBus),
         .address_bus(addrBus),
@@ -74,20 +74,43 @@ module tb_dcache ();
         addrForBus = 0;
         dataForBus = 0;
         dte_2_dcache = '{default : '0};
-        st_ovveride_fromArb = 0;
+        st_overide_fromArb = 0;
 
         block_req = '{default: '0}; 
 
         DelayCLKs(10);
+        
         @(posedge clk)
+        
         rst = 1;  //actve low
         DelayCLKs(10);
-        //@(posedge clk)
+        @(posedge clk)
+        block_req.p_addr = 15'h2000;
         block_req.oe = 1;
         block_req.we = 0;
-        block_req.p_addr = 15'h2000;
-        block_req.vec = 0;
-        block_req.st_q_data = '{default: '0};
+
+        block_req.vec = 16'hFFFF;
+        block_req.st_q_data = '{default: '1};
+  
+        @(posedge clk)
+        DelayCLKs(10);
+        @(posedge clk)
+        dte_2_dcache.mem_valid[0] = 1;
+        driveDataBus = 1;
+        dataForBus = 32'hFFFF;
+        @(posedge clk)
+        @(posedge clk)
+        @(posedge clk)
+        @(posedge clk)
+        dte_2_dcache.mem_valid[0] = 0;
+        driveDataBus = 0;
+        
+
+
+
+
+
+        
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time

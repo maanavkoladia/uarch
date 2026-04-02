@@ -125,7 +125,7 @@ module VCache_TagStore (
         newLRU = tagMetaStore.LRU;  //do copy
         update_idx = DCache_Will_Evict_i ? currLRU_IDX : hitIdx;
         // Update LRU tree to mark accessed way as MRU (bits point toward MRU)
-        unique case (update_idx)
+        case (update_idx)
             2'b00: begin  // Way 0 accessed - point to left/left
                 newLRU[LRU_ROOT]      = 1'b0;  // Point to left subtree
                 newLRU[LRU_LEFT_LEAF] = 1'b0;  // Point to way 0
@@ -142,6 +142,7 @@ module VCache_TagStore (
                 newLRU[LRU_ROOT]       = 1'b1;  // Point to right subtree
                 newLRU[LRU_RIGHT_LEAF] = 1'b1;  // Point to way 3
             end
+            default: if(rst) $fatal;
         endcase
 
     end

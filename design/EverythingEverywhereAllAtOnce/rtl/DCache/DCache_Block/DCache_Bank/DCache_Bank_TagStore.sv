@@ -102,7 +102,8 @@ module DCache_Bank_TagStore (
     end
 
     always_comb begin  //bc active low, chose fill3_i bc it lines up better with valid logic
-        WR_2_TagStore = ld_From_V_Swap_i || fill3_i ? 1'b0 : 1'b1;
+        if(rst)WR_2_TagStore = ld_From_V_Swap_i || fill3_i ? 1'b0 : 1'b1;
+        else WR_2_TagStore = 1;
     end
 
     //from the comments above, i shoudl always be able to drive this, wr logic
@@ -112,7 +113,10 @@ module DCache_Bank_TagStore (
     end
 
     always_comb begin  //bc active low
-        OE_2_TagStore = ((oe_i || we_i) && !bankControllerBusy_i) || write2_Dwap_i ? 1'b0 : 1'b1;
+        if(rst)OE_2_TagStore = ((oe_i || we_i) && !bankControllerBusy_i) || write2_Dwap_i ? 1'b0 : 1'b1;
+        else begin
+            OE_2_TagStore <= 1;
+        end
     end
 
     //now to deal with the tag meta store,
