@@ -48,8 +48,7 @@ module DCache_Bank_DataStore (
     logic WR_2_DataStore_clk[NUM_CELL_IN_DATA_STORE];
     logic WR_2_DataStore_Delay[NUM_CELL_IN_DATA_STORE];
     logic WR_2_DataStore_actual[NUM_CELL_IN_DATA_STORE];
-    
-    assign #6 WR_2_DataStore_Delay = !rst ? '{default: '1} : WR_2_DataStore_clk;
+
 
     //din can come from bus, for a ld_req or wr_req and a miss, or from block_req we req st_q req, or v$ swapBuf
     //exact control will be dictacted by oe and we
@@ -70,11 +69,11 @@ module DCache_Bank_DataStore (
 
     p_addr_dcache_fields_t p_addr_fields;
     assign p_addr_fields = '{
-        tag    : p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
-        index  : p_addr_i[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
-        bank   : p_addr_i[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
-        offset : p_addr_i[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
-    };
+            tag    : p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
+            index  : p_addr_i[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
+            bank   : p_addr_i[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
+            offset : p_addr_i[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
+        };
 
     generate
         for (
@@ -143,12 +142,21 @@ module DCache_Bank_DataStore (
             end
 
             default: begin
-                
+
             end
 
         endcase
     end
 
+    assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} : WR_2_DataStore_clk;
+
+    always_comb begin
+        if (!rst) WR_2_DataStore_actual = '{default: '1};
+        else begin
+            for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++)
+            WR_2_DataStore_actual[i] = (WR_2_DataStore_clk[i] == 0 && WR_2_DataStore_Delay[0] == 0) ? 0 : 1;
+        end
+    end
 
     //DIN_2_DataStore logic
     always_comb begin
@@ -193,7 +201,7 @@ module DCache_Bank_DataStore (
             end
 
             default: begin
-            
+
             end
 
         endcase

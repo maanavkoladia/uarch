@@ -13,7 +13,7 @@
 
     "VCache_TagStorePath" : "tb_dcache.uut0_dcache.g_dcache_block[<blockNum>].block.vcache_unit.vcache_tag_store_unit.g_tagStore_Entry[<numVCacheLines>].g_tagStoreCell[<numCellsNeeded>].tagStoreCell",
     "VCache_DataStorePath" : "tb_dcache.uut0_dcache.g_dcache_block[<blockNum>].block.vcache_unit.vcache_datastore_unit.g_vcache_data_store_ram_cells[<cellNum>].v_cache_data_store_ramCell",
-    "loadRandomData" : "true",
+    "loadRandomData" : "false",
 
     "outputPath" : "gen/"
 

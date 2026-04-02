@@ -46,7 +46,9 @@ module DCache_Bank_TagStore (
     //written in.
     //case 1: ld_ing from the V$ swap buf,
     //case 2: new data from bus
-    logic WR_2_TagStore;
+    logic WR_2_TagStore_clk;
+    logic WR_2_TagStore_delay;
+    logic WR_2_TagStore_actual;
 
     //din can come from bus, for a ld_req or wr_req and a miss, or from block_req we req st_q req, or v$ swapBuf
     //exact control will be dictacted by oe and we
@@ -77,21 +79,21 @@ module DCache_Bank_TagStore (
 
     logic [DCACHE_BANK_TAG_WIDTH - 1 : 0] DOUT_2_TagStore;
     logic [7:0] DOUT_2_TagStore_extended;
-    assign DOUT_2_TagStore = DOUT_2_TagStore_extended[DCACHE_BANK_TAG_WIDTH - 1 : 0];
+    assign DOUT_2_TagStore = DOUT_2_TagStore_extended[DCACHE_BANK_TAG_WIDTH-1 : 0];
 
     p_addr_dcache_fields_t p_addr_fields;
     assign p_addr_fields = '{
-        tag    : p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
-        index  : p_addr_i[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
-        bank   : p_addr_i[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
-        offset : p_addr_i[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
-    };
+            tag    : p_addr_i[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
+            index  : p_addr_i[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
+            bank   : p_addr_i[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
+            offset : p_addr_i[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
+        };
 
     //create the cell for the tag store, there are only 6 tag bits
     ram8b8w$ tag_store_ramCell (
         .A(ADDRESS_2_TagStore),
-        .WR(WR_2_TagStore),
-        .DIN({2'b00,DIN_2_TagStore}),
+        .WR(WR_2_TagStore_actual),
+        .DIN({2'b00, DIN_2_TagStore}),
         .OE(OE_2_TagStore),
         .DOUT(DOUT_2_TagStore_extended)
     );
@@ -101,10 +103,9 @@ module DCache_Bank_TagStore (
         ADDRESS_2_TagStore = p_addr_fields.index;
     end
 
-    always_comb begin  //bc active low, chose fill3_i bc it lines up better with valid logic
-        if(rst)WR_2_TagStore = ld_From_V_Swap_i || fill3_i ? 1'b0 : 1'b1;
-        else WR_2_TagStore = 1;
-    end
+    assign WR_2_TagStore_clk = !rst ? 1 : ld_From_V_Swap_i || fill3_i ? 1'b0 : 1'b1;
+    assign #2 WR_2_TagStore_Delay = !rst ? 1 : WR_2_TagStore_clk;
+    assign WR_2_TagStore_actual = (WR_2_TagStore_clk == 0) && (WR_2_TagStore_Delay == 0) ? 0 : 1;
 
     //from the comments above, i shoudl always be able to drive this, wr logic
     //should handle when
@@ -113,7 +114,8 @@ module DCache_Bank_TagStore (
     end
 
     always_comb begin  //bc active low
-        if(rst)OE_2_TagStore = ((oe_i || we_i) && !bankControllerBusy_i) || write2_Dwap_i ? 1'b0 : 1'b1;
+        if (rst)
+            OE_2_TagStore = ((oe_i || we_i) && !bankControllerBusy_i) || write2_Dwap_i ? 1'b0 : 1'b1;
         else begin
             OE_2_TagStore <= 1;
         end
@@ -134,8 +136,8 @@ module DCache_Bank_TagStore (
     //
     always_ff @(posedge clk) begin
         if (!rst) begin
-            for(int i = 0; i < DCACHE_BANK_NUM_LINES; i++) begin
-                tagMetaStore[i] <= '{default:'0};
+            for (int i = 0; i < DCACHE_BANK_NUM_LINES; i++) begin
+                tagMetaStore[i] <= '{default: '0};
             end
         end else begin
             if (fill3_i || ld_From_V_Swap_i) begin
