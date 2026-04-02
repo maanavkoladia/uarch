@@ -121,6 +121,7 @@ module tb_dcache ();
         block_req.vec = 16'hFFFF;
         block_req.st_q_data = '{default: '1};
         @(posedge clk)
+
         DelayCLKs(7);
         @(posedge clk)
         dte_2_dcache.mem_valid[0] = 1;
@@ -146,6 +147,8 @@ module tb_dcache ();
         block_req.vec = 16'hFFFF;
         block_req.st_q_data = '{default: '1};
         @(posedge clk)
+        block_req.oe = 0;
+
         //hit here and also latches updated at the same time 
         // block_req.oe = 0;
         // block_req.we = 1;

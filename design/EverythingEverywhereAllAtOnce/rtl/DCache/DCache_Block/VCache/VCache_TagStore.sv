@@ -122,8 +122,9 @@ module VCache_TagStore (
         //update if loading eb, means that a new lines is goig to be written
         //to the LRU, so LRU  is new MRU
         //cant rely on LD_EB_i signal because dont always needs to evict
-        newLRU = tagMetaStore.LRU;  //do copy
-        update_idx = DCache_Will_Evict_i ? currLRU_IDX : hitIdx;
+        newLRU = tagMetaStore.LRU;  //the meta store stores the MRU which is used to find LRU
+       // update_idx = DCache_Will_Evict_i ? currLRU_IDX : hitIdx;
+        update_idx = use_savedSwapIDX ? saved_SwapIDX : currLRU_IDX;
         // Update LRU tree to mark accessed way as MRU (bits point toward MRU)
         case (update_idx)
             2'b00: begin  // Way 0 accessed - point to left/left
@@ -265,17 +266,17 @@ module VCache_TagStore (
     //hit logic, if there is a oe or we and we are not busy, then give the hit
     //miss logic opposite, write success logic
 
+    assign hitIdx_onehot = 1<<hitIdx;
+
     always_comb begin
         hit = 0;
         miss = 0;
         hitIdx = 0;
-
         if (doAccess) begin
             for (int i = 0; i < VCACHE_NUM_LINES; i++) begin
                 if (DOUT_of_TagStore[i] == p_addr_fields.tag && tagMetaStore.tag_line_metaStore[i].valid) begin
                     hit = 1;
                     hitIdx = i;
-                    hitIdx_onehot = 1 << hitIdx;
                 end
             end
         end
