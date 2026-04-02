@@ -128,7 +128,10 @@ typedef enum {
         ZEXT_BUF16 = 12,     //m16 for branch,
         ZEXT_IMM16 = 13,    //rel 16 for branch
         SEGMENT_EIP = 14,
-        FLAGS = 15  
+        FLAGS = 15,
+        EIP = 16,           //similar to NEIP but for EIP
+        CMPXCHG_SEL = 17,       //cmpxchg operation
+        IRETD_SEL = 18          //iretd operation  
     // How source selection works in the ALU input selector:
     //refined comment with claude so its coherent buddy
     // 1. All sources first get assigned to a 128-bit wire (srA_128/srB_128)

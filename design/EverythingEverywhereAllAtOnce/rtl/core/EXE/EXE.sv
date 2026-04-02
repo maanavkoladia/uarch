@@ -1,3 +1,5 @@
+import core_common_pkg::*;
+import core_stage_latches_pkg::*;
 import common_pkg::*;
 import control_store_pkg::*;
 
@@ -88,7 +90,7 @@ module EXE (
     uint64_t far_call_res_buf;
 
     // IRETD Outputs
-    uint32_t iretd_cs_o;
+    uint64_t iretd_cs_o;
     uint64_t iretd_stack_ptr_o;
 
     // MOV Outputs
@@ -134,7 +136,7 @@ module EXE (
     uint64_t ret_far_imm_sr_o;
 
     // RET_FAR Outputs
-    uint32_t ret_far_cs_o;
+    uint64_t ret_far_cs_o;
     uint64_t ret_far_next_ptr_o;
 
     // RET_IMM Outputs
@@ -218,6 +220,7 @@ module EXE (
         ST_XCL:       latches_i.ST_XCL,
         ST_PADDR_0:   latches_i.ST_PADDR_0,
         ST_BIT_VEC_0: bit_vec_0_next,
+        ST_PADDR_1:   latches_i.ST_PADDR_1,
         ST_BIT_VEC_1: bit_vec_1_next,
         MIO:          latches_i.MIO,
         res_buf:      res_buf_next,
@@ -731,7 +734,7 @@ module EXE (
     // --- IRETD: Interrupt Return ---
     iretd_op u_iretd_op (
         .cs          (srA[31:0]),
-        .flags       (srB[63:31]),
+        .flags       (srA[63:32]),
         .stack_ptr   (srB),
         .dr_o        (iretd_cs_o),
         .sr_o (iretd_stack_ptr_o),
@@ -758,7 +761,7 @@ module EXE (
 
     // --- RET_FAR: Far Return ---
     ret_far_op u_ret_far_op (
-        .cs         (srA),
+        .cs         (srA[63:32]),
         .stack_ptr  (srB),
         .dr_o       (ret_far_cs_o),
         .sr_o (ret_far_next_ptr_o)

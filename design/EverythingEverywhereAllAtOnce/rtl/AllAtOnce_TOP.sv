@@ -1,5 +1,5 @@
 import common_pkg::*;
-import interconnect_pkgnt::*;
+import interconnect_pkg::*;
 
 module AllAtOnce_TOP (
     input wire clk,

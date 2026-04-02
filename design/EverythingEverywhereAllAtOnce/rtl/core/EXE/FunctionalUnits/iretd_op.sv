@@ -5,8 +5,8 @@ module iretd_op(
     input uint32_t flags,     //from mem buffer
     input uint64_t stack_ptr, //ESP in SR
 
-    output uint32_t dr_o,
-    output uint32_t sr_o,
+    output uint64_t dr_o,
+    output uint64_t sr_o,
     //output uint32_t flags_o; I dont really know how other flags will change other than the main 6..
     output bool CF,
     output bool PF,
@@ -17,7 +17,7 @@ module iretd_op(
     
 );
 
-    assign dr_o = cs;
+    assign dr_o = {32'd0, cs};
     assign sr_o = stack_ptr + 12;
     assign CF = flags[CF_IDX];
     assign PF = flags[PF_IDX];

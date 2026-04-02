@@ -1,3 +1,6 @@
+import common_pkg::*;
+import control_store_pkg::*;
+
 module alu_input_sel(
 
     input p_address_t ld_addr_0, //not $ aligned
@@ -44,12 +47,12 @@ module alu_input_sel(
             NEIP:           srA_64 = {32'd0, NEIP};
             EIP:            srA_64 = {32'b0, EIP};
             SEXT8:          srA_64 = {32'd0, 32'(signed'(imm64[7:0]))};
-            NOP:            srA_64 = 0;
+            NO_EXE:            srA_64 = 0;
             SEGMENT_NEIP:   srA_64 = {dr_data, NEIP}; 
             SEGMENT_EIP:    srA_64 = {dr_data, EIP}; //not sure when this needs to be used
             EAX:            srA_64    = {32'd0, EAX}; //cmpxchg
-            CMPXCHG:        srA_64 = {sr_data, dr_data}; 
-            IRETD:          srA_64 = res_buf_out[95:32];
+            CMPXCHG_SEL:        srA_64 = {sr_data, dr_data}; 
+            IRETD_SEL:          srA_64 = res_buf_out[96:32];
             FLAGS:          srA_64 = {32'd0, flags};
             default:        $fatal;
         endcase
@@ -65,12 +68,12 @@ module alu_input_sel(
             NEIP:           srB_64 = {32'd0, NEIP};
             EIP:            srB_64 = {32'b0, EIP};
             SEXT8:          srB_64 = {32'd0, 32'(signed'(imm64[7:0]))};
-            NOP:            srB_64 = 0;
+            NO_EXE:            srB_64 = 0;
             SEGMENT_NEIP:   srB_64 = {NEIP, dr_data}; 
             SEGMENT_EIP:    srB_64 = {EIP, dr_data}; //not sure when this needs to be used
             EAX:            srB_64  = {32'd0, EAX}; //send forward EAX
-            CMPXCHG:        srB_64 = {sr_data, dr_data}; //rm32 r32 on cmpxchg 
-            IRETD:          srB_64 = res_buf_out[95:32];
+            CMPXCHG_SEL:        srB_64 = {sr_data, dr_data}; //rm32 r32 on cmpxchg 
+            IRETD_SEL:          srB_64 = res_buf_out[95:32];
             FLAGS:          srB_64 = {32'd0, flags};
             default:        $fatal;
         endcase

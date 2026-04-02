@@ -1,7 +1,7 @@
 module packssdw (
-    input  uint64_t [63:0] srA,
-    input  uint64_t [63:0] srB,
-    output uint64_t [63:0] dr_o
+    input  uint64_t srA,
+    input  uint64_t srB,
+    output uint64_t dr_o
 );
 
     // Extract 32-bit signed lanes
