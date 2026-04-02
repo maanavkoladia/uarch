@@ -64,8 +64,6 @@ module tb_dcache ();
         .outputs_o()
     );
 
-    
-
     dcache_loader dcache_loader_unit ();
 
     initial begin
@@ -80,10 +78,13 @@ module tb_dcache ();
         dte_2_dcache = '{default : '0};
         st_ovveride_fromArb = 0;
 
+        block_req = '{default: '0}; 
+
+        DelayCLKs(10);
         @(posedge clk)
         rst = 1;  //actve low
         DelayCLKs(10);
-        @(posedge clk)
+        //@(posedge clk)
         block_req.oe = 1;
         block_req.we = 0;
         block_req.p_addr = 15'h2000;

@@ -34,7 +34,8 @@ module VCache (
     assign vcache_fsm_state = vcache_fsm_state_bits;
 
     block_req_t savedReq;
-    block_req_t reqInUse = fsmOuts.useSavedReq ? savedReq : blockReq_i;
+    block_req_t reqInUse;
+    assign reqInUse = fsmOuts.useSavedReq ? savedReq : blockReq_i;
 
     p_addr_vcache_fields_t block_req_p_addr_fields;
     assign block_req_p_addr_fields = '{

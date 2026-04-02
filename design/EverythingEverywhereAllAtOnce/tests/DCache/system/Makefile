@@ -50,7 +50,6 @@ clean:
 	rm -f $(TARGET)
 	rm -rf *.daidir
 	rm -rf csrc
-	rm -f master
 	rm -f *.log
 	rm -f ucli.key
 
