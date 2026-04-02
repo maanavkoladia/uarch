@@ -53,7 +53,7 @@ package reg_ids_pkg;
         ETR = 38,
 
         //error reg, sending here if sometjings wrong, for debugging only
-        ERROR = 39
+        ERROR_REG = 39
 
     } reg_ids_e;
 

@@ -14,6 +14,7 @@ module RegFile (
     assign outputs.SIB_IDX_data = ARCH_REGISTERS[inputs.SIB_IDX_ID[2:0]];
     assign outputs.SIB_BASE_data = ARCH_REGISTERS[inputs.SIB_BASE_ID[2:0]];
     assign outputs.ECX_data = ARCH_REGISTERS[ECX[2:0]];
+    assign outputs.EAX_data = ARCH_REGISTERS[EAX[2:0]];
     assign outputs.CS_data = SEG_REG[CS[2:0]];
     assign outputs.Segment0_data = SEG_REG[inputs.Segment0_ID[2:0]];
     assign outputs.Segment1_data = SEG_REG[inputs.Segment1_ID[2:0]];

@@ -1,4 +1,7 @@
-DECODE_PATH_INTERNAL = $(ROOT)/rtl/core/Decode/
+DECODE_PATH_INTERNAL = $(CORE_PATH_INTERNAL)/Decode/
+
+DECODE_PKGS = \
+						$(DECODE_PATH_INTERNAL)/pkg/Decode_pkg.sv \
 
 GEN_DECODE_SRC_FILES = \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/MOD_LUT.v \
@@ -22,6 +25,7 @@ DECODE_SRC_FILES_STRUCTURAL = \
 
 DECODE_SRC_FILES = \
 						$(DECODE_PATH_INTERNAL)/br_info_processing.sv \
+						$(DECODE_PATH_INTERNAL)/control_store_genned.sv \
 						$(DECODE_PATH_INTERNAL)/control_store.sv \
 						$(DECODE_PATH_INTERNAL)/decode_gp_gen.sv \
 						$(DECODE_PATH_INTERNAL)/modrm_processor.sv \

@@ -1,4 +1,6 @@
+import core_stage_latches_pkg::*;
 import reg_ids_pkg::*;
+import Decode_pkg::*;
 module control_store (
     input logic [9:0] total_pf_vector,
     input byte_t opcode,
@@ -13,10 +15,6 @@ module control_store (
     //wire [63:0] cs_out[2];
     //logic [9:0] rom_index;
     //assign rom_index = {(total_pf_vector[0] || total_pf_vector[1]), opcode, total_pf_vector[3]};
-
-    modrm_processor_outs_t mod_rm_cs_outs;
-    modrm_processor mod_rm_cs_gen(.modrm_byte(modrm), .datasize(DATASIZE), .outputs(mod_rm_cs_outs));
-
 
     // =====================
     // Input wires
@@ -157,21 +155,25 @@ module control_store (
         .input0_i(input_bus[0])
     );
 
+    modrm_processor_outs_t mod_rm_cs_outs;
+    modrm_processor mod_rm_cs_gen(.modrm_byte(modrm), .datasize(DATA_SIZE), .decode_cs_inputs(decode_cs), .outputs(mod_rm_cs_outs));
+
+
 
     // =====================
     // Struct Initializations
     // =====================
 
     // DECODE
-    decode_cs_t decode_cs = '{
+    assign decode_cs = '{
         REP               : REP,
         MODRM_NEEDED      : MODRM_NEEDED,
         RM_IS_DR          : RM_IS_DR,
         REG_IS_DR         : REG_IS_DR,
-        HARD_CODED_DR     : HARD_CODED_DR,
-        HARD_CODED_DR_ID  : HARD_CODED_DR_ID,
-        HARD_CODED_SR     : HARD_CODED_SR,
-        HARD_CODED_SR_ID  : HARD_CODED_SR_ID,
+        HARDCODED_DR      : HARD_CODED_DR,
+        HARDCODED_DR_ID   : HARD_CODED_DR_ID,
+        HARDCODED_SR      : HARD_CODED_SR,
+        HARDCODED_SR_ID   : HARD_CODED_SR_ID,
         OP_IN_MODRM       : OP_IN_MODRM,
         dr_id             : mod_rm_cs_outs.dr_id,
         sr_id             : mod_rm_cs_outs.sr_id,
@@ -179,15 +181,15 @@ module control_store (
     };
 
     // RR
-    rr_cs_t rr_cs = '{
+    assign rr_cs = '{
         RR_OP            : RR_OP,
         HARDCODED_DR_RD  : HARDCODED_DR_RD,
         HARDCODED_SR_RD  : HARDCODED_SR_RD,
         ST_SEL           : ST_SEL,
         MODRM_NEEDED     : MODRM_NEEDED,
         RM_IS_DR         : RM_IS_DR,
-        LD_OP            : LD_OP,
-        ST_OP            : ST_OP,
+        LD_OP            : mod_rm_cs_outs.ld_op,
+        ST_OP            : mod_rm_cs_outs.st_op,
         dr_id            : mod_rm_cs_outs.dr_id,
         sr_id            : mod_rm_cs_outs.sr_id,
         dr_rd            : mod_rm_cs_outs.dr_rd,
@@ -197,27 +199,27 @@ module control_store (
         st_op            : mod_rm_cs_outs.st_op,
         ld_op            : mod_rm_cs_outs.ld_op,
         datasize         : DATA_SIZE,
-        will_mod_ZF      : 1'b0             //need to add this to excel sheet
+        will_mod_zf      : 1'b0             //need to add this to cs excel sheet
     };
 
     // DC
-    dc_cs_t dc_cs = '{
+    assign dc_cs = '{
         DC_OP : DC_OP,
-        LD_OP : LD_OP,
-        ST_OP : ST_OP
+        LD_OP : mod_rm_cs_outs.ld_op,
+        ST_OP : mod_rm_cs_outs.st_op
     };
 
     // MEM
-    mem_cs_t mem_cs = '{
+    assign mem_cs = '{
         MEM_OP : MEM_OP,
-        ST_OP  : ST_OP,
-        LD_OP  : LD_OP
+        ST_OP  : mod_rm_cs_outs.st_op,
+        LD_OP  : mod_rm_cs_outs.ld_op
     };
 
     // EXE
-    exe_cs_t exe_cs = '{
+    assign exe_cs = '{
         EXE_OP              : EXE_OP,
-        ST_OP               : ST_OP,
+        ST_OP               : mod_rm_cs_outs.st_op,
         DATA_SIZE           : DATA_SIZE,
         OP_TYPE             : OP_TYPE,
 
@@ -233,9 +235,9 @@ module control_store (
     };
 
     // WB
-    wb_cs_t wb_cs = '{
+    assign wb_cs = '{
         WB_OP : WB_OP,
-        ST_OP : ST_OP,
+        ST_OP : mod_rm_cs_outs.st_op,
         WB_DR : mod_rm_cs_outs.dr_wr,
         WB_SR : mod_rm_cs_outs.sr_wr
     };

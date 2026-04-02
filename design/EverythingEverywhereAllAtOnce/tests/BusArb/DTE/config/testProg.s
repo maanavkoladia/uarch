@@ -3,25 +3,13 @@
 
     .global _start
 _start:
-    # load data address into eax
-    movl  $0x2000, %eax
 
-    # load first word from data section
-    movl  (%eax), %ebx
+    # 1) ADD AX, 0xDEAD
+    addw $0xDEAD, %ax
 
-    # add second word
-    addl  4(%eax), %ebx
+    # 2) ADD ECX, EAX
+    addl %eax, %ecx
 
-    # store result back
-    movl  %ebx, 8(%eax)
-
-    # infinite loop (halt equivalent)
+# infinite loop (halt)
 loop:
-    jmp   loop
-
-
-    .org x2000
-    .data
-
-val_a:  .long  0xDEADBEEF
-val_b:  .long  0x0000CAFE
+    jmp loop

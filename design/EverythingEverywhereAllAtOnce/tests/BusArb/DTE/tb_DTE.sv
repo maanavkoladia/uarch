@@ -122,6 +122,12 @@ module tb_DTE ();
     wire dma_int;
     fetch_outputs_t fetch_outs_o;
 
+    rr_latches_t rr_latches, rr_latches_next;
+    dc_latches_t dc_latches, dc_latches_next;
+    mem_latches_t mem_latches, mem_latches_next;
+    exe_latches_t exe_latches, exe_latches_next;
+    wb_latches_t wb_latches, wb_latches_next;
+
     // ================= ICACHE =================
     dte_2_icache_t dte_2_icache;
 
@@ -142,6 +148,9 @@ module tb_DTE ();
     //sch pick signals
     req_2_sch_t bestPick_req_2_dte;
     logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_2_dte;
+
+    dcache_2_core_t DCacheIn_i;
+    assign DCacheIn_i = '{default: 0};
 
 
     DTE uut0_DTE (
@@ -204,6 +213,120 @@ module tb_DTE ();
         .idm_outs_o(idm_info_i)
     );
 
+    Decode decode_uut(
+        .clk(clk),
+        .rst(rst),
+        .cs_limit(32'hFFFF_FFFF),    //fill have to feed in real cs_limit at some point
+        .idm_outs_i(idm_info_i),
+        .fetch_outs_i(fetch_outs_o),
+        .rr_outs_i(rr_outs_i),
+        .dc_outs_i(dc_outs_i),
+        .mem_outs_i(mem_outs_i),
+        .exe_outs_i(exe_outs_i),
+        .wb_outs_i(wb_outs_i),
+        .rr_latches_next(rr_latches_next),
+        .outs_o(decode_outs_i)
+    );
+
+    RR_Latches rr_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(rr_latches_next),
+        .latches_o(rr_latches)
+    );
+
+    RR rr_uut(
+        .clk(clk),
+        .rst(rst),
+        .latches_i(rr_latches),
+        .fetch_outs_i(fetch_outs_o),
+        .decode_outs_i(decode_outs_i),
+        .dc_outs_i(dc_outs_i),
+        .mem_outs_i(mem_outs_i),
+        .exe_outs_i(exe_outs_i),
+        .wb_outs_i(wb_outs_i),
+        .dc_latches_next(dc_latches_next),
+        .outs_o(rr_outs_i)
+    );
+
+    DC_Latches dc_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(dc_latches_next),
+        .latches_o(dc_latches)
+    );
+
+    DC dc_unit (
+        .clk(clk),
+        .rst(rst),
+        .latches_i(dc_latches),
+        .mem_outs_i(mem_outs_i),
+        .exe_outs_i(exe_outs_i),
+        .wb_outs_i(wb_outs_i),
+        .mem_latches_next_o(mem_latches_next),
+        .req_rejected_mio(DCacheIn_i.req_rejected_mio),
+        .req_rejected_0(DCacheIn_i.req_rejected_0),
+        .req_rejected_1(DCacheIn_i.req_rejected_1),
+        .dc_outs_o(dc_outs_i)
+    );
+
+    MEM_Latches mem_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(mem_latches_next),
+        .latches_o(mem_latches)
+    );
+
+    MEM mem_unit (
+        .clk(clk),
+        .rst(rst),
+
+        .latches_i (mem_latches),
+        .exe_outs_i(exe_outs_i),
+        .wb_outs_i (wb_outs_i),
+
+        .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
+        .line_0(DCacheIn_i.line_0),
+        .hit_line_1(DCacheIn_i.hit_line_1),
+        .line_1(DCacheIn_i.line_1),
+        .exe_latches_next_o(exe_latches_next),
+        .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
+        .line_MMIO(DCacheIn_i.line_MIO),
+        .outs_o(mem_outs_i)
+    );
+
+    EXE_Latches exe_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(exe_latches_next),
+        .latches_o(exe_latches)
+    );
+
+    EXE execute_unit (
+        .clk(clk),
+        .rst(rst),
+        .latches_i(exe_latches),
+        .wb_outs_i(wb_outs_i),
+        .wb_latches_next_o(wb_latches_next),
+        .outs_o(exe_outs_i)
+    );
+
+    WB_Latches wb_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(wb_latches_next),
+        .latches_o(wb_latches)
+    );
+
+    WB write_back_unit (
+        .clk(clk),
+        .rst(rst),
+        .wb_latches(wb_latches),
+        .write_success(DCacheIn_i.writeSuccess),
+        .write_success_mio(DCacheIn_i.writeSuccess_MIO),
+        .outputs(wb_outs_i)
+    );
+
     Scheduler uut0_scheduler (
         .clk(clk),
         .rst(rst),  //active low
@@ -215,21 +338,21 @@ module tb_DTE ();
         .bestPick_bk_id_o(bestPick_bk_id_2_dte)
     );
 
-    assign decode_outs_i = '{
-        valid: 0,
-        stall:  0,
-        eip: 32'h1000,
-        invalid_instruction:  0,
-        decode_gp: 0
-    };
+    // assign decode_outs_i = '{
+    //     valid: 0,
+    //     stall:  0,
+    //     eip: 32'h1000,
+    //     invalid_instruction:  0,
+    //     decode_gp: 0
+    // };
 
     
     //code segment is at 0
-    assign rr_outs_i = '{default: '0};
-    assign dc_outs_i = '{default: '0};
-    assign mem_outs_i = '{default: '0};
-    assign exe_outs_i = '{default: '0};
-    assign wb_outs_i = '{default: '0};
+    //assign rr_outs_i = '{default: '0};
+    // assign dc_outs_i = '{default: '0};
+    // assign mem_outs_i = '{default: '0};
+    // assign exe_outs_i = '{default: '0};
+    // assign wb_outs_i = '{default: '0};
 
 
 

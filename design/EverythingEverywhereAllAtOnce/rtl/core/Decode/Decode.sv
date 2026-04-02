@@ -42,6 +42,7 @@ module Decode (
     logic [3:0] PrevLength;
     uint8_t sib_byte;
     bool sib_size;
+    bool disp_needed;
     uint32_t displacement;
     bool disp_size;
     uint64_t imm64;
@@ -65,7 +66,7 @@ module Decode (
     logic [63:0][7:0] queue;
     genvar i;
     generate
-        for (i = 0; i < 4; i++) begin
+        for (i = 0; i < 4; i++) begin   : idm_to_queue_nonsense
             assign queue[i*16 +: 16] = '{
                 idm_outs_i.idm_slots[i].data[15], idm_outs_i.idm_slots[i].data[14], idm_outs_i.idm_slots[i].data[13], idm_outs_i.idm_slots[i].data[12],
                 idm_outs_i.idm_slots[i].data[11], idm_outs_i.idm_slots[i].data[10], idm_outs_i.idm_slots[i].data[9], idm_outs_i.idm_slots[i].data[8],
@@ -102,9 +103,10 @@ module Decode (
     l_address_t predicted_target;
     assign predicted_target = predicted_taken ? idm_outs_i.idm_slots[EIP[5:4]].br_btb_target : 32'b0;
     br_info_processing br_info_gen(
-        .cs_branch(cs_branch), .eip(EIP), .br_length(inst_length),
+        .cs_branch(1'b0), .eip(EIP), .br_length(inst_length),
         .pred_taken(predicted_taken), .pred_target(predicted_target), .branch_output(br_info_for_latches)
     );
+    //need to add if branch or not to cs excel sheet
 
     reg_ids_e sibbase, sibidx;
     uint8_t sibscale;
@@ -150,12 +152,14 @@ module Decode (
         br_info         : br_info_for_latches,
         NEIP            : NEIP,
         EIP             : EIP,
+        EAX             : rr_outs_i.eax,
 
         imm64           : imm64,
         sib_idx_id      : sibidx,
         sib_base_id     : sibbase,
-        sib_needed      : sibsize,
+        sib_needed      : sib_size,
         sib_scale       : sibscale,
+        disp_needed     : disp_needed,
         disp_size       : disp_size,
         displacement    : displacement,
         seg_1_valid     : 1'b0,

@@ -3,7 +3,8 @@ module AddressGen_Logic (
     input uint32_t SIB_IDX_data,
     input uint32_t SIB_BASE_data,
     input uint8_t SIB_SCALE_val,
-    input rr_cs_t rr_cs,
+    input bool sib_needed,
+    input bool disp_needed,
     input bool dispsize,
     input uint32_t displacement,
 
@@ -14,7 +15,7 @@ module AddressGen_Logic (
     bool cout;
 
     always_comb begin
-        unique case({rr_cs.SIB_NEEDED, rr_cs.DISP_NEEDED})
+        unique case({sib_needed, disp_needed})
             2'b00: begin
                 adder_input2 = register_data;
             end
@@ -29,7 +30,7 @@ module AddressGen_Logic (
             end
         endcase
 
-        unique case({rr_cs.DISP_NEEDED, dispsize})
+        unique case({disp_needed, dispsize})
             2'b00: begin
                 adder_input1 = 32'b0;
             end

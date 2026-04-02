@@ -1,5 +1,6 @@
-import common_pkg::*;
 package Decode_pkg;
+    import common_pkg::*;
+    import reg_ids_pkg::*;
 
     typedef struct{
         reg_ids_e dr_id;

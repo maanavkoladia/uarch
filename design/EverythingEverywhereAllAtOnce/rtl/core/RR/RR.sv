@@ -86,7 +86,8 @@ module RR (
         .SIB_IDX_data(reg_out.SIB_IDX_data),
         .SIB_BASE_data(reg_out.SIB_BASE_data),
         .SIB_SCALE_val(latches_i.normal_latches.sib_scale),
-        .rr_cs(latches_i.normal_latches.cs),
+        .sib_needed(latches_i.normal_latches.sib_needed),
+        .disp_needed(latches_i.normal_latches.disp_needed),
         .dispsize(latches_i.normal_latches.disp_size),
         .displacement(latches_i.normal_latches.displacement),
         .AddrGen_out(addygen_out)
@@ -157,9 +158,10 @@ module RR (
         stall   :   latches_i.normal_latches.valid && (depstall || (RR_PF || RR_GP)),
         exp_present : RR_PF || RR_GP,
         exp_pf  : RR_PF,
-        ecx_sb : ecx_sb,
+        ecx_sb  : ecx_sb,
         ecx     : reg_out.ECX_data,
-        set_ZF_sb   : latches_i.normal_latches.cs.will_mod_ZF,
+        eax     : reg_out.EAX_data,
+        set_ZF_sb   : latches_i.normal_latches.cs.will_mod_zf,
         codeSeg_sb  : cs_sb,
         codeSeg_data  : reg_out.CS_data,
         codeSeg_limit  : '1

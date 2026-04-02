@@ -60,6 +60,7 @@ package core_common_pkg;
         //outputs to decode
         bool ecx_sb;
         uint32_t ecx;
+        uint32_t eax;
         bool set_ZF_sb;
 
         bool codeSeg_sb;  //needed for far brs, the sb will disable the i cache

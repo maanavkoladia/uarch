@@ -1,6 +1,6 @@
 CORE_PATH_INTERNAL = $(ROOT)/rtl/core/
 
-include $(CORE_PATH_INTERNAL)/Decode/structural/srcs.mk
+include $(CORE_PATH_INTERNAL)/Decode/srcs.mk
 include $(CORE_PATH_INTERNAL)/Fetch/srcs.mk
 include $(CORE_PATH_INTERNAL)/RR/srcs.mk
 include $(CORE_PATH_INTERNAL)/DC/srcs.mk
@@ -45,6 +45,7 @@ CORE_PKGS = \
 			$(CORE_PATH_INTERNAL)/TLB/pkg/TLB_pkg.sv \
 			$(CORE_PATH_INTERNAL)/SegmentTranslation/SegmentTranslation_pkg.sv \
 			$(FETCH_PKGS) \
+			$(DECODE_PKGS)	\
 			$(RR_PKGS)	\
 			$(DC_PKGS) \
 			$(WB_PKGS) \

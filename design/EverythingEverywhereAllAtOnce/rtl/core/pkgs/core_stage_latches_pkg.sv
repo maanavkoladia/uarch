@@ -59,10 +59,10 @@ package core_stage_latches_pkg;
         bool MODRM_NEEDED;
         bool RM_IS_DR;
         bool REG_IS_DR;
-        bool HARD_CODED_DR;
-        reg_ids_e HARD_CODED_DR_ID;
-        bool HARD_CODED_SR;
-        bool HARD_CODED_SR_ID;      //ik this is a bool rn, but cs has it as bool rn, will hcnage later
+        bool HARDCODED_DR;
+        reg_ids_e HARDCODED_DR_ID;
+        bool HARDCODED_SR;
+        bool HARDCODED_SR_ID;      //ik this is a bool rn, but cs has it as bool rn, will hcnage later
         bool OP_IN_MODRM;
         reg_ids_e dr_id;
         reg_ids_e sr_id;
@@ -152,6 +152,7 @@ package core_stage_latches_pkg;
         reg_ids_e sib_base_id;
         bool sib_needed;
         uint8_t sib_scale;  //0,2,4,8
+        bool disp_needed;
         bool disp_size; //8 or 32, 0 determined by DISP_NEEDED
         uint32_t displacement;
         bool seg_1_valid;  //need two beacuse two segs for movs etc, 
