@@ -1,4 +1,4 @@
-module cmp32 (
+module cmp (
     input  uint64_t srA,
     input  uint64_t srB,
     input  logic [3:0] data_size,  // bottom 3 bits used: data_size[2:0]

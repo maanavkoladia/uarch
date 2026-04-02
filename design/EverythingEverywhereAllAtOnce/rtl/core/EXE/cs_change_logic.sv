@@ -22,7 +22,7 @@ module cs_change_logic(
             st_op_o = cancel_store ? 0 : cs_st_op;
         end
         if(op_type == CMOVC)begin
-            st_op = curr_cf_flag ? 1 : 0;
+            st_op_o = curr_cf_flag ? 1 : 0;
         end
     end
 

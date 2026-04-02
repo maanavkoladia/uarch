@@ -1,7 +1,7 @@
 module pavgb (
-    input  logic [63:0] srA,
-    input  logic [63:0] srB,
-    output logic [63:0] dr_o
+    input  uint64_t srA,
+    input  uint64_t srB,
+    output uint64_t dr_o
 );
 
     // Extract bytes

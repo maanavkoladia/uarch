@@ -1,3 +1,6 @@
+import control_store_pkg::*;
+import common_pkg::*;
+
 module pf_flag_sel(
 	input bool adc_pf,
 	input bool add_pf,

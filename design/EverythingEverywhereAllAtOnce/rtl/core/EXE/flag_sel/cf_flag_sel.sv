@@ -1,6 +1,6 @@
 // Carry Flag Selection Module
 import common_pkg::*;
-import contorl_store_pkg::*;
+import control_store_pkg::*;
 
 module cf_flag_sel(
 	input bool aaa_cf,
@@ -16,7 +16,7 @@ module cf_flag_sel(
 
 	// Add more as needed if new functional units affect CF
 	input curr_cf_flag,
-	input exe_cs_operation_type_e op_type;
+	input exe_cs_operation_type_e op_type,
 
 	output bool cf_flag_o
 );

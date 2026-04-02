@@ -1,5 +1,5 @@
 import common_pkg::*;
-import contorl_store_pkg::*;
+import control_store_pkg::*;
 
 module df_flag_sel(
     input bool curr_df_flag,

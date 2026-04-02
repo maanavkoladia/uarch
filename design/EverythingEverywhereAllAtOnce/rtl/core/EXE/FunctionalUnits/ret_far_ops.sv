@@ -7,7 +7,7 @@ module ret_far_op(
 
 );
 
-    assign dr_o = cs;
+    assign dr_o = {32'd0, cs};
     assign sr_o = stack_ptr + 8;
 
 

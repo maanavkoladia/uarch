@@ -25,19 +25,19 @@ module res_buf_sel (
 
     always_comb begin
         case (op_type)
-            ADC_OP:      res_buf_o = adc_res_buf_i;
-            ADD_OP:      res_buf_o = add_res_buf_i;
-            AND_OP:      res_buf_o = and_res_buf_i;
-            CALL_OP:     res_buf_o = call_res_buf_i;
-            CMPXCHG_OP:  res_buf_o = cmpxchg_buf_i;
-            FAR_CALL_OP: res_buf_o = far_call_res_buf_i;
-            MOV_OP:      res_buf_o = mov_res_buf_i;
-            NOT_OP:      res_buf_o = not_res_buf_i;
-            OR_OP:       res_buf_o = or_res_buf_i;
-            PUSH_OP:     res_buf_o = push_res_buf_i;
-            SAR_OP:      res_buf_o = sar_res_buf_i;
-            SBB_OP:      res_buf_o = sbb_res_buf_i;
-            XCHG_OP:     res_buf_o = xchg_res_buf_i;
+            ADC:      res_buf_o = adc_res_buf_i;
+            ADD:      res_buf_o = add_res_buf_i;
+            AND:      res_buf_o = and_res_buf_i;
+            CALL:     res_buf_o = call_res_buf_i;
+            CMPXCHG:  res_buf_o = cmpxchg_buf_i;
+            FAR_CALL: res_buf_o = far_call_res_buf_i;
+            MOV:      res_buf_o = mov_res_buf_i;
+            NOT:      res_buf_o = not_res_buf_i;
+            OR:       res_buf_o = or_res_buf_i;
+            PUSH:     res_buf_o = push_res_buf_i;
+            SAR:      res_buf_o = sar_res_buf_i;
+            SBB:      res_buf_o = sbb_res_buf_i;
+            XCHG:     res_buf_o = xchg_res_buf_i;
             default:     res_buf_o = 64'h0;
         endcase
     end

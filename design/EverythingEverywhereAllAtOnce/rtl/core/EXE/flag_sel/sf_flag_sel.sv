@@ -1,10 +1,13 @@
 // Sign Flag Selection Module
+import control_store_pkg::*;
+import common_pkg::*;
+
 module sf_flag_sel(
 	input bool add_sf,
 	input bool adc_sf,
 	input bool and_sf,
 	input bool cmp_sf,
-	input bool cmpxchg_sf
+	input bool cmpxchg_sf,
 	input bool or_sf,
 	input bool sal_sf,
 	input bool sar_sf,
@@ -16,7 +19,6 @@ module sf_flag_sel(
 	input bool curr_sf_flag,
 	output bool sf_flag_o
 
-	output bool sf_flag_o
 );
 
 	always_comb begin

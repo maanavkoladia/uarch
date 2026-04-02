@@ -54,7 +54,8 @@ module DCache_Bank (
     swap_buf_t dcache_bank_swapBuf;
 
     block_req_t savedReq;
-    block_req_t reqInUse = fsmOuts.useSaved_Req ? savedReq : blockReq_i;
+    block_req_t reqInUse;
+    assign reqInUse = fsmOuts.useSaved_Req ? savedReq : blockReq_i;
 
     p_addr_dcache_fields_t blockReq_p_addr_fields;
     assign blockReq_p_addr_fields = '{

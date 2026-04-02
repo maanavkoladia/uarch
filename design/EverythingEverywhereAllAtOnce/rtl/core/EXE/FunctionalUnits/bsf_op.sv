@@ -4,7 +4,7 @@
 
 import common_pkg::*;
 
-module bsf (
+module bsf_op (
     input  uint64_t srA,
     input  logic [3:0] data_size,    // 01=16bit, 10=32bit
     output uint64_t dr_o,      // Index of first set bit

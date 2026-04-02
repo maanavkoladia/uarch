@@ -145,6 +145,7 @@ package core_stage_latches_pkg;
         br_info_t br_info;
         l_address_t NEIP;
         l_address_t EIP;
+        uint32_t EAX;
 
         uint64_t imm64;
         reg_ids_e sib_idx_id;
@@ -181,6 +182,8 @@ package core_stage_latches_pkg;
 
         l_address_t NEIP;
         l_address_t EIP;
+        uint32_t EAX;
+
 
         uint64_t imm64;
 
@@ -209,6 +212,7 @@ package core_stage_latches_pkg;
 
         l_address_t NEIP;
         l_address_t EIP;
+        uint32_t EAX;
 
         uint64_t imm64;
 
@@ -238,6 +242,8 @@ package core_stage_latches_pkg;
 
         l_address_t NEIP;
         l_address_t EIP;
+        uint32_t EAX;
+
 
         uint64_t imm64;
 
