@@ -12,37 +12,45 @@ Conf keys:
     readmemFilePath      – output filename        (e.g. "dcache_loader.sv")
     outputPath           – directory to write into
     startUpDelay         – single delay at top of initial begin
-    numBlocks            – number of dcache blocks  (outer genvar / generate)
-    numDataStoreCells    – cells per data store, shared by bank AND vcache
-    numBankLines         – words per bank ram cell   (ram8b8w$ → 8)
-    numVCacheLines       – words per vcache ram cell  (ram8b4w$ → 4)
+    numBlocks            – number of dcache blocks
+    numDataStoreCells    – data store cells per block, shared by bank AND vcache
+    numBankLines         – words per bank ram cell        (ram8b8w$ → 8)
+    numVCacheLines       – vcache tag store entry count   (outer generate loop)
+                           also used as words per vcache DATA store cell (ram8b4w$ → 4)
+    numCellsNeeded       – vcache tag store cells per entry (inner generate loop)
+                           NUM_CELLS_NEEDED in RTL (typically 2)
 
-    Bank_TagStorePath    – hierarchical path template for bank tag store cell
-    Bank_DataStorePath   – hierarchical path template for bank data store cells
-    VCache_TagStorePath  – hierarchical path template for vcache tag store cell
-    VCache_DataStorePath – hierarchical path template for vcache data store cells
+    Bank_TagStorePath    – path template for bank tag store cell
+    Bank_DataStorePath   – path template for bank data store cells
+    VCache_TagStorePath  – path template for vcache tag store cells
+                           must contain <numVCacheLines> and <numCellsNeeded>
+                           tokens (iterated as entry index and cell index)
+    VCache_DataStorePath – path template for vcache data store cells
 
-    Path template tokens (replaced per block / cell):
-        <blockNum>  → block index  (0 .. numBlocks-1)
-        <cellNum>   → cell index   (0 .. numDataStoreCells-1)
+    Path template tokens:
+        <blockNum>       → block index          (0 .. numBlocks-1)
+        <cellNum>        → data cell index      (0 .. numDataStoreCells-1)
+        <numVCacheLines> → vcache tag entry idx (0 .. numVCacheLines-1)
+        <numCellsNeeded> → vcache tag cell idx  (0 .. numCellsNeeded-1)
 
-    loadRandomData       – (optional) "true" → random 8-bit values per word
+    loadRandomData       – (optional) "true" → random 8-bit value per word
                            Any other value / omitted → zero-fill.
 
 Cell geometry:
-    Bank  tag  store  : ram8b8w$  →  numBankLines   words (typically 8)
-    Bank  data store  : ram8b8w$  →  numBankLines   words (typically 8)
-    VCache tag  store : ram8b4w$  →  numVCacheLines words (typically 4)
-    VCache data store : ram8b4w$  →  numVCacheLines words (typically 4)
+    Bank  tag  store  : ram8b8w$  → numBankLines words   (1 cell / block)
+    Bank  data store  : ram8b8w$  → numBankLines words   (numDataStoreCells / block)
+    VCache tag  store : ram8b4w$  → numVCacheLines words (numVCacheLines entries ×
+                                                           numCellsNeeded cells each)
+    VCache data store : ram8b4w$  → numVCacheLines words (numDataStoreCells / block)
 
 Generated Verilog is fully unrolled — no for-loops, no generate blocks.
 Every mem[] assignment is an explicit statement so VCS has no issues.
 
 Total writes emitted per block:
-    bank  tag  (1 cell  × numBankLines)
-    bank  data (numDataStoreCells × numBankLines)
-    vcache tag  (1 cell  × numVCacheLines)
-    vcache data (numDataStoreCells × numVCacheLines)
+    bank  tag  : 1                × numBankLines
+    bank  data : numDataStoreCells × numBankLines
+    vcache tag : numVCacheLines   × numCellsNeeded × numVCacheLines  (words)
+    vcache data: numDataStoreCells × numVCacheLines
 """
 
 import json
@@ -59,6 +67,7 @@ REQUIRED_KEYS = [
     "numDataStoreCells",
     "numBankLines",
     "numVCacheLines",
+    "numCellsNeeded",
     "Bank_TagStorePath",
     "Bank_DataStorePath",
     "VCache_TagStorePath",
@@ -101,18 +110,41 @@ def _cell_value(random_mode: bool) -> str:
     return "8'h00"
 
 
-def _resolve(template: str, block: int, cell: int | None = None) -> str:
+def _resolve_bank(template: str, block: int, cell: int | None = None) -> str:
     """
-    Replace path template tokens:
+    Resolve tokens for bank tag/data store paths:
         <blockNum>  → block index
-        [<cellNum>] → [cell index]  (handles missing closing '>' gracefully)
+        [<cellNum>] → [cell index]  (tolerates missing closing '>')
     """
     result = template.strip()
     result = result.replace("<blockNum>", str(block))
     if cell is not None:
-        # Accept both [<cellNum>] and [<cellNum] (missing '>')
         result = re.sub(r'\[<cellNum>?\]', f'[{cell}]', result)
     return result
+
+
+def _resolve_vcache_tag(template: str, block: int, entry: int, cell: int) -> str:
+    """
+    Resolve tokens for vcache tag store paths (2D generate):
+        <blockNum>       → block index
+        <numVCacheLines> → entry index  (outer generate: g_tagStore_Entry)
+        <numCellsNeeded> → cell index   (inner generate: g_tagStoreCell)
+    Both [<tok>] and [<tok] (missing '>') are accepted.
+    """
+    result = template.strip()
+    result = result.replace("<blockNum>", str(block))
+    result = re.sub(r'\[<numVCacheLines>?\]', f'[{entry}]', result)
+    result = re.sub(r'\[<numCellsNeeded>?\]',  f'[{cell}]',  result)
+    return result
+
+
+def _resolve_vcache_data(template: str, block: int, cell: int) -> str:
+    """
+    Resolve tokens for vcache data store paths:
+        <blockNum>  → block index
+        [<cellNum>] → [cell index]
+    """
+    return _resolve_bank(template, block=block, cell=cell)
 
 
 def _cell_lines(hier_path: str, num_words: int, random_mode: bool) -> list[str]:
@@ -131,12 +163,13 @@ def _cell_lines(hier_path: str, num_words: int, random_mode: bool) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def generate(conf: dict) -> str:
-    delay        = conf["startUpDelay"].strip()
-    num_blocks   = int(conf["numBlocks"])
-    num_cells    = int(conf["numDataStoreCells"])
-    bank_words   = int(conf["numBankLines"])
-    vcache_words = int(conf["numVCacheLines"])
-    random_mode  = _is_random_mode(conf)
+    delay            = conf["startUpDelay"].strip()
+    num_blocks       = int(conf["numBlocks"])
+    num_cells        = int(conf["numDataStoreCells"])
+    bank_words       = int(conf["numBankLines"])
+    vcache_words     = int(conf["numVCacheLines"])   # words/cell AND entry count
+    num_cells_needed = int(conf["numCellsNeeded"])   # inner tag store loop
+    random_mode      = _is_random_mode(conf)
 
     tmpl_bank_tag    = conf["Bank_TagStorePath"]
     tmpl_bank_data   = conf["Bank_DataStorePath"]
@@ -153,9 +186,11 @@ def generate(conf: dict) -> str:
         f"// Fills every ram cell in the DCache with {fill_desc} at simulation start.",
         "// All assignments are fully unrolled (no loops) for VCS compatibility.",
         "",
-        f"// Geometry: {num_blocks} block(s), {num_cells} data-store cell(s) per bank/vcache",
-        f"//           bank  words/cell : {bank_words}",
-        f"//           vcache words/cell: {vcache_words}",
+        f"// Geometry : {num_blocks} block(s)",
+        f"//   Bank   : 1 tag cell × {bank_words} words",
+        f"//            {num_cells} data cells × {bank_words} words",
+        f"//   VCache : {vcache_words} tag entries × {num_cells_needed} cells × {vcache_words} words",
+        f"//            {num_cells} data cells × {vcache_words} words",
         "",
         f"module {module_name};",
         "",
@@ -166,35 +201,45 @@ def generate(conf: dict) -> str:
     ]
 
     for b in range(num_blocks):
-        lines.append(f"    // =========================================================")
-        lines.append(f"    // Block [{b}]")
-        lines.append(f"    // =========================================================")
-        lines.append("")
+        lines += [
+            f"    // =========================================================",
+            f"    // Block [{b}]",
+            f"    // =========================================================",
+            "",
+        ]
 
-        # ── Bank Tag Store ─────────────────────────────────────────────────
+        # ── Bank Tag Store  (1 cell, ram8b8w$) ────────────────────────────
         lines.append(f"    // Block [{b}] – Bank Tag Store")
-        path = _resolve(tmpl_bank_tag, block=b)
+        path = _resolve_bank(tmpl_bank_tag, block=b)
         lines += _cell_lines(path, bank_words, random_mode)
         lines.append("")
 
-        # ── Bank Data Store ────────────────────────────────────────────────
+        # ── Bank Data Store  (numDataStoreCells cells, ram8b8w$) ──────────
         lines.append(f"    // Block [{b}] – Bank Data Store")
         for c in range(num_cells):
-            path = _resolve(tmpl_bank_data, block=b, cell=c)
+            path = _resolve_bank(tmpl_bank_data, block=b, cell=c)
             lines.append(f"    // g_dcache_bank_data_store_ram_cells[{c}]")
             lines += _cell_lines(path, bank_words, random_mode)
         lines.append("")
 
-        # ── VCache Tag Store ───────────────────────────────────────────────
+        # ── VCache Tag Store  (numVCacheLines × numCellsNeeded, ram8b4w$) ─
+        # Mirrors the RTL generate structure:
+        #   for (genvar i = 0; i < VCACHE_NUM_LINES;  i++) : g_tagStore_Entry
+        #     for (genvar j = 0; j < NUM_CELLS_NEEDED; j++) : g_tagStoreCell
         lines.append(f"    // Block [{b}] – VCache Tag Store")
-        path = _resolve(tmpl_vcache_tag, block=b)
-        lines += _cell_lines(path, vcache_words, random_mode)
+        for entry in range(vcache_words):
+            lines.append(f"    // g_tagStore_Entry[{entry}]")
+            for cell in range(num_cells_needed):
+                path = _resolve_vcache_tag(tmpl_vcache_tag, block=b,
+                                           entry=entry, cell=cell)
+                lines.append(f"    // g_tagStoreCell[{cell}]")
+                lines += _cell_lines(path, vcache_words, random_mode)
         lines.append("")
 
-        # ── VCache Data Store ──────────────────────────────────────────────
+        # ── VCache Data Store  (numDataStoreCells cells, ram8b4w$) ────────
         lines.append(f"    // Block [{b}] – VCache Data Store")
         for c in range(num_cells):
-            path = _resolve(tmpl_vcache_data, block=b, cell=c)
+            path = _resolve_vcache_data(tmpl_vcache_data, block=b, cell=c)
             lines.append(f"    // g_vcache_data_store_ram_cells[{c}]")
             lines += _cell_lines(path, vcache_words, random_mode)
         lines.append("")
@@ -231,28 +276,34 @@ def main() -> int:
         print(f"[ERROR] DCache_Startup_Gen: cannot write {out_file}: {exc}")
         return 1
 
-    num_blocks   = int(conf["numBlocks"])
-    num_cells    = int(conf["numDataStoreCells"])
-    bank_words   = int(conf["numBankLines"])
-    vcache_words = int(conf["numVCacheLines"])
+    num_blocks       = int(conf["numBlocks"])
+    num_cells        = int(conf["numDataStoreCells"])
+    bank_words       = int(conf["numBankLines"])
+    vcache_words     = int(conf["numVCacheLines"])
+    num_cells_needed = int(conf["numCellsNeeded"])
 
+    vc_tag_writes    = vcache_words * num_cells_needed * vcache_words
     writes_per_block = (
-        (1 * bank_words)            +   # bank  tag store  (1 cell)
-        (num_cells * bank_words)    +   # bank  data store
-        (1 * vcache_words)          +   # vcache tag store (1 cell)
-        (num_cells * vcache_words)      # vcache data store
+        (1         * bank_words)   +   # bank  tag  store
+        (num_cells * bank_words)   +   # bank  data store
+        vc_tag_writes              +   # vcache tag store (2D)
+        (num_cells * vcache_words)     # vcache data store
     )
     total_writes = num_blocks * writes_per_block
 
     print(f"[DCache_Startup_Gen] written → {out_file.resolve()}")
-    print(f"  blocks              : {num_blocks}")
-    print(f"  data store cells    : {num_cells}  (bank + vcache)")
-    print(f"  bank  words/cell    : {bank_words}")
-    print(f"  vcache words/cell   : {vcache_words}")
-    print(f"  startup delay       : #{conf['startUpDelay'].strip()}")
-    print(f"  fill mode           : {'RANDOM' if random_mode else 'ZERO'}")
-    print(f"  writes/block        : {writes_per_block}")
-    print(f"  total writes        : {total_writes}")
+    print(f"  blocks                  : {num_blocks}")
+    print(f"  bank  tag  cells/block  : 1")
+    print(f"  bank  data cells/block  : {num_cells}")
+    print(f"  bank  words/cell        : {bank_words}")
+    print(f"  vcache tag entries      : {vcache_words}  (g_tagStore_Entry)")
+    print(f"  vcache tag cells/entry  : {num_cells_needed}  (g_tagStoreCell)")
+    print(f"  vcache tag/data words   : {vcache_words}")
+    print(f"  vcache data cells/block : {num_cells}")
+    print(f"  startup delay           : #{conf['startUpDelay'].strip()}")
+    print(f"  fill mode               : {'RANDOM' if random_mode else 'ZERO'}")
+    print(f"  writes/block            : {writes_per_block}")
+    print(f"  total writes            : {total_writes}")
     return 0
 
 
