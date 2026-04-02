@@ -42,6 +42,9 @@ module DCache_Block (
     v_cache_outputs_t vcache_outputs;
     eb_outputs_t eb_outputs;
 
+    bool block_busy;
+    assign block_busy = dcache_bank_outputs.busy || vcache_outputs.busy;
+
     DCache_Bank dcache_bank_unit (
         .clk(clk_i),
         .rst(rst_i),
@@ -49,6 +52,7 @@ module DCache_Block (
         .eb_i(eb_outputs),
         .mem_Valid_FromDte_i(mem_Valid_FromDte_i),
         .blockReq_i(block_req_i),
+        .block_busy_i(block_busy),
         .dataBus(dataBus),
         .outputs_o(dcache_bank_outputs)
     );
@@ -57,6 +61,7 @@ module DCache_Block (
         .clk(clk_i),
         .rst(rst_i),  //active low
         .blockReq_i(block_req_i),
+        .block_busy_i(block_busy),
         .eb_outs_i(eb_outputs),
         .dcache_outs_i(dcache_bank_outputs),
         .outputs_o(vcache_outputs)
@@ -72,6 +77,7 @@ module DCache_Block (
         .outputs_o(eb_outputs)
     );
 
+    
     always_comb begin
         outputs_o.dataLineOut = '{default: '0};  // default (or leave if you prefer fail-fast X)
         unique case ({

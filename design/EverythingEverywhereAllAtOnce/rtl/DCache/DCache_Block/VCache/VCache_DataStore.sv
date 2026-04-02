@@ -3,6 +3,7 @@ import DCache_common_pkg::*;
 
 module VCache_DataStore (
 
+    input rst_i,
     //from block req
     input p_address_t p_addr_i,
     input bool oe_i,
@@ -48,7 +49,11 @@ module VCache_DataStore (
     //there is not bytes addressable st
     //case 1: when loading from D$ swabuf
     //case 2:  not busy doing a write, use the vector
-    logic WR_2_DataStore[NUM_CELL_IN_DATA_STORE];
+    logic WR_2_DataStore_clk[NUM_CELL_IN_DATA_STORE];
+    logic WR_2_DataStore_delay[NUM_CELL_IN_DATA_STORE];
+    logic WR_2_DataStore_actual[NUM_CELL_IN_DATA_STORE];
+
+    assign #6 WR_2_DataStore_delay = !rst_i ? '{default: '1} : WR_2_DataStore_clk;
 
     //data can only come from the D$ swap buf
     //i lied
@@ -69,7 +74,7 @@ module VCache_DataStore (
         for (genvar i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin : g_vcache_data_store_ram_cells
             ram8b4w$ v_cache_data_store_ramCell (
                 .A(ADDRESS_2_DataStore),
-                .WR(WR_2_DataStore[i]),
+                .WR(WR_2_DataStore_actual[i]),
                 .DIN(DIN_2_DataStore[i]),
                 .OE(OE_2_DataStore),
                 .DOUT(DOUT_DataStore[i])
@@ -85,17 +90,25 @@ module VCache_DataStore (
         if (LD_EB_i) ADDRESS_2_DataStore = evictionIDX_i;
     end
 
+    always_comb begin
+        if(!rst_i) WR_2_DataStore_actual = '{default: '1};
+        else begin
+            for(int i = 0; i < NUM_CELL_IN_DATA_STORE; i++)
+                WR_2_DataStore_actual[i] = ((WR_2_DataStore_delay[i] == 0) && (WR_2_DataStore_clk[i] == 0)) ? 0 : 1;
+
+        end
+    end
     //WR_2_DataStore, active low
     always_comb begin
         //comb completness
-        WR_2_DataStore = '{default: '1};
+        WR_2_DataStore_clk = '{default: '1};
         if (read_D_SWAP_i) begin
-            WR_2_DataStore = '{default: '0};
+            WR_2_DataStore_clk = '{default: '0};
         end
 
         if (!busy_i && we_i) begin
             for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++) begin
-                WR_2_DataStore[i] = st_data_vec_i[i] && tagStore_hit_i ? 1'b0 : 1'b1;
+                WR_2_DataStore_clk[i] = st_data_vec_i[i] && tagStore_hit_i ? 1'b0 : 1'b1;
             end
         end
     end

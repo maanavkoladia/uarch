@@ -11,6 +11,8 @@ module VCache (
 
     input d_cache_bank_outputs_t dcache_outs_i,
 
+    input bool block_busy_i,
+
     output v_cache_outputs_t outputs_o
 );
 
@@ -101,7 +103,7 @@ module VCache (
         .DCache_Will_Evict_i(dcache_outs_i.D_will_evict),
         .saveSwapIDX(fsmOuts.saveSwapIDX),
         .use_savedSwapIDX(fsmOuts.use_savedSwapIDX),
-        .bankControllerBusy_i(fsmOuts.busy),
+        .bankControllerBusy_i(block_busy_i),
         .LD_EB_i(fsmOuts.WR_2_EB),
         .Write_VSWAP_i(fsmOuts.Write_VSWAP),
         .Update_LRU(fsmOuts.Update_LRU),
@@ -116,6 +118,7 @@ module VCache (
     );
     
     VCache_DataStore vcache_datastore_unit (
+        .rst_i(rst),
         .p_addr_i(reqInUse.p_addr),
         .oe_i(reqInUse.oe),
         .we_i(reqInUse.we),
@@ -124,7 +127,7 @@ module VCache (
         .DCache_SwapBuf_Line_i(dcache_outs_i.dcache_swapBuf.line),
         .read_D_SWAP_i(fsmOuts.Read_DSWAP),  //for writing
         .Write_VSWAP_i(fsmOuts.Write_VSWAP),  //for reading
-        .busy_i(fsmOuts.busy),  //do access logic
+        .busy_i(block_busy_i),  //do access logic
         .LD_EB_i(fsmOuts.WR_2_EB),  //oe logic
         .tagStore_hit_i(hit),
         .use_savedSwapIDX_i(fsmOuts.use_savedSwapIDX),

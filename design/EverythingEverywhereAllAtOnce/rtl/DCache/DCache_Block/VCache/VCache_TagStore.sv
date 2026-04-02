@@ -150,7 +150,11 @@ module VCache_TagStore (
     //case 1: loading from dcache bank swapbuf, for a swap, use the
     //address that was saved, ie the lines that got the hit in the previous cycle
     //case 2: loading from dcache bank swapbuf, for an eviction, use lru
-    logic WR_2_TagStore[VCACHE_NUM_LINES];
+    logic WR_2_TagStore_clk[VCACHE_NUM_LINES];
+    logic WR_2_TagStore_delay[VCACHE_NUM_LINES];
+    logic WR_2_TagStore_actual[VCACHE_NUM_LINES];
+
+    assign #2 WR_2_TagStore_delay = !rst ? '{default: '1} : WR_2_TagStore_clk;
     //logic WR_2_TagStore_net;
     logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] WR_2_TagStore_idx;
 
@@ -159,9 +163,18 @@ module VCache_TagStore (
 
     //WR_2_TagStore,
     always_comb begin
-        WR_2_TagStore = '{default: '1};
+        WR_2_TagStore_clk = '{default: '1};
         WR_2_TagStore_idx = use_savedSwapIDX ? saved_SwapIDX : currLRU_IDX;
-        WR_2_TagStore[WR_2_TagStore_idx] = Read_DSWAP_i ? 0 : 1;
+        WR_2_TagStore_clk[WR_2_TagStore_idx] = Read_DSWAP_i ? 0 : 1;
+    end
+
+    always_comb begin
+        if(!rst) WR_2_TagStore_actual = '{default : '1};
+        else begin
+            for(int i = 0; i < VCACHE_NUM_LINES; i++)begin
+                WR_2_TagStore_actual[i] = ((WR_2_TagStore_delay[i] == 0) && (WR_2_TagStore_clk[i] == 0)) ? 0 :1;
+            end
+        end
     end
 
     //can onyl come from the D$ swap buf addr, bits need,
@@ -238,7 +251,7 @@ module VCache_TagStore (
             for (genvar j = 0; j < NUM_CELLS_NEEDED; j++) begin : g_tagStoreCell
                 ram8b4w$ tagStoreCell (
                     .A(2'b0),
-                    .WR(WR_2_TagStore[i]),
+                    .WR(WR_2_TagStore_actual[i]),
                     .DIN(DIN_2_TagStore_net[j]),
                     .OE(OE_2_TagStore[i]),
                     .DOUT(DOUT_of_TagStore_Net[i][j])

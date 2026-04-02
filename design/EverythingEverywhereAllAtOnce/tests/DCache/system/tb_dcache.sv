@@ -97,14 +97,69 @@ module tb_dcache ();
         @(posedge clk)
         dte_2_dcache.mem_valid[0] = 1;
         driveDataBus = 1;
-        dataForBus = 32'hFFFF;
+        dataForBus = 32'h0101_0101;
         @(posedge clk)
+        dataForBus = 32'h0202_0202;
+
         @(posedge clk)
+        dataForBus = 32'h0303_0303;
+
+        @(posedge clk)
+        dataForBus = 32'h0404_0404;
+
         @(posedge clk)
         @(posedge clk)
         dte_2_dcache.mem_valid[0] = 0;
         driveDataBus = 0;
+        block_req.oe = 0;
+
+
+        DelayCLKs(10);
+        block_req.p_addr = 15'h3000; //new address should cause evictions
+        block_req.oe = 1;
+        block_req.we = 0;
+        block_req.vec = 16'hFFFF;
+        block_req.st_q_data = '{default: '1};
+        @(posedge clk)
+        DelayCLKs(7);
+        @(posedge clk)
+        dte_2_dcache.mem_valid[0] = 1;
+        driveDataBus = 1;
+        dataForBus = 32'h1111_1111;
+        @(posedge clk)
+        dataForBus = 32'h1212_1212;
+        @(posedge clk)
+        dataForBus = 32'h1313_1313;
+        @(posedge clk)
+        dataForBus = 32'h1414_1414;
+        @(posedge clk)
+        dte_2_dcache.mem_valid[0] = 0;
+        driveDataBus = 0;
+        @(posedge clk)
+        block_req.oe = 0;
+
+        DelayCLKs(10);
+        @(posedge clk)
+        block_req.p_addr = 15'h2000; //new address should be in vcache
+        block_req.oe = 1;
+        block_req.we = 0;
+        block_req.vec = 16'hFFFF;
+        block_req.st_q_data = '{default: '1};
+        @(posedge clk)
+        //hit here and also latches updated at the same time 
+        // block_req.oe = 0;
+        // block_req.we = 1;
+        // block_req.p_addr = 15'h3000; //write to the vcache after swap
+
+
+
+
         
+
+        
+
+
+
 
 
 

@@ -22,6 +22,8 @@ module DCache_Bank (
 
     input block_req_t blockReq_i,
 
+    input bool block_busy_i,
+
     //data bus is only an input here, outputs go to V$
     input wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus,
 
@@ -49,6 +51,7 @@ module DCache_Bank (
     dcache_bank_fsm_states_e dcache_bank_State;
     logic [$clog2(NUM_DCACHE_BANK_FSM_STATES) - 1 : 0] dcache_bank_State_bits;
     assign dcache_bank_State = dcache_bank_State_bits;
+
 
     //nned to create the dcache swap buffer
     swap_buf_t dcache_bank_swapBuf;
@@ -89,7 +92,7 @@ module DCache_Bank (
         .EB_Hit_i(eb_i.reqHit),
         .Line_valid_i(currLineValid),
         .DTE_Mem_valid_i(mem_Valid_FromDte_i),
-        .D_Swap_valid_i(),
+        .D_Swap_valid_i(dcache_bank_swapBuf.valid),
         .we_i(reqInUse.we),
 
         .S_0(dcache_bank_State_bits[0]),  // current-state bit 0 (LSB)
@@ -125,7 +128,7 @@ module DCache_Bank (
         .fill3_i(fsmOuts.fill3),
 
         .write2_Dwap_i(fsmOuts.write_to_dswap),
-        .bankControllerBusy_i(fsmOuts.busy),
+        .bankControllerBusy_i(block_busy_i),
         .st_q_data(reqInUse.st_q_data),
         .st_data_vec(reqInUse.vec),
         .VCache_SwapBuf_Line_i(V_Cache_i.vcache_swapBuf.line),
@@ -146,7 +149,7 @@ module DCache_Bank (
         .V_Cache_SwapBuf_DirtyBit(V_Cache_i.vcache_swapBuf.dirty),
         .fill3_i(fsmOuts.fill3),
         .write2_Dwap_i(fsmOuts.write_to_dswap),
-        .bankControllerBusy_i(fsmOuts.busy),
+        .bankControllerBusy_i(block_busy_i),
         .writeSuccess(writeSuccess2TagStore),  //
         .tagOut_o(currTag),
         .currLine_V_o(currLineValid),
@@ -192,7 +195,7 @@ module DCache_Bank (
 
 
     bool doAccess;
-    assign doAccess = !fsmOuts.busy && (reqInUse.oe || reqInUse.we);
+    assign doAccess = !block_busy_i && (reqInUse.oe || reqInUse.we);
     //need to do hit/miss logic
     always_comb begin
         miss = 0;

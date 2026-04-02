@@ -154,7 +154,7 @@ module DCache_Bank_DataStore (
         if (!rst) WR_2_DataStore_actual = '{default: '1};
         else begin
             for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++)
-            WR_2_DataStore_actual[i] = (WR_2_DataStore_clk[i] == 0 && WR_2_DataStore_Delay[0] == 0) ? 0 : 1;
+            WR_2_DataStore_actual[i] = (WR_2_DataStore_clk[i] == 0 && WR_2_DataStore_Delay[i] == 0) ? 0 : 1;
         end
     end
 
