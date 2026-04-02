@@ -6,77 +6,87 @@ module modrm_processor (
     output reg_ids_e mod_rm_id,
     output reg_ids_e reg_id
 );
+    reg_ids_e dr_id;
+    reg_ids_e sr_id;
+    bool dr_rd;
+    bool sr_rd;
+    bool dr_wr;
+    bool sr_wr;
 
     always_comb begin
-        unique case (modrm_byte[7:6])
-            2'b00, 2'b01, 2'b10: begin
-                unique case(modrm_byte[2:0])
-                    3'd0: mod_rm_id = EAX;
-                    3'd1: mod_rm_id = ECX;
-                    3'd2: mod_rm_id = EDX;
-                    3'd3: mod_rm_id = EBX;
-                    3'd4: mod_rm_id = ESP;
-                    3'd5: mod_rm_id = EBP;
-                    3'd6: mod_rm_id = ESI;
-                    3'd7: mod_rm_id = EDI;
-                endcase
-            end
-            2'b11: begin
-                unique case(modrm_byte[2:0])
-                    3'd0: mod_rm_id = datasize[1] ?
-                            (datasize[0] ? MM0 : EAX) :
-                            (datasize[0] ? AX : AL);
-                    3'd1: mod_rm_id = datasize[1] ?
-                            (datasize[0] ? MM1 : ECX) :
-                            (datasize[0] ? CX : CL);
-                    3'd2: mod_rm_id = datasize[1] ?
-                            (datasize[0] ? MM2 : EDX) :
-                            (datasize[0] ? DX : DL);
-                    3'd3: mod_rm_id = datasize[1] ?
-                            (datasize[0] ? MM3 : EBX) :
-                            (datasize[0] ? BX : BL);
-                    3'd4: mod_rm_id = datasize[1] ?
-                            (datasize[0] ? MM4 : ESP) :
-                            (datasize[0] ? SP : AH);
-                    3'd5: mod_rm_id = datasize[1] ?
-                            (datasize[0] ? MM5 : EBP) :
-                            (datasize[0] ? BP : CH);
-                    3'd6: mod_rm_id = datasize[1] ?
-                            (datasize[0] ? MM6 : ESI) :
-                            (datasize[0] ? SI : DH);
-                    3'd7: mod_rm_id = datasize[1] ?
-                            (datasize[0] ? MM7 : EDI) :
-                            (datasize[0] ? DI : BH);
-                endcase
-            end
-        endcase
 
-        unique case(modrm_byte[5:3])
-            3'd0: reg_id = datasize[1] ?
-                    (datasize[0] ? MM0 : EAX) :
-                    (datasize[0] ? AX : AL);
-            3'd1: reg_id = datasize[1] ?
-                    (datasize[0] ? MM1 : ECX) :
-                    (datasize[0] ? CX : CL);
-            3'd2: reg_id = datasize[1] ?
-                    (datasize[0] ? MM2 : EDX) :
-                    (datasize[0] ? DX : DL);
-            3'd3: reg_id = datasize[1] ?
-                    (datasize[0] ? MM3 : EBX) :
-                    (datasize[0] ? BX : BL);
-            3'd4: reg_id = datasize[1] ?
-                    (datasize[0] ? MM4 : ESP) :
-                    (datasize[0] ? SP : AH);
-            3'd5: reg_id = datasize[1] ?
-                    (datasize[0] ? MM5 : EBP) :
-                    (datasize[0] ? BP : CH);
-            3'd6: reg_id = datasize[1] ?
-                    (datasize[0] ? MM6 : ESI) :
-                    (datasize[0] ? SI : DH);
-            3'd7: reg_id = datasize[1] ?
-                    (datasize[0] ? MM7 : EDI) :
-                    (datasize[0] ? DI : BH);
-        endcase
+        //dr reg setting
+        if(MODRM_NEEDED && RM_IS_DR && !REG_IS_DR) begin
+            unique case(modrm_byte[2:0])    //rm id
+                3'd0: dr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
+                3'd1: dr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
+                3'd2: dr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
+                3'd3: dr_id = (datasize[1] && datasize[0]) ? MM3 : EBX;
+                3'd4: dr_id = (datasize[1] && datasize[0]) ? MM4 : ESP;
+                3'd5: dr_id = (datasize[1] && datasize[0]) ? MM5 : EBP;
+                3'd6: dr_id = (datasize[1] && datasize[0]) ? MM6 : ESI;
+                3'd7: dr_id = (datasize[1] && datasize[0]) ? MM7 : EDI;
+            endcase
+        end
+        else if(MODRM_NEEDED && !RM_IS_DR && REG_IS_DR) begin
+            unique case(modrm_byte[5:3])    //reg id
+                3'd0: dr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
+                3'd1: dr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
+                3'd2: dr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
+                3'd3: dr_id = (datasize[1] && datasize[0]) ? MM3 : EBX;
+                3'd4: dr_id = (datasize[1] && datasize[0]) ? MM4 : ESP;
+                3'd5: dr_id = (datasize[1] && datasize[0]) ? MM5 : EBP;
+                3'd6: dr_id = (datasize[1] && datasize[0]) ? MM6 : ESI;
+                3'd7: dr_id = (datasize[1] && datasize[0]) ? MM7 : EDI;
+            endcase
+        end
+        else if(!MODRM_NEEDED && HARDCODED_DR) begin
+            dr_id = HARDCODED_DR_ID;
+        end
+        else dr_id = ERROR;
+
+        dr_rd = 1'b1
+        dr_wr = (reg_is_dr) || (rm_id_dr && modrm_byte[7:6] == 2'b11);
+
+
+        //sr reg setting
+        if(rm_is_dr) begin
+            unique case(modrm_byte[2:0])    //rm id
+                3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
+                3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
+                3'd2: sr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
+                3'd3: sr_id = (datasize[1] && datasize[0]) ? MM3 : EBX;
+                3'd4: sr_id = (datasize[1] && datasize[0]) ? MM4 : ESP;
+                3'd5: sr_id = (datasize[1] && datasize[0]) ? MM5 : EBP;
+                3'd6: sr_id = (datasize[1] && datasize[0]) ? MM6 : ESI;
+                3'd7: sr_id = (datasize[1] && datasize[0]) ? MM7 : EDI;
+            endcase
+        end
+        else if(reg_is_dr) begin
+            unique case(modrm_byte[5:3])    //reg id
+                3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
+                3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
+                3'd2: sr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
+                3'd3: sr_id = (datasize[1] && datasize[0]) ? MM3 : EBX;
+                3'd4: sr_id = (datasize[1] && datasize[0]) ? MM4 : ESP;
+                3'd5: sr_id = (datasize[1] && datasize[0]) ? MM5 : EBP;
+                3'd6: sr_id = (datasize[1] && datasize[0]) ? MM6 : ESI;
+                3'd7: sr_id = (datasize[1] && datasize[0]) ? MM7 : EDI;
+            endcase
+        end
+        else if(!MODRM_NEEDED && HARDCODED_SR) begin
+            sr_id = HARDCODED_SR_ID;
+        end
+        else sr_id = ERROR;
+        sr_rd = 1'b1;
+        sr_wr = 1'b0;
+
+
+        //st/ld op setting
+        rm_reg_is_dr = (MODRM_NEEDED && RM_IS_DR && !REG_IS_DR);
+        reg_is_dr = (MODRM_NEEDED && !RM_IS_DR && REG_IS_DR);
+        ld_op = modrm_byte[7:6] != 2'b11;
+        sr_op = (rm_reg_is_dr && (modrm_byte[7:6] != 2'b11));
     end
 
 
