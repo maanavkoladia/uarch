@@ -1,7 +1,7 @@
 import RegisterRead_pkg::*;
 import core_common_pkg::*;
 import core_stage_latches_pkg::*;
-import flag_fields_pkg::*;
+import control_store_pkg::*;
 
 module RR (
     input wire clk,

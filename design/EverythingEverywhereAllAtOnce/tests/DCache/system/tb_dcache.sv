@@ -31,7 +31,8 @@ module tb_dcache ();
 
     block_req_t block_req;
     dte_2_dcache_t dte_2_dcache;
-
+    
+    bool st_ovveride_fromArb;
     initial begin
         $vcdpluson;
         $vcdplusmemon;
@@ -55,7 +56,7 @@ module tb_dcache ();
         .permissionToDriveAddrBus_Ld(dte_2_dcache.permissionToDriveAddrBus_Ld[0]),
         .permissionToDriveAddrBus_eb(dte_2_dcache.permissionToDriveAddrBus_eb[0]),
 
-        .st_override_for_sch_req(0),
+        .st_override_for_sch_req(st_ovveride_fromArb),
 
         .dataBus(dataBus),
         .address_bus(addrBus),
@@ -77,7 +78,7 @@ module tb_dcache ();
         addrForBus = 0;
         dataForBus = 0;
         dte_2_dcache = '{default : '0};
-        
+        st_ovveride_fromArb = 0;
 
         @(posedge clk)
         rst = 1;  //actve low

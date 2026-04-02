@@ -15,7 +15,8 @@ RTL_DESIGN_SRC_FILES = \
 					   $(IO_SRC_FILES)	\
 					   $(CORE_SRC_FILES)	\
 					   $(DCACHE_SRC_FILES) \
-					   $(RTL_ROOT_PATH_INTERNAL)/TOP.sv	\
+					   $(RTL_ROOT_PATH_INTERNAL)/Everywhere_TOP.sv	\
+					   $(RTL_ROOT_PATH_INTERNAL)/AllAtOnce_TOP.s \
 
 RTL_DESIGN_TOP_LEVEL_PKGS = \
 				  $(RTL_ROOT_PATH_INTERNAL)/pkgs/common_pkg.sv \

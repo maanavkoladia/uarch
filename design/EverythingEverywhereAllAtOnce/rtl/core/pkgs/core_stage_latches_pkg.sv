@@ -3,7 +3,7 @@ package core_stage_latches_pkg;
     import common_pkg::*;
     import reg_ids_pkg::*;
     import core_common_pkg::*;
-    import contorl_store_pkg::*;
+    import control_store_pkg::*;
 
     localparam int EXE_BUFFER_SIZE = 32;
 

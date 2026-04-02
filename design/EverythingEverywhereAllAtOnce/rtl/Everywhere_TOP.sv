@@ -1,10 +1,15 @@
 import common_pkg::*;
+import interconnect_pkgnt::*;
 
-module TOP (
+module Everywhere_TOP (
     input wire clk,
-    input wire rst
+    input wire rst,
+    input core_2_icache_t core2icache_i,
+    output icache_2_core_t icache2core_o,
+    input core_2_dcache_t core2dcache_i,
+    output dcache_2_core_t dcache2core_o,
+    output dma_controller_2_core_t dma2core_o
 );
-
 
     icache_2_scheduler_t                                          icache2sched;
     dte_2_icache_t                                                dte2icache;
@@ -21,28 +26,8 @@ module TOP (
 
     dte_2_ddr5_t                                                  dte2ddr5;
 
-    icache_2_core_t                                               icache2core;
-    core_2_icache_t                                               core2icache;
-
-    st_q_2_dcache_t                                               stq2dcache;
-    core_2_dcache_t                                               core2dcache;
-    dcache_2_core_t                                               dcache2core;
-
-    dma_controller_2_core_t                                       dma2core;
-
     wire                         [   DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;
     wire                         [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addressBus;
-
-    //core
-    CoreTop core_unit (
-        .clk(clk),
-        .rst(rst),
-        .ICacheIn_i(icache2core),
-        .out2ICache_o(core2icache),
-        .DCacheIn_i(dcache2core),
-        .out2DCache_o(core2dcache),
-        .inFromDMA_i(dma2core)
-    );
 
     //mem
     mem_TOP mem_unit (
@@ -59,8 +44,8 @@ module TOP (
     DCache_TOP dcache_unit (
         .clk(clk),
         .rst(rst),
-        .inFromCore_i(core2dcache),
-        .out2Core_o(dcache2core),
+        .inFromCore_i(core2dcache_i),
+        .out2Core_o(dcache2core_o),
         .inFromDTE_i(dte2dcache),
         .out2Sch_o(dcache2sched),
         .address_bus(addressBus),
@@ -71,8 +56,8 @@ module TOP (
     ICache icache_unit (
         .clk(clk),
         .rst(rst),
-        .inFromCore_i(core2icache),
-        .out2Core_o(icache2core),
+        .inFromCore_i(core2icache_i),
+        .out2Core_o(icache2core_o),
         .inFromDte_i(dte2icache),
         .out2Sch_o(icache2sched),
         .addrBus(addressBus),
@@ -100,7 +85,7 @@ module TOP (
         .clk(clk),
         .rst(rst),
         .inFromDTE_i(dte2dma),
-        .out2Core_o(dma2core),
+        .out2Core_o(dma2core_o),
         .out2Sch_o(dma2sched),
         .dataBus(dataBus),
         .addrBus(addressBus)
@@ -116,7 +101,4 @@ module TOP (
 
     );
 
-    initial begin
-        //for init rituals
-    end
 endmodule

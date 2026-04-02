@@ -107,9 +107,20 @@ module DCache_Arbitration (
 
     //possible issues when MEM is not a MEMOP and it stall on down stream
     //instruction, and DC keeps making the same req
+    /*
+    This causes a long critical path for the next latch. Our path is now from arb latches thru dcache to hit/miss logic so basically look up time for vcache
+    then that signal goes back to stq which the sends out new data which then goes through arbutration to get latched again
+
+
+    reqs_2_blocks_o[i].oe && block_hit_i[i] && !core_i.memStalling --> we are currently doing a read. It is done and that hit signal has stopped the core from stalling.
+    This means that mem was causing the stall and not something downstream
+
+    reqs_2_blocks_o[i].we && block_hit_i[i] -> means that 
+
+    */
     always_comb begin
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            readyForNewReq[i] = (reqs_2_blocks_o[i].oe && block_hit_i[i] && !core_i.memStalling)
+            readyForNewReq[i] = (reqs_2_blocks_o[i].oe && block_hit_i[i] && !core_i.memStalling) //this case is if are currently doing a read that 
             || (reqs_2_blocks_o[i].we && block_hit_i[i])
             || block_idleness[i];
         end
