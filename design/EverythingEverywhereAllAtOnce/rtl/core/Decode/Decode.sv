@@ -92,7 +92,7 @@ module Decode (
 
     decode_gp_gen gp_gen_decode(
         .prev_eip(PrevEIP), .prev_length(PrevLength), .segValue(rr_outs_i.codeSeg_data),
-        .seg_sb(rr_outs_i.codeSeg_sb), .segLimit(rr_outs_i.codeSeg_limit), .gp_fault_o(decode_gp)
+        .seg_sb(rr_outs_i.codeSeg_sb), .segLimit(cs_limit), .gp_fault_o(decode_gp)
     );
 
     br_info_t br_info_for_latches;
@@ -157,10 +157,10 @@ module Decode (
         imm64           : imm64,
         sib_idx_id      : sibidx,
         sib_base_id     : sibbase,
-        sib_needed      : sib_size,
+        sib_needed      : (temp_rr_cs.MODRM_NEEDED) ? sib_size : 1'b0,
         sib_scale       : sibscale,
-        disp_needed     : disp_needed,
-        disp_size       : disp_size,
+        disp_needed     : (temp_rr_cs.MODRM_NEEDED) ? disp_needed : 1'b0,
+        disp_size       : (temp_rr_cs.MODRM_NEEDED) ? disp_size : 1'b0,
         displacement    : displacement,
         seg_1_valid     : 1'b0,
         seg_0_id        : segment0,

@@ -20,7 +20,7 @@ module predecode(
     wire [15:0][7:0] IR; //16 different IR bytes
     wire [15:0] IR_valid_vect;
     wire [3:0][3:0] ppu_inst_length;
-    wire [4:0][2:0] ppu_imm_size, ppu_msd_size;
+    wire [3:0][2:0] ppu_imm_size, ppu_msd_size;
     wire [3:0][7:0] ppu_sib_byte;
     wire [3:0][31:0] ppu_displacement;
     wire [3:0][63:0] ppu_imm;

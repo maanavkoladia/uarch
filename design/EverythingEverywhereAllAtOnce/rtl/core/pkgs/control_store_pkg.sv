@@ -116,7 +116,7 @@ typedef enum {
         DR_REGISTER = 2,    //alu or branch 
         BUFFER = 3,         //128 bits you can use this one for all alu ops
         NEIP = 4,           //PUSH and POP stuff and JMP
-        EAX = 5,            //CMPXCHG
+        EAX_REG = 5,            //CMPXCHG
         SEXT8 = 6,          //SIGN extended alu ops
         SEGMENT_NEIP =7 ,   //Far calls 
         IMM64 = 8,          //I think for regular ALU ops the operation size is always the same or sign extended

@@ -12,8 +12,7 @@ module imm_finder (
     assign idx6 = imm_index + 4'd6;
     assign idx7 = imm_index + 4'd7;
 
-assign imm64 = {
-    IR[imm_index], IR[idx1], IR[idx2], IR[idx3],
-    IR[idx4], IR[idx5], IR[idx6], IR[idx7]};
+assign imm64 = {IR[idx7], IR[idx6], IR[idx5], IR[idx4],
+                IR[idx3], IR[idx2], IR[idx1], IR[imm_index]};
 
 endmodule
