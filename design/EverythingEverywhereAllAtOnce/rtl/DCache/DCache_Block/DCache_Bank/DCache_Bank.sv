@@ -37,8 +37,6 @@ module DCache_Bank (
         logic ldFrom_V_swap;
         logic clr_v_swap;
         logic MakeReq;
-        logic saveReq;
-        logic useSaved_Req;
         logic Blocked;
         logic busy;
         logic fill0;
@@ -54,11 +52,14 @@ module DCache_Bank (
 
 
     //nned to create the dcache swap buffer
-    swap_buf_t dcache_bank_swapBuf;
+    swap_buf_t  dcache_bank_swapBuf;
 
     block_req_t savedReq;
     block_req_t reqInUse;
-    assign reqInUse = fsmOuts.useSaved_Req ? savedReq : blockReq_i;
+    bool saveReq, useSavedReq;
+    assign saveReq = !fsmOuts.busy;
+    assign useSavedReq = fsmOuts.busy;
+    assign reqInUse = useSavedReq ? savedReq : blockReq_i;
 
     p_addr_dcache_fields_t blockReq_p_addr_fields;
     assign blockReq_p_addr_fields = '{
@@ -105,8 +106,6 @@ module DCache_Bank (
         .ldFrom_V_swap_o(fsmOuts.ldFrom_V_swap),
         .clr_v_swap_o(fsmOuts.clr_v_swap),
         .MakeReq_o(fsmOuts.MakeReq),
-        .saveReq_o(fsmOuts.saveReq),
-        .useSaved_Req_o(fsmOuts.useSaved_Req),
         .Blocked_o(fsmOuts.Blocked),
         .busy_o(fsmOuts.busy),
         .fill0_o(fsmOuts.fill0),
@@ -161,16 +160,6 @@ module DCache_Bank (
         if (!rst) begin
             dcache_bank_swapBuf <= '{default: '0};
         end else begin
-            //valid bit logic
-            //unique case ({
-            //    fsmOuts.write_to_dswap_o, V_Cache_i.D_Cache_swapBuf_valid_clr
-            //})
-            //    2'b00: dcache_bank_swapBuf.valid <= dcache_bank_swapBuf.valid;
-            //    2'b01: dcache_bank_swapBuf.valid <= 0;
-            //    2'b10: dcache_bank_swapBuf.valid <= 1;
-            //    2'b11: if (rst) $fatal;
-            //endcase
-
             if (V_Cache_i.D_Cache_swapBuf_valid_clr) dcache_bank_swapBuf.valid <= 0;
             if (fsmOuts.write_to_dswap) begin
                 dcache_bank_swapBuf.valid <= 1;
@@ -190,7 +179,7 @@ module DCache_Bank (
 
     always_ff @(posedge clk) begin
         if (!rst) savedReq <= '{default: '0};
-        else if (fsmOuts.saveReq) savedReq <= blockReq_i;
+        else if (saveReq) savedReq <= blockReq_i;
     end
 
 
