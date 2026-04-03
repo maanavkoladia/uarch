@@ -80,17 +80,17 @@ module VCache (
         .S_0(vcache_fsm_state_bits[0]),  // current-state bit 0 (LSB)
         .S_1(vcache_fsm_state_bits[1]),  // current-state bit 1 (1)
         .S_2(vcache_fsm_state_bits[2]),  // current-state bit 2 (MSB)
-        .WR_2_EB(fsmOuts.WR_2_EB),
+        .WR_2_EB_o(fsmOuts.WR_2_EB),
         .CLR_D_SWAP_V_o(fsmOuts.CLR_D_SWAP_V),
         .Read_DSWAP_o(fsmOuts.Read_DSWAP),
         .Write_VSWAP_o(fsmOuts.Write_VSWAP),
         .Update_LRU_o(fsmOuts.Update_LRU),
         .busy_o(fsmOuts.busy),
-        .blocked_o(fsmOuts.blocked),
+        .blocked_o(fsmOuts.blocked)
     );
 
     VCache_TagStore vcache_tagstore_unit (
-        .clk_i(clk),
+        .clk(clk),
         .rst(rst),  //active low
         .p_addr_i(reqInUse.p_addr),
         .oe_i(reqInUse.oe),
@@ -100,14 +100,16 @@ module VCache (
         .D_Cache_SwapBuf_DirtyBit(dcache_outs_i.dcache_swapBuf.dirty),
         .DCache_Will_Evict_i(dcache_outs_i.D_will_evict),
         .saveIDX(saveIDX),
-        .use_savedIDX(use_savedIDX),
+        .use_savedIDX(useSavedIDX),
         .busy_i(block_busy_i),
         .WR_2_EB(fsmOuts.WR_2_EB),
         .Write_VSWAP_i(fsmOuts.Write_VSWAP),
         .Update_LRU(fsmOuts.Update_LRU),
+        .tagOut_o(currTag),
         .hit_o(hit),
         .miss_o(miss),
         .hitIDX_o(hitIDX),  //for drving the datastore
+        .evictionIDX_o(evictionIDX),
         .savedIDX_o(savedIDX),  //for swapping
         .currLine_Dirty_o(V_Cache_TagStore_CurrLine_Dirty),  //will be the hit idx for the swap buf
         .VC_Will_Need_ToEvict_o(V_Cache_needs_2_evict)  //for the fsm, based off the curr LRU
@@ -129,7 +131,7 @@ module VCache (
         .useSavedIDX(useSavedIDX),
         .hitIDX_i(hitIDX),  //for drving the datastore
         .evictionIDX_i(evictionIDX),  //for evivtions from vcach
-        .savedSwapIDX_i(savedIDX),  //for swapping
+        .savedIDX_i(savedIDX),  //for swapping
         .VCache_DataStore_LineOut_o(vcache_dataStore_Line)
     );
 

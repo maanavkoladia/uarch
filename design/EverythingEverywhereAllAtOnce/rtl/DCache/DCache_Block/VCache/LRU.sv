@@ -7,9 +7,9 @@ module LRU (
 
     input logic updateLRU,
 
-    input logic [$clog(VCACHE_NUM_LINES) - 1 : 0] savedIDX,
+    input logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] savedIDX,
 
-    output logic [$clog(VCACHE_NUM_LINES) - 1 : 0] currLRU_IDX
+    output logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] currLRU_IDX
 
 );
     localparam int NUM_LRU_BITS = 3;
@@ -28,7 +28,7 @@ module LRU (
     //we got the hit, this line is no longer the lru, this shoudl become the
     //mru
 
-    logic newLRU;
+    logic newLRU[NUM_LRU_BITS];
 
     always_comb begin
         //no latches, update on hit, not on swap bc redudant with hit, this
@@ -36,7 +36,7 @@ module LRU (
         //update if loading eb, means that a new lines is goig to be written
         //to the LRU, so LRU  is new MRU
         //cant rely on LD_EB_i signal because dont always needs to evict
-        newLRU = tagMetaStore.LRU;  //the meta store stores the MRU which is used to find LRU
+        newLRU = LRU;  //the meta store stores the MRU which is used to find LRU
         // update_idx = DCache_Will_Evict_i ? currLRU_IDX : hitIdx;
         // Update LRU tree to mark accessed way as MRU (bits point toward MRU)
         case (savedIDX)
@@ -62,12 +62,12 @@ module LRU (
     end
 
     always_ff @(posedge clk) begin
-        if (!rst) LRU <= '0;
+        if (!rst) LRU <= '{default: '0};
         else if (updateLRU) LRU <= newLRU;
     end
 
     ////////MODULE OUTPUTS///////////////////
-    assign currLRU_IDX[1] = !tagMetaStore.LRU[LRU_ROOT];
-    assign currLRU_IDX[0] = !tagMetaStore.LRU[LRU_ROOT] ? !tagMetaStore.LRU[LRU_RIGHT_LEAF] : !tagMetaStore.LRU[LRU_LEFT_LEAF];
+    assign currLRU_IDX[1] = !LRU[LRU_ROOT];
+    assign currLRU_IDX[0] = !LRU[LRU_ROOT] ? !LRU[LRU_RIGHT_LEAF] : !LRU[LRU_LEFT_LEAF];
 
 endmodule

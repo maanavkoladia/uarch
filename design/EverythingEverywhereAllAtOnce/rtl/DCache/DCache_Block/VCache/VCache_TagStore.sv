@@ -28,7 +28,7 @@ module VCache_TagStore (
     input bool Update_LRU,
 
     //for external fsm logic
-    //output logic [V_CACHE_TAG_WIDTH - 1 : 0] tagOut_o,
+    output logic [V_CACHE_TAG_WIDTH - 1 : 0] tagOut_o,
     output bool hit_o,
     output bool miss_o,
 
@@ -53,7 +53,7 @@ module VCache_TagStore (
         logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] idx;
     } tag_line_meta_store_info_t;
 
-    tag_line_meta_store_info_t tag_line_metaStore[VCACHE_NUM_LINES];
+    tag_line_meta_store_info_t tagMetaStore[VCACHE_NUM_LINES];
 
     p_addr_vcache_fields_t p_addr_fields;
     assign p_addr_fields = '{
@@ -138,7 +138,7 @@ module VCache_TagStore (
 
     always_comb begin
         OE_2_TagStore = '{default: '1};
-        OE_2_TagStore_idx = use_savedIDX ? saved_SwapIDX : currLRU_IDX;
+        OE_2_TagStore_idx = use_savedIDX ? savedIDX : currLRU_IDX;
         if (doAccess) OE_2_TagStore = '{default: '0};
         else if (WR_2_EB || Write_VSWAP_i) begin  //use lru idx
             OE_2_TagStore[OE_2_TagStore_idx] = 0;
@@ -161,15 +161,15 @@ module VCache_TagStore (
         if (!rst) begin
             tagMetaStore <= '{default: '0};
             for (int i = 0; i < VCACHE_NUM_LINES; i++) begin
-                tagMetaStore.tag_line_metaStore[i].idx <= i;
+                tagMetaStore[i].idx <= i;
             end
         end else begin
             if (Read_DSWAP_i) begin
-                tagMetaStore.tag_line_metaStore[savedIDX].valid <= 1;
-                tagMetaStore.tag_line_metaStore[savedIDX].dirty <= D_Cache_SwapBuf_DirtyBit;
+                tagMetaStore[savedIDX].valid <= 1;
+                tagMetaStore[savedIDX].dirty <= D_Cache_SwapBuf_DirtyBit;
             end
             if (writeSuccess) begin
-                tagMetaStore.tag_line_metaStore[hitIdx].dirty <= 1;
+                tagMetaStore[hitIdx].dirty <= 1;
             end
         end
     end
@@ -197,7 +197,7 @@ module VCache_TagStore (
         hitIdx = 0;
         if (doAccess) begin
             for (int i = 0; i < VCACHE_NUM_LINES; i++) begin
-                if (DOUT_of_TagStore[i] == p_addr_fields.tag && tagMetaStore.tag_line_metaStore[i].valid) begin
+                if ( tagMetaStore[i].valid && DOUT_of_TagStore[i] == p_addr_fields.tag) begin
                     hit = 1;
                     hitIdx = i;
                 end
@@ -212,7 +212,7 @@ module VCache_TagStore (
     //when i write comes in we wait one cycle before writing to the vswap and
     //we lose the hit idx for the line we are swapping
     logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] currLine_Dirty_idx;
-    assign currLine_Dirty_idx = use_savedIDX ? saved_SwapIDX : hitIdx;
+    assign currLine_Dirty_idx = use_savedIDX ? savedIDX : hitIdx;
 
     //create the memcells for this
     generate
@@ -257,9 +257,9 @@ module VCache_TagStore (
 
     assign hitIDX_o = hitIdx;
     assign savedIDX_o = savedIDX;
-    assign evictionIDX_o = use_savedIDX ? saved_SwapIDX : hitIdx;
+    assign evictionIDX_o = use_savedIDX ? savedIDX : hitIdx;
 
-    assign currLine_Dirty_o = tagMetaStore.tag_line_metaStore[currLine_Dirty_idx].dirty;//for loading swap buf one cytcle late or curr idle cycle
-    assign VC_Will_Need_ToEvict_o = tagMetaStore.tag_line_metaStore[currLRU_IDX].dirty && tagMetaStore.tag_line_metaStore[currLRU_IDX].valid;//for evciton so lru
+    assign currLine_Dirty_o = tagMetaStore[currLine_Dirty_idx].dirty;//for loading swap buf one cytcle late or curr idle cycle
+    assign VC_Will_Need_ToEvict_o = tagMetaStore[currLRU_IDX].dirty && tagMetaStore[currLRU_IDX].valid;//for evciton so lru
 
 endmodule
