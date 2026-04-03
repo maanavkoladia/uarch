@@ -16,9 +16,10 @@ module tb_Dec();
     mem_outputs_t mem_outs_i;
     exe_outputs_t exe_outs_i;
     wb_outputs_t wb_outs_i;
-    idm_slot_info_t idm_slot;
-    rr_latches_t rr_latches_next;
-    decode_outputs_t outs_o;
+    idm_slot_info_t idm_slot_actual, idm_slot_empty;
+    rr_latches_t rr_latches_next, rr_latches;
+    dc_latches_t dc_latches_next, dc_latches;
+    decode_outputs_t decode_outs_o;
 
     // Example assign template for struct population:
     // assign idm_outs_i = '{ valid: 0, opcode: 0, ... };
@@ -82,7 +83,6 @@ module tb_Dec();
         idm_reqs    : idm_reqs_o,
         default     : '0
     };
-    assign rr_outs_i = '{default: '0};
     assign dc_outs_i = '{default: '0};
     assign mem_outs_i = '{default: '0};
     assign exe_outs_i = '{default: '0};
@@ -108,12 +108,31 @@ module tb_Dec();
     // );
 
 
-    IDM idm_uut1(
-        .clk(clk),
-        .rst(rst),
-        .fetch_outs_i(fetch_outs_o),
-        .idm_outs_o(idm_outs_i)
-    );
+    // IDM idm_uut1(
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .fetch_outs_i(fetch_outs_o),
+    //     .idm_outs_o(idm_outs_i)
+    // );
+
+    assign idm_slot_actual = '{
+        valid       : 1'b1,
+        br_valid    : 1'b0,
+        br_eip      : 32'h0000_FFFF,
+        br_btb_target   : 32'h0000_FFFF,  //this is the btbs predicted target, 
+        br_xcl      : 1'b0,
+        data        : '{8'h66, 8'h05, 8'hAD, 8'hDE,
+                8'h01, 8'hC1, 8'h00, 8'h00,
+                8'h00, 8'h00, 8'h00, 8'h00,
+                8'h00, 8'h00, 8'h00, 8'h00}
+    };
+
+    assign idm_slot_empty = '{default : '0};
+
+    assign idm_outs_i = '{
+        idm_slots : {idm_slot_actual, idm_slot_empty, idm_slot_empty, idm_slot_empty},
+        valid_slots : 2'b01
+    };
 
     Decode decode_uut(
         .clk(clk),
@@ -127,7 +146,7 @@ module tb_Dec();
         .exe_outs_i(exe_outs_i),
         .wb_outs_i(wb_outs_i),
         .rr_latches_next(rr_latches_next),
-        .outs_o(decode_outs_i)
+        .outs_o(decode_outs_o)
     );
 
     RR_Latches rr_latches_unit (
@@ -142,7 +161,7 @@ module tb_Dec();
         .rst(rst),
         .latches_i(rr_latches),
         .fetch_outs_i(fetch_outs_o),
-        .decode_outs_i(decode_outs_i),
+        .decode_outs_i(decode_outs_o),
         .dc_outs_i(dc_outs_i),
         .mem_outs_i(mem_outs_i),
         .exe_outs_i(exe_outs_i),
@@ -161,8 +180,10 @@ module tb_Dec();
     // Reset sequence
     initial begin
         rst = 0;   // assert reset (active low)
-        #15;
+        #10;
+        force decode_uut.EIP = 32'h1000;
         rst = 1;   // deassert reset
+        release decode_uut.EIP;
 
         #900;
         $finish;
@@ -175,6 +196,6 @@ module tb_Dec();
     // Clock generation (10ns period)
     initial begin
         clk = 0;
-        forever #5 clk = ~clk; // 5ns high, 5ns low
+        forever #10 clk = ~clk; // 5ns high, 5ns low
     end
 endmodule
