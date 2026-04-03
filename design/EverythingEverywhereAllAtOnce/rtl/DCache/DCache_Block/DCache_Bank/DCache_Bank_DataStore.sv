@@ -2,6 +2,7 @@ import common_pkg::*;
 import DCache_common_pkg::*;
 
 module DCache_Bank_DataStore (
+    input wire clk,
     input wire rst,
     input p_address_t p_addr_i,
 
@@ -46,7 +47,6 @@ module DCache_Bank_DataStore (
     //can be driven by req with vec and we logic , or fsm fill signals, or all high for a swap
     //active low
     logic WR_2_DataStore_clk[NUM_CELL_IN_DATA_STORE];
-    logic WR_2_DataStore_Delay[NUM_CELL_IN_DATA_STORE];
     logic WR_2_DataStore_actual[NUM_CELL_IN_DATA_STORE];
 
 
@@ -63,6 +63,9 @@ module DCache_Bank_DataStore (
     //
     logic OE_2_DataStore;
 
+    //write window
+    wire clk_45_phase;
+    assign #2.5 clk_45_phase = clk;
 
     //DOUT can go to D$ swap buf or up to ld_mem (so D$ output)
     byte_t DOUT_DataStore[NUM_CELL_IN_DATA_STORE];
@@ -148,13 +151,12 @@ module DCache_Bank_DataStore (
         endcase
     end
 
-    assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} : WR_2_DataStore_clk;
 
     always_comb begin
         if (!rst) WR_2_DataStore_actual = '{default: '1};
         else begin
             for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++)
-            WR_2_DataStore_actual[i] = (WR_2_DataStore_clk[i] == 0 && WR_2_DataStore_Delay[i] == 0) ? 0 : 1;
+            WR_2_DataStore_actual[i] = (WR_2_DataStore_clk[i] == 0 &&  clk_45_phase) ? 0 : 1;
         end
     end
 

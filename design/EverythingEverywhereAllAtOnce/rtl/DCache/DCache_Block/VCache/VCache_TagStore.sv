@@ -22,7 +22,7 @@ module VCache_TagStore (
 
     input bool busy_i,
 
-    input bool WR_2_EB,
+    input bool WR_2_EB_i,
     input bool Write_VSWAP_i,
 
     input bool Update_LRU,
@@ -45,7 +45,8 @@ module VCache_TagStore (
 
     localparam int NUM_CELLS_NEEDED = 2;  //bc 9 tag bits wide
     localparam int CELL_WIDTH_BITS = 8;
-
+    wire clk_phase_45;
+    assign #2.5 clk_phase_45 = clk;
 
     typedef struct {
         bool valid;
@@ -90,10 +91,10 @@ module VCache_TagStore (
     //address that was saved, ie the lines that got the hit in the previous cycle
     //case 2: loading from dcache bank swapbuf, for an eviction, use lru
     logic WR_2_TagStore_clk[VCACHE_NUM_LINES];
-    logic WR_2_TagStore_delay[VCACHE_NUM_LINES];
+    //logic WR_2_TagStore_delay[VCACHE_NUM_LINES];
     logic WR_2_TagStore_actual[VCACHE_NUM_LINES];
 
-    assign #2 WR_2_TagStore_delay = !rst ? '{default: '1} : WR_2_TagStore_clk;
+   // assign #2 WR_2_TagStore_delay = !rst ? '{default: '1} : WR_2_TagStore_clk;
 
     //WR_2_TagStore,
     always_comb begin
@@ -105,7 +106,7 @@ module VCache_TagStore (
         if (!rst) WR_2_TagStore_actual = '{default: '1};
         else begin
             for (int i = 0; i < VCACHE_NUM_LINES; i++) begin
-                WR_2_TagStore_actual[i] = ((WR_2_TagStore_delay[i] == 0) && (WR_2_TagStore_clk[i] == 0)) ? 0 :1;
+                WR_2_TagStore_actual[i] = ((WR_2_TagStore_clk[i] == 0) && (clk_phase_45)) ? 0 :1;
             end
         end
     end
@@ -140,7 +141,7 @@ module VCache_TagStore (
         OE_2_TagStore = '{default: '1};
         OE_2_TagStore_idx = use_savedIDX ? savedIDX : currLRU_IDX;
         if (doAccess) OE_2_TagStore = '{default: '0};
-        else if (WR_2_EB || Write_VSWAP_i) begin  //use lru idx
+        else if (WR_2_EB_i || Write_VSWAP_i) begin  //use lru idx
             OE_2_TagStore[OE_2_TagStore_idx] = 0;
         end
     end
@@ -174,6 +175,7 @@ module VCache_TagStore (
         end
     end
 
+    
     always_ff @(posedge clk) begin
         if (!rst) begin
             savedIDX_oneHot <= 0;
@@ -195,6 +197,7 @@ module VCache_TagStore (
         hit = 0;
         miss = 0;
         hitIdx = 0;
+        writeSuccess = 0;
         if (doAccess) begin
             for (int i = 0; i < VCACHE_NUM_LINES; i++) begin
                 if ( tagMetaStore[i].valid && DOUT_of_TagStore[i] == p_addr_fields.tag) begin
@@ -245,10 +248,23 @@ module VCache_TagStore (
     //cases that we need ot output the tag out
     //case 1, WR_2_EB
     //case 2, Write_VSWAP_i
+    logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] tag_out_write_to_vswap_idx;
+    assign tag_out_write_to_vswap_idx = use_savedIDX ? savedIDX : hitIdx;
+    //write to vswap when we got the hit right away. 
+
+    logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] tag_out_write_to_eb_idx;
+    assign tag_out_write_to_eb_idx = use_savedIDX ? savedIDX : currLRU_IDX;
+
+
+    bool tag_assigned;
     always_comb begin
+        tag_assigned = 0;
         tagOut_o = '0;  //zeroing for now, shoudl stop zs from going out
-        if (WR_2_EB || Write_VSWAP_i) begin
-            tagOut_o = DOUT_of_TagStore[OE_2_TagStore_idx];
+        if (Write_VSWAP_i) begin
+            tagOut_o = DOUT_of_TagStore[tag_out_write_to_vswap_idx];
+        end
+        if(WR_2_EB_i)begin
+            tagOut_o = DOUT_of_TagStore[tag_out_write_to_eb_idx];
         end
     end
 

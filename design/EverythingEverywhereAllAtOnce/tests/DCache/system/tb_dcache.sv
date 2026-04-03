@@ -146,8 +146,23 @@ module tb_dcache ();
         block_req.we = 0;
         block_req.vec = 16'hFFFF;
         block_req.st_q_data = '{default: '1};
+        @(posedge clk)  
+        block_req.p_addr = 15'h2000; //new address should be in vcache
+        block_req.oe = 0;
+        block_req.we = 1;
+        block_req.vec = 16'hFFFF;
+        block_req.st_q_data = '{default: '1};
+        @(posedge clk)
+        @(posedge clk)
+        block_req.we = 0;
+        block_req.oe = 1;
         @(posedge clk)
         block_req.oe = 0;
+
+
+
+
+
 
         //hit here and also latches updated at the same time 
         // block_req.oe = 0;

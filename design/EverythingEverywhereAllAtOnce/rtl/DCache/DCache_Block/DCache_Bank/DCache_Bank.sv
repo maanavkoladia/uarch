@@ -46,6 +46,7 @@ module DCache_Bank (
     } dcache_fsm_outputs_t;
     dcache_fsm_outputs_t fsmOuts;
 
+
     dcache_bank_fsm_states_e dcache_bank_State;
     logic [$clog2(NUM_DCACHE_BANK_FSM_STATES) - 1 : 0] dcache_bank_State_bits;
     assign dcache_bank_State = dcache_bank_State_bits;
@@ -115,6 +116,7 @@ module DCache_Bank (
     );
 
     DCache_Bank_DataStore DCache_Bank_DataStore_unit (
+        .clk(clk),
         .rst(rst),
         .p_addr_i(reqInUse.p_addr),
         .oe(reqInUse.oe),

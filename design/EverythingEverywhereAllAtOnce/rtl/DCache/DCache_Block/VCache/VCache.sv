@@ -102,7 +102,7 @@ module VCache (
         .saveIDX(saveIDX),
         .use_savedIDX(useSavedIDX),
         .busy_i(block_busy_i),
-        .WR_2_EB(fsmOuts.WR_2_EB),
+        .WR_2_EB_i(fsmOuts.WR_2_EB),
         .Write_VSWAP_i(fsmOuts.Write_VSWAP),
         .Update_LRU(fsmOuts.Update_LRU),
         .tagOut_o(currTag),
@@ -116,6 +116,7 @@ module VCache (
     );
 
     VCache_DataStore vcache_datastore_unit (
+        .clk_i(clk),
         .rst_i(rst),
         .p_addr_i(reqInUse.p_addr),
         .oe_i(reqInUse.oe),

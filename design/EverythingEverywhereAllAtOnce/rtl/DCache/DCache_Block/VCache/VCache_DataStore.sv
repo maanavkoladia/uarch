@@ -2,7 +2,7 @@ import common_pkg::*;
 import DCache_common_pkg::*;
 
 module VCache_DataStore (
-
+    input clk_i,
     input rst_i,
     //from block req
     input p_address_t p_addr_i,
@@ -48,6 +48,9 @@ module VCache_DataStore (
 
     //ADDRESS_2_DataStore logic, comes from either the saved swapBuf idx,
     //hitidx, or eviction lru idx
+    wire clk_phase_45; 
+    assign #2.5 clk_phase_45 = clk_i;
+
     always_comb begin
         ADDRESS_2_DataStore = hitIDX_i;
         if (useSavedIDX) ADDRESS_2_DataStore = savedIDX_i;
@@ -58,10 +61,11 @@ module VCache_DataStore (
     //case 1: when loading from D$ swabuf
     //case 2:  not busy doing a write, use the vector
     logic WR_2_DataStore_clk[NUM_CELL_IN_DATA_STORE];
-    logic WR_2_DataStore_delay[NUM_CELL_IN_DATA_STORE];
     logic WR_2_DataStore_actual[NUM_CELL_IN_DATA_STORE];
 
-    assign #6 WR_2_DataStore_delay = !rst_i ? '{default: '1} : WR_2_DataStore_clk;
+    //might be werid on some back to back writes. 
+
+    
 
     always_comb begin
         //comb completness
@@ -81,7 +85,7 @@ module VCache_DataStore (
         if (!rst_i) WR_2_DataStore_actual = '{default: '1};
         else begin
             for (int i = 0; i < NUM_CELL_IN_DATA_STORE; i++)
-            WR_2_DataStore_actual[i] = ((WR_2_DataStore_delay[i] == 0) && (WR_2_DataStore_clk[i] == 0)) ? 0 : 1;
+            WR_2_DataStore_actual[i] = ((WR_2_DataStore_clk[i] == 0) && (clk_phase_45)) ? 0 : 1;
 
         end
     end
@@ -93,7 +97,8 @@ module VCache_DataStore (
 
     //DIN_2_DataStore lgoic
     always_comb begin
-        DIN_2_DataStore = read_D_SWAP_i ? DCache_SwapBuf_Line_i : st_q_data_i;
+        DIN_2_DataStore = (!busy_i & we_i) ? st_q_data_i : DCache_SwapBuf_Line_i;
+       //DIN_2_DataStore = DCache_SwapBuf_Line_i;
     end
 
     //active low, intentioanlly made it 1 bit, and not a vecotr,
@@ -101,11 +106,19 @@ module VCache_DataStore (
     //case 1: !busy and oe
     //case 2: need to output to eb
     //case 3: write to V$ swapBuf
-    logic OE_2_DataStore;
+    logic OE_2_DataStore_clk;
+    logic OE_2_DataStore_delay;
+    logic OE_2_DataStore_actual;
 
-    //OE_2_DataStore logic
+    assign #2 OE_2_DataStore_delay = (!rst_i) ? 1 : OE_2_DataStore_clk;
+
+    assign OE_2_DataStore_actual = ((OE_2_DataStore_clk == 0) && (OE_2_DataStore_delay== 0)) ?
+                                    0 : 1;
+
+
+    //OE_2_DataStore_clk logic
     always_comb begin
-        OE_2_DataStore = WR_2_EB || Write_VSWAP_i || (!busy_i && oe_i) ? 1'b0 : 1'b1;
+        OE_2_DataStore_clk = WR_2_EB || Write_VSWAP_i || (!busy_i && oe_i) ? 1'b0 : 1'b1;
     end
 
     //assigned, handled enternally 
@@ -122,7 +135,7 @@ module VCache_DataStore (
                 .A(ADDRESS_2_DataStore),
                 .WR(WR_2_DataStore_actual[i]),
                 .DIN(DIN_2_DataStore[i]),
-                .OE(OE_2_DataStore),
+                .OE(OE_2_DataStore_actual),
                 .DOUT(DOUT_DataStore[i])
             );
         end

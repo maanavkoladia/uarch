@@ -46,8 +46,8 @@ module DCache_Bank_TagStore (
     //written in.
     //case 1: ld_ing from the V$ swap buf,
     //case 2: new data from bus
+    wire clk_45_phase;
     logic WR_2_TagStore_clk;
-    logic WR_2_TagStore_delay;
     logic WR_2_TagStore_actual;
 
     //din can come from bus, for a ld_req or wr_req and a miss, or from block_req we req st_q req, or v$ swapBuf
@@ -103,9 +103,13 @@ module DCache_Bank_TagStore (
         ADDRESS_2_TagStore = p_addr_fields.index;
     end
 
+        //write window
+  
+    assign #2.5 clk_45_phase = clk;
+
     assign WR_2_TagStore_clk = !rst ? 1 : ld_From_V_Swap_i || fill3_i ? 1'b0 : 1'b1;
-    assign #2 WR_2_TagStore_Delay = !rst ? 1 : WR_2_TagStore_clk;
-    assign WR_2_TagStore_actual = (WR_2_TagStore_clk == 0) && (WR_2_TagStore_Delay == 0) ? 0 : 1;
+
+    assign WR_2_TagStore_actual = ((WR_2_TagStore_clk == 0) && (clk_45_phase)) ? 0 : 1;
 
     //from the comments above, i shoudl always be able to drive this, wr logic
     //should handle when
