@@ -10,7 +10,7 @@ module tb_Dec();
     // Struct signals for Decode module
     reg [31:0] cs_limit;
     idm_outputs_t idm_outs_i;
-    fetch_outputs_t fetch_outs_i;
+    fetch_outputs_t fetch_outs_o;
     rr_outputs_t rr_outs_i;
     dc_outputs_t dc_outs_i;
     mem_outputs_t mem_outs_i;
@@ -19,9 +19,6 @@ module tb_Dec();
     idm_slot_info_t idm_slot;
     rr_latches_t rr_latches_next;
     decode_outputs_t outs_o;
-
-
-
 
     // Example assign template for struct population:
     // assign idm_outs_i = '{ valid: 0, opcode: 0, ... };
@@ -48,16 +45,43 @@ module tb_Dec();
     //     data            :
     // };
 
-    assign idm_slot = '{default: '0};
+    //assign idm_slot = '{default: '0};
 
     //actual idm init
-    assign idm_outs_i = '{
-        idm_slots   : '{default: idm_slot},
-        valid_slots : 3'd4
-    };
+    // assign idm_outs_i = '{
+    //     idm_slots   : '{default: idm_slot},
+    //     valid_slots : 3'd4
+    // };
 
     //think i can get away with leaving zero for now
-    assign fetch_outs_i = '{default: '0};
+    idm_slot_req_t actual_test, empty;
+    assign actual_test = '{
+        ld_meta_data:       1'b0,
+        ld_data:            1'b1,
+        valid:              1'b1,
+        br_valid:           1'b0,
+        br_eip:             32'h0000_0000,
+        br_target:          32'h0000_0000,
+        br_xcl:             1'b0,
+        data:   '{8'h00, 8'h00, 8'h00, 8'h00,
+                8'h00, 8'h00, 8'h00, 8'h00,
+                8'h00, 8'h00, 8'hC1, 8'h01,
+                8'hDE, 8'hAD, 8'h05, 8'h66}
+    };
+
+    assign empty = '{default : '0};
+
+
+    fetch_idm_ctrl_2_idm_t idm_reqs_o;
+    assign idm_reqs_o = '{
+        req     : {empty, empty, empty, actual_test}
+    };
+
+
+    assign fetch_outs_o = '{
+        idm_reqs    : idm_reqs_o,
+        default     : '0
+    };
     assign rr_outs_i = '{default: '0};
     assign dc_outs_i = '{default: '0};
     assign mem_outs_i = '{default: '0};
@@ -68,19 +92,70 @@ module tb_Dec();
     // fetch_outs_i = '{fieldA: valueA, ...};
 
 
+    // Decode decode_uut(
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .cs_limit(cs_limit),
+    //     .idm_outs_i(idm_outs_i),
+    //     .fetch_outs_i(fetch_outs_i),
+    //     .rr_outs_i(rr_outs_i),
+    //     .dc_outs_i(dc_outs_i),
+    //     .mem_outs_i(mem_outs_i),
+    //     .exe_outs_i(exe_outs_i),
+    //     .wb_outs_i(wb_outs_i),
+    //     .rr_latches_next(rr_latches_next),
+    //     .outs_o(outs_o)
+    // );
+
+
+    IDM idm_uut1(
+        .clk(clk),
+        .rst(rst),
+        .fetch_outs_i(fetch_outs_o),
+        .idm_outs_o(idm_outs_i)
+    );
+
     Decode decode_uut(
         .clk(clk),
         .rst(rst),
-        .cs_limit(cs_limit),
+        .cs_limit(32'hFFFF_FFFF),    //fill have to feed in real cs_limit at some point
         .idm_outs_i(idm_outs_i),
-        .fetch_outs_i(fetch_outs_i),
+        .fetch_outs_i(fetch_outs_o),
         .rr_outs_i(rr_outs_i),
         .dc_outs_i(dc_outs_i),
         .mem_outs_i(mem_outs_i),
         .exe_outs_i(exe_outs_i),
         .wb_outs_i(wb_outs_i),
         .rr_latches_next(rr_latches_next),
-        .outs_o(outs_o)
+        .outs_o(decode_outs_i)
+    );
+
+    RR_Latches rr_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(rr_latches_next),
+        .latches_o(rr_latches)
+    );
+
+    RR rr_uut(
+        .clk(clk),
+        .rst(rst),
+        .latches_i(rr_latches),
+        .fetch_outs_i(fetch_outs_o),
+        .decode_outs_i(decode_outs_i),
+        .dc_outs_i(dc_outs_i),
+        .mem_outs_i(mem_outs_i),
+        .exe_outs_i(exe_outs_i),
+        .wb_outs_i(wb_outs_i),
+        .dc_latches_next(dc_latches_next),
+        .outs_o(rr_outs_i)
+    );
+
+    DC_Latches dc_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(dc_latches_next),
+        .latches_o(dc_latches)
     );
 
     // Reset sequence
