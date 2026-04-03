@@ -18,7 +18,4 @@ ucli.key
 
 *.log
 
-memGen/
-
-tests/mem/mainMem/memGen/
 
