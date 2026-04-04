@@ -1,0 +1,12 @@
+# Minimised SOP (Quine-McCluskey) for: dc_valid_logic
+.i 8
+.o 2
+.ilb RR_stall_i RR_V_i DC_stall_i DC_V_i MEM_V_i MEM_stall_i EXE_V_i WB_stall_i
+.ob  DC_we_o N_DC_V_o
+.type f
+---0---- 10
+--0--0-0 10
+--0--00- 10
+--0-0--- 10
+01------ 01
+.e

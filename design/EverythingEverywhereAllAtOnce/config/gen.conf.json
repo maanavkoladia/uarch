@@ -93,6 +93,12 @@
             "run Combinational SOP Gen": "true"
         },
 
+        "DC_valid_logic" : {
+            "csv" : "rtl/core/RR/gen/dc_valid_logic.csv",
+            "outputFilePath": "rtl/core/RR/gen/rr_valid_logic.v",
+            "run Combinational SOP Gen": "true"
+        },
+
         "4_2 pencoder" : {
             "csv" : "lib/STDCells/gen/4_2_pendcoder.csv",
             "outputFilePath" : "lib/STDCells/4_2_pendcoder.sv",
