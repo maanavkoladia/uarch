@@ -26,143 +26,177 @@ module RR (
     output rr_outputs_t outs_o
 );
 
-    uint32_t SEGMENT_LIMITS[6]; //CS, DS, ES, FS, GS, SS
+    rr_latches_general_t latchesInUse = latches_i.useRep ? latches_i.rep_latches : latches_i.normal_latches;
+
+    //6 bc 6 seg regs and their respctive limits
+    uint32_t SEGMENT_LIMITS[6];  //CS, DS, ES, FS, GS, SS
 
     bool RR_GP, RR_PF;
 
+    //SB Oouts
+    bool ecx_sb;
+    bool cs_sb;
+    bool depstall;
+
+    //32 bit bc mmx sare the data areg
     uint32_t addygen_input_addy;
-    assign addygen_input_addy = (latches_i.normal_latches.cs.MODRM_NEEDED && latches_i.normal_latches.cs.RM_IS_DR) ? reg_out.DR_data[31:0] : reg_out.SR_data[31:0];
+    assign addygen_input_addy =
+        (latchesInUse.cs.MODRM_NEEDED && latches_i.normal_latches.cs.RM_IS_DR) ?
+        reg_out.DR_data[31:0] : reg_out.SR_data[31:0];
 
+    //adress fro the store addy addy trnaslate logic
     l_address_t addygen_out;
-
     l_address_t staddyX_neuralnet_addy;
     assign staddyX_neuralnet_addy =
-        (latches_i.normal_latches.cs.ST_SEL) ?
-            ((latches_i.normal_latches.cs.ST_SEL) ? reg_out.SR_data[31:0] : reg_out.DR_data[31:0]) :
+        (latchesInUse.cs.ST_SEL) ?
+            ((latchesInUse.cs.ST_SEL) ? reg_out.SR_data[31:0] : reg_out.DR_data[31:0]) :
             addygen_out;
 
-    bool depstall;
 
     regfile_output_t reg_out;
     neuralnet_outputs_t ld_neuralnet;
     neuralnet_outputs_t st_neuralnet;
     regfile_input_t reg_in;
-    assign reg_in =  '{
-        DR_ID       : latches_i.normal_latches.cs.dr_id,
-        SR_ID         : latches_i.normal_latches.cs.sr_id,
-        SIB_IDX_ID     : latches_i.normal_latches.sib_idx_id,
-        SIB_BASE_ID    : latches_i.normal_latches.sib_base_id,
-        WB_DR0_data       : wb_outs_i.DR_0_data,
-        WB_DR1_data       : wb_outs_i.DR_1_data,
-        WB_DR0_ID         : wb_outs_i.DR_0_id,
-        WB_DR1_ID         : wb_outs_i.DR_1_id,
-        WB_DR0_we         : wb_outs_i.DR_0_we,
-        WB_DR1_we         : wb_outs_i.DR_1_we,
-        Segment0_ID    : latches_i.normal_latches.seg_0_id,
-        Segment1_ID    : latches_i.normal_latches.seg_1_id
-    };
-    regsb_inputs_t regsb_in;
-    assign regsb_in = '{
-        sr_id           : latches_i.normal_latches.cs.sr_id,
-        dr_id           : latches_i.normal_latches.cs.dr_id,
-        sib_base_id     : latches_i.normal_latches.sib_base_id,
-        sib_idx_id      : latches_i.normal_latches.sib_idx_id,
-        wb_dr0_id       : wb_outs_i.DR_0_id,
-        wb_dr0_we       : wb_outs_i.DR_0_we,
-        wb_dr1_id       : wb_outs_i.DR_1_id,
-        wb_dr1_we       : wb_outs_i.DR_1_id,
-        cs_sib_size     : latches_i.normal_latches.sib_needed,
-        cs_sr_rd        : latches_i.normal_latches.cs.sr_rd,
-        cs_dr_rd        : latches_i.normal_latches.cs.dr_rd,
-        cs_sr_wr        : latches_i.normal_latches.cs.sr_wr,
-        cs_dr_wr        : latches_i.normal_latches.cs.dr_wr,
-        Segment0_ID     : latches_i.normal_latches.seg_0_id,
-        Segment1_ID     : latches_i.normal_latches.seg_1_id,
-        Segment1_valid  : 1'b0
-    };
 
-    RegFile regfile(.clk(clk), .rst(rst), .inputs(reg_in), .outputs(reg_out));
+    assign reg_in = '{
+            DR_ID       : latchesInUse.cs.dr_id,
+            SR_ID         : latchesInUse.cs.sr_id,
+            SIB_IDX_ID     : latchesInUse.sib_idx_id,
+            SIB_BASE_ID    : latchesInUse.sib_base_id,
+            WB_DR0_data       : wb_outs_i.DR_0_data,
+            WB_DR1_data       : wb_outs_i.DR_1_data,
+            WB_DR0_ID         : wb_outs_i.DR_0_id,
+            WB_DR1_ID         : wb_outs_i.DR_1_id,
+            WB_DR0_we         : wb_outs_i.DR_0_we,
+            WB_DR1_we         : wb_outs_i.DR_1_we,
+            Segment0_ID    : latchesInUse.seg_0_id,
+            Segment1_ID    : latchesInUse.seg_1_id
+        };
 
+
+    RegFile regfile (
+        .clk(clk),
+        .rst(rst),
+        .inputs(reg_in),
+        .outputs(reg_out)
+    );
+
+    //this is final sib addy gen logic
     AddressGen_Logic addygen_logic (
         .register_data(addygen_input_addy),
         .SIB_IDX_data(reg_out.SIB_IDX_data),
         .SIB_BASE_data(reg_out.SIB_BASE_data),
-        .SIB_SCALE_val(latches_i.normal_latches.sib_scale),
-        .sib_needed(latches_i.normal_latches.sib_needed),
-        .disp_needed(latches_i.normal_latches.disp_needed),
-        .dispsize(latches_i.normal_latches.disp_size),
-        .displacement(latches_i.normal_latches.displacement),
+        .SIB_SCALE_val(latchesInUse.sib_scale),
+        .sib_needed(latchesInUse.sib_needed),
+        .disp_needed(latchesInUse.disp_needed),
+        .dispsize(latchesInUse.disp_size),
+        .displacement(latchesInUse.displacement),
         .AddrGen_out(addygen_out)
     );
 
     AddyX_NeuralNet ld_addyX_neuralnet (
-        .data_size(latches_i.normal_latches.cs.datasize),
+        .data_size(latchesInUse.cs.datasize),
         .addy0(addygen_out),
-        .mem_op(latches_i.normal_latches.cs.LD_OP),
+        .mem_op(latchesInUse.cs.LD_OP),
         .seg_data(reg_out.Segment0_data),
-        .seg_limit(SEGMENT_LIMITS[latches_i.normal_latches.seg_0_id]),
+        .seg_limit(SEGMENT_LIMITS[(latchesInUse.seg_0_id)-32]),
         .write_intent(1'b0),
         .outputs(ld_neuralnet)
     );
 
     AddyX_NeuralNet st_addyX_neuralnet (
-        .data_size(latches_i.normal_latches.cs.datasize),
+        .data_size(latchesInUse.cs.datasize),
         .addy0(staddyX_neuralnet_addy),
-        .mem_op(latches_i.normal_latches.cs.ST_OP),
+        .mem_op(latchesInUse.cs.ST_OP),
         .seg_data(reg_out.Segment1_data),
-        .seg_limit(SEGMENT_LIMITS[latches_i.normal_latches.seg_1_id]),
-        .write_intent(latches_i.normal_latches.cs.ST_OP),
+        .seg_limit(SEGMENT_LIMITS[(latchesInUse.seg_1_id)-32]),
+        .write_intent(latchesInUse.cs.ST_OP),
         .outputs(st_neuralnet)
     );
 
-    bool ecx_sb;
-    bool cs_sb;
-    RegSB regsb(
-        .clk(clk), .rst(rst), .inputs(regsb_in), .dep_stall(depstall), .ecx_sb(ecx_sb), .codeSeg_sb(cs_sb)
+    RegSB reg_sb_unit (
+        .clk           (clk),
+        .rst           (rst),
+        .dr_id         (latchesInUse.cs.dr_id),
+        .sr_id         (latchesInUse.cs.sr_id),
+        .sib_base_id   (latchesInUse.sib_base_id),
+        .sib_idx_id    (latchesInUse.sib_idx_id),
+        .wb_dr0_id     (wb_outs_i.DR_0_id),
+        .wb_dr0_we     (wb_outs_i.DR_0_we),
+        .wb_dr1_id     (wb_outs_i.DR_1_id),
+        .wb_dr1_we     (wb_outs_i.DR_1_we),         // ⚠️ FIXED (you had a typo)
+        .cs_sib_size   (latchesInUse.sib_needed),
+        .cs_dr_wr      (latchesInUse.cs.dr_wr),
+        .cs_sr_wr      (latchesInUse.cs.sr_wr),
+        .cs_dr_rd      (latchesInUse.cs.dr_rd),
+        .cs_sr_rd      (latchesInUse.cs.sr_rd),
+        .Segment0_ID   (latchesInUse.seg_0_id),
+        .Segment1_ID   (latchesInUse.seg_1_id),
+        .Segment1_valid(1'b0),
+        .dep_stall     (depstall),
+        .ecx_sb        (ecx_sb),
+        .codeSeg_sb    (cs_sb)
     );
 
-    assign RR_PF = ld_neuralnet.pf0_exception || ld_neuralnet.pf1_exception || st_neuralnet.pf0_exception || st_neuralnet.pf1_exception;
-    assign RR_GP = ld_neuralnet.gp0_exception || ld_neuralnet.gp1_exception || st_neuralnet.gp0_exception || st_neuralnet.gp1_exception || decode_outs_i.decode_gp;
+    //needed sb clear, we will use dep stall to mask out expcetions if there
+    //a a dirty sb for the needed regs, we are p sure that thnis correct
+    //bahrvioru
+    assign RR_PF =
+        (ld_neuralnet.pf0_exception
+        || ld_neuralnet.pf1_exception
+        || st_neuralnet.pf0_exception
+        || st_neuralnet.pf1_exception)
+        && !(depstall);
+
+    assign RR_GP =
+            (ld_neuralnet.gp0_exception
+        || ld_neuralnet.gp1_exception
+        || st_neuralnet.gp0_exception
+        || st_neuralnet.gp1_exception
+        || decode_outs_i.decode_gp)
+        && !(depstall);
 
     assign dc_latches_next = '{
-        valid       : 1'b1, //need ot do valid logic
-        cs          : latches_i.normal_latches.dc_cs,
-        mem_cs      : latches_i.normal_latches.mem_cs,
-        exe_cs      : latches_i.normal_latches.exe_cs,
-        wb_cs       : latches_i.normal_latches.wb_cs,
-        br_info     : latches_i.normal_latches.br_info,
-        ST_XCL      : st_neuralnet.xcl,
-        ST_PADDR_0  : st_neuralnet.paddy,
-        ST_PADDR_1  : st_neuralnet.paddy_aligned,
-        MIO         : 1'b0,  //need to figure out where this signal comes from
-        NEIP        : latches_i.normal_latches.NEIP,
-        EIP         : latches_i.normal_latches.EIP,
-        EAX         : latches_i.normal_latches.EAX,
-        imm64       : latches_i.normal_latches.imm64,
-        LD_XCL      : ld_neuralnet.xcl,
-        LD_PADDR_0  : ld_neuralnet.paddy,
-        LD_PADDR_1  : ld_neuralnet.paddy_aligned,
-        swapLines   : ld_neuralnet.bank_hi,
-        sr_id       : reg_in.SR_ID,
-        sr_data     : reg_out.SR_data[31:0],
-        dr_id       : reg_in.DR_ID,
-        dr_data     : reg_out.DR_data[31:0]
-    };
+            valid       : 1'b1,  //need ot do valid logic
+            cs          : latchesInUse.dc_cs,
+            mem_cs      : latchesInUse.mem_cs,
+            exe_cs      : latchesInUse.exe_cs,
+            wb_cs       : latchesInUse.wb_cs,
+            br_info     : latchesInUse.br_info,
+            ST_XCL      : st_neuralnet.xcl,
+            ST_PADDR_0  : st_neuralnet.paddy,
+            ST_PADDR_1  : st_neuralnet.paddy_aligned,
+            MIO         : 1'b0,  //need to figure out where this signal comes from
+            NEIP        : latchesInUse.NEIP,
+            EIP         : latchesInUse.EIP,
+            EAX         : latchesInUse.EAX,
+            imm64       : latchesInUse.imm64,
+            LD_XCL      : ld_neuralnet.xcl,
+            LD_PADDR_0  : ld_neuralnet.paddy,
+            LD_PADDR_1  : ld_neuralnet.paddy_aligned,
+            swapLines   : ld_neuralnet.bank_hi,
+            sr_id       : reg_in.SR_ID,
+            sr_data     : reg_out.SR_data[31:0],
+            dr_id       : reg_in.DR_ID,
+            dr_data     : reg_out.DR_data[31:0]
+        };
 
 
     bool set_zf_scoreboard;
+
     assign outs_o = '{
-        valid   :   1'b1,
-        stall   :   latches_i.normal_latches.valid && (depstall || (RR_PF || RR_GP)),
-        exp_present : RR_PF || RR_GP,
-        exp_pf  : RR_PF,
-        ecx_sb  : ecx_sb,
-        ecx     : reg_out.ECX_data,
-        eax     : reg_out.EAX_data,
-        set_ZF_sb   : latches_i.normal_latches.cs.will_mod_zf,
-        codeSeg_sb  : cs_sb,
-        codeSeg_data  : reg_out.CS_data,
-        codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID]
-    };
+            valid   : 1'b1,
+            stall   : latchesInUse.valid && (depstall || (RR_PF || RR_GP)),
+            exp_present : RR_PF || RR_GP,
+            exp_pf  : RR_PF,
+            ecx_sb  : ecx_sb,
+            ecx     : reg_out.ECX_data,
+            eax     : reg_out.EAX_data,
+            set_ZF_sb   : latchesInUse.cs.will_mod_zf,
+            codeSeg_sb  : cs_sb,
+            codeSeg_data  : reg_out.CS_data,
+            codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID]
+        };
 
 endmodule
+

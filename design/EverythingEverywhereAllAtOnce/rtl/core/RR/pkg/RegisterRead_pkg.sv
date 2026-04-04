@@ -1,6 +1,7 @@
 package RegisterRead_pkg;
     import common_pkg::*;
     import reg_ids_pkg::*;
+
     typedef struct {
         reg_ids_e DR_ID;
         reg_ids_e SR_ID;
@@ -41,30 +42,8 @@ package RegisterRead_pkg;
         p_address_t paddy;
     } neuralnet_outputs_t;
 
+
     typedef struct {
-        reg_ids_e dr_id;
-        reg_ids_e sr_id;
-        reg_ids_e sib_base_id;
-        reg_ids_e sib_idx_id;
-
-        reg_ids_e wb_dr0_id;
-        bool wb_dr0_we;
-        reg_ids_e wb_dr1_id;
-        bool wb_dr1_we;
-
-        bool cs_sib_size;
-
-        bool cs_sr_rd;
-        bool cs_dr_rd;
-
-        bool cs_sr_wr;
-        bool cs_dr_wr;
-        reg_ids_e Segment0_ID;
-        reg_ids_e Segment1_ID;      
-        bool Segment1_valid;        //need to implement sb checking for segments
-    } regsb_inputs_t;
-
-    typedef struct{
         //bool sb; //may not need is jsut use counter as >1 == dependency
         uint8_t counter;
     } regsb_entry_t;
@@ -72,10 +51,10 @@ package RegisterRead_pkg;
     typedef enum {
         CS_LIMIT_ID = 0,
         DS_LIMIT_ID = 1,
-        ES_LIMIT_ID = 2,
-        FS_LIMIT_ID = 3,
-        GS_LIMIT_ID = 4,
-        SS_LIMIT_ID = 5
+        SS_LIMIT_ID = 2,
+        ES_LIMIT_ID = 3,
+        FS_LIMIT_ID = 4,
+        GS_LIMIT_ID = 5
     } seg_limit_reg_ids_e;
 
 
