@@ -218,7 +218,6 @@ module tb_DTE ();
     Decode decode_uut(
         .clk(clk),
         .rst(rst),
-        .cs_limit(32'hFFFF_FFFF),    //fill have to feed in real cs_limit at some point
         .idm_outs_i(idm_info_i),
         .fetch_outs_i(fetch_outs_o),
         .rr_outs_i(rr_outs_i),

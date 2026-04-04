@@ -69,5 +69,14 @@ package RegisterRead_pkg;
         uint8_t counter;
     } regsb_entry_t;
 
+    typedef enum {
+        CS_LIMIT_ID = 0,
+        DS_LIMIT_ID = 1,
+        ES_LIMIT_ID = 2,
+        FS_LIMIT_ID = 3,
+        GS_LIMIT_ID = 4,
+        SS_LIMIT_ID = 5
+    } seg_limit_reg_ids_e;
+
 
 endpackage

@@ -4,8 +4,6 @@ module Decode (
     input wire clk,
     input wire rst,
 
-    input uint32_t cs_limit,
-
     //for decoding instructions coming in from fetch
     input idm_outputs_t idm_outs_i,
 
@@ -94,7 +92,7 @@ module Decode (
 
     decode_gp_gen gp_gen_decode(
         .prev_eip(PrevEIP), .prev_length(PrevLength), .segValue(rr_outs_i.codeSeg_data),
-        .seg_sb(rr_outs_i.codeSeg_sb), .segLimit(cs_limit), .gp_fault_o(decode_gp)
+        .seg_sb(rr_outs_i.codeSeg_sb), .segLimit(rr_outs_i.codeSeg_limit), .gp_fault_o(decode_gp)
     );
 
     br_info_t br_info_for_latches;

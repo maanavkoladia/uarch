@@ -124,10 +124,6 @@ module RR (
     assign RR_PF = ld_neuralnet.pf0_exception || ld_neuralnet.pf1_exception || st_neuralnet.pf0_exception || st_neuralnet.pf1_exception;
     assign RR_GP = ld_neuralnet.gp0_exception || ld_neuralnet.gp1_exception || st_neuralnet.gp0_exception || st_neuralnet.gp1_exception || decode_outs_i.decode_gp;
 
-    initial begin
-        SEGMENT_LIMITS = '{6{'1}};
-    end
-
     assign dc_latches_next = '{
         valid       : 1'b1, //need ot do valid logic
         cs          : latches_i.normal_latches.dc_cs,
@@ -166,7 +162,7 @@ module RR (
         set_ZF_sb   : latches_i.normal_latches.cs.will_mod_zf,
         codeSeg_sb  : cs_sb,
         codeSeg_data  : reg_out.CS_data,
-        codeSeg_limit  : '1
+        codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID]
     };
 
 endmodule

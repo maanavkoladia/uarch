@@ -13,7 +13,8 @@ module RR_Latches (
     assign latches_o = latches;
     always_ff @(posedge clk) begin
         if (!rst) latches <= ('{default:0});
-        else latches <= (write_enable_i) ? nextLatches_i : latches;
+        else if(write_enable_i) latches <= nextLatches_i;
+        else latches <= latches;
     end
 
 endmodule
