@@ -15,66 +15,73 @@ module RegSB (
     assign ecx_sb = 1'b0;
 
     always_ff @(posedge clk) begin
-        //setting scoreboards
-        //nned to check and block only if ids match, otherwise should still go through
-        //just wanna check compilation rn have to fix this later
-        if(inputs.cs_sr_wr && !inputs.wb_dr0_we && !inputs.wb_dr1_we) begin
-            unique case(inputs.sr_id[4:3])
-                2'b00, 2'b01, 2'b10: begin
-                    ARCH_SCOREBOARD[inputs.sr_id[2:0]].counter <=
-                        ARCH_SCOREBOARD[inputs.sr_id[2:0]].counter + 1;
-                end
-                2'b11: begin
-                    MMX_SCOREBOARD[inputs.sr_id[2:0]].counter <=
-                        MMX_SCOREBOARD[inputs.sr_id[2:0]].counter+1;
-                end
-            endcase
+        if(!rst) begin
+            ARCH_SCOREBOARD <= '{default : '0};
+            MMX_SCOREBOARD <= '{default : '0};
+            SEG_SCOREBOARD <= '{default : '0};
         end
+        else begin
+            //setting scoreboards
+            //nned to check and block only if ids match, otherwise should still go through
+            //just wanna check compilation rn have to fix this later
+            if(inputs.cs_sr_wr && !inputs.wb_dr0_we && !inputs.wb_dr1_we) begin
+                case(inputs.sr_id[4:3])
+                    2'b00, 2'b01, 2'b10: begin
+                        ARCH_SCOREBOARD[inputs.sr_id[2:0]].counter <=
+                            ARCH_SCOREBOARD[inputs.sr_id[2:0]].counter + 1;
+                    end
+                    2'b11: begin
+                        MMX_SCOREBOARD[inputs.sr_id[2:0]].counter <=
+                            MMX_SCOREBOARD[inputs.sr_id[2:0]].counter+1;
+                    end
+                endcase
+            end
 
-        if(inputs.cs_dr_wr && !inputs.wb_dr0_we && !inputs.wb_dr1_we) begin
-            unique case(inputs.dr_id[4:3])
-                2'b00, 2'b01, 2'b10: begin
-                    ARCH_SCOREBOARD[inputs.dr_id[2:0]].counter <=
-                        ARCH_SCOREBOARD[inputs.dr_id[2:0]].counter + 1;
-                end
-                2'b11: begin
-                    MMX_SCOREBOARD[inputs.dr_id[2:0]].counter <=
-                        MMX_SCOREBOARD[inputs.dr_id[2:0]].counter+1;
-                end
-            endcase
-        end
+            if(inputs.cs_dr_wr && !inputs.wb_dr0_we && !inputs.wb_dr1_we) begin
+                case(inputs.dr_id[4:3])
+                    2'b00, 2'b01, 2'b10: begin
+                        ARCH_SCOREBOARD[inputs.dr_id[2:0]].counter <=
+                            ARCH_SCOREBOARD[inputs.dr_id[2:0]].counter + 1;
+                    end
+                    2'b11: begin
+                        MMX_SCOREBOARD[inputs.dr_id[2:0]].counter <=
+                            MMX_SCOREBOARD[inputs.dr_id[2:0]].counter+1;
+                    end
+                endcase
+            end
 
-        //for clearning, will def need to consolidate multiple driver issue
-        if(inputs.wb_dr0_we && !inputs.cs_dr_wr && !inputs.cs_sr_wr) begin
-            unique case(inputs.wb_dr0_id[4:3])
-                2'b00, 2'b01, 2'b10: begin
-                    ARCH_SCOREBOARD[inputs.wb_dr0_id[2:0]].counter <=
-                        ARCH_SCOREBOARD[inputs.wb_dr0_id[2:0]].counter - 1;
-                end
-                2'b11: begin
-                    MMX_SCOREBOARD[inputs.wb_dr0_id[2:0]].counter <=
-                        MMX_SCOREBOARD[inputs.wb_dr0_id[2:0]].counter-1;
-                end
-            endcase
-        end
+            //for clearning, will def need to consolidate multiple driver issue
+            if(inputs.wb_dr0_we && !inputs.cs_dr_wr && !inputs.cs_sr_wr) begin
+                case(inputs.wb_dr0_id[4:3])
+                    2'b00, 2'b01, 2'b10: begin
+                        ARCH_SCOREBOARD[inputs.wb_dr0_id[2:0]].counter <=
+                            ARCH_SCOREBOARD[inputs.wb_dr0_id[2:0]].counter - 1;
+                    end
+                    2'b11: begin
+                        MMX_SCOREBOARD[inputs.wb_dr0_id[2:0]].counter <=
+                            MMX_SCOREBOARD[inputs.wb_dr0_id[2:0]].counter-1;
+                    end
+                endcase
+            end
 
-        if(inputs.wb_dr1_we && !inputs.cs_dr_wr && !inputs.cs_sr_wr) begin
-            unique case(inputs.wb_dr1_id[4:3])
-                2'b00, 2'b01, 2'b10: begin
-                    ARCH_SCOREBOARD[inputs.wb_dr1_id[2:0]].counter <=
-                        ARCH_SCOREBOARD[inputs.wb_dr1_id[2:0]].counter - 1;
-                end
-                2'b11: begin
-                    MMX_SCOREBOARD[inputs.wb_dr1_id[2:0]].counter <=
-                        MMX_SCOREBOARD[inputs.wb_dr1_id[2:0]].counter-1;
-                end
-            endcase
+            if(inputs.wb_dr1_we && !inputs.cs_dr_wr && !inputs.cs_sr_wr) begin
+                case(inputs.wb_dr1_id[4:3])
+                    2'b00, 2'b01, 2'b10: begin
+                        ARCH_SCOREBOARD[inputs.wb_dr1_id[2:0]].counter <=
+                            ARCH_SCOREBOARD[inputs.wb_dr1_id[2:0]].counter - 1;
+                    end
+                    2'b11: begin
+                        MMX_SCOREBOARD[inputs.wb_dr1_id[2:0]].counter <=
+                            MMX_SCOREBOARD[inputs.wb_dr1_id[2:0]].counter-1;
+                    end
+                endcase
+            end
         end
     end
 
     always_comb begin
         if(inputs.cs_sr_rd) begin
-            unique case(inputs.sr_id[4:3])
+            case(inputs.sr_id[4:3])
                 2'b00, 2'b01, 2'b10: begin
                     if(ARCH_SCOREBOARD[inputs.sr_id[2:0]].counter != 0) begin
                         dep_stall = 1'b1;
@@ -95,7 +102,7 @@ module RegSB (
         end
 
         if(inputs.cs_dr_rd) begin
-            unique case(inputs.dr_id[4:3])
+            case(inputs.dr_id[4:3])
                 2'b00, 2'b01, 2'b10: begin
                     if(ARCH_SCOREBOARD[inputs.dr_id[2:0]].counter != 0) begin
                         dep_stall = 1'b1;
@@ -116,7 +123,7 @@ module RegSB (
         end
 
         if(inputs.cs_sib_size) begin
-            unique case(inputs.sib_base_id[4:3])
+            case(inputs.sib_base_id[4:3])
                 2'b00, 2'b01, 2'b10: begin
                     if(ARCH_SCOREBOARD[inputs.sib_base_id[2:0]].counter != 0) begin
                         dep_stall = 1'b1;
@@ -137,7 +144,7 @@ module RegSB (
         end
 
         if(inputs.cs_sib_size) begin
-            unique case(inputs.sib_idx_id[4:3])
+            case(inputs.sib_idx_id[4:3])
                 2'b00, 2'b01, 2'b10: begin
                     if(ARCH_SCOREBOARD[inputs.sib_idx_id[2:0]].counter != 0) begin
                         dep_stall = 1'b1;

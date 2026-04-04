@@ -15,7 +15,7 @@ module AddressGen_Logic (
     bool cout;
 
     always_comb begin
-        unique case({sib_needed, disp_needed})
+        case({sib_needed, disp_needed})
             2'b00: begin
                 adder_input2 = register_data;
             end
@@ -30,7 +30,7 @@ module AddressGen_Logic (
             end
         endcase
 
-        unique case({disp_needed, dispsize})
+        case({disp_needed, dispsize})
             2'b00: begin
                 adder_input1 = 32'b0;
             end

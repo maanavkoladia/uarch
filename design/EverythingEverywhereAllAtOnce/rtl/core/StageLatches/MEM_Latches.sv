@@ -10,7 +10,7 @@ module MEM_Latches (
 
     assign latches_o = latches;
     always_ff @(posedge clk) begin
-        if (rst) latches <= ('{default:0});
+        if (!rst) latches <= ('{default:0});
         else     latches <= nextLatches_i;
     end
 

@@ -30,8 +30,8 @@ module RR (
 
     bool RR_GP, RR_PF;
 
-    uint32_t addygen_input_addy =
-        (latches_i.normal_latches.cs.MODRM_NEEDED && latches_i.normal_latches.cs.RM_IS_DR) ? reg_out.DR_data[31:0] : reg_out.SR_data[31:0];
+    uint32_t addygen_input_addy;
+    assign addygen_input_addy = (latches_i.normal_latches.cs.MODRM_NEEDED && latches_i.normal_latches.cs.RM_IS_DR) ? reg_out.DR_data[31:0] : reg_out.SR_data[31:0];
 
     l_address_t addygen_out;
 
@@ -46,7 +46,8 @@ module RR (
     regfile_output_t reg_out;
     neuralnet_outputs_t ld_neuralnet;
     neuralnet_outputs_t st_neuralnet;
-    regfile_input_t reg_in = '{
+    regfile_input_t reg_in;
+    assign reg_in =  '{
         DR_ID       : latches_i.normal_latches.cs.dr_id,
         SR_ID         : latches_i.normal_latches.cs.sr_id,
         SIB_IDX_ID     : latches_i.normal_latches.sib_idx_id,
@@ -60,7 +61,8 @@ module RR (
         Segment0_ID    : latches_i.normal_latches.seg_0_id,
         Segment1_ID    : latches_i.normal_latches.seg_1_id
     };
-    regsb_inputs_t regsb_in = '{
+    regsb_inputs_t regsb_in;
+    assign regsb_in = '{
         sr_id           : latches_i.normal_latches.cs.sr_id,
         dr_id           : latches_i.normal_latches.cs.dr_id,
         sib_base_id     : latches_i.normal_latches.sib_base_id,

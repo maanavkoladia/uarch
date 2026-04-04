@@ -1,6 +1,6 @@
 package reg_ids_pkg;
 
-    typedef enum {
+    typedef enum logic [5:0]{
         //{datasize, ID}
         AL  = 0,
         AX  = 8,

@@ -39,7 +39,7 @@ module rep_controller (
         else begin
             if(flush) REP_IN_PROGRESS <= 1'b0;
             else begin
-                unique case ({set_rep, clear_rep})
+                case ({set_rep, clear_rep})
                     2'b00: REP_IN_PROGRESS <= REP_IN_PROGRESS;
                     2'b01: REP_IN_PROGRESS <= 1'b0;
                     2'b10: REP_IN_PROGRESS <= 1'b1;
@@ -56,7 +56,7 @@ module rep_controller (
         else begin
             if(flush) zf_sb.counter <= 8'b0;
             else begin
-                unique case ({set_zf, clear_zf})
+                case ({set_zf, clear_zf})
                     2'b00: zf_sb <= zf_sb;
                     2'b01: zf_sb.counter <= (zf_sb.counter == 0) ? zf_sb.counter : zf_sb.counter - 1;
                     2'b10: zf_sb.counter <= (zf_sb.counter == 8'hFF) ? zf_sb.counter : zf_sb.counter + 1;
@@ -77,7 +77,7 @@ module rep_controller (
     rr_latches_general_t add_nf;        //cmp2
 
     always_comb begin
-        unique case (inst_select)
+        case (inst_select)
             3'b000: rep_latches = idle_output;
             3'b001: rep_latches = movs_edi_esi;
             3'b010: rep_latches = decrement_ecx;

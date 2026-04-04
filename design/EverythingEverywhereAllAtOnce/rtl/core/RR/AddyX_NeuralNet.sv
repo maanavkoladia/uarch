@@ -17,26 +17,30 @@ module AddyX_NeuralNet (
     bool gp0_exp_temp_seg, gp1_exp_temp_seg;
 
     //do not use tag here since vaddy0 is virtual address, rest should be same so safe to use
-    p_addr_dcache_fields_t vaddy0_fields = '{
+    p_addr_dcache_fields_t vaddy0_fields;
+    assign vaddy0_fields = '{
         tag    : vaddy0[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
         index  : vaddy0[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
         bank   : vaddy0[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
         offset : vaddy0[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
     };
 
-    p_addr_dcache_fields_t vaddy1_fields = '{
+    p_addr_dcache_fields_t vaddy1_fields;
+    assign vaddy1_fields =  '{
         tag    : vaddy1[DCACHE_BANK_TAG_UB : DCACHE_BANK_TAG_LB],
         index  : vaddy1[DCACHE_BANK_INDEX_UB : DCACHE_BANK_INDEX_LB],
         bank   : vaddy1[DCACHE_BANK_BANK_UB : DCACHE_BANK_BANK_LB],
         offset : vaddy1[DCACHE_BANK_OFFSET_UB : DCACHE_BANK_OFFSET_LB]
     };
 
-    tlb_inputs_t tlb0_in = '{
+    tlb_inputs_t tlb0_in;
+    assign tlb0_in = '{
         virtual_addr    : vaddy0,
         write_intention : write_intent
     };
 
-    tlb_inputs_t tlb1_in = '{
+    tlb_inputs_t tlb1_in;
+    assign tlb1_in = '{
         virtual_addr    : vaddy1,
         write_intention : write_intent
     };
@@ -68,7 +72,7 @@ module AddyX_NeuralNet (
     TLB RRtlb0 (.inputs(tlb1_in), .outputs(tlb1_out));
 
     always_comb begin
-        unique case(data_size[1:0])
+        case(data_size[1:0])
             //want to find the last byte of the data being pulled, if 16b access, must add 1 to address
             //if 32b access, must add 3 to address to find address of last byte since byte addressable mem
             2'b00: addy1 = addy0;

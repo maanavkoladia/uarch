@@ -23,7 +23,7 @@ module modrm_processor (
     always_comb begin
         //dr reg setting
         if(rm_is_dr) begin
-            unique case(modrm_byte[2:0])    //rm id
+            case(modrm_byte[2:0])    //rm id
                 3'd0: dr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: dr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
                 3'd2: dr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
@@ -37,7 +37,7 @@ module modrm_processor (
             dr_wr = (modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
         end
         else if(reg_is_dr) begin
-            unique case(modrm_byte[5:3])    //reg id
+            case(modrm_byte[5:3])    //reg id
                 3'd0: dr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: dr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
                 3'd2: dr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
@@ -65,7 +65,7 @@ module modrm_processor (
 
         //sr reg setting
         if(rm_is_dr) begin
-            unique case(modrm_byte[5:3])    //rm id
+            case(modrm_byte[5:3])    //rm id
                 3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
                 3'd2: sr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
@@ -79,7 +79,7 @@ module modrm_processor (
             sr_wr = 1'b0;
         end
         else if(reg_is_dr) begin
-            unique case(modrm_byte[2:0])    //reg id
+            case(modrm_byte[2:0])    //reg id
                 3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
                 3'd2: sr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
