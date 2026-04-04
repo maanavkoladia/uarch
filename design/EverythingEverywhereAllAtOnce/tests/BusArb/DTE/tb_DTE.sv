@@ -226,14 +226,13 @@ module tb_DTE ();
         .exe_outs_i(exe_outs_i),
         .wb_outs_i(wb_outs_i),
         .rr_latches_next(rr_latches_next),
-        .outs_o(decode_outs_i),
-        .latch_we_o(RR_we)
+        .outs_o(decode_outs_i)
     );
 
     RR_Latches rr_latches_unit (
         .clk(clk),
         .rst(rst),
-        .write_enable_i(RR_we),
+        .write_enable_i(decode_outs_i.rr_stage_latch_we),
         .flush(exe_outs_i.br_res_out.flush),
         .farFlush(exe_outs_i.br_res_out.farFlush),
         .nextLatches_i(rr_latches_next),
@@ -254,12 +253,15 @@ module tb_DTE ();
         .outs_o(rr_outs_i)
     );
 
-    // DC_Latches dc_latches_unit (
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .nextLatches_i(dc_latches_next),
-    //     .latches_o(dc_latches)
-    // );
+    DC_Latches dc_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .write_enable_i(rr_outs_i.dc_stage_latch_we),
+        .flush(exe_outs_i.br_res_out.flush),
+        .farFlush(exe_outs_i.br_res_out.farFlush),
+        .nextLatches_i(dc_latches_next),
+        .latches_o(dc_latches)
+    );
 
     // DC dc_unit (
     //     .clk(clk),

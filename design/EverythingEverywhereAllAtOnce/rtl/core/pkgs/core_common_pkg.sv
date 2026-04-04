@@ -49,6 +49,7 @@ package core_common_pkg;
         l_address_t eip;
         bool invalid_instruction;
         bool decode_gp;  //instruciton crossing segment line
+        bool rr_stage_latch_we;
     } decode_outputs_t;
 
     typedef struct {
@@ -66,6 +67,8 @@ package core_common_pkg;
         bool codeSeg_sb;  //needed for far brs, the sb will disable the i cache
         uint32_t codeSeg_data;  //used for translation from spc to phyiscial addr
         uint32_t codeSeg_limit;
+
+        bool dc_stage_latch_we;
     } rr_outputs_t;
 
     typedef struct {

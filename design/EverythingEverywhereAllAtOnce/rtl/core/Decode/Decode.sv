@@ -29,10 +29,7 @@ module Decode (
     output rr_latches_t rr_latches_next,
 
     //actual stage bundled outputs
-    output decode_outputs_t outs_o,
-
-    output wire latch_we_o
-
+    output decode_outputs_t outs_o
 );
 
     uint32_t PrevEIP;
@@ -59,6 +56,7 @@ module Decode (
     rr_latches_general_t temp_rr_latch;
     bool flush, stall;
     logic REP_MOV_LATCH, REP_CMP_LATCH;
+    wire rr_latch_we_o;
 
     assign flush = exe_outs_i.br_res_out.flush;
     assign stall = rr_outs_i.valid && rr_outs_i.stall;
@@ -122,7 +120,7 @@ module Decode (
 
     bool rr_valid;
     rr_valid_logic decode_2_RR_valid_logic(
-        .RR_we_o(latch_we_o),
+        .RR_we_o(rr_latch_we_o),
         .N_RR_V_o(rr_valid),
         .DECODE_V_i(!invalid_inst),
         .RR_stall_i(rr_outs_i.stall),
@@ -141,7 +139,8 @@ module Decode (
         stall : invalid_inst || rr_outs_i.stall,
         eip : EIP,
         invalid_instruction : invalid_inst,
-        decode_gp : decode_gp
+        decode_gp : decode_gp,
+        rr_stage_latch_we : rr_latch_we_o
     };
 
     reg_ids_e segment0;

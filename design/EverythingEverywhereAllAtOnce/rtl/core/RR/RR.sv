@@ -38,6 +38,11 @@ module RR (
     bool cs_sb;
     bool depstall;
 
+    bool dc_latches_we;
+    bool next_dc_valid;
+    bool rr_stall;
+    assign rr_stall = latchesInUse.valid && (depstall || (RR_PF || RR_GP));
+
     //32 bit bc mmx sare the data areg
     uint32_t addygen_input_addy;
     assign addygen_input_addy =
@@ -138,6 +143,20 @@ module RR (
         .codeSeg_sb    (cs_sb)
     );
 
+    dc_valid_logic dc_valid_logic_unit(
+        .DC_we_o(dc_latches_we),
+        .N_DC_V_o(next_dc_valid),
+        .RR_stall_i(rr_stall),
+        .RR_V_i(latchesInUse.valid),
+        .DC_stall_i(dc_outs_i.stall),
+        .DC_V_i(dc_outs_i.valid),
+        .MEM_V_i(mem_outs_i.valid),
+        .MEM_stall_i(mem_outs_i.stall),
+        .EXE_V_i(exe_outs_i.valid),
+        .WB_stall_i(wb_outs_i.wb_stall)
+    );
+   
+
     //needed sb clear, we will use dep stall to mask out expcetions if there
     //a a dirty sb for the needed regs, we are p sure that thnis correct
     //bahrvioru
@@ -157,7 +176,7 @@ module RR (
         && !(depstall);
 
     assign dc_latches_next = '{
-            valid       : 1'b1,  //need ot do valid logic
+            valid       : next_dc_valid,
             cs          : latchesInUse.dc_cs,
             mem_cs      : latchesInUse.mem_cs,
             exe_cs      : latchesInUse.exe_cs,
@@ -196,7 +215,8 @@ module RR (
             set_ZF_sb   : latchesInUse.cs.will_mod_zf,
             codeSeg_sb  : cs_sb,
             codeSeg_data  : reg_out.CS_data,
-            codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID]
+            codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID],
+            dc_stage_latch_we : dc_latches_we
         };
 
 endmodule

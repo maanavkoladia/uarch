@@ -4,6 +4,9 @@ module DC_Latches (
     input  wire clk,
     input  wire rst,
     input  dc_latches_t nextLatches_i,
+    input wire write_enable_i,
+    input wire flush,
+    input wire farFlush,
     output dc_latches_t latches_o
 );
     dc_latches_t latches;
@@ -11,7 +14,9 @@ module DC_Latches (
     assign latches_o = latches;
     always_ff @(posedge clk) begin
         if (!rst) latches <= ('{default:0});
-        else     latches <= nextLatches_i;
+        else if(flush || farFlush) latches <= '{default:0};
+        else if(write_enable_i) latches <= nextLatches_i;
+        else latches <= latches;
     end
     
 endmodule
