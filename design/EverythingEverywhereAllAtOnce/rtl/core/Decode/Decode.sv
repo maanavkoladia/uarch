@@ -78,8 +78,8 @@ module Decode (
 
     predecode inst_processing(
         .clk(clk), .rst(rst), .queue(queue),
-        .queue_valid({idm_outs_i.idm_slots[0].valid, idm_outs_i.idm_slots[1].valid,
-                    idm_outs_i.idm_slots[2].valid, idm_outs_i.idm_slots[3].valid}),
+        .queue_valid({idm_outs_i.idm_slots[3].valid, idm_outs_i.idm_slots[2].valid,
+                    idm_outs_i.idm_slots[1].valid, idm_outs_i.idm_slots[0].valid}),
         .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_byte(sib_byte), .sib_size(sib_size),
         .opcode_byte(opcode_byte), .modrm_byte(modrm_byte), .disp(displacement), .disp_size(disp_size),
         .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector(total_pf_vector), .invalid_inst(invalid_inst)
@@ -92,7 +92,7 @@ module Decode (
 
     decode_gp_gen gp_gen_decode(
         .prev_eip(PrevEIP), .prev_length(PrevLength), .segValue(rr_outs_i.codeSeg_data),
-        .seg_sb(rr_outs_i.codeSeg_sb), .segLimit(rr_outs_i.codeSeg_limit), .gp_fault_o(decode_gp)
+        .seg_sb(rr_outs_i.codeSeg_sb), .segLimit(cs_limit), .gp_fault_o(decode_gp)
     );
 
     br_info_t br_info_for_latches;
@@ -157,10 +157,10 @@ module Decode (
         imm64           : imm64,
         sib_idx_id      : sibidx,
         sib_base_id     : sibbase,
-        sib_needed      : sib_size,
+        sib_needed      : (temp_rr_cs.MODRM_NEEDED) ? sib_size : 1'b0,
         sib_scale       : sibscale,
-        disp_needed     : disp_needed,
-        disp_size       : disp_size,
+        disp_needed     : (temp_rr_cs.MODRM_NEEDED) ? disp_needed : 1'b0,
+        disp_size       : (temp_rr_cs.MODRM_NEEDED) ? disp_size : 1'b0,
         displacement    : displacement,
         seg_1_valid     : 1'b0,
         seg_0_id        : segment0,
@@ -193,7 +193,8 @@ module Decode (
                     EIP <= idm_outs_i.idm_slots[EIP[5:4]].br_btb_target;
                 end
                 else begin
-                    if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
+                    //if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
+                    if(!invalid_inst && !stall) EIP <= NEIP;    //need to integrate rep
                     else EIP <= EIP;
                 end
             end

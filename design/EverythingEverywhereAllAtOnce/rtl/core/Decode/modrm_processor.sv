@@ -22,7 +22,7 @@ module modrm_processor (
 
     always_comb begin
         //dr reg setting
-        if(decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.RM_IS_DR && !decode_cs_inputs.REG_IS_DR) begin
+        if(rm_is_dr) begin
             unique case(modrm_byte[2:0])    //rm id
                 3'd0: dr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: dr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
@@ -33,8 +33,10 @@ module modrm_processor (
                 3'd6: dr_id = (datasize[1] && datasize[0]) ? MM6 : ESI;
                 3'd7: dr_id = (datasize[1] && datasize[0]) ? MM7 : EDI;
             endcase
+            dr_rd = 1'b1;
+            dr_wr = (modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
         end
-        else if(decode_cs_inputs.MODRM_NEEDED && !decode_cs_inputs.RM_IS_DR && decode_cs_inputs.REG_IS_DR) begin
+        else if(reg_is_dr) begin
             unique case(modrm_byte[5:3])    //reg id
                 3'd0: dr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: dr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
@@ -45,19 +47,25 @@ module modrm_processor (
                 3'd6: dr_id = (datasize[1] && datasize[0]) ? MM6 : ESI;
                 3'd7: dr_id = (datasize[1] && datasize[0]) ? MM7 : EDI;
             endcase
+            dr_rd = 1'b1;
+            dr_wr = 1'b1;
         end
         else if(!decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.HARDCODED_DR) begin
             dr_id = decode_cs_inputs.HARDCODED_DR_ID;
+            dr_rd = decode_cs_inputs.HARDCODED_DR_RD;
+            //gonna assume for now that if youre reading this reg then youre gonna write back to it since this is dr
+            dr_wr = decode_cs_inputs.HARDCODED_DR_RD;
         end
-        else dr_id = ERROR_REG;
-
-        dr_rd = 1'b1;
-        dr_wr = (reg_is_dr) || (rm_is_dr && modrm_byte[7:6] == 2'b11);
+        else begin
+            dr_id = ERROR_REG;
+            dr_rd = 1'b0;
+            dr_wr = 1'b0;
+        end
 
 
         //sr reg setting
         if(rm_is_dr) begin
-            unique case(modrm_byte[2:0])    //rm id
+            unique case(modrm_byte[5:3])    //rm id
                 3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
                 3'd2: sr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
@@ -67,9 +75,11 @@ module modrm_processor (
                 3'd6: sr_id = (datasize[1] && datasize[0]) ? MM6 : ESI;
                 3'd7: sr_id = (datasize[1] && datasize[0]) ? MM7 : EDI;
             endcase
+            sr_rd = 1'b1;
+            sr_wr = 1'b0;
         end
         else if(reg_is_dr) begin
-            unique case(modrm_byte[5:3])    //reg id
+            unique case(modrm_byte[2:0])    //reg id
                 3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
                 3'd2: sr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
@@ -79,17 +89,23 @@ module modrm_processor (
                 3'd6: sr_id = (datasize[1] && datasize[0]) ? MM6 : ESI;
                 3'd7: sr_id = (datasize[1] && datasize[0]) ? MM7 : EDI;
             endcase
+            sr_rd = 1'b1;
+            sr_wr = 1'b0;
         end
         else if(!decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.HARDCODED_SR) begin
             sr_id = decode_cs_inputs.HARDCODED_SR_ID;
+            sr_rd = decode_cs_inputs.HARDCODED_SR_RD;
+            sr_wr = 1'b0;
         end
-        else sr_id = ERROR_REG;
-        sr_rd = 1'b1;
-        sr_wr = 1'b0;
+        else begin
+            sr_id = ERROR_REG;
+            sr_rd = 1'b0;
+            sr_wr = 1'b0;
+        end
 
 
         //st/ld op setting
-        ld_op = modrm_byte[7:6] != 2'b11;
+        ld_op = (modrm_byte[7:6] != 2'b11) && decode_cs_inputs.MODRM_NEEDED;
         st_op = (rm_is_dr && (modrm_byte[7:6] != 2'b11));
     end
 

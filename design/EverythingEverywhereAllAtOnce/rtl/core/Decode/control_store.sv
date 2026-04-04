@@ -1,6 +1,7 @@
 import core_stage_latches_pkg::*;
 import reg_ids_pkg::*;
 import Decode_pkg::*;
+import control_store_pkg::*;
 module control_store (
     input logic [9:0] total_pf_vector,
     input byte_t opcode,
@@ -174,6 +175,8 @@ module control_store (
         HARDCODED_DR_ID   : HARD_CODED_DR_ID,
         HARDCODED_SR      : HARD_CODED_SR,
         HARDCODED_SR_ID   : HARD_CODED_SR_ID,
+        HARDCODED_DR_RD   : HARDCODED_DR_RD,
+        HARDCODED_SR_RD   : HARDCODED_SR_RD,
         OP_IN_MODRM       : OP_IN_MODRM,
         dr_id             : mod_rm_cs_outs.dr_id,
         sr_id             : mod_rm_cs_outs.sr_id,
@@ -223,8 +226,9 @@ module control_store (
         DATA_SIZE           : DATA_SIZE,
         OP_TYPE             : OP_TYPE,
 
-        alu_inputA_sel      : alu_inputA_sel,
-        alu_inputB_sel      : alu_inputB_sel,
+        //in control store, i defaulted to reg, mem will have to be buffer
+        alu_inputA_sel      : (modrm == 2'b11) ? alu_inputA_sel : BUFFER,       
+        alu_inputB_sel      : (modrm == 2'b11) ? alu_inputB_sel : BUFFER,
         branch_target_sel   : branch_target_sel,
 
         br_ucond            : br_uncond,

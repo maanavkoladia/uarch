@@ -87,7 +87,7 @@ import core_common_pkg::*;
 
 
 module tb_DTE ();
-    localparam int Clk_PERIOD = 10;
+    localparam int Clk_PERIOD = 20;
 
     initial begin
         $vcdpluson;
@@ -249,83 +249,83 @@ module tb_DTE ();
         .outs_o(rr_outs_i)
     );
 
-    DC_Latches dc_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(dc_latches_next),
-        .latches_o(dc_latches)
-    );
+    // DC_Latches dc_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .nextLatches_i(dc_latches_next),
+    //     .latches_o(dc_latches)
+    // );
 
-    DC dc_unit (
-        .clk(clk),
-        .rst(rst),
-        .latches_i(dc_latches),
-        .mem_outs_i(mem_outs_i),
-        .exe_outs_i(exe_outs_i),
-        .wb_outs_i(wb_outs_i),
-        .mem_latches_next_o(mem_latches_next),
-        .req_rejected_mio(DCacheIn_i.req_rejected_mio),
-        .req_rejected_0(DCacheIn_i.req_rejected_0),
-        .req_rejected_1(DCacheIn_i.req_rejected_1),
-        .dc_outs_o(dc_outs_i)
-    );
+    // DC dc_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .latches_i(dc_latches),
+    //     .mem_outs_i(mem_outs_i),
+    //     .exe_outs_i(exe_outs_i),
+    //     .wb_outs_i(wb_outs_i),
+    //     .mem_latches_next_o(mem_latches_next),
+    //     .req_rejected_mio(DCacheIn_i.req_rejected_mio),
+    //     .req_rejected_0(DCacheIn_i.req_rejected_0),
+    //     .req_rejected_1(DCacheIn_i.req_rejected_1),
+    //     .dc_outs_o(dc_outs_i)
+    // );
 
-    MEM_Latches mem_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(mem_latches_next),
-        .latches_o(mem_latches)
-    );
+    // MEM_Latches mem_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .nextLatches_i(mem_latches_next),
+    //     .latches_o(mem_latches)
+    // );
 
-    MEM mem_unit (
-        .clk(clk),
-        .rst(rst),
+    // MEM mem_unit (
+    //     .clk(clk),
+    //     .rst(rst),
 
-        .latches_i (mem_latches),
-        .exe_outs_i(exe_outs_i),
-        .wb_outs_i (wb_outs_i),
+    //     .latches_i (mem_latches),
+    //     .exe_outs_i(exe_outs_i),
+    //     .wb_outs_i (wb_outs_i),
 
-        .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
-        .line_0(DCacheIn_i.line_0),
-        .hit_line_1(DCacheIn_i.hit_line_1),
-        .line_1(DCacheIn_i.line_1),
-        .exe_latches_next_o(exe_latches_next),
-        .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
-        .line_MMIO(DCacheIn_i.line_MIO),
-        .outs_o(mem_outs_i)
-    );
+    //     .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
+    //     .line_0(DCacheIn_i.line_0),
+    //     .hit_line_1(DCacheIn_i.hit_line_1),
+    //     .line_1(DCacheIn_i.line_1),
+    //     .exe_latches_next_o(exe_latches_next),
+    //     .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
+    //     .line_MMIO(DCacheIn_i.line_MIO),
+    //     .outs_o(mem_outs_i)
+    // );
 
-    EXE_Latches exe_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(exe_latches_next),
-        .latches_o(exe_latches)
-    );
+    // EXE_Latches exe_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .nextLatches_i(exe_latches_next),
+    //     .latches_o(exe_latches)
+    // );
 
-    EXE execute_unit (
-        .clk(clk),
-        .rst(rst),
-        .latches_i(exe_latches),
-        .wb_outs_i(wb_outs_i),
-        .wb_latches_next_o(wb_latches_next),
-        .outs_o(exe_outs_i)
-    );
+    // EXE execute_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .latches_i(exe_latches),
+    //     .wb_outs_i(wb_outs_i),
+    //     .wb_latches_next_o(wb_latches_next),
+    //     .outs_o(exe_outs_i)
+    // );
 
-    WB_Latches wb_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(wb_latches_next),
-        .latches_o(wb_latches)
-    );
+    // WB_Latches wb_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .nextLatches_i(wb_latches_next),
+    //     .latches_o(wb_latches)
+    // );
 
-    WB write_back_unit (
-        .clk(clk),
-        .rst(rst),
-        .wb_latches(wb_latches),
-        .write_success(DCacheIn_i.writeSuccess),
-        .write_success_mio(DCacheIn_i.writeSuccess_MIO),
-        .outputs(wb_outs_i)
-    );
+    // WB write_back_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .wb_latches(wb_latches),
+    //     .write_success(DCacheIn_i.writeSuccess),
+    //     .write_success_mio(DCacheIn_i.writeSuccess_MIO),
+    //     .outputs(wb_outs_i)
+    // );
 
     Scheduler uut0_scheduler (
         .clk(clk),
@@ -349,10 +349,12 @@ module tb_DTE ();
     
     //code segment is at 0
     //assign rr_outs_i = '{default: '0};
-    // assign dc_outs_i = '{default: '0};
-    // assign mem_outs_i = '{default: '0};
-    // assign exe_outs_i = '{default: '0};
-    // assign wb_outs_i = '{default: '0};
+    //decode worked fine when I had this above line uncommented
+    //need to check how the rr_outs_i is being set or initialized
+    assign dc_outs_i = '{default: '0};
+    assign mem_outs_i = '{default: '0};
+    assign exe_outs_i = '{default: '0};
+    assign wb_outs_i = '{default: '0};
 
 
 
@@ -362,9 +364,9 @@ module tb_DTE ();
 
 
 
-    // assign data_bus = data_bus_drv;
-    // assign data_bus_drv = 'z;
-    // assign address_bus = dte_2_icache.driveAddrBus ? 32'h1000 : 'z;
+    assign data_bus = data_bus_drv;
+    assign data_bus_drv = 'z;
+    assign address_bus = dte_2_icache.driveAddrBus ? 32'h1000 : 'z;
   
 
     initial begin
@@ -375,10 +377,10 @@ module tb_DTE ();
         rst = 0;  //active low
 
 
-        // bestPick_req_2_dte = NO_REQ;
+        //bestPick_req_2_dte = NO_REQ;
         DelayClks(20);
         @(posedge clk)
-       // bestPick_req_2_dte   = ICACHE_HIGH_PRI;
+        //bestPick_req_2_dte   = ICACHE_HIGH_PRI;
         @(posedge clk)
         force fetch_uut.SPC = 32'h1000;
         @(posedge clk)
@@ -392,20 +394,20 @@ module tb_DTE ();
 
         
 
-        // @(posedge clk) 
-        // bestPick_req_2_dte   = ICACHE_HIGH_PRI;
-        // bestPick_bk_id_2_dte = 0;
-        // @(posedge clk) bestPick_req_2_dte = NO_REQ;
+        @(posedge clk) 
+        //bestPick_req_2_dte   = ICACHE_HIGH_PRI;
+        //bestPick_bk_id_2_dte = 0;
+        //@(posedge clk) bestPick_req_2_dte = NO_REQ;
   
         
-        // @(posedge clk)  //ICACHE_LD0
-        // @(posedge clk)  //ICACHE_LD1
-        // @(posedge clk)  //ICACHE_LD2
-        // @(posedge clk)
-        // @(negedge clk)
-        // assert (uut0_DTE.dte_mem_2_icache_fsm_state == DTE_MEM_2_ICACHE_IDLE)
-        // else $error("Assert fail: Icache transation should be complete: should be IDLE \
-        //              GOT: %d ", uut0_DTE.dte_mem_2_icache_fsm_state);
+        @(posedge clk)  //ICACHE_LD0
+        @(posedge clk)  //ICACHE_LD1
+        @(posedge clk)  //ICACHE_LD2
+        @(posedge clk)
+        @(negedge clk)
+        assert (uut0_DTE.dte_mem_2_icache_fsm_state == DTE_MEM_2_ICACHE_IDLE)
+        else $error("Assert fail: Icache transation should be complete: should be IDLE \
+                     GOT: %d ", uut0_DTE.dte_mem_2_icache_fsm_state);
 
    
         // bestPick_req_2_dte   = DCACHE_FILL_LD;
@@ -413,9 +415,13 @@ module tb_DTE ();
         // @(posedge clk) bestPick_req_2_dte = ICACHE_LOW_PRI_REQ;
         // @(posedge clk) @(posedge clk) @(posedge clk) bestPick_req_2_dte = DCACHE_EB_BLOCKING_LD;
         // bestPick_bk_id_2_dte = 3;
-   
-        // @(posedge clk)
-        // @(posedge clk)
+
+        DelayClks(9);
+        @(posedge clk)
+        force decode_uut.EIP = 32'h1000;
+        @(posedge clk)
+        release decode_uut.EIP;
+
         // @(posedge clk)
         // @(posedge clk)
         // @(negedge clk)

@@ -63,6 +63,8 @@ package core_stage_latches_pkg;
         reg_ids_e HARDCODED_DR_ID;
         bool HARDCODED_SR;
         bool HARDCODED_SR_ID;      //ik this is a bool rn, but cs has it as bool rn, will hcnage later
+        bool HARDCODED_DR_RD;
+        bool HARDCODED_SR_RD;
         bool OP_IN_MODRM;
         reg_ids_e dr_id;
         reg_ids_e sr_id;

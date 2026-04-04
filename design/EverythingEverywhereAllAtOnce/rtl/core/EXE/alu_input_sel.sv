@@ -50,7 +50,7 @@ module alu_input_sel(
             NO_EXE:            srA_64 = 0;
             SEGMENT_NEIP:   srA_64 = {dr_data, NEIP}; 
             SEGMENT_EIP:    srA_64 = {dr_data, EIP}; //not sure when this needs to be used
-            EAX:            srA_64    = {32'd0, EAX}; //cmpxchg
+            EAX_REG:            srA_64    = {32'd0, EAX}; //cmpxchg
             CMPXCHG_SEL:        srA_64 = {sr_data, dr_data}; 
             IRETD_SEL:          srA_64 = res_buf_out[96:32];
             FLAGS:          srA_64 = {32'd0, flags};
@@ -71,7 +71,7 @@ module alu_input_sel(
             NO_EXE:            srB_64 = 0;
             SEGMENT_NEIP:   srB_64 = {NEIP, dr_data}; 
             SEGMENT_EIP:    srB_64 = {EIP, dr_data}; //not sure when this needs to be used
-            EAX:            srB_64  = {32'd0, EAX}; //send forward EAX
+            EAX_REG:            srB_64  = {32'd0, EAX}; //send forward EAX
             CMPXCHG_SEL:        srB_64 = {sr_data, dr_data}; //rm32 r32 on cmpxchg 
             IRETD_SEL:          srB_64 = res_buf_out[95:32];
             FLAGS:          srB_64 = {32'd0, flags};
