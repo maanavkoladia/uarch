@@ -16,56 +16,44 @@ module wb_stq_sb_logic(
     logic [$clog2(NUM_WB_ST_QS)-1:0] st0_bank_num;
     logic [$clog2(NUM_WB_ST_QS)-1:0] st1_bank_num;
     
-    //[5:4]
+    //[5:4] --> bank number of each store address 
     assign st0_bank_num = st_paddr_0[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];
     assign st1_bank_num = st_paddr_1[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];
 
-    bool st0_bank_hit[NUM_WB_ST_QS];
-    bool st1_bank_hit[NUM_WB_ST_QS];
+    bool st0_bank_hit;
+    bool st1_bank_hit;
 
     bool valid_dep0;
     bool valid_dep1;
 
     // Check each bank's store queue for address matches
-    always_comb begin
-        // Initialize hit arrays
-        for(int num_stqs = 0; num_stqs < NUM_WB_ST_QS; num_stqs++) begin
-            st0_bank_hit[num_stqs] = 1'b0;
-            st1_bank_hit[num_stqs] = 1'b0;
-        end
-
-        // Check all entries in each bank's queue
-        for(int num_stqs = 0; num_stqs < NUM_WB_ST_QS; num_stqs++) begin
-            for(int i = 0; i < ST_Q_DEPTH; i++) begin
-                st0_bank_hit[num_stqs] |= ((stq_info.entries[num_stqs*ST_Q_DEPTH + i].address == st_paddr_0)
-                                            & stq_info.entries[num_stqs*ST_Q_DEPTH + i].valid);
-                
-                st1_bank_hit[num_stqs] |= ((stq_info.entries[num_stqs*ST_Q_DEPTH + i].address == st_paddr_1)
-                                            & stq_info.entries[num_stqs*ST_Q_DEPTH + i].valid);
-            end
+    always_comb begin    
+    st0_bank_hit = 0;
+    st1_bank_hit = 0;
+    // Check all entries in each bank's queue
+        for(int i = 0; i < ST_Q_DEPTH; i++) begin
+            st0_bank_hit |= ((stq_info.entries[st0_bank_num*ST_Q_DEPTH + i].address == st_paddr_0)
+                                        & stq_info.entries[st0_bank_num*ST_Q_DEPTH + i].valid);
+            
+            st1_bank_hit |= ((stq_info.entries[st1_bank_num*ST_Q_DEPTH + i].address == st_paddr_1)
+                                        & stq_info.entries[st1_bank_num*ST_Q_DEPTH + i].valid);
         end
     end
 
-    assign valid_dep0 = st0_bank_hit[st0_bank_num] & ST_OP;
-    assign valid_dep1 = st1_bank_hit[st1_bank_num] & ST_OP & ST_XCL;
+    assign valid_dep0 = st0_bank_hit & ST_OP;
+    assign valid_dep1 = st1_bank_hit & ST_OP & ST_XCL;
 
     assign stall = valid_dep0 | valid_dep1;
 
-    /* Dependency Check Structure:
-     * For each of 4 banks (selected by address bits [5:4]):
-     * - 16 comparators per incoming store address (4 comparators × 4 queues)
-     * - Each bank's queue (4 entries) checks for address match
-     * 
-     * Layout per address:
-     * [bank0: 4 comps] [bank1: 4 comps] [bank2: 4 comps] [bank3: 4 comps]
-     *        |                |                |                |
-     *       hit0            hit1             hit2             hit3
-     * ________________________________________________________________
-     * |_______________________mux (4:1)_______________________________|  <-- select using addr[5:4]
-     *                              |
-     *                         hit result
-     *                              & ST_OP
-     *                              = dependency stall
-     */
+/*
+    structurally this woudl look like the following. 
+    We have 16 data addresses and valid bits. 
+    We have to mux which ones we want to use based off the bank bits 
+    We feed those into 4 comparators. And the comparator outputs of each comparator with the valid bit of the entry
+    Or the results together to get the st0_bank hit.
+
+    then duplicate the logic for the eother entry
+
+*/ 
 
 endmodule
