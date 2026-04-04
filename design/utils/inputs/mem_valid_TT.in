@@ -1,0 +1,19 @@
+.i:
+DECODE_V_i {0,1}
+RR_stall_i {0,1}
+RR_V_i {0,1}
+DC_stall_i {0,1}
+DC_V_i {0,1}
+MEM_V_i {0,1}
+MEM_stall_i {0,1}
+EXE_V_i {0,1}
+WB_stall_i {0,1}
+
+.o:
+RR_we_o
+N_RR_V_o
+WB_FORWAD
+EXE_FORWARD
+MEM_FORWARD
+DC_FORWARD
+RR_FORWARD

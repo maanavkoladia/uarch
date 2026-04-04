@@ -74,9 +74,22 @@
             "run Combinational SOP Gen": "true"
         },
 
-        "Decode threeinput_adder logic" : {
-            "csv" : "lib/STDCells/gen/three_input_adder.csv",
-            "outputFilePath": "lib/STDCellsthree_input_adder.sv",
+        "REP_FSM": {
+            "csv": "rtl/core/Decode/structural/gen/rep_fsm.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/rep_fsm.sv",
+            "run FSM SOP gen": "true"
+        },
+
+        "CONTROL_STORE": {
+            "csv": "rtl/core/Decode/cs_roms/cs.csv",
+            "outputFilePath": "rtl/core/Decode/control_store_genned.sv",
+            "run Combinational LUT GEN": "false",
+            "run Combinational SOP GEN": "true"
+        },
+
+        "RR_valid_logic" : {
+            "csv" : "rtl/core/Decode/structural/gen/rr_valid_logic.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/rr_valid_logic.v",
             "run Combinational SOP Gen": "true"
         },
 
@@ -126,17 +139,6 @@
             "csv": "rtl/BusArbitration/gen/DTE_DMA_2_MEM_FSM.csv",
             "outputFilePath": "rtl/BusArbitration/gen/DTE_DMA_2_MEM_FSM.sv",
             "run FSM SOP gen": "true"
-        },
-        "REP_FSM": {
-            "csv": "rtl/core/Decode/structural/gen/rep_fsm.csv",
-            "outputFilePath": "rtl/core/Decode/structural/gen/rep_fsm.sv",
-            "run FSM SOP gen": "true"
-        },
-        "CONTROL_STORE": {
-            "csv": "rtl/core/Decode/cs_roms/cs.csv",
-            "outputFilePath": "rtl/core/Decode/control_store_genned.sv",
-            "run Combinational LUT GEN": "false",
-            "run Combinational SOP GEN": "true"
         }
     }
 

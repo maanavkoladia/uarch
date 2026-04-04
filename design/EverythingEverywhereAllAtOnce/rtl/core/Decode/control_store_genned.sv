@@ -1164,22 +1164,22 @@ assign OP_IN_MODRM_o = 1'b0;
 // DATA_SIZE2_o = 0  (no ON-set minterms)
 assign DATA_SIZE2_o = 1'b0;
 
-// DATA_SIZE1_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input2_i & input1_i & !input0_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & input3_i & input2_i & !input1_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input3_i & input1_i & !input0_i)
+// DATA_SIZE1_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input3_i & input1_i & !input0_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & input3_i & input2_i & !input1_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input2_i & input1_i & !input0_i)
 wire DATA_SIZE1_o_t0;
 wire DATA_SIZE1_o_t1;
 wire DATA_SIZE1_o_t2;
 
-and9$ DATA_SIZE1_o_and0 (DATA_SIZE1_o_t0, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input2_i_inv, input1_i, input0_i_inv);
+and9$ DATA_SIZE1_o_and0 (DATA_SIZE1_o_t0, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i_inv, input1_i, input0_i_inv);
 and9$ DATA_SIZE1_o_and1 (DATA_SIZE1_o_t1, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i, input2_i, input1_i_inv);
-and9$ DATA_SIZE1_o_and2 (DATA_SIZE1_o_t2, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i_inv, input1_i, input0_i_inv);
+and9$ DATA_SIZE1_o_and2 (DATA_SIZE1_o_t2, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input2_i_inv, input1_i, input0_i_inv);
 or3$  DATA_SIZE1_o_or  (DATA_SIZE1_o, DATA_SIZE1_o_t0, DATA_SIZE1_o_t1, DATA_SIZE1_o_t2);
 
-// DATA_SIZE0_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input3_i & input1_i & input0_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input2_i & input1_i & input0_i)
+// DATA_SIZE0_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input2_i & input1_i & input0_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input3_i & input1_i & input0_i)
 wire DATA_SIZE0_o_t0;
 wire DATA_SIZE0_o_t1;
 
-and9$ DATA_SIZE0_o_and0 (DATA_SIZE0_o_t0, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i_inv, input1_i, input0_i);
-and9$ DATA_SIZE0_o_and1 (DATA_SIZE0_o_t1, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input2_i_inv, input1_i, input0_i);
+and9$ DATA_SIZE0_o_and0 (DATA_SIZE0_o_t0, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input2_i_inv, input1_i, input0_i);
+and9$ DATA_SIZE0_o_and1 (DATA_SIZE0_o_t1, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i_inv, input1_i, input0_i);
 or2$  DATA_SIZE0_o_or  (DATA_SIZE0_o, DATA_SIZE0_o_t0, DATA_SIZE0_o_t1);
 
 // RR_OP_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input2_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input3_i)
@@ -1224,12 +1224,12 @@ assign alu_inputA_sel3_o = 1'b0;
 // alu_inputA_sel2_o = 0  (no ON-set minterms)
 assign alu_inputA_sel2_o = 1'b0;
 
-// alu_inputA_sel1_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & input3_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & input2_i)
+// alu_inputA_sel1_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & input2_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & input3_i)
 wire alu_inputA_sel1_o_t0;
 wire alu_inputA_sel1_o_t1;
 
-and7$ alu_inputA_sel1_o_and0 (alu_inputA_sel1_o_t0, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i);
-and7$ alu_inputA_sel1_o_and1 (alu_inputA_sel1_o_t1, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input2_i);
+and7$ alu_inputA_sel1_o_and0 (alu_inputA_sel1_o_t0, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input2_i);
+and7$ alu_inputA_sel1_o_and1 (alu_inputA_sel1_o_t1, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i);
 or2$  alu_inputA_sel1_o_or  (alu_inputA_sel1_o, alu_inputA_sel1_o_t0, alu_inputA_sel1_o_t1);
 
 // alu_inputA_sel0_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & input3_i & input2_i & input1_i)
