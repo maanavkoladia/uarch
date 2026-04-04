@@ -152,6 +152,8 @@ module tb_DTE ();
     dcache_2_core_t DCacheIn_i;
     assign DCacheIn_i = '{default: 0};
 
+    wire RR_we;
+
 
     DTE uut0_DTE (
         .clk(clk),
@@ -225,29 +227,31 @@ module tb_DTE ();
         .exe_outs_i(exe_outs_i),
         .wb_outs_i(wb_outs_i),
         .rr_latches_next(rr_latches_next),
-        .outs_o(decode_outs_i)
+        .outs_o(decode_outs_i),
+        .latch_we_o(RR_we)
     );
 
     RR_Latches rr_latches_unit (
         .clk(clk),
         .rst(rst),
+        .write_enable_i(RR_we),
         .nextLatches_i(rr_latches_next),
         .latches_o(rr_latches)
     );
 
-    // RR rr_uut(
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .latches_i(rr_latches),
-    //     .fetch_outs_i(fetch_outs_o),
-    //     .decode_outs_i(decode_outs_i),
-    //     .dc_outs_i(dc_outs_i),
-    //     .mem_outs_i(mem_outs_i),
-    //     .exe_outs_i(exe_outs_i),
-    //     .wb_outs_i(wb_outs_i),
-    //     .dc_latches_next(dc_latches_next),
-    //     .outs_o(rr_outs_i)
-    // );
+    RR rr_uut(
+        .clk(clk),
+        .rst(rst),
+        .latches_i(rr_latches),
+        .fetch_outs_i(fetch_outs_o),
+        .decode_outs_i(decode_outs_i),
+        .dc_outs_i(dc_outs_i),
+        .mem_outs_i(mem_outs_i),
+        .exe_outs_i(exe_outs_i),
+        .wb_outs_i(wb_outs_i),
+        .dc_latches_next(dc_latches_next),
+        .outs_o(rr_outs_i)
+    );
 
     // DC_Latches dc_latches_unit (
     //     .clk(clk),
@@ -348,7 +352,7 @@ module tb_DTE ();
 
     
     //code segment is at 0
-    assign rr_outs_i = '{default: '0};
+    //assign rr_outs_i = '{default: '0};
     //decode worked fine when I had this above line uncommented
     //need to check how the rr_outs_i is being set or initialized
     assign dc_outs_i = '{default: '0};

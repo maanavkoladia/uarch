@@ -31,7 +31,9 @@ module Decode (
     output rr_latches_t rr_latches_next,
 
     //actual stage bundled outputs
-    output decode_outputs_t outs_o
+    output decode_outputs_t outs_o,
+
+    output wire latch_we_o
 
 );
 
@@ -120,9 +122,24 @@ module Decode (
         .zf_flag(exe_outs_i.ZF), .stall(stall), .flush(flush), .rep_latches(rep_latch_holder), .rep_register(rep_reg_value)
     );
 
+    bool rr_valid;
+    rr_valid_logic decode_2_RR_valid_logic(
+        .RR_we_o(latch_we_o),
+        .N_RR_V_o(rr_valid),
+        .DECODE_V_i(!invalid_inst),
+        .RR_stall_i(rr_outs_i.stall),
+        .RR_V_i(rr_outs_i.valid),
+        .DC_stall_i(dc_outs_i.stall),
+        .DC_V_i(dc_outs_i.valid),
+        .MEM_V_i(mem_outs_i.valid),
+        .MEM_stall_i(mem_outs_i.stall),
+        .EXE_V_i(exe_outs_i.valid),
+        .WB_stall_i(wb_outs_i.wb_stall)
+    );
+
 
     assign outs_o = '{
-        valid : !invalid_inst,
+        valid : rr_valid,
         stall : invalid_inst || rr_outs_i.stall,
         eip : EIP,
         invalid_instruction : invalid_inst,

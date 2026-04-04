@@ -4,6 +4,7 @@ module RR_Latches (
     input wire clk,
     input wire rst,
     input rr_latches_t nextLatches_i,
+    input wire write_enable_i,
     output rr_latches_t latches_o
 );
     rr_latches_t latches;
@@ -12,7 +13,7 @@ module RR_Latches (
     assign latches_o = latches;
     always_ff @(posedge clk) begin
         if (!rst) latches <= ('{default:0});
-        else     latches <= nextLatches_i;
+        else latches <= (write_enable_i) ? nextLatches_i : latches;
     end
 
 endmodule
