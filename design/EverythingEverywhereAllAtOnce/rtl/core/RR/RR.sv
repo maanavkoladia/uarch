@@ -41,7 +41,7 @@ module RR (
     //32 bit bc mmx sare the data areg
     uint32_t addygen_input_addy;
     assign addygen_input_addy =
-        (latchesInUse.cs.MODRM_NEEDED && latches_i.normal_latches.cs.RM_IS_DR) ?
+        (latchesInUse.cs.MODRM_NEEDED && latchesInUse.cs.RM_IS_DR) ?
         reg_out.DR_data[31:0] : reg_out.SR_data[31:0];
 
     //adress fro the store addy addy trnaslate logic
@@ -54,35 +54,33 @@ module RR (
 
 
     regfile_output_t reg_out;
-    neuralnet_outputs_t ld_neuralnet;
-    neuralnet_outputs_t st_neuralnet;
-    regfile_input_t reg_in;
+    neuralnet_outputs_t ld_neuralnet_out;
+    neuralnet_outputs_t st_neuralnet_out;
 
-    assign reg_in = '{
-            DR_ID       : latchesInUse.cs.dr_id,
-            SR_ID         : latchesInUse.cs.sr_id,
-            SIB_IDX_ID     : latchesInUse.sib_idx_id,
-            SIB_BASE_ID    : latchesInUse.sib_base_id,
-            WB_DR0_data       : wb_outs_i.DR_0_data,
-            WB_DR1_data       : wb_outs_i.DR_1_data,
-            WB_DR0_ID         : wb_outs_i.DR_0_id,
-            WB_DR1_ID         : wb_outs_i.DR_1_id,
-            WB_DR0_we         : wb_outs_i.DR_0_we,
-            WB_DR1_we         : wb_outs_i.DR_1_we,
-            Segment0_ID    : latchesInUse.seg_0_id,
-            Segment1_ID    : latchesInUse.seg_1_id
-        };
-
-
-    RegFile regfile (
+    RegFile RegisterFile_unit (
         .clk(clk),
         .rst(rst),
-        .inputs(reg_in),
+
+        .DR_ID(latchesInUse.cs.dr_id),
+        .SR_ID(latchesInUse.cs.sr_id),
+        .SIB_IDX_ID(latchesInUse.sib_idx_id),
+        .SIB_BASE_ID(latchesInUse.sib_base_id),
+
+        .WB_DR0_data(wb_outs_i.DR_0_data),
+        .WB_DR1_data(wb_outs_i.DR_1_data),
+        .WB_DR0_ID(wb_outs_i.DR_0_id),
+        .WB_DR1_ID(wb_outs_i.DR_1_id),
+        .WB_DR0_we(wb_outs_i.DR_0_we),
+        .WB_DR1_we(wb_outs_i.DR_1_we),
+
+        .Segment0_ID(latchesInUse.seg_0_id),
+        .Segment1_ID(latchesInUse.seg_1_id),
+
         .outputs(reg_out)
     );
 
     //this is final sib addy gen logic
-    AddressGen_Logic addygen_logic (
+    AddressGen_Logic addygen_logic_unit (
         .register_data(addygen_input_addy),
         .SIB_IDX_data(reg_out.SIB_IDX_data),
         .SIB_BASE_data(reg_out.SIB_BASE_data),
@@ -94,24 +92,24 @@ module RR (
         .AddrGen_out(addygen_out)
     );
 
-    AddyX_NeuralNet ld_addyX_neuralnet (
+    AddyX_NeuralNet ld_addyX_neuralnet_unit (
         .data_size(latchesInUse.cs.datasize),
         .addy0(addygen_out),
         .mem_op(latchesInUse.cs.LD_OP),
         .seg_data(reg_out.Segment0_data),
-        .seg_limit(SEGMENT_LIMITS[(latchesInUse.seg_0_id)-32]),
+        .seg_limit(SEGMENT_LIMITS[latchesInUse.seg_0_id]),
         .write_intent(1'b0),
-        .outputs(ld_neuralnet)
+        .outputs(ld_neuralnet_out)
     );
 
-    AddyX_NeuralNet st_addyX_neuralnet (
+    AddyX_NeuralNet st_addyX_neuralnet_unit (
         .data_size(latchesInUse.cs.datasize),
         .addy0(staddyX_neuralnet_addy),
         .mem_op(latchesInUse.cs.ST_OP),
         .seg_data(reg_out.Segment1_data),
-        .seg_limit(SEGMENT_LIMITS[(latchesInUse.seg_1_id)-32]),
+        .seg_limit(SEGMENT_LIMITS[latchesInUse.seg_1_id]),
         .write_intent(latchesInUse.cs.ST_OP),
-        .outputs(st_neuralnet)
+        .outputs(st_neuralnet_out)
     );
 
     RegSB reg_sb_unit (
@@ -119,6 +117,8 @@ module RR (
         .rst           (rst),
         .dr_id         (latchesInUse.cs.dr_id),
         .sr_id         (latchesInUse.cs.sr_id),
+        .flush         (exe_outs_i.br_res_out.flush),
+        .farFlush      (exe_outs_i.br_res_out.farFlush),
         .sib_base_id   (latchesInUse.sib_base_id),
         .sib_idx_id    (latchesInUse.sib_idx_id),
         .wb_dr0_id     (wb_outs_i.DR_0_id),
@@ -142,17 +142,17 @@ module RR (
     //a a dirty sb for the needed regs, we are p sure that thnis correct
     //bahrvioru
     assign RR_PF =
-        (ld_neuralnet.pf0_exception
-        || ld_neuralnet.pf1_exception
-        || st_neuralnet.pf0_exception
-        || st_neuralnet.pf1_exception)
+        (ld_neuralnet_out.pf0_exception
+        || ld_neuralnet_out.pf1_exception
+        || st_neuralnet_out.pf0_exception
+        || st_neuralnet_out.pf1_exception)
         && !(depstall);
 
     assign RR_GP =
-            (ld_neuralnet.gp0_exception
-        || ld_neuralnet.gp1_exception
-        || st_neuralnet.gp0_exception
-        || st_neuralnet.gp1_exception
+            (ld_neuralnet_out.gp0_exception
+        || ld_neuralnet_out.gp1_exception
+        || st_neuralnet_out.gp0_exception
+        || st_neuralnet_out.gp1_exception
         || decode_outs_i.decode_gp)
         && !(depstall);
 
@@ -163,21 +163,22 @@ module RR (
             exe_cs      : latchesInUse.exe_cs,
             wb_cs       : latchesInUse.wb_cs,
             br_info     : latchesInUse.br_info,
-            ST_XCL      : st_neuralnet.xcl,
-            ST_PADDR_0  : st_neuralnet.paddy,
-            ST_PADDR_1  : st_neuralnet.paddy_aligned,
-            MIO         : 1'b0,  //need to figure out where this signal comes from
+            ST_XCL      : st_neuralnet_out.xcl,
+            ST_PADDR_0  : st_neuralnet_out.paddy,
+            ST_PADDR_1  : st_neuralnet_out.paddy_aligned,
+            ST_MIO      : st_neuralnet_out.mio,
             NEIP        : latchesInUse.NEIP,
             EIP         : latchesInUse.EIP,
             EAX         : latchesInUse.EAX,
             imm64       : latchesInUse.imm64,
-            LD_XCL      : ld_neuralnet.xcl,
-            LD_PADDR_0  : ld_neuralnet.paddy,
-            LD_PADDR_1  : ld_neuralnet.paddy_aligned,
-            swapLines   : ld_neuralnet.bank_hi,
-            sr_id       : reg_in.SR_ID,
+            LD_XCL      : ld_neuralnet_out.xcl,
+            LD_PADDR_0  : ld_neuralnet_out.paddy,
+            LD_PADDR_1  : ld_neuralnet_out.paddy_aligned,
+            LD_MIO      : ld_neuralnet_out.mio,
+            swapLines   : ld_neuralnet_out.bank_hi,
+            sr_id       : latchesInUse.cs.sr_id,
             sr_data     : reg_out.SR_data[31:0],
-            dr_id       : reg_in.DR_ID,
+            dr_id       : latchesInUse.cs.dr_id,
             dr_data     : reg_out.DR_data[31:0]
         };
 
@@ -185,7 +186,7 @@ module RR (
     bool set_zf_scoreboard;
 
     assign outs_o = '{
-            valid   : 1'b1,
+            valid   : latchesInUse.valid,
             stall   : latchesInUse.valid && (depstall || (RR_PF || RR_GP)),
             exp_present : RR_PF || RR_GP,
             exp_pf  : RR_PF,

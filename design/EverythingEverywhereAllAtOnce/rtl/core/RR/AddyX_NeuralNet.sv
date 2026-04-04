@@ -48,6 +48,27 @@ module AddyX_NeuralNet (
     tlb_outputs_t tlb0_out;
     tlb_outputs_t tlb1_out;
 
+    SegmentTranslation segx0 (.l_addr_i(addy0), .segValue(seg_data),
+        .segLimit(seg_limit), .v_addr_o(vaddy0), .gp_fault_o(gp0_exp_temp_seg));
+
+    TLB tlb0 (.inputs(tlb0_in), .outputs(tlb0_out));
+
+    SegmentTranslation segx1 (.l_addr_i(addy1), .segValue(seg_data),
+        .segLimit(seg_limit), .v_addr_o(vaddy1), .gp_fault_o(gp1_exp_temp_seg));
+
+    TLB tlb1 (.inputs(tlb1_in), .outputs(tlb1_out));
+
+    always_comb begin
+        case(data_size[1:0])
+            //want to find the last byte of the data being pulled, if 16b access, must add 1 to address
+            //if 32b access, must add 3 to address to find address of last byte since byte addressable mem
+            2'b00: addy1 = addy0;
+            2'b01: addy1 = addy0 + 32'd1;
+            2'b10: addy1 = addy0 + 32'd3;
+            2'b11: addy1 = addy0 + 32'd7;
+        endcase
+    end
+
     assign outputs.paddy = tlb0_out.physical_addr;
     assign outputs.pf0_exception = tlb0_out.pageFault;
     assign outputs.pf1_exception = tlb1_out.pageFault;
@@ -60,26 +81,6 @@ module AddyX_NeuralNet (
     assign outputs.valid_mem_op = tlb0_out.physical_addr_valid && tlb1_out.physical_addr_valid && mem_op;
     assign outputs.gp0_exception = tlb0_out.gp_exp || gp0_exp_temp_seg;
     assign outputs.gp1_exception = tlb1_out.gp_exp || gp1_exp_temp_seg;
-
-    SegmentTranslation segx0 (.l_addr_i(addy0), .segValue(seg_data),
-        .segLimit(seg_limit), .v_addr_o(vaddy0), .gp_fault_o(gp0_exp_temp_seg));
-
-    TLB tlb0 (.inputs(tlb0_in), .outputs(tlb0_out));
-
-    SegmentTranslation segx1 (.l_addr_i(addy1), .segValue(seg_data),
-        .segLimit(seg_limit), .v_addr_o(vaddy1), .gp_fault_o(gp1_exp_temp_seg));
-
-    TLB RRtlb0 (.inputs(tlb1_in), .outputs(tlb1_out));
-
-    always_comb begin
-        case(data_size[1:0])
-            //want to find the last byte of the data being pulled, if 16b access, must add 1 to address
-            //if 32b access, must add 3 to address to find address of last byte since byte addressable mem
-            2'b00: addy1 = addy0;
-            2'b01: addy1 = addy0 + 32'd1;
-            2'b10: addy1 = addy0 + 32'd3;
-            2'b11: addy1 = addy0 + 32'd7;
-        endcase
-    end
+    assign outputs.mio = tlb0_out.MIO;
 
 endmodule

@@ -1,0 +1,5 @@
+======== RR =======
+segment1 valid logic need to be outputted from control store,
+need to delete the hardcode and wireup contorl singal output fro MOVS in RegSB
+
+also need to fix hardocde of MIO in RR, outputs from TLB when 

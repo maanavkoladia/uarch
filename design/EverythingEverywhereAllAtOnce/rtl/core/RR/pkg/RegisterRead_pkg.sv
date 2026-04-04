@@ -3,22 +3,6 @@ package RegisterRead_pkg;
     import reg_ids_pkg::*;
 
     typedef struct {
-        reg_ids_e DR_ID;
-        reg_ids_e SR_ID;
-        reg_ids_e SIB_IDX_ID;
-        reg_ids_e SIB_BASE_ID;
-        uint64_t WB_DR0_data;
-        uint64_t WB_DR1_data;
-        reg_ids_e WB_DR0_ID;
-        reg_ids_e WB_DR1_ID;
-        bool WB_DR0_we;
-        bool WB_DR1_we;
-
-        reg_ids_e Segment0_ID;
-        reg_ids_e Segment1_ID;
-    } regfile_input_t;
-
-    typedef struct {
         uint64_t DR_data;
         uint64_t SR_data;
         uint32_t SIB_IDX_data;
@@ -40,6 +24,7 @@ package RegisterRead_pkg;
         bool bank_hi;
         bool xcl;
         p_address_t paddy;
+        bool mio;
     } neuralnet_outputs_t;
 
 

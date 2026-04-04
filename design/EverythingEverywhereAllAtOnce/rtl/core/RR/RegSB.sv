@@ -24,7 +24,7 @@ module RegSB (
     input bool Segment1_valid,  //inidcated wether or not we need to read the regfile for the scond Segment1_ID
 
     input bool flush,  //clear everthing
-    input bool farCallFlush,  //preserve CS sb, to keep fetch off
+    input bool farFlush,  //preserve CS sb, to keep fetch off
     output bool dep_stall,
     output bool ecx_sb,
     output bool codeSeg_sb
@@ -39,14 +39,14 @@ module RegSB (
     bool depStall_Internal;
 
     assign dep_stall = depStall_Internal;
-    assign ecx_sb = SCORE_BOARD[ECX] == 0;
-    assign codeSeg_sb = SCORE_BOARD[CS];
+    assign ecx_sb = SCORE_BOARD[ECX].counter == 0;
+    assign codeSeg_sb = SCORE_BOARD[CS].counter == 0;
     //dr, sr, and segment Reg is encasulated in dr
 
     always_ff @(posedge clk) begin
         if (!rst) SCORE_BOARD <= '{default: '0};
         else if (flush) SCORE_BOARD <= '{default: '0};
-        else if (farCallFlush) begin  //realies on CS being the zero Segment ID
+        else if (farFlush) begin  //realies on CS being the zero Segment ID
             for (int i = 0; i < NUM_REGS - 1; i++) begin
                 if (!(i == CS)) SCORE_BOARD[i].counter <= 0;
             end

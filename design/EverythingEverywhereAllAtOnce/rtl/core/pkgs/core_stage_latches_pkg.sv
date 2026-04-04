@@ -181,7 +181,8 @@ package core_stage_latches_pkg;
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t ST_PADDR_1;  //cacheline algned
-        bool MIO;  //this a write to mem_io
+        bool ST_MIO;  //this a write to mem_io
+
 
         l_address_t NEIP;
         l_address_t EIP;
@@ -193,6 +194,7 @@ package core_stage_latches_pkg;
         bool LD_XCL;
         p_address_t LD_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t LD_PADDR_1;  //cacheline algned
+        bool LD_MIO;
         bool swapLines;
 
         reg_ids_e sr_id;

@@ -234,6 +234,8 @@ module tb_DTE ();
         .clk(clk),
         .rst(rst),
         .write_enable_i(RR_we),
+        .flush(exe_outs_i.br_res_out.flush),
+        .farFlush(exe_outs_i.br_res_out.farFlush),
         .nextLatches_i(rr_latches_next),
         .latches_o(rr_latches)
     );
