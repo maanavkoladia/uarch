@@ -1,0 +1,11 @@
+{
+  "Master_Startup_Script": "/Users/harishthehershey/Desktop/HW/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/StartUp_Gen/startup_gen_master.py",
+  "Mem_Compile_Path": "/Users/harishthehershey/Desktop/HW/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/StartUp_Gen/Mem/compile.py",
+  "Mem_Gen_Hex_Path": "/Users/harishthehershey/Desktop/HW/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/StartUp_Gen/Mem/genHexMem.py",
+  "Mem_Gen_Readmem_Path": "/Users/harishthehershey/Desktop/HW/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/StartUp_Gen/Mem/genReadMemFile.py",
+  "ICache_Startup_Path": "/Users/harishthehershey/Desktop/HW/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/StartUp_Gen/ICache/ICache_Startup_Gen.py",
+  "DCache_Startup_Path": "/Users/harishthehershey/Desktop/HW/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/StartUp_Gen/DCache/DCache_StartUp_Gen.py",
+  "TLB_Startup_Path": "/Users/harishthehershey/Desktop/HW/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/StartUp_Gen/TLB/TLB_StartUp_Gen.py",
+  "Disk_Startup_Path": "/Users/harishthehershey/Desktop/HW/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/StartUp_Gen/Disk/Disk_StartUp_Gen.py",
+  "Core_Regs_Startup_Path": "/Users/harishthehershey/Desktop/HW/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/StartUp_Gen/CoreRegs/CoreRegs_StartUp_Gen.py"
+}

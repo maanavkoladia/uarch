@@ -151,20 +151,20 @@ and3$ WR_2_EB_o_and0 (WR_2_EB_o_t0, S_0_inv, S_1, S_2_inv);
 and5$ WR_2_EB_o_and1 (WR_2_EB_o_t1, S_0_inv, S_2_inv, V_Hit_i_inv, DC_will_evict_i, VC_needs_2_evict_i);
 or2$  WR_2_EB_o_or  (WR_2_EB_o, WR_2_EB_o_t0, WR_2_EB_o_t1);
 
-// CLR_D_SWAP_V_o = (S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2)
+// CLR_D_SWAP_V_o = (!S_0 & !S_1 & S_2) | (S_0 & S_1 & !S_2)
 wire CLR_D_SWAP_V_o_t0;
 wire CLR_D_SWAP_V_o_t1;
 
-and3$ CLR_D_SWAP_V_o_and0 (CLR_D_SWAP_V_o_t0, S_0, S_1, S_2_inv);
-and3$ CLR_D_SWAP_V_o_and1 (CLR_D_SWAP_V_o_t1, S_0_inv, S_1_inv, S_2);
+and3$ CLR_D_SWAP_V_o_and0 (CLR_D_SWAP_V_o_t0, S_0_inv, S_1_inv, S_2);
+and3$ CLR_D_SWAP_V_o_and1 (CLR_D_SWAP_V_o_t1, S_0, S_1, S_2_inv);
 or2$  CLR_D_SWAP_V_o_or  (CLR_D_SWAP_V_o, CLR_D_SWAP_V_o_t0, CLR_D_SWAP_V_o_t1);
 
-// Read_DSWAP_o = (S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2)
+// Read_DSWAP_o = (!S_0 & !S_1 & S_2) | (S_0 & S_1 & !S_2)
 wire Read_DSWAP_o_t0;
 wire Read_DSWAP_o_t1;
 
-and3$ Read_DSWAP_o_and0 (Read_DSWAP_o_t0, S_0, S_1, S_2_inv);
-and3$ Read_DSWAP_o_and1 (Read_DSWAP_o_t1, S_0_inv, S_1_inv, S_2);
+and3$ Read_DSWAP_o_and0 (Read_DSWAP_o_t0, S_0_inv, S_1_inv, S_2);
+and3$ Read_DSWAP_o_and1 (Read_DSWAP_o_t1, S_0, S_1, S_2_inv);
 or2$  Read_DSWAP_o_or  (Read_DSWAP_o, Read_DSWAP_o_t0, Read_DSWAP_o_t1);
 
 // Write_VSWAP_o = (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i)
