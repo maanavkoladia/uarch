@@ -1244,12 +1244,12 @@ assign alu_inputB_sel2_o = 1'b0;
 // alu_inputB_sel1_o = 0  (no ON-set minterms)
 assign alu_inputB_sel1_o = 1'b0;
 
-// alu_inputB_sel0_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & input3_i & input2_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input3_i & !input2_i)
+// alu_inputB_sel0_o = (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & !input3_i & !input2_i) | (!input9_i & !input8_i & !input7_i & !input6_i & !input5_i & !input4_i & input3_i & input2_i)
 wire alu_inputB_sel0_o_t0;
 wire alu_inputB_sel0_o_t1;
 
-and8$ alu_inputB_sel0_o_and0 (alu_inputB_sel0_o_t0, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i, input2_i);
-and8$ alu_inputB_sel0_o_and1 (alu_inputB_sel0_o_t1, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i_inv, input2_i_inv);
+and8$ alu_inputB_sel0_o_and0 (alu_inputB_sel0_o_t0, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i_inv, input2_i_inv);
+and8$ alu_inputB_sel0_o_and1 (alu_inputB_sel0_o_t1, input9_i_inv, input8_i_inv, input7_i_inv, input6_i_inv, input5_i_inv, input4_i_inv, input3_i, input2_i);
 or2$  alu_inputB_sel0_o_or  (alu_inputB_sel0_o, alu_inputB_sel0_o_t0, alu_inputB_sel0_o_t1);
 
 // branch_target_sel3_o = 0  (no ON-set minterms)

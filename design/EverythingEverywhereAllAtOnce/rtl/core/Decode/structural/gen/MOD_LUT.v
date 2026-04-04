@@ -313,17 +313,17 @@ and2$ msd_size1_o_and0 (msd_size1_o_t0, input7_i_inv, input6_i);
 and4$ msd_size1_o_and1 (msd_size1_o_t1, input6_i_inv, input2_i, input1_i_inv, input0_i_inv);
 or2$  msd_size1_o_or  (msd_size1_o, msd_size1_o_t0, msd_size1_o_t1);
 
-// msd_size0_o = (input7_i & input6_i) | (!input6_i & !input2_i) | (!input6_i & input1_i) | (!input6_i & input0_i) | (input6_i & input2_i & !input1_i & !input0_i)
+// msd_size0_o = (!input6_i & input0_i) | (input7_i & input6_i) | (!input6_i & !input2_i) | (!input6_i & input1_i) | (input6_i & input2_i & !input1_i & !input0_i)
 wire msd_size0_o_t0;
 wire msd_size0_o_t1;
 wire msd_size0_o_t2;
 wire msd_size0_o_t3;
 wire msd_size0_o_t4;
 
-and2$ msd_size0_o_and0 (msd_size0_o_t0, input7_i, input6_i);
-and2$ msd_size0_o_and1 (msd_size0_o_t1, input6_i_inv, input2_i_inv);
-and2$ msd_size0_o_and2 (msd_size0_o_t2, input6_i_inv, input1_i);
-and2$ msd_size0_o_and3 (msd_size0_o_t3, input6_i_inv, input0_i);
+and2$ msd_size0_o_and0 (msd_size0_o_t0, input6_i_inv, input0_i);
+and2$ msd_size0_o_and1 (msd_size0_o_t1, input7_i, input6_i);
+and2$ msd_size0_o_and2 (msd_size0_o_t2, input6_i_inv, input2_i_inv);
+and2$ msd_size0_o_and3 (msd_size0_o_t3, input6_i_inv, input1_i);
 and4$ msd_size0_o_and4 (msd_size0_o_t4, input6_i, input2_i, input1_i_inv, input0_i_inv);
 or5$  msd_size0_o_or  (msd_size0_o, msd_size0_o_t0, msd_size0_o_t1, msd_size0_o_t2, msd_size0_o_t3, msd_size0_o_t4);
 
@@ -335,14 +335,14 @@ and4$ sib_needed_o_and0 (sib_needed_o_t0, input6_i_inv, input2_i, input1_i_inv, 
 and4$ sib_needed_o_and1 (sib_needed_o_t1, input7_i_inv, input2_i, input1_i_inv, input0_i_inv);
 or2$  sib_needed_o_or  (sib_needed_o, sib_needed_o_t0, sib_needed_o_t1);
 
-// disp_needed_o = (input7_i & !input6_i) | (!input7_i & input6_i) | (!input7_i & input2_i & !input1_i & input0_i)
+// disp_needed_o = (!input7_i & input6_i) | (input7_i & !input6_i) | (!input6_i & input2_i & !input1_i & input0_i)
 wire disp_needed_o_t0;
 wire disp_needed_o_t1;
 wire disp_needed_o_t2;
 
-and2$ disp_needed_o_and0 (disp_needed_o_t0, input7_i, input6_i_inv);
-and2$ disp_needed_o_and1 (disp_needed_o_t1, input7_i_inv, input6_i);
-and4$ disp_needed_o_and2 (disp_needed_o_t2, input7_i_inv, input2_i, input1_i_inv, input0_i);
+and2$ disp_needed_o_and0 (disp_needed_o_t0, input7_i_inv, input6_i);
+and2$ disp_needed_o_and1 (disp_needed_o_t1, input7_i, input6_i_inv);
+and4$ disp_needed_o_and2 (disp_needed_o_t2, input6_i_inv, input2_i, input1_i_inv, input0_i);
 or3$  disp_needed_o_or  (disp_needed_o, disp_needed_o_t0, disp_needed_o_t1, disp_needed_o_t2);
 
 // disp_size_o = (input7_i & !input6_i) | (!input6_i & input2_i & !input1_i & input0_i)
