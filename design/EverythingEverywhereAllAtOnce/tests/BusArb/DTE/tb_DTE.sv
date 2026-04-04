@@ -235,19 +235,19 @@ module tb_DTE ();
         .latches_o(rr_latches)
     );
 
-    RR rr_uut(
-        .clk(clk),
-        .rst(rst),
-        .latches_i(rr_latches),
-        .fetch_outs_i(fetch_outs_o),
-        .decode_outs_i(decode_outs_i),
-        .dc_outs_i(dc_outs_i),
-        .mem_outs_i(mem_outs_i),
-        .exe_outs_i(exe_outs_i),
-        .wb_outs_i(wb_outs_i),
-        .dc_latches_next(dc_latches_next),
-        .outs_o(rr_outs_i)
-    );
+    // RR rr_uut(
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .latches_i(rr_latches),
+    //     .fetch_outs_i(fetch_outs_o),
+    //     .decode_outs_i(decode_outs_i),
+    //     .dc_outs_i(dc_outs_i),
+    //     .mem_outs_i(mem_outs_i),
+    //     .exe_outs_i(exe_outs_i),
+    //     .wb_outs_i(wb_outs_i),
+    //     .dc_latches_next(dc_latches_next),
+    //     .outs_o(rr_outs_i)
+    // );
 
     // DC_Latches dc_latches_unit (
     //     .clk(clk),
@@ -348,7 +348,7 @@ module tb_DTE ();
 
     
     //code segment is at 0
-    //assign rr_outs_i = '{default: '0};
+    assign rr_outs_i = '{default: '0};
     //decode worked fine when I had this above line uncommented
     //need to check how the rr_outs_i is being set or initialized
     assign dc_outs_i = '{default: '0};
@@ -461,51 +461,51 @@ module tb_DTE ();
         $display("  ║                          FETCH MODULE STATE                                  ║");
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ Mode Flags:                                                                  ║");
-        $display("  ║   exp_mode_jk=%0b  int_mode_jk=%0b  DMA_int_jk=%0b                               ║",
+        $display("  ║   exp_mode_jk=%0b  int_mode_jk=%0b  DMA_int_jk=%0b                                 ║",
                   fetch_uut.exp_mode_jk, fetch_uut.int_mode_jk, fetch_uut.DMA_int_jk);
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ SPC & Selection:                                                             ║");
-        $display("  ║   SPC=0x%08h  next_spc=0x%08h  spc_16=0x%08h         ║", 
+        $display("  ║   SPC=0x%08h  next_spc=0x%08h  spc_16=0x%08h                     ║", 
                   fetch_uut.SPC, fetch_uut.next_spc, fetch_uut.spc_16);
-        $display("  ║   sel=%s  br_target_sel=%0b  flush_reg=%0b                      ║",
+        $display("  ║   sel=%s  br_target_sel=%0b  flush_reg=%0b                                 ║",
                   get_spc_sel_name(fetch_uut.spc_sel_logic_outs.sel), 
                   fetch_uut.spc_sel_logic_outs.br_target_sel, fetch_uut.spc_sel_logic_outs.flush_reg);
-        $display("  ║   br_target=0x%08h  br_restore_spc=0x%08h                       ║",
+        $display("  ║   br_target=0x%08h  br_restore_spc=0x%08h                            ║",
                   fetch_uut.spc_sel_logic_outs.br_target, fetch_uut.br_restore_spc);
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ TLB:                                                                         ║");
-        $display("  ║   v_addr=0x%08h  p_addr=0x%08h  valid=%0b                        ║",
+        $display("  ║   v_addr=0x%08h  p_addr=0x%08h  valid=%0b                              ║",
                   fetch_uut.seg_xlation_out, fetch_uut.tlb_outs.physical_addr, fetch_uut.tlb_outs.physical_addr_valid);
-        $display("  ║   gp_exp=%0b  pageFault=%0b  f_exp=%0b                                        ║",
+        $display("  ║   gp_exp=%0b  pageFault=%0b  f_exp=%0b                                             ║",
                   fetch_uut.tlb_outs.gp_exp, fetch_uut.tlb_outs.pageFault, fetch_uut.f_exp);
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ ICache Enable Logic:                                                         ║");
-        $display("  ║   en_icache=%0b  (exp_mode=%0b  int_mode=%0b  cs_sb=%0b)                        ║",
+        $display("  ║   en_icache=%0b  (exp_mode=%0b  int_mode=%0b  cs_sb=%0b)                             ║",
                   fetch_uut.en_icache, fetch_uut.exp_mode_jk, fetch_uut.int_mode_jk, rr_outs_i.codeSeg_sb);
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ Exception Logic:                                                             ║");
-        $display("  ║   exp_pipe_clear=%0b  int_pipe_clear=%0b                                      ║",
+        $display("  ║   exp_pipe_clear=%0b  int_pipe_clear=%0b                                         ║",
                   fetch_uut.exp_set_logic_outs.exp_pipe_clear, fetch_uut.exp_set_logic_outs.int_pipe_clear);
-        $display("  ║   invalid_instruction=%0b  rr_exp=%0b  rr_exp_pf=%0b                          ║",
+        $display("  ║   invalid_instruction=%0b  rr_exp=%0b  rr_exp_pf=%0b                               ║",
                   decode_outs_i.invalid_instruction, rr_outs_i.exp_present, rr_outs_i.exp_pf);
-        $display("  ║   rom_sel=0x%02h  rom_idx=%0b                                                 ║",
+        $display("  ║   rom_sel=0x%02h  rom_idx=%0b                                                  ║",
                   fetch_uut.exp_ctrl_roms.rom_sel, fetch_uut.exp_ctrl_roms.rom_idx);
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
-        $display("  ║ Pipeline Stage State:                                                        ║");
-        $display("  ╠──────────────────────────────────────────────────────────────────────────────╣");
+        $display("  ║                              PIPELINE STATE                                  ║");
+        $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ DECODE Stage:                                                                ║");
-        $display("  ║   valid=%0b  invalid_instr=%0b                                                 ║",
+        $display("  ║   valid=%0b  invalid_instr=%0b                                                   ║",
                   decode_outs_i.valid, decode_outs_i.invalid_instruction);
         if (decode_outs_i.valid) begin
-            $display("  ║   eip=0x%08h                                                       ║",
+            $display("  ║   eip=0x%08h                                                             ║",
                       decode_outs_i.eip);
         end
         $display("  ╠──────────────────────────────────────────────────────────────────────────────╣");
         $display("  ║ RR Stage:                                                                    ║");
-        $display("  ║   valid=%0b  exp_present=%0b  exp_pf=%0b codeSeg_sb=%0b                           ║",
+        $display("  ║   valid=%0b  exp_present=%0b  exp_pf=%0b codeSeg_sb=%0b                              ║",
                   rr_outs_i.valid, rr_outs_i.exp_present, rr_outs_i.exp_pf, rr_outs_i.codeSeg_sb);
         if (rr_outs_i.valid) begin
-            $display("  ║   codeSeg_sb=%0b                                                              ║",
+            $display("  ║   codeSeg_sb=%0b                                                               ║",
                       rr_outs_i.codeSeg_sb);
         end
         $display("  ╠──────────────────────────────────────────────────────────────────────────────╣");
@@ -514,11 +514,11 @@ module tb_DTE ();
                   dc_outs_i.valid);
         $display("  ╠──────────────────────────────────────────────────────────────────────────────╣");
         $display("  ║ EXE Stage:                                                                   ║");
-        $display("  ║   valid=%0b  br_valid=%0b  br_flush=%0b  br_taken=%0b                             ║",
+        $display("  ║   valid=%0b  br_valid=%0b  br_flush=%0b  br_taken=%0b                                ║",
                   exe_outs_i.valid, exe_outs_i.br_res_out.valid, 
                   exe_outs_i.br_res_out.flush, exe_outs_i.br_res_out.taken);
         if (exe_outs_i.br_res_out.valid) begin
-            $display("  ║   br_eip=0x%08h  br_target=0x%08h                               ║",
+            $display("  ║   br_eip=0x%08h  br_target=0x%08h                                     ║",
                       exe_outs_i.br_res_out.br_eip, exe_outs_i.br_res_out.br_target);
         end
         $display("  ╠──────────────────────────────────────────────────────────────────────────────╣");
@@ -531,9 +531,9 @@ module tb_DTE ();
                   wb_outs_i.valid);
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ BTB Output:                                                                  ║");
-        $display("  ║   hit=%0b  br_eip=0x%08h  br_target=0x%08h                         ║",
+        $display("  ║   hit=%0b  br_eip=0x%08h  br_target=0x%08h                             ║",
                   fetch_uut.btb_outs.hit, fetch_uut.btb_outs.br_eip, fetch_uut.btb_outs.br_target);
-        $display("  ║   XCL=%0b  br_ucond=%0b                                                        ║",
+        $display("  ║   XCL=%0b  br_ucond=%0b                                                          ║",
                   fetch_uut.btb_outs.XCL, fetch_uut.btb_outs.br_ucond);
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ Predictor:                                                                   ║");
@@ -541,9 +541,9 @@ module tb_DTE ();
                   fetch_uut.predictor_outs.taken);
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ Invalidate Logic:                                                            ║");
-        $display("  ║   eip=0x%08h  prev_eip=0x%08h                                    ║",
+        $display("  ║   eip=0x%08h  prev_eip=0x%08h                                        ║",
                   decode_outs_i.eip, fetch_uut.idm_invalidate_logic.prev_eip);
-        $display("  ║   invalidate: [3]=%0b [2]=%0b [1]=%0b [0]=%0b  no_writes=%0b                    ║",
+        $display("  ║   invalidate: [3]=%0b [2]=%0b [1]=%0b [0]=%0b  no_writes=%0b                           ║",
                   fetch_uut.idm_invalidate_logic_outs.invalidate[3], fetch_uut.idm_invalidate_logic_outs.invalidate[2],
                   fetch_uut.idm_invalidate_logic_outs.invalidate[1], fetch_uut.idm_invalidate_logic_outs.invalidate[0],
                   fetch_uut.idm_invalidate_logic_outs.no_writes);
@@ -553,7 +553,7 @@ module tb_DTE ();
                   fetch_uut.idm_ctrl_logic_outs.push_success);
         $display("  ║   IDM Requests (per slot):                                                   ║");
         for (int i = 0; i < NUM_IDM_SLOTS; i++) begin
-            $display("  ║     [%0d] valid=%0b ld_meta_data=%0b ld_data=%0b br_valid=%0b br_xcl=%0b               ║",
+            $display("  ║     [%0d] valid=%0b ld_meta_data=%0b ld_data=%0b br_valid=%0b br_xcl=%0b                 ║",
                       i, fetch_uut.idm_ctrl_logic_outs.idm_input.req[i].valid,
                       fetch_uut.idm_ctrl_logic_outs.idm_input.req[i].ld_meta_data,
                       fetch_uut.idm_ctrl_logic_outs.idm_input.req[i].ld_data,
@@ -578,11 +578,11 @@ module tb_DTE ();
         end
         $display("  ╠══════════════════════════════════════════════════════════════════════════════╣");
         $display("  ║ Branch Resolution (from EXE):                                                ║");
-        $display("  ║   valid=%0b  flush=%0b  taken=%0b  clr_exp_mode=%0b                               ║",
+        $display("  ║   valid=%0b  flush=%0b  taken=%0b  clr_exp_mode=%0b                                  ║",
                   exe_outs_i.br_res_out.valid, exe_outs_i.br_res_out.flush,
                   exe_outs_i.br_res_out.taken, exe_outs_i.br_res_out.clr_exp_mode);
         if (exe_outs_i.br_res_out.valid) begin
-            $display("  ║   br_eip=0x%08h  br_target=0x%08h                               ║",
+            $display("  ║   br_eip=0x%08h  br_target=0x%08h                                         ║",
                       exe_outs_i.br_res_out.br_eip, exe_outs_i.br_res_out.br_target);
         end
         $display("  ╚══════════════════════════════════════════════════════════════════════════════╝");

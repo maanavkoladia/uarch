@@ -169,8 +169,9 @@ module Decode (
 
     assign rr_latches_next = '{
         normal_latches : temp_rr_latch,
-        rep_latches : rep_latch_holder,
-        useRep  : rep_reg_value
+        rep_latches : temp_rr_latch,
+        //useRep  : rep_reg_value
+        useRep : 1'b0
     };
 
     always_ff @(posedge clk) begin

@@ -21,7 +21,7 @@ module RegFile (
 
     always_comb begin
         //MODRM out
-        unique case (inputs.DR_ID[4:3])
+        case (inputs.DR_ID[4:3])
             2'b00: begin    //byte
                 if(inputs.DR_ID[2] == 0) begin
                     outputs.DR_data = ARCH_REGISTERS[inputs.DR_ID[2:0]] & 64'h0000_000F;
@@ -43,7 +43,7 @@ module RegFile (
         endcase
 
         //REG out
-        unique case (inputs.SR_ID[4:3])
+        case (inputs.SR_ID[4:3])
             2'b00: begin    //byte
                 outputs.SR_data = ARCH_REGISTERS[inputs.SR_ID[2:0]] & 64'h0000_000F;
             end
@@ -59,7 +59,7 @@ module RegFile (
         endcase
 
         //REG out
-        unique case (inputs.SR_ID[4:3])
+        case (inputs.SR_ID[4:3])
             2'b00: begin    //byte
                 if(inputs.SR_ID[2] == 0) begin
                     outputs.SR_data = ARCH_REGISTERS[inputs.SR_ID[2:0]] & 64'h0000_000F;
@@ -80,72 +80,73 @@ module RegFile (
     end
 
     always_ff @(posedge clk ) begin
-        if (inputs.WB_DR0_we) begin
-            if(inputs.WB_DR0_ID[5]) begin
-                SEG_REG[inputs.WB_DR0_ID[2:0]] <= inputs.WB_DR0_data;
-            end
-            else begin
-                unique case(inputs.WB_DR0_ID[4:3])
-                    2'b00: begin
-                        if(inputs.WB_DR0_ID[2] == 0) begin
+        if(!rst) begin
+            ARCH_REGISTERS <= '{default: '0};
+            MMX_REGISTERS <= '{default: '0};
+            SEG_REG <= '{default: '0};
+        end
+        else begin
+            if (inputs.WB_DR0_we) begin
+                if(inputs.WB_DR0_ID[5]) begin
+                    SEG_REG[inputs.WB_DR0_ID[2:0]] <= inputs.WB_DR0_data;
+                end
+                else begin
+                    case(inputs.WB_DR0_ID[4:3])
+                        2'b00: begin
+                            if(inputs.WB_DR0_ID[2] == 0) begin
+                                ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]]
+                                    <= {ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]][31:8], inputs.WB_DR0_data[7:0]};
+                            end
+                            else begin
+                                ARCH_REGISTERS[{1'b0, inputs.WB_DR0_ID[1:0]}]
+                                    <= {ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]][31:16], inputs.WB_DR0_data[7:0],
+                                        ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]][7:0]};
+                            end
+                        end
+                        2'b01: begin
                             ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]]
-                                <= {ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]][31:8], inputs.WB_DR0_data[7:0]};
+                                <= {ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]][31:16], inputs.WB_DR0_data[15:0]};
                         end
-                        else begin
-                            ARCH_REGISTERS[{1'b0, inputs.WB_DR0_ID[1:0]}]
-                                <= {ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]][31:16], inputs.WB_DR0_data[7:0],
-                                    ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]][7:0]};
+                        2'b10: begin
+                            ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]] <= inputs.WB_DR0_data[31:0];
                         end
-                    end
-                    2'b01: begin
-                        ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]]
-                            <= {ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]][31:16], inputs.WB_DR0_data[15:0]};
-                    end
-                    2'b10: begin
-                        ARCH_REGISTERS[inputs.WB_DR0_ID[2:0]] <= inputs.WB_DR0_data[31:0];
-                    end
-                    2'b11: begin
-                        MMX_REGISTERS[inputs.WB_DR0_ID[2:0]] <= inputs.WB_DR0_data;
-                    end
-                endcase
+                        2'b11: begin
+                            MMX_REGISTERS[inputs.WB_DR0_ID[2:0]] <= inputs.WB_DR0_data;
+                        end
+                    endcase
+                end
             end
-        end
-        else begin
 
-        end
-
-        if (inputs.WB_DR1_we) begin
-            if(inputs.WB_DR1_ID[5]) begin
-                SEG_REG[inputs.WB_DR1_ID[2:0]] <= inputs.WB_DR1_data;
-            end
-            else begin
-                unique case(inputs.WB_DR1_ID[4:3])
-                    2'b00: begin
-                        if(inputs.WB_DR1_ID[2] == 0) begin
+            if (inputs.WB_DR1_we) begin
+                if(inputs.WB_DR1_ID[5]) begin
+                    SEG_REG[inputs.WB_DR1_ID[2:0]] <= inputs.WB_DR1_data;
+                end
+                else begin
+                    case(inputs.WB_DR1_ID[4:3])
+                        2'b00: begin
+                            if(inputs.WB_DR1_ID[2] == 0) begin
+                                ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]]
+                                    <= {ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]][31:8], inputs.WB_DR1_data[7:0]};
+                            end
+                            else begin
+                                ARCH_REGISTERS[{1'b0, inputs.WB_DR1_ID[1:0]}]
+                                    <= {ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]][31:16], inputs.WB_DR1_data[7:0],
+                                        ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]][7:0]};
+                            end
+                        end
+                        2'b01: begin
                             ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]]
-                                <= {ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]][31:8], inputs.WB_DR1_data[7:0]};
+                                <= {ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]][31:16], inputs.WB_DR1_data[15:0]};
                         end
-                        else begin
-                            ARCH_REGISTERS[{1'b0, inputs.WB_DR1_ID[1:0]}]
-                                <= {ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]][31:16], inputs.WB_DR1_data[7:0],
-                                    ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]][7:0]};
+                        2'b10: begin
+                            ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]] <= inputs.WB_DR1_data[31:0];
                         end
-                    end
-                    2'b01: begin
-                        ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]]
-                            <= {ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]][31:16], inputs.WB_DR1_data[15:0]};
-                    end
-                    2'b10: begin
-                        ARCH_REGISTERS[inputs.WB_DR1_ID[2:0]] <= inputs.WB_DR1_data[31:0];
-                    end
-                    2'b11: begin
-                        MMX_REGISTERS[inputs.WB_DR1_ID[2:0]] <= inputs.WB_DR1_data;
-                    end
-                endcase
+                        2'b11: begin
+                            MMX_REGISTERS[inputs.WB_DR1_ID[2:0]] <= inputs.WB_DR1_data;
+                        end
+                    endcase
+                end
             end
-        end
-        else begin
-
         end
     end
 
