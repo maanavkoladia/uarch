@@ -26,7 +26,8 @@ module RR (
     output rr_outputs_t outs_o
 );
 
-    rr_latches_general_t latchesInUse = latches_i.useRep ? latches_i.rep_latches : latches_i.normal_latches;
+    rr_latches_general_t latchesInUse;
+    assign latchesInUse = latches_i.useRep ? latches_i.rep_latches : latches_i.normal_latches;
 
     //6 bc 6 seg regs and their respctive limits
     uint32_t SEGMENT_LIMITS[6];  //CS, DS, ES, FS, GS, SS

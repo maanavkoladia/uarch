@@ -396,6 +396,7 @@ module tb_DTE ();
         @(posedge clk)
         display_state();
 
+
         
         
 
@@ -422,7 +423,7 @@ module tb_DTE ();
         // @(posedge clk) bestPick_req_2_dte = ICACHE_LOW_PRI_REQ;
         // @(posedge clk) @(posedge clk) @(posedge clk) bestPick_req_2_dte = DCACHE_EB_BLOCKING_LD;
         // bestPick_bk_id_2_dte = 3;
-
+        set_limit_regs();   //task to set segment limit
         DelayClks(9);
         @(posedge clk)
         force decode_uut.EIP = 32'h1000;
@@ -606,5 +607,15 @@ module tb_DTE ();
             default: return "UNKNOWN ";
         endcase
     endfunction
+
+    //task to set limit regs
+    task automatic set_limit_regs();
+            rr_uut.SEGMENT_LIMITS[CS_LIMIT_ID] = 32'h0000_4FFF;
+            rr_uut.SEGMENT_LIMITS[DS_LIMIT_ID] = 32'h0000_11FF;
+            rr_uut.SEGMENT_LIMITS[SS_LIMIT_ID] = 32'h0000_4000;
+            rr_uut.SEGMENT_LIMITS[ES_LIMIT_ID] = 32'h0000_03FF;
+            rr_uut.SEGMENT_LIMITS[FS_LIMIT_ID] = 32'h0000_03FF;
+            rr_uut.SEGMENT_LIMITS[GS_LIMIT_ID] = 32'h0000_07FF;
+    endtask
 
 endmodule

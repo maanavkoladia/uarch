@@ -39,8 +39,8 @@ module RegSB (
     bool depStall_Internal;
 
     assign dep_stall = depStall_Internal;
-    assign ecx_sb = SCORE_BOARD[ECX].counter == 0;
-    assign codeSeg_sb = SCORE_BOARD[CS].counter == 0;
+    assign ecx_sb = SCORE_BOARD[ECX].counter != 0;
+    assign codeSeg_sb = SCORE_BOARD[CS].counter != 0;
     //dr, sr, and segment Reg is encasulated in dr
 
     always_ff @(posedge clk) begin

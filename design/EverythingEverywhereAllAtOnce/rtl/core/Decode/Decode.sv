@@ -61,6 +61,9 @@ module Decode (
     assign flush = exe_outs_i.br_res_out.flush;
     assign stall = rr_outs_i.valid && rr_outs_i.stall;
 
+    assign REP_MOV_LATCH = 1'b0;
+    assign REP_CMP_LATCH = 1'b0;
+
     logic [63:0][7:0] queue;
     genvar i;
     generate

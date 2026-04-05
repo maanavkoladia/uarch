@@ -1,3 +1,8 @@
 ======== RR =======
 segment1 valid logic need to be outputted from control store,
 need to delete the hardcode and wireup contorl singal output fro MOVS in RegSB
+
+========= DECODE =======
+REP_CMP_LATCH and REP_MOV_LATCH has been hardcoded for now,
+these signals will have to come from the control store and latched in,
+I will have to go back and un hardcode them after fixing contorl store
