@@ -29,10 +29,9 @@ module tb_dcache ();
     logic [31 : 0] dataForBus;
     bool driveDataBus;
 
-    core_2_dcache_t inFromCore;
-    dcache_2_core_t out2Core;
-    dte_2_dcache_t inFromDTE;
-    dcache_2_scheduler_t out2Sch;
+    core_2_dcache_t core_2_dcache;
+    dcache_2_core_t dcache_2_core;
+    dte_2_dcache_t dte_2_dcache;
 
     // ================= MEMORY =================
     mem_2_dte_t mem_2_dte;
@@ -42,13 +41,13 @@ module tb_dcache ();
     logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_2_dte;
 
 
-    DCache_TOP uut0_DCache (
+    DCache_TOP uut0_dcache (
         .clk(clk),
         .rst(rst),
-        .inFromCore_i(inFromCore),
-        .out2Core_o(out2Core),
-        .inFromDTE_i(inFromDTE),
-        .out2Sch_o(out2Sch),
+        .inFromCore_i(core_2_dcache),
+        .out2Core_o(dcache_2_core),
+        .inFromDTE_i(dte_2_dcache),
+        .out2Sch_o(),
         .dataBus(dataBus),
         .address_bus(addrBus)
     );
@@ -58,7 +57,7 @@ module tb_dcache ();
         .rst(rst),
         .address_bus(addrBus),
         .data_bus(dataBus),
-        .inFromDte(inFromDTE),
+        .inFromDte(dte_2_mem),
         .out2Dte(mem_2_dte),
         .out2Sch()
     );
@@ -88,9 +87,9 @@ module tb_dcache ();
         driveAddrBus = 0;
         dataForBus = 0;
         driveDataBus = 0;
-        inFromCore = '{default: '0};
-        for (int i = 0; i < NUM_DCACHE_PORTS; i++) inFromCore.stq_heads[i].empty = 1;
-        inFromCore.stq_info_mio[i].empty = 1;
+        core_2_dcache = '{default: '0};
+        for (int i = 0; i < NUM_DCACHE_PORTS; i++) core_2_dcache.stq_heads[i].empty = 1;
+        core_2_dcache.stq_info_mio.empty = 1;
         bestPick_req_2_dte = NO_REQ;
         bestPick_bk_id_2_dte = 0;
         DelayCLKs(10);

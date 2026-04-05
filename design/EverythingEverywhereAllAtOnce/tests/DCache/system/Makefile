@@ -8,6 +8,7 @@ GEN_CONF = startUpGen.conf.json
 TOP_FILE_NAME = tb_dcache
 
 STARTUP_FILES = \
+				gen/memLoader.sv	\
 				gen/dcache_loader.sv
 
 TB_FILES = \

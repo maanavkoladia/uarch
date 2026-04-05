@@ -89,7 +89,7 @@ module VCache (
         .blocked_o(fsmOuts.blocked)
     );
 
-    VCache_TagStore vcache_tagstore_unit (
+    VCache_TagStore vcache_tag_store_unit (
         .clk(clk),
         .rst(rst),  //active low
         .p_addr_i(reqInUse.p_addr),
