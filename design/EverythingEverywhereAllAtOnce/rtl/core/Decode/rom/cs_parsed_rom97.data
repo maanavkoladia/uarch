@@ -1,0 +1,36 @@
+// ROM data for cs_parsed  row=9 col=7
+// Covers input address range [256 .. 287]
+// Output bits [3 downto 0]  (4 bits, 1 hex digits per word)
+// Format: readmemh — one hex word per line (addr 0 first)
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0

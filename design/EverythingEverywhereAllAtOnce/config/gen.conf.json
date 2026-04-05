@@ -83,8 +83,8 @@
         "CONTROL_STORE": {
             "csv": "rtl/core/Decode/cs_roms/cs_parsed.csv",
             "outputFilePath": "rtl/core/Decode/control_store_genned.sv",
-            "run Combinational LUT GEN": "false",
-            "run Combinational SOP GEN": "true"
+            "run Combinational LUT GEN": "true",
+            "run Combinational SOP GEN": "false"
         },
 
         "RR_valid_logic" : {

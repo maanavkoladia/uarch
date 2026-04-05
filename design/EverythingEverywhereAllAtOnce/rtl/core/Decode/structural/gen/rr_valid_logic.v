@@ -556,7 +556,7 @@ inv1$ inv_WB_stall_i (WB_stall_i_inv, WB_stall_i);
 
 // SOP logic (Quine-McCluskey minimised)
 
-// RR_we_o = !RR_V_i | (!RR_stall_i & !DC_V_i) | (!RR_stall_i & !DC_stall_i & !MEM_V_i) | (!RR_stall_i & !DC_stall_i & !MEM_stall_i & !EXE_V_i) | (!RR_stall_i & !DC_stall_i & !MEM_stall_i & !WB_stall_i)
+// RR_we_o = !RR_V_i | (!RR_stall_i & !DC_V_i) | (!RR_stall_i & !DC_stall_i & !MEM_V_i) | (!RR_stall_i & !DC_stall_i & !MEM_stall_i & !WB_stall_i) | (!RR_stall_i & !DC_stall_i & !MEM_stall_i & !EXE_V_i)
 wire RR_we_o_t0;
 wire RR_we_o_t1;
 wire RR_we_o_t2;
@@ -566,8 +566,8 @@ wire RR_we_o_t4;
 buffer$ RR_we_o_buf0 (RR_we_o_t0, RR_V_i_inv);
 and2$ RR_we_o_and1 (RR_we_o_t1, RR_stall_i_inv, DC_V_i_inv);
 and3$ RR_we_o_and2 (RR_we_o_t2, RR_stall_i_inv, DC_stall_i_inv, MEM_V_i_inv);
-and4$ RR_we_o_and3 (RR_we_o_t3, RR_stall_i_inv, DC_stall_i_inv, MEM_stall_i_inv, EXE_V_i_inv);
-and4$ RR_we_o_and4 (RR_we_o_t4, RR_stall_i_inv, DC_stall_i_inv, MEM_stall_i_inv, WB_stall_i_inv);
+and4$ RR_we_o_and3 (RR_we_o_t3, RR_stall_i_inv, DC_stall_i_inv, MEM_stall_i_inv, WB_stall_i_inv);
+and4$ RR_we_o_and4 (RR_we_o_t4, RR_stall_i_inv, DC_stall_i_inv, MEM_stall_i_inv, EXE_V_i_inv);
 or5$  RR_we_o_or  (RR_we_o, RR_we_o_t0, RR_we_o_t1, RR_we_o_t2, RR_we_o_t3, RR_we_o_t4);
 
 // N_RR_V_o = DECODE_V_i

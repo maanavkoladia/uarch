@@ -27,19 +27,23 @@ module control_store (
     // Packed output wires
     // =====================
 
-    // HARD_CODED_DR_ID[5:0]
-    logic [5:0] HARD_CODED_DR_ID;
+  // =====================
+    // Packed output wires
+    // =====================
 
-    logic RM_IS_DR;
-    logic REG_IS_DR;
+    // 5-bit IDs
+    logic [4:0] HARD_CODED_DR_ID;
+    logic [4:0] HARD_CODED_SR_ID;
 
     // Single-bit signals
     logic REP;
     logic MODRM_NEEDED;
     logic HARD_CODED_DR;
     logic HARD_CODED_SR;
-    logic HARD_CODED_SR_ID;
     logic OP_IN_MODRM;
+
+    logic RM_IS_DR;
+    logic REG_IS_DR;
 
     // DATA_SIZE[2:0]
     logic [2:0] DATA_SIZE;
@@ -53,12 +57,12 @@ module control_store (
     logic MEM_OP;
     logic EXE_OP;
 
-    // ALU selects
-    logic [3:0] alu_inputA_sel;
-    logic [3:0] alu_inputB_sel;
+    // ALU selects (FIXED WIDTH)
+    logic [4:0] alu_inputA_sel;
+    logic [4:0] alu_inputB_sel;
 
-    // Branch target select
-    logic [3:0] branch_target_sel;
+    // Branch target select (FIXED WIDTH)
+    logic [4:0] branch_target_sel;
 
     // OP_TYPE[5:0]
     logic [5:0] OP_TYPE;
@@ -71,89 +75,97 @@ module control_store (
     logic second_flag_needed;
 
     logic WB_OP;
-
     // =====================
     // Module instantiation
     // =====================
 
-    cs control_store(
-        .REP_o(REP),
-        .MODRM_NEEDED_o(MODRM_NEEDED),
-        .HARD_CODED_DR_o(HARD_CODED_DR),
+    control_store_genned control_store (
+        // Input bits
+        .in_9_i(in_9_i),
+        .in_8_i(in_8_i),
+        .in_7_i(in_7_i),
+        .in_6_i(in_6_i),
+        .in_5_i(in_5_i),
+        .in_4_i(in_4_i),
+        .in_3_i(in_3_i),
+        .in_2_i(in_2_i),
+        .in_1_i(in_1_i),
+        .in_0_i(in_0_i),
 
-        .RM_IS_DR_o(RM_IS_DR),
-        .REG_IS_DR_o(REG_IS_DR),
+        // General Control
+        .REP_o(REP_o),
+        .MODRM_NEEDED_o(MODRM_NEEDED_o),
+        .RM_IS_DR_o(RM_IS_DR_o),
+        .REG_IS_DR_o(REG_IS_DR_o),
+        
+        // Destination Register Hardcoding
+        .HARD_CODED_DR_o(HARD_CODED_DR_o),
+        .HARD_CODED_DR_ID_4_o(HARD_CODED_DR_ID_4_o),
+        .HARD_CODED_DR_ID_3_o(HARD_CODED_DR_ID_3_o),
+        .HARD_CODED_DR_ID_2_o(HARD_CODED_DR_ID_2_o),
+        .HARD_CODED_DR_ID_1_o(HARD_CODED_DR_ID_1_o),
+        .HARD_CODED_DR_ID_0_o(HARD_CODED_DR_ID_0_o),
 
-        // Packed DR IDs
-        .HARD_CODED_DR_ID5_o(HARD_CODED_DR_ID[5]),
-        .HARD_CODED_DR_ID4_o(HARD_CODED_DR_ID[4]),
-        .HARD_CODED_DR_ID3_o(HARD_CODED_DR_ID[3]),
-        .HARD_CODED_DR_ID2_o(HARD_CODED_DR_ID[2]),
-        .HARD_CODED_DR_ID1_o(HARD_CODED_DR_ID[1]),
-        .HARD_CODED_DR_ID0_o(HARD_CODED_DR_ID[0]),
+        // Source Register Hardcoding
+        .HARD_CODED_SR_o(HARD_CODED_SR_o),
+        .HARD_CODED_SR_ID_4_o(HARD_CODED_SR_ID_4_o),
+        .HARD_CODED_SR_ID_3_o(HARD_CODED_SR_ID_3_o),
+        .HARD_CODED_SR_ID_2_o(HARD_CODED_SR_ID_2_o),
+        .HARD_CODED_SR_ID_1_o(HARD_CODED_SR_ID_1_o),
+        .HARD_CODED_SR_ID_0_o(HARD_CODED_SR_ID_0_o),
+        
+        .OP_IN_MODRM_o(OP_IN_MODRM_o),
 
-        .HARD_CODED_SR_o(HARD_CODED_SR),
-        .HARD_CODED_SR_ID_o(HARD_CODED_SR_ID),
-        .OP_IN_MODRM_o(OP_IN_MODRM),
+        // Data Size
+        .DATA_SIZE_2_o(DATA_SIZE_2_o),
+        .DATA_SIZE_1_o(DATA_SIZE_1_o),
+        .DATA_SIZE_0_o(DATA_SIZE_0_o),
 
-        // DATA_SIZE
-        .DATA_SIZE2_o(DATA_SIZE[2]),
-        .DATA_SIZE1_o(DATA_SIZE[1]),
-        .DATA_SIZE0_o(DATA_SIZE[0]),
+        // Op Enables / Selects
+        .RR_OP_o(RR_OP_o),
+        .HARDCODED_DR_RD_o(HARDCODED_DR_RD_o),
+        .HARDCODED_SR_RD_o(HARDCODED_SR_RD_o),
+        .ST_SEL_o(ST_SEL_o),
+        .DC_OP_o(DC_OP_o),
+        .MEM_OP_o(MEM_OP_o),
+        .EXE_OP_o(EXE_OP_o),
 
-        .RR_OP_o(RR_OP),
-        .HARDCODED_DR_RD_o(HARDCODED_DR_RD),
-        .HARDCODED_SR_RD_o(HARDCODED_SR_RD),
-        .ST_SEL_o(ST_SEL),
-        .DC_OP_o(DC_OP),
-        .MEM_OP_o(MEM_OP),
-        .EXE_OP_o(EXE_OP),
+        // ALU A Select
+        .alu_inputA_sel_4_o(alu_inputA_sel_4_o),
+        .alu_inputA_sel_3_o(alu_inputA_sel_3_o),
+        .alu_inputA_sel_2_o(alu_inputA_sel_2_o),
+        .alu_inputA_sel_1_o(alu_inputA_sel_1_o),
+        .alu_inputA_sel_0_o(alu_inputA_sel_0_o),
 
-        // ALU A
-        .alu_inputA_sel3_o(alu_inputA_sel[3]),
-        .alu_inputA_sel2_o(alu_inputA_sel[2]),
-        .alu_inputA_sel1_o(alu_inputA_sel[1]),
-        .alu_inputA_sel0_o(alu_inputA_sel[0]),
+        // ALU B Select
+        .alu_inputB_sel_4_o(alu_inputB_sel_4_o),
+        .alu_inputB_sel_3_o(alu_inputB_sel_3_o),
+        .alu_inputB_sel_2_o(alu_inputB_sel_2_o),
+        .alu_inputB_sel_1_o(alu_inputB_sel_1_o),
+        .alu_inputB_sel_0_o(alu_inputB_sel_0_o),
 
-        // ALU B
-        .alu_inputB_sel3_o(alu_inputB_sel[3]),
-        .alu_inputB_sel2_o(alu_inputB_sel[2]),
-        .alu_inputB_sel1_o(alu_inputB_sel[1]),
-        .alu_inputB_sel0_o(alu_inputB_sel[0]),
+        // Branch Target Select
+        .branch_target_sel_4_o(branch_target_sel_4_o),
+        .branch_target_sel_3_o(branch_target_sel_3_o),
+        .branch_target_sel_2_o(branch_target_sel_2_o),
+        .branch_target_sel_1_o(branch_target_sel_1_o),
+        .branch_target_sel_0_o(branch_target_sel_0_o),
 
-        // Branch target
-        .branch_target_sel3_o(branch_target_sel[3]),
-        .branch_target_sel2_o(branch_target_sel[2]),
-        .branch_target_sel1_o(branch_target_sel[1]),
-        .branch_target_sel0_o(branch_target_sel[0]),
+        // Operation Type
+        .OP_TYPE_4_o(OP_TYPE_4_o),
+        .OP_TYPE_3_o(OP_TYPE_3_o),
+        .OP_TYPE_2_o(OP_TYPE_2_o),
+        .OP_TYPE_1_o(OP_TYPE_1_o),
+        .OP_TYPE_0_o(OP_TYPE_0_o),
 
-        // OP_TYPE
-        .OP_TYPE5_o(OP_TYPE[5]),
-        .OP_TYPE4_o(OP_TYPE[4]),
-        .OP_TYPE3_o(OP_TYPE[3]),
-        .OP_TYPE2_o(OP_TYPE[2]),
-        .OP_TYPE1_o(OP_TYPE[1]),
-        .OP_TYPE0_o(OP_TYPE[0]),
+        // Branch / Execution Flags
+        .br_uncond_o(br_uncond_o),
+        .relative_branch_o(relative_branch_o),
+        .special_dr_o(special_dr_o),
+        .is_far_o(is_far_o),
+        .second_flag_needed_o(second_flag_needed_o),
 
-        .br_uncond_o(br_uncond),
-        .relative_branch_o(relative_branch),
-        .special_dr_o(special_dr),
-        .is_far_o(is_far),
-        .second_flag_needed_o(second_flag_needed),
-
-        .WB_OP_o(WB_OP),
-
-        // Input bus slicing
-        .input9_i(input_bus[9]),
-        .input8_i(input_bus[8]),
-        .input7_i(input_bus[7]),
-        .input6_i(input_bus[6]),
-        .input5_i(input_bus[5]),
-        .input4_i(input_bus[4]),
-        .input3_i(input_bus[3]),
-        .input2_i(input_bus[2]),
-        .input1_i(input_bus[1]),
-        .input0_i(input_bus[0])
+        .WB_OP_o(WB_OP_o)
     );
 
     modrm_processor_outs_t mod_rm_cs_outs;
