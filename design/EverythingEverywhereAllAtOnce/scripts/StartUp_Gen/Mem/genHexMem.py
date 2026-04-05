@@ -118,12 +118,20 @@ def write_cell_hex(words: list, cell_width: int,
                    out_path: str):
     """
     Write a $readmemh-compatible file for one (bank, cell) memCell module.
-    Plain format: one hex word per line, no address tags, no comments.
-    $readmemh loads sequentially into mem[0], mem[1], ... mem[31].
+    Each word is stored little-endian in the binary; we unpack it as a
+    uint32-LE and re-emit it as a plain hex integer so $readmemh sees the
+    architecturally-correct value.
     """
+    fmt = {1: 'B', 2: '<H', 4: '<I', 8: '<Q'}.get(cell_width)
+    if fmt is None:
+        raise ValueError(f"Unsupported cell_width={cell_width}; "
+                         f"expected 1/2/4/8 bytes")
+    hex_digits = cell_width * 2          # e.g. 8 hex chars for 4-byte word
+
     with open(out_path, 'w') as f:
         for word in words:
-            f.write(''.join(f'{b:02x}' for b in word) + '\n')
+            value = struct.unpack(fmt, word)[0]
+            f.write(f'{value:0{hex_digits}x}\n')
 
 
 # ── debug writers ─────────────────────────────────────────────────────────────

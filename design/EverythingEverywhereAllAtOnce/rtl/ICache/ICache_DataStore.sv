@@ -33,6 +33,9 @@ module ICache_DataStore (
     logic [ICACHE_INDEX_WIDTH - 1 : 0] v_addr_i_index;
     assign v_addr_i_index = v_addr_i[ICACHE_INDEX_UB : ICACHE_INDEX_LB];
 
+    wire clk_45_phase;
+    assign #2.5 clk_45_phase = clk;
+
     // Use virtual address for indexing into tag store (VIPT)
     // Lower bits select the RAM cell address, MSB selects which of the 2 RAM cells
     logic [ICACHE_INDEX_WIDTH - 1 - 1 : 0] ADDRESS_2_DataStore;
@@ -48,13 +51,14 @@ module ICache_DataStore (
     //or from bus, in which case the
     //address comes from p_addr
     logic WR_2_DataStore_clk[LAYERS_OF_CELLS][NUM_CELLS];
-    logic WR_2_DataStore_Delay[LAYERS_OF_CELLS][NUM_CELLS];
+    //logic WR_2_DataStore_Delay[LAYERS_OF_CELLS][NUM_CELLS];
     logic WR_2_DataStore_actual[LAYERS_OF_CELLS][NUM_CELLS];
+
 
     //assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} :  WR_2_DataStore_clk;
     //VCS yelled at me so I am removing the delay - harish, this is irrevalt
     //after the merge
-    assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} : WR_2_DataStore_clk;
+    //assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} : WR_2_DataStore_clk;
 
 
     always_comb begin
@@ -63,7 +67,7 @@ module ICache_DataStore (
         end else begin
             for (int i = 0; i < LAYERS_OF_CELLS; i++) begin
                 for (int j = 0; j < NUM_CELLS; j++) begin
-                    WR_2_DataStore_actual[i][j] = (WR_2_DataStore_Delay[i][j] == 0) && (WR_2_DataStore_clk[i][j] == 0) ? 0 : 1;
+                    WR_2_DataStore_actual[i][j] = ((WR_2_DataStore_clk[i][j] == 0) && clk_45_phase) ? 0 : 1;
                 end
             end
         end
@@ -104,39 +108,22 @@ module ICache_DataStore (
         if (ld_From_I_VC_Swap) begin
             DIN_2_DataStore = I_VC_SwapBuf_i.line;
         end else begin
-            // DIN_2_DataStore[0] = dataBus[7:0];
-            // DIN_2_DataStore[1] = dataBus[15:8];
-            // DIN_2_DataStore[2] = dataBus[23:16];
-            // DIN_2_DataStore[3] = dataBus[31:24];
-            // DIN_2_DataStore[4] = dataBus[7:0];
-            // DIN_2_DataStore[5] = dataBus[15:8];
-            // DIN_2_DataStore[6] = dataBus[23:16];
-            // DIN_2_DataStore[7] = dataBus[31:24];
-            // DIN_2_DataStore[8] = dataBus[7:0];
-            // DIN_2_DataStore[9] = dataBus[15:8];
-            // DIN_2_DataStore[10] = dataBus[23:16];
-            // DIN_2_DataStore[11] = dataBus[31:24];
-            // DIN_2_DataStore[12] = dataBus[7:0];
-            // DIN_2_DataStore[13] = dataBus[15:8];
-            // DIN_2_DataStore[14] = dataBus[23:16];
-            // DIN_2_DataStore[15] = dataBus[31:24];
-
-            DIN_2_DataStore[3]  = dataBus[7:0];
-            DIN_2_DataStore[2]  = dataBus[15:8];
-            DIN_2_DataStore[1]  = dataBus[23:16];
-            DIN_2_DataStore[0]  = dataBus[31:24];
-            DIN_2_DataStore[7]  = dataBus[7:0];
-            DIN_2_DataStore[6]  = dataBus[15:8];
-            DIN_2_DataStore[5]  = dataBus[23:16];
-            DIN_2_DataStore[4]  = dataBus[31:24];
-            DIN_2_DataStore[11] = dataBus[7:0];
-            DIN_2_DataStore[10] = dataBus[15:8];
-            DIN_2_DataStore[9]  = dataBus[23:16];
-            DIN_2_DataStore[8]  = dataBus[31:24];
-            DIN_2_DataStore[15] = dataBus[7:0];
-            DIN_2_DataStore[14] = dataBus[15:8];
-            DIN_2_DataStore[13] = dataBus[23:16];
-            DIN_2_DataStore[12] = dataBus[31:24];
+            DIN_2_DataStore[0]  = dataBus[7:0];
+            DIN_2_DataStore[1]  = dataBus[15:8];
+            DIN_2_DataStore[2]  = dataBus[23:16];
+            DIN_2_DataStore[3]  = dataBus[31:24];
+            DIN_2_DataStore[4]  = dataBus[7:0];
+            DIN_2_DataStore[5]  = dataBus[15:8];
+            DIN_2_DataStore[6]  = dataBus[23:16];
+            DIN_2_DataStore[7]  = dataBus[31:24];
+            DIN_2_DataStore[8]  = dataBus[7:0];
+            DIN_2_DataStore[9]  = dataBus[15:8];
+            DIN_2_DataStore[10] = dataBus[23:16];
+            DIN_2_DataStore[11] = dataBus[31:24];
+            DIN_2_DataStore[12] = dataBus[7:0];
+            DIN_2_DataStore[13] = dataBus[15:8];
+            DIN_2_DataStore[14] = dataBus[23:16];
+            DIN_2_DataStore[15] = dataBus[31:24];
 
         end
     end
