@@ -61,7 +61,7 @@ package reg_ids_pkg;
     //    } reg_ids_e;
 
 
-    localparam int NUM_REGS = 22 + 1 + 1;  //bc etr and error reg
+    localparam int NUM_REGS = 22 + 1 + 1 + 1;  //bc etr and error reg
     typedef enum logic [$clog2(
 NUM_REGS
 ) - 1:0] {
@@ -92,7 +92,8 @@ NUM_REGS
         MM7 = 21,
 
         ETR = 22,
-        ERROR_REG = 23
+        ERROR_REG = 23,
+        NO_REG = 24
     } reg_ids_e;
 
 
