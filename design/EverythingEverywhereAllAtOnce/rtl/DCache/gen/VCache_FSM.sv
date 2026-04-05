@@ -175,14 +175,14 @@ and3$ Write_VSWAP_o_and0 (Write_VSWAP_o_t0, S_0, S_1_inv, S_2_inv);
 and4$ Write_VSWAP_o_and1 (Write_VSWAP_o_t1, S_1_inv, S_2_inv, V_Hit_i, we_i_inv);
 or2$  Write_VSWAP_o_or  (Write_VSWAP_o, Write_VSWAP_o_t0, Write_VSWAP_o_t1);
 
-// Update_LRU_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i)
+// Update_LRU_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i)
 wire Update_LRU_o_t0;
 wire Update_LRU_o_t1;
 wire Update_LRU_o_t2;
 
 and4$ Update_LRU_o_and0 (Update_LRU_o_t0, S_0_inv, S_1_inv, S_2_inv, V_Hit_i);
-and5$ Update_LRU_o_and1 (Update_LRU_o_t1, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, EB_V_i_inv);
-and5$ Update_LRU_o_and2 (Update_LRU_o_t2, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, VC_needs_2_evict_i);
+and5$ Update_LRU_o_and1 (Update_LRU_o_t1, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, VC_needs_2_evict_i);
+and5$ Update_LRU_o_and2 (Update_LRU_o_t2, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, EB_V_i_inv);
 or3$  Update_LRU_o_or  (Update_LRU_o, Update_LRU_o_t0, Update_LRU_o_t1, Update_LRU_o_t2);
 
 // saveSwapIDX_o = (!S_0 & !S_1 & !S_2 & V_Hit_i)
@@ -204,14 +204,14 @@ and2$ busy_o_and1 (busy_o_t1, S_0, S_2_inv);
 and3$ busy_o_and2 (busy_o_t2, S_0_inv, S_1_inv, S_2);
 or3$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2);
 
-// saveReq_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i)
+// saveReq_o = (!S_0 & !S_1 & !S_2 & V_Hit_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & VC_needs_2_evict_i) | (!S_0 & !S_1 & !S_2 & DC_will_evict_i & !EB_V_i)
 wire saveReq_o_t0;
 wire saveReq_o_t1;
 wire saveReq_o_t2;
 
 and4$ saveReq_o_and0 (saveReq_o_t0, S_0_inv, S_1_inv, S_2_inv, V_Hit_i);
-and5$ saveReq_o_and1 (saveReq_o_t1, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, EB_V_i_inv);
-and5$ saveReq_o_and2 (saveReq_o_t2, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, VC_needs_2_evict_i);
+and5$ saveReq_o_and1 (saveReq_o_t1, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, VC_needs_2_evict_i);
+and5$ saveReq_o_and2 (saveReq_o_t2, S_0_inv, S_1_inv, S_2_inv, DC_will_evict_i, EB_V_i_inv);
 or3$  saveReq_o_or  (saveReq_o, saveReq_o_t0, saveReq_o_t1, saveReq_o_t2);
 
 // useSavedReq_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
