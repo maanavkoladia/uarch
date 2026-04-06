@@ -120,10 +120,9 @@ module ICache (
     I_VCache i_vcache_unit (
         .clk(clk),
         .rst(rst),  //active low
-        .controller_fsmState(controller_fsmState),
         .busy_i(fsmOuts.busy),
         .en_i(inFromCore_i.icache_en),  //i think we can ust use the icache en signal, might be a src of problems later
-        .p_addr_i(curr_p_addr_to_use),
+        .v_addr_i(curr_v_addr_to_use),
         .IC_SwapBuf_i(icache_swapbuf),
         .I_VC_SwapBuf_o(i_vcache_swapBuf),
         .hit_o(i_vcache_hit),

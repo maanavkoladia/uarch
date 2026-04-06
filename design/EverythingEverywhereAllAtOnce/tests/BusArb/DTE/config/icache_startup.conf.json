@@ -1,8 +1,9 @@
 {
     "readmemFilePath" : "icache_loader.sv",
-
-    "TagStoreCellPath_Lower" : "tb_DTE.uut1_icache.icache_TagStore_unit.tag_store_ramCell_Lower",
-    "TagStoreCellPath_Upper" : "tb_DTE.uut1_icache.icache_TagStore_unit.tag_store_ramCell_Upper ",
+    
+    "numTagStore_Layers":"2",
+    "numTagStore_Cells": "3",
+    "TagStoreCellPath" : "tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[<Layer>].g_tagStore_Cells[<NumCells>].tagStoreCell.mem",
 
     "numDataStore_CellLayers": "2",
     "numDataStoreCells": "16",

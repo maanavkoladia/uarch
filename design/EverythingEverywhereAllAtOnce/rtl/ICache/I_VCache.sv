@@ -51,7 +51,6 @@ module I_VCache (
     v_addr_icache_fields_t v_addr_i_fields;
     assign v_addr_i_fields = '{
             tag : v_addr_i[I_VCACHE_TAG_UB : I_VCACHE_TAG_LB],
-            index : v_addr_i[I_VCACHE_INDEX_UB : I_VCACHE_INDEX_LB],
             offset : v_addr_i[ICACHE_OFFSET_UB : ICACHE_OFFSET_LB]
         };
 
@@ -99,7 +98,7 @@ module I_VCache (
         end
     end
 
-    always_ff begin
+    always_ff @(posedge clk) begin
         hitHappened <= hit;
     end
 

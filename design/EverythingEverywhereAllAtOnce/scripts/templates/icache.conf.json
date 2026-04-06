@@ -1,19 +1,16 @@
 {
     "readmemFilePath" : "icache_loader.sv",
-
-
-    "loadRandomData" : "true",
+    
+    "numTagStore_Layers":"2",
+    "numTagStore_Cells": "3",
+    "TagStoreCellPath" : "tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[<Layer>].g_tagStore_Cells[<NumCells>].tagStoreCell.mem",
 
     "numDataStore_CellLayers": "2",
     "numDataStoreCells": "16",
-
-    "TagStoreCellPath_Lower" : "tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Lower",
-    "TagStoreCellPath_Upper" : "tb_ICache.u_icache.icache_TagStore_unit.tag_store_ramCell_Upper ",
-
-    "dataStoreCellPath" : "tb_ICache.u_icache.icache_dataStore_unit.g_mem_layer[<cell layer>].g_memCells[<cellNum].dataStore_memCell",
-    "startUpDelay" : "10",
+    "dataStoreCellPath" : "tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[<cell layer>].g_memCells[<cellNum].dataStore_memCell",
+    "startUpDelay" : "30",
 
 
-    "outputPath" : "startUpGen/ICache/"
+    "outputPath" : "gen/"
 
 }

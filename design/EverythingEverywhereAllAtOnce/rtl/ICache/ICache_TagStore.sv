@@ -19,7 +19,7 @@ module ICache_TagStore (
 );
 
     localparam int NUM_LAYERS = 2;
-    localparam int NUM_CELL = 3;
+    localparam int NUM_CELLS = 3;
 
     wire clk_45_phase;
     assign #2.5 clk_45_phase = clk;
@@ -71,7 +71,7 @@ module ICache_TagStore (
 
     logic [ICACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore;
     logic [ICACHE_TAG_WIDTH - 1 : 0] DOUT_2_TagStore_net[NUM_LAYERS];
-    assign DOUT_2_TagStore = DOUT_2_TagStore_extended[tagCellOutSel];
+    assign DOUT_2_TagStore = DOUT_2_TagStore_net[tagCellOutSel];
 
     // Output assignments
     assign currTag_o = DOUT_2_TagStore;
@@ -94,7 +94,7 @@ module ICache_TagStore (
     // Valid bit storage - reset when rst is active high
     always_ff @(posedge clk) begin
         if (!rst) validStore <= '{default: '0};
-        else if (fill3_i || ld_From_I_VC_Swap) validStore[v_addr_i_index] <= 1;
+        else if (fill3_i || ld_From_I_VC_Swap) validStore[v_addr_i_fields.index] <= 1;
     end
 
 endmodule

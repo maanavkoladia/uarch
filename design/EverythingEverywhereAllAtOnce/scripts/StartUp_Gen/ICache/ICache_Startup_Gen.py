@@ -11,8 +11,11 @@ Usage:
 Conf keys:
     readmemFilePath          – output filename  (e.g. "icache_loader.sv")
     outputPath               – directory to write the file into
-    TagStoreCellPath_Lower   – hierarchical path to tag_store_ramCell_Lower
-    TagStoreCellPath_Upper   – hierarchical path to tag_store_ramCell_Upper
+    TagStoreCellPath         – path template for tag store cells; literal substrings
+                               "<Layer>"    → replaced with layer index
+                               "<NumCells>" → replaced with cell index
+    numTagStore_Layers       – number of tag store layers   (outer genvar)
+    numTagStore_Cells        – number of tag store cells    (inner genvar)
     numDataStore_CellLayers  – LAYERS_OF_CELLS  (outer genvar i)
     numDataStoreCells        – NUM_CELLS / CACHE_LINES_SIZE_B  (inner genvar j)
     dataStoreCellPath        – path template; literal substrings
@@ -30,12 +33,13 @@ Generated Verilog is fully unrolled — no for-loops, no generate blocks.
 Every mem[] assignment is an explicit statement so VCS has no issues.
 
 Total writes emitted:
-    2  (tag Lower + Upper, 8 words each)            =  16
-    numDataStore_CellLayers × numDataStoreCells × 8  =  varies
+    numTagStore_Layers × numTagStore_Cells × 8   (tag store)
+    numDataStore_CellLayers × numDataStoreCells × 8  (data store)
 """
 
 import json
 import random
+import re
 import sys
 from pathlib import Path
 
@@ -45,8 +49,9 @@ WORDS_PER_CELL = 8
 REQUIRED_KEYS = [
     "readmemFilePath",
     "outputPath",
-    "TagStoreCellPath_Lower",
-    "TagStoreCellPath_Upper",
+    "TagStoreCellPath",
+    "numTagStore_Layers",
+    "numTagStore_Cells",
     "numDataStore_CellLayers",
     "numDataStoreCells",
     "dataStoreCellPath",
@@ -96,16 +101,23 @@ def _zero_cell_lines(hier_path: str, random_mode: bool) -> list[str]:
     """
     path = hier_path.strip()
     return [
-        f"    {path}.mem[{w}] = {_cell_value(random_mode)};"
+        f"    {path}[{w}] = {_cell_value(random_mode)};"
         for w in range(WORDS_PER_CELL)
     ]
 
 
-def _resolve(template: str, layer: int, cell: int) -> str:
-    import re
+def _resolve_tag(template: str, layer: int, cell: int) -> str:
+    """Substitute <Layer> and <NumCells> placeholders in a tag store path template."""
+    result = template.replace("<Layer>", str(layer))
+    result = result.replace("<NumCells>", str(cell))
+    return result
+
+
+def _resolve_data(template: str, layer: int, cell: int) -> str:
+    """Substitute <cell layer> and <cellNum> placeholders in a data store path template.
+    Handles both well-formed [<cellNum>] and the malformed [<cellNum] variant."""
     result = template.replace("<cell layer>", str(layer))
-    # Handle both [<cellNum>] (correct) and [<cellNum] (missing closing >) from conf.
-    # Replace the entire bracketed placeholder so output is always well-formed [N].
+    # Accept both [<cellNum>] (correct) and [<cellNum] (missing closing >) from conf.
     result = re.sub(r'\[<cellNum>?\]', f'[{cell}]', result)
     return result
 
@@ -114,13 +126,14 @@ def _resolve(template: str, layer: int, cell: int) -> str:
 # ---------------------------------------------------------------------------
 
 def generate(conf: dict) -> str:
-    delay       = conf["startUpDelay"].strip()
-    lower_path  = conf["TagStoreCellPath_Lower"].strip()
-    upper_path  = conf["TagStoreCellPath_Upper"].strip()
-    num_layers  = int(conf["numDataStore_CellLayers"])
-    num_cells   = int(conf["numDataStoreCells"])
-    tmpl        = conf["dataStoreCellPath"].strip()
-    random_mode = _is_random_mode(conf)
+    delay           = conf["startUpDelay"].strip()
+    tag_tmpl        = conf["TagStoreCellPath"].strip()
+    num_tag_layers  = int(conf["numTagStore_Layers"])
+    num_tag_cells   = int(conf["numTagStore_Cells"])
+    num_data_layers = int(conf["numDataStore_CellLayers"])
+    num_data_cells  = int(conf["numDataStoreCells"])
+    data_tmpl       = conf["dataStoreCellPath"].strip()
+    random_mode     = _is_random_mode(conf)
 
     module_name = Path(conf["readmemFilePath"].strip()).stem
 
@@ -140,22 +153,22 @@ def generate(conf: dict) -> str:
         "",
     ]
 
-    # ── Tag Store – Lower ──────────────────────────────────────────────────
-    lines.append("    // Tag Store – Lower")
-    lines += _zero_cell_lines(lower_path, random_mode)
-    lines.append("")
-
-    # ── Tag Store – Upper ──────────────────────────────────────────────────
-    lines.append("    // Tag Store – Upper")
-    lines += _zero_cell_lines(upper_path, random_mode)
-    lines.append("")
+    # ── Tag Store – fully unrolled over [layer][cell][word] ────────────────
+    lines.append("    // Tag Store")
+    for i in range(num_tag_layers):
+        lines.append(f"    // g_tagStore_Layers[{i}]")
+        for j in range(num_tag_cells):
+            path = _resolve_tag(tag_tmpl, i, j)
+            lines.append(f"    // g_tagStore_Cells[{j}]")
+            lines += _zero_cell_lines(path, random_mode)
+        lines.append("")
 
     # ── Data Store – fully unrolled over [layer][cell][word] ───────────────
     lines.append("    // Data Store")
-    for i in range(num_layers):
+    for i in range(num_data_layers):
         lines.append(f"    // g_mem_layer[{i}]")
-        for j in range(num_cells):
-            path = _resolve(tmpl, i, j)
+        for j in range(num_data_cells):
+            path = _resolve_data(data_tmpl, i, j)
             lines.append(f"    // g_memCells[{j}]")
             lines += _zero_cell_lines(path, random_mode)
         lines.append("")
@@ -173,10 +186,10 @@ def main() -> int:
         print("Usage: ICache_Startup_Gen.py <icache_conf.json>")
         return 2
 
-    conf        = load_conf(sys.argv[1])
-    random_mode = _is_random_mode(conf)
-    out_dir     = Path(conf["outputPath"].strip())
-    out_file    = out_dir / conf["readmemFilePath"].strip()
+    conf            = load_conf(sys.argv[1])
+    random_mode     = _is_random_mode(conf)
+    out_dir         = Path(conf["outputPath"].strip())
+    out_file        = out_dir / conf["readmemFilePath"].strip()
 
     try:
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -192,19 +205,26 @@ def main() -> int:
         print(f"[ERROR] ICache_Startup_Gen: cannot write {out_file}: {exc}")
         return 1
 
-    num_layers = int(conf["numDataStore_CellLayers"])
-    num_cells  = int(conf["numDataStoreCells"])
-    total      = (2 + num_layers * num_cells) * WORDS_PER_CELL
+    num_tag_layers  = int(conf["numTagStore_Layers"])
+    num_tag_cells   = int(conf["numTagStore_Cells"])
+    num_data_layers = int(conf["numDataStore_CellLayers"])
+    num_data_cells  = int(conf["numDataStoreCells"])
+    tag_total       = num_tag_layers * num_tag_cells * WORDS_PER_CELL
+    data_total      = num_data_layers * num_data_cells * WORDS_PER_CELL
 
     print(f"[ICache_Startup_Gen] written → {out_file.resolve()}")
-    print(f"  tag lower       : {conf['TagStoreCellPath_Lower'].strip()}")
-    print(f"  tag upper       : {conf['TagStoreCellPath_Upper'].strip()}")
-    print(f"  layers          : {num_layers}")
-    print(f"  cells per layer : {num_cells}")
+    print(f"  tag store path  : {conf['TagStoreCellPath'].strip()}")
+    print(f"  tag layers      : {num_tag_layers}")
+    print(f"  tag cells/layer : {num_tag_cells}")
+    print(f"  data layers     : {num_data_layers}")
+    print(f"  data cells/layer: {num_data_cells}")
     print(f"  startup delay   : #{conf['startUpDelay'].strip()}")
     print(f"  fill mode       : {'RANDOM' if random_mode else 'ZERO'}")
-    print(f"  total writes    : {total}  "
-          f"(2 tag + {num_layers}×{num_cells} data) × {WORDS_PER_CELL} words")
+    print(f"  total tag writes : {tag_total}  "
+          f"({num_tag_layers}×{num_tag_cells} cells × {WORDS_PER_CELL} words)")
+    print(f"  total data writes: {data_total}  "
+          f"({num_data_layers}×{num_data_cells} cells × {WORDS_PER_CELL} words)")
+    print(f"  total writes     : {tag_total + data_total}")
     return 0
 
 
