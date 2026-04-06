@@ -4,8 +4,7 @@ include ../../Make.build
 TARGET = test_STQ
 
 
-TB_FILES = \
-		   tb_STQ.sv
+TOP_FILE_NAME = tb_STQ
 
 PKGS = $(RTL_PKGS)
 
@@ -25,7 +24,9 @@ run: $(TARGET)
 	./$<
 
 view: run
-	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd
+	#./$(TARGET) -gui &
+	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd tb_STQ.vpd &
+
 
 see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g'

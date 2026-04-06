@@ -33,10 +33,10 @@ module tb_STQ();
     task display_queue_state();
         $display("========================================");
         $display("Time: %0t | Queue State:", $time);
-        $display("  Full: %0b | Empty: %0b | Valid Entries: %0d/%0d", 
-                 outputs.full, outputs.empty, dut.validEntries, ST_Q_DEPTH);
-        $display("  Head Index: %0d | Tail Index: %0d", dut.head, dut.tail);
-        $display("  ST_Override: %0b | Push_Fail: %0b", outputs.st_override, outputs.push_fail);
+        $display("  Full: %0b | Empty: %0b", outputs.full, outputs.empty);
+        $display("  Head: %0d (ptr=%0d) | Tail: %0d (ptr=%0d)", 
+                 dut.head, dut.head_ptr, dut.tail, dut.tail_ptr);
+        $display("  Push_Fail: %0b", outputs.push_fail);
         
         if (!outputs.empty) begin
             $display("  HEAD Entry (output):");
@@ -211,26 +211,16 @@ module tb_STQ();
         $display("\n\n=== TEST SEQUENCE 4: Pop from Full Queue ===");
         pop_data();
 
-        // Test 5: Verify st_override flag
-        $display("\n\n=== TEST SEQUENCE 5: Check ST_Override Flag ===");
-        $display("ST_Override should be 1 (queue was full): %0b", outputs.st_override);
-        if (outputs.st_override) begin
-            $display("✓ PASS: ST_Override correctly set");
-        end else begin
-            $display("✗ FAIL: ST_Override should be set");
-            errors++;
-        end
-
-        // Test 6: Another pop
-        $display("\n\n=== TEST SEQUENCE 6: Pop Again ===");
+        // Test 5: Another pop
+        $display("\n\n=== TEST SEQUENCE 5: Pop Again ===");
         pop_data();
 
-        // Test 7: Simultaneous push and pop
-        $display("\n\n=== TEST SEQUENCE 7: Simultaneous Push+Pop ===");
+        // Test 6: Simultaneous push and pop
+        $display("\n\n=== TEST SEQUENCE 6: Simultaneous Push+Pop ===");
         push_pop_simultaneous(64'hABCDEF00_00000100, 16'h1234, 8'hDD);
 
-        // Test 8: Drain the queue
-        $display("\n\n=== TEST SEQUENCE 8: Drain Entire Queue ===");
+        // Test 7: Drain the queue
+        $display("\n\n=== TEST SEQUENCE 7: Drain Entire Queue ===");
         for (int i = 0; i < ST_Q_DEPTH; i++) begin
             if (!outputs.empty) begin
                 pop_data();
@@ -240,28 +230,27 @@ module tb_STQ();
             end
         end
 
-        // Test 9: Verify empty and st_override cleared
-        $display("\n\n=== TEST SEQUENCE 9: Verify Empty State ===");
+        // Test 8: Verify empty state
+        $display("\n\n=== TEST SEQUENCE 8: Verify Empty State ===");
         @(posedge clk);
         #1;
         display_queue_state();
-        if (outputs.empty && !outputs.st_override) begin
-            $display("✓ PASS: Queue empty and ST_Override cleared");
+        if (outputs.empty) begin
+            $display("✓ PASS: Queue is empty");
         end else begin
-            $display("✗ FAIL: Queue state incorrect (empty=%0b, st_override=%0b)", 
-                     outputs.empty, outputs.st_override);
+            $display("✗ FAIL: Queue should be empty (empty=%0b)", outputs.empty);
             errors++;
         end
 
-        // Test 10: Rapid push-pop cycles
-        $display("\n\n=== TEST SEQUENCE 10: Rapid Push-Pop Cycles ===");
+        // Test 9: Rapid push-pop cycles
+        $display("\n\n=== TEST SEQUENCE 9: Rapid Push-Pop Cycles ===");
         for (int i = 0; i < 5; i++) begin
             push_data(64'h00000000_00000000 + (i * 64), 16'h0001 << i, 8'h20 + i);
             pop_data();
         end
 
-        // Test 11: Fill and drain with simultaneous operations
-        $display("\n\n=== TEST SEQUENCE 11: Fill with Simultaneous Ops ===");
+        // Test 10: Fill and drain with simultaneous operations
+        $display("\n\n=== TEST SEQUENCE 10: Fill with Simultaneous Ops ===");
         // Fill partway
         for (int i = 0; i < ST_Q_DEPTH/2; i++) begin
             push_data(64'h50000000 + (i * 64), 16'hF0F0, 8'h30 + i);
@@ -272,8 +261,8 @@ module tb_STQ();
             push_pop_simultaneous(64'h60000000 + (i * 64), 16'hAAAA, 8'h40 + i);
         end
 
-        // Test 12: Final state check
-        $display("\n\n=== TEST SEQUENCE 12: Final State Check ===");
+        // Test 11: Final state check
+        $display("\n\n=== TEST SEQUENCE 11: Final State Check ===");
         @(posedge clk);
         #1;
         display_queue_state();
@@ -301,9 +290,9 @@ module tb_STQ();
         forever begin
             @(posedge clk);
             if (wb_in.push || wb_in.pop) begin
-                $display("[%0t] Activity: Push=%0b Pop=%0b | Full=%0b Empty=%0b Entries=%0d Push_Fail=%0b", 
+                $display("[%0t] Activity: Push=%0b Pop=%0b | Full=%0b Empty=%0b Head=%0d Tail=%0d Push_Fail=%0b", 
                          $time, wb_in.push, wb_in.pop, 
-                         outputs.full, outputs.empty, dut.validEntries, outputs.push_fail);
+                         outputs.full, outputs.empty, dut.head, dut.tail, outputs.push_fail);
             end
         end
     end
@@ -313,6 +302,12 @@ module tb_STQ();
         #50000;
         $display("\n*** TIMEOUT - Test did not complete in time ***\n");
         $finish;
+    end
+
+    // VPD dump for waveform viewing
+    initial begin
+        $vcdplusfile("tb_STQ.vpd");
+        $vcdpluson;
     end
 
 endmodule
