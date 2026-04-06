@@ -78,7 +78,7 @@ module Fetch (
         outs_o.exp_pipe_clear = exp_set_logic_outs.exp_pipe_clear | exp_set_logic_outs.int_pipe_clear;
         outs_o.fetch_2_icache.icache_en =  en_icache;
         outs_o.fetch_2_icache.p_addr = tlb_outs.physical_addr;
-        outs_o.fetch_2_icache.v_spc_addr_i = seg_xlation_out;
+        outs_o.fetch_2_icache.v_addr_i = seg_xlation_out;
         outs_o.fetch_2_icache.num_valid_IDM_slots = idm_info_i.valid_slots;
     end
 

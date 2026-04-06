@@ -35,7 +35,7 @@ module ICache (
     assign controller_fsmState = controller_fsmState_bits;
     fsm_outputs_t fsmOuts;
 
-    ICache_swap_buf_t icache_swapbuf;
+    ICache_swap_buf_t icache_swapbuf, i_vcache_swapBuf;
 
     byte_t icache_dataLines[CACHE_LINES_SIZE_B];
     logic [ICACHE_TAG_WIDTH - 1 : 0] icache_tag;
@@ -160,7 +160,7 @@ module ICache (
         || (icache_tag != inFromCore_i.v_addr_i[ICACHE_TAG_UB : ICACHE_TAG_LB]));
 
     assign useSaved_v_Addr = fsmOuts.busy;
-    assign curr_v_addr_to_use = useSaved_v_Addr ? saved_vAddr : inFromCore_i.v_spc_addr_i;
+    assign curr_v_addr_to_use = useSaved_v_Addr ? saved_vAddr : inFromCore_i.v_addr_i;
 
     always_ff @(posedge clk) begin
         if (!rst) begin

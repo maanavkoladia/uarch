@@ -7,7 +7,7 @@
 
     "numDataStore_CellLayers": "2",
     "numDataStoreCells": "16",
-    "dataStoreCellPath" : "tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[<cell layer>].g_memCells[<cellNum].dataStore_memCell",
+    "dataStoreCellPath" : "tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[<cell layer>].g_memCells[<cellNum].dataStore_memCell.mem",
     "startUpDelay" : "30",
 
 

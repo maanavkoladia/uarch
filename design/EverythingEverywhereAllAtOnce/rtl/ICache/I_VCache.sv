@@ -42,13 +42,13 @@ module I_VCache (
     datastore_t dataStore;
     ICache_swap_buf_t I_VC_swapBuf;
 
-    v_addr_icache_fields_t ic_swapBuf_v_addr_fields;
+    v_addr_ivcache_fields_t ic_swapBuf_v_addr_fields;
     assign ic_swapBuf_v_addr_fields = '{
             tag : IC_SwapBuf_i.lineAddr[I_VCACHE_TAG_UB : I_VCACHE_TAG_LB],
             offset : IC_SwapBuf_i.lineAddr[I_VCACHE_OFFSET_UB : I_VCACHE_OFFSET_LB]
         };
 
-    v_addr_icache_fields_t v_addr_i_fields;
+    v_addr_ivcache_fields_t v_addr_i_fields;
     assign v_addr_i_fields = '{
             tag : v_addr_i[I_VCACHE_TAG_UB : I_VCACHE_TAG_LB],
             offset : v_addr_i[ICACHE_OFFSET_UB : ICACHE_OFFSET_LB]
