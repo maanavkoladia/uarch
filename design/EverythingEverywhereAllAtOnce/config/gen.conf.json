@@ -1,7 +1,7 @@
 {
     "script path" : { 
         "Combinational SOP GEN": "scripts/RTL_Generation/genCombinational_SOP.py",
-        "FSM SOP GEN" : "scripts/RTL_Generation/genFSM_SOP.py",
+        "FSM SOP GEN" : "scripts/RTL_Generation/remoteAttempt/genFSM_SOP_Harish.py",
         "Combinational LUT GEN" : "scripts/RTL_Generation/genCombinational_ROM.py",
         "FSM LUT GEN" : "scripts/RTL_Generation/genFSM_LUT.py"
     },
@@ -83,8 +83,8 @@
         "CONTROL_STORE": {
             "csv": "rtl/core/Decode/cs_roms/cs_parsed.csv",
             "outputFilePath": "rtl/core/Decode/control_store_genned.sv",
-            "run Combinational LUT GEN": "true",
-            "run Combinational SOP GEN": "false"
+            "run Combinational LUT GEN": "false",
+            "run Combinational SOP GEN": "true"
         },
 
         "RR_valid_logic" : {

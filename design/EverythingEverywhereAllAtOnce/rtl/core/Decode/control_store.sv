@@ -79,18 +79,18 @@ module control_store (
     // Module instantiation
     // =====================
 
-    control_store_genned control_store (
+    cs_parsed control_store (
         // Input bits
-        .in_9_i(in_9_i),
-        .in_8_i(in_8_i),
-        .in_7_i(in_7_i),
-        .in_6_i(in_6_i),
-        .in_5_i(in_5_i),
-        .in_4_i(in_4_i),
-        .in_3_i(in_3_i),
-        .in_2_i(in_2_i),
-        .in_1_i(in_1_i),
-        .in_0_i(in_0_i),
+        .in_9_i(input_bus[9]),
+        .in_8_i(input_bus[8]),
+        .in_7_i(input_bus[7]),
+        .in_6_i(input_bus[6]),
+        .in_5_i(input_bus[5]),
+        .in_4_i(input_bus[4]),
+        .in_3_i(input_bus[3]),
+        .in_2_i(input_bus[2]),
+        .in_1_i(input_bus[1]),
+        .in_0_i(input_bus[0]),
 
         // General Control
         .REP_o(REP_o),

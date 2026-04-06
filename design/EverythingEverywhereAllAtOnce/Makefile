@@ -1,4 +1,4 @@
-PYTHON = python3
+PYTHON = python3.11
 LOG_FILE = gen.log
 
 .PHONY: clean all gen_dry gen
@@ -10,7 +10,7 @@ gen_dry:
 	$(PYTHON) ./scripts/RTL_Generation/generateStructural.py --dry-run ./config/gen.conf.json | tee $(LOG_FILE)
 
 gen:
-	$(PYTHON) ./scripts/RTL_Generation/generateStructural.py ./config/gen.conf.json | tee $(LOG_FILE)
+	$(PYTHON) ./scripts/RTL_Generation/remoteAttempt/generateStructural_Harish.py ./config/gen.conf.json | tee $(LOG_FILE)
 
 clean:
 	@echo "Not yet written"
