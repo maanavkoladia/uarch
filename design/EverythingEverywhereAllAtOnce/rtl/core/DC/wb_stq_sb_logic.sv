@@ -3,45 +3,45 @@ import common_pkg::*;
 
 module wb_stq_sb_logic(
     input bool valid,
-    input p_address_t st_paddr_0,
-    input p_address_t st_paddr_1,
-    input bool ST_XCL,
-    input bool ST_OP,
+    input p_address_t ld_paddr_0,
+    input p_address_t ld_paddr_1,
+    input bool LD_OP,
+    input bool LD_XCL,
     input st_q_2_dep_check_outputs_t stq_info,
     output bool stall
     //probably need to send MIO queue back once I make it
 );
 
 
-    logic [$clog2(NUM_WB_ST_QS)-1:0] st0_bank_num;
-    logic [$clog2(NUM_WB_ST_QS)-1:0] st1_bank_num;
+    logic [$clog2(NUM_WB_ST_QS)-1:0] ld0_bank_num;
+    logic [$clog2(NUM_WB_ST_QS)-1:0] ld1_bank_num;
     
-    //[5:4] --> bank number of each store address 
-    assign st0_bank_num = st_paddr_0[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];
-    assign st1_bank_num = st_paddr_1[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];
+    //[5:4] --> bank number of each load address 
+    assign ld0_bank_num = ld_paddr_0[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];
+    assign ld1_bank_num = ld_paddr_1[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];
 
-    bool st0_bank_hit;
-    bool st1_bank_hit;
+    bool ld0_bank_hit;
+    bool ld1_bank_hit;
 
     bool valid_dep0;
     bool valid_dep1;
 
     // Check each bank's store queue for address matches
     always_comb begin    
-    st0_bank_hit = 0;
-    st1_bank_hit = 0;
+        ld0_bank_hit = 0;
+        ld1_bank_hit = 0;
     // Check all entries in each bank's queue
         for(int i = 0; i < ST_Q_DEPTH; i++) begin
-            st0_bank_hit |= ((stq_info.entries[st0_bank_num*ST_Q_DEPTH + i].address == st_paddr_0)
-                                        & stq_info.entries[st0_bank_num*ST_Q_DEPTH + i].valid);
+            ld0_bank_hit |= ((stq_info.entries[ld0_bank_num*ST_Q_DEPTH + i].address == ld_paddr_0)
+                                        & stq_info.entries[ld0_bank_num*ST_Q_DEPTH + i].valid);
             
-            st1_bank_hit |= ((stq_info.entries[st1_bank_num*ST_Q_DEPTH + i].address == st_paddr_1)
-                                        & stq_info.entries[st1_bank_num*ST_Q_DEPTH + i].valid);
+            ld1_bank_hit |= ((stq_info.entries[ld1_bank_num*ST_Q_DEPTH + i].address == ld_paddr_1)
+                                        & stq_info.entries[ld1_bank_num*ST_Q_DEPTH + i].valid);
         end
     end
 
-    assign valid_dep0 = st0_bank_hit & ST_OP;
-    assign valid_dep1 = st1_bank_hit & ST_OP & ST_XCL;
+    assign valid_dep0 = ld0_bank_hit & LD_OP;
+    assign valid_dep1 = ld1_bank_hit & LD_OP & LD_XCL;
 
     assign stall = valid_dep0 | valid_dep1;
 

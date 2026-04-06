@@ -1245,12 +1245,12 @@ assign alu_inputB_sel_2_o = 1'b0;
 // alu_inputB_sel_1_o = 0  (no ON-set minterms)
 assign alu_inputB_sel_1_o = 1'b0;
 
-// alu_inputB_sel_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_2_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i)
+// alu_inputB_sel_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_2_i)
 wire alu_inputB_sel_0_o_t0;
 wire alu_inputB_sel_0_o_t1;
 
-and7$ alu_inputB_sel_0_o_and0 (alu_inputB_sel_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i);
-and7$ alu_inputB_sel_0_o_and1 (alu_inputB_sel_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv);
+and7$ alu_inputB_sel_0_o_and0 (alu_inputB_sel_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv);
+and7$ alu_inputB_sel_0_o_and1 (alu_inputB_sel_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i);
 or2$  alu_inputB_sel_0_o_or  (alu_inputB_sel_0_o, alu_inputB_sel_0_o_t0, alu_inputB_sel_0_o_t1);
 
 // branch_target_sel_4_o = 0  (no ON-set minterms)
@@ -1280,13 +1280,13 @@ and9$ OP_TYPE_2_o_and (OP_TYPE_2_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_i
 // OP_TYPE_1_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i & in_1_i)
 and9$ OP_TYPE_1_o_and (OP_TYPE_1_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i);
 
-// OP_TYPE_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_1_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i)
+// OP_TYPE_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_1_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i)
 wire OP_TYPE_0_o_t0;
 wire OP_TYPE_0_o_t1;
 wire OP_TYPE_0_o_t2;
 
-and7$ OP_TYPE_0_o_and0 (OP_TYPE_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_1_i);
-and7$ OP_TYPE_0_o_and1 (OP_TYPE_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv);
+and7$ OP_TYPE_0_o_and0 (OP_TYPE_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv);
+and7$ OP_TYPE_0_o_and1 (OP_TYPE_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_1_i);
 and7$ OP_TYPE_0_o_and2 (OP_TYPE_0_o_t2, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv);
 or3$  OP_TYPE_0_o_or  (OP_TYPE_0_o, OP_TYPE_0_o_t0, OP_TYPE_0_o_t1, OP_TYPE_0_o_t2);
 

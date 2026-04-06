@@ -34,6 +34,7 @@ module DC (
     bool stq_stall;
     bool dep_stall;
     bool arb_stall;
+    bool dc_stall;
 
     
     bool ld_addr_0_V;
@@ -57,17 +58,18 @@ module DC (
 
     assign arb_stall = ((req_rejected_mio & latches_i.MIO) 
                             | (req_rejected_0 & latches_i.cs.LD_OP)
-                            | (req_rejected_1 & latches_i.cs.ST_OP)
+                            | (req_rejected_1 & latches_i.cs.LD_OP & latches_i.LD_XCL)
                         ) & latches_i.valid;
 
+    assign dc_stall = dep_stall | arb_stall;
 
 
-    // Check for dependencies on in-flight stores
+    // Check for load-store dependencies: DC's LOAD addresses vs in-flight STORE addresses
     in_flight_sb_logic in_flight_dep_check (
-        .st_paddr_0(latches_i.ST_PADDR_0),
-        .st_paddr_1(latches_i.ST_PADDR_1),
-        .ST_XCL(latches_i.ST_XCL),
-        .ST_OP(dc_ST_OP),
+        .ld_paddr_0(latches_i.LD_PADDR_0),
+        .ld_paddr_1(latches_i.LD_PADDR_1),
+        .LD_XCL(latches_i.LD_XCL),
+        .LD_OP(latches_i.cs.LD_OP),
         .valid(latches_i.valid),
 
         .mem_st_paddr0(mem_outs_i.ST_PADDR_0),
@@ -94,10 +96,10 @@ module DC (
     // Check for dependencies in store queues
     wb_stq_sb_logic stq_dep_check (
         .valid(latches_i.valid),
-        .st_paddr_0(latches_i.ST_PADDR_0),
-        .st_paddr_1(latches_i.ST_PADDR_1),
-        .ST_XCL(latches_i.ST_XCL),
-        .ST_OP(dc_ST_OP),
+        .ld_paddr_0(latches_i.LD_PADDR_0),
+        .ld_paddr_1(latches_i.LD_PADDR_1),
+        .LD_OP(latches_i.cs.LD_OP),
+        .LD_XCL(latches_i.LD_XCL),
         .stq_info(wb_outs_i.dep_check),
         .stall(stq_stall)
     );
@@ -108,9 +110,9 @@ module DC (
         .LD_OP(latches_i.cs.LD_OP),
         .XCL(latches_i.LD_XCL),
         .dep_stall(dep_stall),
+        .MIO(latches_i.MIO),
         .ld_addr0(latches_i.LD_PADDR_0),
         .ld_addr1(latches_i.LD_PADDR_1),
-
         .ld_addr_0_V(ld_addr_0_V),
         .ld_addr_1_V(ld_addr_1_V),
         .ld_addr_0(ld_addr_0),
@@ -118,21 +120,23 @@ module DC (
     );
 
 
+
     assign dc_outs_o = '{
-        valid:       latches_i.valid,
-        stall:       dep_stall | arb_stall,
-        ld_addr_0_V: ld_addr_0_V,
-        ld_addr_0:   ld_addr_0,
-        ld_addr_1_V: ld_addr_1_V,
-        ld_addr_1:   ld_addr_1,
-        ld_addr_MIO_V : 0,
-        ld_addr_MIO : 0,
-        stq_info_mio : '{default:'0}
+        valid:          latches_i.valid,
+        stall:          dc_stall,
+        ld_addr_0_V:    ld_addr_0_V,
+        ld_addr_0:      ld_addr_0,
+        ld_addr_1_V:    ld_addr_1_V,
+        ld_addr_1:      ld_addr_1,
+        ld_addr_MIO_V : latches_i.MIO & latches_i.cs.LD_OP & ~dep_stall,
+        ld_addr_MIO :   ld_addr_0
     };
+
+    //need to add valid logic once this is gened 
 
     
     assign mem_latches_next_o = '{
-        valid:      latches_i.valid & ~dep_stall,  // FIXME: Also need to handle br flush from exe
+        valid:      latches_i.valid & ~dep_stall,  // FIXME: Also need to handle br flush from exe 
         cs:         latches_i.mem_cs,
         exe_cs:     latches_i.exe_cs,
         wb_cs:      latches_i.wb_cs,

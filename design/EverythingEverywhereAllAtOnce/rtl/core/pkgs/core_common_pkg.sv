@@ -85,7 +85,6 @@ package core_common_pkg;
         //mio stuf
         bool ld_addr_MIO_V;
         p_address_t ld_addr_MIO;
-        st_q_2_dcache_t stq_info_mio;
 
     } dc_outputs_t;
 
