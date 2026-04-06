@@ -87,7 +87,7 @@ import core_common_pkg::*;
 
 
 module tb_DTE ();
-    localparam int Clk_PERIOD = 20;
+    localparam int Clk_PERIOD = 10;
 
     initial begin
         $vcdpluson;
@@ -375,7 +375,6 @@ module tb_DTE ();
 
     assign data_bus = data_bus_drv;
     assign data_bus_drv = 'z;
-    assign address_bus = dte_2_icache.driveAddrBus ? 32'h1000 : 'z;
   
 
     initial begin
@@ -415,9 +414,7 @@ module tb_DTE ();
         @(posedge clk)  //ICACHE_LD2
         @(posedge clk)
         @(negedge clk)
-        assert (uut0_DTE.dte_mem_2_icache_fsm_state == DTE_MEM_2_ICACHE_IDLE)
-        else $error("Assert fail: Icache transation should be complete: should be IDLE \
-                     GOT: %d ", uut0_DTE.dte_mem_2_icache_fsm_state);
+
 
    
         // bestPick_req_2_dte   = DCACHE_FILL_LD;

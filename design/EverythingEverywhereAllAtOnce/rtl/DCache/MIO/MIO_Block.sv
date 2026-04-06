@@ -35,8 +35,10 @@ module MIO_Block (
     //0x0050 DDR5: ld temperature value
 
     block_req_mio_t block_req;
-    bool block_idle = !block_req.oe && !block_req.we;
-    bool readyForNewReq = (block_req.we && reqServed_FromDTE_i) || (block_req.oe && reqServed_FromDTE_i && !memStalling_FromCore) || block_idle;
+    bool block_idle;
+    assign block_idle = !block_req.oe && !block_req.we;
+    bool readyForNewReq;
+    assign readyForNewReq = (block_req.we && reqServed_FromDTE_i) || (block_req.oe && reqServed_FromDTE_i && !memStalling_FromCore) || block_idle;
 
     //arb
     always_ff @(posedge clk) begin
@@ -97,7 +99,9 @@ module MIO_Block (
     //wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake = block_req.p_addr;
     assign address_bus = PermissionToDriveAddrBus ? block_req.p_addr : 'z;
 
-    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] data_bus_fake = {
+    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] data_bus_fake;
+    
+    assign data_bus_fake = {
         block_req.st_q_data[3],
         block_req.st_q_data[2],
         block_req.st_q_data[1],

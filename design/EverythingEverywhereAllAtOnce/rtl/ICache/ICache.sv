@@ -43,7 +43,7 @@ module ICache (
 
     logic icache_hit, icache_miss;
 
-    logic i_vcache_hit, i_vcache_miss, i_vcache_busy, i_vcache_swapBuf_V_Clr;
+    logic i_vcache_hit, i_vcache_miss, i_vcache_swapBuf_V_Clr;
     byte_t i_vcache_dataLines[CACHE_LINES_SIZE_B];
 
 
@@ -191,7 +191,8 @@ module ICache (
         end
     end
 
-    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus_drv = saved_pAddr;
+    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus_drv;
+    assign addrBus_drv = saved_pAddr;
     assign addrBus = inFromDte_i.driveAddrBus ? addrBus_drv : 'z;
 
 endmodule

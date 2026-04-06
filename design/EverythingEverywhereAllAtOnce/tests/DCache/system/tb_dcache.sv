@@ -26,8 +26,10 @@ module tb_dcache ();
     p_address_t addrForBus;
     bool driveAddrBus;
 
-    logic [31 : 0] dataForBus;
-    bool driveDataBus;
+    icache_2_scheduler_t icache_2_sch;
+    dcache_2_scheduler_t dcache_2_sch;
+    mem_2_scheduler_t mem_2_sch;
+    dma_controller_2_scheduler_t dma_2_sch;
 
     core_2_dcache_t core_2_dcache;
     dcache_2_core_t dcache_2_core;
@@ -37,8 +39,6 @@ module tb_dcache ();
     mem_2_dte_t mem_2_dte;
     dte_2_mem_t dte_2_mem;
 
-    req_2_sch_t bestPick_req_2_dte;
-    logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_2_dte;
 
 
     DCache_TOP uut0_dcache (
@@ -47,7 +47,7 @@ module tb_dcache ();
         .inFromCore_i(core_2_dcache),
         .out2Core_o(dcache_2_core),
         .inFromDTE_i(dte_2_dcache),
-        .out2Sch_o(),
+        .out2Sch_o(dcache_2_sch),
         .dataBus(dataBus),
         .address_bus(addrBus)
     );
@@ -59,42 +59,56 @@ module tb_dcache ();
         .data_bus(dataBus),
         .inFromDte(dte_2_mem),
         .out2Dte(mem_2_dte),
-        .out2Sch()
+        .out2Sch(mem_2_sch)
     );
 
-    DTE uut2_DTE (
+ 
+
+    BusArbitration busArb(
         .clk(clk),
         .rst(rst),
-        .bestPick_i(bestPick_req_2_dte),
-        .bestPick_bk_id_i(bestPick_bk_id_2_dte),
+        .iCache_2_Sch_i(icache_2_sch),
         .dte_out_2_icache_o(),
-        .dte_out_2_dcache_o(),
+        .dCache_2_Sch_i(dcache_2_sch),
+        .dte_out_2_dcache_o(dte_2_dcache),
+        .mem_2_Sch_i(mem_2_sch),
         .mem_2_dte_i(mem_2_dte),
         .dte_2_mem_o(dte_2_mem),
+        .dma_2_sch_i(dma_2_sch),
         .dte_2_dma_o(),
         .dte_2_ddr5_o()
     );
 
+
+
     dcache_loader dcache_loader_unit ();
     tb_memGen_InitRitual mem_loader_unit ();
 
-    assign dataBus = driveDataBus ? dataForBus : 'z;
-    assign addrBus = driveAddrBus ? addrForBus : 'z;
 
     initial begin
         rst = 0;
-        addrForBus = 0;
-        driveAddrBus = 0;
-        dataForBus = 0;
-        driveDataBus = 0;
+
         core_2_dcache = '{default: '0};
         for (int i = 0; i < NUM_DCACHE_PORTS; i++) core_2_dcache.stq_heads[i].empty = 1;
         core_2_dcache.stq_info_mio.empty = 1;
-        bestPick_req_2_dte = NO_REQ;
-        bestPick_bk_id_2_dte = 0;
+        dma_2_sch = '{default: '0};
+        icache_2_sch = '{default: '0};
+    
         DelayCLKs(10);
 
         rst = 1;
+        DelayCLKs(5);
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h2000;
+        @(posedge clk)
+        DelayCLKs(20);
+        core_2_dcache.ld_addr_0_V = 0;
+        core_2_dcache.ld_addr_0 = 15'h2000;
+
+
+
+
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time

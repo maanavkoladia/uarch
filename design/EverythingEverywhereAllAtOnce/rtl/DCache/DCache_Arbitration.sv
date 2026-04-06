@@ -68,7 +68,7 @@ module DCache_Arbitration (
                         reqs[i] <= '{
                             oe: 1,
                             we: 0,
-                            p_addr : core_i.ld_addr_0_V,
+                            p_addr : core_i.ld_addr_0,
                             vec: 0,
                             st_q_data : '{default: '0}
                         };
@@ -76,7 +76,7 @@ module DCache_Arbitration (
                         reqs[i] <= '{
                             oe: 1,
                             we: 0,
-                            p_addr : core_i.ld_addr_1_V,
+                            p_addr : core_i.ld_addr_1,
                             vec: 0,
                             st_q_data : '{default: '0}
                         };

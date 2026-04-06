@@ -1,18 +1,18 @@
 # Begin_DVE_Session_Save_Info
 # DVE full session
-# Saved on Fri Apr 3 03:12:23 2026
+# Saved on Mon Apr 6 03:12:22 2026
 # Designs open: 1
 #   V1: vcdplus.vpd
 # Toplevel windows open: 2
 # 	TopLevel.1
 # 	TopLevel.2
 #   Source.1: tb_dcache
-#   Wave.1: 231 signals
-#   Group count = 11
-#   Group evictionBuf_unit signal count = 11
-#   Group Group1 signal count = 4
-#   Group Group2 signal count = 3
-#   Group evictionBuf_unit_1 signal count = 11
+#   Wave.1: 262 signals
+#   Group count = 15
+#   Group uut1_mem signal count = 13
+#   Group uut2_DTE signal count = 0
+#   Group Dcache signal count = 7
+#   Group dcahce_block signal count = 4
 # End_DVE_Session_Save_Info
 
 # DVE version: T-2022.06_Full64
@@ -71,7 +71,7 @@ if {![gui_exist_window -window TopLevel.1]} {
 } else { 
     set TopLevel.1 TopLevel.1
 }
-gui_show_window -window ${TopLevel.1} -show_state normal -rect {{1545 32} {3062 806}}
+gui_show_window -window ${TopLevel.1} -show_state maximized -rect {{0 887} {1535 1679}}
 
 # ToolBar settings
 gui_set_toolbar_attributes -toolbar {TimeOperations} -dock_state top
@@ -112,23 +112,23 @@ gui_hide_toolbar -toolbar {Testbench}
 # End ToolBar settings
 
 # Docked window settings
-set HSPane.1 [gui_create_window -type HSPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 447]
+set HSPane.1 [gui_create_window -type HSPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 445]
 catch { set Hier.1 [gui_share_window -id ${HSPane.1} -type Hier] }
-gui_set_window_pref_key -window ${HSPane.1} -key dock_width -value_type integer -value 447
+gui_set_window_pref_key -window ${HSPane.1} -key dock_width -value_type integer -value 445
 gui_set_window_pref_key -window ${HSPane.1} -key dock_height -value_type integer -value -1
 gui_set_window_pref_key -window ${HSPane.1} -key dock_offset -value_type integer -value 0
-gui_update_layout -id ${HSPane.1} {{left 0} {top 0} {width 446} {height 501} {dock_state left} {dock_on_new_line true} {child_hier_colhier 335} {child_hier_coltype 107} {child_hier_colpd 0} {child_hier_col1 0} {child_hier_col2 1} {child_hier_col3 -1}}
-set DLPane.1 [gui_create_window -type DLPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 340]
+gui_update_layout -id ${HSPane.1} {{left 0} {top 0} {width 444} {height 521} {dock_state left} {dock_on_new_line true} {child_hier_colhier 335} {child_hier_coltype 107} {child_hier_colpd 0} {child_hier_col1 0} {child_hier_col2 1} {child_hier_col3 -1}}
+set DLPane.1 [gui_create_window -type DLPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 338]
 catch { set Data.1 [gui_share_window -id ${DLPane.1} -type Data] }
-gui_set_window_pref_key -window ${DLPane.1} -key dock_width -value_type integer -value 340
-gui_set_window_pref_key -window ${DLPane.1} -key dock_height -value_type integer -value 549
+gui_set_window_pref_key -window ${DLPane.1} -key dock_width -value_type integer -value 338
+gui_set_window_pref_key -window ${DLPane.1} -key dock_height -value_type integer -value 520
 gui_set_window_pref_key -window ${DLPane.1} -key dock_offset -value_type integer -value 0
-gui_update_layout -id ${DLPane.1} {{left 0} {top 0} {width 339} {height 501} {dock_state left} {dock_on_new_line true} {child_data_colvariable 352} {child_data_colvalue 161} {child_data_coltype 159} {child_data_col1 0} {child_data_col2 1} {child_data_col3 2}}
-set Console.1 [gui_create_window -type Console -parent ${TopLevel.1} -dock_state bottom -dock_on_new_line true -dock_extent 175]
-gui_set_window_pref_key -window ${Console.1} -key dock_width -value_type integer -value 1279
-gui_set_window_pref_key -window ${Console.1} -key dock_height -value_type integer -value 175
+gui_update_layout -id ${DLPane.1} {{left 0} {top 0} {width 337} {height 521} {dock_state left} {dock_on_new_line true} {child_data_colvariable 352} {child_data_colvalue 161} {child_data_coltype 159} {child_data_col1 0} {child_data_col2 1} {child_data_col3 2}}
+set Console.1 [gui_create_window -type Console -parent ${TopLevel.1} -dock_state bottom -dock_on_new_line true -dock_extent 173]
+gui_set_window_pref_key -window ${Console.1} -key dock_width -value_type integer -value 1476
+gui_set_window_pref_key -window ${Console.1} -key dock_height -value_type integer -value 173
 gui_set_window_pref_key -window ${Console.1} -key dock_offset -value_type integer -value 0
-gui_update_layout -id ${Console.1} {{left 0} {top 0} {width 1517} {height 174} {dock_state bottom} {dock_on_new_line true}}
+gui_update_layout -id ${Console.1} {{left 0} {top 0} {width 1535} {height 172} {dock_state bottom} {dock_on_new_line true}}
 #### Start - Readjusting docked view's offset / size
 set dockAreaList { top left right bottom }
 foreach dockArea $dockAreaList {
@@ -165,7 +165,7 @@ if {![gui_exist_window -window TopLevel.2]} {
 } else { 
     set TopLevel.2 TopLevel.2
 }
-gui_show_window -window ${TopLevel.2} -show_state maximized -rect {{0 23} {1279 671}}
+gui_show_window -window ${TopLevel.2} -show_state normal -rect {{8 31} {1286 678}}
 
 # ToolBar settings
 gui_set_toolbar_attributes -toolbar {TimeOperations} -dock_state top
@@ -213,7 +213,7 @@ gui_sync_global -id ${TopLevel.2} -option true
 # MDI window settings
 set Wave.1 [gui_create_window -type {Wave}  -parent ${TopLevel.2}]
 gui_show_window -window ${Wave.1} -show_state maximized
-gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 370} {child_wave_right 904} {child_wave_colname 288} {child_wave_colvalue 78} {child_wave_col1 0} {child_wave_col2 1}}
+gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 511} {child_wave_right 762} {child_wave_colname 324} {child_wave_colvalue 183} {child_wave_col1 0} {child_wave_col2 1}}
 
 # End MDI window settings
 
@@ -252,103 +252,148 @@ gui_set_time_units 1ps
 # Global: Signal Compare
 
 # Global: Signal Groups
-gui_load_child_values {tb_dcache.uut0_dcache.vcache_unit}
+gui_load_child_values {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit}
+gui_load_child_values {tb_dcache.uut0_dcache.mio_block_unit}
+gui_load_child_values {tb_dcache.uut0_dcache.g_dcache_block[1].block}
 gui_load_child_values {tb_dcache.uut0_dcache}
-gui_load_child_values {tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit}
-gui_load_child_values {tb_dcache.uut0_dcache.dcache_bank_unit}
-gui_load_child_values {tb_dcache.uut0_dcache.evictionBuf_unit}
+gui_load_child_values {tb_dcache.uut0_dcache.g_dcache_block[3].block}
+gui_load_child_values {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit}
+gui_load_child_values {tb_dcache.uut0_dcache.g_dcache_block[0].block}
+gui_load_child_values {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit}
+gui_load_child_values {tb_dcache.uut1_mem}
+gui_load_child_values {tb_dcache.uut0_dcache.g_dcache_block[2].block}
+gui_load_child_values {tb_dcache.uut0_dcache.dcache_arbitration}
 
 
-set _session_group_133 evictionBuf_unit
-gui_sg_create "$_session_group_133"
-set evictionBuf_unit "$_session_group_133"
+set _session_group_71 uut1_mem
+gui_sg_create "$_session_group_71"
+set uut1_mem "$_session_group_71"
 
-gui_sg_addsignal -group "$_session_group_133" { {tb_dcache.uut0_dcache.evictionBuf_unit.$unit} tb_dcache.uut0_dcache.evictionBuf_unit.clk_i tb_dcache.uut0_dcache.evictionBuf_unit.rst_i tb_dcache.uut0_dcache.evictionBuf_unit.eb_clr_i tb_dcache.uut0_dcache.evictionBuf_unit.set_commiting tb_dcache.uut0_dcache.evictionBuf_unit.validReq tb_dcache.uut0_dcache.evictionBuf_unit.hit tb_dcache.uut0_dcache.evictionBuf_unit.blockReq_i tb_dcache.uut0_dcache.evictionBuf_unit.vcache_outputs_i tb_dcache.uut0_dcache.evictionBuf_unit.outputs_o tb_dcache.uut0_dcache.evictionBuf_unit.eb }
+gui_sg_addsignal -group "$_session_group_71" { {tb_dcache.uut1_mem.$unit} tb_dcache.uut1_mem.clk tb_dcache.uut1_mem.rst tb_dcache.uut1_mem.address_bus tb_dcache.uut1_mem.data_bus tb_dcache.uut1_mem.mem_bus tb_dcache.uut1_mem.drive_Data_Bus tb_dcache.uut1_mem.dataToDrive tb_dcache.uut1_mem.inFromDte tb_dcache.uut1_mem.out2Dte tb_dcache.uut1_mem.out2Sch tb_dcache.uut1_mem.controller_2_bank_Cmds tb_dcache.uut1_mem.bank_out_2_controller }
 
-set _session_group_134 Group1
-gui_sg_create "$_session_group_134"
-set Group1 "$_session_group_134"
+set _session_group_72 uut2_DTE
+gui_sg_create "$_session_group_72"
+set uut2_DTE "$_session_group_72"
 
-gui_sg_addsignal -group "$_session_group_134" { }
 
-set _session_group_135 $_session_group_134|
-append _session_group_135 DCache_Bank_TagStore_unit
-gui_sg_create "$_session_group_135"
-set Group1|DCache_Bank_TagStore_unit "$_session_group_135"
+set _session_group_73 Dcache
+gui_sg_create "$_session_group_73"
+set Dcache "$_session_group_73"
 
-gui_sg_addsignal -group "$_session_group_135" { {tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.$unit} tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.clk tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.rst tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.p_addr_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.oe_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.we_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.ld_From_V_Swap_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.V_Cache_SwapBuf_DirtyBit tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.fill3_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.write2_Dwap_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.bankControllerBusy_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.writeSuccess tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tagOut_o tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.currLine_V_o tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.currLine_Dirty_o tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.ADDRESS_2_TagStore tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.WR_2_TagStore_clk tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.WR_2_TagStore_actual tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.DIN_2_TagStore tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.OE_2_TagStore tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.DOUT_2_TagStore tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.DOUT_2_TagStore_extended tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.tagMetaStore tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_TagStore_unit.p_addr_fields }
+gui_sg_addsignal -group "$_session_group_73" { }
 
-gui_sg_move "$_session_group_135" -after "$_session_group_134" -pos 1 
+set _session_group_74 $_session_group_73|
+append _session_group_74 {g_dcache_block[0].block}
+gui_sg_create "$_session_group_74"
+set {Dcache|g_dcache_block[0].block} "$_session_group_74"
 
-set _session_group_136 $_session_group_134|
-append _session_group_136 dcache_bank_unit
-gui_sg_create "$_session_group_136"
-set Group1|dcache_bank_unit "$_session_group_136"
+gui_sg_addsignal -group "$_session_group_74" { {tb_dcache.uut0_dcache.g_dcache_block[0].block.$unit} {tb_dcache.uut0_dcache.g_dcache_block[0].block.clk_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.rst_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.mem_Valid_FromDte_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_clr_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_setCommiting_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.permissionToDriveDataBus_evictionBuf} {tb_dcache.uut0_dcache.g_dcache_block[0].block.permissionToDriveAddrBus_Ld} {tb_dcache.uut0_dcache.g_dcache_block[0].block.permissionToDriveAddrBus_eb} {tb_dcache.uut0_dcache.g_dcache_block[0].block.st_override_for_sch_req} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dataBus} {tb_dcache.uut0_dcache.g_dcache_block[0].block.address_bus} {tb_dcache.uut0_dcache.g_dcache_block[0].block.block_busy} {tb_dcache.uut0_dcache.g_dcache_block[0].block.makeBlockReq} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_blockingVCache} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_V} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_curr_commiting} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_blocking_Bank} {tb_dcache.uut0_dcache.g_dcache_block[0].block.address_bus_fake} {tb_dcache.uut0_dcache.g_dcache_block[0].block.startingOffset} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dataBus_fake} {tb_dcache.uut0_dcache.g_dcache_block[0].block.block_req_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.outputs_o} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_outputs} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_outputs} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_outputs} }
+gui_set_radix -radix {decimal} -signals {{V1:tb_dcache.uut0_dcache.g_dcache_block[0].block.startingOffset}}
+gui_set_radix -radix {twosComplement} -signals {{V1:tb_dcache.uut0_dcache.g_dcache_block[0].block.startingOffset}}
 
-gui_sg_addsignal -group "$_session_group_136" { {tb_dcache.uut0_dcache.dcache_bank_unit.$unit} tb_dcache.uut0_dcache.dcache_bank_unit.clk tb_dcache.uut0_dcache.dcache_bank_unit.rst tb_dcache.uut0_dcache.dcache_bank_unit.mem_Valid_FromDte_i tb_dcache.uut0_dcache.dcache_bank_unit.block_busy_i tb_dcache.uut0_dcache.dcache_bank_unit.dataBus tb_dcache.uut0_dcache.dcache_bank_unit.dcache_bank_State tb_dcache.uut0_dcache.dcache_bank_unit.dcache_bank_State_bits tb_dcache.uut0_dcache.dcache_bank_unit.saveReq tb_dcache.uut0_dcache.dcache_bank_unit.useSavedReq tb_dcache.uut0_dcache.dcache_bank_unit.hit tb_dcache.uut0_dcache.dcache_bank_unit.miss tb_dcache.uut0_dcache.dcache_bank_unit.currTag tb_dcache.uut0_dcache.dcache_bank_unit.currLineValid tb_dcache.uut0_dcache.dcache_bank_unit.currLineDirty tb_dcache.uut0_dcache.dcache_bank_unit.dataStore_Line tb_dcache.uut0_dcache.dcache_bank_unit.writeSuccess2TagStore tb_dcache.uut0_dcache.dcache_bank_unit.doAccess tb_dcache.uut0_dcache.dcache_bank_unit.V_Cache_i tb_dcache.uut0_dcache.dcache_bank_unit.eb_i tb_dcache.uut0_dcache.dcache_bank_unit.blockReq_i tb_dcache.uut0_dcache.dcache_bank_unit.outputs_o tb_dcache.uut0_dcache.dcache_bank_unit.fsmOuts tb_dcache.uut0_dcache.dcache_bank_unit.dcache_bank_swapBuf tb_dcache.uut0_dcache.dcache_bank_unit.savedReq tb_dcache.uut0_dcache.dcache_bank_unit.reqInUse tb_dcache.uut0_dcache.dcache_bank_unit.blockReq_p_addr_fields }
+gui_sg_move "$_session_group_74" -after "$_session_group_73" -pos 4 
 
-gui_sg_move "$_session_group_136" -after "$_session_group_134" -pos 3 
+set _session_group_75 $_session_group_73|
+append _session_group_75 {g_dcache_block[3].block}
+gui_sg_create "$_session_group_75"
+set {Dcache|g_dcache_block[3].block} "$_session_group_75"
 
-set _session_group_137 $_session_group_134|
-append _session_group_137 uut0_dcache
-gui_sg_create "$_session_group_137"
-set Group1|uut0_dcache "$_session_group_137"
+gui_sg_addsignal -group "$_session_group_75" { {tb_dcache.uut0_dcache.g_dcache_block[3].block.$unit} {tb_dcache.uut0_dcache.g_dcache_block[3].block.clk_i} {tb_dcache.uut0_dcache.g_dcache_block[3].block.rst_i} {tb_dcache.uut0_dcache.g_dcache_block[3].block.mem_Valid_FromDte_i} {tb_dcache.uut0_dcache.g_dcache_block[3].block.evictionBuf_clr_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[3].block.evictionBuf_setCommiting_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[3].block.permissionToDriveDataBus_evictionBuf} {tb_dcache.uut0_dcache.g_dcache_block[3].block.permissionToDriveAddrBus_Ld} {tb_dcache.uut0_dcache.g_dcache_block[3].block.permissionToDriveAddrBus_eb} {tb_dcache.uut0_dcache.g_dcache_block[3].block.st_override_for_sch_req} {tb_dcache.uut0_dcache.g_dcache_block[3].block.dataBus} {tb_dcache.uut0_dcache.g_dcache_block[3].block.address_bus} {tb_dcache.uut0_dcache.g_dcache_block[3].block.block_busy} {tb_dcache.uut0_dcache.g_dcache_block[3].block.makeBlockReq} {tb_dcache.uut0_dcache.g_dcache_block[3].block.eb_blockingVCache} {tb_dcache.uut0_dcache.g_dcache_block[3].block.eb_V} {tb_dcache.uut0_dcache.g_dcache_block[3].block.eb_curr_commiting} {tb_dcache.uut0_dcache.g_dcache_block[3].block.eb_blocking_Bank} {tb_dcache.uut0_dcache.g_dcache_block[3].block.address_bus_fake} {tb_dcache.uut0_dcache.g_dcache_block[3].block.startingOffset} {tb_dcache.uut0_dcache.g_dcache_block[3].block.dataBus_fake} {tb_dcache.uut0_dcache.g_dcache_block[3].block.block_req_i} {tb_dcache.uut0_dcache.g_dcache_block[3].block.outputs_o} {tb_dcache.uut0_dcache.g_dcache_block[3].block.dcache_bank_outputs} {tb_dcache.uut0_dcache.g_dcache_block[3].block.vcache_outputs} {tb_dcache.uut0_dcache.g_dcache_block[3].block.eb_outputs} }
 
-gui_sg_addsignal -group "$_session_group_137" { {tb_dcache.uut0_dcache.$unit} tb_dcache.uut0_dcache.clk_i tb_dcache.uut0_dcache.rst_i tb_dcache.uut0_dcache.mem_Valid_FromDte_i tb_dcache.uut0_dcache.evictionBuf_clr_FromDTE_i tb_dcache.uut0_dcache.evictionBuf_setCommiting_FromDTE_i tb_dcache.uut0_dcache.permissionToDriveDataBus_evictionBuf tb_dcache.uut0_dcache.permissionToDriveAddrBus_Ld tb_dcache.uut0_dcache.permissionToDriveAddrBus_eb tb_dcache.uut0_dcache.st_override_for_sch_req tb_dcache.uut0_dcache.dataBus tb_dcache.uut0_dcache.address_bus tb_dcache.uut0_dcache.block_busy tb_dcache.uut0_dcache.makeBlockReq tb_dcache.uut0_dcache.eb_blockingVCache tb_dcache.uut0_dcache.eb_V tb_dcache.uut0_dcache.eb_curr_commiting tb_dcache.uut0_dcache.eb_blocking_Bank tb_dcache.uut0_dcache.address_bus_fake tb_dcache.uut0_dcache.startingOffset tb_dcache.uut0_dcache.dataBus_fake tb_dcache.uut0_dcache.block_req_i tb_dcache.uut0_dcache.outputs_o tb_dcache.uut0_dcache.dcache_bank_outputs tb_dcache.uut0_dcache.vcache_outputs tb_dcache.uut0_dcache.eb_outputs }
+gui_sg_move "$_session_group_75" -after "$_session_group_73" -pos 2 
 
-set _session_group_138 $_session_group_134|
-append _session_group_138 DCache_Bank_DataStore_unit
-gui_sg_create "$_session_group_138"
-set Group1|DCache_Bank_DataStore_unit "$_session_group_138"
+set _session_group_76 $_session_group_73|
+append _session_group_76 mio_block_unit
+gui_sg_create "$_session_group_76"
+set Dcache|mio_block_unit "$_session_group_76"
 
-gui_sg_addsignal -group "$_session_group_138" { {tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.$unit} tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.rst tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.p_addr_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.oe tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.we tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.ld_From_V_Swap_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.fill0_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.fill1_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.fill2_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.fill3_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.write2_Dwap_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.bankControllerBusy_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.st_q_data tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.st_data_vec tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.VCache_SwapBuf_Line_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.dataBus_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.tagStore_hit_i tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.lineOut_o tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.ADDRESS_2_DataStore tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.DIN_2_DataStore tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.OE_2_DataStore tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.DOUT_DataStore tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.WR_2_DataStore_clk tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.WR_2_DataStore_actual tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.NUM_CELL_IN_DATA_STORE tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.p_addr_fields }
-gui_set_radix -radix {decimal} -signals {V1:tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.NUM_CELL_IN_DATA_STORE}
-gui_set_radix -radix {twosComplement} -signals {V1:tb_dcache.uut0_dcache.dcache_bank_unit.DCache_Bank_DataStore_unit.NUM_CELL_IN_DATA_STORE}
+gui_sg_addsignal -group "$_session_group_76" { {tb_dcache.uut0_dcache.mio_block_unit.$unit} tb_dcache.uut0_dcache.mio_block_unit.clk tb_dcache.uut0_dcache.mio_block_unit.rst tb_dcache.uut0_dcache.mio_block_unit.reqServed_FromDTE_i tb_dcache.uut0_dcache.mio_block_unit.PermissionToDriveAddrBus tb_dcache.uut0_dcache.mio_block_unit.permission2DriveDataBus tb_dcache.uut0_dcache.mio_block_unit.ld_addr_MIO_V tb_dcache.uut0_dcache.mio_block_unit.ld_addr_MIO tb_dcache.uut0_dcache.mio_block_unit.memStalling_FromCore tb_dcache.uut0_dcache.mio_block_unit.address_bus tb_dcache.uut0_dcache.mio_block_unit.dataBus tb_dcache.uut0_dcache.mio_block_unit.block_idle tb_dcache.uut0_dcache.mio_block_unit.readyForNewReq tb_dcache.uut0_dcache.mio_block_unit.data_bus_fake tb_dcache.uut0_dcache.mio_block_unit.WE_ADDR_MASK tb_dcache.uut0_dcache.mio_block_unit.stq_info_mio tb_dcache.uut0_dcache.mio_block_unit.outputs_o tb_dcache.uut0_dcache.mio_block_unit.block_req }
+gui_set_radix -radix {decimal} -signals {V1:tb_dcache.uut0_dcache.mio_block_unit.WE_ADDR_MASK}
+gui_set_radix -radix {twosComplement} -signals {V1:tb_dcache.uut0_dcache.mio_block_unit.WE_ADDR_MASK}
 
-gui_sg_move "$_session_group_138" -after "$_session_group_134" -pos 2 
+gui_sg_move "$_session_group_76" -after "$_session_group_73" -pos 1 
 
-set _session_group_139 Group2
-gui_sg_create "$_session_group_139"
-set Group2 "$_session_group_139"
+set _session_group_77 $_session_group_73|
+append _session_group_77 dcache_arbitration
+gui_sg_create "$_session_group_77"
+set Dcache|dcache_arbitration "$_session_group_77"
 
-gui_sg_addsignal -group "$_session_group_139" { }
+gui_sg_addsignal -group "$_session_group_77" { {tb_dcache.uut0_dcache.dcache_arbitration.$unit} tb_dcache.uut0_dcache.dcache_arbitration.clk_i tb_dcache.uut0_dcache.dcache_arbitration.rst tb_dcache.uut0_dcache.dcache_arbitration.block_hit_i tb_dcache.uut0_dcache.dcache_arbitration.req_rejected_0_o tb_dcache.uut0_dcache.dcache_arbitration.req_rejected_1_o tb_dcache.uut0_dcache.dcache_arbitration.st_override_o tb_dcache.uut0_dcache.dcache_arbitration.block_idleness tb_dcache.uut0_dcache.dcache_arbitration.readyForNewReq tb_dcache.uut0_dcache.dcache_arbitration.ld_req_0_bankNum tb_dcache.uut0_dcache.dcache_arbitration.ld_req_1_bankNum tb_dcache.uut0_dcache.dcache_arbitration.st_override tb_dcache.uut0_dcache.dcache_arbitration.ldReq_2_BankPresent tb_dcache.uut0_dcache.dcache_arbitration.LD_REQ_BANK_UB tb_dcache.uut0_dcache.dcache_arbitration.LD_REQ_BANK_LB tb_dcache.uut0_dcache.dcache_arbitration.LD_REQ_BANK_WIDTH tb_dcache.uut0_dcache.dcache_arbitration.core_i tb_dcache.uut0_dcache.dcache_arbitration.reqs_2_blocks_o tb_dcache.uut0_dcache.dcache_arbitration.reqs }
+gui_set_radix -radix {decimal} -signals {V1:tb_dcache.uut0_dcache.dcache_arbitration.LD_REQ_BANK_UB}
+gui_set_radix -radix {twosComplement} -signals {V1:tb_dcache.uut0_dcache.dcache_arbitration.LD_REQ_BANK_UB}
+gui_set_radix -radix {decimal} -signals {V1:tb_dcache.uut0_dcache.dcache_arbitration.LD_REQ_BANK_LB}
+gui_set_radix -radix {twosComplement} -signals {V1:tb_dcache.uut0_dcache.dcache_arbitration.LD_REQ_BANK_LB}
+gui_set_radix -radix {decimal} -signals {V1:tb_dcache.uut0_dcache.dcache_arbitration.LD_REQ_BANK_WIDTH}
+gui_set_radix -radix {twosComplement} -signals {V1:tb_dcache.uut0_dcache.dcache_arbitration.LD_REQ_BANK_WIDTH}
 
-set _session_group_140 $_session_group_139|
-append _session_group_140 vcache_unit
-gui_sg_create "$_session_group_140"
-set Group2|vcache_unit "$_session_group_140"
+gui_sg_move "$_session_group_77" -after "$_session_group_73" -pos 3 
 
-gui_sg_addsignal -group "$_session_group_140" { {tb_dcache.uut0_dcache.vcache_unit.$unit} tb_dcache.uut0_dcache.vcache_unit.clk tb_dcache.uut0_dcache.vcache_unit.rst tb_dcache.uut0_dcache.vcache_unit.block_busy_i tb_dcache.uut0_dcache.vcache_unit.vcache_fsm_state tb_dcache.uut0_dcache.vcache_unit.vcache_fsm_state_bits tb_dcache.uut0_dcache.vcache_unit.saveReq tb_dcache.uut0_dcache.vcache_unit.useSavedReq tb_dcache.uut0_dcache.vcache_unit.saveIDX tb_dcache.uut0_dcache.vcache_unit.useSavedIDX tb_dcache.uut0_dcache.vcache_unit.currTag tb_dcache.uut0_dcache.vcache_unit.hit tb_dcache.uut0_dcache.vcache_unit.miss tb_dcache.uut0_dcache.vcache_unit.hitIDX tb_dcache.uut0_dcache.vcache_unit.evictionIDX tb_dcache.uut0_dcache.vcache_unit.savedIDX tb_dcache.uut0_dcache.vcache_unit.V_Cache_needs_2_evict tb_dcache.uut0_dcache.vcache_unit.V_Cache_TagStore_CurrLine_Dirty tb_dcache.uut0_dcache.vcache_unit.vcache_dataStore_Line tb_dcache.uut0_dcache.vcache_unit.blockReq_i tb_dcache.uut0_dcache.vcache_unit.eb_outs_i tb_dcache.uut0_dcache.vcache_unit.dcache_outs_i tb_dcache.uut0_dcache.vcache_unit.outputs_o tb_dcache.uut0_dcache.vcache_unit.fsmOuts tb_dcache.uut0_dcache.vcache_unit.savedReq tb_dcache.uut0_dcache.vcache_unit.reqInUse tb_dcache.uut0_dcache.vcache_unit.block_req_p_addr_fields tb_dcache.uut0_dcache.vcache_unit.vcache_swapBuf }
+set _session_group_78 $_session_group_73|
+append _session_group_78 {g_dcache_block[1].block}
+gui_sg_create "$_session_group_78"
+set {Dcache|g_dcache_block[1].block} "$_session_group_78"
 
-gui_sg_move "$_session_group_140" -after "$_session_group_139" -pos 2 
+gui_sg_addsignal -group "$_session_group_78" { {tb_dcache.uut0_dcache.g_dcache_block[1].block.$unit} {tb_dcache.uut0_dcache.g_dcache_block[1].block.clk_i} {tb_dcache.uut0_dcache.g_dcache_block[1].block.rst_i} {tb_dcache.uut0_dcache.g_dcache_block[1].block.mem_Valid_FromDte_i} {tb_dcache.uut0_dcache.g_dcache_block[1].block.evictionBuf_clr_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[1].block.evictionBuf_setCommiting_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[1].block.permissionToDriveDataBus_evictionBuf} {tb_dcache.uut0_dcache.g_dcache_block[1].block.permissionToDriveAddrBus_Ld} {tb_dcache.uut0_dcache.g_dcache_block[1].block.permissionToDriveAddrBus_eb} {tb_dcache.uut0_dcache.g_dcache_block[1].block.st_override_for_sch_req} {tb_dcache.uut0_dcache.g_dcache_block[1].block.dataBus} {tb_dcache.uut0_dcache.g_dcache_block[1].block.address_bus} {tb_dcache.uut0_dcache.g_dcache_block[1].block.block_busy} {tb_dcache.uut0_dcache.g_dcache_block[1].block.makeBlockReq} {tb_dcache.uut0_dcache.g_dcache_block[1].block.eb_blockingVCache} {tb_dcache.uut0_dcache.g_dcache_block[1].block.eb_V} {tb_dcache.uut0_dcache.g_dcache_block[1].block.eb_curr_commiting} {tb_dcache.uut0_dcache.g_dcache_block[1].block.eb_blocking_Bank} {tb_dcache.uut0_dcache.g_dcache_block[1].block.address_bus_fake} {tb_dcache.uut0_dcache.g_dcache_block[1].block.startingOffset} {tb_dcache.uut0_dcache.g_dcache_block[1].block.dataBus_fake} {tb_dcache.uut0_dcache.g_dcache_block[1].block.block_req_i} {tb_dcache.uut0_dcache.g_dcache_block[1].block.outputs_o} {tb_dcache.uut0_dcache.g_dcache_block[1].block.dcache_bank_outputs} {tb_dcache.uut0_dcache.g_dcache_block[1].block.vcache_outputs} {tb_dcache.uut0_dcache.g_dcache_block[1].block.eb_outputs} }
 
-set _session_group_141 $_session_group_139|
-append _session_group_141 vcache_tagstore_unit
-gui_sg_create "$_session_group_141"
-set Group2|vcache_tagstore_unit "$_session_group_141"
+gui_sg_move "$_session_group_78" -after "$_session_group_73" -pos 6 
 
-gui_sg_addsignal -group "$_session_group_141" { {tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.$unit} tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.rst tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.p_addr_i tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.oe_i tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.we_i tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.Read_DSWAP_i tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.D_Cache_SwapBuf_Addr tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.D_Cache_SwapBuf_DirtyBit tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.DCache_Will_Evict_i tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.saveIDX tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.busy_i tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.Write_VSWAP_i tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.Update_LRU tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.use_savedIDX tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.clk tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.tagOut_o tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.tag_out_write_to_vswap_idx tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.tag_out_write_to_eb_idx tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.savedIDX tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.hit_o tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.miss_o tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.hitIDX_o tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.evictionIDX_o tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.savedIDX_o tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.currLine_Dirty_o tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.VC_Will_Need_ToEvict_o tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.clk_phase_45 tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.doAccess tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.hit tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.miss tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.writeSuccess tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.hitIdx tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.hitIdx_onehot tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.savedIDX_oneHot tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.currLRU_IDX tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.DIN_2_TagStore tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.OE_2_TagStore_idx tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.DOUT_of_TagStore_Net tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.currLine_Dirty_idx tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.WR_2_TagStore_clk tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.WR_2_TagStore_actual tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.DIN_2_TagStore_net tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.OE_2_TagStore tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.DOUT_of_TagStore tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.NUM_CELLS_NEEDED tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.CELL_WIDTH_BITS tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.tagMetaStore tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.p_addr_fields tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.DCache_SwapBuf_lineAddr_fields }
-gui_set_radix -radix {decimal} -signals {V1:tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.NUM_CELLS_NEEDED}
-gui_set_radix -radix {twosComplement} -signals {V1:tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.NUM_CELLS_NEEDED}
-gui_set_radix -radix {decimal} -signals {V1:tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.CELL_WIDTH_BITS}
-gui_set_radix -radix {twosComplement} -signals {V1:tb_dcache.uut0_dcache.vcache_unit.vcache_tagstore_unit.CELL_WIDTH_BITS}
+set _session_group_79 $_session_group_73|
+append _session_group_79 {g_dcache_block[2].block}
+gui_sg_create "$_session_group_79"
+set {Dcache|g_dcache_block[2].block} "$_session_group_79"
 
-set _session_group_142 $_session_group_139|
-append _session_group_142 vcache_datastore_unit
-gui_sg_create "$_session_group_142"
-set Group2|vcache_datastore_unit "$_session_group_142"
+gui_sg_addsignal -group "$_session_group_79" { {tb_dcache.uut0_dcache.g_dcache_block[2].block.$unit} {tb_dcache.uut0_dcache.g_dcache_block[2].block.clk_i} {tb_dcache.uut0_dcache.g_dcache_block[2].block.rst_i} {tb_dcache.uut0_dcache.g_dcache_block[2].block.mem_Valid_FromDte_i} {tb_dcache.uut0_dcache.g_dcache_block[2].block.evictionBuf_clr_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[2].block.evictionBuf_setCommiting_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[2].block.permissionToDriveDataBus_evictionBuf} {tb_dcache.uut0_dcache.g_dcache_block[2].block.permissionToDriveAddrBus_Ld} {tb_dcache.uut0_dcache.g_dcache_block[2].block.permissionToDriveAddrBus_eb} {tb_dcache.uut0_dcache.g_dcache_block[2].block.st_override_for_sch_req} {tb_dcache.uut0_dcache.g_dcache_block[2].block.dataBus} {tb_dcache.uut0_dcache.g_dcache_block[2].block.address_bus} {tb_dcache.uut0_dcache.g_dcache_block[2].block.block_busy} {tb_dcache.uut0_dcache.g_dcache_block[2].block.makeBlockReq} {tb_dcache.uut0_dcache.g_dcache_block[2].block.eb_blockingVCache} {tb_dcache.uut0_dcache.g_dcache_block[2].block.eb_V} {tb_dcache.uut0_dcache.g_dcache_block[2].block.eb_curr_commiting} {tb_dcache.uut0_dcache.g_dcache_block[2].block.eb_blocking_Bank} {tb_dcache.uut0_dcache.g_dcache_block[2].block.address_bus_fake} {tb_dcache.uut0_dcache.g_dcache_block[2].block.startingOffset} {tb_dcache.uut0_dcache.g_dcache_block[2].block.dataBus_fake} {tb_dcache.uut0_dcache.g_dcache_block[2].block.block_req_i} {tb_dcache.uut0_dcache.g_dcache_block[2].block.outputs_o} {tb_dcache.uut0_dcache.g_dcache_block[2].block.dcache_bank_outputs} {tb_dcache.uut0_dcache.g_dcache_block[2].block.vcache_outputs} {tb_dcache.uut0_dcache.g_dcache_block[2].block.eb_outputs} }
 
-gui_sg_addsignal -group "$_session_group_142" { {tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.$unit} tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.clk_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.rst_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.p_addr_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.oe_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.we_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.st_q_data_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.st_data_vec_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.DCache_SwapBuf_Line_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.read_D_SWAP_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.Write_VSWAP_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.busy_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.WR_2_EB tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.tagStore_hit_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.useSavedIDX tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.hitIDX_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.evictionIDX_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.savedIDX_i tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.VCache_DataStore_LineOut_o tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.ADDRESS_2_DataStore tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.clk_phase_45 tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.DIN_2_DataStore tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.OE_2_DataStore_clk tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.OE_2_DataStore_delay tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.OE_2_DataStore_actual tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.DOUT_DataStore tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.WR_2_DataStore_clk tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.WR_2_DataStore_actual tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.NUM_CELL_IN_DATA_STORE }
-gui_set_radix -radix {decimal} -signals {V1:tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.NUM_CELL_IN_DATA_STORE}
-gui_set_radix -radix {twosComplement} -signals {V1:tb_dcache.uut0_dcache.vcache_unit.vcache_datastore_unit.NUM_CELL_IN_DATA_STORE}
+gui_sg_move "$_session_group_79" -after "$_session_group_73" -pos 5 
 
-gui_sg_move "$_session_group_142" -after "$_session_group_139" -pos 1 
+set _session_group_80 $_session_group_73|
+append _session_group_80 uut0_dcache
+gui_sg_create "$_session_group_80"
+set Dcache|uut0_dcache "$_session_group_80"
 
-set _session_group_143 evictionBuf_unit_1
-gui_sg_create "$_session_group_143"
-set evictionBuf_unit_1 "$_session_group_143"
+gui_sg_addsignal -group "$_session_group_80" { {tb_dcache.uut0_dcache.$unit} tb_dcache.uut0_dcache.clk tb_dcache.uut0_dcache.rst tb_dcache.uut0_dcache.dataBus tb_dcache.uut0_dcache.address_bus tb_dcache.uut0_dcache.hitVec tb_dcache.uut0_dcache.arb_st_override_Out tb_dcache.uut0_dcache.arb_req_rejected_0_out tb_dcache.uut0_dcache.arb_req_rejected_1_out tb_dcache.uut0_dcache.inFromCore_i tb_dcache.uut0_dcache.out2Core_o tb_dcache.uut0_dcache.inFromDTE_i tb_dcache.uut0_dcache.out2Sch_o tb_dcache.uut0_dcache.blockOutputs tb_dcache.uut0_dcache.req_2_blocks tb_dcache.uut0_dcache.mio_block_outputs }
 
-gui_sg_addsignal -group "$_session_group_143" { tb_dcache.uut0_dcache.evictionBuf_unit.validReq tb_dcache.uut0_dcache.evictionBuf_unit.vcache_outputs_i tb_dcache.uut0_dcache.evictionBuf_unit.set_commiting tb_dcache.uut0_dcache.evictionBuf_unit.eb tb_dcache.uut0_dcache.evictionBuf_unit.rst_i tb_dcache.uut0_dcache.evictionBuf_unit.eb_clr_i tb_dcache.uut0_dcache.evictionBuf_unit.outputs_o tb_dcache.uut0_dcache.evictionBuf_unit.hit tb_dcache.uut0_dcache.evictionBuf_unit.blockReq_i {tb_dcache.uut0_dcache.evictionBuf_unit.$unit} tb_dcache.uut0_dcache.evictionBuf_unit.clk_i }
+set _session_group_81 dcahce_block
+gui_sg_create "$_session_group_81"
+set dcahce_block "$_session_group_81"
+
+gui_sg_addsignal -group "$_session_group_81" { }
+
+set _session_group_82 $_session_group_81|
+append _session_group_82 evictionBuf_unit
+gui_sg_create "$_session_group_82"
+set dcahce_block|evictionBuf_unit "$_session_group_82"
+
+gui_sg_addsignal -group "$_session_group_82" { {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.$unit} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.clk_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.rst_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.eb_clr_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.set_commiting} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.validReq} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.hit} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.blockReq_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.vcache_outputs_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.outputs_o} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_unit.eb} }
+
+gui_sg_move "$_session_group_82" -after "$_session_group_81" -pos 2 
+
+set _session_group_83 $_session_group_81|
+append _session_group_83 dcache_bank_unit
+gui_sg_create "$_session_group_83"
+set dcahce_block|dcache_bank_unit "$_session_group_83"
+
+gui_sg_addsignal -group "$_session_group_83" { {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.$unit} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.clk} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.rst} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.mem_Valid_FromDte_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.block_busy_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.dataBus} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.dcache_bank_State} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.dcache_bank_State_bits} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.saveReq} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.useSavedReq} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.hit} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.miss} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.currTag} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.currLineValid} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.currLineDirty} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.dataStore_Line} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.writeSuccess2TagStore} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.doAccess} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.V_Cache_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.eb_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.blockReq_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.outputs_o} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.fsmOuts} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.dcache_bank_swapBuf} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.savedReq} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.reqInUse} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_unit.blockReq_p_addr_fields} }
+
+gui_sg_move "$_session_group_83" -after "$_session_group_81" -pos 3 
+
+set _session_group_84 $_session_group_81|
+append _session_group_84 {g_dcache_block[0].block}
+gui_sg_create "$_session_group_84"
+set {dcahce_block|g_dcache_block[0].block} "$_session_group_84"
+
+gui_sg_addsignal -group "$_session_group_84" { {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_clr_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.makeBlockReq} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dcache_bank_outputs} {tb_dcache.uut0_dcache.g_dcache_block[0].block.mem_Valid_FromDte_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.address_bus_fake} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_outputs} {tb_dcache.uut0_dcache.g_dcache_block[0].block.block_req_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.address_bus} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_V} {tb_dcache.uut0_dcache.g_dcache_block[0].block.block_busy} {tb_dcache.uut0_dcache.g_dcache_block[0].block.permissionToDriveAddrBus_eb} {tb_dcache.uut0_dcache.g_dcache_block[0].block.startingOffset} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_curr_commiting} {tb_dcache.uut0_dcache.g_dcache_block[0].block.permissionToDriveAddrBus_Ld} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_blockingVCache} {tb_dcache.uut0_dcache.g_dcache_block[0].block.st_override_for_sch_req} {tb_dcache.uut0_dcache.g_dcache_block[0].block.rst_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.evictionBuf_setCommiting_FromDTE_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.outputs_o} {tb_dcache.uut0_dcache.g_dcache_block[0].block.permissionToDriveDataBus_evictionBuf} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dataBus} {tb_dcache.uut0_dcache.g_dcache_block[0].block.$unit} {tb_dcache.uut0_dcache.g_dcache_block[0].block.dataBus_fake} {tb_dcache.uut0_dcache.g_dcache_block[0].block.eb_blocking_Bank} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_outputs} {tb_dcache.uut0_dcache.g_dcache_block[0].block.clk_i} }
+gui_set_radix -radix {decimal} -signals {{V1:tb_dcache.uut0_dcache.g_dcache_block[0].block.startingOffset}}
+gui_set_radix -radix {twosComplement} -signals {{V1:tb_dcache.uut0_dcache.g_dcache_block[0].block.startingOffset}}
+
+set _session_group_85 $_session_group_81|
+append _session_group_85 vcache_unit
+gui_sg_create "$_session_group_85"
+set dcahce_block|vcache_unit "$_session_group_85"
+
+gui_sg_addsignal -group "$_session_group_85" { {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.$unit} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.clk} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.rst} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.block_busy_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_fsm_state} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_fsm_state_bits} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.saveReq} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.useSavedReq} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.saveIDX} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.useSavedIDX} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.currTag} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.hit} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.miss} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.hitIDX} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.evictionIDX} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.savedIDX} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.V_Cache_needs_2_evict} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.V_Cache_TagStore_CurrLine_Dirty} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_dataStore_Line} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.blockReq_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.eb_outs_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.dcache_outs_i} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.outputs_o} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.fsmOuts} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.savedReq} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.reqInUse} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.block_req_p_addr_fields} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit.vcache_swapBuf} }
+
+gui_sg_move "$_session_group_85" -after "$_session_group_81" -pos 1 
 
 # Global: Highlighting
 
@@ -358,7 +403,7 @@ gui_change_stack_mode -mode list
 # Post database loading setting...
 
 # Restore C1 time
-gui_set_time -C1_only 713670
+gui_set_time -C1_only 365000
 
 
 
@@ -384,13 +429,16 @@ gui_list_set_filter -id ${Hier.1} -list { {Package 1} {All 0} {Process 1} {VirtP
 gui_list_set_filter -id ${Hier.1} -text {*}
 gui_hier_list_init -id ${Hier.1}
 gui_change_design -id ${Hier.1} -design V1
+catch {gui_list_expand -id ${Hier.1} tb_dcache}
+catch {gui_list_expand -id ${Hier.1} tb_dcache.uut0_dcache}
+catch {gui_list_select -id ${Hier.1} {{tb_dcache.uut0_dcache.g_dcache_block[0].block}}}
 gui_view_scroll -id ${Hier.1} -vertical -set 0
 gui_view_scroll -id ${Hier.1} -horizontal -set 0
 
 # Data 'Data.1'
 gui_list_set_filter -id ${Data.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {LowPower 1} {Parameter 1} {All 1} {Aggregate 1} {LibBaseMember 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {BaseMembers 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Data.1} -text {*}
-gui_list_show_data -id ${Data.1} {tb_dcache.uut0_dcache.evictionBuf_unit}
+gui_list_show_data -id ${Data.1} {tb_dcache.uut0_dcache.g_dcache_block[0].block.vcache_unit}
 gui_view_scroll -id ${Data.1} -vertical -set 0
 gui_view_scroll -id ${Data.1} -horizontal -set 0
 gui_view_scroll -id ${Hier.1} -vertical -set 0
@@ -412,27 +460,31 @@ gui_list_set_height -id Wave -height 25
 set origGroupCreationState [gui_list_create_group_when_add -wave]
 gui_list_create_group_when_add -wave -disable
 gui_marker_set_ref -id ${Wave.1}  C1
-gui_wv_zoom_timerange -id ${Wave.1} 511724 929805
-gui_list_add_group -id ${Wave.1} -after {New Group} {evictionBuf_unit}
-gui_list_add_group -id ${Wave.1} -after {New Group} {Group1}
-gui_list_add_group -id ${Wave.1}  -after Group1 {Group1|uut0_dcache}
-gui_list_add_group -id ${Wave.1} -after Group1|uut0_dcache {Group1|DCache_Bank_TagStore_unit}
-gui_list_add_group -id ${Wave.1} -after Group1|DCache_Bank_TagStore_unit {Group1|DCache_Bank_DataStore_unit}
-gui_list_add_group -id ${Wave.1} -after Group1|DCache_Bank_DataStore_unit {Group1|dcache_bank_unit}
-gui_list_add_group -id ${Wave.1} -after {New Group} {Group2}
-gui_list_add_group -id ${Wave.1}  -after Group2 {Group2|vcache_tagstore_unit}
-gui_list_add_group -id ${Wave.1} -after Group2|vcache_tagstore_unit {Group2|vcache_datastore_unit}
-gui_list_add_group -id ${Wave.1} -after Group2|vcache_datastore_unit {Group2|vcache_unit}
-gui_list_add_group -id ${Wave.1} -after {New Group} {evictionBuf_unit_1}
-gui_list_collapse -id ${Wave.1} evictionBuf_unit
-gui_list_collapse -id ${Wave.1} Group1|uut0_dcache
-gui_list_collapse -id ${Wave.1} Group1|DCache_Bank_TagStore_unit
-gui_list_collapse -id ${Wave.1} Group1|DCache_Bank_DataStore_unit
-gui_list_collapse -id ${Wave.1} Group2|vcache_tagstore_unit
-gui_list_collapse -id ${Wave.1} Group2|vcache_datastore_unit
-gui_list_collapse -id ${Wave.1} evictionBuf_unit_1
-gui_list_expand -id ${Wave.1} tb_dcache.uut0_dcache.dcache_bank_unit.dataStore_Line
-gui_list_select -id ${Wave.1} {tb_dcache.uut0_dcache.dcache_bank_unit.hit }
+gui_wv_zoom_timerange -id ${Wave.1} 158887 664872
+gui_list_add_group -id ${Wave.1} -after {New Group} {uut1_mem}
+gui_list_add_group -id ${Wave.1} -after {New Group} {uut2_DTE}
+gui_list_add_group -id ${Wave.1} -after {New Group} {Dcache}
+gui_list_add_group -id ${Wave.1}  -after Dcache {Dcache|uut0_dcache}
+gui_list_add_group -id ${Wave.1} -after Dcache|uut0_dcache {Dcache|mio_block_unit}
+gui_list_add_group -id ${Wave.1} -after Dcache|mio_block_unit {{Dcache|g_dcache_block[3].block}}
+gui_list_add_group -id ${Wave.1} -after {{Dcache|g_dcache_block[3].block}} {Dcache|dcache_arbitration}
+gui_list_add_group -id ${Wave.1} -after Dcache|dcache_arbitration {{Dcache|g_dcache_block[0].block}}
+gui_list_add_group -id ${Wave.1} -after {{Dcache|g_dcache_block[0].block}} {{Dcache|g_dcache_block[2].block}}
+gui_list_add_group -id ${Wave.1} -after {{Dcache|g_dcache_block[2].block}} {{Dcache|g_dcache_block[1].block}}
+gui_list_add_group -id ${Wave.1} -after {New Group} {dcahce_block}
+gui_list_add_group -id ${Wave.1}  -after dcahce_block {{dcahce_block|g_dcache_block[0].block}}
+gui_list_add_group -id ${Wave.1} -after {{dcahce_block|g_dcache_block[0].block}} {dcahce_block|vcache_unit}
+gui_list_add_group -id ${Wave.1} -after dcahce_block|vcache_unit {dcahce_block|evictionBuf_unit}
+gui_list_add_group -id ${Wave.1} -after dcahce_block|evictionBuf_unit {dcahce_block|dcache_bank_unit}
+gui_list_collapse -id ${Wave.1} uut1_mem
+gui_list_collapse -id ${Wave.1} uut2_DTE
+gui_list_collapse -id ${Wave.1} {dcahce_block|g_dcache_block[0].block}
+gui_list_collapse -id ${Wave.1} dcahce_block|vcache_unit
+gui_list_collapse -id ${Wave.1} dcahce_block|evictionBuf_unit
+gui_list_collapse -id ${Wave.1} dcahce_block|dcache_bank_unit
+gui_list_expand -id ${Wave.1} tb_dcache.uut0_dcache.req_2_blocks
+gui_list_expand -id ${Wave.1} {tb_dcache.uut0_dcache.req_2_blocks[0]}
+gui_list_select -id ${Wave.1} {{tb_dcache.uut0_dcache.req_2_blocks[0].p_addr} }
 gui_seek_criteria -id ${Wave.1} {Any Edge}
 
 
@@ -448,10 +500,10 @@ if { $groupExD } {
 }
 gui_list_set_filter -id ${Wave.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {Parameter 1} {All 1} {Aggregate 1} {LibBaseMember 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {BaseMembers 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Wave.1} -text {*}
-gui_list_set_insertion_bar  -id ${Wave.1} -group Group1|dcache_bank_unit  -position in
+gui_list_set_insertion_bar  -id ${Wave.1} -group dcahce_block  -position in
 
-gui_marker_move -id ${Wave.1} {C1} 713670
-gui_view_scroll -id ${Wave.1} -vertical -set 510
+gui_marker_move -id ${Wave.1} {C1} 365000
+gui_view_scroll -id ${Wave.1} -vertical -set 361
 gui_show_grid -id ${Wave.1} -enable false
 # Restore toplevel window zorder
 # The toplevel window could be closed if it has no view/pane

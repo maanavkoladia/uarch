@@ -276,6 +276,7 @@ module Fetch (
 
     //spc to icache path
     ICache_En_Logic icache_en_logic(
+        .rst(rst),
         .exp_mode(exp_mode_jk),
         .cs_sb(rr_outs_i.codeSeg_sb),
         .int_mode(int_mode_jk),
