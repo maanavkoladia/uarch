@@ -4,362 +4,362 @@
 
 module icache_loader;
 
-    initial begin
+initial begin
 
-        #30;
+    #30;
 
-        // Tag Store
-        // g_tagStore_Layers[0]
-        // g_tagStore_Cells[0]
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[7] = 8'h00;
-        // g_tagStore_Cells[1]
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[7] = 8'h00;
-        // g_tagStore_Cells[2]
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[7] = 8'h00;
+    // Tag Store
+    // g_tagStore_Layers[0]
+    // g_tagStore_Cells[0]
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[0].tagStoreCell.mem[7] = 8'h00;
+    // g_tagStore_Cells[1]
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[1].tagStoreCell.mem[7] = 8'h00;
+    // g_tagStore_Cells[2]
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[0].g_tagStore_Cells[2].tagStoreCell.mem[7] = 8'h00;
 
-        // g_tagStore_Layers[1]
-        // g_tagStore_Cells[0]
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[7] = 8'h00;
-        // g_tagStore_Cells[1]
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[7] = 8'h00;
-        // g_tagStore_Cells[2]
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[7] = 8'h00;
+    // g_tagStore_Layers[1]
+    // g_tagStore_Cells[0]
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[0].tagStoreCell.mem[7] = 8'h00;
+    // g_tagStore_Cells[1]
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[1].tagStoreCell.mem[7] = 8'h00;
+    // g_tagStore_Cells[2]
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_TagStore_unit.g_tagStore_Layers[1].g_tagStore_Cells[2].tagStoreCell.mem[7] = 8'h00;
 
-        // Data Store
-        // g_mem_layer[0]
-        // g_memCells[0]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[1]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[2]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[3]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[4]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[5]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[6]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[7]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[8]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[9]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell[0].mem[0] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell[1].mem[1] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell[2].mem[2] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell[3].mem[3] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell[4].mem[4] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell[5].mem[5] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell[6].mem[6] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell[7].mem[7] = 8'h00;
-        // g_memCells[10]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[11]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[12]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[13]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[14]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[15]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell[7.mem] = 8'h00;
+    // Data Store
+    // g_mem_layer[0]
+    // g_memCells[0]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[0].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[1]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[1].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[2]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[2].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[3]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[3].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[4]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[4].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[5]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[5].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[6]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[6].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[7]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[7].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[8]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[8].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[9]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[9].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[10]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[10].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[11]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[11].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[12]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[12].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[13]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[13].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[14]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[14].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[15]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[0].g_memCells[15].dataStore_memCell.mem[7] = 8'h00;
 
-        // g_mem_layer[1]
-        // g_memCells[0]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[1]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[2]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[3]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[4]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[5]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[6]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[7]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[8]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[9]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell[0].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell[1].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell[2].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell[3].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell[4].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell[5].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell[6].mem = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell[7].mem = 8'h00;
-        // g_memCells[10]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[11]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[12]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[13]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[14]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell[7.mem] = 8'h00;
-        // g_memCells[15]
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell[0.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell[1.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell[2.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell[3.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell[4.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell[5.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell[6.mem] = 8'h00;
-        tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell[7.mem] = 8'h00;
+    // g_mem_layer[1]
+    // g_memCells[0]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[0].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[1]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[1].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[2]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[2].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[3]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[3].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[4]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[4].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[5]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[5].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[6]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[6].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[7]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[7].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[8]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[8].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[9]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[9].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[10]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[10].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[11]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[11].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[12]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[12].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[13]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[13].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[14]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[14].dataStore_memCell.mem[7] = 8'h00;
+    // g_memCells[15]
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[0] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[1] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[2] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[3] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[4] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[5] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[6] = 8'h00;
+    tb_DTE.uut1_icache.icache_dataStore_unit.g_mem_layer[1].g_memCells[15].dataStore_memCell.mem[7] = 8'h00;
 
-    end
+end
 
 endmodule
