@@ -142,11 +142,7 @@ inv1$ inv_we_i (we_i_inv, we_i);
 
 // Next-state and output SOP logic
 
-<<<<<<< HEAD
-// NS_0 = (!S_1 & !S_2 & S_3) | (S_0 & !S_1 & !S_2 & EB_Hit_i) | (S_0 & S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & !S_1 & S_2 & !S_3 & DTE_Mem_valid_i) | (!S_0 & S_1 & !S_2 & !S_3 & !D_Swap_valid_i) | (S_0 & !S_1 & S_2 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & !Line_valid_i) | (!S_1 & !S_2 & D_Miss_i & V_Miss_i & EB_Hit_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & !V_Miss_i & !we_i)
-=======
-// NS_0 = (!S_1 & !S_2 & S_3) | (S_0 & !S_1 & !S_2 & EB_Hit_i) | (!S_0 & S_1 & !S_2 & !S_3 & !D_Swap_valid_i) | (S_0 & !S_1 & S_2 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & !S_1 & S_2 & !S_3 & DTE_Mem_valid_i) | (S_0 & S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & !Line_valid_i) | (!S_1 & !S_2 & D_Miss_i & EB_Hit_i & !we_i) | (!S_1 & !S_2 & D_Miss_i & V_Miss_i & EB_Hit_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & !V_Miss_i & !we_i)
->>>>>>> debugging_dcache
+// NS_0 = (!S_1 & !S_2 & S_3) | (S_0 & !S_1 & !S_2 & EB_Hit_i) | (S_0 & S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i) | (S_0 & !S_1 & S_2 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & !S_1 & S_2 & !S_3 & DTE_Mem_valid_i) | (!S_0 & S_1 & !S_2 & !S_3 & !D_Swap_valid_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & !Line_valid_i) | (!S_1 & !S_2 & D_Miss_i & EB_Hit_i & !we_i) | (!S_1 & !S_2 & D_Miss_i & V_Miss_i & EB_Hit_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & !V_Miss_i & !we_i)
 wire NS_0_t0;
 wire NS_0_t1;
 wire NS_0_t2;
@@ -156,37 +152,21 @@ wire NS_0_t5;
 wire NS_0_t6;
 wire NS_0_t7;
 wire NS_0_t8;
-<<<<<<< HEAD
-
-and3$ NS_0_and0 (NS_0_t0, S_1_inv, S_2_inv, S_3);
-and4$ NS_0_and1 (NS_0_t1, S_0, S_1_inv, S_2_inv, EB_Hit_i);
-and5$ NS_0_and2 (NS_0_t2, S_0, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i_inv);
-and5$ NS_0_and3 (NS_0_t3, S_0_inv, S_1_inv, S_2, S_3_inv, DTE_Mem_valid_i);
-and5$ NS_0_and4 (NS_0_t4, S_0_inv, S_1, S_2_inv, S_3_inv, D_Swap_valid_i_inv);
-and5$ NS_0_and5 (NS_0_t5, S_0, S_1_inv, S_2, S_3_inv, DTE_Mem_valid_i_inv);
-and5$ NS_0_and6 (NS_0_t6, S_0_inv, S_1_inv, S_2_inv, D_Miss_i, Line_valid_i_inv);
-and5$ NS_0_and7 (NS_0_t7, S_1_inv, S_2_inv, D_Miss_i, V_Miss_i, EB_Hit_i);
-and6$ NS_0_and8 (NS_0_t8, S_0_inv, S_1_inv, S_2_inv, D_Miss_i, V_Miss_i_inv, we_i_inv);
-or9$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5, NS_0_t6, NS_0_t7, NS_0_t8);
-
-// NS_1 = (S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & !S_1 & !S_2 & S_3) | (!S_0 & S_1 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & S_1 & !S_2 & !S_3) | (S_0 & !S_1 & S_2 & !S_3 & DTE_Mem_valid_i) | (!S_0 & !S_2 & !S_3 & D_Miss_i & V_Miss_i & !EB_Hit_i) | (!S_0 & !S_2 & !S_3 & D_Miss_i & V_Miss_i & !Line_valid_i) | (!S_0 & !S_2 & !S_3 & D_Miss_i & !V_Miss_i & Line_valid_i & !we_i)
-=======
 wire NS_0_t9;
 
 and3$ NS_0_and0 (NS_0_t0, S_1_inv, S_2_inv, S_3);
 and4$ NS_0_and1 (NS_0_t1, S_0, S_1_inv, S_2_inv, EB_Hit_i);
-and5$ NS_0_and2 (NS_0_t2, S_0_inv, S_1, S_2_inv, S_3_inv, D_Swap_valid_i_inv);
+and5$ NS_0_and2 (NS_0_t2, S_0, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i_inv);
 and5$ NS_0_and3 (NS_0_t3, S_0, S_1_inv, S_2, S_3_inv, DTE_Mem_valid_i_inv);
 and5$ NS_0_and4 (NS_0_t4, S_0_inv, S_1_inv, S_2, S_3_inv, DTE_Mem_valid_i);
-and5$ NS_0_and5 (NS_0_t5, S_0, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i_inv);
+and5$ NS_0_and5 (NS_0_t5, S_0_inv, S_1, S_2_inv, S_3_inv, D_Swap_valid_i_inv);
 and5$ NS_0_and6 (NS_0_t6, S_0_inv, S_1_inv, S_2_inv, D_Miss_i, Line_valid_i_inv);
 and5$ NS_0_and7 (NS_0_t7, S_1_inv, S_2_inv, D_Miss_i, EB_Hit_i, we_i_inv);
 and5$ NS_0_and8 (NS_0_t8, S_1_inv, S_2_inv, D_Miss_i, V_Miss_i, EB_Hit_i);
 and6$ NS_0_and9 (NS_0_t9, S_0_inv, S_1_inv, S_2_inv, D_Miss_i, V_Miss_i_inv, we_i_inv);
 or10$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5, NS_0_t6, NS_0_t7, NS_0_t8, NS_0_t9);
 
-// NS_1 = (!S_0 & S_1 & !S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & S_3) | (!S_0 & S_1 & !S_3 & !DTE_Mem_valid_i) | (S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i) | (S_0 & !S_1 & S_2 & !S_3 & DTE_Mem_valid_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & V_Miss_i & !Line_valid_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & V_Miss_i & !EB_Hit_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & !V_Miss_i & Line_valid_i & !we_i)
->>>>>>> debugging_dcache
+// NS_1 = (!S_0 & S_1 & !S_3 & !DTE_Mem_valid_i) | (!S_0 & !S_1 & !S_2 & S_3) | (!S_0 & S_1 & !S_2 & !S_3) | (S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i) | (S_0 & !S_1 & S_2 & !S_3 & DTE_Mem_valid_i) | (!S_0 & !S_2 & !S_3 & D_Miss_i & V_Miss_i & !EB_Hit_i) | (!S_0 & !S_2 & !S_3 & D_Miss_i & V_Miss_i & !Line_valid_i) | (!S_0 & !S_2 & !S_3 & D_Miss_i & !V_Miss_i & Line_valid_i & !we_i)
 wire NS_1_t0;
 wire NS_1_t1;
 wire NS_1_t2;
@@ -196,21 +176,14 @@ wire NS_1_t5;
 wire NS_1_t6;
 wire NS_1_t7;
 
-<<<<<<< HEAD
-and4$ NS_1_and0 (NS_1_t0, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i_inv);
+and4$ NS_1_and0 (NS_1_t0, S_0_inv, S_1, S_3_inv, DTE_Mem_valid_i_inv);
 and4$ NS_1_and1 (NS_1_t1, S_0_inv, S_1_inv, S_2_inv, S_3);
-and4$ NS_1_and2 (NS_1_t2, S_0_inv, S_1, S_3_inv, DTE_Mem_valid_i_inv);
-and4$ NS_1_and3 (NS_1_t3, S_0_inv, S_1, S_2_inv, S_3_inv);
-=======
-and4$ NS_1_and0 (NS_1_t0, S_0_inv, S_1, S_2_inv, S_3_inv);
-and4$ NS_1_and1 (NS_1_t1, S_0_inv, S_1_inv, S_2_inv, S_3);
-and4$ NS_1_and2 (NS_1_t2, S_0_inv, S_1, S_3_inv, DTE_Mem_valid_i_inv);
+and4$ NS_1_and2 (NS_1_t2, S_0_inv, S_1, S_2_inv, S_3_inv);
 and4$ NS_1_and3 (NS_1_t3, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i_inv);
->>>>>>> debugging_dcache
 and5$ NS_1_and4 (NS_1_t4, S_0, S_1_inv, S_2, S_3_inv, DTE_Mem_valid_i);
-and6$ NS_1_and5 (NS_1_t5, S_0_inv, S_1_inv, S_2_inv, D_Miss_i, V_Miss_i, Line_valid_i_inv);
-and6$ NS_1_and6 (NS_1_t6, S_0_inv, S_1_inv, S_2_inv, D_Miss_i, V_Miss_i, EB_Hit_i_inv);
-and7$ NS_1_and7 (NS_1_t7, S_0_inv, S_1_inv, S_2_inv, D_Miss_i, V_Miss_i_inv, Line_valid_i, we_i_inv);
+and6$ NS_1_and5 (NS_1_t5, S_0_inv, S_2_inv, S_3_inv, D_Miss_i, V_Miss_i, EB_Hit_i_inv);
+and6$ NS_1_and6 (NS_1_t6, S_0_inv, S_2_inv, S_3_inv, D_Miss_i, V_Miss_i, Line_valid_i_inv);
+and7$ NS_1_and7 (NS_1_t7, S_0_inv, S_2_inv, S_3_inv, D_Miss_i, V_Miss_i_inv, Line_valid_i, we_i_inv);
 or8$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4, NS_1_t5, NS_1_t6, NS_1_t7);
 
 // NS_2 = (!S_1 & S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & S_3) | (!S_0 & S_2 & !S_3 & !DTE_Mem_valid_i) | (S_0 & S_1 & !S_2 & !S_3 & DTE_Mem_valid_i) | (!S_0 & !S_1 & !S_2 & D_Miss_i & !V_Miss_i & Line_valid_i & !we_i)
@@ -257,41 +230,20 @@ and4$ clr_v_swap_o_and (clr_v_swap_o, S_0, S_1, S_2, S_3_inv);
 // MakeReq_o = (S_0 & S_1 & !S_2 & !S_3 & !DTE_Mem_valid_i)
 and5$ MakeReq_o_and (MakeReq_o, S_0, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i_inv);
 
-<<<<<<< HEAD
-// saveReq_o = (!S_0 & !S_1 & !S_2 & !S_3 & D_Miss_i & Line_valid_i) | (!S_0 & !S_1 & !S_2 & !S_3 & D_Miss_i & V_Miss_i)
-wire saveReq_o_t0;
-wire saveReq_o_t1;
-
-and6$ saveReq_o_and0 (saveReq_o_t0, S_0_inv, S_1_inv, S_2_inv, S_3_inv, D_Miss_i, Line_valid_i);
-and6$ saveReq_o_and1 (saveReq_o_t1, S_0_inv, S_1_inv, S_2_inv, S_3_inv, D_Miss_i, V_Miss_i);
-or2$  saveReq_o_or  (saveReq_o, saveReq_o_t0, saveReq_o_t1);
-
-// useSaved_Req_o = (S_0 & !S_3) | (S_1 & !S_3) | (S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & S_3)
-wire useSaved_Req_o_t0;
-wire useSaved_Req_o_t1;
-wire useSaved_Req_o_t2;
-wire useSaved_Req_o_t3;
-
-and2$ useSaved_Req_o_and0 (useSaved_Req_o_t0, S_0, S_3_inv);
-and2$ useSaved_Req_o_and1 (useSaved_Req_o_t1, S_1, S_3_inv);
-and2$ useSaved_Req_o_and2 (useSaved_Req_o_t2, S_2, S_3_inv);
-and4$ useSaved_Req_o_and3 (useSaved_Req_o_t3, S_0_inv, S_1_inv, S_2_inv, S_3);
-or4$  useSaved_Req_o_or  (useSaved_Req_o, useSaved_Req_o_t0, useSaved_Req_o_t1, useSaved_Req_o_t2, useSaved_Req_o_t3);
-
-=======
->>>>>>> debugging_dcache
 // Blocked_o = (S_0 & !S_1 & !S_2 & !S_3 & EB_Hit_i)
 and5$ Blocked_o_and (Blocked_o, S_0, S_1_inv, S_2_inv, S_3_inv, EB_Hit_i);
 
-// busy_o = (S_1 & !S_2 & !S_3) | (!S_0 & S_2 & !S_3) | (S_0 & !S_1 & !S_3)
+// busy_o = (S_0 & !S_1 & !S_3) | (!S_0 & S_1 & !S_3) | (S_1 & !S_2 & !S_3) | (!S_0 & S_2 & !S_3)
 wire busy_o_t0;
 wire busy_o_t1;
 wire busy_o_t2;
+wire busy_o_t3;
 
-and3$ busy_o_and0 (busy_o_t0, S_1, S_2_inv, S_3_inv);
-and3$ busy_o_and1 (busy_o_t1, S_0_inv, S_2, S_3_inv);
-and3$ busy_o_and2 (busy_o_t2, S_0, S_1_inv, S_3_inv);
-or3$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2);
+and3$ busy_o_and0 (busy_o_t0, S_0, S_1_inv, S_3_inv);
+and3$ busy_o_and1 (busy_o_t1, S_0_inv, S_1, S_3_inv);
+and3$ busy_o_and2 (busy_o_t2, S_1, S_2_inv, S_3_inv);
+and3$ busy_o_and3 (busy_o_t3, S_0_inv, S_2, S_3_inv);
+or4$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2, busy_o_t3);
 
 // fill0_o = (S_0 & S_1 & !S_2 & !S_3 & DTE_Mem_valid_i)
 and5$ fill0_o_and (fill0_o, S_0, S_1, S_2_inv, S_3_inv, DTE_Mem_valid_i);

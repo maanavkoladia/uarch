@@ -107,6 +107,7 @@ module ICache (
     //create the data store
     ICache_DataStore icache_dataStore_unit (
         .rst(rst),
+        .clk(clk),
         .en(inFromCore_i.icache_en),  //active high
         .v_addr_i(curr_v_addr_to_use),
         .p_addr_i(curr_p_addr_to_use),

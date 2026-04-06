@@ -4,6 +4,7 @@ import ICache_common_pkg::*;
 module ICache_DataStore (
 
     input wire rst,
+    input wire clk,
     input wire en,  //active high
     input v_address_t v_addr_i,  //can be the spc one, or the latched one, top module will decide
     input p_address_t p_addr_i,  //can be the spc one, or the latched one, top module will decide
