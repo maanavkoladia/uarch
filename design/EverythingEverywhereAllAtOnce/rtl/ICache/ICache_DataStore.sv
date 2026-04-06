@@ -7,7 +7,6 @@ module ICache_DataStore (
     input wire clk,
     input wire en,  //active high
     input v_address_t v_addr_i,  //can be the spc one, or the latched one, top module will decide
-    input p_address_t p_addr_i,  //can be the spc one, or the latched one, top module will decide
 
     //output the line evition line to write to IC_SWAP_BUF
     input bool LD_IC_SWAP_BUF,
@@ -44,9 +43,9 @@ module ICache_DataStore (
     logic dataLineOutSel;
     assign dataLineOutSel = v_addr_i_index[ICACHE_INDEX_WIDTH-1];
 
-    //comes from p_addr upper index bit
+    //comes from v_addr upper index bit
 
-    //index with upper idx bit from p_addr and use if fill0
+    //index with upper idx bit from v_addr and use if fill0
     //cases to write is
     //reading from swap buf,
     //or from bus, in which case the
@@ -54,13 +53,6 @@ module ICache_DataStore (
     logic WR_2_DataStore_clk[LAYERS_OF_CELLS][NUM_CELLS];
     //logic WR_2_DataStore_Delay[LAYERS_OF_CELLS][NUM_CELLS];
     logic WR_2_DataStore_actual[LAYERS_OF_CELLS][NUM_CELLS];
-
-
-    //assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} :  WR_2_DataStore_clk;
-    //VCS yelled at me so I am removing the delay - harish, this is irrevalt
-    //after the merge
-    //assign #2 WR_2_DataStore_Delay = !rst ? '{default: '1} : WR_2_DataStore_clk;
-
 
     always_comb begin
         if (!rst) begin
@@ -101,7 +93,7 @@ module ICache_DataStore (
         end
     end
 
-    // Tag input: always use physical address tag (VIPT)
+    // Tag input: usng VIVT
     // Swap buffer only provides data, not the tag - tag comes from current p_addr_i
     byte_t DIN_2_DataStore[CACHE_LINES_SIZE_B];
 

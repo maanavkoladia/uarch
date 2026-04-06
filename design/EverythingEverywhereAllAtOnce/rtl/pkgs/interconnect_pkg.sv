@@ -162,7 +162,7 @@ package interconnect_pkg;
     typedef struct {
         bool icache_en;
         p_address_t p_addr;
-        v_address_t v_spc_addr_i;
+        v_address_t v_addr_i;
         logic [$clog2(NUM_IDM_SLOTS) : 0] num_valid_IDM_slots;
     } core_2_icache_t;
 

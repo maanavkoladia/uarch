@@ -23,8 +23,6 @@ module ICache (
         bool LD_IC_SWAP_BUF;
         bool RD_I_VC_SWAP_BUF;
         bool busy;
-        bool saveAddress;
-        bool UseSavedAddr;
         bool MakeReq;
         bool Fill0EN;
         bool Fill1EN;
@@ -38,7 +36,6 @@ module ICache (
     fsm_outputs_t fsmOuts;
 
     ICache_swap_buf_t icache_swapbuf;
-    ICache_swap_buf_t i_vcache_swapBuf;
 
     byte_t icache_dataLines[CACHE_LINES_SIZE_B];
     logic [ICACHE_TAG_WIDTH - 1 : 0] icache_tag;
@@ -61,10 +58,10 @@ module ICache (
     p_address_t saved_pAddr;
     v_address_t saved_vAddr;
 
-    p_address_t curr_p_addr_to_use;
-    v_address_t  curr_v_addr_to_use;
+    v_address_t curr_v_addr_to_use;
 
-    //create the fsm
+    bool useSaved_v_Addr;
+
     ICache_Controller_Logic icache_contrller_fsm (
         .clk(clk),
         .rst(rst),
@@ -78,8 +75,6 @@ module ICache (
         .LD_IC_SWAP_BUF_o(fsmOuts.LD_IC_SWAP_BUF),
         .RD_I_VC_SWAP_BUF_o(fsmOuts.RD_I_VC_SWAP_BUF),
         .busy_o(fsmOuts.busy),
-        .saveAddress_o(fsmOuts.saveAddress),
-        .UseSavedAddr_o(fsmOuts.UseSavedAddr),
         .MakeReq_o(fsmOuts.MakeReq),
         .Fill0EN_o(fsmOuts.Fill0EN),
         .Fill1EN_o(fsmOuts.Fill1EN),
@@ -94,7 +89,6 @@ module ICache (
         .rst(rst),
         .en(inFromCore_i.icache_en),  //active high
         .v_addr_i(curr_v_addr_to_use),
-        .p_addr_i(curr_p_addr_to_use),
         .ld_From_I_VC_Swap(fsmOuts.RD_I_VC_SWAP_BUF),
         .LD_IC_SWAP_BUF(fsmOuts.LD_IC_SWAP_BUF),
         .fill3_i(fsmOuts.Fill3EN),
@@ -110,7 +104,6 @@ module ICache (
         .clk(clk),
         .en(inFromCore_i.icache_en),  //active high
         .v_addr_i(curr_v_addr_to_use),
-        .p_addr_i(curr_p_addr_to_use),
         .LD_IC_SWAP_BUF(fsmOuts.LD_IC_SWAP_BUF),
         .fill0_i(fsmOuts.Fill0EN),
         .fill1_i(fsmOuts.Fill1EN),
@@ -128,13 +121,13 @@ module ICache (
         .clk(clk),
         .rst(rst),  //active low
         .controller_fsmState(controller_fsmState),
-        .req_V_i(inFromCore_i.icache_en),  //i think we can ust use the icache en signal, might be a src of problems later
+        .busy_i(fsmOuts.busy),
+        .en_i(inFromCore_i.icache_en),  //i think we can ust use the icache en signal, might be a src of problems later
         .p_addr_i(curr_p_addr_to_use),
         .IC_SwapBuf_i(icache_swapbuf),
         .I_VC_SwapBuf_o(i_vcache_swapBuf),
         .hit_o(i_vcache_hit),
         .miss_o(i_vcache_miss),
-        .busy_o(i_vcache_busy),
         .IC_SwapBuf_V_clr_o(i_vcache_swapBuf_V_Clr),
         .dataLineOut_o(i_vcache_dataLines)
     );
@@ -144,7 +137,9 @@ module ICache (
         if (!rst) icache_swapbuf <= '{default: '0};
         else if (fsmOuts.LD_IC_SWAP_BUF) begin
             icache_swapbuf.valid <= 1;
-            icache_swapbuf.lineAddr <= {icache_tag, 4'b0000};
+            icache_swapbuf.lineAddr <= {
+                icache_tag, inFromCore_i.v_addr_i[ICACHE_INDEX_UB : ICACHE_INDEX_LB], 4'b0000
+            };
             icache_swapbuf.line <= icache_dataLines;
         end else if (i_vcache_swapBuf_V_Clr) begin
             icache_swapbuf.valid <= 0;
@@ -152,30 +147,32 @@ module ICache (
     end
 
     //INTERNAL SIGNALS
+
     assign icache_hit =
         inFromCore_i.icache_en
-        && (controller_fsmState == ICACHE_IDLE)
+        && (!fsmOuts.busy)
         && (icache_tag_V
-        && (icache_tag == inFromCore_i.p_addr[ICACHE_TAG_UB : ICACHE_TAG_LB]));
+        && (icache_tag == inFromCore_i.v_addr_i[ICACHE_TAG_UB : ICACHE_TAG_LB]));
 
     assign icache_miss =
         inFromCore_i.icache_en
-        && (controller_fsmState == ICACHE_IDLE)
+        && (!fsmOuts.busy)
         && (!icache_tag_V
-        || (icache_tag != inFromCore_i.p_addr[ICACHE_TAG_UB : ICACHE_TAG_LB]));
+        || (icache_tag != inFromCore_i.v_addr_i[ICACHE_TAG_UB : ICACHE_TAG_LB]));
+
+    assign useSaved_v_Addr = fsmOuts.busy;
+    assign curr_v_addr_to_use = useSaved_v_Addr ? saved_vAddr : inFromCore_i.v_spc_addr_i;
 
     always_ff @(posedge clk) begin
         if (!rst) begin
             saved_vAddr <= 0;
             saved_pAddr <= 0;
-        end else if (fsmOuts.saveAddress) begin
+        end else if (!fsmOuts.busy) begin
             saved_pAddr <= inFromCore_i.p_addr;
-            saved_vAddr <= inFromCore_i.v_spc_addr_i;
+            saved_vAddr <= inFromCore_i.v_addr_i;
         end
     end
 
-    assign curr_v_addr_to_use = fsmOuts.UseSavedAddr ? saved_vAddr : inFromCore_i.v_spc_addr_i;
-    assign curr_p_addr_to_use = fsmOuts.UseSavedAddr ? saved_pAddr : inFromCore_i.p_addr;
 
     //MODULE OUTPUT SIGNALS
     assign out2Core_o.hit = icache_hit || i_vcache_hit;//en is already included in the gen of the icache hit signal
@@ -195,7 +192,7 @@ module ICache (
         end
     end
 
-    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus_drv = inFromCore_i.p_addr;
+    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus_drv = saved_pAddr;
     assign addrBus = inFromDte_i.driveAddrBus ? addrBus_drv : 'z;
 
 endmodule

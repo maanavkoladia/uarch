@@ -2,21 +2,21 @@
 # Input  signal order : ['S_0', 'S_1', 'S_2', 'S_3', 'cont_mov_i', 'cont_cmp_i', 'rep_prefix_i', 'cs_mov_i', 'cs_cmp_i', 'stall_i']
 # Output signal order : ['NS_0', 'NS_1', 'NS_2', 'NS_3', 'set_rep_o', 'clear_rep_o', 'select_line2_o', 'select_line1_o', 'select_line0_o']
 
-NS_0 = (S_0 & !S_1 & stall_i) | (S_0 & !S_2 & stall_i) | (!S_0 & S_1 & !S_3 & !stall_i) | (S_0 & S_1 & S_2 & !S_3) | (!S_0 & !S_2 & S_3 & !stall_i) | (!S_0 & !S_3 & rep_prefix_i & !stall_i) | (!S_0 & S_2 & !S_3 & !stall_i) | (S_0 & !S_1 & S_2 & S_3 & cs_cmp_i) | (S_0 & !S_1 & S_2 & S_3 & !cs_mov_i)
+NS_0 = (S_0 & !S_1 & stall_i) | (S_0 & !S_3 & stall_i) | (!S_0 & !S_2 & rep_prefix_i & !stall_i) | (!S_0 & S_2 & !S_3 & !stall_i) | (S_0 & !S_2 & stall_i) | (S_1 & S_2 & !S_3 & !stall_i) | (!S_0 & !S_2 & S_3 & !stall_i) | (!S_0 & S_1 & !S_2 & !stall_i) | (S_0 & !S_1 & S_2 & S_3 & cs_cmp_i) | (S_0 & !S_1 & S_2 & S_3 & !cs_mov_i)
 
-NS_1 = (!S_0 & S_1 & !S_2) | (S_1 & !S_3 & stall_i) | (!S_0 & S_1 & S_3) | (S_0 & S_2 & !S_3 & !stall_i) | (S_1 & !S_2 & stall_i) | (S_0 & !S_1 & !S_2 & cont_cmp_i & !stall_i) | (S_0 & !S_1 & !S_2 & S_3 & !stall_i) | (S_0 & !S_1 & S_3 & !cs_mov_i & !cs_cmp_i & !stall_i) | (S_0 & !S_1 & S_3 & cs_mov_i & cs_cmp_i & !stall_i)
+NS_1 = (S_1 & !S_2 & stall_i) | (!S_0 & S_1 & S_3) | (S_1 & !S_3 & stall_i) | (S_0 & S_2 & !S_3 & !stall_i) | (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2 & S_3 & !stall_i) | (S_0 & !S_1 & !S_2 & cont_cmp_i & !stall_i) | (S_0 & !S_1 & S_3 & cs_mov_i & cs_cmp_i & !stall_i) | (S_0 & !S_1 & S_3 & !cs_mov_i & !cs_cmp_i & !stall_i)
 
-NS_2 = (!S_1 & S_2 & !S_3) | (!S_0 & S_2 & stall_i) | (S_0 & S_2 & !S_3) | (S_0 & S_1 & !S_2 & !stall_i) | (!S_1 & S_2 & stall_i) | (!S_0 & S_1 & S_2 & S_3) | (S_0 & !S_1 & S_2 & cs_mov_i) | (!S_0 & !S_1 & !S_3 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & S_2 & !cs_cmp_i)
+NS_2 = (!S_1 & S_2 & stall_i) | (S_0 & S_2 & !S_3) | (!S_0 & S_2 & stall_i) | (S_0 & S_1 & !S_2 & !stall_i) | (!S_1 & S_2 & !S_3) | (!S_0 & S_1 & S_2 & S_3) | (S_0 & !S_1 & S_2 & !cs_cmp_i) | (!S_0 & !S_1 & !S_3 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & S_2 & cs_mov_i)
 
-NS_3 = (!S_2 & S_3) | (!S_1 & S_3 & stall_i) | (!S_0 & S_1 & S_3) | (!S_0 & S_3 & cont_mov_i) | (!S_0 & !S_1 & !S_2 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & S_3 & cs_mov_i & !cs_cmp_i)
+NS_3 = (!S_2 & S_3) | (!S_0 & S_3 & stall_i) | (!S_0 & S_3 & cont_mov_i) | (!S_1 & S_3 & stall_i) | (!S_0 & S_1 & S_3) | (!S_0 & !S_1 & !S_2 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & S_3 & cs_mov_i & !cs_cmp_i)
 
 set_rep_o = (!S_0 & !S_1 & !S_2 & !S_3 & rep_prefix_i & !stall_i)
 
-clear_rep_o = (S_0 & !S_1 & !S_2 & !S_3 & !cont_cmp_i & !stall_i) | (!S_0 & !S_1 & S_2 & S_3 & !cont_mov_i & !stall_i)
+clear_rep_o = (!S_0 & !S_1 & S_2 & S_3 & !cont_mov_i & !stall_i) | (S_0 & !S_1 & !S_2 & !S_3 & !cont_cmp_i & !stall_i)
 
 select_line2_o = (!S_0 & S_1 & !S_2 & !stall_i) | (S_1 & !S_2 & !S_3 & !stall_i) | (S_0 & !S_1 & S_2 & !S_3 & !stall_i) | (S_0 & !S_1 & !S_3 & cont_cmp_i & !stall_i)
 
 select_line1_o = (!S_1 & !S_2 & S_3 & !stall_i) | (S_1 & !S_2 & !S_3 & !stall_i) | (!S_0 & !S_1 & S_2 & !S_3 & !stall_i)
 
-select_line0_o = (S_0 & !S_1 & !S_2 & cont_cmp_i & !stall_i) | (!S_0 & !S_1 & S_2 & !S_3 & !stall_i) | (S_0 & S_1 & !S_2 & !S_3 & !stall_i) | (!S_0 & !S_1 & S_2 & cont_mov_i & !stall_i) | (S_0 & !S_1 & !S_2 & S_3 & !stall_i)
+select_line0_o = (!S_0 & !S_1 & S_2 & !S_3 & !stall_i) | (S_0 & !S_1 & !S_2 & S_3 & !stall_i) | (S_0 & !S_2 & !S_3 & cont_cmp_i & !stall_i) | (S_0 & S_1 & !S_2 & !S_3 & !stall_i) | (!S_0 & !S_1 & S_2 & cont_mov_i & !stall_i)
 

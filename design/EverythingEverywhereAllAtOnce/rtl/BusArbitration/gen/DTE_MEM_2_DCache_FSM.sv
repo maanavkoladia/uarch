@@ -132,14 +132,14 @@ and4$ NS_2_and2 (NS_2_t2, S_0, S_1_inv, S_2, mem_ready_i_inv);
 and6$ NS_2_and3 (NS_2_t3, S_0_inv, S_1_inv, S_2_inv, req_hit_i, bank_hit_i, others_busy_i_inv);
 or4$  NS_2_or  (NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3);
 
-// busy_o = (S_1 & !S_2) | (S_0 & !S_1) | (!S_1 & S_2)
+// busy_o = (!S_1 & S_2) | (S_1 & !S_2) | (S_0 & !S_2)
 wire busy_o_t0;
 wire busy_o_t1;
 wire busy_o_t2;
 
-and2$ busy_o_and0 (busy_o_t0, S_1, S_2_inv);
-and2$ busy_o_and1 (busy_o_t1, S_0, S_1_inv);
-and2$ busy_o_and2 (busy_o_t2, S_1_inv, S_2);
+and2$ busy_o_and0 (busy_o_t0, S_1_inv, S_2);
+and2$ busy_o_and1 (busy_o_t1, S_1, S_2_inv);
+and2$ busy_o_and2 (busy_o_t2, S_0, S_2_inv);
 or3$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2);
 
 // mem_valid_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
@@ -155,16 +155,16 @@ or3$  mem_valid_o_or  (mem_valid_o, mem_valid_o_t0, mem_valid_o_t1, mem_valid_o_
 // ld_req_o = (S_0 & !S_1 & S_2)
 and3$ ld_req_o_and (ld_req_o, S_0, S_1_inv, S_2);
 
-// Drive_Addr_Bus_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2) | (!S_1 & req_hit_i & bank_hit_i & !others_busy_i)
+// Drive_Addr_Bus_o = (!S_1 & S_2) | (S_1 & !S_2) | (S_0 & !S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_t0;
 wire Drive_Addr_Bus_o_t1;
 wire Drive_Addr_Bus_o_t2;
 wire Drive_Addr_Bus_o_t3;
 
-and2$ Drive_Addr_Bus_o_and0 (Drive_Addr_Bus_o_t0, S_0, S_1_inv);
+and2$ Drive_Addr_Bus_o_and0 (Drive_Addr_Bus_o_t0, S_1_inv, S_2);
 and2$ Drive_Addr_Bus_o_and1 (Drive_Addr_Bus_o_t1, S_1, S_2_inv);
-and2$ Drive_Addr_Bus_o_and2 (Drive_Addr_Bus_o_t2, S_1_inv, S_2);
-and4$ Drive_Addr_Bus_o_and3 (Drive_Addr_Bus_o_t3, S_1_inv, req_hit_i, bank_hit_i, others_busy_i_inv);
+and2$ Drive_Addr_Bus_o_and2 (Drive_Addr_Bus_o_t2, S_0, S_2_inv);
+and4$ Drive_Addr_Bus_o_and3 (Drive_Addr_Bus_o_t3, S_2_inv, req_hit_i, bank_hit_i, others_busy_i_inv);
 or4$  Drive_Addr_Bus_o_or  (Drive_Addr_Bus_o, Drive_Addr_Bus_o_t0, Drive_Addr_Bus_o_t1, Drive_Addr_Bus_o_t2, Drive_Addr_Bus_o_t3);
 
 // Drv_DB_0_o = (S_0 & !S_1 & !S_2)
