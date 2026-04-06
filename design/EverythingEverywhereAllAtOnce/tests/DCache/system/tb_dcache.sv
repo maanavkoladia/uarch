@@ -13,6 +13,11 @@ module tb_dcache ();
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
 
+    initial begin
+        $vcdpluson;
+        $vcdplusmemon;
+    end
+
     logic rst;
     wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus;
@@ -24,70 +29,72 @@ module tb_dcache ();
     logic [31 : 0] dataForBus;
     bool driveDataBus;
 
-    core_2_dcache_t inFromCore;
-    dcache_2_core_t out2Core;
-    dte_2_dcache_t inFromDTE;
-    dcache_2_scheduler_t out2Sch;
-
-    block_req_t block_req;
+    core_2_dcache_t core_2_dcache;
+    dcache_2_core_t dcache_2_core;
     dte_2_dcache_t dte_2_dcache;
-    
-    bool st_ovveride_fromArb;
-    initial begin
-        $vcdpluson;
-        $vcdplusmemon;
-    end
+
+    // ================= MEMORY =================
+    mem_2_dte_t mem_2_dte;
+    dte_2_mem_t dte_2_mem;
+
+    req_2_sch_t bestPick_req_2_dte;
+    logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] bestPick_bk_id_2_dte;
+
+
+    DCache_TOP uut0_dcache (
+        .clk(clk),
+        .rst(rst),
+        .inFromCore_i(core_2_dcache),
+        .out2Core_o(dcache_2_core),
+        .inFromDTE_i(dte_2_dcache),
+        .out2Sch_o(),
+        .dataBus(dataBus),
+        .address_bus(addrBus)
+    );
+
+    mem_TOP uut1_mem (
+        .clk(clk),
+        .rst(rst),
+        .address_bus(addrBus),
+        .data_bus(dataBus),
+        .inFromDte(dte_2_mem),
+        .out2Dte(mem_2_dte),
+        .out2Sch()
+    );
+
+    DTE uut2_DTE (
+        .clk(clk),
+        .rst(rst),
+        .bestPick_i(bestPick_req_2_dte),
+        .bestPick_bk_id_i(bestPick_bk_id_2_dte),
+        .dte_out_2_icache_o(),
+        .dte_out_2_dcache_o(),
+        .mem_2_dte_i(mem_2_dte),
+        .dte_2_mem_o(dte_2_mem),
+        .dte_2_dma_o(),
+        .dte_2_ddr5_o()
+    );
+
+    dcache_loader dcache_loader_unit ();
+    tb_memGen_InitRitual mem_loader_unit ();
 
     assign dataBus = driveDataBus ? dataForBus : 'z;
     assign addrBus = driveAddrBus ? addrForBus : 'z;
 
-    
-
-    DCache_Block uut0_dcache (
-        .clk_i(clk),
-        .rst_i(rst),
-        .block_req_i(block_req),
-        .mem_Valid_FromDte_i(dte_2_dcache.mem_valid[0]),
-        .evictionBuf_clr_FromDTE_i(dte_2_dcache.evictionBuf_clr[0]),
-        .evictionBuf_setCommiting_FromDTE_i(dte_2_dcache.evictionBuf_setCommiting[0]),
-        .permissionToDriveDataBus_evictionBuf(dte_2_dcache.permissionToDriveDataBus_evictionBuf[0]),
-        .permissionToDriveAddrBus_Ld(dte_2_dcache.permissionToDriveAddrBus_Ld[0]),
-        .permissionToDriveAddrBus_eb(dte_2_dcache.permissionToDriveAddrBus_eb[0]),
-
-        .st_override_for_sch_req(st_ovveride_fromArb),
-
-        .dataBus(dataBus),
-        .address_bus(addrBus),
-
-        .outputs_o()
-    );
-
-    dcache_loader dcache_loader_unit ();
-
     initial begin
-        `LOG("DCache Tb Starting up");
-        rst = 0;  //actve low
-        inFromCore = '{default: '0};
-        inFromDTE = '{default: '0};
-        driveAddrBus = 0;
-        driveDataBus = 0;
+        rst = 0;
         addrForBus = 0;
+        driveAddrBus = 0;
         dataForBus = 0;
-        dte_2_dcache = '{default : '0};
-        st_ovveride_fromArb = 0;
-
-        block_req = '{default: '0}; 
-
+        driveDataBus = 0;
+        core_2_dcache = '{default: '0};
+        for (int i = 0; i < NUM_DCACHE_PORTS; i++) core_2_dcache.stq_heads[i].empty = 1;
+        core_2_dcache.stq_info_mio.empty = 1;
+        bestPick_req_2_dte = NO_REQ;
+        bestPick_bk_id_2_dte = 0;
         DelayCLKs(10);
-        @(posedge clk)
-        rst = 1;  //actve low
-        DelayCLKs(10);
-        //@(posedge clk)
-        block_req.oe = 1;
-        block_req.we = 0;
-        block_req.p_addr = 15'h2000;
-        block_req.vec = 0;
-        block_req.st_q_data = '{default: '0};
+
+        rst = 1;
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
@@ -95,5 +102,7 @@ module tb_dcache ();
         DelayCLKs(30);
         `LOG("DCache  Tb Complete");
         $finish;
+
     end
+
 endmodule

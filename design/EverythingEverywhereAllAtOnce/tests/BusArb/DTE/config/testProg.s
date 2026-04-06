@@ -26,7 +26,6 @@ _start:
 #loop:
     #jmp   loop
 
-
     .org x2000
     .data
 

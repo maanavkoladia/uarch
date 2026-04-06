@@ -22,6 +22,8 @@ module DCache_Bank (
 
     input block_req_t blockReq_i,
 
+    input bool block_busy_i,
+
     //data bus is only an input here, outputs go to V$
     input wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus,
 
@@ -35,8 +37,6 @@ module DCache_Bank (
         logic ldFrom_V_swap;
         logic clr_v_swap;
         logic MakeReq;
-        logic saveReq;
-        logic useSaved_Req;
         logic Blocked;
         logic busy;
         logic fill0;
@@ -46,16 +46,21 @@ module DCache_Bank (
     } dcache_fsm_outputs_t;
     dcache_fsm_outputs_t fsmOuts;
 
+
     dcache_bank_fsm_states_e dcache_bank_State;
     logic [$clog2(NUM_DCACHE_BANK_FSM_STATES) - 1 : 0] dcache_bank_State_bits;
     assign dcache_bank_State = dcache_bank_State_bits;
 
+
     //nned to create the dcache swap buffer
-    swap_buf_t dcache_bank_swapBuf;
+    swap_buf_t  dcache_bank_swapBuf;
 
     block_req_t savedReq;
     block_req_t reqInUse;
-    assign reqInUse = fsmOuts.useSaved_Req ? savedReq : blockReq_i;
+    bool saveReq, useSavedReq;
+    assign saveReq = !fsmOuts.busy;
+    assign useSavedReq = fsmOuts.busy;
+    assign reqInUse = useSavedReq ? savedReq : blockReq_i;
 
     p_addr_dcache_fields_t blockReq_p_addr_fields;
     assign blockReq_p_addr_fields = '{
@@ -89,7 +94,7 @@ module DCache_Bank (
         .EB_Hit_i(eb_i.reqHit),
         .Line_valid_i(currLineValid),
         .DTE_Mem_valid_i(mem_Valid_FromDte_i),
-        .D_Swap_valid_i(),
+        .D_Swap_valid_i(dcache_bank_swapBuf.valid),
         .we_i(reqInUse.we),
 
         .S_0(dcache_bank_State_bits[0]),  // current-state bit 0 (LSB)
@@ -102,8 +107,6 @@ module DCache_Bank (
         .ldFrom_V_swap_o(fsmOuts.ldFrom_V_swap),
         .clr_v_swap_o(fsmOuts.clr_v_swap),
         .MakeReq_o(fsmOuts.MakeReq),
-        .saveReq_o(fsmOuts.saveReq),
-        .useSaved_Req_o(fsmOuts.useSaved_Req),
         .Blocked_o(fsmOuts.Blocked),
         .busy_o(fsmOuts.busy),
         .fill0_o(fsmOuts.fill0),
@@ -113,6 +116,7 @@ module DCache_Bank (
     );
 
     DCache_Bank_DataStore DCache_Bank_DataStore_unit (
+        .clk(clk),
         .rst(rst),
         .p_addr_i(reqInUse.p_addr),
         .oe(reqInUse.oe),
@@ -125,7 +129,7 @@ module DCache_Bank (
         .fill3_i(fsmOuts.fill3),
 
         .write2_Dwap_i(fsmOuts.write_to_dswap),
-        .bankControllerBusy_i(fsmOuts.busy),
+        .bankControllerBusy_i(block_busy_i),
         .st_q_data(reqInUse.st_q_data),
         .st_data_vec(reqInUse.vec),
         .VCache_SwapBuf_Line_i(V_Cache_i.vcache_swapBuf.line),
@@ -146,7 +150,7 @@ module DCache_Bank (
         .V_Cache_SwapBuf_DirtyBit(V_Cache_i.vcache_swapBuf.dirty),
         .fill3_i(fsmOuts.fill3),
         .write2_Dwap_i(fsmOuts.write_to_dswap),
-        .bankControllerBusy_i(fsmOuts.busy),
+        .bankControllerBusy_i(block_busy_i),
         .writeSuccess(writeSuccess2TagStore),  //
         .tagOut_o(currTag),
         .currLine_V_o(currLineValid),
@@ -158,16 +162,6 @@ module DCache_Bank (
         if (!rst) begin
             dcache_bank_swapBuf <= '{default: '0};
         end else begin
-            //valid bit logic
-            //unique case ({
-            //    fsmOuts.write_to_dswap_o, V_Cache_i.D_Cache_swapBuf_valid_clr
-            //})
-            //    2'b00: dcache_bank_swapBuf.valid <= dcache_bank_swapBuf.valid;
-            //    2'b01: dcache_bank_swapBuf.valid <= 0;
-            //    2'b10: dcache_bank_swapBuf.valid <= 1;
-            //    2'b11: if (rst) $fatal;
-            //endcase
-
             if (V_Cache_i.D_Cache_swapBuf_valid_clr) dcache_bank_swapBuf.valid <= 0;
             if (fsmOuts.write_to_dswap) begin
                 dcache_bank_swapBuf.valid <= 1;
@@ -187,12 +181,12 @@ module DCache_Bank (
 
     always_ff @(posedge clk) begin
         if (!rst) savedReq <= '{default: '0};
-        else if (fsmOuts.saveReq) savedReq <= blockReq_i;
+        else if (saveReq) savedReq <= blockReq_i;
     end
 
 
     bool doAccess;
-    assign doAccess = !fsmOuts.busy && (reqInUse.oe || reqInUse.we);
+    assign doAccess = !block_busy_i && (reqInUse.oe || reqInUse.we);
     //need to do hit/miss logic
     always_comb begin
         miss = 0;

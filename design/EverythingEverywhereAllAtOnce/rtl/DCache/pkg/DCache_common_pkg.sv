@@ -152,18 +152,17 @@ NUM_DCACHE_BANK_FSM_STATES
 
 
     // Total number of states = 6
-    localparam int NUM_VCACHE_STATES = 6;
+    localparam int NUM_VCACHE_STATES = 5;
 
     // 3 bits required (matches spec)
     typedef enum logic [$clog2(
 NUM_VCACHE_STATES
 )-1:0] {
-        VCACHE_IDLE            = 3'd0,  // 000
-        VCACHE_LD_VC_SWAP      = 3'd1,  // 001
-        VCACHE_WAITEVICT       = 3'd2,  // 010
-        VCACHE_WRITE_2_HIT_IDX = 3'd3,  // 011
-        VCACHE_WRITE_2_LRU     = 3'd4,  // 100
-        VCACHE_ERROR           = 3'd5   // 101
+        VCACHE_IDLE       = 3'd0,  // 000
+        VCACHE_LD_VC_SWAP = 3'd1,  // 001
+        VCACHE_WAITEVICT  = 3'd2,  // 010
+        WRITE_2_VCACHE    = 3'd3,  // 011
+        VCACHE_ERROR      = 3'd4   // 101
     } vcache_fsm_states_e;
 
 endpackage

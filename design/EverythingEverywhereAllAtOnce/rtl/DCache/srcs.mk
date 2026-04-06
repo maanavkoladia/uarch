@@ -10,6 +10,7 @@ DCACHE_SRC_FILES = \
 					$(DCACHE_PATH_INTERNAL)DCache_Block/DCache_Bank/DCache_Bank_DataStore.sv	\
 					$(DCACHE_PATH_INTERNAL)DCache_Block/DCache_Bank/DCache_Bank_TagStore.sv	\
 					$(DCACHE_PATH_INTERNAL)DCache_Block/DCache_Bank/DCache_Bank.sv	\
+					$(DCACHE_PATH_INTERNAL)DCache_Block/VCache/LRU.sv	\
 					$(DCACHE_PATH_INTERNAL)DCache_Block/VCache/VCache_DataStore.sv	\
 					$(DCACHE_PATH_INTERNAL)DCache_Block/VCache/VCache_TagStore.sv	\
 					$(DCACHE_PATH_INTERNAL)DCache_Block/VCache/VCache.sv	\

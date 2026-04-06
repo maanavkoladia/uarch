@@ -21,7 +21,6 @@ CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/TLB/TLB.sv \
 				 $(CORE_PATH_INTERNAL)/SegmentTranslation/SegmentTranslation.sv \
 				 $(FETCH_SRC_FILES) \
-				 $(DECODE_SRC_FILES) \
 				 $(EXE_SRC_FILES)\
 				 $(RR_SRC_FILES) \
 				 $(DC_SRC_FILES) \
@@ -32,9 +31,9 @@ CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/StageLatches/MEM_Latches.sv \
 				 $(CORE_PATH_INTERNAL)/StageLatches/RR_Latches.sv \
 				 $(CORE_PATH_INTERNAL)/StageLatches/WB_Latches.sv \
-				 $(CORE_PATH_INTERNAL)/EveryThing_TOP.sv \
+#$(CORE_PATH_INTERNAL)/EveryThing_TOP.sv
 
-
+#$(DECODE_SRC_FILES)
 #no prodecode pakcages rn that need ot be compiled
 
 CORE_PKGS = \
