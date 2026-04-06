@@ -56,7 +56,7 @@ module DC (
     //in store flight and stq stall logic accounts for valid bits
     assign dep_stall = in_flight_stall | stq_stall;
 
-    assign arb_stall = ((req_rejected_mio & latches_i.MIO) 
+    assign arb_stall = ((req_rejected_mio & latches_i.MIO & latches_i.LD_OP) 
                             | (req_rejected_0 & latches_i.cs.LD_OP)
                             | (req_rejected_1 & latches_i.cs.LD_OP & latches_i.LD_XCL)
                         ) & latches_i.valid;
@@ -128,6 +128,7 @@ module DC (
         ld_addr_0:      ld_addr_0,
         ld_addr_1_V:    ld_addr_1_V,
         ld_addr_1:      ld_addr_1,
+        //mio sent to mio block not arbitration.. I think 
         ld_addr_MIO_V : latches_i.MIO & latches_i.cs.LD_OP & ~dep_stall,
         ld_addr_MIO :   ld_addr_0
     };
