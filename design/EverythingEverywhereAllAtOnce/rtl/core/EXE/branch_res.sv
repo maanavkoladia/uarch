@@ -31,6 +31,7 @@ module branch_res(
     bool taken;
     bool clr_exp_mode;
     bool flush;
+    bool far_flush;
     bool miss_prediction;
 
     bool second_flag_res;
@@ -67,7 +68,7 @@ module branch_res(
         
         if(is_far_i) begin
             miss_prediction = 1'b1;
-            flush = 1'b1;
+            far_flush = 1'b1;
         end
     end
 
@@ -76,6 +77,7 @@ module branch_res(
     assign outs_o = '{
         valid: valid_i,
         flush: flush, 
+        farFlush: far_flush, 
         miss_prediction: miss_prediction,  
         br_eip: br_eip_i,  
         neip: NEIP_i, 
@@ -85,7 +87,6 @@ module branch_res(
         clr_exp_mode: clr_exp_mode,  
         br_ucond: br_ucond_i
     };
-
 
 
 endmodule

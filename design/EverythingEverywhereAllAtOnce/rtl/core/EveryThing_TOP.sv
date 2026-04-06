@@ -57,14 +57,20 @@ module EveryThing_TOP (
         .clk(clk),
         .rst(rst),
         .nextLatches_i(rr_latches_next),
-        .latches_o(rr_latches)
+        .latches_o(rr_latches),
+        .write_enable_i(decode_outputs.rr_stage_latch_we),
+        .flush(exe_outputs.br_res_out.flush),
+        .farFlush(exe_outputs.br_res_out.farFlush)
     );
 
     DC_Latches dc_latches_unit (
         .clk(clk),
         .rst(rst),
         .nextLatches_i(dc_latches_next),
-        .latches_o(dc_latches)
+        .latches_o(dc_latches),
+        .write_enable_i(rr_outputs.dc_stage_latch_we),
+        .flush(exe_outputs.br_res_out.flush),
+        .farFlush(exe_outputs.br_res_out.farFlush)
     );
 
     MEM_Latches mem_latches_unit (
@@ -113,7 +119,7 @@ module EveryThing_TOP (
     Decode decode_unit (
         .clk(clk),
         .rst(rst),
-        .cs_limit(32'b1),  //need to wire in actual limit register
+        //.cs_limit(32'b1),  //need to wire in actual limit register
         .idm_outs_i(idm_outputs),
         .fetch_outs_i(fetch_outputs),
         .rr_outs_i(rr_outputs),

@@ -186,7 +186,7 @@ module RR (
             ST_XCL      : st_neuralnet_out.xcl,
             ST_PADDR_0  : st_neuralnet_out.paddy,
             ST_PADDR_1  : st_neuralnet_out.paddy_aligned,
-            ST_MIO      : st_neuralnet_out.mio,
+            MIO         : st_neuralnet_out.mio,
             NEIP        : latchesInUse.NEIP,
             EIP         : latchesInUse.EIP,
             EAX         : latchesInUse.EAX,
