@@ -215,53 +215,53 @@ module tb_DTE ();
         .idm_outs_o(idm_info_i)
     );
 
-    Decode decode_uut(
-        .clk(clk),
-        .rst(rst),
-        .idm_outs_i(idm_info_i),
-        .fetch_outs_i(fetch_outs_o),
-        .rr_outs_i(rr_outs_i),
-        .dc_outs_i(dc_outs_i),
-        .mem_outs_i(mem_outs_i),
-        .exe_outs_i(exe_outs_i),
-        .wb_outs_i(wb_outs_i),
-        .rr_latches_next(rr_latches_next),
-        .outs_o(decode_outs_i)
-    );
+    // Decode decode_uut(
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .idm_outs_i(idm_info_i),
+    //     .fetch_outs_i(fetch_outs_o),
+    //     .rr_outs_i(rr_outs_i),
+    //     .dc_outs_i(dc_outs_i),
+    //     .mem_outs_i(mem_outs_i),
+    //     .exe_outs_i(exe_outs_i),
+    //     .wb_outs_i(wb_outs_i),
+    //     .rr_latches_next(rr_latches_next),
+    //     .outs_o(decode_outs_i)
+    // );
 
-    RR_Latches rr_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .write_enable_i(decode_outs_i.rr_stage_latch_we),
-        .flush(exe_outs_i.br_res_out.flush),
-        .farFlush(exe_outs_i.br_res_out.farFlush),
-        .nextLatches_i(rr_latches_next),
-        .latches_o(rr_latches)
-    );
+    // RR_Latches rr_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .write_enable_i(decode_outs_i.rr_stage_latch_we),
+    //     .flush(exe_outs_i.br_res_out.flush),
+    //     .farFlush(exe_outs_i.br_res_out.farFlush),
+    //     .nextLatches_i(rr_latches_next),
+    //     .latches_o(rr_latches)
+    // );
 
-    RR rr_uut(
-        .clk(clk),
-        .rst(rst),
-        .latches_i(rr_latches),
-        .fetch_outs_i(fetch_outs_o),
-        .decode_outs_i(decode_outs_i),
-        .dc_outs_i(dc_outs_i),
-        .mem_outs_i(mem_outs_i),
-        .exe_outs_i(exe_outs_i),
-        .wb_outs_i(wb_outs_i),
-        .dc_latches_next(dc_latches_next),
-        .outs_o(rr_outs_i)
-    );
+    // RR rr_uut(
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .latches_i(rr_latches),
+    //     .fetch_outs_i(fetch_outs_o),
+    //     .decode_outs_i(decode_outs_i),
+    //     .dc_outs_i(dc_outs_i),
+    //     .mem_outs_i(mem_outs_i),
+    //     .exe_outs_i(exe_outs_i),
+    //     .wb_outs_i(wb_outs_i),
+    //     .dc_latches_next(dc_latches_next),
+    //     .outs_o(rr_outs_i)
+    // );
 
-    DC_Latches dc_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .write_enable_i(rr_outs_i.dc_stage_latch_we),
-        .flush(exe_outs_i.br_res_out.flush),
-        .farFlush(exe_outs_i.br_res_out.farFlush),
-        .nextLatches_i(dc_latches_next),
-        .latches_o(dc_latches)
-    );
+    // DC_Latches dc_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .write_enable_i(rr_outs_i.dc_stage_latch_we),
+    //     .flush(exe_outs_i.br_res_out.flush),
+    //     .farFlush(exe_outs_i.br_res_out.farFlush),
+    //     .nextLatches_i(dc_latches_next),
+    //     .latches_o(dc_latches)
+    // );
 
     // DC dc_unit (
     //     .clk(clk),
@@ -353,9 +353,11 @@ module tb_DTE ();
     //     decode_gp: 0
     // };
 
+    assign decode_outs_i = '{default: '0};
+
     
     //code segment is at 0
-    //assign rr_outs_i = '{default: '0};
+    assign rr_outs_i = '{default: '0};
     //decode worked fine when I had this above line uncommented
     //need to check how the rr_outs_i is being set or initialized
     assign dc_outs_i = '{default: '0};
@@ -394,7 +396,7 @@ module tb_DTE ();
         rst = 1;
         release fetch_uut.SPC;
         @(posedge clk)
-        display_state();
+        //display_state();
 
 
         
@@ -423,12 +425,12 @@ module tb_DTE ();
         // @(posedge clk) bestPick_req_2_dte = ICACHE_LOW_PRI_REQ;
         // @(posedge clk) @(posedge clk) @(posedge clk) bestPick_req_2_dte = DCACHE_EB_BLOCKING_LD;
         // bestPick_bk_id_2_dte = 3;
-        set_limit_regs();   //task to set segment limit
+        //set_limit_regs();   //task to set segment limit
         DelayClks(9);
         @(posedge clk)
-        force decode_uut.EIP = 32'h1000;
+        //force decode_uut.EIP = 32'h1000;
         @(posedge clk)
-        release decode_uut.EIP;
+        //release decode_uut.EIP;
 
         // @(posedge clk)
         // @(posedge clk)
@@ -446,8 +448,8 @@ module tb_DTE ();
         // let it idle for a bit, shoudl countinues to rx no_reqs from
         // sceduler
         DelayClks(20);
-        display_icache_contents();
-        display_state();
+        //display_icache_contents();
+        //display_state();
         //now give it a pick ...
         //need to test all the picks and getting new picks while one fsm is
         //running to enure that another dte fsm doesnt startup
@@ -609,13 +611,13 @@ module tb_DTE ();
     endfunction
 
     //task to set limit regs
-    task automatic set_limit_regs();
-            rr_uut.SEGMENT_LIMITS[CS_LIMIT_ID] = 32'h0000_4FFF;
-            rr_uut.SEGMENT_LIMITS[DS_LIMIT_ID] = 32'h0000_11FF;
-            rr_uut.SEGMENT_LIMITS[SS_LIMIT_ID] = 32'h0000_4000;
-            rr_uut.SEGMENT_LIMITS[ES_LIMIT_ID] = 32'h0000_03FF;
-            rr_uut.SEGMENT_LIMITS[FS_LIMIT_ID] = 32'h0000_03FF;
-            rr_uut.SEGMENT_LIMITS[GS_LIMIT_ID] = 32'h0000_07FF;
-    endtask
+    // task automatic set_limit_regs();
+    //         rr_uut.SEGMENT_LIMITS[CS_LIMIT_ID] = 32'h0000_4FFF;
+    //         rr_uut.SEGMENT_LIMITS[DS_LIMIT_ID] = 32'h0000_11FF;
+    //         rr_uut.SEGMENT_LIMITS[SS_LIMIT_ID] = 32'h0000_4000;
+    //         rr_uut.SEGMENT_LIMITS[ES_LIMIT_ID] = 32'h0000_03FF;
+    //         rr_uut.SEGMENT_LIMITS[FS_LIMIT_ID] = 32'h0000_03FF;
+    //         rr_uut.SEGMENT_LIMITS[GS_LIMIT_ID] = 32'h0000_07FF;
+    // endtask
 
 endmodule
