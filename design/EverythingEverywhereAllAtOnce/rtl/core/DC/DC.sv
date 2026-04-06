@@ -56,7 +56,7 @@ module DC (
     //in store flight and stq stall logic accounts for valid bits
     assign dep_stall = in_flight_stall | stq_stall;
 
-    assign arb_stall = ((req_rejected_mio & latches_i.MIO & latches_i.LD_OP) 
+    assign arb_stall = ((req_rejected_mio & latches_i.MIO & latches_i.cs.LD_OP) 
                             | (req_rejected_0 & latches_i.cs.LD_OP)
                             | (req_rejected_1 & latches_i.cs.LD_OP & latches_i.LD_XCL)
                         ) & latches_i.valid;
