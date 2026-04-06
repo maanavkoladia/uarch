@@ -8,8 +8,7 @@ module tb_Dec();
     reg rst; // active low
 
     // Struct signals for Decode module
-    reg [31:0] cs_limit;
-    idm_outputs_t idm_outs_i;
+    idm_outputs_t idm_info_i;
     fetch_outputs_t fetch_outs_o;
     rr_outputs_t rr_outs_i;
     dc_outputs_t dc_outs_i;
@@ -19,7 +18,7 @@ module tb_Dec();
     idm_slot_info_t idm_slot_actual, idm_slot_empty;
     rr_latches_t rr_latches_next, rr_latches;
     dc_latches_t dc_latches_next, dc_latches;
-    decode_outputs_t decode_outs_o;
+    decode_outputs_t decode_outs_i;
 
     // Example assign template for struct population:
     // assign idm_outs_i = '{ valid: 0, opcode: 0, ... };
@@ -34,7 +33,6 @@ module tb_Dec();
     // Framework for struct population (edit these as needed)
     // Example: assign idm_outs_i = '{ field1: value1, field2: value2, ... };
     // Populate these assignments with your desired values
-    assign cs_limit = 32'hFFFF_FFFF;
 
     //idm_slot init
     // assign idm_slot = '{
@@ -91,23 +89,6 @@ module tb_Dec();
     // idm_outs_i = '{valid: 1, opcode: 8'hFF, ...};
     // fetch_outs_i = '{fieldA: valueA, ...};
 
-
-    // Decode decode_uut(
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .cs_limit(cs_limit),
-    //     .idm_outs_i(idm_outs_i),
-    //     .fetch_outs_i(fetch_outs_i),
-    //     .rr_outs_i(rr_outs_i),
-    //     .dc_outs_i(dc_outs_i),
-    //     .mem_outs_i(mem_outs_i),
-    //     .exe_outs_i(exe_outs_i),
-    //     .wb_outs_i(wb_outs_i),
-    //     .rr_latches_next(rr_latches_next),
-    //     .outs_o(outs_o)
-    // );
-
-
     // IDM idm_uut1(
     //     .clk(clk),
     //     .rst(rst),
@@ -121,24 +102,23 @@ module tb_Dec();
         br_eip      : 32'h0000_FFFF,
         br_btb_target   : 32'h0000_FFFF,  //this is the btbs predicted target, 
         br_xcl      : 1'b0,
-        data        : '{8'h66, 8'h05, 8'hAD, 8'hDE,
-                8'h01, 8'hC1, 8'h00, 8'h00,
+        data        : '{8'h00, 8'h00, 8'h00, 8'h00,
                 8'h00, 8'h00, 8'h00, 8'h00,
-                8'h00, 8'h00, 8'h00, 8'h00}
+                8'h00, 8'h00, 8'hC1, 8'h01,
+                8'hDE, 8'hAD, 8'h05, 8'h66}
     };
 
     assign idm_slot_empty = '{default : '0};
 
-    assign idm_outs_i = '{
-        idm_slots : {idm_slot_actual, idm_slot_empty, idm_slot_empty, idm_slot_empty},
+    assign idm_info_i = '{
+        idm_slots : {idm_slot_empty, idm_slot_empty, idm_slot_empty, idm_slot_actual},
         valid_slots : 2'b01
     };
 
     Decode decode_uut(
         .clk(clk),
         .rst(rst),
-        .cs_limit(32'hFFFF_FFFF),    //fill have to feed in real cs_limit at some point
-        .idm_outs_i(idm_outs_i),
+        .idm_outs_i(idm_info_i),
         .fetch_outs_i(fetch_outs_o),
         .rr_outs_i(rr_outs_i),
         .dc_outs_i(dc_outs_i),
@@ -146,12 +126,15 @@ module tb_Dec();
         .exe_outs_i(exe_outs_i),
         .wb_outs_i(wb_outs_i),
         .rr_latches_next(rr_latches_next),
-        .outs_o(decode_outs_o)
+        .outs_o(decode_outs_i)
     );
 
     RR_Latches rr_latches_unit (
         .clk(clk),
         .rst(rst),
+        .write_enable_i(decode_outs_i.rr_stage_latch_we),
+        .flush(exe_outs_i.br_res_out.flush),
+        .farFlush(exe_outs_i.br_res_out.farFlush),
         .nextLatches_i(rr_latches_next),
         .latches_o(rr_latches)
     );
@@ -161,7 +144,7 @@ module tb_Dec();
         .rst(rst),
         .latches_i(rr_latches),
         .fetch_outs_i(fetch_outs_o),
-        .decode_outs_i(decode_outs_o),
+        .decode_outs_i(decode_outs_i),
         .dc_outs_i(dc_outs_i),
         .mem_outs_i(mem_outs_i),
         .exe_outs_i(exe_outs_i),
@@ -173,6 +156,9 @@ module tb_Dec();
     DC_Latches dc_latches_unit (
         .clk(clk),
         .rst(rst),
+        .write_enable_i(rr_outs_i.dc_stage_latch_we),
+        .flush(exe_outs_i.br_res_out.flush),
+        .farFlush(exe_outs_i.br_res_out.farFlush),
         .nextLatches_i(dc_latches_next),
         .latches_o(dc_latches)
     );
@@ -198,4 +184,14 @@ module tb_Dec();
         clk = 0;
         forever #10 clk = ~clk; // 5ns high, 5ns low
     end
+
+    //task to set limit regs
+    task automatic set_limit_regs();
+            rr_uut.SEGMENT_LIMITS[CS_LIMIT_ID] = 32'h0000_4FFF;
+            rr_uut.SEGMENT_LIMITS[DS_LIMIT_ID] = 32'h0000_11FF;
+            rr_uut.SEGMENT_LIMITS[SS_LIMIT_ID] = 32'h0000_4000;
+            rr_uut.SEGMENT_LIMITS[ES_LIMIT_ID] = 32'h0000_03FF;
+            rr_uut.SEGMENT_LIMITS[FS_LIMIT_ID] = 32'h0000_03FF;
+            rr_uut.SEGMENT_LIMITS[GS_LIMIT_ID] = 32'h0000_07FF;
+    endtask
 endmodule

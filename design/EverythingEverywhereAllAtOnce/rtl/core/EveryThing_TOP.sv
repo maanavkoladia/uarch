@@ -53,141 +53,141 @@ module EveryThing_TOP (
         };
 
 
-    RR_Latches rr_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(rr_latches_next),
-        .latches_o(rr_latches)
-    );
+    // RR_Latches rr_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .nextLatches_i(rr_latches_next),
+    //     .latches_o(rr_latches)
+    // );
 
-    DC_Latches dc_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(dc_latches_next),
-        .latches_o(dc_latches)
-    );
+    // DC_Latches dc_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .nextLatches_i(dc_latches_next),
+    //     .latches_o(dc_latches)
+    // );
 
-    MEM_Latches mem_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(mem_latches_next),
-        .latches_o(mem_latches)
-    );
+    // MEM_Latches mem_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .nextLatches_i(mem_latches_next),
+    //     .latches_o(mem_latches)
+    // );
 
-    EXE_Latches exe_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(exe_latches_next),
-        .latches_o(exe_latches)
-    );
+    // EXE_Latches exe_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .nextLatches_i(exe_latches_next),
+    //     .latches_o(exe_latches)
+    // );
 
-    WB_Latches wb_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(wb_latches_next),
-        .latches_o(wb_latches)
-    );
+    // WB_Latches wb_latches_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .nextLatches_i(wb_latches_next),
+    //     .latches_o(wb_latches)
+    // );
 
-    Fetch fetch_unit (
-        .clk(clk),
-        .rst(rst),
-        .icache_info_i(ICacheIn_i),
-        .idm_info_i(idm_outputs),
-        .decode_outs_i(decode_outputs),
-        .rr_outs_i(rr_outputs),
-        .dc_outs_i(dc_outputs),
-        .mem_outs_i(mem_outputs),
-        .exe_outs_i(exe_outputs),
-        .dma_int(inFromDMA_i.intOut),
-        .wb_outs_i(wb_outputs),
-        .outs_o(fetch_outputs)
-    );
+    // Fetch fetch_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .icache_info_i(ICacheIn_i),
+    //     .idm_info_i(idm_outputs),
+    //     .decode_outs_i(decode_outputs),
+    //     .rr_outs_i(rr_outputs),
+    //     .dc_outs_i(dc_outputs),
+    //     .mem_outs_i(mem_outputs),
+    //     .exe_outs_i(exe_outputs),
+    //     .dma_int(inFromDMA_i.intOut),
+    //     .wb_outs_i(wb_outputs),
+    //     .outs_o(fetch_outputs)
+    // );
 
-    IDM idm_unit (
-        .clk(clk),
-        .rst(rst),
-        .fetch_outs_i(fetch_outputs),
-        .idm_outs_o(idm_outputs)
-    );
+    // IDM idm_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .fetch_outs_i(fetch_outputs),
+    //     .idm_outs_o(idm_outputs)
+    // );
 
-    Decode decode_unit (
-        .clk(clk),
-        .rst(rst),
-        .cs_limit(32'b1),  //need to wire in actual limit register
-        .idm_outs_i(idm_outputs),
-        .fetch_outs_i(fetch_outputs),
-        .rr_outs_i(rr_outputs),
-        .dc_outs_i(dc_outputs),
-        .mem_outs_i(mem_outputs),
-        .exe_outs_i(exe_outputs),
-        .wb_outs_i(wb_outputs),
-        .rr_latches_next(rr_latches_next),
-        .outs_o(decode_outputs)
-    );
+    // Decode decode_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .cs_limit(32'b1),  //need to wire in actual limit register
+    //     .idm_outs_i(idm_outputs),
+    //     .fetch_outs_i(fetch_outputs),
+    //     .rr_outs_i(rr_outputs),
+    //     .dc_outs_i(dc_outputs),
+    //     .mem_outs_i(mem_outputs),
+    //     .exe_outs_i(exe_outputs),
+    //     .wb_outs_i(wb_outputs),
+    //     .rr_latches_next(rr_latches_next),
+    //     .outs_o(decode_outputs)
+    // );
 
-    RR rr_unit (
-        .clk(clk),
-        .rst(rst),
-        .latches_i(rr_latches),
-        .fetch_outs_i(fetch_outputs),
-        .decode_outs_i(decode_outputs),
-        .dc_outs_i(dc_outputs),
-        .mem_outs_i(mem_outputs),
-        .exe_outs_i(exe_outputs),
-        .wb_outs_i(wb_outputs),
-        .dc_latches_next(dc_latches_next),
-        .outs_o(rr_outputs)
-    );
+    // RR rr_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .latches_i(rr_latches),
+    //     .fetch_outs_i(fetch_outputs),
+    //     .decode_outs_i(decode_outputs),
+    //     .dc_outs_i(dc_outputs),
+    //     .mem_outs_i(mem_outputs),
+    //     .exe_outs_i(exe_outputs),
+    //     .wb_outs_i(wb_outputs),
+    //     .dc_latches_next(dc_latches_next),
+    //     .outs_o(rr_outputs)
+    // );
 
-    DC dc_unit (
-        .clk(clk),
-        .rst(rst),
-        .latches_i(dc_latches),
-        .mem_outs_i(mem_outputs),
-        .exe_outs_i(exe_outputs),
-        .wb_outs_i(wb_outputs),
-        .mem_latches_next_o(mem_latches_next),
-        .req_rejected_mio(DCacheIn_i.req_rejected_mio),
-        .req_rejected_0(DCacheIn_i.req_rejected_0),
-        .req_rejected_1(DCacheIn_i.req_rejected_1),
-        .dc_outs_o(dc_outputs)
-    );
+    // DC dc_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .latches_i(dc_latches),
+    //     .mem_outs_i(mem_outputs),
+    //     .exe_outs_i(exe_outputs),
+    //     .wb_outs_i(wb_outputs),
+    //     .mem_latches_next_o(mem_latches_next),
+    //     .req_rejected_mio(DCacheIn_i.req_rejected_mio),
+    //     .req_rejected_0(DCacheIn_i.req_rejected_0),
+    //     .req_rejected_1(DCacheIn_i.req_rejected_1),
+    //     .dc_outs_o(dc_outputs)
+    // );
 
-    MEM mem_unit (
-        .clk(clk),
-        .rst(rst),
+    // MEM mem_unit (
+    //     .clk(clk),
+    //     .rst(rst),
 
-        .latches_i (mem_latches),
-        .exe_outs_i(exe_outputs),
-        .wb_outs_i (wb_outputs),
+    //     .latches_i (mem_latches),
+    //     .exe_outs_i(exe_outputs),
+    //     .wb_outs_i (wb_outputs),
 
-        .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
-        .line_0(DCacheIn_i.line_0),
-        .hit_line_1(DCacheIn_i.hit_line_1),
-        .line_1(DCacheIn_i.line_1),
-        .exe_latches_next_o(exe_latches_next),
-        .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
-        .line_MMIO(DCacheIn_i.line_MIO),
-        .outs_o(mem_outputs)
-    );
+    //     .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
+    //     .line_0(DCacheIn_i.line_0),
+    //     .hit_line_1(DCacheIn_i.hit_line_1),
+    //     .line_1(DCacheIn_i.line_1),
+    //     .exe_latches_next_o(exe_latches_next),
+    //     .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
+    //     .line_MMIO(DCacheIn_i.line_MIO),
+    //     .outs_o(mem_outputs)
+    // );
 
-    EXE execute_unit (
-        .clk(clk),
-        .rst(rst),
-        .latches_i(exe_latches),
-        .wb_outs_i(wb_outputs),
-        .wb_latches_next_o(wb_latches_next),
-        .outs_o(exe_outputs)
-    );
+    // EXE execute_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .latches_i(exe_latches),
+    //     .wb_outs_i(wb_outputs),
+    //     .wb_latches_next_o(wb_latches_next),
+    //     .outs_o(exe_outputs)
+    // );
 
-    WB write_back_unit (
-        .clk(clk),
-        .rst(rst),
-        .wb_latches(wb_latches),
-        .write_success(DCacheIn_i.writeSuccess),
-        .write_success_mio(DCacheIn_i.writeSuccess_MIO),
-        .outputs(wb_outputs)
-    );
+    // WB write_back_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .wb_latches(wb_latches),
+    //     .write_success(DCacheIn_i.writeSuccess),
+    //     .write_success_mio(DCacheIn_i.writeSuccess_MIO),
+    //     .outputs(wb_outputs)
+    // );
 
 
 
