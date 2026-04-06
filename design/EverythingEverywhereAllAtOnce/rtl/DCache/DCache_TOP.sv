@@ -40,7 +40,8 @@ module DCache_TOP (
         .req_rejected_0_o(arb_req_rejected_0_out),
         .req_rejected_1_o(arb_req_rejected_1_out),
         .reqs_2_blocks_o(req_2_blocks),
-        .st_override_o(arb_st_override_Out)
+        .st_override_o(arb_st_override_Out),
+        .writeSuccess_o(out2Core_o.writeSuccess)
     );
 
     generate
@@ -85,11 +86,11 @@ module DCache_TOP (
 
     //deal w the outputs
     //st_q write uccess logic
-    always_comb begin
-        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            if (req_2_blocks[i].we && blockOutputs[i].hit_o) out2Core_o.writeSuccess[i] = 1;
-        end
-    end
+    //always_comb begin
+    //    for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
+    //        if (req_2_blocks[i].we && blockOutputs[i].hit_o) out2Core_o.writeSuccess[i] = 1;
+    //    end
+    //end
 
     //line0 line 1 logic
     always_comb begin
@@ -129,5 +130,6 @@ module DCache_TOP (
     assign out2Core_o.req_rejected_0 = arb_req_rejected_0_out;
     assign out2Core_o.req_rejected_1 = arb_req_rejected_1_out;
     assign out2Sch_o.req_mio = mio_block_outputs.req_2_sch;
+
 endmodule
 
