@@ -3,10 +3,9 @@ TODO:
 - IRETD for EXE
 - Data size vector creation
 - Decode to add the upper8 lower 8 for data size conversion
-- df flag scoreboard needs to be created
-- exe needs to send back df flag (and zf flag cant remember)
 - decode kogge stone with muxes rather than instruction length 
 - writeback
+
 - mem bank port
 - mem controller port
 - mio cache line in dcache logic

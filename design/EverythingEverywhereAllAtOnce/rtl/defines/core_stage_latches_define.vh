@@ -1,0 +1,1 @@
+`define EXE_BUFFER_SIZE (32)

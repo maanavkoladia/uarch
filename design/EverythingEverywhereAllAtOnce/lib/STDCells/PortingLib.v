@@ -1,5 +1,5 @@
-module buffer_delay_stages$ #(
-    parameter integer STAGES = 4
+module mps_buffer_delay_stages #(
+    parameter integer STAGES = 1
 ) (
     input  wire in,
     output wire out
@@ -22,4 +22,24 @@ module buffer_delay_stages$ #(
 
 endmodule
 
+module mps_tristateL_width #(
+    parameter WIDTH = 1
+) (
+    input              enbar,
+    input  [WIDTH-1:0] in,
+    output [WIDTH-1:0] out
+);
 
+    genvar i;
+
+    generate
+        for (i = 0; i < WIDTH; i = i + 1) begin : gen_tri
+            tristateL$ u_tristate (
+                .enbar(enbar),
+                .in   (in[i]),
+                .out  (out[i])
+            );
+        end
+    endgenerate
+
+endmodule

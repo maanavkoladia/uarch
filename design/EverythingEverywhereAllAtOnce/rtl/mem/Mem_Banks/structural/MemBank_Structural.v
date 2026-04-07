@@ -1,49 +1,5 @@
-
-`define CACHE_LINES_SIZE_B 16
-`define CACHE_LINES_SIZE_Bits (`CACHE_LINES_SIZE_B * 8)
-
-`define ADDRESS_BITS 32
-`define PAGE_SIZE 4096
-`define PHY_MEM_SIZE (1 << 15)
-
-// buses
-`define DATA_BUS_WIDTH_BITS 32
-`define ADDRESS_BUS_WIDTH_BITS 32
-
-// derived (manual clog2 replacement)
-`define PHY_MEM_ADDR_BITS 15   // log2(1<<15)
-
-// queue / structure sizes
-`define NUM_WB_ST_QS 4
-`define ST_Q_DEPTH 4
-`define NUM_IDM_SLOTS 4
-
-`define MEM_BUS_SIZE `CACHE_LINES_SIZE_Bits
-
-`define NUM_SBS 22
-`define NUM_BANKS (64)
-`define NUM_BANK_GROUPS (8)
-`define NUM_BANKS_PER_BANK_GROUP (`NUM_BANKS / `NUM_BANK_GROUPS)
-
-
-`define NUM_OF_BANK_CHIPS (16)
-`define NUM_BANKS_PER_CHIP (`NUM_BANKS / `NUM_OF_BANK_CHIPS)
-
-`define NUM_SRAM_ADDRESS_WORD (32)
-
-// Replace $clog2 manually (since not available in Verilog-2005)
-`define NUM_SRAM_ADDRESS_BITS (5)   // log2(32) = 5
-
-`define MEM_SIZE (1 << 15)
-`define PHY_MEM_ADDRESS_SIZE (15)   // log2(2^15) = 15
-
-// Bit ranges
-`define MEM_BANKGROUP_BITS_UB (6)
-`define MEM_BANKGROUP_BITS_LD (4)
-
-`define MEM_CHIP_BITS_UB (9)
-`define MEM_CHIP_BITS_LD (6)
-
+include "../../../defines/common_define.vh"
+include "../../../defines/mem_common_define.vh"
 
 module MemBank_Structural (
     input wire clk,
@@ -55,12 +11,11 @@ module MemBank_Structural (
     input wire start_store,
     input wire ld_address_change,
     input wire driveMemBus,
-    input [7 : 0] writeBuf[`CACHE_LINES_SIZE_B],
-
+    input [`CACHE_LINES_SIZE_Bits : 0] writeBuf,
 
     inout [`MEM_BUS_SIZE - 1 : 0] mem_bus,
 
-    //mem_bank_out_t 
+    //mem_bank_out_t
     input wire precharged,
     input wire clear_writebufV
 
@@ -69,19 +24,98 @@ module MemBank_Structural (
     wire mem_bank_controller_we;
     wire mem_bank_controller_send_store_address;
     wire mem_bank_controller_send_store_address_delayed;
-
+    wire [$clog2(`BANK_CONTROLLER_FSM_LOGIC_STATES) - 1 : 0] mem_bank_controller_states_bits;
     //delay of .24, need four lined up
-    buffer_delay_stages$ U_mem_bank_controller_send_store_address_delay (
+    mps_buffer_delay_stages #(
+        .STAGES(4)
+    ) u0 (
         .out(mem_bank_controller_send_store_address_delayed),
         .in (mem_bank_controller_send_store_address)
     );
 
-    wire bank_address_i;
-    mux2_8$ u_bank_address_sel (
-        .Y  (),
-        .IN0(),
-        .IN1(),
-        .S0 ()
+    wire [`NUM_SRAM_ADDRESS_BITS-1:0] bank_address_i;
+    wire [`MEM_BUS_SIZE-1:0] bank_bus;
+    wire [`MEM_BUS_SIZE-1:0] bank_write_data;
+
+    //assign bank_write_data = {
+    //    controller2bank_i.writeBuf[15],
+    //    controller2bank_i.writeBuf[14],
+    //    controller2bank_i.writeBuf[13],
+    //    controller2bank_i.writeBuf[12],
+    //    controller2bank_i.writeBuf[11],
+    //    controller2bank_i.writeBuf[10],
+    //    controller2bank_i.writeBuf[9],
+    //    controller2bank_i.writeBuf[8],
+    //    controller2bank_i.writeBuf[7],
+    //    controller2bank_i.writeBuf[6],
+    //    controller2bank_i.writeBuf[5],
+    //    controller2bank_i.writeBuf[4],
+    //    controller2bank_i.writeBuf[3],
+    //    controller2bank_i.writeBuf[2],
+    //    controller2bank_i.writeBuf[1],
+    //    controller2bank_i.writeBuf[0]
+    //};
+
+    assign bank_write_data = writeBuf;
+    mux2_8$ u1 (
+        .Y  (bank_address_i),
+        .IN0(ld_address),
+        .IN1(st_address),
+        .S0 (mem_bank_controller_send_store_address_delayed)
     );
+
+    // bank internal bus
+    //assign bank_bus = !mem_bank_controller_we ? bank_write_data : 'z;
+    mps_tristateL_width #(
+        .WIDTH(`MEM_BUS_SIZE)
+    ) (
+        .enbar(mem_bank_controller_we),
+        .in (bank_write_data),
+        .out(bank_bus)
+    );
+
+    //assign mem_bus = controller2bank_i.driveMemBus ? bank_bus : 'z;
+    wire driveMemBus_bar;
+    inv1$ u2(.out(driveMemBus_bar), .in(driveMemBus));
+    mps_tristateL_width #(
+        .WIDTH(`MEM_BUS_SIZE)
+    ) (
+        .enbar(driveMemBus_bar),
+        .in (bank_bus),
+        .out(mem_bus)
+    );
+
+    genvar i_gen;
+    generate
+        for (i_gen = 0; i_gen < `NUM_SRAM_CELLS; i_gen++) begin : g_sram_cells
+
+            sram32x32$ mem_cell (
+                .A(bank_address_i),
+                .DIO(bank_bus[(i_gen+1)*(`MEM_BUS_SIZE/4)-1 : i_gen*(`MEM_BUS_SIZE/4)]),
+                .OE(mem_bank_controller_oe),
+                .WR(mem_bank_controller_we),
+                .CE(1'b0)  // always enabled
+            );
+        end
+    endgenerate
+
+    // instantiate the controller FSM
+    bank_controller_fsm_logic u0_Controller (
+        .clk(clk),
+        .rst(rst),
+        .ld_address_change_i(controller2bank_i.ld_address_change),
+        .start_store_i(controller2bank_i.start_store),
+        .S_0(mem_bank_controller_states_bits[0]),  // current-state bit 0
+        .S_1(mem_bank_controller_states_bits[1]),  // current-state bit 1
+        .S_2(mem_bank_controller_states_bits[2]),  // current-state bit 2
+        .S_3(mem_bank_controller_states_bits[3]),  // current-state bit 3
+        .S_4(mem_bank_controller_states_bits[4]),  // current-state bit 4
+        .st_addr_release_o(mem_bank_controller_send_store_address),
+        .OE_o(mem_bank_controller_oe),
+        .WE_o(mem_bank_controller_we),
+        .clear_writebufV_o(outputs.clear_writebufV),
+        .PreCharged_o(outputs.precharged)
+    );
+
 
 endmodule
