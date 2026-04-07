@@ -73,7 +73,7 @@ module AddyX_NeuralNet (
     assign outputs.pf0_exception = tlb0_out.pageFault;
     assign outputs.pf1_exception = tlb1_out.pageFault;
 
-    assign outputs.bank_hi = vaddy0_fields.index == vaddy1_fields.index;
+    assign outputs.bank_hi = vaddy0_fields.index != vaddy1_fields.index;
     assign outputs.xcl = (vaddy0_fields.bank[0] ^ vaddy1_fields.bank[0]) && mem_op;
     assign outputs.paddy_aligned = {tlb1_out.physical_addr[$clog2(PHY_MEM_SIZE) - 1 : 4], 4'b0};
 

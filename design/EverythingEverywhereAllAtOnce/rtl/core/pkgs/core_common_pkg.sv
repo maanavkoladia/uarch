@@ -96,7 +96,7 @@ package core_common_pkg;
         p_address_t ST_PADDR_1;  //cacheline algned
         bool ST_OP;
 
-        bool exe_stage_we;
+        bool exe_stage_latch_we;
     } mem_outputs_t;
 
     typedef struct {
@@ -130,7 +130,7 @@ package core_common_pkg;
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t ST_PADDR_1;  //cacheline algned
 
-        bool wb_stage_we;
+        bool wb_stage_latch_we;
     } exe_outputs_t;
 
     typedef struct {

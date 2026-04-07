@@ -51,23 +51,6 @@ module EveryThing_TOP (
             stq_heads : wb_outputs.stq_heads,
             stq_info_mio : wb_outputs.mio_head
         };
-
-    // EXE_Latches exe_latches_unit (
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .nextLatches_i(exe_latches_next),
-    //     .latches_o(exe_latches)
-    // );
-
-    // WB_Latches wb_latches_unit (
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .nextLatches_i(wb_latches_next),
-    //     .latches_o(wb_latches)
-    // );
-    
-    assign exe_outputs = '{default: '0};
-    assign mem_outputs = '{default: '0};
     
     always_comb begin
         wb_outputs = '{default: '0};
@@ -173,33 +156,52 @@ module EveryThing_TOP (
     );
 
 
+    MEM mem_unit (
+        .clk(clk),
+        .rst(rst),
 
-    // MEM mem_unit (
-    //     .clk(clk),
-    //     .rst(rst),
+        .latches_i (mem_latches),
+        .exe_outs_i(exe_outputs),
+        .wb_outs_i (wb_outputs),
 
-    //     .latches_i (mem_latches),
-    //     .exe_outs_i(exe_outputs),
-    //     .wb_outs_i (wb_outputs),
+        .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
+        .line_0(DCacheIn_i.line_0),
+        .hit_line_1(DCacheIn_i.hit_line_1),
+        .line_1(DCacheIn_i.line_1),
+        .exe_latches_next_o(exe_latches_next),
+        .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
+        .line_MMIO(DCacheIn_i.line_MIO),
+        .outs_o(mem_outputs)
+    );
 
-    //     .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
-    //     .line_0(DCacheIn_i.line_0),
-    //     .hit_line_1(DCacheIn_i.hit_line_1),
-    //     .line_1(DCacheIn_i.line_1),
-    //     .exe_latches_next_o(exe_latches_next),
-    //     .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
-    //     .line_MMIO(DCacheIn_i.line_MIO),
-    //     .outs_o(mem_outputs)
-    // );
 
-    // EXE execute_unit (
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .latches_i(exe_latches),
-    //     .wb_outs_i(wb_outputs),
-    //     .wb_latches_next_o(wb_latches_next),
-    //     .outs_o(exe_outputs)
-    // );
+    EXE_Latches exe_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(exe_latches_next),
+        .write_enable_i(mem_outputs.exe_stage_latch_we),
+        .flush(exe_outputs.br_res_out.flush),
+        .farFlush(exe_outputs.br_res_out.farFlush),
+        .latches_o(exe_latches)
+    );
+
+
+    EXE execute_unit (
+        .clk(clk),
+        .rst(rst),
+        .latches_i(exe_latches),
+        .wb_outs_i(wb_outputs),
+        .wb_latches_next_o(wb_latches_next),
+        .outs_o(exe_outputs)
+    );
+
+    WB_Latches wb_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(wb_latches_next),
+        .write_enable_i(exe_outputs.wb_stage_latch_we),
+        .latches_o(wb_latches)
+    );
 
     // WB write_back_unit (
     //     .clk(clk),

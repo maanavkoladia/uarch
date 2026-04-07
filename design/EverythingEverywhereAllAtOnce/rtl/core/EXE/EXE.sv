@@ -250,7 +250,7 @@ module EXE (
         ST_XCL: latches_i.ST_XCL,
         ST_PADDR_0: latches_i.ST_PADDR_0,
         ST_PADDR_1: latches_i.ST_PADDR_1,
-        wb_stage_we: wb_stage_we_valid_unit_o
+        wb_stage_latch_we: wb_stage_we_valid_unit_o
     };
 
     //==========================================================================

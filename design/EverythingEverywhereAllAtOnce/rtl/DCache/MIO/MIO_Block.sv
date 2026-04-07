@@ -80,7 +80,7 @@ module MIO_Block (
     end
 
     always_comb begin
-        unique case ({
+        case ({
             block_req.we, block_req.oe
         })
             2'b00: outputs_o.req_2_sch = NO_REQ;
@@ -91,7 +91,8 @@ module MIO_Block (
             outputs_o.req_2_sch = block_req.p_addr & WE_ADDR_MASK ? 
             DCACHE_MIO_WR_SIMPLE : DCACHE_MIO_WR_COMPLEX;
 
-            2'b11: $fatal;
+            default: begin
+            end
         endcase
     end
 

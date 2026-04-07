@@ -22,7 +22,7 @@ module MEM (
     input byte_t line_0[CACHE_LINES_SIZE_B],
 
     input bool hit_line_1,
-    input byte_t C1[CACHE_LINES_SIZE_B],
+    input byte_t line_1[CACHE_LINES_SIZE_B],
 
     input bool hit_line_MMIO,
     input byte_t line_MMIO[CACHE_LINES_SIZE_B],
@@ -38,8 +38,8 @@ module MEM (
 
     always_comb begin
         C0 = latches_i.MIO ? line_MMIO : line_0;  //mux
-        up_buf = latches_i.swapLines ? C0 : C1;
-        low_buf = latches_i.swapLines ? C1 : C0;
+        up_buf = latches_i.swapLines ? C0 : line_1;
+        low_buf = latches_i.swapLines ? line_1 : C0;
     end
 
     mem_miss_stall_logic mem_stall (
@@ -100,7 +100,7 @@ module MEM (
             ST_PADDR_0: latches_i.ST_PADDR_0,  //cacheline unalgned, ie actual addr
             ST_PADDR_1: latches_i.ST_PADDR_1,  //cacheline algned
             ST_OP: latches_i.cs.ST_OP,
-            wb_stage_we: exe_stage_we_valid_unit_o
+            exe_stage_latch_we: exe_stage_we_valid_unit_o
         };
 
 
