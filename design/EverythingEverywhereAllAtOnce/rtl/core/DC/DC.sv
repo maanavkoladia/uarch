@@ -8,7 +8,7 @@ module DC (
     input wire rst,
 
     //stage latches
-    input dc_latches_t latches_i, //assumign load input is not cache aligned
+    input dc_latches_t latches_i,  //assumign load input is not cache aligned
 
     //miss stall and valid, inflight store addys
     input mem_outputs_t mem_outs_i,
@@ -29,14 +29,14 @@ module DC (
 
 );
 
- 
+
     bool in_flight_stall;
     bool stq_stall;
     bool dep_stall;
     bool arb_stall;
     bool dc_stall;
 
-    
+
     bool ld_addr_0_V;
     bool ld_addr_1_V;
     p_address_t ld_addr_0;
@@ -119,45 +119,60 @@ module DC (
         .ld_addr_1(ld_addr_1)
     );
 
-
+    bool mem_stage_we_valid_unit_o;
+    bool mem_stage_next_vaild_o;
+    mem_valid_logic mem_valid_unit (
+        .MEM_we_o(mem_stage_we),
+        .N_MEM_V_o(mem_stage_next_vaild_o),
+        .DC_stall_i(dc_stall),
+        .DC_V_i(latches_i.valid),
+        .MEM_V_i(mem_outs_i.valid),
+        .MEM_stall_i(mem_outs_i.stall),
+        .EXE_V_i(exe_outs_i.valid),
+        .WB_stall_i(wb_outs_i.wb_stall)
+    );
 
     assign dc_outs_o = '{
-        valid:          latches_i.valid,
-        stall:          dc_stall,
-        ld_addr_0_V:    ld_addr_0_V,
-        ld_addr_0:      ld_addr_0,
-        ld_addr_1_V:    ld_addr_1_V,
-        ld_addr_1:      ld_addr_1,
-        //mio sent to mio block not arbitration.. I think 
-        ld_addr_MIO_V : latches_i.MIO & latches_i.cs.LD_OP & ~dep_stall,
-        ld_addr_MIO :   ld_addr_0
-    };
+            valid: latches_i.valid,
+            stall: dc_stall,
+            ld_addr_0_V: ld_addr_0_V,
+            ld_addr_0: ld_addr_0,
+            ld_addr_1_V: ld_addr_1_V,
+            ld_addr_1: ld_addr_1,
+            //mio sent to mio block not arbitration.. I think 
+            ld_addr_MIO_V :
+            (
+            latches_i.MIO & latches_i.cs.LD_OP & ~dep_stall
+            ),
+            ld_addr_MIO : ld_addr_0,
+            mem_stage_we : mem_stage_we_valid_unit_o
+        };
 
     //need to add valid logic once this is gened 
 
-    
+
     assign mem_latches_next_o = '{
-        valid:      latches_i.valid & ~dep_stall,  // FIXME: Also need to handle br flush from exe 
-        cs:         latches_i.mem_cs,
-        exe_cs:     latches_i.exe_cs,
-        wb_cs:      latches_i.wb_cs,
-        br_info:    latches_i.br_info,
-        ST_XCL:     latches_i.ST_XCL,
-        ST_PADDR_0: latches_i.ST_PADDR_0,
-        ST_PADDR_1: latches_i.ST_PADDR_1,
-        MIO:        latches_i.MIO,
-        NEIP:       latches_i.NEIP,
-        EIP:        latches_i.EIP,
-        EAX:        latches_i.EAX,
-        imm64:      latches_i.imm64,
-        sr_id:      latches_i.sr_id,
-        sr_data:    latches_i.sr_data,
-        dr_id:      latches_i.dr_id,
-        dr_data:    latches_i.dr_data,
-        LD_XCL:     latches_i.LD_XCL,
-        swapLines:  latches_i.swapLines,
-        LD_PADDR_0: latches_i.LD_PADDR_0,
-        LD_PADDR_1: latches_i.LD_PADDR_1
-    };
+            valid: mem_stage_next_vaild_o,
+            cs: latches_i.mem_cs,
+            exe_cs: latches_i.exe_cs,
+            wb_cs: latches_i.wb_cs,
+            br_info: latches_i.br_info,
+            ST_XCL: latches_i.ST_XCL,
+            ST_PADDR_0: latches_i.ST_PADDR_0,
+            ST_PADDR_1: latches_i.ST_PADDR_1,
+            MIO: latches_i.MIO,
+            NEIP: latches_i.NEIP,
+            EIP: latches_i.EIP,
+            EAX: latches_i.EAX,
+            imm64: latches_i.imm64,
+            sr_id: latches_i.sr_id,
+            sr_data: latches_i.sr_data,
+            dr_id: latches_i.dr_id,
+            dr_data: latches_i.dr_data,
+            LD_XCL: latches_i.LD_XCL,
+            swapLines: latches_i.swapLines,
+            LD_PADDR_0: latches_i.LD_PADDR_0,
+            LD_PADDR_1: latches_i.LD_PADDR_1
+        };
 
 endmodule

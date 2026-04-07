@@ -1,0 +1,11 @@
+# PLA for: wb_valid_logic
+.i 2
+.o 2
+.ilb EXE_V_i WB_stall_i
+.ob  WB_we_o N_WB_V_o
+.type fr
+00 10
+01 00
+10 11
+11 01
+.e

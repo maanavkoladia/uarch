@@ -85,7 +85,7 @@ package core_common_pkg;
         //mio stuf
         bool ld_addr_MIO_V;
         p_address_t ld_addr_MIO;
-
+        bool mem_stage_we;
     } dc_outputs_t;
 
     typedef struct {
@@ -94,7 +94,9 @@ package core_common_pkg;
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t ST_PADDR_1;  //cacheline algned
-        bool ST_OP; 
+        bool ST_OP;
+
+        bool exe_stage_we;
     } mem_outputs_t;
 
     typedef struct {
@@ -102,7 +104,7 @@ package core_common_pkg;
         bool flush;  //do we need to flush
         //jacob, when generating this make sure its only on valid
         //we don't want to cause unsesirde flusheds ie nuclear output signals when not valid
-        bool farFlush; //need ot generate using cs_isFar if farflush
+        bool farFlush;  //need ot generate using cs_isFar if farflush
         bool miss_prediction;  //was there a miss predict
         l_address_t br_eip;  //where is the br, this is for btb entries
         l_address_t neip;//for when we miss predict on a taken and we need to fall thrhough on a flush in decode(EIP) and fetch (SPC)
@@ -110,7 +112,7 @@ package core_common_pkg;
         bool taken;  //this is the correct resolution
         bool br_XCL;  //this is for btb entry
         bool clr_exp_mode;  //for the special exp br in the rom, to clear exp mode in fetch
-        bool br_ucond; //3/17 adding this for btb info on on if branch was unconditional - Jacob
+        bool br_ucond;  //3/17 adding this for btb info on on if branch was unconditional - Jacob
     } exe_br_resolution_outputs_t;
 
     typedef struct {
@@ -128,6 +130,7 @@ package core_common_pkg;
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t ST_PADDR_1;  //cacheline algned
 
+        bool wb_stage_we;
     } exe_outputs_t;
 
     typedef struct {

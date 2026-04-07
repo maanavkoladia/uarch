@@ -37,12 +37,12 @@ module MEM (
     bool miss_stall;
 
     always_comb begin
-        C0 = latches_i.MIO ? line_MMIO : line_0; //mux
+        C0 = latches_i.MIO ? line_MMIO : line_0;  //mux
         up_buf = latches_i.swapLines ? C0 : C1;
         low_buf = latches_i.swapLines ? C1 : C0;
     end
 
-    mem_miss_stall_logic mem_stall(
+    mem_miss_stall_logic mem_stall (
         .valid(latches_i.valid),
         .LD_XCL(latches_i.LD_XCL),
         .LD_OP(latches_i.cs.LD_OP),
@@ -53,43 +53,55 @@ module MEM (
         .miss_stall(miss_stall)
     );
 
+    bool exe_stage_we_valid_unit_o;
+    bool exe_stage_next_vaild_o;
+    EXE_valid_logic exe_valid_logic_unit (
+        .EXE_we_o(exe_stage_we_valid_unit_o),
+        .N_EXE_V_o(exe_stage_next_vaild_o),
+        .MEM_V_i(latches_i.valid),
+        .MEM_stall_i(miss_stall),
+        .EXE_V_i(exe_outs_i.valid),
+        .WB_stall_i(wb_outs_i.wb_stall)
+    );
+
     always_comb begin
         for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
             ld_buf[i] = low_buf[i];
-            ld_buf[i + CACHE_LINES_SIZE_B] = up_buf[i];
+            ld_buf[i+CACHE_LINES_SIZE_B] = up_buf[i];
         end
     end
 
 
     assign exe_latches_next_o = '{
-        valid: latches_i.valid,  //TODO need to actually create logic here (handle stall/flush)
-        cs: latches_i.exe_cs,
-        wb_cs: latches_i.wb_cs,
-        ST_XCL: latches_i.ST_XCL,
-        ST_PADDR_0: latches_i.ST_PADDR_0,
-        ST_PADDR_1: latches_i.ST_PADDR_1,
-        MIO: latches_i.MIO,
-        br_info: latches_i.br_info,
-        NEIP: latches_i.NEIP,
-        EIP: latches_i.EIP,
-        EAX: latches_i.EAX,
-        imm64: latches_i.imm64,
-        ld_buf: ld_buf,
-        sr_id: latches_i.sr_id,
-        sr_data: latches_i.sr_data,
-        dr_id: latches_i.dr_id,
-        dr_data: latches_i.dr_data,
-        ld_addy: latches_i.LD_PADDR_0 //rn this I Think is cache unaligned. 
-    };
+            valid: exe_stage_next_vaild_o,
+            cs: latches_i.exe_cs,
+            wb_cs: latches_i.wb_cs,
+            ST_XCL: latches_i.ST_XCL,
+            ST_PADDR_0: latches_i.ST_PADDR_0,
+            ST_PADDR_1: latches_i.ST_PADDR_1,
+            MIO: latches_i.MIO,
+            br_info: latches_i.br_info,
+            NEIP: latches_i.NEIP,
+            EIP: latches_i.EIP,
+            EAX: latches_i.EAX,
+            imm64: latches_i.imm64,
+            ld_buf: ld_buf,
+            sr_id: latches_i.sr_id,
+            sr_data: latches_i.sr_data,
+            dr_id: latches_i.dr_id,
+            dr_data: latches_i.dr_data,
+            ld_addy: latches_i.LD_PADDR_0  //rn this I Think is cache unaligned. 
+        };
 
     assign outs_o = '{
-        valid: latches_i.valid,
-        stall: miss_stall,
-        ST_XCL: latches_i.ST_XCL,  //valid bit or second set of st info if st_op
-        ST_PADDR_0: latches_i.ST_PADDR_0,  //cacheline unalgned, ie actual addr
-        ST_PADDR_1: latches_i.ST_PADDR_1,  //cacheline algned
-        ST_OP: latches_i.cs.ST_OP
-    };
+            valid: latches_i.valid,
+            stall: miss_stall,
+            ST_XCL: latches_i.ST_XCL,  //valid bit or second set of st info if st_op
+            ST_PADDR_0: latches_i.ST_PADDR_0,  //cacheline unalgned, ie actual addr
+            ST_PADDR_1: latches_i.ST_PADDR_1,  //cacheline algned
+            ST_OP: latches_i.cs.ST_OP,
+            wb_stage_we: exe_stage_we_valid_unit_o
+        };
 
 
 

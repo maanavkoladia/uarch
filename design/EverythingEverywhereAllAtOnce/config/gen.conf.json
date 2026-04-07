@@ -99,6 +99,24 @@
             "run Combinational SOP Gen": "true"
         },
 
+        "Mem_Valid_Logic" : {
+            "csv" : "rtl/core/DC/gen/mem_valid_logic.csv",
+            "outputFilePath": "rtl/core/DC/gen/mem_valid_logic.v",
+            "run Combinational SOP Gen": "true"
+        },
+
+        "EXE_Valid_Logic" : {
+            "csv" : "rtl/core/MEM/gen/EXE_valid_logic.csv",
+            "outputFilePath": "rtl/core/MEM/gen/EXE_valid_logic.v",
+            "run Combinational SOP Gen": "true"
+        },
+
+        "WB_Valid_Logic" : {
+            "csv" : "rtl/core/EXE/gen/wb_valid_logic.csv",
+            "outputFilePath": "rtl/core/EXE/gen/wb_valid_logic.v",
+            "run Combinational SOP Gen": "true"
+        },
+
         "4_2 pencoder" : {
             "csv" : "lib/STDCells/gen/4_2_pendcoder.csv",
             "outputFilePath" : "lib/STDCells/4_2_pendcoder.sv",

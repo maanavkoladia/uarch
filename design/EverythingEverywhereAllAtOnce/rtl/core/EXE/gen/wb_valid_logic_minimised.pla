@@ -1,0 +1,9 @@
+# Minimised SOP (Quine-McCluskey) for: wb_valid_logic
+.i 2
+.o 2
+.ilb EXE_V_i WB_stall_i
+.ob  WB_we_o N_WB_V_o
+.type f
+-0 10
+1- 01
+.e

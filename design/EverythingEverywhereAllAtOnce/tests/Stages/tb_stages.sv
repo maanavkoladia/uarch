@@ -68,8 +68,7 @@ module tb_stages();
     dma_2_scheduler_t dma_2_sch;
     dma_controller_2_core_t dma_2_core;
 
-
-   BusArbitration busArb(
+   BusArbitration uut4_busArb (
         .clk(clk),
         .rst(rst),
         .iCache_2_Sch_i(icache_2_sch),
@@ -84,7 +83,7 @@ module tb_stages();
         .dte_2_ddr5_o()
     );
     
-    mem_TOP uut1_mem (
+    mem_TOP uut_mem (
         .clk(clk),
         .rst(rst),
         .address_bus(address_bus),
@@ -94,7 +93,7 @@ module tb_stages();
         .out2Sch(mem_2_sch)
     );
 
-    DCache_TOP uut0_dcache (
+    DCache_TOP uut_dcache (
         .clk(clk),
         .rst(rst),
         .inFromCore_i(core_2_dcache),
@@ -105,7 +104,7 @@ module tb_stages();
         .address_bus(address_bus)
     );
 
-    ICache uut1_icache(
+    ICache uut_icache(
         .clk(clk),
         .rst(rst),
         .inFromCore_i(fetch_outs_o.fetch_2_icache),
@@ -115,7 +114,6 @@ module tb_stages();
         .dataBus(data_bus),
         .addrBus(address_bus)
     );
-
 
     EveryThing_TOP uut_core(
         .clk(clk),

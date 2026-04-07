@@ -1,0 +1,16 @@
+{
+    "readmemFilePath" : "icache_loader.sv",
+    
+    "numTagStore_Layers":"2",
+    "numTagStore_Cells": "3",
+    "TagStoreCellPath" : "uut_icache.icache_TagStore_unit.g_tagStore_Layers[<Layer>].g_tagStore_Cells[<NumCells>].tagStoreCell.mem",
+
+    "numDataStore_CellLayers": "2",
+    "numDataStoreCells": "16",
+    "dataStoreCellPath" : "uut_icache.icache_dataStore_unit.g_mem_layer[<cell layer>].g_memCells[<cellNum].dataStore_memCell.mem",
+    "startUpDelay" : "30",
+
+
+    "outputPath" : "gen/"
+
+}
