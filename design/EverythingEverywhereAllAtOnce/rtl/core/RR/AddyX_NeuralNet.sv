@@ -65,7 +65,7 @@ module AddyX_NeuralNet (
             2'b00: addy1 = addy0;
             2'b01: addy1 = addy0 + 32'd1;
             2'b10: addy1 = addy0 + 32'd3;
-            2'b11: addy1 = addy0 + 32'd7;
+            2'b11: addy1 = addy0 + 32'd7;x
         endcase
     end
 
