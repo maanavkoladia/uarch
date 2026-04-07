@@ -11,6 +11,7 @@ module bit_vec_logic(
     logic [3:0] start_offset;
     assign start_offset = st_addr_0[3:0];
 
+    //currently wrong does not account for the shift by AH right now
     always_comb begin
         // Map data_size to byte count
         case (data_size)

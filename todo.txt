@@ -16,3 +16,4 @@ TODO:
 - icache victim cache stress testing
 - dcache victim cache stress testing 
 - IO testing 
+- might have to updated bit vector with new datasize vector
