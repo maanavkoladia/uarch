@@ -131,8 +131,11 @@ MEM_CONTROLLER_FSM_STATES
     //wire the precharge from the banks to each respective chip
 
     logic [$clog2(NUM_OF_BANK_CHIPS) - 1 : 0] chipNum;  //4 wide
-    logic [$clog2(NUM_BANKS) - 1 : 0] bankBits_InChip;  //2 wide
+    logic [$clog2(NUM_BANKS_PER_CHIP) - 1 : 0] bankBits_InChip;  //2 wide
     logic [NUM_SRAM_ADDRESS_BITS -1 : 0] rowBitFromChipAddress;  //5 wide
+
+    logic [$clog2(NUM_BANKS) - 1 : 0] bank_num_for_chip;
+    assign bank_num_for_chip = {chipNum, bankBits_InChip};
 
     assign chipNum = address_bus[MEM_CHIP_BITS_UB : MEM_CHIP_BITS_LD];
     assign bankBits_InChip = address_bus[5:4];
@@ -189,7 +192,7 @@ MEM_CONTROLLER_FSM_STATES
     //allow a single bank the privladege to drive the main memBus
     always_comb begin
         for (int i = 0; i < NUM_BANKS; i++) bank_cmds_o[i].driveMemBus = 0;
-        if (fsm_outs.set_ld_tristate) bank_cmds_o[{chipNum, bankBits_InChip}].driveMemBus = 1;
+        if (fsm_outs.set_ld_tristate) bank_cmds_o[bank_num_for_chip].driveMemBus = 1;
         //send load address to each bank
     end
 

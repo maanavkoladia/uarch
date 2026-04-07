@@ -4,7 +4,7 @@
     .global _start
 _start:
 
-    # 1) ADD AX, 0xDEAD
+    # 1) ADD AX, 0xABCD
     addw $0xDEAD, %ax
 
     # 2) ADD ECX, EBX
@@ -17,8 +17,8 @@ _start:
     addl %edi, %ebx
 
 
-    .org 0x2000
+    .org 0x5670
     .data
 
-val_a:  .long  0xDEADBEEF
-val_b:  .long  0x0000CAFE
+val_a:  .long  0xAABBCCDD
+val_b:  .long  0xBEEFDEAD
