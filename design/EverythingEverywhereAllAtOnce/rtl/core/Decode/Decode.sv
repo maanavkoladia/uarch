@@ -195,7 +195,7 @@ module Decode (
         if(!rst) begin
             EIP <= 32'b0;
             PrevEIP <= 32'b0;
-            PrevLength <= inst_length;
+            PrevLength <= 32'b0;
             //REP_MOV_LATCH <= 1'b0;    //need to save if its mov or cmp so can process next cylce, doing this to save crit path time
             //REP_CMP_LATCH <= 1'b0;
         end

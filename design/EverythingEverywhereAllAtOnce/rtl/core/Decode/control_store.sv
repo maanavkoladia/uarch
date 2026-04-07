@@ -22,59 +22,38 @@ module control_store (
     // =====================
     logic [9:0] input_bus;
     assign input_bus = {(total_pf_vector[0] || total_pf_vector[1]), opcode, total_pf_vector[3]};
-
     // =====================
-    // Packed output wires
-    // =====================
-
-  // =====================
-    // Packed output wires
+    // Packed output wires (FROM cs_parsed)
     // =====================
 
-    // 5-bit IDs
-    logic [4:0] HARD_CODED_DR_ID;
-    logic [4:0] HARD_CODED_SR_ID;
+    // Single-bit
+    logic MODRM_NEEDED_o;
+    logic RM_IS_DR_o;
+    logic REG_IS_DR_o;
+    logic HARD_CODED_DR_o;
+    logic HARD_CODED_SR_o;
+    logic OP_IN_MODRM_o;
 
-    // Single-bit signals
-    logic REP;
-    logic MODRM_NEEDED;
-    logic HARD_CODED_DR;
-    logic HARD_CODED_SR;
-    logic OP_IN_MODRM;
+    logic HARDCODED_DR_RD_o;
+    logic HARDCODED_SR_RD_o;
+    logic ST_SEL_o;
 
-    logic RM_IS_DR;
-    logic REG_IS_DR;
+    logic br_uncond_o;
+    logic relative_branch_o;
+    logic special_dr_o;
+    logic is_far_o;
+    logic second_flag_needed_o;
 
-    // DATA_SIZE[2:0]
-    logic [2:0] DATA_SIZE;
+    // Packed fields
+    logic [4:0] HARD_CODED_DR_ID_o;
+    logic [4:0] HARD_CODED_SR_ID_o;
+    logic [2:0] DATA_SIZE_o;
 
-    // Misc control
-    logic RR_OP;
-    logic HARDCODED_DR_RD;
-    logic HARDCODED_SR_RD;
-    logic ST_SEL;
-    logic DC_OP;
-    logic MEM_OP;
-    logic EXE_OP;
+    logic [4:0] alu_inputA_sel_o;
+    logic [4:0] alu_inputB_sel_o;
+    logic [4:0] branch_target_sel_o;
 
-    // ALU selects (FIXED WIDTH)
-    logic [4:0] alu_inputA_sel;
-    logic [4:0] alu_inputB_sel;
-
-    // Branch target select (FIXED WIDTH)
-    logic [4:0] branch_target_sel;
-
-    // OP_TYPE[5:0]
-    logic [5:0] OP_TYPE;
-
-    // Branch/control flags
-    logic br_uncond;
-    logic relative_branch;
-    logic special_dr;
-    logic is_far;
-    logic second_flag_needed;
-
-    logic WB_OP;
+    logic [4:0] OP_TYPE_o; // (fix width to 5 unless you truly have 6 bits)
     // =====================
     // Module instantiation
     // =====================
@@ -98,111 +77,100 @@ module control_store (
         .RM_IS_DR_o(RM_IS_DR_o),
         .REG_IS_DR_o(REG_IS_DR_o),
         
-        // Destination Register Hardcoding
-        .HARD_CODED_DR_o(HARD_CODED_DR_o),
-        .HARD_CODED_DR_ID_4_o(HARD_CODED_DR_ID_4_o),
-        .HARD_CODED_DR_ID_3_o(HARD_CODED_DR_ID_3_o),
-        .HARD_CODED_DR_ID_2_o(HARD_CODED_DR_ID_2_o),
-        .HARD_CODED_DR_ID_1_o(HARD_CODED_DR_ID_1_o),
-        .HARD_CODED_DR_ID_0_o(HARD_CODED_DR_ID_0_o),
-
-        // Source Register Hardcoding
-        .HARD_CODED_SR_o(HARD_CODED_SR_o),
-        .HARD_CODED_SR_ID_4_o(HARD_CODED_SR_ID_4_o),
-        .HARD_CODED_SR_ID_3_o(HARD_CODED_SR_ID_3_o),
-        .HARD_CODED_SR_ID_2_o(HARD_CODED_SR_ID_2_o),
-        .HARD_CODED_SR_ID_1_o(HARD_CODED_SR_ID_1_o),
-        .HARD_CODED_SR_ID_0_o(HARD_CODED_SR_ID_0_o),
-        
         .OP_IN_MODRM_o(OP_IN_MODRM_o),
 
-        // Data Size
-        .DATA_SIZE_2_o(DATA_SIZE_2_o),
-        .DATA_SIZE_1_o(DATA_SIZE_1_o),
-        .DATA_SIZE_0_o(DATA_SIZE_0_o),
-
         // Op Enables / Selects
-        .RR_OP_o(RR_OP_o),
         .HARDCODED_DR_RD_o(HARDCODED_DR_RD_o),
         .HARDCODED_SR_RD_o(HARDCODED_SR_RD_o),
         .ST_SEL_o(ST_SEL_o),
-        .DC_OP_o(DC_OP_o),
-        .MEM_OP_o(MEM_OP_o),
-        .EXE_OP_o(EXE_OP_o),
 
-        // ALU A Select
-        .alu_inputA_sel_4_o(alu_inputA_sel_4_o),
-        .alu_inputA_sel_3_o(alu_inputA_sel_3_o),
-        .alu_inputA_sel_2_o(alu_inputA_sel_2_o),
-        .alu_inputA_sel_1_o(alu_inputA_sel_1_o),
-        .alu_inputA_sel_0_o(alu_inputA_sel_0_o),
+        // Destination Register Hardcoding
+        .HARD_CODED_DR_o(HARD_CODED_DR_o),
+        .HARD_CODED_DR_ID_4_o(HARD_CODED_DR_ID_o[4]),
+        .HARD_CODED_DR_ID_3_o(HARD_CODED_DR_ID_o[3]),
+        .HARD_CODED_DR_ID_2_o(HARD_CODED_DR_ID_o[2]),
+        .HARD_CODED_DR_ID_1_o(HARD_CODED_DR_ID_o[1]),
+        .HARD_CODED_DR_ID_0_o(HARD_CODED_DR_ID_o[0]),
 
-        // ALU B Select
-        .alu_inputB_sel_4_o(alu_inputB_sel_4_o),
-        .alu_inputB_sel_3_o(alu_inputB_sel_3_o),
-        .alu_inputB_sel_2_o(alu_inputB_sel_2_o),
-        .alu_inputB_sel_1_o(alu_inputB_sel_1_o),
-        .alu_inputB_sel_0_o(alu_inputB_sel_0_o),
+        // Source Register Hardcoding
+        .HARD_CODED_SR_o(HARD_CODED_SR_o),
+        .HARD_CODED_SR_ID_4_o(HARD_CODED_SR_ID_o[4]),
+        .HARD_CODED_SR_ID_3_o(HARD_CODED_SR_ID_o[3]),
+        .HARD_CODED_SR_ID_2_o(HARD_CODED_SR_ID_o[2]),
+        .HARD_CODED_SR_ID_1_o(HARD_CODED_SR_ID_o[1]),
+        .HARD_CODED_SR_ID_0_o(HARD_CODED_SR_ID_o[0]),
 
-        // Branch Target Select
-        .branch_target_sel_4_o(branch_target_sel_4_o),
-        .branch_target_sel_3_o(branch_target_sel_3_o),
-        .branch_target_sel_2_o(branch_target_sel_2_o),
-        .branch_target_sel_1_o(branch_target_sel_1_o),
-        .branch_target_sel_0_o(branch_target_sel_0_o),
+        // DATA SIZE
+        .DATA_SIZE_2_o(DATA_SIZE_o[2]),
+        .DATA_SIZE_1_o(DATA_SIZE_o[1]),
+        .DATA_SIZE_0_o(DATA_SIZE_o[0]),
 
-        // Operation Type
-        .OP_TYPE_4_o(OP_TYPE_4_o),
-        .OP_TYPE_3_o(OP_TYPE_3_o),
-        .OP_TYPE_2_o(OP_TYPE_2_o),
-        .OP_TYPE_1_o(OP_TYPE_1_o),
-        .OP_TYPE_0_o(OP_TYPE_0_o),
+        // ALU A
+        .alu_inputA_sel_4_o(alu_inputA_sel_o[4]),
+        .alu_inputA_sel_3_o(alu_inputA_sel_o[3]),
+        .alu_inputA_sel_2_o(alu_inputA_sel_o[2]),
+        .alu_inputA_sel_1_o(alu_inputA_sel_o[1]),
+        .alu_inputA_sel_0_o(alu_inputA_sel_o[0]),
+
+        // ALU B
+        .alu_inputB_sel_4_o(alu_inputB_sel_o[4]),
+        .alu_inputB_sel_3_o(alu_inputB_sel_o[3]),
+        .alu_inputB_sel_2_o(alu_inputB_sel_o[2]),
+        .alu_inputB_sel_1_o(alu_inputB_sel_o[1]),
+        .alu_inputB_sel_0_o(alu_inputB_sel_o[0]),
+
+        // Branch target
+        .branch_target_sel_4_o(branch_target_sel_o[4]),
+        .branch_target_sel_3_o(branch_target_sel_o[3]),
+        .branch_target_sel_2_o(branch_target_sel_o[2]),
+        .branch_target_sel_1_o(branch_target_sel_o[1]),
+        .branch_target_sel_0_o(branch_target_sel_o[0]),
+
+        // OP_TYPE
+        .OP_TYPE_4_o(OP_TYPE_o[4]),
+        .OP_TYPE_3_o(OP_TYPE_o[3]),
+        .OP_TYPE_2_o(OP_TYPE_o[2]),
+        .OP_TYPE_1_o(OP_TYPE_o[1]),
+        .OP_TYPE_0_o(OP_TYPE_o[0]),
 
         // Branch / Execution Flags
         .br_uncond_o(br_uncond_o),
         .relative_branch_o(relative_branch_o),
         .special_dr_o(special_dr_o),
         .is_far_o(is_far_o),
-        .second_flag_needed_o(second_flag_needed_o),
-
-        .WB_OP_o(WB_OP_o)
+        .second_flag_needed_o(second_flag_needed_o)
     );
 
     modrm_processor_outs_t mod_rm_cs_outs;
-    modrm_processor mod_rm_cs_gen(.modrm_byte(modrm), .datasize(DATA_SIZE), .decode_cs_inputs(decode_cs), .outputs(mod_rm_cs_outs));
+    modrm_processor mod_rm_cs_gen(.modrm_byte(modrm), .datasize(DATA_SIZE_o), .decode_cs_inputs(decode_cs), .outputs(mod_rm_cs_outs));
 
 
-
-    // =====================
-    // Struct Initializations
-    // =====================
 
     // DECODE
     assign decode_cs = '{
-        REP               : REP,
-        MODRM_NEEDED      : MODRM_NEEDED,
-        RM_IS_DR          : RM_IS_DR,
-        REG_IS_DR         : REG_IS_DR,
-        HARDCODED_DR      : HARD_CODED_DR,
-        HARDCODED_DR_ID   : HARD_CODED_DR_ID,
-        HARDCODED_SR      : HARD_CODED_SR,
-        HARDCODED_SR_ID   : HARD_CODED_SR_ID,
-        HARDCODED_DR_RD   : HARDCODED_DR_RD,
-        HARDCODED_SR_RD   : HARDCODED_SR_RD,
-        OP_IN_MODRM       : OP_IN_MODRM,
+        REP               : REP_o,
+        MODRM_NEEDED      : MODRM_NEEDED_o,
+        RM_IS_DR          : RM_IS_DR_o,
+        REG_IS_DR         : REG_IS_DR_o,
+        HARDCODED_DR      : HARD_CODED_DR_o,
+        HARDCODED_DR_ID   : HARD_CODED_DR_ID_o,
+        HARDCODED_SR      : HARD_CODED_SR_o,
+        HARDCODED_SR_ID   : HARD_CODED_SR_ID_o,
+        HARDCODED_DR_RD   : HARDCODED_DR_RD_o,
+        HARDCODED_SR_RD   : HARDCODED_SR_RD_o,
+        OP_IN_MODRM       : OP_IN_MODRM_o,
         dr_id             : mod_rm_cs_outs.dr_id,
         sr_id             : mod_rm_cs_outs.sr_id,
-        DATA_SIZE         : DATA_SIZE
+        DATA_SIZE         : DATA_SIZE_o
     };
 
     // RR
     assign rr_cs = '{
-        RR_OP            : RR_OP,
-        HARDCODED_DR_RD  : HARDCODED_DR_RD,
-        HARDCODED_SR_RD  : HARDCODED_SR_RD,
-        ST_SEL           : ST_SEL,
-        MODRM_NEEDED     : MODRM_NEEDED,
-        RM_IS_DR         : RM_IS_DR,
+        HARDCODED_DR_RD  : HARDCODED_DR_RD_o,
+        HARDCODED_SR_RD  : HARDCODED_SR_RD_o,
+        ST_SEL           : ST_SEL_o,
+        MODRM_NEEDED     : MODRM_NEEDED_o,
+        RM_IS_DR         : RM_IS_DR_o,
         LD_OP            : mod_rm_cs_outs.ld_op,
         ST_OP            : mod_rm_cs_outs.st_op,
         dr_id            : mod_rm_cs_outs.dr_id,
@@ -211,48 +179,47 @@ module control_store (
         sr_rd            : mod_rm_cs_outs.sr_rd,
         dr_wr            : mod_rm_cs_outs.dr_wr,
         sr_wr            : mod_rm_cs_outs.sr_wr,
-        st_op            : mod_rm_cs_outs.st_op,
-        ld_op            : mod_rm_cs_outs.ld_op,
-        datasize         : DATA_SIZE,
-        will_mod_zf      : 1'b0             //need to add this to cs excel sheet
+        datasize         : DATA_SIZE_o,
+        will_mod_zf      : 1'b0
     };
 
     // DC
     assign dc_cs = '{
-        DC_OP : DC_OP,
         LD_OP : mod_rm_cs_outs.ld_op,
         ST_OP : mod_rm_cs_outs.st_op
     };
 
     // MEM
     assign mem_cs = '{
-        MEM_OP : MEM_OP,
         ST_OP  : mod_rm_cs_outs.st_op,
         LD_OP  : mod_rm_cs_outs.ld_op
     };
 
     // EXE
     assign exe_cs = '{
-        EXE_OP              : EXE_OP,
         ST_OP               : mod_rm_cs_outs.st_op,
-        DATA_SIZE           : DATA_SIZE,
-        OP_TYPE             : OP_TYPE,
+        DATA_SIZE           : DATA_SIZE_o,
+        OP_TYPE             : OP_TYPE_o,
 
-        //in control store, i defaulted to reg, mem will have to be buffer
-        alu_inputA_sel      : (modrm == 2'b11) ? alu_inputA_sel : BUFFER,       
-        alu_inputB_sel      : (modrm == 2'b11) ? alu_inputB_sel : BUFFER,
-        branch_target_sel   : branch_target_sel,
+        alu_inputA_sel      : mod_rm_cs_outs.alu_inputA_override ?
+                                mod_rm_cs_outs.alu_inputA_override_sel :
+                                alu_inputA_sel_o,
 
-        br_ucond            : br_uncond,
-        relative_branch     : relative_branch,
-        special_br          : special_dr,
-        is_far              : is_far,
-        second_flag_needed  : second_flag_needed
+        alu_inputB_sel      : mod_rm_cs_outs.alu_inputB_override ?
+                                mod_rm_cs_outs.alu_inputB_override_sel :
+                                alu_inputB_sel_o,
+
+        branch_target_sel   : branch_target_sel_o,
+
+        br_ucond            : br_uncond_o,
+        relative_branch     : relative_branch_o,
+        special_br          : special_dr_o,
+        is_far              : is_far_o,
+        second_flag_needed  : second_flag_needed_o
     };
 
     // WB
     assign wb_cs = '{
-        WB_OP : WB_OP,
         ST_OP : mod_rm_cs_outs.st_op,
         WB_DR : mod_rm_cs_outs.dr_wr,
         WB_SR : mod_rm_cs_outs.sr_wr

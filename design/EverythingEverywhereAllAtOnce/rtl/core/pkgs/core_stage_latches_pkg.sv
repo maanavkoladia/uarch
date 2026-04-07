@@ -72,7 +72,6 @@ package core_stage_latches_pkg;
     } decode_cs_t;
 
     typedef struct {
-        bool RR_OP;
         bool HARDCODED_DR_RD;
         bool HARDCODED_SR_RD;
         bool ST_SEL;
@@ -86,8 +85,6 @@ package core_stage_latches_pkg;
         bool sr_rd;
         bool dr_wr;
         bool sr_wr;
-        bool st_op;
-        bool ld_op;
 
         logic [2:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 
@@ -95,19 +92,16 @@ package core_stage_latches_pkg;
     } rr_cs_t;
 
     typedef struct {
-        bool DC_OP;
         bool LD_OP;
         bool ST_OP;
     } dc_cs_t;
 
     typedef struct {
-        bool MEM_OP;
         bool ST_OP;
         bool LD_OP;
     } mem_cs_t;
 
     typedef struct {
-        bool EXE_OP;
         bool ST_OP;
         logic [3:0] DATA_SIZE; //im assuming this is 8 16 32 64
         exe_cs_operation_type_e OP_TYPE;
@@ -129,7 +123,6 @@ package core_stage_latches_pkg;
 
 
     typedef struct {
-        bool WB_OP;
         bool ST_OP;
         bool WB_DR;
         bool WB_SR;

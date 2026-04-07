@@ -56,13 +56,15 @@ def parse_header(raw_header: list[str], schema: dict):
               'enum_map': dict|None,     # name->int mapping for enums
             }
     """
-    schema_input_bits = int(schema["InputNumBits"])
+    # FIX: key is now "Input" instead of "InputNumBits"
+    schema_input_bits = int(schema["Input"])
 
     # Build ordered list of expected output fields from schema
-    # (preserving schema order, skipping InputNumBits)
+    # (preserving schema order, skipping Input)
     schema_fields = []
     for key, val in schema.items():
-        if key == "InputNumBits":
+        # FIX: skip "Input" instead of "InputNumBits"
+        if key == "Input":
             continue
         if isinstance(val, dict):
             # enum field — width = bits needed to encode max value
@@ -111,15 +113,13 @@ def parse_header(raw_header: list[str], schema: dict):
             )
 
         # Determine how many CSV columns this field occupies.
-        # For enums in this CSV, the pattern is: named col + (n_bits-1) blank cols
-        # where n_bits is schema bits. For 1-bit fields it's always 1 col.
+        # For enums/multibit in this CSV, the pattern is: named col + N blank cols.
+        # For 1-bit fields it's always 1 col.
         if sf['kind'] in ('enum', 'multibit'):
             # Count trailing blank cols
             span = 1
             while (csv_col + span) < len(csv_fields) and csv_fields[csv_col + span].strip() == '':
                 span += 1
-            # Validate span matches schema bits
-            # (some CSVs pad to a fixed width; we accept span >= 1)
         else:
             span = 1
 
@@ -212,8 +212,6 @@ def parse_row(row: list[str], column_map: list, input_bits: int, row_num: int) -
         count = cm['csv_col_count']
         kind = cm['kind']
 
-        # Gather the raw value(s) for this field
-        # The first column in the span holds the value; rest are blank padding
         if start >= len(data_cols):
             raise ValueError(
                 f"Row {row_num}, field '{name}': CSV row too short "
@@ -221,14 +219,6 @@ def parse_row(row: list[str], column_map: list, input_bits: int, row_num: int) -
             )
 
         raw_val = data_cols[start].strip()
-
-        # Validate blank padding columns
-        for pad_i in range(1, count):
-            if (start + pad_i) < len(data_cols):
-                pad_val = data_cols[start + pad_i].strip()
-                if pad_val not in ('', '0'):
-                    # Some padding cols have 0 values which are fine (empty enum slots)
-                    pass  # tolerate non-blank padding — it's from the enum expansion slots
 
         if kind == '1bit':
             if raw_val not in ('0', '1'):
@@ -238,13 +228,26 @@ def parse_row(row: list[str], column_map: list, input_bits: int, row_num: int) -
             out_bits.append(int(raw_val))
 
         elif kind == 'multibit':
-            try:
-                int_val = int(raw_val)
-            except ValueError:
-                raise ValueError(
-                    f"Row {row_num}, field '{name}': expected integer, got '{raw_val}'"
-                )
-            out_bits.extend(int_to_bits(int_val, cm['bits'], f"row {row_num}/{name}"))
+            # FIX: The CSV stores each bit in its own column across the span,
+            # not as a single integer in the first column.
+            # Read one bit per output bit position (MSB first across columns).
+            n = cm['bits']
+            for i in range(n):
+                col_idx = start + i
+                if col_idx < len(data_cols):
+                    bit_str = data_cols[col_idx].strip()
+                else:
+                    bit_str = '0'
+
+                if bit_str in ('', '0'):
+                    out_bits.append(0)
+                elif bit_str == '1':
+                    out_bits.append(1)
+                else:
+                    raise ValueError(
+                        f"Row {row_num}, field '{name}': expected 0 or 1 "
+                        f"in bit column {i} (CSV col {col_idx + 1}), got '{bit_str}'"
+                    )
 
         elif kind == 'enum':
             if raw_val == '' or raw_val == '0':

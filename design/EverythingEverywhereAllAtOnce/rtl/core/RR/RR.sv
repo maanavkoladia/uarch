@@ -202,9 +202,6 @@ module RR (
             dr_data     : reg_out.DR_data[31:0]
         };
 
-
-    bool set_zf_scoreboard;
-
     assign outs_o = '{
             valid   : latchesInUse.valid,
             stall   : latchesInUse.valid && (depstall || (RR_PF || RR_GP)),

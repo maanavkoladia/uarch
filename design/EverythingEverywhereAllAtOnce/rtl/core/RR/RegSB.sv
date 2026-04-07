@@ -62,35 +62,25 @@ module RegSB (
 
     //dr_rd, sr_rd, sib_rd if rd(sib_base_id, sib_idx_id), Segment0_ID, Segment1_ID
     logic dr_stall, sr_stall, seg0_stall, seg1_stall, sib_base_stall, sib_idx_stall;
-    logic dr_matches, sr_matches, seg0_matches, seg1_matches, sib_base_matches, sib_idx_matches;
-
     always_comb begin
-        // Match logic
-        dr_matches = ((dr_id == wb_dr0_id) && wb_dr0_we) || ((dr_id == wb_dr1_id) && wb_dr1_we);
-        sr_matches = ((sr_id == wb_dr0_id) && wb_dr0_we) || ((sr_id == wb_dr1_id) && wb_dr1_we);
-        seg0_matches = ((Segment0_ID == wb_dr0_id) && wb_dr0_we) || ((Segment0_ID == wb_dr1_id) && wb_dr1_we);
-        seg1_matches = ((Segment1_ID == wb_dr0_id) && wb_dr0_we) || ((Segment1_ID == wb_dr1_id) && wb_dr1_we);
-        sib_base_matches = ((sib_base_id == wb_dr0_id) && wb_dr0_we) || ((sib_base_id == wb_dr1_id) && wb_dr1_we);
-        sib_idx_matches  = ((sib_idx_id == wb_dr0_id) && wb_dr0_we) || ((sib_idx_id == wb_dr1_id) && wb_dr1_we);
-
         // Stall logic (ALL using match-aware rule)
         dr_stall = cs_dr_rd &&
-        (SCORE_BOARD[dr_id].counter > 1 || (SCORE_BOARD[dr_id].counter == 1 && !dr_matches));
+        (SCORE_BOARD[dr_id].counter != 0);
 
         sr_stall = cs_sr_rd &&
-        (SCORE_BOARD[sr_id].counter > 1 || (SCORE_BOARD[sr_id].counter == 1 && !sr_matches));
+        (SCORE_BOARD[sr_id].counter != 0);
 
         seg0_stall =
-        (SCORE_BOARD[Segment0_ID].counter > 1 || (SCORE_BOARD[Segment0_ID].counter == 1 && !seg0_matches));
+        (SCORE_BOARD[Segment0_ID].counter != 0);
 
         seg1_stall = Segment1_valid &&
-        (SCORE_BOARD[Segment1_ID].counter > 1 || (SCORE_BOARD[Segment1_ID].counter == 1 && !seg1_matches));
+        (SCORE_BOARD[Segment1_ID].counter != 0);
 
         sib_base_stall = (cs_sib_size != 0) &&
-        (SCORE_BOARD[sib_base_id].counter > 1 || (SCORE_BOARD[sib_base_id].counter == 1 && !sib_base_matches));
+        (SCORE_BOARD[sib_base_id].counter != 0);
 
         sib_idx_stall = (cs_sib_size != 0) &&
-        (SCORE_BOARD[sib_idx_id].counter > 1 || (SCORE_BOARD[sib_idx_id].counter == 1 && !sib_idx_matches));
+        (SCORE_BOARD[sib_idx_id].counter != 0);
 
         // Final OR
         depStall_Internal = dr_stall || sr_stall || seg0_stall || seg1_stall || sib_base_stall || sib_idx_stall;
