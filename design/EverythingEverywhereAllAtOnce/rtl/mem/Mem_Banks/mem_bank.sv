@@ -2,9 +2,7 @@ import common_pkg::*;
 import interconnect_pkg::MEM_BUS_SIZE;
 import mem_common_pkg::*;
 
-module mem_bank #(
-    parameter int BANK_ID
-) (
+module mem_bank (
 
     input logic clk,
     input logic rst,

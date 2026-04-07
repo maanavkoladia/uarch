@@ -1,7 +1,8 @@
-include "../../../defines/common_define.vh"
-include "../../../defines/mem_common_define.vh"
+`include "../../../defines/common_define.vh"
+`include "../../../defines/interconnect_define.vh"
+`include "../../../defines/mem_common_define.vh"
 
-module MemBank_Structural (
+module mem_bank (
     input wire clk,
     input wire rst,
     input wire [`NUM_SRAM_ADDRESS_BITS - 1 : 0] ld_address,
@@ -11,7 +12,7 @@ module MemBank_Structural (
     input wire start_store,
     input wire ld_address_change,
     input wire driveMemBus,
-    input [`CACHE_LINES_SIZE_Bits : 0] writeBuf,
+    input [`CACHE_LINES_SIZE_BITS - 1 : 0] writeBuf,
 
     inout [`MEM_BUS_SIZE - 1 : 0] mem_bus,
 

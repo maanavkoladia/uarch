@@ -1,5 +1,8 @@
+`ifndef COMMONDEFINES_VH
+`define COMMONDEFINES_VH
+
 `define CACHE_LINES_SIZE_B (16)
-`define CACHE_LINES_SIZE_Bits (CACHE_LINES_SIZE_B * 8)
+`define CACHE_LINES_SIZE_BITS (`CACHE_LINES_SIZE_B * 8)
 `define ADDRESS_BITS (32)
 `define PAGE_SIZE (4096)
 `define PHY_MEM_SIZE (1 << 15)
@@ -9,3 +12,5 @@
 `define ST_Q_DEPTH (4)
 `define NUM_IDM_SLOTS (4)
 `define NUM_SBS (22)
+
+`endif
