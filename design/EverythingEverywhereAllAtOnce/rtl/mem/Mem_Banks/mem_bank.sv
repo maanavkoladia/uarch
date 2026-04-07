@@ -2,9 +2,7 @@ import common_pkg::*;
 import interconnect_pkg::MEM_BUS_SIZE;
 import mem_common_pkg::*;
 
-module mem_bank #(
-    parameter int BANK_ID
-) (
+module mem_bank (
 
     input logic clk,
     input logic rst,
@@ -56,21 +54,22 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
 
     // address mux
     logic [NUM_SRAM_ADDRESS_BITS-1:0] bank_address_i;
+    wire [MEM_BUS_SIZE-1:0] bank_bus;
+    wire [MEM_BUS_SIZE-1:0] bank_write_data;
+
     assign bank_address_i = mem_bank_controller_send_store_address_delayed ?
                             controller2bank_i.st_address : controller2bank_i.ld_address;
 
     // bank internal bus
-    wire [MEM_BUS_SIZE-1:0] bank_bus;
 
     //buffer to take 16 bytes array into a 128 bit bank bus out
-    wire [MEM_BUS_SIZE-1:0] bank_write_data;
 
-    // drive mem_bus tri-state
-    assign mem_bus = controller2bank_i.driveMemBus ? bank_bus : 'z;
 
     //no mem_bank_controller_we, bc active low, i forgot about ts, fck
     assign bank_bus = !mem_bank_controller_we ? bank_write_data : 'z;
 
+    // drive mem_bus tri-state
+    assign mem_bus = controller2bank_i.driveMemBus ? bank_bus : 'z;
 
     assign bank_write_data = {
         controller2bank_i.writeBuf[15],
@@ -123,13 +122,5 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
         .clear_writebufV_o(outputs.clear_writebufV),
         .PreCharged_o(outputs.precharged)
     );
-
-    //initial begin
-    //    $readmemh("fakeData/mem0.hex", mem_bank.g_sram_cells[0].mem_cell.mem);
-    //    $readmemh("fakeData/mem1.hex", mem_bank.g_sram_cells[1].mem_cell.mem);
-    //    $readmemh("fakeData/mem2.hex", mem_bank.g_sram_cells[2].mem_cell.mem);
-    //    $readmemh("fakeData/mem3.hex", mem_bank.g_sram_cells[3].mem_cell.mem);
-    //    `LOG("read in mem");
-    //end
 
 endmodule
