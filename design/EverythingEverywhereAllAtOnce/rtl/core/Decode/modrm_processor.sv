@@ -1,5 +1,7 @@
 import reg_ids_pkg::*;
 import core_stage_latches_pkg::*;
+import control_store_pkg::*;
+
 module modrm_processor (
     input byte_t modrm_byte,
     input logic [2:0] datasize,
@@ -16,13 +18,29 @@ module modrm_processor (
     bool st_op;
     bool rm_reg_is_dr;
     bool reg_is_dr;
+    bool alu_inputA_override;
+    bool alu_inputB_override;
+    source_selector_e alu_inputA_override_sel;
+    source_selector_e alu_inputB_override_sel;
 
     assign rm_is_dr = (decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.RM_IS_DR && !decode_cs_inputs.REG_IS_DR);
     assign reg_is_dr = (decode_cs_inputs.MODRM_NEEDED && !decode_cs_inputs.RM_IS_DR && decode_cs_inputs.REG_IS_DR);
 
+    assign alu_inputA_override = rm_is_dr && (st_op || ld_op);
+    assign alu_inputB_override = reg_is_dr && ld_op;
+
+    assign alu_inputA_override_sel = BUFFER;
+    assign alu_inputB_override_sel = BUFFER;
+
+
     always_comb begin
         //dr reg setting
-        if(rm_is_dr) begin
+        if(rm_is_dr && 
+            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00100) &&
+            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00101) &&
+            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b01100) &&
+            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b10100)) 
+            begin
             case(modrm_byte[2:0])    //rm id
                 3'd0: dr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: dr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
@@ -57,7 +75,7 @@ module modrm_processor (
             dr_wr = decode_cs_inputs.HARDCODED_DR_RD;
         end
         else begin
-            dr_id = ERROR_REG;
+            dr_id = NO_REG;
             dr_rd = 1'b0;
             dr_wr = 1'b0;
         end
@@ -98,7 +116,7 @@ module modrm_processor (
             sr_wr = 1'b0;
         end
         else begin
-            sr_id = ERROR_REG;
+            sr_id = NO_REG;
             sr_rd = 1'b0;
             sr_wr = 1'b0;
         end
@@ -118,7 +136,11 @@ module modrm_processor (
         dr_wr   : dr_wr,
         sr_wr   : sr_wr,
         st_op   : st_op,
-        ld_op   : ld_op
+        ld_op   : ld_op,
+        alu_inputA_override : alu_inputA_override,
+        alu_inputB_override : alu_inputB_override,
+        alu_inputA_override_sel : alu_inputA_override_sel,
+        alu_inputB_override_sel : alu_inputB_override_sel
     };
 
 

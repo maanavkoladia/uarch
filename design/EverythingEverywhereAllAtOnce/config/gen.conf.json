@@ -47,7 +47,7 @@
         "DCache bank fsm" : {
             "csv" : "rtl/DCache/gen/DCache_Bank_FSM.csv",
             "outputFilePath" : "rtl/DCache/gen/DCache_Bank_FSM.sv",
-            "run FSM SOP gen": "true"
+            "run FSM SOP gen": "false"
         },
 
         "VCache bank fsm" : {
@@ -77,7 +77,7 @@
         "REP_FSM": {
             "csv": "rtl/core/Decode/structural/gen/rep_fsm.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rep_fsm.sv",
-            "run FSM SOP gen": "true"
+            "run FSM SOP gen": "false"
         },
 
         "CONTROL_STORE": {

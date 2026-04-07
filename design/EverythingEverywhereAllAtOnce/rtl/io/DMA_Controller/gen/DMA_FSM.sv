@@ -96,28 +96,49 @@ inv1$ inv_write_Complete_i (write_Complete_i_inv, write_Complete_i);
 
 // Next-state and output SOP logic
 
+<<<<<<< HEAD
 // NS_0 = (S_0 & S_1 & !S_2) | (S_0 & !S_2 & !write_Complete_i) | (S_1 & !S_2 & ld_buf_data_V_i)
+=======
+// NS_0 = (S_0 & !S_2 & !write_Complete_i) | (S_1 & !S_2 & ld_buf_data_V_i) | (S_0 & S_1 & !S_2)
+>>>>>>> decode-rr-debuggin
 wire NS_0_t0;
 wire NS_0_t1;
 wire NS_0_t2;
 
+<<<<<<< HEAD
 and3$ NS_0_and0 (NS_0_t0, S_0, S_1, S_2_inv);
 and3$ NS_0_and1 (NS_0_t1, S_0, S_2_inv, write_Complete_i_inv);
 and3$ NS_0_and2 (NS_0_t2, S_1, S_2_inv, ld_buf_data_V_i);
 or3$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2);
 
 // NS_1 = (!S_1 & !S_2 & start_write_i & !write_Complete_i) | (S_0 & S_1 & !S_2 & writeBuf_V_i) | (!S_0 & S_1 & !S_2 & !ld_buf_data_V_i) | (!S_0 & !S_1 & !S_2 & start_write_i) | (S_0 & !S_1 & !S_2 & !write_Complete_i)
+=======
+and3$ NS_0_and0 (NS_0_t0, S_0, S_2_inv, write_Complete_i_inv);
+and3$ NS_0_and1 (NS_0_t1, S_1, S_2_inv, ld_buf_data_V_i);
+and3$ NS_0_and2 (NS_0_t2, S_0, S_1, S_2_inv);
+or3$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2);
+
+// NS_1 = (!S_0 & S_1 & !S_2 & !ld_buf_data_V_i) | (S_0 & !S_2 & !write_Complete_i & writeBuf_V_i) | (!S_0 & !S_1 & !S_2 & start_write_i) | (S_0 & !S_1 & !S_2 & !write_Complete_i) | (S_0 & S_1 & !S_2 & writeBuf_V_i)
+>>>>>>> decode-rr-debuggin
 wire NS_1_t0;
 wire NS_1_t1;
 wire NS_1_t2;
 wire NS_1_t3;
 wire NS_1_t4;
 
+<<<<<<< HEAD
 and4$ NS_1_and0 (NS_1_t0, S_1_inv, S_2_inv, start_write_i, write_Complete_i_inv);
 and4$ NS_1_and1 (NS_1_t1, S_0, S_1, S_2_inv, writeBuf_V_i);
 and4$ NS_1_and2 (NS_1_t2, S_0_inv, S_1, S_2_inv, ld_buf_data_V_i_inv);
 and4$ NS_1_and3 (NS_1_t3, S_0_inv, S_1_inv, S_2_inv, start_write_i);
 and4$ NS_1_and4 (NS_1_t4, S_0, S_1_inv, S_2_inv, write_Complete_i_inv);
+=======
+and4$ NS_1_and0 (NS_1_t0, S_0_inv, S_1, S_2_inv, ld_buf_data_V_i_inv);
+and4$ NS_1_and1 (NS_1_t1, S_0, S_2_inv, write_Complete_i_inv, writeBuf_V_i);
+and4$ NS_1_and2 (NS_1_t2, S_0_inv, S_1_inv, S_2_inv, start_write_i);
+and4$ NS_1_and3 (NS_1_t3, S_0, S_1_inv, S_2_inv, write_Complete_i_inv);
+and4$ NS_1_and4 (NS_1_t4, S_0, S_1, S_2_inv, writeBuf_V_i);
+>>>>>>> decode-rr-debuggin
 or5$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4);
 
 // NS_2 = (!S_0 & !S_1 & S_2)

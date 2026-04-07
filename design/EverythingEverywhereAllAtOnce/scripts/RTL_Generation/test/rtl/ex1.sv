@@ -3,7 +3,11 @@
 // Tool: csv2rtl.py  (auto-generated -- do not hand-edit)
 // WARNING: 12 input vector(s) had no CSV row.
 //          Those vectors produce all-zero outputs (OFF-set default).
+<<<<<<< HEAD
 //          See: /home/ecelrc/students/je28497/uarch/design/EverythingEverywhereAllAtOnce/scripts/RTL_Generation/test/ex1_coverage_report.txt
+=======
+//          See: /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/RTL_Generation/test/ex1_coverage_report.txt
+>>>>>>> decode-rr-debuggin
 // ======================================================================
 
 // Truth table (expanded, from CSV)
@@ -58,7 +62,11 @@ inv1$ inv_u_i (u_i_inv, u_i);
 
 // SOP logic (Quine-McCluskey minimised)
 
+<<<<<<< HEAD
 //  k0_o = (u_i &  w_i & ! x_i & ! y_i) | ( v_i &  w_i &  x_i &  y_i) | (!u_i &  w_i & ! x_i &  y_i) | ( v_i & ! w_i &  x_i & ! y_i) | (u_i &  w_i &  x_i &  y_i) | (!u_i & ! v_i & ! w_i &  x_i &  y_i)
+=======
+//  k0_o = (!u_i &  w_i & ! x_i &  y_i) | ( v_i &  w_i &  x_i &  y_i) | ( v_i & ! w_i &  x_i & ! y_i) | (u_i &  w_i & ! x_i & ! y_i) | (u_i &  w_i &  x_i &  y_i) | (!u_i & ! v_i & ! w_i &  x_i &  y_i)
+>>>>>>> decode-rr-debuggin
 wire  k0_o_t0;
 wire  k0_o_t1;
 wire  k0_o_t2;
@@ -66,15 +74,24 @@ wire  k0_o_t3;
 wire  k0_o_t4;
 wire  k0_o_t5;
 
-and4$  k0_o_and0 ( k0_o_t0, u_i,  w_i,  x_i_inv,  y_i_inv);
+and4$  k0_o_and0 ( k0_o_t0, u_i_inv,  w_i,  x_i_inv,  y_i);
 and4$  k0_o_and1 ( k0_o_t1,  v_i,  w_i,  x_i,  y_i);
+<<<<<<< HEAD
 and4$  k0_o_and2 ( k0_o_t2, u_i_inv,  w_i,  x_i_inv,  y_i);
 and4$  k0_o_and3 ( k0_o_t3,  v_i,  w_i_inv,  x_i,  y_i_inv);
+=======
+and4$  k0_o_and2 ( k0_o_t2,  v_i,  w_i_inv,  x_i,  y_i_inv);
+and4$  k0_o_and3 ( k0_o_t3, u_i,  w_i,  x_i_inv,  y_i_inv);
+>>>>>>> decode-rr-debuggin
 and4$  k0_o_and4 ( k0_o_t4, u_i,  w_i,  x_i,  y_i);
 and5$  k0_o_and5 ( k0_o_t5, u_i_inv,  v_i_inv,  w_i_inv,  x_i,  y_i);
 or6$   k0_o_or  ( k0_o,  k0_o_t0,  k0_o_t1,  k0_o_t2,  k0_o_t3,  k0_o_t4,  k0_o_t5);
 
+<<<<<<< HEAD
 //  k1_o = (u_i &  w_i &  y_i) | ( v_i &  w_i &  y_i) | ( w_i & ! x_i &  y_i) | (!u_i &  v_i &  x_i &  y_i) | (u_i & ! v_i & ! x_i &  y_i) | (u_i &  v_i & ! w_i &  x_i & ! y_i) | (!u_i & ! v_i & ! w_i & ! x_i & ! y_i) | (!u_i & ! v_i &  w_i &  x_i & ! y_i)
+=======
+//  k1_o = ( v_i &  w_i &  y_i) | ( w_i & ! x_i &  y_i) | (u_i &  w_i &  y_i) | (u_i & ! v_i & ! x_i &  y_i) | (!u_i &  v_i &  x_i &  y_i) | (u_i &  v_i & ! w_i &  x_i & ! y_i) | (!u_i & ! v_i & ! w_i & ! x_i & ! y_i) | (!u_i & ! v_i &  w_i &  x_i & ! y_i)
+>>>>>>> decode-rr-debuggin
 wire  k1_o_t0;
 wire  k1_o_t1;
 wire  k1_o_t2;
@@ -84,17 +101,21 @@ wire  k1_o_t5;
 wire  k1_o_t6;
 wire  k1_o_t7;
 
-and3$  k1_o_and0 ( k1_o_t0, u_i,  w_i,  y_i);
-and3$  k1_o_and1 ( k1_o_t1,  v_i,  w_i,  y_i);
-and3$  k1_o_and2 ( k1_o_t2,  w_i,  x_i_inv,  y_i);
-and4$  k1_o_and3 ( k1_o_t3, u_i_inv,  v_i,  x_i,  y_i);
-and4$  k1_o_and4 ( k1_o_t4, u_i,  v_i_inv,  x_i_inv,  y_i);
+and3$  k1_o_and0 ( k1_o_t0,  v_i,  w_i,  y_i);
+and3$  k1_o_and1 ( k1_o_t1,  w_i,  x_i_inv,  y_i);
+and3$  k1_o_and2 ( k1_o_t2, u_i,  w_i,  y_i);
+and4$  k1_o_and3 ( k1_o_t3, u_i,  v_i_inv,  x_i_inv,  y_i);
+and4$  k1_o_and4 ( k1_o_t4, u_i_inv,  v_i,  x_i,  y_i);
 and5$  k1_o_and5 ( k1_o_t5, u_i,  v_i,  w_i_inv,  x_i,  y_i_inv);
 and5$  k1_o_and6 ( k1_o_t6, u_i_inv,  v_i_inv,  w_i_inv,  x_i_inv,  y_i_inv);
 and5$  k1_o_and7 ( k1_o_t7, u_i_inv,  v_i_inv,  w_i,  x_i,  y_i_inv);
 or8$   k1_o_or  ( k1_o,  k1_o_t0,  k1_o_t1,  k1_o_t2,  k1_o_t3,  k1_o_t4,  k1_o_t5,  k1_o_t6,  k1_o_t7);
 
+<<<<<<< HEAD
 //  k2_o = ( v_i & ! w_i & ! x_i & ! y_i) | (u_i & ! v_i &  w_i &  y_i) | (u_i &  w_i &  x_i &  y_i) | (u_i & ! v_i & ! w_i &  x_i & ! y_i) | (!u_i & ! v_i & ! w_i & ! x_i &  y_i) | (!u_i &  v_i &  w_i & ! x_i &  y_i) | (!u_i & ! v_i &  w_i &  x_i & ! y_i)
+=======
+//  k2_o = (u_i & ! v_i &  w_i &  y_i) | ( v_i & ! w_i & ! x_i & ! y_i) | (u_i &  w_i &  x_i &  y_i) | (!u_i & ! v_i &  w_i &  x_i & ! y_i) | (!u_i & ! v_i & ! w_i & ! x_i &  y_i) | (!u_i &  v_i &  w_i & ! x_i &  y_i) | (u_i & ! v_i & ! w_i &  x_i & ! y_i)
+>>>>>>> decode-rr-debuggin
 wire  k2_o_t0;
 wire  k2_o_t1;
 wire  k2_o_t2;
@@ -103,13 +124,17 @@ wire  k2_o_t4;
 wire  k2_o_t5;
 wire  k2_o_t6;
 
-and4$  k2_o_and0 ( k2_o_t0,  v_i,  w_i_inv,  x_i_inv,  y_i_inv);
-and4$  k2_o_and1 ( k2_o_t1, u_i,  v_i_inv,  w_i,  y_i);
+and4$  k2_o_and0 ( k2_o_t0, u_i,  v_i_inv,  w_i,  y_i);
+and4$  k2_o_and1 ( k2_o_t1,  v_i,  w_i_inv,  x_i_inv,  y_i_inv);
 and4$  k2_o_and2 ( k2_o_t2, u_i,  w_i,  x_i,  y_i);
 and5$  k2_o_and3 ( k2_o_t3, u_i,  v_i_inv,  w_i_inv,  x_i,  y_i_inv);
 and5$  k2_o_and4 ( k2_o_t4, u_i_inv,  v_i_inv,  w_i_inv,  x_i_inv,  y_i);
 and5$  k2_o_and5 ( k2_o_t5, u_i_inv,  v_i,  w_i,  x_i_inv,  y_i);
+<<<<<<< HEAD
 and5$  k2_o_and6 ( k2_o_t6, u_i_inv,  v_i_inv,  w_i,  x_i,  y_i_inv);
+=======
+and5$  k2_o_and6 ( k2_o_t6, u_i,  v_i_inv,  w_i_inv,  x_i,  y_i_inv);
+>>>>>>> decode-rr-debuggin
 or7$   k2_o_or  ( k2_o,  k2_o_t0,  k2_o_t1,  k2_o_t2,  k2_o_t3,  k2_o_t4,  k2_o_t5,  k2_o_t6);
 
 endmodule

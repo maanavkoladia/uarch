@@ -30,19 +30,6 @@ module tb_Dec();
     end
 
     // Queue initialization placeholder
-    initial begin
-        // Initialize queue here
-        // Example:
-	queue = '{default: 8'h00};
-        queue[0]  = 8'h03; queue[1]  = 8'hC1; // add eax, ecx
-        queue[2]  = 8'h03; queue[3]  = 8'hC8; // add ecx, eax
-        queue[4]  = 8'h03; queue[5]  = 8'hD3; // add edx, ebx
-        queue[6]  = 8'h03; queue[7]  = 8'hDA; // add ebx, edx
-        queue[8]  = 8'h03; queue[9]  = 8'hC2; // add eax, edx
-        queue[10] = 8'h03; queue[11] = 8'hCB; // add ecx, ebx
-        queue[12] = 8'h01; queue[13] = 8'hD8; // add eax, ebx
-        queue[14] = 8'h01; queue[15] = 8'hCA; // add edx, ecx
-    end
 
     initial
         begin

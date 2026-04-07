@@ -3,6 +3,7 @@ include ../../Make.build
 
 TARGET = test_Decode
 
+TOP_FILE_NAME = tb_Dec
 
 TB_FILES = \
 		   tb_Dec.sv
@@ -19,7 +20,7 @@ SRC_FILES = \
 all: $(TARGET)
 
 $(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -o $@ $(SRC_FILES)
+	$(CC) $(CC_FLAGS) -top $(TOP_FILE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee compile.log
 
 run: $(TARGET)
 	./$<

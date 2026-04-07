@@ -34,10 +34,10 @@ module WB (
     st_q_outputs_t stq_outputs[NUM_WB_ST_QS];
     mio_inputs_t mio_q_input;
     reg_wb_logic_outputs_t reg_wb_logic_outs;
+
     st_q_2_dep_check_outputs_t dc_dep;
     st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
     st_q_2_dcache_t mio_q_output;
-    bool st_override_array[NUM_WB_ST_QS];
 
 
     //stq 2 dcache (non MIO)
@@ -50,7 +50,6 @@ module WB (
                 bit_vec : stq_outputs[i].bit_vec,
                 data    : stq_outputs[i].data
             };
-           // st_override_array[i] = stq_outputs[i].st_override;
         end
     end
 

@@ -17,12 +17,12 @@ module MEM (
 
     //not sure if valid are needed, leaving for now
     //if not XCL, then wait for line_0 to hit, if XCL, wait for both line_0
-    //and line_1
+    //and C1
     input bool hit_line_0,  //this onyl goes high if valid
     input byte_t line_0[CACHE_LINES_SIZE_B],
 
     input bool hit_line_1,
-    input byte_t line_1[CACHE_LINES_SIZE_B],
+    input byte_t C1[CACHE_LINES_SIZE_B],
 
     input bool hit_line_MMIO,
     input byte_t line_MMIO[CACHE_LINES_SIZE_B],
@@ -38,8 +38,8 @@ module MEM (
 
     always_comb begin
         C0 = latches_i.MIO ? line_MMIO : line_0; //mux
-        up_buf = latches_i.swapLines ? C0 : line_1;
-        low_buf = latches_i.swapLines ? line_1 : C0;
+        up_buf = latches_i.swapLines ? C0 : C1;
+        low_buf = latches_i.swapLines ? C1 : C0;
     end
 
     mem_miss_stall_logic mem_stall(

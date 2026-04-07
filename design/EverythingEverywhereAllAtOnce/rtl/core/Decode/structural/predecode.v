@@ -30,14 +30,11 @@ module predecode(
     wire [3:0] ppu_sib_size;
     wire [1:0] num_pfs;
     wire [9:0] pf_vector0, pf_vector1, pf_vector2;
-    wire [15:0] eip_bar_top, eip_bar_bottom;
-    wire [8:0] carry;
     wire [31:0] sext_inst_length;
     wire inst_length_cout;
     wire [3:0] inst_valid;
     wire true_inst_valid;
 
-    assign carry[0] = 1'b0;
     assign sext_inst_length = {28'b0, inst_length};
 
     selection_logic sel_log1(.queue(queue), .queue_valid(queue_valid), .EIP(EIP), .IR(IR), .IR_valid_vect(IR_valid_vect));

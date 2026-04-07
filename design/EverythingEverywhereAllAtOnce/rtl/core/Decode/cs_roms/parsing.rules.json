@@ -1,5 +1,5 @@
 {
-    "InputNumBits" : "10",
+    "Input" : "10",
     "REP" : "1",
     "MODRM_NEEDED" : "1",
     "RM_IS_DR" : "1",
@@ -66,13 +66,9 @@
 
     "OP_IN_MODRM" : "1",
     "DATA_SIZE" : "3",
-    "RR_OP" : "1",
     "HARDCODED_DR_RD" : "1",
     "HARDCODED_SR_RD" : "1",
     "ST_SEL" : "1",
-    "DC_OP" : "1",
-    "MEM_OP" : "1",
-    "EXE_OP" : "1",
 
     "alu_inputA_sel" : {
         "NO_EXE" : "0",
@@ -179,6 +175,5 @@
     "relative_branch" : "1",
     "special_dr" : "1",
     "is_far" : "1",
-    "second_flag_needed" : "1",
-    "WB_OP" : "1"
+    "second_flag_needed" : "1"
 }
