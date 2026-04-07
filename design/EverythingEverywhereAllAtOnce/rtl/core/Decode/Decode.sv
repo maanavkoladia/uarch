@@ -157,6 +157,35 @@ module Decode (
         else segment0 = DS;
     end
 
+    always_ff @(posedge clk) begin
+        if(!rst) begin
+            EIP <= 32'b0;
+            PrevEIP <= 32'b0;
+            PrevLength <= 32'b0;
+            //REP_MOV_LATCH <= 1'b0;    //need to save if its mov or cmp so can process next cylce, doing this to save crit path time
+            //REP_CMP_LATCH <= 1'b0;
+        end
+        else begin
+            PrevEIP <= EIP;
+            PrevLength <= inst_length;
+            //REP_MOV_LATCH <= cs_rep_mov;
+            //REP_CMP_LATCH <= cs_rep_cmp;
+
+            if(exe_outs_i.br_res_out.valid && flush) EIP <= exe_outs_i.br_res_out.br_target;
+            else begin
+                if(idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP && idm_outs_i.idm_slots[EIP[5:4]].valid && idm_outs_i.idm_slots[EIP[5:4]].br_valid) begin
+                    EIP <= idm_outs_i.idm_slots[EIP[5:4]].br_btb_target;
+                end
+                else begin
+                    //if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
+                    if(!invalid_inst && !stall) EIP <= NEIP;    //need to integrate rep
+                    else EIP <= EIP;
+                end
+            end
+        end
+    end
+
+
     assign temp_rr_latch = '{
         valid           : !invalid_inst,
         cs              : temp_rr_cs,
@@ -190,34 +219,6 @@ module Decode (
         //useRep  : rep_reg_value
         useRep : 1'b0
     };
-
-    always_ff @(posedge clk) begin
-        if(!rst) begin
-            EIP <= 32'b0;
-            PrevEIP <= 32'b0;
-            PrevLength <= 32'b0;
-            //REP_MOV_LATCH <= 1'b0;    //need to save if its mov or cmp so can process next cylce, doing this to save crit path time
-            //REP_CMP_LATCH <= 1'b0;
-        end
-        else begin
-            PrevEIP <= EIP;
-            PrevLength <= inst_length;
-            //REP_MOV_LATCH <= cs_rep_mov;
-            //REP_CMP_LATCH <= cs_rep_cmp;
-
-            if(exe_outs_i.br_res_out.valid && flush) EIP <= exe_outs_i.br_res_out.br_target;
-            else begin
-                if(idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP && idm_outs_i.idm_slots[EIP[5:4]].valid && idm_outs_i.idm_slots[EIP[5:4]].br_valid) begin
-                    EIP <= idm_outs_i.idm_slots[EIP[5:4]].br_btb_target;
-                end
-                else begin
-                    //if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
-                    if(!invalid_inst && !stall) EIP <= NEIP;    //need to integrate rep
-                    else EIP <= EIP;
-                end
-            end
-        end
-    end
 
 
 endmodule

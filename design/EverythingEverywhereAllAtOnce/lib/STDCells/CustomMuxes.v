@@ -63,7 +63,7 @@ module mux64_8 (
         end
     endgenerate
 
-mux4_8$ mux2 (out, secondlayer[0], secondlayer[1], secondlayer[2], secondlayer[3], sel[4], sel[5]);
+    mux4_8$ mux2 (out, secondlayer[0], secondlayer[1], secondlayer[2], secondlayer[3], sel[4], sel[5]);
 
 endmodule
 
@@ -84,5 +84,25 @@ module mux4_64 (
 );
     mux4_32 first32 (.in0(in0[31:0]), .in1(in1[31:0]), .in2(in2[31:0]), .in3(in3[31:0]), .sel0(sel0), .sel1(sel1), .out(out[31:0]));
     mux4_32 last32 (.in0(in0[63:32]), .in1(in1[63:32]), .in2(in2[63:32]), .in3(in3[63:32]), .sel0(sel0), .sel1(sel1), .out(out[63:32]));
+
+endmodule
+
+module mux16_32 (
+    input  logic [15:0][31:0] in,
+    input  logic sel0, sel1, sel2, sel3,
+    output logic [31:0] out
+);
+
+    // Intermediate wires
+    logic [31:0] sub_out0, sub_out1, sub_out2, sub_out3;
+
+    // First stage (lower 2 bits: sel0, sel1)
+    mux4_32 mux0(.in0(in[0]), .in1(in[1]), .in2(in[2]), .in3(in[3]), .sel0(sel0), .sel1(sel1), .out(sub_out0));
+    mux4_32 mux1(.in0(in[4]), .in1(in[5]), .in2(in[6]), .in3(in[7]), .sel0(sel0), .sel1(sel1), .out(sub_out1));
+    mux4_32 mux2(.in0(in[8]), .in1(in[9]), .in2(in[10]), .in3(in[11]), .sel0(sel0), .sel1(sel1), .out(sub_out2));
+    mux4_32 mux3(.in0(in[12]), .in1(in[13]), .in2(in[14]), .in3(in[15]), .sel0(sel0), .sel1(sel1), .out(sub_out3));
+
+    // Final stage (upper 2 bits: sel2, sel3)
+    mux4_32 mux_final(.in0(sub_out0), .in1(sub_out1), .in2(sub_out2), .in3(sub_out3), .sel0(sel2), .sel1(sel3), .out(out));
 
 endmodule
