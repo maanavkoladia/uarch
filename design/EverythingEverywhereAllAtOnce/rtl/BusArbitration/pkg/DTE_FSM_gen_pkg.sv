@@ -27,9 +27,9 @@ DTE_MEM_2_DCACHE_FSM_NUM_STATES
         DTE_MEM_2_DCACHE_LD0     = 1,
         DTE_MEM_2_DCACHE_LD1     = 2,
         DTE_MEM_2_DCACHE_LD2     = 3,
-        DTE_MEM_2_DCACHE_LD3     = 5,
-        DTE_MEM_2_DCACHE_MEM_REQ = 6,
-        DTE_MEM_2_DCACHE_ERROR   = 7
+        DTE_MEM_2_DCACHE_LD3     = 4,
+        DTE_MEM_2_DCACHE_MEM_REQ = 5,
+        DTE_MEM_2_DCACHE_ERROR   = 6
     } DTE_MEM_2_DCache_FSM_State_e;
 
 
