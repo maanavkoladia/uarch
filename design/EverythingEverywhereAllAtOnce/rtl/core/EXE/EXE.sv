@@ -217,7 +217,7 @@ module EXE (
     //==========================================================================
 
     assign op_type = latches_i.cs.OP_TYPE;
-    assign data_size = latches_i.cs.DATA_SIZE;
+    assign data_size = latches_i.data_size_vec;
 
 
     //==========================================================================

@@ -1,4 +1,4 @@
-
+'
 import core_common_pkg::*;
 import core_stage_latches_pkg::*;
 import common_pkg::*;
@@ -41,6 +41,10 @@ module DC (
     bool ld_addr_1_V;
     p_address_t ld_addr_0;
     p_address_t ld_addr_1;
+
+    bool rh_into_mem_o;
+    bool mem_into_rh_o;
+    logic [3:0] data_size_vec;
 
     // Derive ST_OP signals (store operation present)
     bool dc_ST_OP;
@@ -132,6 +136,18 @@ module DC (
         .WB_stall_i(wb_outs_i.wb_stall)
     );
 
+    data_size_vec_logic data_vec_uint(
+        .data_size(latches_i.data),
+        .upper8(latches_i.upper8),
+        .ST_OP(latches_i.cs.ST_OP),
+        .LD_OP(latches_i.cs.LD_OP),
+        .rh_into_mem_o(rh_into_mem_o),
+        .mem_into_rh_o(mem_into_rh_o),
+        .data_size_vec_o(data_size_vec)
+    );
+
+
+
     assign dc_outs_o = '{
             valid: latches_i.valid,
             stall: dc_stall,
@@ -149,7 +165,7 @@ module DC (
         };
 
     //need to add valid logic once this is gened 
-
+    
 
     assign mem_latches_next_o = '{
             valid: mem_stage_next_vaild_o,
@@ -157,6 +173,7 @@ module DC (
             exe_cs: latches_i.exe_cs,
             wb_cs: latches_i.wb_cs,
             br_info: latches_i.br_info,
+            data_size_vec = data_size_vec,
             ST_XCL: latches_i.ST_XCL,
             ST_PADDR_0: latches_i.ST_PADDR_0,
             ST_PADDR_1: latches_i.ST_PADDR_1,
@@ -172,7 +189,8 @@ module DC (
             LD_XCL: latches_i.LD_XCL,
             swapLines: latches_i.swapLines,
             LD_PADDR_0: latches_i.LD_PADDR_0,
-            LD_PADDR_1: latches_i.LD_PADDR_1
+            LD_PADDR_1: latches_i.LD_PADDR_1,
+
         };
 
 endmodule
