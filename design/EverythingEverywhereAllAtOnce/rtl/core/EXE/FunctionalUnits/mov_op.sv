@@ -16,7 +16,8 @@ module mov_op(
     assign merged_res[31:16] = data_size[2] ? srB[31:16] : srA[31:16];
     assign merged_res[63:32] = data_size[3] ? srB[63:32] : srB[63:32];
 
-    assign res_buf_o = srA;
+    assign res_buf_o = merged_res;
+    assign dr_o = merged_res;
     
 
 endmodule

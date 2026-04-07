@@ -44,7 +44,7 @@ module or_op(
     bool zf_low8;
     bool zf_up8;
     bool zf_up16;
-    assign zf_low = (merged_result[7:0] == 8'h0);
+    assign zf_low8 = (merged_result[7:0] == 8'h0);
     assign zf_up8 = (merged_result[15:8] == 8'h0);
     assign zf_up16 = (merged_result[31:16] == 16'h0);
 
@@ -57,9 +57,19 @@ module or_op(
         4'b0010 : ZF = zf_up8;
         4'b0011 : ZF = zf_low16;
         4'b0100 : ZF = zf_low16 & zf_up16;
+        default: ZF = 0;
       endcase  
     end
 
-    
+    // SF is the most significant bit of the result based on data size
+    always_comb begin
+      case(data_size)
+        4'b0001 : SF = merged_result[7];   // 8-bit: bit 7
+        4'b0010 : SF = merged_result[15];  // 16-bit: bit 15
+        4'b0011 : SF = merged_result[15];  // 16-bit: bit 15
+        4'b0100 : SF = merged_result[31];  // 32-bit: bit 31
+        default: SF = 0;
+      endcase  
+    end
 
 endmodule

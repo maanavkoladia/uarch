@@ -19,6 +19,7 @@ _start:
 
     .org 0x5670
     .data
-
+val_1:  .long  0x11111111
+val_2:  .long  0x22222222
 val_a:  .long  0xAABBCCDD
 val_b:  .long  0xBEEFDEAD

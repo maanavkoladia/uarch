@@ -26,7 +26,7 @@ module sr_sel (
             RET_IMM:     sr_o = ret_imm_sr_i;
             RET:         sr_o = ret_sr_i;
             XCHG:        sr_o = xchg_sr_i;
-            default:        sr_o = 64'h0;
+            default:      sr_o = 64'h0;
         endcase
     end
 

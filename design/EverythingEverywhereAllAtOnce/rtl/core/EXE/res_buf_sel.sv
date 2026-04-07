@@ -38,7 +38,7 @@ module res_buf_sel (
             SAR:      res_buf_o = sar_res_buf_i;
             SBB:      res_buf_o = sbb_res_buf_i;
             XCHG:     res_buf_o = xchg_res_buf_i;
-            default:     res_buf_o = 64'h0;
+            default:  res_buf_o = 64'h0;
         endcase
     end
 

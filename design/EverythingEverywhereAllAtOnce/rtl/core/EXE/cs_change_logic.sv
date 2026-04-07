@@ -16,6 +16,9 @@ module cs_change_logic(
 );
 
     always_comb begin
+        wb_dr_o = cs_wb_dr;
+        wb_sr_o = cs_wb_sr;
+        st_op_o = cs_st_op;
         if(op_type == CMPXCHG)begin
             wb_dr_o = cancel_dr_we ? 0 : cs_wb_dr;
             wb_sr_o = cancel_sr_we ? 0 : cs_wb_sr;

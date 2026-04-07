@@ -22,7 +22,7 @@ module not_op(
     assign merged_res[15:8] = data_size[1] ? out_32[15:7] : srA[15:8];
     assign merged_res[31:16] = data_size[2]? out_32[31:16] : srA[31:16];
 
-    assign res_buf = {32'h0, merged_res};
+    assign res_buf_o = {32'h0, merged_res};
     assign dr_o = {32'h0, merged_res};
 
 

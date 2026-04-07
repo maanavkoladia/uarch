@@ -39,7 +39,7 @@ module alu_input_sel(
 
     //logic to determine srA
     always_comb begin
-        unique case (alu_inputA_sel)
+        case (alu_inputA_sel)
             SR_REGISTER:    srA_64 = sr_data;
             DR_REGISTER:    srA_64 = dr_data;
             IMM64:          srA_64 = imm64;
@@ -54,13 +54,13 @@ module alu_input_sel(
             CMPXCHG_SEL:        srA_64 = {sr_data, dr_data}; 
             IRETD_SEL:          srA_64 = res_buf_out[96:32];
             FLAGS:          srA_64 = {32'd0, flags};
-            default:        $fatal;
+            default:        srA_64 = '0;
         endcase
     end
 
     //logic for srB
     always_comb begin
-        unique case (alu_inputB_sel)
+        case (alu_inputB_sel)
             SR_REGISTER:    srB_64 = sr_data;
             DR_REGISTER:    srB_64 = dr_data;
             IMM64:          srB_64 = imm64;
@@ -75,14 +75,14 @@ module alu_input_sel(
             CMPXCHG_SEL:        srB_64 = {sr_data, dr_data}; //rm32 r32 on cmpxchg 
             IRETD_SEL:          srB_64 = res_buf_out[95:32];
             FLAGS:          srB_64 = {32'd0, flags};
-            default:        $fatal;
+            default:        srB_64 = '0;
         endcase
     end
 
 
     //logic for BR 
     always_comb begin
-        unique case (br_input_sel)
+        case (br_input_sel)
             SR_REGISTER: br_sel = sr_data[31:0];
             DR_REGISTER: br_sel = dr_data[31:0];
             IMM32        : br_sel = imm64[31:0];
@@ -92,6 +92,7 @@ module alu_input_sel(
             //stack grows toward lower mem addresses. EIP always pushed last so its at lowest address always bottom 32 bits 
             BUF32     : br_sel = res_buf_out[31:0]; 
             ZEXT_BUF16 : br_sel = {16'd0, res_buf_out[15:0]};
+            default: br_sel = '0;
         endcase
     end
 

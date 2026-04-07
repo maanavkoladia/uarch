@@ -55,8 +55,7 @@ module EXE (
 
     // --- Result Selection Outputs ---
     uint64_t                          res_buf_selected;
-    uint64_t                          dr_selected;
-    uint64_t                          sr_selected;
+
 
     // --- Control Store Change Signals ---
     bool                              cancel_dr_we;

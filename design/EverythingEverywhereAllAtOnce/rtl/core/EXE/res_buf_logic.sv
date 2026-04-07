@@ -7,14 +7,15 @@ module res_buf_logic(
 
 //I think this will be a much bigger mess in structural so I kept its own module
 
-logic [3:0] offset = st_addr_0[3:0];
+logic [3:0] offset;
+assign offset = st_addr_0[3:0];
 
 always_comb begin
+    res_buf = '{default: '0};
     //max could be moved to 12. will save us time in structural
     for(int i = 0; i < 8; i++)begin
         res_buf[i+offset] = res_info_i[i*8 +: 8];
     end
-
 end
 
 

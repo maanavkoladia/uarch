@@ -19,10 +19,17 @@ module cmp (
     assign result32 = diff32[31:0];
 
     // Signals for different ranges
-    logic [7:0] lower8   = result32[7:0];
-    logic [7:0] upper8   = result32[15:8];
-    logic [15:0] lower16 = result32[15:0];
-    logic [31:0] full32  = result32[31:0];
+    logic [7:0] lower8;
+    assign lower8  = result32[7:0];
+
+    logic [7:0] upper8;
+    assign upper8 = result32[15:8];
+
+    logic [15:0] lower16;
+    assign lower16 = result32[15:0];
+
+    logic [31:0] full32;
+    assign full32 = result32[31:0];
 
     always_comb begin
         // Default flags

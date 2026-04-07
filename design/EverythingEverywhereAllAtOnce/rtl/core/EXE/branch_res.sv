@@ -41,7 +41,7 @@ module branch_res(
     //taken logic
     assign second_flag_res = second_flag_needed_i ? ~CF : 1'b1; //mux
     assign cond_br_res = ~ZF & second_flag_res;
-    assign taken = br_ucond_i || cond_br_res;
+    assign taken = (br_ucond_i || cond_br_res) & valid_i;
 
     //target logic
     assign br_target = relative_branch_i ? (NEIP_i + br_source_i) : br_source_i;
@@ -53,6 +53,7 @@ module branch_res(
     always_comb begin
         miss_prediction = 1'b0;
         flush = 1'b0;
+        far_flush = 0;
         if(taken & br_pred_taken_i & target_match) begin
             miss_prediction = 1'b0;
             flush = 1'b0;
