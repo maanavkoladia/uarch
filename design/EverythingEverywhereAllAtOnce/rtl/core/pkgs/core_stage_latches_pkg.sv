@@ -187,7 +187,6 @@ package core_stage_latches_pkg;
         bool LD_XCL;
         p_address_t LD_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t LD_PADDR_1;  //cacheline algned
-        bool LD_MIO;
         bool swapLines;
 
         reg_ids_e sr_id;

@@ -19,11 +19,13 @@ module zf_flag_sel(
 
     input bool curr_zf_flag,
 	input exe_cs_operation_type_e op_type,
-    output bool zf_flag_o
+    output bool zf_flag_o,
+	output bool clr_ZF_sb
 );
 
 
 	always_comb begin
+		clr_ZF_sb = 1;
 		case(op_type)
 			ADC:      zf_flag_o = adc_zf;
 			ADD:      zf_flag_o = add_zf;
@@ -36,7 +38,10 @@ module zf_flag_sel(
 			SAR:      zf_flag_o = sar_zf;
 			SBB:      zf_flag_o = sbb_zf;
 			IRETD:	  zf_flag_o = iretd_zf;
-			default:  zf_flag_o = curr_zf_flag;
+			default: begin
+				 zf_flag_o = curr_zf_flag;
+				 clr_ZF_sb = 0;
+			end
 		endcase
 	end
 

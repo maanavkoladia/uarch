@@ -18,7 +18,7 @@ module EXE (
     //==========================================================================
     // SIGNAL DECLARATIONS
     //==========================================================================
-
+    bool clr_ZF_sb;
     bool wb_stage_we_valid_unit_o;
     bool wb_stage_next_vaild_o;
     wb_valid_logic wb_valid_logic_unit (
@@ -226,7 +226,7 @@ module EXE (
     //==========================================================================
 
     assign wb_latches_next_o = '{
-            valid: wb_stage_next_vaild_o,  //TODO
+            valid: wb_stage_next_vaild_o,  
             cs: latches_i.wb_cs,
             ST_XCL: latches_i.ST_XCL,
             ST_PADDR_0: latches_i.ST_PADDR_0,
@@ -239,8 +239,19 @@ module EXE (
             sr_data: sr_next,
             dr_id: latches_i.dr_id,
             dr_data: dr_next
-        };
+    };
 
+    assign outs_o = '{
+        valid: latches_i.valid,
+        br_res_out: branch_resolution_o,
+        ZF: flags_reg[ZF_IDX],
+        clr_ZF_sb: clr_ZF_sb,
+        ST_OP: latches_i.cs.ST_OP,
+        ST_XCL: latches_i.ST_XCL,
+        ST_PADDR_0: latches_i.ST_PADDR_0,
+        ST_PADDR_1: latches_i.ST_PADDR_1,
+        wb_stage_we: wb_stage_we_valid_unit_o
+    };
 
     //==========================================================================
     // ALU INPUT SELECTION
@@ -519,7 +530,8 @@ module EXE (
         .sbb_zf      (sbb_zf_o),
         .curr_zf_flag(flags_reg[ZF_IDX]),
         .op_type     (op_type),
-        .zf_flag_o   (zf_flag_o)
+        .zf_flag_o   (zf_flag_o),
+        .clr_ZF_sb   (clr_ZF_sb)
     );
 
 

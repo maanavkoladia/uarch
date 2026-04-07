@@ -65,6 +65,18 @@ module EveryThing_TOP (
     //     .nextLatches_i(wb_latches_next),
     //     .latches_o(wb_latches)
     // );
+    
+    assign exe_outputs = '{default: '0};
+    assign mem_outputs = '{default: '0};
+    
+    always_comb begin
+        wb_outputs = '{default: '0};
+        for(int i=0; i < 4; i++) begin
+            wb_outputs.stq_heads[i].empty = 1;
+        end
+        wb_outputs.mio_head.empty = 1;
+        
+    end
 
     Fetch fetch_unit (
         .clk(clk),

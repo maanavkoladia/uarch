@@ -122,7 +122,7 @@ module DC (
     bool mem_stage_we_valid_unit_o;
     bool mem_stage_next_vaild_o;
     mem_valid_logic mem_valid_unit (
-        .MEM_we_o(mem_stage_we),
+        .MEM_we_o(mem_stage_we_valid_unit_o),
         .N_MEM_V_o(mem_stage_next_vaild_o),
         .DC_stall_i(dc_stall),
         .DC_V_i(latches_i.valid),
@@ -145,7 +145,7 @@ module DC (
             latches_i.MIO & latches_i.cs.LD_OP & ~dep_stall
             ),
             ld_addr_MIO : ld_addr_0,
-            mem_stage_we : mem_stage_we_valid_unit_o
+            mem_stage_latch_we : mem_stage_we_valid_unit_o
         };
 
     //need to add valid logic once this is gened 
