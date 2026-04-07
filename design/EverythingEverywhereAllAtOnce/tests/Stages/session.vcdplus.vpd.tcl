@@ -1,6 +1,6 @@
 # Begin_DVE_Session_Save_Info
 # DVE full session
-# Saved on Mon Apr 6 22:48:39 2026
+# Saved on Mon Apr 6 22:50:34 2026
 # Designs open: 1
 #   V1: vcdplus.vpd
 # Toplevel windows open: 2
@@ -207,7 +207,7 @@ gui_sync_global -id ${TopLevel.2} -option true
 # MDI window settings
 set Wave.1 [gui_create_window -type {Wave}  -parent ${TopLevel.2}]
 gui_show_window -window ${Wave.1} -show_state maximized
-gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 370} {child_wave_right 904} {child_wave_colname 187} {child_wave_colvalue 179} {child_wave_col1 0} {child_wave_col2 1}}
+gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 605} {child_wave_right 669} {child_wave_colname 262} {child_wave_colvalue 339} {child_wave_col1 0} {child_wave_col2 1}}
 
 # End MDI window settings
 
@@ -272,78 +272,78 @@ gui_load_child_values {tb_stages.uut_dcache.dcache_arbitration}
 gui_load_child_values {tb_stages.uut4_busArb.dte_unit}
 
 
-set _session_group_141 busArb
-gui_sg_create "$_session_group_141"
-set busArb "$_session_group_141"
+set _session_group_169 busArb
+gui_sg_create "$_session_group_169"
+set busArb "$_session_group_169"
 
-gui_sg_addsignal -group "$_session_group_141" { }
+gui_sg_addsignal -group "$_session_group_169" { }
 
-set _session_group_142 $_session_group_141|
-append _session_group_142 uut4_busArb
-gui_sg_create "$_session_group_142"
-set busArb|uut4_busArb "$_session_group_142"
+set _session_group_170 $_session_group_169|
+append _session_group_170 uut4_busArb
+gui_sg_create "$_session_group_170"
+set busArb|uut4_busArb "$_session_group_170"
 
-gui_sg_addsignal -group "$_session_group_142" { {tb_stages.uut4_busArb.$unit} tb_stages.uut4_busArb.clk tb_stages.uut4_busArb.rst tb_stages.uut4_busArb.sch_best_pick tb_stages.uut4_busArb.sch_best_pick_bk_id tb_stages.uut4_busArb.iCache_2_Sch_i tb_stages.uut4_busArb.dte_out_2_icache_o tb_stages.uut4_busArb.dCache_2_Sch_i tb_stages.uut4_busArb.dte_out_2_dcache_o tb_stages.uut4_busArb.mem_2_Sch_i tb_stages.uut4_busArb.mem_2_dte_i tb_stages.uut4_busArb.dte_2_mem_o tb_stages.uut4_busArb.dma_2_sch_i tb_stages.uut4_busArb.dte_2_dma_o tb_stages.uut4_busArb.dte_2_ddr5_o }
+gui_sg_addsignal -group "$_session_group_170" { {tb_stages.uut4_busArb.$unit} tb_stages.uut4_busArb.clk tb_stages.uut4_busArb.rst tb_stages.uut4_busArb.sch_best_pick tb_stages.uut4_busArb.sch_best_pick_bk_id tb_stages.uut4_busArb.iCache_2_Sch_i tb_stages.uut4_busArb.dte_out_2_icache_o tb_stages.uut4_busArb.dCache_2_Sch_i tb_stages.uut4_busArb.dte_out_2_dcache_o tb_stages.uut4_busArb.mem_2_Sch_i tb_stages.uut4_busArb.mem_2_dte_i tb_stages.uut4_busArb.dte_2_mem_o tb_stages.uut4_busArb.dma_2_sch_i tb_stages.uut4_busArb.dte_2_dma_o tb_stages.uut4_busArb.dte_2_ddr5_o }
 
-gui_sg_move "$_session_group_142" -after "$_session_group_141" -pos 2 
+gui_sg_move "$_session_group_170" -after "$_session_group_169" -pos 2 
 
-set _session_group_143 $_session_group_141|
-append _session_group_143 scheduler_unit
-gui_sg_create "$_session_group_143"
-set busArb|scheduler_unit "$_session_group_143"
+set _session_group_171 $_session_group_169|
+append _session_group_171 scheduler_unit
+gui_sg_create "$_session_group_171"
+set busArb|scheduler_unit "$_session_group_171"
 
-gui_sg_addsignal -group "$_session_group_143" { {tb_stages.uut4_busArb.scheduler_unit.$unit} tb_stages.uut4_busArb.scheduler_unit.clk tb_stages.uut4_busArb.scheduler_unit.rst tb_stages.uut4_busArb.scheduler_unit.bestPick_o tb_stages.uut4_busArb.scheduler_unit.bestPick_bk_id_o tb_stages.uut4_busArb.scheduler_unit.dcache_Best_Pick tb_stages.uut4_busArb.scheduler_unit.dcache_Best_Pick_BK_ID tb_stages.uut4_busArb.scheduler_unit.dma_req tb_stages.uut4_busArb.scheduler_unit.IC_MIO_Pick tb_stages.uut4_busArb.scheduler_unit.IC_MIO_DMA_PICK tb_stages.uut4_busArb.scheduler_unit.bestPick tb_stages.uut4_busArb.scheduler_unit.iCache_2_Sch_i tb_stages.uut4_busArb.scheduler_unit.dCache_2_Sch_i tb_stages.uut4_busArb.scheduler_unit.mem_2_Sch_i tb_stages.uut4_busArb.scheduler_unit.dma_2_sch_i tb_stages.uut4_busArb.scheduler_unit.sch_latches }
+gui_sg_addsignal -group "$_session_group_171" { {tb_stages.uut4_busArb.scheduler_unit.$unit} tb_stages.uut4_busArb.scheduler_unit.clk tb_stages.uut4_busArb.scheduler_unit.rst tb_stages.uut4_busArb.scheduler_unit.bestPick_o tb_stages.uut4_busArb.scheduler_unit.bestPick_bk_id_o tb_stages.uut4_busArb.scheduler_unit.dcache_Best_Pick tb_stages.uut4_busArb.scheduler_unit.dcache_Best_Pick_BK_ID tb_stages.uut4_busArb.scheduler_unit.dma_req tb_stages.uut4_busArb.scheduler_unit.IC_MIO_Pick tb_stages.uut4_busArb.scheduler_unit.IC_MIO_DMA_PICK tb_stages.uut4_busArb.scheduler_unit.bestPick tb_stages.uut4_busArb.scheduler_unit.iCache_2_Sch_i tb_stages.uut4_busArb.scheduler_unit.dCache_2_Sch_i tb_stages.uut4_busArb.scheduler_unit.mem_2_Sch_i tb_stages.uut4_busArb.scheduler_unit.dma_2_sch_i tb_stages.uut4_busArb.scheduler_unit.sch_latches }
 
-set _session_group_144 $_session_group_141|
-append _session_group_144 dte_unit
-gui_sg_create "$_session_group_144"
-set busArb|dte_unit "$_session_group_144"
+set _session_group_172 $_session_group_169|
+append _session_group_172 dte_unit
+gui_sg_create "$_session_group_172"
+set busArb|dte_unit "$_session_group_172"
 
-gui_sg_addsignal -group "$_session_group_144" { {tb_stages.uut4_busArb.dte_unit.$unit} tb_stages.uut4_busArb.dte_unit.clk tb_stages.uut4_busArb.dte_unit.rst tb_stages.uut4_busArb.dte_unit.bestPick_i tb_stages.uut4_busArb.dte_unit.bestPick_bk_id_i tb_stages.uut4_busArb.dte_unit.dte_mem_2_icache_fsm_state tb_stages.uut4_busArb.dte_unit.dte_mem_2_icache_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_mem_2_dcache_fsm_state tb_stages.uut4_busArb.dte_unit.dte_dcache_2_mem_fsm_state tb_stages.uut4_busArb.dte_unit.dte_ddr5_2_core_fsm_state tb_stages.uut4_busArb.dte_unit.dte_ddr5_2_core_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_core_2_ddr5_fsm_state tb_stages.uut4_busArb.dte_unit.dte_core_2_ddr5_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_core_2_dma_fsm_state tb_stages.uut4_busArb.dte_unit.dte_core_2_dma_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_dma_2_mem_fsm_state tb_stages.uut4_busArb.dte_unit.dte_dma_2_mem_fsm_state_bits tb_stages.uut4_busArb.dte_unit.ddr5_2_core_fsmout_busy tb_stages.uut4_busArb.dte_unit.core_2_ddr5_fsmout_busy tb_stages.uut4_busArb.dte_unit.core_2_dma_fsmout_busy tb_stages.uut4_busArb.dte_unit.dma_2_mem_fsmout_busy tb_stages.uut4_busArb.dte_unit.mem_2_icache_fsmout_busy tb_stages.uut4_busArb.dte_unit.mem_2_dcache_fsmout_busy_per tb_stages.uut4_busArb.dte_unit.mem_2_dcache_fsmout_busy tb_stages.uut4_busArb.dte_unit.dcache_2_mem_fsmout_busy_per tb_stages.uut4_busArb.dte_unit.dcache_2_mem_fsmout_busy tb_stages.uut4_busArb.dte_unit.DTE_Busy tb_stages.uut4_busArb.dte_unit.mem_2_icache_ld_req_fsmOut tb_stages.uut4_busArb.dte_unit.mem_2_dcache_ld_req_fsmOut tb_stages.uut4_busArb.dte_unit.mem_2_icache_drv_db_fsmOut tb_stages.uut4_busArb.dte_unit.mem_2_dcache_drv_db_fsmOut tb_stages.uut4_busArb.dte_unit.dcache_2_mem_st_req_fsmOut tb_stages.uut4_busArb.dte_unit.dma_2_mem_st_req_fsmOut tb_stages.uut4_busArb.dte_unit.ddr5_2_core_reqServed_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_ddr5_reqServed_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_dma_reqServed_fsmOut tb_stages.uut4_busArb.dte_unit.ddr5_2_core_driveAddrBus_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_ddr5_driveAddrBus_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_dma_driveAddrBus_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_ddr5_drvDB_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_dma_drvDB_fsmOut tb_stages.uut4_busArb.dte_unit.mem_2_icache_req_hit tb_stages.uut4_busArb.dte_unit.mem_2_dcache_req_hit tb_stages.uut4_busArb.dte_unit.mem_2_dcache_bk_hit tb_stages.uut4_busArb.dte_unit.dcache_2_mem_req_hit tb_stages.uut4_busArb.dte_unit.dcache_2_mem_bk_hit tb_stages.uut4_busArb.dte_unit.ddr5_2_core_req_hit tb_stages.uut4_busArb.dte_unit.core_2_ddr5_req_hit tb_stages.uut4_busArb.dte_unit.core_2_dma_req_hit tb_stages.uut4_busArb.dte_unit.dma_2_mem_req_hit tb_stages.uut4_busArb.dte_unit.dte_mem_2_dcache_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_dcache_2_mem_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_out_2_icache_o tb_stages.uut4_busArb.dte_unit.dte_out_2_dcache_o tb_stages.uut4_busArb.dte_unit.mem_2_dte_i tb_stages.uut4_busArb.dte_unit.dte_2_mem_o tb_stages.uut4_busArb.dte_unit.dte_2_dma_o tb_stages.uut4_busArb.dte_unit.dte_2_ddr5_o }
+gui_sg_addsignal -group "$_session_group_172" { {tb_stages.uut4_busArb.dte_unit.$unit} tb_stages.uut4_busArb.dte_unit.clk tb_stages.uut4_busArb.dte_unit.rst tb_stages.uut4_busArb.dte_unit.bestPick_i tb_stages.uut4_busArb.dte_unit.bestPick_bk_id_i tb_stages.uut4_busArb.dte_unit.dte_mem_2_icache_fsm_state tb_stages.uut4_busArb.dte_unit.dte_mem_2_icache_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_mem_2_dcache_fsm_state tb_stages.uut4_busArb.dte_unit.dte_dcache_2_mem_fsm_state tb_stages.uut4_busArb.dte_unit.dte_ddr5_2_core_fsm_state tb_stages.uut4_busArb.dte_unit.dte_ddr5_2_core_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_core_2_ddr5_fsm_state tb_stages.uut4_busArb.dte_unit.dte_core_2_ddr5_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_core_2_dma_fsm_state tb_stages.uut4_busArb.dte_unit.dte_core_2_dma_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_dma_2_mem_fsm_state tb_stages.uut4_busArb.dte_unit.dte_dma_2_mem_fsm_state_bits tb_stages.uut4_busArb.dte_unit.ddr5_2_core_fsmout_busy tb_stages.uut4_busArb.dte_unit.core_2_ddr5_fsmout_busy tb_stages.uut4_busArb.dte_unit.core_2_dma_fsmout_busy tb_stages.uut4_busArb.dte_unit.dma_2_mem_fsmout_busy tb_stages.uut4_busArb.dte_unit.mem_2_icache_fsmout_busy tb_stages.uut4_busArb.dte_unit.mem_2_dcache_fsmout_busy_per tb_stages.uut4_busArb.dte_unit.mem_2_dcache_fsmout_busy tb_stages.uut4_busArb.dte_unit.dcache_2_mem_fsmout_busy_per tb_stages.uut4_busArb.dte_unit.dcache_2_mem_fsmout_busy tb_stages.uut4_busArb.dte_unit.DTE_Busy tb_stages.uut4_busArb.dte_unit.mem_2_icache_ld_req_fsmOut tb_stages.uut4_busArb.dte_unit.mem_2_dcache_ld_req_fsmOut tb_stages.uut4_busArb.dte_unit.mem_2_icache_drv_db_fsmOut tb_stages.uut4_busArb.dte_unit.mem_2_dcache_drv_db_fsmOut tb_stages.uut4_busArb.dte_unit.dcache_2_mem_st_req_fsmOut tb_stages.uut4_busArb.dte_unit.dma_2_mem_st_req_fsmOut tb_stages.uut4_busArb.dte_unit.ddr5_2_core_reqServed_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_ddr5_reqServed_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_dma_reqServed_fsmOut tb_stages.uut4_busArb.dte_unit.ddr5_2_core_driveAddrBus_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_ddr5_driveAddrBus_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_dma_driveAddrBus_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_ddr5_drvDB_fsmOut tb_stages.uut4_busArb.dte_unit.core_2_dma_drvDB_fsmOut tb_stages.uut4_busArb.dte_unit.mem_2_icache_req_hit tb_stages.uut4_busArb.dte_unit.mem_2_dcache_req_hit tb_stages.uut4_busArb.dte_unit.mem_2_dcache_bk_hit tb_stages.uut4_busArb.dte_unit.dcache_2_mem_req_hit tb_stages.uut4_busArb.dte_unit.dcache_2_mem_bk_hit tb_stages.uut4_busArb.dte_unit.ddr5_2_core_req_hit tb_stages.uut4_busArb.dte_unit.core_2_ddr5_req_hit tb_stages.uut4_busArb.dte_unit.core_2_dma_req_hit tb_stages.uut4_busArb.dte_unit.dma_2_mem_req_hit tb_stages.uut4_busArb.dte_unit.dte_mem_2_dcache_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_dcache_2_mem_fsm_state_bits tb_stages.uut4_busArb.dte_unit.dte_out_2_icache_o tb_stages.uut4_busArb.dte_unit.dte_out_2_dcache_o tb_stages.uut4_busArb.dte_unit.mem_2_dte_i tb_stages.uut4_busArb.dte_unit.dte_2_mem_o tb_stages.uut4_busArb.dte_unit.dte_2_dma_o tb_stages.uut4_busArb.dte_unit.dte_2_ddr5_o }
 
-gui_sg_move "$_session_group_144" -after "$_session_group_141" -pos 1 
+gui_sg_move "$_session_group_172" -after "$_session_group_169" -pos 1 
 
-set _session_group_145 dcache
-gui_sg_create "$_session_group_145"
-set dcache "$_session_group_145"
+set _session_group_173 dcache
+gui_sg_create "$_session_group_173"
+set dcache "$_session_group_173"
 
-gui_sg_addsignal -group "$_session_group_145" { }
+gui_sg_addsignal -group "$_session_group_173" { }
 
-set _session_group_146 $_session_group_145|
-append _session_group_146 {g_dcache_block[0].block}
-gui_sg_create "$_session_group_146"
-set {dcache|g_dcache_block[0].block} "$_session_group_146"
+set _session_group_174 $_session_group_173|
+append _session_group_174 {g_dcache_block[0].block}
+gui_sg_create "$_session_group_174"
+set {dcache|g_dcache_block[0].block} "$_session_group_174"
 
-gui_sg_addsignal -group "$_session_group_146" { {tb_stages.uut_dcache.g_dcache_block[0].block.clk_i} {tb_stages.uut_dcache.g_dcache_block[0].block.rst_i} {tb_stages.uut_dcache.g_dcache_block[0].block.mem_Valid_FromDte_i} {tb_stages.uut_dcache.g_dcache_block[0].block.evictionBuf_clr_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[0].block.evictionBuf_setCommiting_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[0].block.permissionToDriveDataBus_evictionBuf} {tb_stages.uut_dcache.g_dcache_block[0].block.permissionToDriveAddrBus_Ld} {tb_stages.uut_dcache.g_dcache_block[0].block.permissionToDriveAddrBus_eb} {tb_stages.uut_dcache.g_dcache_block[0].block.st_override_for_sch_req} {tb_stages.uut_dcache.g_dcache_block[0].block.dataBus} {tb_stages.uut_dcache.g_dcache_block[0].block.address_bus} {tb_stages.uut_dcache.g_dcache_block[0].block.block_busy} {tb_stages.uut_dcache.g_dcache_block[0].block.makeBlockReq} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_blockingVCache} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_V} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_curr_commiting} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_blocking_Bank} {tb_stages.uut_dcache.g_dcache_block[0].block.address_bus_fake} {tb_stages.uut_dcache.g_dcache_block[0].block.startingOffset} {tb_stages.uut_dcache.g_dcache_block[0].block.dataBus_fake} {tb_stages.uut_dcache.g_dcache_block[0].block.block_req_i} {tb_stages.uut_dcache.g_dcache_block[0].block.outputs_o} {tb_stages.uut_dcache.g_dcache_block[0].block.dcache_bank_outputs} {tb_stages.uut_dcache.g_dcache_block[0].block.vcache_outputs} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_outputs} }
+gui_sg_addsignal -group "$_session_group_174" { {tb_stages.uut_dcache.g_dcache_block[0].block.clk_i} {tb_stages.uut_dcache.g_dcache_block[0].block.rst_i} {tb_stages.uut_dcache.g_dcache_block[0].block.mem_Valid_FromDte_i} {tb_stages.uut_dcache.g_dcache_block[0].block.evictionBuf_clr_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[0].block.evictionBuf_setCommiting_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[0].block.permissionToDriveDataBus_evictionBuf} {tb_stages.uut_dcache.g_dcache_block[0].block.permissionToDriveAddrBus_Ld} {tb_stages.uut_dcache.g_dcache_block[0].block.permissionToDriveAddrBus_eb} {tb_stages.uut_dcache.g_dcache_block[0].block.st_override_for_sch_req} {tb_stages.uut_dcache.g_dcache_block[0].block.dataBus} {tb_stages.uut_dcache.g_dcache_block[0].block.address_bus} {tb_stages.uut_dcache.g_dcache_block[0].block.block_busy} {tb_stages.uut_dcache.g_dcache_block[0].block.makeBlockReq} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_blockingVCache} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_V} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_curr_commiting} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_blocking_Bank} {tb_stages.uut_dcache.g_dcache_block[0].block.address_bus_fake} {tb_stages.uut_dcache.g_dcache_block[0].block.startingOffset} {tb_stages.uut_dcache.g_dcache_block[0].block.dataBus_fake} {tb_stages.uut_dcache.g_dcache_block[0].block.block_req_i} {tb_stages.uut_dcache.g_dcache_block[0].block.outputs_o} {tb_stages.uut_dcache.g_dcache_block[0].block.dcache_bank_outputs} {tb_stages.uut_dcache.g_dcache_block[0].block.vcache_outputs} {tb_stages.uut_dcache.g_dcache_block[0].block.eb_outputs} }
 
-gui_sg_move "$_session_group_146" -after "$_session_group_145" -pos 4 
+gui_sg_move "$_session_group_174" -after "$_session_group_173" -pos 4 
 
-set _session_group_147 $_session_group_145|
-append _session_group_147 {g_dcache_block[3].block}
-gui_sg_create "$_session_group_147"
-set {dcache|g_dcache_block[3].block} "$_session_group_147"
+set _session_group_175 $_session_group_173|
+append _session_group_175 {g_dcache_block[3].block}
+gui_sg_create "$_session_group_175"
+set {dcache|g_dcache_block[3].block} "$_session_group_175"
 
-gui_sg_addsignal -group "$_session_group_147" { {tb_stages.uut_dcache.g_dcache_block[3].block.clk_i} {tb_stages.uut_dcache.g_dcache_block[3].block.rst_i} {tb_stages.uut_dcache.g_dcache_block[3].block.mem_Valid_FromDte_i} {tb_stages.uut_dcache.g_dcache_block[3].block.evictionBuf_clr_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[3].block.evictionBuf_setCommiting_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[3].block.permissionToDriveDataBus_evictionBuf} {tb_stages.uut_dcache.g_dcache_block[3].block.permissionToDriveAddrBus_Ld} {tb_stages.uut_dcache.g_dcache_block[3].block.permissionToDriveAddrBus_eb} {tb_stages.uut_dcache.g_dcache_block[3].block.st_override_for_sch_req} {tb_stages.uut_dcache.g_dcache_block[3].block.dataBus} {tb_stages.uut_dcache.g_dcache_block[3].block.address_bus} {tb_stages.uut_dcache.g_dcache_block[3].block.block_busy} {tb_stages.uut_dcache.g_dcache_block[3].block.makeBlockReq} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_blockingVCache} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_V} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_curr_commiting} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_blocking_Bank} {tb_stages.uut_dcache.g_dcache_block[3].block.address_bus_fake} {tb_stages.uut_dcache.g_dcache_block[3].block.startingOffset} {tb_stages.uut_dcache.g_dcache_block[3].block.dataBus_fake} {tb_stages.uut_dcache.g_dcache_block[3].block.block_req_i} {tb_stages.uut_dcache.g_dcache_block[3].block.outputs_o} {tb_stages.uut_dcache.g_dcache_block[3].block.dcache_bank_outputs} {tb_stages.uut_dcache.g_dcache_block[3].block.vcache_outputs} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_outputs} }
+gui_sg_addsignal -group "$_session_group_175" { {tb_stages.uut_dcache.g_dcache_block[3].block.clk_i} {tb_stages.uut_dcache.g_dcache_block[3].block.rst_i} {tb_stages.uut_dcache.g_dcache_block[3].block.mem_Valid_FromDte_i} {tb_stages.uut_dcache.g_dcache_block[3].block.evictionBuf_clr_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[3].block.evictionBuf_setCommiting_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[3].block.permissionToDriveDataBus_evictionBuf} {tb_stages.uut_dcache.g_dcache_block[3].block.permissionToDriveAddrBus_Ld} {tb_stages.uut_dcache.g_dcache_block[3].block.permissionToDriveAddrBus_eb} {tb_stages.uut_dcache.g_dcache_block[3].block.st_override_for_sch_req} {tb_stages.uut_dcache.g_dcache_block[3].block.dataBus} {tb_stages.uut_dcache.g_dcache_block[3].block.address_bus} {tb_stages.uut_dcache.g_dcache_block[3].block.block_busy} {tb_stages.uut_dcache.g_dcache_block[3].block.makeBlockReq} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_blockingVCache} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_V} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_curr_commiting} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_blocking_Bank} {tb_stages.uut_dcache.g_dcache_block[3].block.address_bus_fake} {tb_stages.uut_dcache.g_dcache_block[3].block.startingOffset} {tb_stages.uut_dcache.g_dcache_block[3].block.dataBus_fake} {tb_stages.uut_dcache.g_dcache_block[3].block.block_req_i} {tb_stages.uut_dcache.g_dcache_block[3].block.outputs_o} {tb_stages.uut_dcache.g_dcache_block[3].block.dcache_bank_outputs} {tb_stages.uut_dcache.g_dcache_block[3].block.vcache_outputs} {tb_stages.uut_dcache.g_dcache_block[3].block.eb_outputs} }
 
-gui_sg_move "$_session_group_147" -after "$_session_group_145" -pos 2 
+gui_sg_move "$_session_group_175" -after "$_session_group_173" -pos 2 
 
-set _session_group_148 $_session_group_145|
-append _session_group_148 mio_block_unit
-gui_sg_create "$_session_group_148"
-set dcache|mio_block_unit "$_session_group_148"
+set _session_group_176 $_session_group_173|
+append _session_group_176 mio_block_unit
+gui_sg_create "$_session_group_176"
+set dcache|mio_block_unit "$_session_group_176"
 
-gui_sg_addsignal -group "$_session_group_148" { {tb_stages.uut_dcache.mio_block_unit.$unit} tb_stages.uut_dcache.mio_block_unit.clk tb_stages.uut_dcache.mio_block_unit.rst tb_stages.uut_dcache.mio_block_unit.reqServed_FromDTE_i tb_stages.uut_dcache.mio_block_unit.PermissionToDriveAddrBus tb_stages.uut_dcache.mio_block_unit.permission2DriveDataBus tb_stages.uut_dcache.mio_block_unit.ld_addr_MIO_V tb_stages.uut_dcache.mio_block_unit.ld_addr_MIO tb_stages.uut_dcache.mio_block_unit.memStalling_FromCore tb_stages.uut_dcache.mio_block_unit.address_bus tb_stages.uut_dcache.mio_block_unit.dataBus tb_stages.uut_dcache.mio_block_unit.block_idle tb_stages.uut_dcache.mio_block_unit.readyForNewReq tb_stages.uut_dcache.mio_block_unit.data_bus_fake tb_stages.uut_dcache.mio_block_unit.WE_ADDR_MASK tb_stages.uut_dcache.mio_block_unit.stq_info_mio tb_stages.uut_dcache.mio_block_unit.outputs_o tb_stages.uut_dcache.mio_block_unit.block_req }
+gui_sg_addsignal -group "$_session_group_176" { {tb_stages.uut_dcache.mio_block_unit.$unit} tb_stages.uut_dcache.mio_block_unit.clk tb_stages.uut_dcache.mio_block_unit.rst tb_stages.uut_dcache.mio_block_unit.reqServed_FromDTE_i tb_stages.uut_dcache.mio_block_unit.PermissionToDriveAddrBus tb_stages.uut_dcache.mio_block_unit.permission2DriveDataBus tb_stages.uut_dcache.mio_block_unit.ld_addr_MIO_V tb_stages.uut_dcache.mio_block_unit.ld_addr_MIO tb_stages.uut_dcache.mio_block_unit.memStalling_FromCore tb_stages.uut_dcache.mio_block_unit.address_bus tb_stages.uut_dcache.mio_block_unit.dataBus tb_stages.uut_dcache.mio_block_unit.block_idle tb_stages.uut_dcache.mio_block_unit.readyForNewReq tb_stages.uut_dcache.mio_block_unit.data_bus_fake tb_stages.uut_dcache.mio_block_unit.WE_ADDR_MASK tb_stages.uut_dcache.mio_block_unit.stq_info_mio tb_stages.uut_dcache.mio_block_unit.outputs_o tb_stages.uut_dcache.mio_block_unit.block_req }
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_dcache.mio_block_unit.WE_ADDR_MASK}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_dcache.mio_block_unit.WE_ADDR_MASK}
 
-gui_sg_move "$_session_group_148" -after "$_session_group_145" -pos 1 
+gui_sg_move "$_session_group_176" -after "$_session_group_173" -pos 1 
 
-set _session_group_149 $_session_group_145|
-append _session_group_149 dcache_arbitration
-gui_sg_create "$_session_group_149"
-set dcache|dcache_arbitration "$_session_group_149"
+set _session_group_177 $_session_group_173|
+append _session_group_177 dcache_arbitration
+gui_sg_create "$_session_group_177"
+set dcache|dcache_arbitration "$_session_group_177"
 
-gui_sg_addsignal -group "$_session_group_149" { tb_stages.uut_dcache.dcache_arbitration.clk_i tb_stages.uut_dcache.dcache_arbitration.rst tb_stages.uut_dcache.dcache_arbitration.block_hit_i tb_stages.uut_dcache.dcache_arbitration.req_rejected_0_o tb_stages.uut_dcache.dcache_arbitration.req_rejected_1_o tb_stages.uut_dcache.dcache_arbitration.st_override_o tb_stages.uut_dcache.dcache_arbitration.writeSuccess_o tb_stages.uut_dcache.dcache_arbitration.block_idleness tb_stages.uut_dcache.dcache_arbitration.readyForNewReq tb_stages.uut_dcache.dcache_arbitration.ld_req_0_bankNum tb_stages.uut_dcache.dcache_arbitration.ld_req_1_bankNum tb_stages.uut_dcache.dcache_arbitration.st_override tb_stages.uut_dcache.dcache_arbitration.ldReq_2_BankPresent tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_UB tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_LB tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_WIDTH tb_stages.uut_dcache.dcache_arbitration.core_i tb_stages.uut_dcache.dcache_arbitration.reqs_2_blocks_o tb_stages.uut_dcache.dcache_arbitration.reqs tb_stages.uut_dcache.dcache_arbitration.nextReqs }
+gui_sg_addsignal -group "$_session_group_177" { tb_stages.uut_dcache.dcache_arbitration.clk_i tb_stages.uut_dcache.dcache_arbitration.rst tb_stages.uut_dcache.dcache_arbitration.block_hit_i tb_stages.uut_dcache.dcache_arbitration.req_rejected_0_o tb_stages.uut_dcache.dcache_arbitration.req_rejected_1_o tb_stages.uut_dcache.dcache_arbitration.st_override_o tb_stages.uut_dcache.dcache_arbitration.writeSuccess_o tb_stages.uut_dcache.dcache_arbitration.block_idleness tb_stages.uut_dcache.dcache_arbitration.readyForNewReq tb_stages.uut_dcache.dcache_arbitration.ld_req_0_bankNum tb_stages.uut_dcache.dcache_arbitration.ld_req_1_bankNum tb_stages.uut_dcache.dcache_arbitration.st_override tb_stages.uut_dcache.dcache_arbitration.ldReq_2_BankPresent tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_UB tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_LB tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_WIDTH tb_stages.uut_dcache.dcache_arbitration.core_i tb_stages.uut_dcache.dcache_arbitration.reqs_2_blocks_o tb_stages.uut_dcache.dcache_arbitration.reqs tb_stages.uut_dcache.dcache_arbitration.nextReqs }
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_UB}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_UB}
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_LB}
@@ -351,54 +351,54 @@ gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_dcache.dcache_a
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_WIDTH}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_dcache.dcache_arbitration.LD_REQ_BANK_WIDTH}
 
-gui_sg_move "$_session_group_149" -after "$_session_group_145" -pos 3 
+gui_sg_move "$_session_group_177" -after "$_session_group_173" -pos 3 
 
-set _session_group_150 $_session_group_145|
-append _session_group_150 {g_dcache_block[1].block}
-gui_sg_create "$_session_group_150"
-set {dcache|g_dcache_block[1].block} "$_session_group_150"
+set _session_group_178 $_session_group_173|
+append _session_group_178 {g_dcache_block[1].block}
+gui_sg_create "$_session_group_178"
+set {dcache|g_dcache_block[1].block} "$_session_group_178"
 
-gui_sg_addsignal -group "$_session_group_150" { {tb_stages.uut_dcache.g_dcache_block[1].block.clk_i} {tb_stages.uut_dcache.g_dcache_block[1].block.rst_i} {tb_stages.uut_dcache.g_dcache_block[1].block.mem_Valid_FromDte_i} {tb_stages.uut_dcache.g_dcache_block[1].block.evictionBuf_clr_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[1].block.evictionBuf_setCommiting_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[1].block.permissionToDriveDataBus_evictionBuf} {tb_stages.uut_dcache.g_dcache_block[1].block.permissionToDriveAddrBus_Ld} {tb_stages.uut_dcache.g_dcache_block[1].block.permissionToDriveAddrBus_eb} {tb_stages.uut_dcache.g_dcache_block[1].block.st_override_for_sch_req} {tb_stages.uut_dcache.g_dcache_block[1].block.dataBus} {tb_stages.uut_dcache.g_dcache_block[1].block.address_bus} {tb_stages.uut_dcache.g_dcache_block[1].block.block_busy} {tb_stages.uut_dcache.g_dcache_block[1].block.makeBlockReq} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_blockingVCache} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_V} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_curr_commiting} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_blocking_Bank} {tb_stages.uut_dcache.g_dcache_block[1].block.address_bus_fake} {tb_stages.uut_dcache.g_dcache_block[1].block.startingOffset} {tb_stages.uut_dcache.g_dcache_block[1].block.dataBus_fake} {tb_stages.uut_dcache.g_dcache_block[1].block.block_req_i} {tb_stages.uut_dcache.g_dcache_block[1].block.outputs_o} {tb_stages.uut_dcache.g_dcache_block[1].block.dcache_bank_outputs} {tb_stages.uut_dcache.g_dcache_block[1].block.vcache_outputs} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_outputs} }
+gui_sg_addsignal -group "$_session_group_178" { {tb_stages.uut_dcache.g_dcache_block[1].block.clk_i} {tb_stages.uut_dcache.g_dcache_block[1].block.rst_i} {tb_stages.uut_dcache.g_dcache_block[1].block.mem_Valid_FromDte_i} {tb_stages.uut_dcache.g_dcache_block[1].block.evictionBuf_clr_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[1].block.evictionBuf_setCommiting_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[1].block.permissionToDriveDataBus_evictionBuf} {tb_stages.uut_dcache.g_dcache_block[1].block.permissionToDriveAddrBus_Ld} {tb_stages.uut_dcache.g_dcache_block[1].block.permissionToDriveAddrBus_eb} {tb_stages.uut_dcache.g_dcache_block[1].block.st_override_for_sch_req} {tb_stages.uut_dcache.g_dcache_block[1].block.dataBus} {tb_stages.uut_dcache.g_dcache_block[1].block.address_bus} {tb_stages.uut_dcache.g_dcache_block[1].block.block_busy} {tb_stages.uut_dcache.g_dcache_block[1].block.makeBlockReq} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_blockingVCache} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_V} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_curr_commiting} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_blocking_Bank} {tb_stages.uut_dcache.g_dcache_block[1].block.address_bus_fake} {tb_stages.uut_dcache.g_dcache_block[1].block.startingOffset} {tb_stages.uut_dcache.g_dcache_block[1].block.dataBus_fake} {tb_stages.uut_dcache.g_dcache_block[1].block.block_req_i} {tb_stages.uut_dcache.g_dcache_block[1].block.outputs_o} {tb_stages.uut_dcache.g_dcache_block[1].block.dcache_bank_outputs} {tb_stages.uut_dcache.g_dcache_block[1].block.vcache_outputs} {tb_stages.uut_dcache.g_dcache_block[1].block.eb_outputs} }
 
-gui_sg_move "$_session_group_150" -after "$_session_group_145" -pos 6 
+gui_sg_move "$_session_group_178" -after "$_session_group_173" -pos 6 
 
-set _session_group_151 $_session_group_145|
-append _session_group_151 {g_dcache_block[2].block}
-gui_sg_create "$_session_group_151"
-set {dcache|g_dcache_block[2].block} "$_session_group_151"
+set _session_group_179 $_session_group_173|
+append _session_group_179 {g_dcache_block[2].block}
+gui_sg_create "$_session_group_179"
+set {dcache|g_dcache_block[2].block} "$_session_group_179"
 
-gui_sg_addsignal -group "$_session_group_151" { {tb_stages.uut_dcache.g_dcache_block[2].block.clk_i} {tb_stages.uut_dcache.g_dcache_block[2].block.rst_i} {tb_stages.uut_dcache.g_dcache_block[2].block.mem_Valid_FromDte_i} {tb_stages.uut_dcache.g_dcache_block[2].block.evictionBuf_clr_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[2].block.evictionBuf_setCommiting_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[2].block.permissionToDriveDataBus_evictionBuf} {tb_stages.uut_dcache.g_dcache_block[2].block.permissionToDriveAddrBus_Ld} {tb_stages.uut_dcache.g_dcache_block[2].block.permissionToDriveAddrBus_eb} {tb_stages.uut_dcache.g_dcache_block[2].block.st_override_for_sch_req} {tb_stages.uut_dcache.g_dcache_block[2].block.dataBus} {tb_stages.uut_dcache.g_dcache_block[2].block.address_bus} {tb_stages.uut_dcache.g_dcache_block[2].block.block_busy} {tb_stages.uut_dcache.g_dcache_block[2].block.makeBlockReq} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_blockingVCache} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_V} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_curr_commiting} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_blocking_Bank} {tb_stages.uut_dcache.g_dcache_block[2].block.address_bus_fake} {tb_stages.uut_dcache.g_dcache_block[2].block.startingOffset} {tb_stages.uut_dcache.g_dcache_block[2].block.dataBus_fake} {tb_stages.uut_dcache.g_dcache_block[2].block.block_req_i} {tb_stages.uut_dcache.g_dcache_block[2].block.outputs_o} {tb_stages.uut_dcache.g_dcache_block[2].block.dcache_bank_outputs} {tb_stages.uut_dcache.g_dcache_block[2].block.vcache_outputs} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_outputs} }
+gui_sg_addsignal -group "$_session_group_179" { {tb_stages.uut_dcache.g_dcache_block[2].block.clk_i} {tb_stages.uut_dcache.g_dcache_block[2].block.rst_i} {tb_stages.uut_dcache.g_dcache_block[2].block.mem_Valid_FromDte_i} {tb_stages.uut_dcache.g_dcache_block[2].block.evictionBuf_clr_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[2].block.evictionBuf_setCommiting_FromDTE_i} {tb_stages.uut_dcache.g_dcache_block[2].block.permissionToDriveDataBus_evictionBuf} {tb_stages.uut_dcache.g_dcache_block[2].block.permissionToDriveAddrBus_Ld} {tb_stages.uut_dcache.g_dcache_block[2].block.permissionToDriveAddrBus_eb} {tb_stages.uut_dcache.g_dcache_block[2].block.st_override_for_sch_req} {tb_stages.uut_dcache.g_dcache_block[2].block.dataBus} {tb_stages.uut_dcache.g_dcache_block[2].block.address_bus} {tb_stages.uut_dcache.g_dcache_block[2].block.block_busy} {tb_stages.uut_dcache.g_dcache_block[2].block.makeBlockReq} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_blockingVCache} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_V} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_curr_commiting} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_blocking_Bank} {tb_stages.uut_dcache.g_dcache_block[2].block.address_bus_fake} {tb_stages.uut_dcache.g_dcache_block[2].block.startingOffset} {tb_stages.uut_dcache.g_dcache_block[2].block.dataBus_fake} {tb_stages.uut_dcache.g_dcache_block[2].block.block_req_i} {tb_stages.uut_dcache.g_dcache_block[2].block.outputs_o} {tb_stages.uut_dcache.g_dcache_block[2].block.dcache_bank_outputs} {tb_stages.uut_dcache.g_dcache_block[2].block.vcache_outputs} {tb_stages.uut_dcache.g_dcache_block[2].block.eb_outputs} }
 
-gui_sg_move "$_session_group_151" -after "$_session_group_145" -pos 5 
+gui_sg_move "$_session_group_179" -after "$_session_group_173" -pos 5 
 
-set _session_group_152 $_session_group_145|
-append _session_group_152 uut_dcache
-gui_sg_create "$_session_group_152"
-set dcache|uut_dcache "$_session_group_152"
+set _session_group_180 $_session_group_173|
+append _session_group_180 uut_dcache
+gui_sg_create "$_session_group_180"
+set dcache|uut_dcache "$_session_group_180"
 
-gui_sg_addsignal -group "$_session_group_152" { {tb_stages.uut_dcache.$unit} tb_stages.uut_dcache.clk tb_stages.uut_dcache.rst tb_stages.uut_dcache.dataBus tb_stages.uut_dcache.address_bus tb_stages.uut_dcache.hitVec tb_stages.uut_dcache.arb_st_override_Out tb_stages.uut_dcache.arb_req_rejected_0_out tb_stages.uut_dcache.arb_req_rejected_1_out tb_stages.uut_dcache.inFromCore_i tb_stages.uut_dcache.out2Core_o tb_stages.uut_dcache.inFromDTE_i tb_stages.uut_dcache.out2Sch_o tb_stages.uut_dcache.blockOutputs tb_stages.uut_dcache.req_2_blocks tb_stages.uut_dcache.mio_block_outputs }
+gui_sg_addsignal -group "$_session_group_180" { {tb_stages.uut_dcache.$unit} tb_stages.uut_dcache.clk tb_stages.uut_dcache.rst tb_stages.uut_dcache.dataBus tb_stages.uut_dcache.address_bus tb_stages.uut_dcache.hitVec tb_stages.uut_dcache.arb_st_override_Out tb_stages.uut_dcache.arb_req_rejected_0_out tb_stages.uut_dcache.arb_req_rejected_1_out tb_stages.uut_dcache.inFromCore_i tb_stages.uut_dcache.out2Core_o tb_stages.uut_dcache.inFromDTE_i tb_stages.uut_dcache.out2Sch_o tb_stages.uut_dcache.blockOutputs tb_stages.uut_dcache.req_2_blocks tb_stages.uut_dcache.mio_block_outputs }
 
-set _session_group_153 icache
-gui_sg_create "$_session_group_153"
-set icache "$_session_group_153"
+set _session_group_181 icache
+gui_sg_create "$_session_group_181"
+set icache "$_session_group_181"
 
-gui_sg_addsignal -group "$_session_group_153" { }
+gui_sg_addsignal -group "$_session_group_181" { }
 
-set _session_group_154 $_session_group_153|
-append _session_group_154 icache_contrller_fsm
-gui_sg_create "$_session_group_154"
-set icache|icache_contrller_fsm "$_session_group_154"
+set _session_group_182 $_session_group_181|
+append _session_group_182 icache_contrller_fsm
+gui_sg_create "$_session_group_182"
+set icache|icache_contrller_fsm "$_session_group_182"
 
-gui_sg_addsignal -group "$_session_group_154" { tb_stages.uut_icache.icache_contrller_fsm.clk tb_stages.uut_icache.icache_contrller_fsm.rst tb_stages.uut_icache.icache_contrller_fsm.IC_miss_i tb_stages.uut_icache.icache_contrller_fsm.I_VC_Miss_i tb_stages.uut_icache.icache_contrller_fsm.mem_valid_i tb_stages.uut_icache.icache_contrller_fsm.en_i tb_stages.uut_icache.icache_contrller_fsm.S_0 tb_stages.uut_icache.icache_contrller_fsm.S_1 tb_stages.uut_icache.icache_contrller_fsm.S_2 tb_stages.uut_icache.icache_contrller_fsm.LD_IC_SWAP_BUF_o tb_stages.uut_icache.icache_contrller_fsm.RD_I_VC_SWAP_BUF_o tb_stages.uut_icache.icache_contrller_fsm.busy_o tb_stages.uut_icache.icache_contrller_fsm.MakeReq_o tb_stages.uut_icache.icache_contrller_fsm.Fill0EN_o tb_stages.uut_icache.icache_contrller_fsm.Fill1EN_o tb_stages.uut_icache.icache_contrller_fsm.Fill2EN_o tb_stages.uut_icache.icache_contrller_fsm.Fill3EN_o tb_stages.uut_icache.icache_contrller_fsm.NS_0 tb_stages.uut_icache.icache_contrller_fsm.NS_1 tb_stages.uut_icache.icache_contrller_fsm.NS_2 tb_stages.uut_icache.icache_contrller_fsm.I_VC_Miss_i_inv tb_stages.uut_icache.icache_contrller_fsm.S_0_inv tb_stages.uut_icache.icache_contrller_fsm.S_1_inv tb_stages.uut_icache.icache_contrller_fsm.S_2_inv tb_stages.uut_icache.icache_contrller_fsm.mem_valid_i_inv tb_stages.uut_icache.icache_contrller_fsm.NS_0_t0 tb_stages.uut_icache.icache_contrller_fsm.NS_0_t1 tb_stages.uut_icache.icache_contrller_fsm.NS_0_t2 tb_stages.uut_icache.icache_contrller_fsm.NS_1_t0 tb_stages.uut_icache.icache_contrller_fsm.NS_1_t1 tb_stages.uut_icache.icache_contrller_fsm.NS_1_t2 tb_stages.uut_icache.icache_contrller_fsm.NS_2_t0 tb_stages.uut_icache.icache_contrller_fsm.NS_2_t1 tb_stages.uut_icache.icache_contrller_fsm.NS_2_t2 tb_stages.uut_icache.icache_contrller_fsm.NS_2_t3 tb_stages.uut_icache.icache_contrller_fsm.busy_o_t0 tb_stages.uut_icache.icache_contrller_fsm.busy_o_t1 tb_stages.uut_icache.icache_contrller_fsm.busy_o_t2 }
+gui_sg_addsignal -group "$_session_group_182" { tb_stages.uut_icache.icache_contrller_fsm.clk tb_stages.uut_icache.icache_contrller_fsm.rst tb_stages.uut_icache.icache_contrller_fsm.IC_miss_i tb_stages.uut_icache.icache_contrller_fsm.I_VC_Miss_i tb_stages.uut_icache.icache_contrller_fsm.mem_valid_i tb_stages.uut_icache.icache_contrller_fsm.en_i tb_stages.uut_icache.icache_contrller_fsm.S_0 tb_stages.uut_icache.icache_contrller_fsm.S_1 tb_stages.uut_icache.icache_contrller_fsm.S_2 tb_stages.uut_icache.icache_contrller_fsm.LD_IC_SWAP_BUF_o tb_stages.uut_icache.icache_contrller_fsm.RD_I_VC_SWAP_BUF_o tb_stages.uut_icache.icache_contrller_fsm.busy_o tb_stages.uut_icache.icache_contrller_fsm.MakeReq_o tb_stages.uut_icache.icache_contrller_fsm.Fill0EN_o tb_stages.uut_icache.icache_contrller_fsm.Fill1EN_o tb_stages.uut_icache.icache_contrller_fsm.Fill2EN_o tb_stages.uut_icache.icache_contrller_fsm.Fill3EN_o tb_stages.uut_icache.icache_contrller_fsm.NS_0 tb_stages.uut_icache.icache_contrller_fsm.NS_1 tb_stages.uut_icache.icache_contrller_fsm.NS_2 tb_stages.uut_icache.icache_contrller_fsm.I_VC_Miss_i_inv tb_stages.uut_icache.icache_contrller_fsm.S_0_inv tb_stages.uut_icache.icache_contrller_fsm.S_1_inv tb_stages.uut_icache.icache_contrller_fsm.S_2_inv tb_stages.uut_icache.icache_contrller_fsm.mem_valid_i_inv tb_stages.uut_icache.icache_contrller_fsm.NS_0_t0 tb_stages.uut_icache.icache_contrller_fsm.NS_0_t1 tb_stages.uut_icache.icache_contrller_fsm.NS_0_t2 tb_stages.uut_icache.icache_contrller_fsm.NS_1_t0 tb_stages.uut_icache.icache_contrller_fsm.NS_1_t1 tb_stages.uut_icache.icache_contrller_fsm.NS_1_t2 tb_stages.uut_icache.icache_contrller_fsm.NS_2_t0 tb_stages.uut_icache.icache_contrller_fsm.NS_2_t1 tb_stages.uut_icache.icache_contrller_fsm.NS_2_t2 tb_stages.uut_icache.icache_contrller_fsm.NS_2_t3 tb_stages.uut_icache.icache_contrller_fsm.busy_o_t0 tb_stages.uut_icache.icache_contrller_fsm.busy_o_t1 tb_stages.uut_icache.icache_contrller_fsm.busy_o_t2 }
 
-gui_sg_move "$_session_group_154" -after "$_session_group_153" -pos 2 
+gui_sg_move "$_session_group_182" -after "$_session_group_181" -pos 2 
 
-set _session_group_155 $_session_group_153|
-append _session_group_155 i_vcache_unit
-gui_sg_create "$_session_group_155"
-set icache|i_vcache_unit "$_session_group_155"
+set _session_group_183 $_session_group_181|
+append _session_group_183 i_vcache_unit
+gui_sg_create "$_session_group_183"
+set icache|i_vcache_unit "$_session_group_183"
 
-gui_sg_addsignal -group "$_session_group_155" { tb_stages.uut_icache.i_vcache_unit.clk tb_stages.uut_icache.i_vcache_unit.rst tb_stages.uut_icache.i_vcache_unit.busy_i tb_stages.uut_icache.i_vcache_unit.en_i tb_stages.uut_icache.i_vcache_unit.v_addr_i tb_stages.uut_icache.i_vcache_unit.hit_o tb_stages.uut_icache.i_vcache_unit.miss_o tb_stages.uut_icache.i_vcache_unit.dataLineOut_o tb_stages.uut_icache.i_vcache_unit.IC_SwapBuf_V_clr_o tb_stages.uut_icache.i_vcache_unit.LD_I_VC_SWAP_BUF tb_stages.uut_icache.i_vcache_unit.RD_IC_SWAP_BUF tb_stages.uut_icache.i_vcache_unit.hit_idx tb_stages.uut_icache.i_vcache_unit.currTag tb_stages.uut_icache.i_vcache_unit.currTagHit tb_stages.uut_icache.i_vcache_unit.currDataLine tb_stages.uut_icache.i_vcache_unit.hit tb_stages.uut_icache.i_vcache_unit.miss tb_stages.uut_icache.i_vcache_unit.hitHappened tb_stages.uut_icache.i_vcache_unit.updateLRU tb_stages.uut_icache.i_vcache_unit.currLRU_IDX tb_stages.uut_icache.i_vcache_unit.currMRU_IDX tb_stages.uut_icache.i_vcache_unit.IDX_2_Write tb_stages.uut_icache.i_vcache_unit.update_idx tb_stages.uut_icache.i_vcache_unit.NUM_LINES tb_stages.uut_icache.i_vcache_unit.NUM_LRU_BITS tb_stages.uut_icache.i_vcache_unit.LRU_ROOT tb_stages.uut_icache.i_vcache_unit.LRU_LEFT_LEAF tb_stages.uut_icache.i_vcache_unit.LRU_RIGHT_LEAF tb_stages.uut_icache.i_vcache_unit.IC_SwapBuf_i tb_stages.uut_icache.i_vcache_unit.I_VC_SwapBuf_o tb_stages.uut_icache.i_vcache_unit.tagStore tb_stages.uut_icache.i_vcache_unit.dataStore tb_stages.uut_icache.i_vcache_unit.I_VC_swapBuf tb_stages.uut_icache.i_vcache_unit.ic_swapBuf_v_addr_fields tb_stages.uut_icache.i_vcache_unit.v_addr_i_fields }
+gui_sg_addsignal -group "$_session_group_183" { tb_stages.uut_icache.i_vcache_unit.clk tb_stages.uut_icache.i_vcache_unit.rst tb_stages.uut_icache.i_vcache_unit.busy_i tb_stages.uut_icache.i_vcache_unit.en_i tb_stages.uut_icache.i_vcache_unit.v_addr_i tb_stages.uut_icache.i_vcache_unit.hit_o tb_stages.uut_icache.i_vcache_unit.miss_o tb_stages.uut_icache.i_vcache_unit.dataLineOut_o tb_stages.uut_icache.i_vcache_unit.IC_SwapBuf_V_clr_o tb_stages.uut_icache.i_vcache_unit.LD_I_VC_SWAP_BUF tb_stages.uut_icache.i_vcache_unit.RD_IC_SWAP_BUF tb_stages.uut_icache.i_vcache_unit.hit_idx tb_stages.uut_icache.i_vcache_unit.currTag tb_stages.uut_icache.i_vcache_unit.currTagHit tb_stages.uut_icache.i_vcache_unit.currDataLine tb_stages.uut_icache.i_vcache_unit.hit tb_stages.uut_icache.i_vcache_unit.miss tb_stages.uut_icache.i_vcache_unit.hitHappened tb_stages.uut_icache.i_vcache_unit.updateLRU tb_stages.uut_icache.i_vcache_unit.currLRU_IDX tb_stages.uut_icache.i_vcache_unit.currMRU_IDX tb_stages.uut_icache.i_vcache_unit.IDX_2_Write tb_stages.uut_icache.i_vcache_unit.update_idx tb_stages.uut_icache.i_vcache_unit.NUM_LINES tb_stages.uut_icache.i_vcache_unit.NUM_LRU_BITS tb_stages.uut_icache.i_vcache_unit.LRU_ROOT tb_stages.uut_icache.i_vcache_unit.LRU_LEFT_LEAF tb_stages.uut_icache.i_vcache_unit.LRU_RIGHT_LEAF tb_stages.uut_icache.i_vcache_unit.IC_SwapBuf_i tb_stages.uut_icache.i_vcache_unit.I_VC_SwapBuf_o tb_stages.uut_icache.i_vcache_unit.tagStore tb_stages.uut_icache.i_vcache_unit.dataStore tb_stages.uut_icache.i_vcache_unit.I_VC_swapBuf tb_stages.uut_icache.i_vcache_unit.ic_swapBuf_v_addr_fields tb_stages.uut_icache.i_vcache_unit.v_addr_i_fields }
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_icache.i_vcache_unit.NUM_LINES}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_icache.i_vcache_unit.NUM_LINES}
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_icache.i_vcache_unit.NUM_LRU_BITS}
@@ -410,125 +410,125 @@ gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_icache.i_vcache
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_icache.i_vcache_unit.LRU_RIGHT_LEAF}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_icache.i_vcache_unit.LRU_RIGHT_LEAF}
 
-gui_sg_move "$_session_group_155" -after "$_session_group_153" -pos 4 
+gui_sg_move "$_session_group_183" -after "$_session_group_181" -pos 4 
 
-set _session_group_156 $_session_group_153|
-append _session_group_156 uut_icache
-gui_sg_create "$_session_group_156"
-set icache|uut_icache "$_session_group_156"
+set _session_group_184 $_session_group_181|
+append _session_group_184 uut_icache
+gui_sg_create "$_session_group_184"
+set icache|uut_icache "$_session_group_184"
 
-gui_sg_addsignal -group "$_session_group_156" { {tb_stages.uut_icache.$unit} tb_stages.uut_icache.clk tb_stages.uut_icache.rst tb_stages.uut_icache.dataBus tb_stages.uut_icache.addrBus tb_stages.uut_icache.controller_fsmState tb_stages.uut_icache.controller_fsmState_bits tb_stages.uut_icache.icache_dataLines tb_stages.uut_icache.icache_tag tb_stages.uut_icache.icache_tag_V tb_stages.uut_icache.icache_hit tb_stages.uut_icache.icache_miss tb_stages.uut_icache.i_vcache_hit tb_stages.uut_icache.i_vcache_miss tb_stages.uut_icache.i_vcache_swapBuf_V_Clr tb_stages.uut_icache.i_vcache_dataLines tb_stages.uut_icache.saved_pAddr tb_stages.uut_icache.saved_vAddr tb_stages.uut_icache.curr_v_addr_to_use tb_stages.uut_icache.useSaved_v_Addr tb_stages.uut_icache.addrBus_drv tb_stages.uut_icache.inFromCore_i tb_stages.uut_icache.out2Core_o tb_stages.uut_icache.inFromDte_i tb_stages.uut_icache.out2Sch_o tb_stages.uut_icache.fsmOuts tb_stages.uut_icache.icache_swapbuf tb_stages.uut_icache.i_vcache_swapBuf }
+gui_sg_addsignal -group "$_session_group_184" { {tb_stages.uut_icache.$unit} tb_stages.uut_icache.clk tb_stages.uut_icache.rst tb_stages.uut_icache.dataBus tb_stages.uut_icache.addrBus tb_stages.uut_icache.controller_fsmState tb_stages.uut_icache.controller_fsmState_bits tb_stages.uut_icache.icache_dataLines tb_stages.uut_icache.icache_tag tb_stages.uut_icache.icache_tag_V tb_stages.uut_icache.icache_hit tb_stages.uut_icache.icache_miss tb_stages.uut_icache.i_vcache_hit tb_stages.uut_icache.i_vcache_miss tb_stages.uut_icache.i_vcache_swapBuf_V_Clr tb_stages.uut_icache.i_vcache_dataLines tb_stages.uut_icache.saved_pAddr tb_stages.uut_icache.saved_vAddr tb_stages.uut_icache.curr_v_addr_to_use tb_stages.uut_icache.useSaved_v_Addr tb_stages.uut_icache.addrBus_drv tb_stages.uut_icache.inFromCore_i tb_stages.uut_icache.out2Core_o tb_stages.uut_icache.inFromDte_i tb_stages.uut_icache.out2Sch_o tb_stages.uut_icache.fsmOuts tb_stages.uut_icache.icache_swapbuf tb_stages.uut_icache.i_vcache_swapBuf }
 
-set _session_group_157 $_session_group_153|
-append _session_group_157 icache_TagStore_unit
-gui_sg_create "$_session_group_157"
-set icache|icache_TagStore_unit "$_session_group_157"
+set _session_group_185 $_session_group_181|
+append _session_group_185 icache_TagStore_unit
+gui_sg_create "$_session_group_185"
+set icache|icache_TagStore_unit "$_session_group_185"
 
-gui_sg_addsignal -group "$_session_group_157" { tb_stages.uut_icache.icache_TagStore_unit.clk tb_stages.uut_icache.icache_TagStore_unit.rst tb_stages.uut_icache.icache_TagStore_unit.en tb_stages.uut_icache.icache_TagStore_unit.v_addr_i tb_stages.uut_icache.icache_TagStore_unit.ld_From_I_VC_Swap tb_stages.uut_icache.icache_TagStore_unit.LD_IC_SWAP_BUF tb_stages.uut_icache.icache_TagStore_unit.fill3_i tb_stages.uut_icache.icache_TagStore_unit.busy tb_stages.uut_icache.icache_TagStore_unit.currTag_o tb_stages.uut_icache.icache_TagStore_unit.currLine_V tb_stages.uut_icache.icache_TagStore_unit.clk_45_phase tb_stages.uut_icache.icache_TagStore_unit.validStore tb_stages.uut_icache.icache_TagStore_unit.ADDRESS_2_TagStore tb_stages.uut_icache.icache_TagStore_unit.tagCellOutSel tb_stages.uut_icache.icache_TagStore_unit.DIN_2_TagStore tb_stages.uut_icache.icache_TagStore_unit.OE_2_TagStore tb_stages.uut_icache.icache_TagStore_unit.DOUT_2_TagStore tb_stages.uut_icache.icache_TagStore_unit.WR_2_TagStore_clk tb_stages.uut_icache.icache_TagStore_unit.WR_2_TagStore_actual tb_stages.uut_icache.icache_TagStore_unit.DOUT_2_TagStore_net tb_stages.uut_icache.icache_TagStore_unit.NUM_LAYERS tb_stages.uut_icache.icache_TagStore_unit.NUM_CELLS tb_stages.uut_icache.icache_TagStore_unit.I_VC_SwapBuf_i tb_stages.uut_icache.icache_TagStore_unit.v_addr_i_fields }
+gui_sg_addsignal -group "$_session_group_185" { tb_stages.uut_icache.icache_TagStore_unit.clk tb_stages.uut_icache.icache_TagStore_unit.rst tb_stages.uut_icache.icache_TagStore_unit.en tb_stages.uut_icache.icache_TagStore_unit.v_addr_i tb_stages.uut_icache.icache_TagStore_unit.ld_From_I_VC_Swap tb_stages.uut_icache.icache_TagStore_unit.LD_IC_SWAP_BUF tb_stages.uut_icache.icache_TagStore_unit.fill3_i tb_stages.uut_icache.icache_TagStore_unit.busy tb_stages.uut_icache.icache_TagStore_unit.currTag_o tb_stages.uut_icache.icache_TagStore_unit.currLine_V tb_stages.uut_icache.icache_TagStore_unit.clk_45_phase tb_stages.uut_icache.icache_TagStore_unit.validStore tb_stages.uut_icache.icache_TagStore_unit.ADDRESS_2_TagStore tb_stages.uut_icache.icache_TagStore_unit.tagCellOutSel tb_stages.uut_icache.icache_TagStore_unit.DIN_2_TagStore tb_stages.uut_icache.icache_TagStore_unit.OE_2_TagStore tb_stages.uut_icache.icache_TagStore_unit.DOUT_2_TagStore tb_stages.uut_icache.icache_TagStore_unit.WR_2_TagStore_clk tb_stages.uut_icache.icache_TagStore_unit.WR_2_TagStore_actual tb_stages.uut_icache.icache_TagStore_unit.DOUT_2_TagStore_net tb_stages.uut_icache.icache_TagStore_unit.NUM_LAYERS tb_stages.uut_icache.icache_TagStore_unit.NUM_CELLS tb_stages.uut_icache.icache_TagStore_unit.I_VC_SwapBuf_i tb_stages.uut_icache.icache_TagStore_unit.v_addr_i_fields }
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_icache.icache_TagStore_unit.NUM_LAYERS}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_icache.icache_TagStore_unit.NUM_LAYERS}
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_icache.icache_TagStore_unit.NUM_CELLS}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_icache.icache_TagStore_unit.NUM_CELLS}
 
-gui_sg_move "$_session_group_157" -after "$_session_group_153" -pos 3 
+gui_sg_move "$_session_group_185" -after "$_session_group_181" -pos 3 
 
-set _session_group_158 $_session_group_153|
-append _session_group_158 icache_dataStore_unit
-gui_sg_create "$_session_group_158"
-set icache|icache_dataStore_unit "$_session_group_158"
+set _session_group_186 $_session_group_181|
+append _session_group_186 icache_dataStore_unit
+gui_sg_create "$_session_group_186"
+set icache|icache_dataStore_unit "$_session_group_186"
 
-gui_sg_addsignal -group "$_session_group_158" { {tb_stages.uut_icache.icache_dataStore_unit.$unit} tb_stages.uut_icache.icache_dataStore_unit.rst tb_stages.uut_icache.icache_dataStore_unit.clk tb_stages.uut_icache.icache_dataStore_unit.en tb_stages.uut_icache.icache_dataStore_unit.v_addr_i tb_stages.uut_icache.icache_dataStore_unit.LD_IC_SWAP_BUF tb_stages.uut_icache.icache_dataStore_unit.fill0_i tb_stages.uut_icache.icache_dataStore_unit.fill1_i tb_stages.uut_icache.icache_dataStore_unit.fill2_i tb_stages.uut_icache.icache_dataStore_unit.fill3_i tb_stages.uut_icache.icache_dataStore_unit.busy tb_stages.uut_icache.icache_dataStore_unit.ld_From_I_VC_Swap tb_stages.uut_icache.icache_dataStore_unit.dataBus tb_stages.uut_icache.icache_dataStore_unit.currLine_o tb_stages.uut_icache.icache_dataStore_unit.v_addr_i_index tb_stages.uut_icache.icache_dataStore_unit.clk_45_phase tb_stages.uut_icache.icache_dataStore_unit.ADDRESS_2_DataStore tb_stages.uut_icache.icache_dataStore_unit.dataLineOutSel tb_stages.uut_icache.icache_dataStore_unit.WR_2_DataStore_clk tb_stages.uut_icache.icache_dataStore_unit.WR_2_DataStore_actual tb_stages.uut_icache.icache_dataStore_unit.DIN_2_DataStore tb_stages.uut_icache.icache_dataStore_unit.OE_2_DataStore tb_stages.uut_icache.icache_dataStore_unit.DOUT_2_DataStore tb_stages.uut_icache.icache_dataStore_unit.LAYERS_OF_CELLS tb_stages.uut_icache.icache_dataStore_unit.NUM_CELLS tb_stages.uut_icache.icache_dataStore_unit.I_VC_SwapBuf_i }
+gui_sg_addsignal -group "$_session_group_186" { {tb_stages.uut_icache.icache_dataStore_unit.$unit} tb_stages.uut_icache.icache_dataStore_unit.rst tb_stages.uut_icache.icache_dataStore_unit.clk tb_stages.uut_icache.icache_dataStore_unit.en tb_stages.uut_icache.icache_dataStore_unit.v_addr_i tb_stages.uut_icache.icache_dataStore_unit.LD_IC_SWAP_BUF tb_stages.uut_icache.icache_dataStore_unit.fill0_i tb_stages.uut_icache.icache_dataStore_unit.fill1_i tb_stages.uut_icache.icache_dataStore_unit.fill2_i tb_stages.uut_icache.icache_dataStore_unit.fill3_i tb_stages.uut_icache.icache_dataStore_unit.busy tb_stages.uut_icache.icache_dataStore_unit.ld_From_I_VC_Swap tb_stages.uut_icache.icache_dataStore_unit.dataBus tb_stages.uut_icache.icache_dataStore_unit.currLine_o tb_stages.uut_icache.icache_dataStore_unit.v_addr_i_index tb_stages.uut_icache.icache_dataStore_unit.clk_45_phase tb_stages.uut_icache.icache_dataStore_unit.ADDRESS_2_DataStore tb_stages.uut_icache.icache_dataStore_unit.dataLineOutSel tb_stages.uut_icache.icache_dataStore_unit.WR_2_DataStore_clk tb_stages.uut_icache.icache_dataStore_unit.WR_2_DataStore_actual tb_stages.uut_icache.icache_dataStore_unit.DIN_2_DataStore tb_stages.uut_icache.icache_dataStore_unit.OE_2_DataStore tb_stages.uut_icache.icache_dataStore_unit.DOUT_2_DataStore tb_stages.uut_icache.icache_dataStore_unit.LAYERS_OF_CELLS tb_stages.uut_icache.icache_dataStore_unit.NUM_CELLS tb_stages.uut_icache.icache_dataStore_unit.I_VC_SwapBuf_i }
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_icache.icache_dataStore_unit.LAYERS_OF_CELLS}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_icache.icache_dataStore_unit.LAYERS_OF_CELLS}
 gui_set_radix -radix {decimal} -signals {V1:tb_stages.uut_icache.icache_dataStore_unit.NUM_CELLS}
 gui_set_radix -radix {twosComplement} -signals {V1:tb_stages.uut_icache.icache_dataStore_unit.NUM_CELLS}
 
-gui_sg_move "$_session_group_158" -after "$_session_group_153" -pos 1 
+gui_sg_move "$_session_group_186" -after "$_session_group_181" -pos 1 
 
-set _session_group_159 core
-gui_sg_create "$_session_group_159"
-set core "$_session_group_159"
+set _session_group_187 core
+gui_sg_create "$_session_group_187"
+set core "$_session_group_187"
 
-gui_sg_addsignal -group "$_session_group_159" { }
+gui_sg_addsignal -group "$_session_group_187" { }
 
-set _session_group_160 $_session_group_159|
-append _session_group_160 dc_unit
-gui_sg_create "$_session_group_160"
-set core|dc_unit "$_session_group_160"
+set _session_group_188 $_session_group_187|
+append _session_group_188 dc_unit
+gui_sg_create "$_session_group_188"
+set core|dc_unit "$_session_group_188"
 
-gui_sg_addsignal -group "$_session_group_160" { tb_stages.uut_core.dc_unit.mem_latches_next_o tb_stages.uut_core.dc_unit.dep_stall tb_stages.uut_core.dc_unit.mem_stage_we_valid_unit_o tb_stages.uut_core.dc_unit.mem_ST_OP tb_stages.uut_core.dc_unit.latches_i tb_stages.uut_core.dc_unit.ld_addr_0_V tb_stages.uut_core.dc_unit.req_rejected_0 tb_stages.uut_core.dc_unit.mem_stage_next_vaild_o tb_stages.uut_core.dc_unit.stq_stall tb_stages.uut_core.dc_unit.req_rejected_1 tb_stages.uut_core.dc_unit.ld_addr_1_V tb_stages.uut_core.dc_unit.dc_ST_OP tb_stages.uut_core.dc_unit.ld_addr_0 tb_stages.uut_core.dc_unit.ld_addr_1 tb_stages.uut_core.dc_unit.in_flight_stall tb_stages.uut_core.dc_unit.exe_outs_i tb_stages.uut_core.dc_unit.arb_stall tb_stages.uut_core.dc_unit.clk tb_stages.uut_core.dc_unit.dc_outs_o tb_stages.uut_core.dc_unit.wb_outs_i tb_stages.uut_core.dc_unit.mem_outs_i tb_stages.uut_core.dc_unit.req_rejected_mio tb_stages.uut_core.dc_unit.dc_stall tb_stages.uut_core.dc_unit.exe_ST_OP {tb_stages.uut_core.dc_unit.$unit} tb_stages.uut_core.dc_unit.wb_ST_OP tb_stages.uut_core.dc_unit.rst }
+gui_sg_addsignal -group "$_session_group_188" { tb_stages.uut_core.dc_unit.mem_latches_next_o tb_stages.uut_core.dc_unit.dep_stall tb_stages.uut_core.dc_unit.mem_stage_we_valid_unit_o tb_stages.uut_core.dc_unit.mem_ST_OP tb_stages.uut_core.dc_unit.latches_i tb_stages.uut_core.dc_unit.ld_addr_0_V tb_stages.uut_core.dc_unit.req_rejected_0 tb_stages.uut_core.dc_unit.mem_stage_next_vaild_o tb_stages.uut_core.dc_unit.stq_stall tb_stages.uut_core.dc_unit.req_rejected_1 tb_stages.uut_core.dc_unit.ld_addr_1_V tb_stages.uut_core.dc_unit.dc_ST_OP tb_stages.uut_core.dc_unit.ld_addr_0 tb_stages.uut_core.dc_unit.ld_addr_1 tb_stages.uut_core.dc_unit.in_flight_stall tb_stages.uut_core.dc_unit.exe_outs_i tb_stages.uut_core.dc_unit.arb_stall tb_stages.uut_core.dc_unit.clk tb_stages.uut_core.dc_unit.dc_outs_o tb_stages.uut_core.dc_unit.wb_outs_i tb_stages.uut_core.dc_unit.mem_outs_i tb_stages.uut_core.dc_unit.req_rejected_mio tb_stages.uut_core.dc_unit.dc_stall tb_stages.uut_core.dc_unit.exe_ST_OP {tb_stages.uut_core.dc_unit.$unit} tb_stages.uut_core.dc_unit.wb_ST_OP tb_stages.uut_core.dc_unit.rst }
 
-set _session_group_161 $_session_group_159|
-append _session_group_161 idm_unit
-gui_sg_create "$_session_group_161"
-set core|idm_unit "$_session_group_161"
+set _session_group_189 $_session_group_187|
+append _session_group_189 idm_unit
+gui_sg_create "$_session_group_189"
+set core|idm_unit "$_session_group_189"
 
-gui_sg_addsignal -group "$_session_group_161" { tb_stages.uut_core.idm_unit.clk tb_stages.uut_core.idm_unit.rst tb_stages.uut_core.idm_unit.fetch_outs_i tb_stages.uut_core.idm_unit.idm_outs_o tb_stages.uut_core.idm_unit.idm }
+gui_sg_addsignal -group "$_session_group_189" { tb_stages.uut_core.idm_unit.clk tb_stages.uut_core.idm_unit.rst tb_stages.uut_core.idm_unit.fetch_outs_i tb_stages.uut_core.idm_unit.idm_outs_o tb_stages.uut_core.idm_unit.idm }
 
-gui_sg_move "$_session_group_161" -after "$_session_group_159" -pos 5 
+gui_sg_move "$_session_group_189" -after "$_session_group_187" -pos 5 
 
-set _session_group_162 $_session_group_159|
-append _session_group_162 mem_latches_unit
-gui_sg_create "$_session_group_162"
-set core|mem_latches_unit "$_session_group_162"
+set _session_group_190 $_session_group_187|
+append _session_group_190 mem_latches_unit
+gui_sg_create "$_session_group_190"
+set core|mem_latches_unit "$_session_group_190"
 
-gui_sg_addsignal -group "$_session_group_162" { tb_stages.uut_core.mem_latches_unit.clk tb_stages.uut_core.mem_latches_unit.rst tb_stages.uut_core.mem_latches_unit.write_enable_i tb_stages.uut_core.mem_latches_unit.flush tb_stages.uut_core.mem_latches_unit.farFlush tb_stages.uut_core.mem_latches_unit.nextLatches_i tb_stages.uut_core.mem_latches_unit.latches_o tb_stages.uut_core.mem_latches_unit.latches }
+gui_sg_addsignal -group "$_session_group_190" { tb_stages.uut_core.mem_latches_unit.clk tb_stages.uut_core.mem_latches_unit.rst tb_stages.uut_core.mem_latches_unit.write_enable_i tb_stages.uut_core.mem_latches_unit.flush tb_stages.uut_core.mem_latches_unit.farFlush tb_stages.uut_core.mem_latches_unit.nextLatches_i tb_stages.uut_core.mem_latches_unit.latches_o tb_stages.uut_core.mem_latches_unit.latches }
 
-gui_sg_move "$_session_group_162" -after "$_session_group_159" -pos 4 
+gui_sg_move "$_session_group_190" -after "$_session_group_187" -pos 4 
 
-set _session_group_163 $_session_group_159|
-append _session_group_163 rr_latches_unit
-gui_sg_create "$_session_group_163"
-set core|rr_latches_unit "$_session_group_163"
+set _session_group_191 $_session_group_187|
+append _session_group_191 rr_latches_unit
+gui_sg_create "$_session_group_191"
+set core|rr_latches_unit "$_session_group_191"
 
-gui_sg_addsignal -group "$_session_group_163" { tb_stages.uut_core.rr_latches_unit.clk tb_stages.uut_core.rr_latches_unit.rst tb_stages.uut_core.rr_latches_unit.write_enable_i tb_stages.uut_core.rr_latches_unit.flush tb_stages.uut_core.rr_latches_unit.farFlush tb_stages.uut_core.rr_latches_unit.nextLatches_i tb_stages.uut_core.rr_latches_unit.latches_o tb_stages.uut_core.rr_latches_unit.latches }
+gui_sg_addsignal -group "$_session_group_191" { tb_stages.uut_core.rr_latches_unit.clk tb_stages.uut_core.rr_latches_unit.rst tb_stages.uut_core.rr_latches_unit.write_enable_i tb_stages.uut_core.rr_latches_unit.flush tb_stages.uut_core.rr_latches_unit.farFlush tb_stages.uut_core.rr_latches_unit.nextLatches_i tb_stages.uut_core.rr_latches_unit.latches_o tb_stages.uut_core.rr_latches_unit.latches }
 
-gui_sg_move "$_session_group_163" -after "$_session_group_159" -pos 3 
+gui_sg_move "$_session_group_191" -after "$_session_group_187" -pos 3 
 
-set _session_group_164 $_session_group_159|
-append _session_group_164 rr_unit
-gui_sg_create "$_session_group_164"
-set core|rr_unit "$_session_group_164"
+set _session_group_192 $_session_group_187|
+append _session_group_192 rr_unit
+gui_sg_create "$_session_group_192"
+set core|rr_unit "$_session_group_192"
 
-gui_sg_addsignal -group "$_session_group_164" { {tb_stages.uut_core.rr_unit.$unit} tb_stages.uut_core.rr_unit.SEGMENT_LIMITS tb_stages.uut_core.rr_unit.clk tb_stages.uut_core.rr_unit.rst tb_stages.uut_core.rr_unit.RR_GP tb_stages.uut_core.rr_unit.RR_PF tb_stages.uut_core.rr_unit.ecx_sb tb_stages.uut_core.rr_unit.cs_sb tb_stages.uut_core.rr_unit.depstall tb_stages.uut_core.rr_unit.dc_latches_we tb_stages.uut_core.rr_unit.next_dc_valid tb_stages.uut_core.rr_unit.rr_stall tb_stages.uut_core.rr_unit.addygen_input_addy tb_stages.uut_core.rr_unit.addygen_out tb_stages.uut_core.rr_unit.staddyX_neuralnet_addy tb_stages.uut_core.rr_unit.latches_i tb_stages.uut_core.rr_unit.fetch_outs_i tb_stages.uut_core.rr_unit.decode_outs_i tb_stages.uut_core.rr_unit.dc_outs_i tb_stages.uut_core.rr_unit.mem_outs_i tb_stages.uut_core.rr_unit.exe_outs_i tb_stages.uut_core.rr_unit.wb_outs_i tb_stages.uut_core.rr_unit.dc_latches_next tb_stages.uut_core.rr_unit.outs_o tb_stages.uut_core.rr_unit.latchesInUse tb_stages.uut_core.rr_unit.reg_out tb_stages.uut_core.rr_unit.ld_neuralnet_out tb_stages.uut_core.rr_unit.st_neuralnet_out }
+gui_sg_addsignal -group "$_session_group_192" { {tb_stages.uut_core.rr_unit.$unit} tb_stages.uut_core.rr_unit.SEGMENT_LIMITS tb_stages.uut_core.rr_unit.clk tb_stages.uut_core.rr_unit.rst tb_stages.uut_core.rr_unit.RR_GP tb_stages.uut_core.rr_unit.RR_PF tb_stages.uut_core.rr_unit.ecx_sb tb_stages.uut_core.rr_unit.cs_sb tb_stages.uut_core.rr_unit.depstall tb_stages.uut_core.rr_unit.dc_latches_we tb_stages.uut_core.rr_unit.next_dc_valid tb_stages.uut_core.rr_unit.rr_stall tb_stages.uut_core.rr_unit.addygen_input_addy tb_stages.uut_core.rr_unit.addygen_out tb_stages.uut_core.rr_unit.staddyX_neuralnet_addy tb_stages.uut_core.rr_unit.latches_i tb_stages.uut_core.rr_unit.fetch_outs_i tb_stages.uut_core.rr_unit.decode_outs_i tb_stages.uut_core.rr_unit.dc_outs_i tb_stages.uut_core.rr_unit.mem_outs_i tb_stages.uut_core.rr_unit.exe_outs_i tb_stages.uut_core.rr_unit.wb_outs_i tb_stages.uut_core.rr_unit.dc_latches_next tb_stages.uut_core.rr_unit.outs_o tb_stages.uut_core.rr_unit.latchesInUse tb_stages.uut_core.rr_unit.reg_out tb_stages.uut_core.rr_unit.ld_neuralnet_out tb_stages.uut_core.rr_unit.st_neuralnet_out }
 
-gui_sg_move "$_session_group_164" -after "$_session_group_159" -pos 2 
+gui_sg_move "$_session_group_192" -after "$_session_group_187" -pos 2 
 
-set _session_group_165 $_session_group_159|
-append _session_group_165 decode_unit
-gui_sg_create "$_session_group_165"
-set core|decode_unit "$_session_group_165"
+set _session_group_193 $_session_group_187|
+append _session_group_193 decode_unit
+gui_sg_create "$_session_group_193"
+set core|decode_unit "$_session_group_193"
 
-gui_sg_addsignal -group "$_session_group_165" { tb_stages.uut_core.decode_unit.EIP tb_stages.uut_core.decode_unit.clk tb_stages.uut_core.decode_unit.rst tb_stages.uut_core.decode_unit.PrevEIP tb_stages.uut_core.decode_unit.NEIP tb_stages.uut_core.decode_unit.inst_length tb_stages.uut_core.decode_unit.PrevLength tb_stages.uut_core.decode_unit.sib_byte tb_stages.uut_core.decode_unit.sib_size tb_stages.uut_core.decode_unit.disp_needed tb_stages.uut_core.decode_unit.displacement tb_stages.uut_core.decode_unit.disp_size tb_stages.uut_core.decode_unit.imm64 tb_stages.uut_core.decode_unit.total_pf_vector tb_stages.uut_core.decode_unit.invalid_inst tb_stages.uut_core.decode_unit.opcode_byte tb_stages.uut_core.decode_unit.modrm_byte tb_stages.uut_core.decode_unit.decode_gp tb_stages.uut_core.decode_unit.flush tb_stages.uut_core.decode_unit.stall tb_stages.uut_core.decode_unit.REP_MOV_LATCH tb_stages.uut_core.decode_unit.REP_CMP_LATCH tb_stages.uut_core.decode_unit.rr_latch_we_o tb_stages.uut_core.decode_unit.queue tb_stages.uut_core.decode_unit.predicted_taken tb_stages.uut_core.decode_unit.predicted_target tb_stages.uut_core.decode_unit.sibbase tb_stages.uut_core.decode_unit.sibidx tb_stages.uut_core.decode_unit.sibscale tb_stages.uut_core.decode_unit.rep_reg_value tb_stages.uut_core.decode_unit.rr_valid tb_stages.uut_core.decode_unit.segment0 tb_stages.uut_core.decode_unit.idm_outs_i tb_stages.uut_core.decode_unit.fetch_outs_i tb_stages.uut_core.decode_unit.rr_outs_i tb_stages.uut_core.decode_unit.dc_outs_i tb_stages.uut_core.decode_unit.mem_outs_i tb_stages.uut_core.decode_unit.exe_outs_i tb_stages.uut_core.decode_unit.wb_outs_i tb_stages.uut_core.decode_unit.rr_latches_next tb_stages.uut_core.decode_unit.outs_o tb_stages.uut_core.decode_unit.temp_decode_cs tb_stages.uut_core.decode_unit.temp_rr_cs tb_stages.uut_core.decode_unit.temp_dc_cs tb_stages.uut_core.decode_unit.temp_mem_cs tb_stages.uut_core.decode_unit.temp_exe_cs tb_stages.uut_core.decode_unit.temp_wb_cs tb_stages.uut_core.decode_unit.temp_rr_latch tb_stages.uut_core.decode_unit.br_info_for_latches tb_stages.uut_core.decode_unit.rep_latch_holder }
+gui_sg_addsignal -group "$_session_group_193" { tb_stages.uut_core.decode_unit.EIP tb_stages.uut_core.decode_unit.clk tb_stages.uut_core.decode_unit.rst tb_stages.uut_core.decode_unit.PrevEIP tb_stages.uut_core.decode_unit.NEIP tb_stages.uut_core.decode_unit.inst_length tb_stages.uut_core.decode_unit.PrevLength tb_stages.uut_core.decode_unit.sib_byte tb_stages.uut_core.decode_unit.sib_size tb_stages.uut_core.decode_unit.disp_needed tb_stages.uut_core.decode_unit.displacement tb_stages.uut_core.decode_unit.disp_size tb_stages.uut_core.decode_unit.imm64 tb_stages.uut_core.decode_unit.total_pf_vector tb_stages.uut_core.decode_unit.invalid_inst tb_stages.uut_core.decode_unit.opcode_byte tb_stages.uut_core.decode_unit.modrm_byte tb_stages.uut_core.decode_unit.decode_gp tb_stages.uut_core.decode_unit.flush tb_stages.uut_core.decode_unit.stall tb_stages.uut_core.decode_unit.REP_MOV_LATCH tb_stages.uut_core.decode_unit.REP_CMP_LATCH tb_stages.uut_core.decode_unit.rr_latch_we_o tb_stages.uut_core.decode_unit.queue tb_stages.uut_core.decode_unit.predicted_taken tb_stages.uut_core.decode_unit.predicted_target tb_stages.uut_core.decode_unit.sibbase tb_stages.uut_core.decode_unit.sibidx tb_stages.uut_core.decode_unit.sibscale tb_stages.uut_core.decode_unit.rep_reg_value tb_stages.uut_core.decode_unit.rr_valid tb_stages.uut_core.decode_unit.segment0 tb_stages.uut_core.decode_unit.idm_outs_i tb_stages.uut_core.decode_unit.fetch_outs_i tb_stages.uut_core.decode_unit.rr_outs_i tb_stages.uut_core.decode_unit.dc_outs_i tb_stages.uut_core.decode_unit.mem_outs_i tb_stages.uut_core.decode_unit.exe_outs_i tb_stages.uut_core.decode_unit.wb_outs_i tb_stages.uut_core.decode_unit.rr_latches_next tb_stages.uut_core.decode_unit.outs_o tb_stages.uut_core.decode_unit.temp_decode_cs tb_stages.uut_core.decode_unit.temp_rr_cs tb_stages.uut_core.decode_unit.temp_dc_cs tb_stages.uut_core.decode_unit.temp_mem_cs tb_stages.uut_core.decode_unit.temp_exe_cs tb_stages.uut_core.decode_unit.temp_wb_cs tb_stages.uut_core.decode_unit.temp_rr_latch tb_stages.uut_core.decode_unit.br_info_for_latches tb_stages.uut_core.decode_unit.rep_latch_holder }
 
-gui_sg_move "$_session_group_165" -after "$_session_group_159" -pos 7 
+gui_sg_move "$_session_group_193" -after "$_session_group_187" -pos 7 
 
-set _session_group_166 $_session_group_159|
-append _session_group_166 dc_latches_unit
-gui_sg_create "$_session_group_166"
-set core|dc_latches_unit "$_session_group_166"
+set _session_group_194 $_session_group_187|
+append _session_group_194 dc_latches_unit
+gui_sg_create "$_session_group_194"
+set core|dc_latches_unit "$_session_group_194"
 
-gui_sg_addsignal -group "$_session_group_166" { tb_stages.uut_core.dc_latches_unit.clk tb_stages.uut_core.dc_latches_unit.rst tb_stages.uut_core.dc_latches_unit.write_enable_i tb_stages.uut_core.dc_latches_unit.flush tb_stages.uut_core.dc_latches_unit.farFlush tb_stages.uut_core.dc_latches_unit.nextLatches_i tb_stages.uut_core.dc_latches_unit.latches_o tb_stages.uut_core.dc_latches_unit.latches }
+gui_sg_addsignal -group "$_session_group_194" { tb_stages.uut_core.dc_latches_unit.clk tb_stages.uut_core.dc_latches_unit.rst tb_stages.uut_core.dc_latches_unit.write_enable_i tb_stages.uut_core.dc_latches_unit.flush tb_stages.uut_core.dc_latches_unit.farFlush tb_stages.uut_core.dc_latches_unit.nextLatches_i tb_stages.uut_core.dc_latches_unit.latches_o tb_stages.uut_core.dc_latches_unit.latches }
 
-gui_sg_move "$_session_group_166" -after "$_session_group_159" -pos 8 
+gui_sg_move "$_session_group_194" -after "$_session_group_187" -pos 8 
 
-set _session_group_167 $_session_group_159|
-append _session_group_167 uut_core
-gui_sg_create "$_session_group_167"
-set core|uut_core "$_session_group_167"
+set _session_group_195 $_session_group_187|
+append _session_group_195 uut_core
+gui_sg_create "$_session_group_195"
+set core|uut_core "$_session_group_195"
 
-gui_sg_addsignal -group "$_session_group_167" { {tb_stages.uut_core.$unit} tb_stages.uut_core.clk tb_stages.uut_core.rst tb_stages.uut_core.ICacheIn_i tb_stages.uut_core.out2ICache_o tb_stages.uut_core.DCacheIn_i tb_stages.uut_core.out2DCache_o tb_stages.uut_core.inFromDMA_i tb_stages.uut_core.idm_outputs tb_stages.uut_core.fetch_outputs tb_stages.uut_core.decode_outputs tb_stages.uut_core.rr_outputs tb_stages.uut_core.dc_outputs tb_stages.uut_core.mem_outputs tb_stages.uut_core.exe_outputs tb_stages.uut_core.wb_outputs tb_stages.uut_core.rr_latches tb_stages.uut_core.rr_latches_next tb_stages.uut_core.dc_latches tb_stages.uut_core.dc_latches_next tb_stages.uut_core.mem_latches tb_stages.uut_core.mem_latches_next tb_stages.uut_core.exe_latches tb_stages.uut_core.exe_latches_next tb_stages.uut_core.wb_latches tb_stages.uut_core.wb_latches_next }
+gui_sg_addsignal -group "$_session_group_195" { {tb_stages.uut_core.$unit} tb_stages.uut_core.clk tb_stages.uut_core.rst tb_stages.uut_core.ICacheIn_i tb_stages.uut_core.out2ICache_o tb_stages.uut_core.DCacheIn_i tb_stages.uut_core.out2DCache_o tb_stages.uut_core.inFromDMA_i tb_stages.uut_core.idm_outputs tb_stages.uut_core.fetch_outputs tb_stages.uut_core.decode_outputs tb_stages.uut_core.rr_outputs tb_stages.uut_core.dc_outputs tb_stages.uut_core.mem_outputs tb_stages.uut_core.exe_outputs tb_stages.uut_core.wb_outputs tb_stages.uut_core.rr_latches tb_stages.uut_core.rr_latches_next tb_stages.uut_core.dc_latches tb_stages.uut_core.dc_latches_next tb_stages.uut_core.mem_latches tb_stages.uut_core.mem_latches_next tb_stages.uut_core.exe_latches tb_stages.uut_core.exe_latches_next tb_stages.uut_core.wb_latches tb_stages.uut_core.wb_latches_next }
 
-gui_sg_move "$_session_group_167" -after "$_session_group_159" -pos 1 
+gui_sg_move "$_session_group_195" -after "$_session_group_187" -pos 1 
 
-set _session_group_168 $_session_group_159|
-append _session_group_168 fetch_unit
-gui_sg_create "$_session_group_168"
-set core|fetch_unit "$_session_group_168"
+set _session_group_196 $_session_group_187|
+append _session_group_196 fetch_unit
+gui_sg_create "$_session_group_196"
+set core|fetch_unit "$_session_group_196"
 
-gui_sg_addsignal -group "$_session_group_168" { tb_stages.uut_core.fetch_unit.SPC tb_stages.uut_core.fetch_unit.clk tb_stages.uut_core.fetch_unit.rst tb_stages.uut_core.fetch_unit.dma_int tb_stages.uut_core.fetch_unit.exp_mode_jk tb_stages.uut_core.fetch_unit.int_mode_jk tb_stages.uut_core.fetch_unit.DMA_int_jk tb_stages.uut_core.fetch_unit.f_exp tb_stages.uut_core.fetch_unit.seg_xlation_out tb_stages.uut_core.fetch_unit.seg_xlation_gp_fault tb_stages.uut_core.fetch_unit.rom_data_out tb_stages.uut_core.fetch_unit.idm_ctrl_data_in tb_stages.uut_core.fetch_unit.next_spc tb_stages.uut_core.fetch_unit.spc_16 tb_stages.uut_core.fetch_unit.br_restore_spc tb_stages.uut_core.fetch_unit.br_target tb_stages.uut_core.fetch_unit.spc_2_IDM_CTRL tb_stages.uut_core.fetch_unit.en_icache tb_stages.uut_core.fetch_unit.icache_info_i tb_stages.uut_core.fetch_unit.idm_info_i tb_stages.uut_core.fetch_unit.decode_outs_i tb_stages.uut_core.fetch_unit.rr_outs_i tb_stages.uut_core.fetch_unit.dc_outs_i tb_stages.uut_core.fetch_unit.mem_outs_i tb_stages.uut_core.fetch_unit.exe_outs_i tb_stages.uut_core.fetch_unit.wb_outs_i tb_stages.uut_core.fetch_unit.outs_o tb_stages.uut_core.fetch_unit.predictor_inputs tb_stages.uut_core.fetch_unit.tlb_inputs tb_stages.uut_core.fetch_unit.btb_outs tb_stages.uut_core.fetch_unit.spc_sel_logic_outs tb_stages.uut_core.fetch_unit.predictor_outs tb_stages.uut_core.fetch_unit.idm_ctrl_logic_outs tb_stages.uut_core.fetch_unit.idm_invalidate_logic_outs tb_stages.uut_core.fetch_unit.tlb_outs tb_stages.uut_core.fetch_unit.exp_set_logic_outs }
+gui_sg_addsignal -group "$_session_group_196" { tb_stages.uut_core.fetch_unit.SPC tb_stages.uut_core.fetch_unit.clk tb_stages.uut_core.fetch_unit.rst tb_stages.uut_core.fetch_unit.dma_int tb_stages.uut_core.fetch_unit.exp_mode_jk tb_stages.uut_core.fetch_unit.int_mode_jk tb_stages.uut_core.fetch_unit.DMA_int_jk tb_stages.uut_core.fetch_unit.f_exp tb_stages.uut_core.fetch_unit.seg_xlation_out tb_stages.uut_core.fetch_unit.seg_xlation_gp_fault tb_stages.uut_core.fetch_unit.rom_data_out tb_stages.uut_core.fetch_unit.idm_ctrl_data_in tb_stages.uut_core.fetch_unit.next_spc tb_stages.uut_core.fetch_unit.spc_16 tb_stages.uut_core.fetch_unit.br_restore_spc tb_stages.uut_core.fetch_unit.br_target tb_stages.uut_core.fetch_unit.spc_2_IDM_CTRL tb_stages.uut_core.fetch_unit.en_icache tb_stages.uut_core.fetch_unit.icache_info_i tb_stages.uut_core.fetch_unit.idm_info_i tb_stages.uut_core.fetch_unit.decode_outs_i tb_stages.uut_core.fetch_unit.rr_outs_i tb_stages.uut_core.fetch_unit.dc_outs_i tb_stages.uut_core.fetch_unit.mem_outs_i tb_stages.uut_core.fetch_unit.exe_outs_i tb_stages.uut_core.fetch_unit.wb_outs_i tb_stages.uut_core.fetch_unit.outs_o tb_stages.uut_core.fetch_unit.predictor_inputs tb_stages.uut_core.fetch_unit.tlb_inputs tb_stages.uut_core.fetch_unit.btb_outs tb_stages.uut_core.fetch_unit.spc_sel_logic_outs tb_stages.uut_core.fetch_unit.predictor_outs tb_stages.uut_core.fetch_unit.idm_ctrl_logic_outs tb_stages.uut_core.fetch_unit.idm_invalidate_logic_outs tb_stages.uut_core.fetch_unit.tlb_outs tb_stages.uut_core.fetch_unit.exp_set_logic_outs }
 
-gui_sg_move "$_session_group_168" -after "$_session_group_159" -pos 6 
+gui_sg_move "$_session_group_196" -after "$_session_group_187" -pos 6 
 
 # Global: Highlighting
 
@@ -574,7 +574,7 @@ gui_list_set_height -id Wave -height 25
 set origGroupCreationState [gui_list_create_group_when_add -wave]
 gui_list_create_group_when_add -wave -disable
 gui_marker_set_ref -id ${Wave.1}  C1
-gui_wv_zoom_timerange -id ${Wave.1} 0 1204224
+gui_wv_zoom_timerange -id ${Wave.1} 0 884097
 gui_list_add_group -id ${Wave.1} -after {New Group} {busArb}
 gui_list_add_group -id ${Wave.1}  -after busArb {busArb|scheduler_unit}
 gui_list_add_group -id ${Wave.1} -after busArb|scheduler_unit {busArb|dte_unit}
@@ -606,16 +606,17 @@ gui_list_add_group -id ${Wave.1} -after core|decode_unit {core|dc_latches_unit}
 gui_list_collapse -id ${Wave.1} busArb
 gui_list_collapse -id ${Wave.1} dcache
 gui_list_collapse -id ${Wave.1} icache
+gui_list_collapse -id ${Wave.1} core|dc_unit
 gui_list_collapse -id ${Wave.1} core|uut_core
-gui_list_collapse -id ${Wave.1} core|rr_unit
 gui_list_collapse -id ${Wave.1} core|rr_latches_unit
 gui_list_collapse -id ${Wave.1} core|mem_latches_unit
 gui_list_collapse -id ${Wave.1} core|idm_unit
 gui_list_collapse -id ${Wave.1} core|fetch_unit
 gui_list_collapse -id ${Wave.1} core|decode_unit
 gui_list_collapse -id ${Wave.1} core|dc_latches_unit
-gui_list_expand -id ${Wave.1} tb_stages.uut_core.dc_unit.latches_i
-gui_list_select -id ${Wave.1} {tb_stages.uut_core.dc_unit.latches_i.MIO }
+gui_list_expand -id ${Wave.1} tb_stages.uut_core.rr_unit.dc_latches_next
+gui_list_select -id ${Wave.1} {tb_stages.uut_core.rr_unit.dc_latches_next.MIO }
+gui_set_radix -radix enum_toggle -signal tb_stages.uut_core.rr_unit.dc_latches_next.dr_id
 gui_seek_criteria -id ${Wave.1} {Any Edge}
 
 
@@ -634,7 +635,7 @@ gui_list_set_filter -id ${Wave.1} -text {*}
 gui_list_set_insertion_bar  -id ${Wave.1} -group core  -position in
 
 gui_marker_move -id ${Wave.1} {C1} 235000
-gui_view_scroll -id ${Wave.1} -vertical -set 375
+gui_view_scroll -id ${Wave.1} -vertical -set 300
 gui_show_grid -id ${Wave.1} -enable false
 
 # Hier 'Hier.1'
