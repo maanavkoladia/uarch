@@ -7,8 +7,8 @@ _start:
     # 1) ADD AX, 0xDEAD
     addw $0xDEAD, %ax
 
-    # 2) ADD ECX, EAX
-    addl %eax, %ecx
+    # 2) ADD ECX, EBX
+    addl %ebx, %ecx
 
     # 3) ADD [EDX*2 + EDI + 0x12345678], ESI
     addl %esi, 0x12345678(%edi,%edx,2)

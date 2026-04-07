@@ -6,7 +6,7 @@ import core_common_pkg::*;
 
 module tb_stages();
 
-    localparam int Clk_PERIOD = 10;
+    localparam int Clk_PERIOD = 11;
 
     initial begin
         $vcdpluson;
@@ -38,13 +38,6 @@ module tb_stages();
     core_2_icache_t core_2_icache;
     core_2_dcache_t core_2_dcache;
 
-    // ================= CORE LATCHES =================
-    rr_latches_t rr_latches, rr_latches_next;
-    dc_latches_t dc_latches, dc_latches_next;
-    exe_latches_t exe_latches, exe_latches_next;
-    mem_latches_t mem_latches, mem_latches_next;
-    wb_latches_t wb_latches, wb_latches_next;
-
     // ================= ICACHE OUTPUTS =================
     icache_2_core_t icache_2_core;
     icache_2_scheduler_t icache_2_sch;
@@ -69,7 +62,7 @@ module tb_stages();
     dma_controller_2_core_t dma_2_core;
 
     assign dma_2_core = '{default: '0};
-
+    assign dma_2_sch = '{default: '0};
    BusArbitration uut4_busArb (
         .clk(clk),
         .rst(rst),

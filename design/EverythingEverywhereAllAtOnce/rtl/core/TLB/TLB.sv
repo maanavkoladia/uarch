@@ -62,10 +62,12 @@ module TLB (
     always_comb begin
         outputs.physical_addr = '0;
         outputs.physical_addr_valid = 0;
+        outputs.MIO = 0;
         for (int i = 0; i < entries; i++) begin
             if (tlb[i].valid && tlb[i].VPN == inputs.virtual_addr[ADDRESS_BITS-1:OFFSET_BITS]) begin
                 outputs.physical_addr_valid = 1;
                 outputs.physical_addr = {tlb[i].PFN, inputs.virtual_addr[OFFSET_BITS-1:0]};
+                outputs.MIO = tlb[i].MMIO;
             end
         end
     end
