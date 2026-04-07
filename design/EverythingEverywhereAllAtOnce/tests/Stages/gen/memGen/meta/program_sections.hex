@@ -1,4 +1,4 @@
-// Sections hex  base=0x1000  len=18040 B  line_size=16 B
+// Sections hex  base=0x1000  len=18048 B  line_size=16 B
 // Sections: ['data']
 
 // $line_256    addr: 0x1000
@@ -3383,5 +3383,5 @@
   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 
 // $line_1383   addr: 0x5670
-  dd cc bb aa  ad de ef be  00 00 00 00  00 00 00 00
+  11 11 11 11  22 22 22 22  dd cc bb aa  ad de ef be
 
