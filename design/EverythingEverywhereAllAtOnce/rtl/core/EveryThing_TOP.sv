@@ -52,34 +52,6 @@ module EveryThing_TOP (
             stq_info_mio : wb_outputs.mio_head
         };
 
-
-    RR_Latches rr_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(rr_latches_next),
-        .latches_o(rr_latches),
-        .write_enable_i(decode_outputs.rr_stage_latch_we),
-        .flush(exe_outputs.br_res_out.flush),
-        .farFlush(exe_outputs.br_res_out.farFlush)
-    );
-
-    DC_Latches dc_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(dc_latches_next),
-        .latches_o(dc_latches),
-        .write_enable_i(rr_outputs.dc_stage_latch_we),
-        .flush(exe_outputs.br_res_out.flush),
-        .farFlush(exe_outputs.br_res_out.farFlush)
-    );
-
-    MEM_Latches mem_latches_unit (
-        .clk(clk),
-        .rst(rst),
-        .nextLatches_i(mem_latches_next),
-        .latches_o(mem_latches)
-    );
-
     // EXE_Latches exe_latches_unit (
     //     .clk(clk),
     //     .rst(rst),
@@ -130,6 +102,16 @@ module EveryThing_TOP (
         .outs_o(decode_outputs)
     );
 
+    RR_Latches rr_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(rr_latches_next),
+        .latches_o(rr_latches),
+        .write_enable_i(decode_outputs.rr_stage_latch_we),
+        .flush(exe_outputs.br_res_out.flush),
+        .farFlush(exe_outputs.br_res_out.farFlush)
+    );
+
     RR rr_unit (
         .clk(clk),
         .rst(rst),
@@ -142,6 +124,16 @@ module EveryThing_TOP (
         .wb_outs_i(wb_outputs),
         .dc_latches_next(dc_latches_next),
         .outs_o(rr_outputs)
+    );
+
+    DC_Latches dc_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(dc_latches_next),
+        .latches_o(dc_latches),
+        .write_enable_i(rr_outputs.dc_stage_latch_we),
+        .flush(exe_outputs.br_res_out.flush),
+        .farFlush(exe_outputs.br_res_out.farFlush)
     );
 
     DC dc_unit (
@@ -157,6 +149,18 @@ module EveryThing_TOP (
         .req_rejected_1(DCacheIn_i.req_rejected_1),
         .dc_outs_o(dc_outputs)
     );
+
+    MEM_Latches mem_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(mem_latches_next),
+        .write_enable_i(dc_outputs.mem_stage_latch_we),
+        .flush(exe_outputs.br_res_out.flush),
+        .farFlush(exe_outputs.br_res_out.farFlush),
+        .latches_o(mem_latches)
+    );
+
+
 
     // MEM mem_unit (
     //     .clk(clk),

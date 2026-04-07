@@ -85,7 +85,7 @@ package core_common_pkg;
         //mio stuf
         bool ld_addr_MIO_V;
         p_address_t ld_addr_MIO;
-        bool mem_stage_we;
+        bool mem_stage_latch_we;
     } dc_outputs_t;
 
     typedef struct {

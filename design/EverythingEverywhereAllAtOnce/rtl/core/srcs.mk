@@ -12,6 +12,10 @@ include $(CORE_PATH_INTERNAL)/WB/srcs.mk
 CORE_GEN_SRC_FILES = \
 					 $(GEN_DECODE_SRC_FILES)	\
 					 $(RR_GEN_SRC_FILES)	\
+					 $(GEN_DC_SRC_FILES)	\
+					 $(GEN_MEM_SRC_FILES)	\
+					 $(GEN_EXE_SRC_FILES)	\
+
 
 
 CORE_SRC_FILES = \

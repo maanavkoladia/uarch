@@ -172,6 +172,30 @@ module tb_Dec();
         .latches_o(dc_latches)
     );
 
+    DC dc_unit (
+        .clk(clk),
+        .rst(rst),
+        .latches_i(dc_latches),
+        .mem_outs_i(mem_outs_i),
+        .exe_outs_i(exe_outs_i),
+        .wb_outs_i(wb_outs_i),
+        .mem_latches_next_o(mem_latches_next),
+        .req_rejected_mio(DCacheIn_i.req_rejected_mio),
+        .req_rejected_0(DCacheIn_i.req_rejected_0),
+        .req_rejected_1(DCacheIn_i.req_rejected_1),
+        .dc_outs_o(dc_outs_i)
+    );
+
+    MEM_Latches mem_latches_unit (
+        .clk(clk),
+        .rst(rst),
+        .nextLatches_i(mem_latches_next),
+        .write_enable_i(dc_outs_i.mem_stage_latch_we),
+        .flush(exe_outs_i.br_res_out.flush),
+        .farFlush(exe_outs_i.br_res_out.farFlush),
+        .latches_o(mem_latches)
+    );
+
     // assign rr_outs_i = '{default: '0};
     //decode worked fine when I had this above line uncommented
     //need to check how the rr_outs_i is being set or initialized

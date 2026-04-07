@@ -4,6 +4,9 @@ DC_PATH_INTERNAL = $(CORE_PATH_INTERNAL)/DC/
 DC_PKGS = \
 	$(DC_PATH_INTERNAL)/pkg/DC_pkg.sv \
 
+GEN_DC_SRC_FILES = \
+	$(DC_PATH_INTERNAL)/gen/mem_valid_logic.v \
+
 # DC source files
 DC_SRC_FILES = \
 	$(DC_PATH_INTERNAL)/in_flight_sb_logic.sv \

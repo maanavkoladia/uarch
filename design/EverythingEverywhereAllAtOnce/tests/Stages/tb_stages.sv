@@ -65,7 +65,7 @@ module tb_stages();
     dte_2_ddr5_t dte_2_ddr5;
 
     // ================= DMA OUTPUTS =================
-    dma_2_scheduler_t dma_2_sch;
+    dma_controller_2_scheduler_t dma_2_sch;
     dma_controller_2_core_t dma_2_core;
 
    BusArbitration uut4_busArb (
@@ -119,10 +119,10 @@ module tb_stages();
         .clk(clk),
         .rst(rst),
         .ICacheIn_i(icache_2_core),
-        .inFromDMA_i(dma_2_core)   
+        .inFromDMA_i(dma_2_core),   
         .DCacheIn_i(dcache_2_core),
         .out2DCache_o(core_2_dcache),
-        .out2ICache_o(core_2_icache),
+        .out2ICache_o(core_2_icache)
     );
    
 

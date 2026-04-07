@@ -2,6 +2,9 @@ MEM_PATH_INTERNAL = $(CORE_PATH_INTERNAL)/MEM/
 
 # MEM packages..dont exist rn
 
+GEN_MEM_SRC_FILES = \
+	$(MEM_PATH_INTERNAL)/gen/EXE_valid_logic.v	\
+
 #MEM source files
 MEM_STAGE_SRC_FILES = \
 	$(MEM_PATH_INTERNAL)/mem_miss_stall_logic.sv \

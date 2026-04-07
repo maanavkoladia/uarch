@@ -3,6 +3,9 @@ EXE_PATH_INTERNAL = $(CORE_PATH_INTERNAL)/EXE/
 # EXE packages (none - uses common_pkg and control_store_pkg from core/pkgs)
 EXE_PKGS = \
 
+GEN_EXE_SRC_FILES = \
+    $(EXE_PATH_INTERNAL)/gen/wb_valid_logic.v \
+
 # EXE source files
 EXE_SRC_FILES = \
     $(EXE_PATH_INTERNAL)/alu_input_sel.sv \
