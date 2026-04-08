@@ -186,7 +186,9 @@ module control_store (
     // DC
     assign dc_cs = '{
         LD_OP : mod_rm_cs_outs.ld_op,
-        ST_OP : mod_rm_cs_outs.st_op
+        ST_OP : mod_rm_cs_outs.st_op,
+        upper8: 0, //TODO
+        data_size: DATA_SIZE_o
     };
 
     // MEM
@@ -198,7 +200,6 @@ module control_store (
     // EXE
     assign exe_cs = '{
         ST_OP               : mod_rm_cs_outs.st_op,
-        DATA_SIZE           : DATA_SIZE_o,
         OP_TYPE             : OP_TYPE_o,
 
         alu_inputA_sel      : mod_rm_cs_outs.alu_inputA_override ?

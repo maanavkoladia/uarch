@@ -4,10 +4,12 @@ import core_stage_latches_pkg::*;
 import control_store_pkg::*;
 
 module branch_res(
-    //br_info
+//br_info
     input bool valid_i,
     input l_address_t br_eip_i,
     input bool br_xcl_i,
+
+    //prediction info
     input bool br_pred_taken_i,
     input l_address_t speculative_target_i,
 
@@ -18,6 +20,7 @@ module branch_res(
     input bool is_far_i,
     input bool second_flag_needed_i,
 
+//from exe stage
     input uint32_t br_source_i,
     input l_address_t NEIP_i,
     input bool CF,
@@ -34,13 +37,13 @@ module branch_res(
     bool far_flush;
     bool miss_prediction;
 
-    bool second_flag_res;
+    bool second_flag_result;
     bool cond_br_res;
     bool target_match;
 
     //taken logic
-    assign second_flag_res = second_flag_needed_i ? ~CF : 1'b1; //mux
-    assign cond_br_res = ~ZF & second_flag_res;
+    assign second_flag_result = second_flag_needed_i ? ~CF : 1'b1; //mux
+    assign cond_br_res = ~ZF & second_flag_result;
     assign taken = (br_ucond_i || cond_br_res) & valid_i;
 
     //target logic

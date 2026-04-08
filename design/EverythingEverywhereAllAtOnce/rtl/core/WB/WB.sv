@@ -4,14 +4,7 @@ import common_pkg::*;
 import core_stage_latches_pkg::*;
 import interconnect_pkg::*;
 
-//TODO: I need to take in pop signals and then look at the head pointer combinationally
-/*
-Problem : when a store is getting latched into cache arbitration the 
-          cache can send a pop on the same cycle. This means that we have served the store req but then would end up latchign the same data again
-          OFF BY ONE ISSUE. 
-Solution: I have to make it such that I look at t a different vlaue when pop is asserted and send combinational full and empty signals to the arbitration so it works out 
 
-*/
 module WB (
     input wire clk,
     input wire rst,
