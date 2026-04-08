@@ -94,6 +94,7 @@ package core_stage_latches_pkg;
     typedef struct {
         bool LD_OP;
         bool ST_OP;
+        bool upper8;
         logic [1:0] data_size;
     } dc_cs_t;
 
@@ -202,7 +203,9 @@ package core_stage_latches_pkg;
         wb_cs_t wb_cs;
         br_info_t br_info;
 
-        logic [3:0] data_size_vec,
+        logic [3:0] data_size_vec;
+        bool rh_into_mem;
+        bool mem_into_rh;
 
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
@@ -233,7 +236,9 @@ package core_stage_latches_pkg;
         exe_cs_t cs;
         wb_cs_t wb_cs;
 
-        logic [3:0] data_size_vec,
+        logic [3:0] data_size_vec;
+        bool rh_into_mem;
+        bool mem_into_rh;
 
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr

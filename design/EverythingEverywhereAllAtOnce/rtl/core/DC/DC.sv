@@ -1,4 +1,3 @@
-'
 import core_common_pkg::*;
 import core_stage_latches_pkg::*;
 import common_pkg::*;
@@ -137,8 +136,8 @@ module DC (
     );
 
     data_size_vec_logic data_vec_uint(
-        .data_size(latches_i.data),
-        .upper8(latches_i.upper8),
+        .data_size(latches_i.cs.data_size),
+        .upper8(latches_i.cs.upper8),
         .ST_OP(latches_i.cs.ST_OP),
         .LD_OP(latches_i.cs.LD_OP),
         .rh_into_mem_o(rh_into_mem_o),
@@ -173,7 +172,9 @@ module DC (
             exe_cs: latches_i.exe_cs,
             wb_cs: latches_i.wb_cs,
             br_info: latches_i.br_info,
-            data_size_vec = data_size_vec,
+            data_size_vec: data_size_vec,
+            rh_into_mem: rh_into_mem_o,
+            mem_into_rh: mem_into_rh_o,
             ST_XCL: latches_i.ST_XCL,
             ST_PADDR_0: latches_i.ST_PADDR_0,
             ST_PADDR_1: latches_i.ST_PADDR_1,
@@ -189,7 +190,7 @@ module DC (
             LD_XCL: latches_i.LD_XCL,
             swapLines: latches_i.swapLines,
             LD_PADDR_0: latches_i.LD_PADDR_0,
-            LD_PADDR_1: latches_i.LD_PADDR_1,
+            LD_PADDR_1: latches_i.LD_PADDR_1
 
         };
 

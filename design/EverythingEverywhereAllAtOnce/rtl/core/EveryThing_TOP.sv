@@ -51,15 +51,7 @@ module EveryThing_TOP (
             stq_heads : wb_outputs.stq_heads,
             stq_info_mio : wb_outputs.mio_head
         };
-    
-    always_comb begin
-        wb_outputs = '{default: '0};
-        for(int i=0; i < 4; i++) begin
-            wb_outputs.stq_heads[i].empty = 1;
-        end
-        wb_outputs.mio_head.empty = 1;
-        
-    end
+
 
     Fetch fetch_unit (
         .clk(clk),
@@ -203,14 +195,14 @@ module EveryThing_TOP (
         .latches_o(wb_latches)
     );
 
-    // WB write_back_unit (
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .wb_latches(wb_latches),
-    //     .write_success(DCacheIn_i.writeSuccess),
-    //     .write_success_mio(DCacheIn_i.writeSuccess_MIO),
-    //     .outputs(wb_outputs)
-    // );
+    WB write_back_unit (
+        .clk(clk),
+        .rst(rst),
+        .wb_latches(wb_latches),
+        .write_success(DCacheIn_i.writeSuccess),
+        .write_success_mio(DCacheIn_i.writeSuccess_MIO),
+        .outputs(wb_outputs)
+    );
 
 
 

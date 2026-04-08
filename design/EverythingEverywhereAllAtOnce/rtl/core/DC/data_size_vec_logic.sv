@@ -20,8 +20,8 @@ module data_size_vec_logic(
     assign mem_into_rh_o = LD_OP & ~ST_OP & upper8;   
 
     always_comb begin
-        data_size_vec_logic[0] = 0;
-        data_size_vec_logic[1] = 0;
+        data_size_vec_o[0] = 0;
+        data_size_vec_o[1] = 0;
 
         //if we are doing a regular AL operation OR any store op then we are changing the lower 8 bits
         if((data_size == 0 && ~upper8) || ST_OP)

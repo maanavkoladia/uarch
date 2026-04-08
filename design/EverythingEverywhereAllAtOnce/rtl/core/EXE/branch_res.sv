@@ -43,7 +43,7 @@ module branch_res(
 
     //taken logic
     assign second_flag_result = second_flag_needed_i ? ~CF : 1'b1; //mux
-    assign cond_br_res = ~ZF & second_flag_res;
+    assign cond_br_res = ~ZF & second_flag_result;
     assign taken = (br_ucond_i || cond_br_res) & valid_i;
 
     //target logic

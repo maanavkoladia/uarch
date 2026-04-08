@@ -22,7 +22,7 @@ module alu_input_sel(
 
     //
     output uint64_t srA_64,
-    output uint64_t srB_o,
+    output uint64_t srB_64,
 
     output uint32_t br_sel
 
@@ -90,9 +90,9 @@ module alu_input_sel(
 
     //add ah mem means that we are putting mem into ah. this means we need to shift UP mem
     always_comb begin
-        srB_o = srB;
-        if(rh_into_mem) srB_o = {8'd0, srB[63:7]};
-        if(mem_into_rh) srB_o = {srB[56:0], 8'd0};
+        srB_64 = srB;
+        if(rh_into_mem) srB_64 = {8'd0, srB[63:7]};
+        if(mem_into_rh) srB_64 = {srB[56:0], 8'd0};
     end
 
     //logic for BR 
