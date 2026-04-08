@@ -1,24 +1,22 @@
-//`include "../../../defines/common_define.vh"
-//`include "../../../defines/interconnect_define.vh"
-//`include "../../../defines/mem_common_define.vh"
+`default_nettype none
 
 module mem_bank (
     input wire clk,
     input wire rst,
-    input wire [`NUM_SRAM_ADDRESS_BITS - 1 : 0] ld_address,
+    input wire [`NUM_SRAM_ADDRESS_BITS - 1 : 0] ld_address_i,
 
     //mem_controller_2_mem_bank_t
-    input wire [`NUM_SRAM_ADDRESS_BITS - 1 : 0] st_address,
-    input wire start_store,
-    input wire ld_address_change,
-    input wire driveMemBus,
-    input [`CACHE_LINES_SIZE_BITS - 1 : 0] writeBuf,
+    input wire [`NUM_SRAM_ADDRESS_BITS - 1 : 0] st_address_i,
+    input wire start_store_i,
+    input wire ld_address_change_i,
+    input wire driveMemBus_i,
+    input [`CACHE_LINES_SIZE_BITS - 1 : 0] writeBuf_i,
 
     inout [`MEM_BUS_SIZE - 1 : 0] mem_bus,
 
     //mem_bank_out_t
-    output wire precharged,
-    output wire clear_writebufV
+    output wire precharged_o,
+    output wire clear_writebufV_o
 
 );
     localparam NUM_SRAM_CELLS = 4;
@@ -59,33 +57,32 @@ module mem_bank (
     //    controller2bank_i.writeBuf[0]
     //};
 
-    assign bank_write_data = writeBuf;
+    assign bank_write_data = writeBuf_i;
     mux2_8$ u1 (
         .Y  (bank_address_i),
-        .IN0(ld_address),
-        .IN1(st_address),
+        .IN0(ld_address_i),
+        .IN1(st_address_i),
         .S0 (mem_bank_controller_send_store_address_delayed)
     );
 
     // bank internal bus
     //assign bank_bus = !mem_bank_controller_we ? bank_write_data : 'z;
-    mps_tristateL_width #(
+    mps_tristateL_width#(
         .WIDTH(`MEM_BUS_SIZE)
     ) (
-        .enbar(mem_bank_controller_we),
-        .in (bank_write_data),
-        .out(bank_bus)
+        .enbar(mem_bank_controller_we), .in(bank_write_data), .out(bank_bus)
     );
 
     //assign mem_bus = controller2bank_i.driveMemBus ? bank_bus : 'z;
     wire driveMemBus_bar;
-    inv1$ u2(.out(driveMemBus_bar), .in(driveMemBus));
-    mps_tristateL_width #(
+    inv1$ u2 (
+        .out(driveMemBus_bar),
+        .in (driveMemBus_i)
+    );
+    mps_tristateL_width#(
         .WIDTH(`MEM_BUS_SIZE)
     ) (
-        .enbar(driveMemBus_bar),
-        .in (bank_bus),
-        .out(mem_bus)
+        .enbar(driveMemBus_bar), .in(bank_bus), .out(mem_bus)
     );
 
     genvar i_gen;
@@ -106,8 +103,8 @@ module mem_bank (
     bank_controller_fsm_logic u0_Controller (
         .clk(clk),
         .rst(rst),
-        .ld_address_change_i(controller2bank_i.ld_address_change),
-        .start_store_i(controller2bank_i.start_store),
+        .ld_address_change_i(ld_address_change_i),
+        .start_store_i(start_store_i),
         .S_0(mem_bank_controller_states_bits[0]),  // current-state bit 0
         .S_1(mem_bank_controller_states_bits[1]),  // current-state bit 1
         .S_2(mem_bank_controller_states_bits[2]),  // current-state bit 2
@@ -116,8 +113,8 @@ module mem_bank (
         .st_addr_release_o(mem_bank_controller_send_store_address),
         .OE_o(mem_bank_controller_oe),
         .WE_o(mem_bank_controller_we),
-        .clear_writebufV_o(clear_writebufV),
-        .PreCharged_o(precharged)
+        .clear_writebufV_o(clear_writebufV_o),
+        .PreCharged_o(precharged_o)
     );
 
 
