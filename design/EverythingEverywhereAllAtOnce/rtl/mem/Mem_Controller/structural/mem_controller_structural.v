@@ -1,3 +1,5 @@
+`default_nettype none
+
 // ============================================================================
 // mem_controller_structural.v
 // ============================================================================
@@ -162,7 +164,7 @@ module mem_controller_structural (
             and2$ u_set (.out(bg_set[ci]),
                          .in0(fsm_set_WriteBuf_V),
                          .in1(bg_sel_oh[ci]));
-
+            //need to change this to 8 input or gate
             // CLEAR: OR-reduce 8 clear_writebufV signals for banks ci*8 .. ci*8+7
             wire [3:0] clr_pair;
             or2$ u_c01 (.out(clr_pair[0]),
@@ -187,6 +189,10 @@ module mem_controller_structural (
             inv1$ u_ci  (.out(bg_clr_inv[ci]),  .in(bg_clr[ci]));
             and2$ u_nv  (.out(bg_new_val[ci]), .in0(bg_set[ci]), .in1(bg_clr_inv[ci]));
 
+            //this is for setting the write buffer valid bit
+            //it takes in an incoming clear bit from any bank and any write enable bit from the fsm to a given bank
+            // if valid and not clear -> sets valid
+            //otherwise sets clear 
             `REG_RST_WE(u_wbv, clk, rst, bg_any_chg[ci],
                          bg_new_val[ci], bg_writeBufV[ci], 1);
         end
@@ -356,6 +362,7 @@ module mem_controller_structural (
     // ---- 16:1 mux of chip_row, selected by chipNum ----
     wire [4:0] sel_chip_row;
 
+    //NOT AI NOTE: needs to be become 16x1 mux of width 5. this is selecting which chip to compare against the address
     // Level 0: 8 x 5-bit 2:1 mux (select by chipNum[0])
     wire [4:0] cr_L0 [0:7];
     mux_n #(.WIDTH(5)) u_cr0 (.out(cr_L0[0]), .in0(chip_row[0]),  .in1(chip_row[1]),  .sel(chipNum[0]));
@@ -390,6 +397,9 @@ module mem_controller_structural (
         .b(rowBit)
     );
 
+
+    //checking if the bank that we need to read from is precharged
+    //TODO: convert to 64 to 1 mux
     // ---- 64:1 mux of banks_precharged, selected by bank_num_for_chip ----
     wire sel_precharge;
 
