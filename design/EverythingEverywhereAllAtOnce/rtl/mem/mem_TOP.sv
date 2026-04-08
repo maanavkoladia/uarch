@@ -29,9 +29,7 @@ module mem_TOP (
     genvar i_gen;
     generate
         for (i_gen = 0; i_gen < NUM_BANKS; i_gen++) begin : g_mem_banks
-            mem_bank #(
-                .BANK_ID(i_gen)
-            ) mem_bank (
+            mem_bank mem_bank(
                 .clk(clk),
                 .rst(rst),
                 .controller2bank_i(controller_2_bank_Cmds[i_gen]),

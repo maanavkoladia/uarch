@@ -94,11 +94,8 @@ package core_stage_latches_pkg;
     typedef struct {
         bool LD_OP;
         bool ST_OP;
-
-        //this is for addition with the vaddys in DC stage since addition did not fit in RR stage
-        //still need this cause need to add the datasize to the vaddy cause need to know both starting and ending
-        //address for tlb to check pf or gp, need startung and ending address ot find xcl too. 
-        logic [2:0] datasize;
+        bool upper8;
+        logic [1:0] data_size;
     } dc_cs_t;
 
     typedef struct {
@@ -108,7 +105,6 @@ package core_stage_latches_pkg;
 
     typedef struct {
         bool ST_OP;
-        logic [3:0] DATA_SIZE; //im assuming this is 8 16 32 64
         exe_cs_operation_type_e OP_TYPE;
 
         source_selector_e alu_inputA_sel;
@@ -212,6 +208,10 @@ package core_stage_latches_pkg;
         wb_cs_t wb_cs;
         br_info_t br_info;
 
+        logic [3:0] data_size_vec;
+        bool rh_into_mem;
+        bool mem_into_rh;
+
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t ST_PADDR_1;  //cacheline algned
@@ -240,6 +240,11 @@ package core_stage_latches_pkg;
         bool valid;
         exe_cs_t cs;
         wb_cs_t wb_cs;
+
+        logic [3:0] data_size_vec;
+        bool rh_into_mem;
+        bool mem_into_rh;
+
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t ST_PADDR_1;  //cacheline algned

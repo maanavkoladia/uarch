@@ -24,16 +24,16 @@ module DCache_Block (
     inout wire [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus,
     inout wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus,
 
-    //output byte_t dataLineOut[CACHE_LINES_SIZE_B],
-    //output bool   hit_o,
-    //i dont think miss is needed, bc its not going to sch, dte, or MEM/wb
-    //output bool miss,
+    // output byte_t dataLineOut[CACHE_LINES_SIZE_B],
+    // output bool   hit_o,
+    // i dont think miss is needed, bc its not going to sch, dte, or MEM/wb
+    // output bool miss,
 
-    //output byte_t eb_V_o,
-    //output p_address_t eb_addr,
-    //output byte_t eb_line_O[CACHE_LINES_SIZE_B],
+    // output byte_t eb_V_o,
+    // output p_address_t eb_addr,
+    // output byte_t eb_line_O[CACHE_LINES_SIZE_B],
 
-    //output dcache_req_types_2_scheduler_e req_2_sch,
+    // output dcache_req_types_2_scheduler_e req_2_sch,
 
     output dcache_block_outputs_t outputs_o
 

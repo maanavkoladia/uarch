@@ -55,8 +55,7 @@ package core_common_pkg;
     typedef struct {
         bool valid;
         bool stall;  //dep stall or exp present
-        bool exp_present;  //if present and not pf, then gp
-        bool exp_pf;
+
 
         //outputs to decode
         bool ecx_sb;
@@ -75,7 +74,8 @@ package core_common_pkg;
         bool valid;
 
         bool stall;  //dep stall or req rejected
-
+        bool exp_present;  //if present and not pf, then gp
+        bool exp_pf;
         //outputs to D$ arb
         bool ld_addr_0_V;
         p_address_t ld_addr_0;

@@ -2,6 +2,12 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import DTE_FSM_gen_pkg::*;
 import core_common_pkg::*;
+import core_stage_latches_pkg::*;
+import control_store_pkg::*;
+import reg_ids_pkg::*;
+import Fetch_pkg::*;
+import DCache_common_pkg::*;
+import WriteBack_pkg::*;
 
 
 module tb_stages();
@@ -125,11 +131,471 @@ module tb_stages();
     dcache_loader dcache_loader_unit();
     tb_memGen_InitRitual memLoader();
 
-  
+    // ===================== DEBUG LOGGER =====================
+    int log_fd;
+    int cycle_count;
+
+    initial begin
+        log_fd = $fopen("pipeline_debug.log", "w");
+        if (log_fd == 0) begin
+            $display("ERROR: Could not open log file");
+            $finish;
+        end
+        cycle_count = 0;
+    end
+
+    final begin
+        if (log_fd != 0) $fclose(log_fd);
+    end
+
+    // Cycle counter
+    always @(posedge clk) begin
+        if (rst) cycle_count <= cycle_count + 1;
+    end
+
+    // ===================== REG NAME HELPER =====================
+    function automatic string get_reg_name(reg_ids_e id);
+        case (id)
+            CS:  return "CS ";  DS:  return "DS ";  SS:  return "SS ";
+            ES:  return "ES ";  FS:  return "FS ";  GS:  return "GS ";
+            EAX: return "EAX";  EBX: return "EBX";  ECX: return "ECX";
+            EDX: return "EDX";  ESI: return "ESI";  EDI: return "EDI";
+            ESP: return "ESP";  EBP: return "EBP";
+            MM0: return "MM0";  MM1: return "MM1";  MM2: return "MM2";
+            MM3: return "MM3";  MM4: return "MM4";  MM5: return "MM5";
+            MM6: return "MM6";  MM7: return "MM7";
+            ETR: return "ETR";  ERROR_REG: return "ERR";  NO_REG: return "---";
+            default: return "???";
+        endcase
+    endfunction
+
+    function automatic string get_op_name(exe_cs_operation_type_e op);
+        case (op)
+            ADD: return "ADD";   ADC: return "ADC";   AND: return "AND";
+            OR:  return "OR ";   NOT: return "NOT";   SAL: return "SAL";
+            SAR: return "SAR";   SBB: return "SBB";   BSF: return "BSF";
+            CMP: return "CMP";   MOV: return "MOV";   PUSH: return "PSH";
+            POP: return "POP";   CALL: return "CAL";  RET: return "RET";
+            XCHG: return "XCH";  CMPXCHG: return "CXG";  IRETD: return "IRT";
+            default: return "???";
+        endcase
+    endfunction
+
+    // ===================== HELPER FUNCTIONS =====================
+    function automatic string get_spc_sel_name(spc_sel_logic_output_options_e sel);
+        case (sel)
+            Fetch_pkg::SPC: return "SPC     ";
+            Fetch_pkg::SPC_P16: return "SPC_P16 ";
+            Fetch_pkg::BR_RESTORE: return "BR_RST  ";
+            Fetch_pkg::BTB_TARGET: return "BTB_TGT ";
+            default: return "UNKNOWN ";
+        endcase
+    endfunction
+
+    // ===================== PRINT TASKS =====================
+
+    // --- HEADER ---
+    task automatic print_cycle_header();
+        $fdisplay(log_fd, "");
+        $fdisplay(log_fd, "==================== CYCLE %0d  (t=%0t) ====================", cycle_count, $time);
+    endtask
+
+    // --- FETCH ---
+    task automatic print_fetch();
+        $fdisplay(log_fd, "[FETCH]");
+        $fdisplay(log_fd, "  SPC       = 0x%08h   next_spc = 0x%08h   spc+16 = 0x%08h",
+            uut_core.fetch_unit.SPC, uut_core.fetch_unit.next_spc, uut_core.fetch_unit.spc_16);
+        $fdisplay(log_fd, "  spc_sel   = %s   br_tgt_sel=%0b   flush_reg=%0b",
+            get_spc_sel_name(uut_core.fetch_unit.spc_sel_logic_outs.sel),
+            uut_core.fetch_unit.spc_sel_logic_outs.br_target_sel,
+            uut_core.fetch_unit.spc_sel_logic_outs.flush_reg);
+        $fdisplay(log_fd, "  exp_mode  = %0b   int_mode=%0b   DMA_int=%0b   en_icache=%0b",
+            uut_core.fetch_unit.exp_mode_jk, uut_core.fetch_unit.int_mode_jk,
+            uut_core.fetch_unit.DMA_int_jk, uut_core.fetch_unit.en_icache);
+        $fdisplay(log_fd, "  TLB: v_addr=0x%08h  p_addr=0x%08h  valid=%0b  gp=%0b  pf=%0b  f_exp=%0b",
+            uut_core.fetch_unit.seg_xlation_out,
+            uut_core.fetch_unit.tlb_outs.physical_addr,
+            uut_core.fetch_unit.tlb_outs.physical_addr_valid,
+            uut_core.fetch_unit.tlb_outs.gp_exp,
+            uut_core.fetch_unit.tlb_outs.pageFault,
+            uut_core.fetch_unit.f_exp);
+        $fdisplay(log_fd, "  BTB: hit=%0b  eip=0x%08h  tgt=0x%08h  XCL=%0b  ucond=%0b",
+            uut_core.fetch_unit.btb_outs.hit,
+            uut_core.fetch_unit.btb_outs.br_eip,
+            uut_core.fetch_unit.btb_outs.br_target,
+            uut_core.fetch_unit.btb_outs.XCL,
+            uut_core.fetch_unit.btb_outs.br_ucond);
+        $fdisplay(log_fd, "  Predictor: taken=%0b", uut_core.fetch_unit.predictor_outs.taken);
+        $fdisplay(log_fd, "  ICache: hit=%0b  icache_en=%0b",
+            icache_2_core.hit, uut_core.fetch_outputs.fetch_2_icache.icache_en);
+    endtask
+
+    // --- IDM ---
+    task automatic print_idm();
+        $fdisplay(log_fd, "[IDM]  valid_slots=%0d", uut_core.idm_outputs.valid_slots);
+        for (int i = 0; i < NUM_IDM_SLOTS; i++) begin
+            if (uut_core.idm_outputs.idm_slots[i].valid) begin
+                $fwrite(log_fd, "  slot[%0d] V=1  br_v=%0b  br_xcl=%0b",
+                    i,
+                    uut_core.idm_outputs.idm_slots[i].br_valid,
+                    uut_core.idm_outputs.idm_slots[i].br_xcl);
+                if (uut_core.idm_outputs.idm_slots[i].br_valid)
+                    $fwrite(log_fd, "  br_eip=0x%08h  br_tgt=0x%08h",
+                        uut_core.idm_outputs.idm_slots[i].br_eip,
+                        uut_core.idm_outputs.idm_slots[i].br_btb_target);
+                $fdisplay(log_fd, "");
+            end else begin
+                $fdisplay(log_fd, "  slot[%0d] V=0", i);
+            end
+        end
+        $fdisplay(log_fd, "  IDM Ctrl: push_success=%0b",
+            uut_core.fetch_unit.idm_ctrl_logic_outs.push_success);
+        $fwrite(log_fd, "  Invalidate:");
+        for (int i = 0; i < NUM_IDM_SLOTS; i++)
+            $fwrite(log_fd, " [%0d]=%0b", i, uut_core.fetch_unit.idm_invalidate_logic_outs.invalidate[i]);
+        $fdisplay(log_fd, "  no_writes=%0b", uut_core.fetch_unit.idm_invalidate_logic_outs.no_writes);
+    endtask
+
+    // --- DECODE (outputs) ---
+    task automatic print_decode();
+        $fdisplay(log_fd, "[DECODE]");
+        $fdisplay(log_fd, "  valid=%0b  eip=0x%08h  invalid_instr=%0b  decode_gp=%0b  rr_latch_we=%0b",
+            uut_core.decode_outputs.valid,
+            uut_core.decode_outputs.eip,
+            uut_core.decode_outputs.invalid_instruction,
+            uut_core.decode_outputs.decode_gp,
+            uut_core.decode_outputs.rr_stage_latch_we);
+    endtask
+
+    // --- RR LATCHES ---
+    task automatic print_rr_latches();
+        $fdisplay(log_fd, "[RR LATCHES]  useRep=%0b", uut_core.rr_latches.useRep);
+        begin
+            automatic rr_latches_general_t L = uut_core.rr_latches.useRep ?
+                uut_core.rr_latches.rep_latches : uut_core.rr_latches.normal_latches;
+            $fdisplay(log_fd, "  valid=%0b  EIP=0x%08h  NEIP=0x%08h", L.valid, L.EIP, L.NEIP);
+            $fdisplay(log_fd, "  dr=%s  sr=%s  dr_rd=%0b  sr_rd=%0b  dr_wr=%0b  sr_wr=%0b  datasize=%0d",
+                get_reg_name(L.cs.dr_id), get_reg_name(L.cs.sr_id),
+                L.cs.dr_rd, L.cs.sr_rd, L.cs.dr_wr, L.cs.sr_wr, L.cs.datasize);
+            $fdisplay(log_fd, "  LD_OP=%0b  ST_OP=%0b  MODRM=%0b  RM_IS_DR=%0b",
+                L.cs.LD_OP, L.cs.ST_OP, L.cs.MODRM_NEEDED, L.cs.RM_IS_DR);
+            $fdisplay(log_fd, "  EXE_CS: OP=%s  br_ucond=%0b  rel_br=%0b  special=%0b  far=%0b",
+                get_op_name(L.exe_cs.OP_TYPE), L.exe_cs.br_ucond,
+                L.exe_cs.relative_branch, L.exe_cs.special_br, L.exe_cs.is_far);
+            $fdisplay(log_fd, "  br_info: v=%0b  eip=0x%08h  xcl=%0b  pred_taken=%0b  spec_tgt=0x%08h",
+                L.br_info.valid, L.br_info.br_eip, L.br_info.br_xcl,
+                L.br_info.br_pred_taken, L.br_info.speculative_target);
+            if (L.sib_needed)
+                $fdisplay(log_fd, "  SIB: idx=%s  base=%s  scale=%0d",
+                    get_reg_name(L.sib_idx_id), get_reg_name(L.sib_base_id), L.sib_scale);
+            if (L.disp_needed)
+                $fdisplay(log_fd, "  DISP: size=%s  val=0x%08h",
+                    L.disp_size ? "32" : "8", L.displacement);
+            $fdisplay(log_fd, "  imm64=0x%016h  seg0=%s  seg1=%s (v=%0b)",
+                L.imm64, get_reg_name(L.seg_0_id), get_reg_name(L.seg_1_id), L.seg_1_valid);
+            $fdisplay(log_fd, "  WB_CS: ST_OP=%0b  WB_DR=%0b  WB_SR=%0b",
+                L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
+        end
+    endtask
+
+    // --- RR OUTPUTS ---
+    task automatic print_rr_outputs();
+        $fdisplay(log_fd, "[RR OUTS]");
+        $fdisplay(log_fd, "  valid=%0b  stall=%0b ecx_sb=%0b  cs_sb=%0b  dc_we=%0b",
+            uut_core.rr_outputs.valid, uut_core.rr_outputs.stall,
+            uut_core.rr_outputs.ecx_sb, uut_core.rr_outputs.codeSeg_sb,
+            uut_core.rr_outputs.dc_stage_latch_we);
+    endtask
+
+    // --- DC LATCHES ---
+    task automatic print_dc_latches();
+        $fdisplay(log_fd, "[DC LATCHES]");
+        begin
+            automatic dc_latches_t L = uut_core.dc_latches;
+            $fdisplay(log_fd, "  valid=%0b  EIP=0x%08h  NEIP=0x%08h", L.valid, L.EIP, L.NEIP);
+            $fdisplay(log_fd, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
+                get_reg_name(L.dr_id), L.dr_data, get_reg_name(L.sr_id), L.sr_data);
+            $fdisplay(log_fd, "  CS: LD=%0b  ST=%0b  upper8=%0b  dsize=%0d",
+                L.cs.LD_OP, L.cs.ST_OP, L.cs.upper8, L.cs.data_size);
+            $fdisplay(log_fd, "  LD: xcl=%0b  paddr0=0x%04h  paddr1=0x%04h  swap=%0b  MIO=%0b",
+                L.LD_XCL, L.LD_PADDR_0, L.LD_PADDR_1, L.swapLines, L.MIO);
+            $fdisplay(log_fd, "  ST: xcl=%0b  paddr0=0x%04h  paddr1=0x%04h",
+                L.ST_XCL, L.ST_PADDR_0, L.ST_PADDR_1);
+            $fdisplay(log_fd, "  br_info: v=%0b  eip=0x%08h  pred_taken=%0b",
+                L.br_info.valid, L.br_info.br_eip, L.br_info.br_pred_taken);
+            $fdisplay(log_fd, "  EXE_CS: OP=%s  WB_CS: ST=%0b DR=%0b SR=%0b",
+                get_op_name(L.exe_cs.OP_TYPE), L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
+            $fdisplay(log_fd, "  imm64=0x%016h", L.imm64);
+        end
+    endtask
+
+    // --- DC OUTPUTS ---
+    task automatic print_dc_outputs();
+        $fdisplay(log_fd, "[DC OUTS]");
+        $fdisplay(log_fd, "  valid=%0b  stall=%0b  mem_we=%0b",
+            uut_core.dc_outputs.valid, uut_core.dc_outputs.stall,
+            uut_core.dc_outputs.exp_present, uut_core.dc_outputs.exp_pf,
+            uut_core.dc_outputs.mem_stage_latch_we);
+        $fdisplay(log_fd, "  ld0: V=%0b addr=0x%04h   ld1: V=%0b addr=0x%04h   mio: V=%0b addr=0x%04h",
+            uut_core.dc_outputs.ld_addr_0_V, uut_core.dc_outputs.ld_addr_0,
+            uut_core.dc_outputs.ld_addr_1_V, uut_core.dc_outputs.ld_addr_1,
+            uut_core.dc_outputs.ld_addr_MIO_V, uut_core.dc_outputs.ld_addr_MIO);
+    endtask
+
+    // --- MEM LATCHES ---
+    task automatic print_mem_latches();
+        $fdisplay(log_fd, "[MEM LATCHES]");
+        begin
+            automatic mem_latches_t L = uut_core.mem_latches;
+            $fdisplay(log_fd, "  valid=%0b  EIP=0x%08h  NEIP=0x%08h", L.valid, L.EIP, L.NEIP);
+            $fdisplay(log_fd, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
+                get_reg_name(L.dr_id), L.dr_data, get_reg_name(L.sr_id), L.sr_data);
+            $fdisplay(log_fd, "  CS: LD=%0b  ST=%0b   data_size_vec=0x%01h",
+                L.cs.LD_OP, L.cs.ST_OP, L.data_size_vec);
+            $fdisplay(log_fd, "  LD: xcl=%0b  paddr0=0x%04h  paddr1=0x%04h  swap=%0b",
+                L.LD_XCL, L.LD_PADDR_0, L.LD_PADDR_1, L.swapLines);
+            $fdisplay(log_fd, "  ST: xcl=%0b  paddr0=0x%04h  paddr1=0x%04h  MIO=%0b",
+                L.ST_XCL, L.ST_PADDR_0, L.ST_PADDR_1, L.MIO);
+            $fdisplay(log_fd, "  EXE_CS: OP=%s  WB_CS: ST=%0b DR=%0b SR=%0b",
+                get_op_name(L.exe_cs.OP_TYPE), L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
+            $fdisplay(log_fd, "  br_info: v=%0b  eip=0x%08h  pred_taken=%0b",
+                L.br_info.valid, L.br_info.br_eip, L.br_info.br_pred_taken);
+        end
+    endtask
+
+    // --- MEM OUTPUTS ---
+    task automatic print_mem_outputs();
+        $fdisplay(log_fd, "[MEM OUTS]");
+        $fdisplay(log_fd, "  valid=%0b  stall=%0b  exe_we=%0b  ST_OP=%0b  ST_XCL=%0b",
+            uut_core.mem_outputs.valid, uut_core.mem_outputs.stall,
+            uut_core.mem_outputs.exe_stage_latch_we,
+            uut_core.mem_outputs.ST_OP, uut_core.mem_outputs.ST_XCL);
+        $fdisplay(log_fd, "  ST_PADDR_0=0x%04h  ST_PADDR_1=0x%04h",
+            uut_core.mem_outputs.ST_PADDR_0, uut_core.mem_outputs.ST_PADDR_1);
+        $fdisplay(log_fd, "  DCache: hit0=%0b  hit1=%0b  hitMIO=%0b",
+            dcache_2_core.hit_line_0, dcache_2_core.hit_line_1, dcache_2_core.hit_line_MIO);
+    endtask
+
+    // --- EXE LATCHES ---
+    task automatic print_exe_latches();
+        $fdisplay(log_fd, "[EXE LATCHES]");
+        begin
+            automatic exe_latches_t L = uut_core.exe_latches;
+            $fdisplay(log_fd, "  valid=%0b  EIP=0x%08h  NEIP=0x%08h", L.valid, L.EIP, L.NEIP);
+            $fdisplay(log_fd, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
+                get_reg_name(L.dr_id), L.dr_data, get_reg_name(L.sr_id), L.sr_data);
+            $fdisplay(log_fd, "  CS: OP=%s  ST=%0b   data_size_vec=0x%01h",
+                get_op_name(L.cs.OP_TYPE), L.cs.ST_OP, L.data_size_vec);
+            $fdisplay(log_fd, "  inputA_sel=%0d  inputB_sel=%0d  br_tgt_sel=%0d",
+                L.cs.alu_inputA_sel, L.cs.alu_inputB_sel, L.cs.branch_target_sel);
+            $fdisplay(log_fd, "  br_info: v=%0b  eip=0x%08h  xcl=%0b  pred_taken=%0b  spec_tgt=0x%08h",
+                L.br_info.valid, L.br_info.br_eip, L.br_info.br_xcl,
+                L.br_info.br_pred_taken, L.br_info.speculative_target);
+            $fdisplay(log_fd, "  ST: xcl=%0b  paddr0=0x%04h  paddr1=0x%04h  MIO=%0b",
+                L.ST_XCL, L.ST_PADDR_0, L.ST_PADDR_1, L.MIO);
+            $fdisplay(log_fd, "  imm64=0x%016h  ld_addy=0x%04h",
+                L.imm64, L.ld_addy);
+            $fdisplay(log_fd, "  WB_CS: ST=%0b DR=%0b SR=%0b",
+                L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
+        end
+    endtask
+
+    // --- EXE OUTPUTS + BRANCH RESOLUTION ---
+    task automatic print_exe_outputs();
+        $fdisplay(log_fd, "[EXE OUTS]");
+        $fdisplay(log_fd, "  valid=%0b  wb_we=%0b  ST_OP=%0b  ST_XCL=%0b  clr_ZF_sb=%0b  ZF=%0b",
+            uut_core.exe_outputs.valid, uut_core.exe_outputs.wb_stage_latch_we,
+            uut_core.exe_outputs.ST_OP, uut_core.exe_outputs.ST_XCL,
+            uut_core.exe_outputs.clr_ZF_sb, uut_core.exe_outputs.ZF);
+        begin
+            automatic exe_br_resolution_outputs_t B = uut_core.exe_outputs.br_res_out;
+            $fdisplay(log_fd, "  BR_RES: valid=%0b  flush=%0b  farFlush=%0b  mispredict=%0b  taken=%0b",
+                B.valid, B.flush, B.farFlush, B.miss_prediction, B.taken);
+            if (B.valid)
+                $fdisplay(log_fd, "    eip=0x%08h  neip=0x%08h  tgt=0x%08h  xcl=%0b  ucond=%0b  clr_exp=%0b",
+                    B.br_eip, B.neip, B.br_target, B.br_XCL, B.br_ucond, B.clr_exp_mode);
+        end
+    endtask
+
+    // --- WB LATCHES ---
+    task automatic print_wb_latches();
+        $fdisplay(log_fd, "[WB LATCHES]");
+        begin
+            automatic wb_latches_t L = uut_core.wb_latches;
+            $fdisplay(log_fd, "  valid=%0b  CS: ST=%0b  WB_DR=%0b  WB_SR=%0b",
+                L.valid, L.cs.ST_OP, L.cs.WB_DR, L.cs.WB_SR);
+            $fdisplay(log_fd, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
+                get_reg_name(L.dr_id), L.dr_data, get_reg_name(L.sr_id), L.sr_data);
+            $fdisplay(log_fd, "  ST: xcl=%0b  paddr0=0x%04h  bv0=0x%04h  paddr1=0x%04h  bv1=0x%04h  MIO=%0b",
+                L.ST_XCL, L.ST_PADDR_0, L.ST_BIT_VEC_0,
+                L.ST_PADDR_1, L.ST_BIT_VEC_1, L.MIO);
+        end
+    endtask
+
+    // --- WB OUTPUTS ---
+    task automatic print_wb_outputs();
+        $fdisplay(log_fd, "[WB OUTS]");
+        $fdisplay(log_fd, "  valid=%0b  wb_stall=%0b",
+            uut_core.wb_outputs.valid, uut_core.wb_outputs.wb_stall);
+        $fdisplay(log_fd, "  DR0: we=%0b  id=%s  data=0x%016h",
+            uut_core.wb_outputs.DR_0_we,
+            get_reg_name(uut_core.wb_outputs.DR_0_id),
+            uut_core.wb_outputs.DR_0_data);
+        $fdisplay(log_fd, "  DR1: we=%0b  id=%s  data=0x%016h",
+            uut_core.wb_outputs.DR_1_we,
+            get_reg_name(uut_core.wb_outputs.DR_1_id),
+            uut_core.wb_outputs.DR_1_data);
+    endtask
+
+    // --- STALLS & FLUSHES ---
+    task automatic print_stalls();
+        $fdisplay(log_fd, "[STALLS & FLUSHES]");
+        $fdisplay(log_fd, "  RR_stall=%0b  DC_stall=%0b  MEM_stall=%0b  WB_stall=%0b",
+            uut_core.rr_outputs.stall,
+            uut_core.dc_outputs.stall,
+            uut_core.mem_outputs.stall,
+            uut_core.wb_outputs.wb_stall);
+        $fdisplay(log_fd, "  flush=%0b  farFlush=%0b  exp_pipe_clear=%0b  int_pipe_clear=%0b",
+            uut_core.exe_outputs.br_res_out.flush,
+            uut_core.exe_outputs.br_res_out.farFlush,
+            uut_core.fetch_unit.exp_set_logic_outs.exp_pipe_clear,
+            uut_core.fetch_unit.exp_set_logic_outs.int_pipe_clear);
+        $fdisplay(log_fd, "  RR_exp=%0b  RR_exp_pf=%0b  decode_invalid=%0b  decode_gp=%0b",
+            uut_core.dc_outputs.exp_present,
+            uut_core.dc_outputs.exp_pf,
+            uut_core.decode_outputs.invalid_instruction,
+            uut_core.decode_outputs.decode_gp);
+    endtask
+
+    // --- REGISTER FILE ---
+    task automatic print_regfile();
+        $fdisplay(log_fd, "[REGISTER FILE]");
+        $fwrite(log_fd, "  ");
+        for (int i = 0; i < NUM_REGS; i++) begin
+            $fwrite(log_fd, "%s=0x%08h  ",
+                get_reg_name(reg_ids_e'(i)),
+                uut_core.rr_unit.RegisterFile_unit.REGISTERS[i][31:0]);
+            if ((i % 6) == 5) begin
+                $fdisplay(log_fd, "");
+                $fwrite(log_fd, "  ");
+            end
+        end
+        $fdisplay(log_fd, "");
+    endtask
+
+    // --- SCOREBOARD ---
+    task automatic print_scoreboard();
+        $fdisplay(log_fd, "[SCOREBOARD]");
+        $fwrite(log_fd, "  ");
+        for (int i = 0; i < NUM_REGS; i++) begin
+            if (uut_core.rr_unit.reg_sb_unit.SCORE_BOARD[i].counter != 0)
+                $fwrite(log_fd, "%s=%0d  ",
+                    get_reg_name(reg_ids_e'(i)),
+                    uut_core.rr_unit.reg_sb_unit.SCORE_BOARD[i].counter);
+        end
+        $fdisplay(log_fd, "");
+        $fdisplay(log_fd, "  dep_stall=%0b  ecx_sb=%0b  cs_sb=%0b",
+            uut_core.rr_unit.reg_sb_unit.dep_stall,
+            uut_core.rr_unit.reg_sb_unit.ecx_sb,
+            uut_core.rr_unit.reg_sb_unit.codeSeg_sb);
+    endtask
+
+    // --- STORE QUEUES ---
+    task automatic print_one_stq(int idx, st_q_outputs_t outs);
+        $fdisplay(log_fd, "  STQ[%0d]: full=%0b  empty=%0b  push_fail=%0b",
+            idx, outs.full, outs.empty, outs.push_fail);
+        if (!outs.empty) begin
+            $fdisplay(log_fd, "    HEAD: addr=0x%04h  bv=0x%04h",
+                outs.head_address, outs.bit_vec);
+        end
+        for (int e = 0; e < ST_Q_DEPTH; e++) begin
+            if (outs.valid[e])
+                $fdisplay(log_fd, "    [%0d] V=1 addr=0x%04h", e, outs.address[e]);
+        end
+    endtask
+
+    task automatic print_store_queues();
+        $fdisplay(log_fd, "[STORE QUEUES]");
+        print_one_stq(0, uut_core.write_back_unit.stq_outputs[0]);
+        print_one_stq(1, uut_core.write_back_unit.stq_outputs[1]);
+        print_one_stq(2, uut_core.write_back_unit.stq_outputs[2]);
+        print_one_stq(3, uut_core.write_back_unit.stq_outputs[3]);
+    endtask
+
+    // --- MIO QUEUE ---
+    task automatic print_mio_queue();
+        $fdisplay(log_fd, "[MIO QUEUE]");
+        $fdisplay(log_fd, "  full=%0b  empty=%0b",
+            uut_core.write_back_unit.mio_q_inst.full,
+            uut_core.write_back_unit.mio_q_inst.empty);
+        if (!uut_core.write_back_unit.mio_q_inst.empty) begin
+            $fdisplay(log_fd, "  entry: v=%0b  addr=0x%04h  data[0:3]=%02h %02h %02h %02h",
+                uut_core.write_back_unit.mio_q_inst.mio_q.valid,
+                uut_core.write_back_unit.mio_q_inst.mio_q.address,
+                uut_core.write_back_unit.mio_q_inst.mio_q.data[0],
+                uut_core.write_back_unit.mio_q_inst.mio_q.data[1],
+                uut_core.write_back_unit.mio_q_inst.mio_q.data[2],
+                uut_core.write_back_unit.mio_q_inst.mio_q.data[3]);
+        end
+    endtask
+
+    // --- DCACHE ARBITRATION ---
+    task automatic print_dcache_arb();
+        $fdisplay(log_fd, "[DCACHE ARB]");
+        $fdisplay(log_fd, "  req_rej_0=%0b  req_rej_1=%0b  req_rej_mio=%0b",
+            dcache_2_core.req_rejected_0,
+            dcache_2_core.req_rejected_1,
+            dcache_2_core.req_rejected_mio);
+        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
+            $fdisplay(log_fd, "  blk[%0d]: oe=%0b  we=%0b  addr=0x%04h  hit=%0b  ws=%0b  sch_req=%0d",
+                i,
+                uut_dcache.req_2_blocks[i].oe,
+                uut_dcache.req_2_blocks[i].we,
+                uut_dcache.req_2_blocks[i].p_addr,
+                uut_dcache.hitVec[i],
+                dcache_2_core.writeSuccess[i],
+                uut_dcache.out2Sch_o.req[i]);
+        end
+    endtask
+
+    // ===================== MASTER PRINT =====================
+    task automatic print_all();
+        #1; // let combinational logic settle
+        print_cycle_header();
+        print_fetch();
+        print_idm();
+        print_decode();
+        print_rr_latches();
+        print_rr_outputs();
+        print_dc_latches();
+        print_dc_outputs();
+        print_mem_latches();
+        print_mem_outputs();
+        print_exe_latches();
+        print_exe_outputs();
+        print_wb_latches();
+        print_wb_outputs();
+        $fdisplay(log_fd, "");
+        print_stalls();
+        print_regfile();
+        print_scoreboard();
+        $fdisplay(log_fd, "");
+        print_store_queues();
+        print_mio_queue();
+        print_dcache_arb();
+    endtask
+
+    // ===================== AUTO-PRINT EVERY CYCLE =====================
+    always @(posedge clk) begin
+        if (rst) print_all();
+    end
+
+    // ===================== END DEBUG LOGGER =====================
 
     initial begin
         `LOG("Starting mem System TB");
         $display("%m");
+        set_limit_regs();
         rst = 0; 
 
         DelayClks(20);
@@ -137,13 +603,12 @@ module tb_stages();
         @(posedge clk)
         force uut_core.fetch_unit.SPC = 32'h1000;
         force uut_core.decode_unit.EIP = 32'h1000;
-        set_limit_regs();
         @(posedge clk)
         rst = 1;
         release uut_core.fetch_unit.SPC;
         release uut_core.decode_unit.EIP;
         @(posedge clk)
-        @(posedge clk)         
+        @(posedge clk)      
 
 
    
@@ -154,6 +619,7 @@ module tb_stages();
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
         DelayClks(300);
+        print_all();
         $finish;
         `LOG("Finishing mem System TB");
     end

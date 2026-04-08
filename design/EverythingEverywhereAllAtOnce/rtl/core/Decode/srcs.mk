@@ -34,4 +34,5 @@ DECODE_SRC_FILES = \
 						$(DECODE_PATH_INTERNAL)/rep_controller.sv \
 						$(DECODE_PATH_INTERNAL)/Decode.sv \
 
-
+#dont add gen files here are they are includede in the core srcs.mk file
+DECODE_STRUCTURAL_SRC_FILES = \

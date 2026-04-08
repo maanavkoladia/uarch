@@ -13,7 +13,7 @@ module EXP_Set_logic(
 
 // ispresent
     input f_exp,
-    input rr_exp,
+    input dc_exp,
     input int_set,
         //exp mux sels
 
@@ -43,7 +43,7 @@ The registers that actually signal we are servicing the interrupt are in the fet
 */
 
 wire f_pipe_clear;
-wire rr_pipe_clear;
+wire dc_pipe_clear;
 wire int_pipe_clear;
 
 wire not_rr_valid;
@@ -64,13 +64,13 @@ and7$ and_exp (.out(f_pipe_clear), .in0(invalid_instruction),
                 .in4(not_exe_valid), .in5(not_wb_valid), .in6(f_exp));
 
 
-and4$ and_rr (.out(rr_pipe_clear), .in0(not_mem_valid),
-                .in1(not_exe_valid), .in2(not_wb_valid), .in3(rr_exp));
+and4$ and_dc (.out(dc_pipe_clear), .in0(not_mem_valid),
+                .in1(not_exe_valid), .in2(not_wb_valid), .in3(dc_exp));
 
 mux2$ mux_exp_sel (.outb(outputs.exp_pipe_clear),
                     .in0(f_pipe_clear),
-                    .in1(rr_pipe_clear),
-                    .s0(rr_exp)
+                    .in1(dc_pipe_clear),
+                    .s0(dc_exp)
                 );
 
 

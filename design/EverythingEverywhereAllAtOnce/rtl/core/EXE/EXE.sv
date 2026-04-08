@@ -217,7 +217,7 @@ module EXE (
     //==========================================================================
 
     assign op_type = latches_i.cs.OP_TYPE;
-    assign data_size = latches_i.cs.DATA_SIZE;
+    assign data_size = latches_i.data_size_vec;
 
 
     //==========================================================================
@@ -268,6 +268,8 @@ module EXE (
         .flags         (flags_reg),
         .alu_inputA_sel(latches_i.cs.alu_inputA_sel),
         .alu_inputB_sel(latches_i.cs.alu_inputB_sel),
+        .rh_into_mem   (latches_i.rh_into_mem),
+        .mem_into_rh   (latches_i.mem_into_rh),
         .br_input_sel  (latches_i.cs.branch_target_sel),
         .srA_64        (srA),
         .srB_64        (srB),

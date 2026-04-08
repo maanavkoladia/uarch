@@ -14,6 +14,8 @@ module alu_input_sel(
     input uint32_t flags,
     input source_selector_e alu_inputA_sel,
     input source_selector_e alu_inputB_sel,
+    input bool rh_into_mem,
+    input bool mem_into_rh,
     
     input source_selector_e br_input_sel,
 
@@ -27,6 +29,7 @@ module alu_input_sel(
 );
 
     uintCL_t res_buf_out;  // 128 bits
+    uint64_t srB;
 
     logic[$clog2(CACHE_LINES_SIZE_B)-1: 0] res_buf_offset; 
     assign res_buf_offset = ld_addr_0[$clog2(CACHE_LINES_SIZE_B)-1: 0];
@@ -47,12 +50,12 @@ module alu_input_sel(
             NEIP:           srA_64 = {32'd0, NEIP};
             EIP:            srA_64 = {32'b0, EIP};
             SEXT8:          srA_64 = {32'd0, 32'(signed'(imm64[7:0]))};
-            NO_EXE:            srA_64 = 0;
+            NO_EXE:         srA_64 = 0;
             SEGMENT_NEIP:   srA_64 = {dr_data, NEIP}; 
             SEGMENT_EIP:    srA_64 = {dr_data, EIP}; //not sure when this needs to be used
-            EAX_REG:            srA_64    = {32'd0, EAX}; //cmpxchg
-            CMPXCHG_SEL:        srA_64 = {sr_data, dr_data}; 
-            IRETD_SEL:          srA_64 = res_buf_out[96:32];
+            EAX_REG:        srA_64 = {32'd0, EAX}; //cmpxchg
+            CMPXCHG_SEL:    srA_64 = {sr_data, dr_data}; 
+            IRETD_SEL:      srA_64 = res_buf_out[96:32];
             FLAGS:          srA_64 = {32'd0, flags};
             default:        srA_64 = '0;
         endcase
@@ -61,24 +64,36 @@ module alu_input_sel(
     //logic for srB
     always_comb begin
         case (alu_inputB_sel)
-            SR_REGISTER:    srB_64 = sr_data;
-            DR_REGISTER:    srB_64 = dr_data;
-            IMM64:          srB_64 = imm64;
-            BUFFER:         srB_64 = res_buf_out[63:0];
-            NEIP:           srB_64 = {32'd0, NEIP};
-            EIP:            srB_64 = {32'b0, EIP};
-            SEXT8:          srB_64 = {32'd0, 32'(signed'(imm64[7:0]))};
-            NO_EXE:            srB_64 = 0;
-            SEGMENT_NEIP:   srB_64 = {NEIP, dr_data}; 
-            SEGMENT_EIP:    srB_64 = {EIP, dr_data}; //not sure when this needs to be used
-            EAX_REG:            srB_64  = {32'd0, EAX}; //send forward EAX
-            CMPXCHG_SEL:        srB_64 = {sr_data, dr_data}; //rm32 r32 on cmpxchg 
-            IRETD_SEL:          srB_64 = res_buf_out[95:32];
-            FLAGS:          srB_64 = {32'd0, flags};
-            default:        srB_64 = '0;
+            SR_REGISTER:    srB = sr_data;
+            DR_REGISTER:    srB = dr_data;
+            IMM64:          srB = imm64;
+            BUFFER:         srB = res_buf_out[63:0];
+            NEIP:           srB = {32'd0, NEIP};
+            EIP:            srB = {32'b0, EIP};
+            SEXT8:          srB = {32'd0, 32'(signed'(imm64[7:0]))};
+            NO_EXE:         srB = 0;
+            SEGMENT_NEIP:   srB = {NEIP, dr_data}; 
+            SEGMENT_EIP:    srB = {EIP, dr_data}; //not sure when this needs to be used
+            EAX_REG:        srB  = {32'd0, EAX}; //send forward EAX
+            CMPXCHG_SEL:    srB = {sr_data, dr_data}; //rm32 r32 on cmpxchg 
+            IRETD_SEL:      srB = res_buf_out[95:32];
+            FLAGS:          srB = {32'd0, flags};
+            default:        srB = '0;
         endcase
     end
 
+
+
+    //ex: add mem ah means
+    //means the isntruction has rh in the source register and mem in the dr
+    //this means we need to shift down ah.
+
+    //add ah mem means that we are putting mem into ah. this means we need to shift UP mem
+    always_comb begin
+        srB_64 = srB;
+        if(rh_into_mem) srB_64 = {8'd0, srB[63:7]};
+        if(mem_into_rh) srB_64 = {srB[56:0], 8'd0};
+    end
 
     //logic for BR 
     always_comb begin

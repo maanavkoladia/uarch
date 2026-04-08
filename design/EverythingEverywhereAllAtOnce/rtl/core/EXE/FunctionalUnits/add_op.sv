@@ -23,11 +23,12 @@ module add_op(
     logic ld_16;
     logic ld_32;
     logic [32:0] sum32;
+    
 
-    // Single 32-bit addition for all sizes
+
     assign sum32 = {1'b0, srA[31:0]} + {1'b0, srB[31:0]};
     assign add_result[31:0] = sum32[31:0];
-    assign add_result[63:32] = 32'd0;
+    assign add_result[63:32] = 32'd0;   
     
     assign ld_8 = data_size[0];
     assign ld_16 = data_size[1]; 
@@ -38,6 +39,8 @@ module add_op(
     assign AF = (srA[4] ^ srB[4]) ^ add_result[4];
 
     // Only update lower 8/16/32 bits, upper 32 bits remain from srA
+
+   
     assign merged_result[7:0]    = ld_8  ? add_result[7:0] : srA[7:0];
     assign merged_result[15:8]   = ld_16 ? add_result[15:8] : srA[15:8];
     assign merged_result[31:16]  = ld_32 ? add_result[31:16] : srA[31:16];

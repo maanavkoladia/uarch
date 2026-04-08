@@ -58,7 +58,7 @@ module ST_Q (
     end
 
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (!rst) begin
             head <= 0;
             tail <= 0;
             for(int i = 0; i < ST_Q_DEPTH; i++)begin

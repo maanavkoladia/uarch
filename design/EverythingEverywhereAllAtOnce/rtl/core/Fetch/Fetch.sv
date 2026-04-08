@@ -49,7 +49,6 @@ module Fetch (
     //wires
     bool f_exp;
     v_address_t seg_xlation_out;
-    bool seg_xlation_gp_fault; //not used
     byte_t rom_data_out[CACHE_LINES_SIZE_B];
     byte_t idm_ctrl_data_in[CACHE_LINES_SIZE_B];
     l_address_t next_spc;
@@ -93,10 +92,12 @@ module Fetch (
     assign predictor_inputs = '{
         btfn_target: btb_outs.br_target,
         spc: SPC,
+        btb_hit: btb_outs.hit,
         exe_br_valid: exe_outs_i.br_res_out.valid,
         exe_br_target: exe_outs_i.br_res_out.br_target,
         exe_br_taken: exe_outs_i.br_res_out.taken,
-        exe_br_hit: exe_outs_i.br_res_out.taken
+        exe_br_eip: exe_outs_i.br_res_out.br_eip,
+        misprediction: exe_outs_i.br_res_out.miss_prediction
     };
 
     assign idm_ctrl_data_in = (exp_mode_jk ||int_mode_jk) ?
@@ -199,6 +200,8 @@ module Fetch (
     );
 
     Predictor predictor(
+        .clk(clk),
+        .rst(rst),
         .inputs(predictor_inputs),
         .outputs(predictor_outs)
     );
@@ -256,7 +259,7 @@ module Fetch (
         .exe_valid(exe_outs_i.valid),
         .wb_valid(wb_outs_i.valid),
         .f_exp(f_exp),
-        .rr_exp(rr_outs_i.exp_present),
+        .dc_exp(dc_outs_i.exp_present),
         .int_set(DMA_int_jk),
         .outputs(exp_set_logic_outs)
     );
@@ -265,8 +268,8 @@ module Fetch (
         .clk(clk),
         .exp_pipe_clear(exp_set_logic_outs.exp_pipe_clear),
         .int_pipe_clear(exp_set_logic_outs.int_pipe_clear),
-        .RR_pf(rr_outs_i.exp_pf),
-        .RR_exp(rr_outs_i.exp_present),
+        .DC_pf(dc_outs_i.exp_pf),
+        .DC_exp(dc_outs_i.exp_present),
         .Fetch_pf(tlb_outs.pageFault),
         .DMA_int(DMA_int_jk),
         .exp_mode(exp_mode_jk),
@@ -295,7 +298,7 @@ module Fetch (
         .segValue(rr_outs_i.codeSeg_data),
         .segLimit(rr_outs_i.codeSeg_limit),
         .v_addr_o(seg_xlation_out),
-        .gp_fault_o(seg_xlation_gp_fault)
+        .gp_fault_o()
     );
 
 
