@@ -49,7 +49,6 @@ module Fetch (
     //wires
     bool f_exp;
     v_address_t seg_xlation_out;
-    bool seg_xlation_gp_fault; //not used
     byte_t rom_data_out[CACHE_LINES_SIZE_B];
     byte_t idm_ctrl_data_in[CACHE_LINES_SIZE_B];
     l_address_t next_spc;
@@ -293,7 +292,7 @@ module Fetch (
         .segValue(rr_outs_i.codeSeg_data),
         .segLimit(rr_outs_i.codeSeg_limit),
         .v_addr_o(seg_xlation_out),
-        .gp_fault_o(seg_xlation_gp_fault)
+        .gp_fault_o()
     );
 
 

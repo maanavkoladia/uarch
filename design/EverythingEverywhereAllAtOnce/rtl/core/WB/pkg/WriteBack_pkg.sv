@@ -26,7 +26,6 @@ package WriteBack_pkg;
         uint16_t bit_vec;
         byte_t data[CACHE_LINES_SIZE_B];
         bool push_fail;
-        bool st_override;
     } st_q_outputs_t;
 
 
