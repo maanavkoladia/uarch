@@ -54,7 +54,7 @@ module Decode (
     wb_cs_t temp_wb_cs;
     bool decode_gp;
     rr_latches_general_t temp_rr_latch;
-    bool flush, stall;
+    bool flush, cpaddyx;
     logic REP_MOV_LATCH, REP_CMP_LATCH;
     wire rr_latch_we_o;
 

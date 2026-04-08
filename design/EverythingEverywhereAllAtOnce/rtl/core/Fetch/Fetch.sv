@@ -280,6 +280,8 @@ module Fetch (
         .exp_mode(exp_mode_jk),
         .cs_sb(rr_outs_i.codeSeg_sb),
         .int_mode(int_mode_jk),
+        .DMA_int(DMA_int_jk),
+        .f_exp(f_exp),
         .out(en_icache)
     );
 

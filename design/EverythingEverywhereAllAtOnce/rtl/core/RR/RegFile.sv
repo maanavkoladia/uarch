@@ -28,14 +28,14 @@ module RegFile (
         end
     end
 
-    assign outputs.SIB_IDX_data = REGISTERS[SIB_IDX_ID][31:0];
-    assign outputs.SIB_BASE_data = REGISTERS[SIB_BASE_ID][31:0];
-    assign outputs.ECX_data = REGISTERS[ECX][31:0];
-    assign outputs.EAX_data = REGISTERS[EAX][31:0];
-    assign outputs.CS_data = REGISTERS[CS][31:0];
-    assign outputs.Segment0_data = REGISTERS[Segment0_ID][31:0];
-    assign outputs.Segment1_data = REGISTERS[Segment1_ID][31:0];
-    assign outputs.DR_data = REGISTERS[DR_ID];  //dr
-    assign outputs.SR_data = REGISTERS[SR_ID];  //sr
+    assign #1.5 outputs.SIB_IDX_data = REGISTERS[SIB_IDX_ID][31:0];
+    assign #1.5 outputs.SIB_BASE_data = REGISTERS[SIB_BASE_ID][31:0];
+    assign #1.5 outputs.ECX_data = REGISTERS[ECX][31:0];
+    assign #1.5 outputs.EAX_data = REGISTERS[EAX][31:0];
+    assign #1.5 outputs.CS_data = REGISTERS[CS][31:0];
+    assign #1.5 outputs.Segment0_data = REGISTERS[Segment0_ID][31:0];
+    assign #1.5 outputs.Segment1_data = REGISTERS[Segment1_ID][31:0];
+    assign #1.5 outputs.DR_data = REGISTERS[DR_ID];  //dr
+    assign #1.5 outputs.SR_data = REGISTERS[SR_ID];  //sr
 
 endmodule

@@ -30,7 +30,7 @@ module RR (
     assign latchesInUse = latches_i.useRep ? latches_i.rep_latches : latches_i.normal_latches;
 
     //6 bc 6 seg regs and their respctive limits
-    uint32_t SEGMENT_LIMITS[6];  //CS, DS, ES, FS, GS, SS
+    segment_limit_reg_entry_t SEGMENT_LIMITS[NUM_SEG_REGS];  //CS, DS, ES, FS, GS, SS
 
     bool RR_GP, RR_PF;
 
@@ -50,12 +50,10 @@ module RR (
         (latchesInUse.cs.MODRM_NEEDED && latchesInUse.cs.RM_IS_DR) ?
         reg_out.DR_data[31:0] : reg_out.SR_data[31:0];
 
-    //adress fro the store addy addy trnaslate logic
-    l_address_t addygen_out;
     l_address_t staddyX_neuralnet_addy;
     assign staddyX_neuralnet_addy =
         (latchesInUse.cs.ST_SEL) ?
-            ((latchesInUse.cs.ST_SEL) ? reg_out.SR_data[31:0] : reg_out.DR_data[31:0]) :
+            ((latchesInUse.cs.MODRM_NEEDED && latchesInUse.cs.RM_IS_DR) ? reg_out.SR_data[31:0] : reg_out.DR_data[31:0]) :
             addygen_out;
 
 
@@ -86,7 +84,7 @@ module RR (
     );
 
     //this is final sib addy gen logic
-    AddressGen_Logic addygen_logic_unit (
+    npu_node1 addygen_logic_unit (
         .register_data(addygen_input_addy),
         .SIB_IDX_data(reg_out.SIB_IDX_data),
         .SIB_BASE_data(reg_out.SIB_BASE_data),
@@ -95,28 +93,51 @@ module RR (
         .disp_needed(latchesInUse.disp_needed),
         .dispsize(latchesInUse.disp_size),
         .displacement(latchesInUse.displacement),
-        .AddrGen_out(addygen_out)
-    );
-
-    AddyX_NeuralNet ld_addyX_neuralnet_unit (
-        .data_size(latchesInUse.cs.datasize),
-        .addy0(addygen_out),
-        .mem_op(latchesInUse.cs.LD_OP),
-        .seg_data(reg_out.Segment0_data),
-        .seg_limit(SEGMENT_LIMITS[latchesInUse.seg_0_id]),
-        .write_intent(1'b0),
-        .outputs(ld_neuralnet_out)
-    );
-
-    AddyX_NeuralNet st_addyX_neuralnet_unit (
-        .data_size(latchesInUse.cs.datasize),
-        .addy0(staddyX_neuralnet_addy),
-        .mem_op(latchesInUse.cs.ST_OP),
-        .seg_data(reg_out.Segment1_data),
-        .seg_limit(SEGMENT_LIMITS[latchesInUse.seg_1_id]),
-        .write_intent(latchesInUse.cs.ST_OP),
+        .datasize(latchesInUse.cs.datasize),
+        .seg0_data(reg_out.Segment0_data),
+        .segment0_limit(SEGMENT_LIMITS[latchesInUse.seg_0_id]),
+        .seg1_data(reg_out.Segment1_data),
+        .segment1_limit(SEGMENT_LIMITS[latchesInUse.seg_1_id]),
+        .seg1_valid(1'b0),
+        .modrm_needed(),
+        .rm_is_dr(),
+        .st_sel()
         .outputs(st_neuralnet_out)
     );
+
+
+    input uint32_t seg1_data,
+    input segment_limit_reg_entry_t segment1_limit;
+    input bool seg1_valid
+
+    input bool modrm_needed;
+    input bool rm_is_dr;
+    input bool st_sel;
+
+    output v_address_t ld_vaddy;
+    output uint32_t seg0_limit_w_datasize;
+    output v_address_t actual_st_vaddy;
+    output uint32_t seg1_limit_w_datasize;
+
+    // AddyX_NeuralNet ld_addyX_neuralnet_unit (
+    //     .data_size(latchesInUse.cs.datasize),
+    //     .addy0(addygen_out),
+    //     .mem_op(latchesInUse.cs.LD_OP),
+    //     .seg_data(reg_out.Segment0_data),
+    //     .seg_limit(SEGMENT_LIMITS[latchesInUse.seg_0_id]),
+    //     .write_intent(1'b0),
+    //     .outputs(ld_neuralnet_out)
+    // );
+
+    // AddyX_NeuralNet st_addyX_neuralnet_unit (
+    //     .data_size(latchesInUse.cs.datasize),
+    //     .addy0(staddyX_neuralnet_addy),
+    //     .mem_op(latchesInUse.cs.ST_OP),
+    //     .seg_data(reg_out.Segment1_data),
+    //     .seg_limit(SEGMENT_LIMITS[latchesInUse.seg_1_id]),
+    //     .write_intent(latchesInUse.cs.ST_OP),
+    //     .outputs(st_neuralnet_out)
+    // );
 
     RegSB reg_sb_unit (
         .clk           (clk),
@@ -130,7 +151,7 @@ module RR (
         .wb_dr0_id     (wb_outs_i.DR_0_id),
         .wb_dr0_we     (wb_outs_i.DR_0_we),
         .wb_dr1_id     (wb_outs_i.DR_1_id),
-        .wb_dr1_we     (wb_outs_i.DR_1_we),         // ⚠️ FIXED (you had a typo)
+        .wb_dr1_we     (wb_outs_i.DR_1_we),
         .cs_sib_size   (latchesInUse.sib_needed),
         .cs_dr_wr      (latchesInUse.cs.dr_wr),
         .cs_sr_wr      (latchesInUse.cs.sr_wr),

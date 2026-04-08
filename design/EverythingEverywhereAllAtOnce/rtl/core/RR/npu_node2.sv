@@ -1,14 +1,21 @@
 import RegisterRead_pkg::*;
 import DCache_common_pkg::*;
 
-module AddyX_NeuralNet (
 
+//will need two seperate module inits, one for load and one for store adds
+//each module will need starting and ending address
+module npu_node2 (
+    input v_address_t vaddy_start;
+    input uint32_t seg_limit_w_datasize;
+    input logic [2:0] datasize;
 );
 
-    l_address_t addy1;
-    v_address_t vaddy0;
-    v_address_t vaddy1;
+    v_address_t vaddy_end;
     bool gp0_exp_temp_seg, gp1_exp_temp_seg;
+
+    assign #3 vaddy_end = (datasize[1]) ? 
+                            ((datasize[0]) ? (vaddy_start + 32'd7) : (vaddy_start + 32'd3)) :
+                            ((datasize[0]) ? (vaddy_start + 32'd1) : (vaddy_start));
 
     //do not use tag here since vaddy0 is virtual address, rest should be same so safe to use
     p_addr_dcache_fields_t vaddy0_fields;

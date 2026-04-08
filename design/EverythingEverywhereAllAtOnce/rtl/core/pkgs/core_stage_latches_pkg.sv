@@ -94,6 +94,11 @@ package core_stage_latches_pkg;
     typedef struct {
         bool LD_OP;
         bool ST_OP;
+
+        //this is for addition with the vaddys in DC stage since addition did not fit in RR stage
+        //still need this cause need to add the datasize to the vaddy cause need to know both starting and ending
+        //address for tlb to check pf or gp, need startung and ending address ot find xcl too. 
+        logic [2:0] datasize;
     } dc_cs_t;
 
     typedef struct {
@@ -171,23 +176,28 @@ package core_stage_latches_pkg;
 
         br_info_t br_info;
 
-        bool ST_XCL;  //valid bit or second set of st info if st_op
-        p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
-        p_address_t ST_PADDR_1;  //cacheline algned
-        bool MIO;  //this a write to mem_io
+        // bool ST_XCL;  //valid bit or second set of st info if st_op
+        // p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
+        // p_address_t ST_PADDR_1;  //cacheline algned
+        // bool MIO;  //this a write to mem_io
+
+        // bool LD_XCL;
+        // p_address_t LD_PADDR_0;  //cacheline unalgned, ie actual addr
+        // p_address_t LD_PADDR_1;  //cacheline algned
+        // bool swapLines;
+
+        //these are for limit checking for gp
+        v_address_t ld_vaddy;
+        uint32_t seg0_limit_w_datasize;
+        v_address_t actual_st_vaddy;
+        uint32_t seg1_limit_w_datasize;
 
 
         l_address_t NEIP;
         l_address_t EIP;
         uint32_t EAX;
 
-
         uint64_t imm64;
-
-        bool LD_XCL;
-        p_address_t LD_PADDR_0;  //cacheline unalgned, ie actual addr
-        p_address_t LD_PADDR_1;  //cacheline algned
-        bool swapLines;
 
         reg_ids_e sr_id;
         uint64_t  sr_data;
