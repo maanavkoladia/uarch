@@ -1,6 +1,6 @@
-`include "../../../defines/common_define.vh"
-`include "../../../defines/interconnect_define.vh"
-`include "../../../defines/mem_common_define.vh"
+//`include "../../../defines/common_define.vh"
+//`include "../../../defines/interconnect_define.vh"
+//`include "../../../defines/mem_common_define.vh"
 
 module mem_bank (
     input wire clk,
@@ -17,8 +17,8 @@ module mem_bank (
     inout [`MEM_BUS_SIZE - 1 : 0] mem_bus,
 
     //mem_bank_out_t
-    input wire precharged,
-    input wire clear_writebufV
+    output wire precharged,
+    output wire clear_writebufV
 
 );
     localparam NUM_SRAM_CELLS = 4;
@@ -116,8 +116,8 @@ module mem_bank (
         .st_addr_release_o(mem_bank_controller_send_store_address),
         .OE_o(mem_bank_controller_oe),
         .WE_o(mem_bank_controller_we),
-        .clear_writebufV_o(outputs.clear_writebufV),
-        .PreCharged_o(outputs.precharged)
+        .clear_writebufV_o(clear_writebufV),
+        .PreCharged_o(precharged)
     );
 
 

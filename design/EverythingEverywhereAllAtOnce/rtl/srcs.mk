@@ -39,8 +39,6 @@ RTL_DESIGN_STRUCTURAL_SRC_FILES = \
 					   $(BUS_ARB_STRUCTURAL_SRC_FILES)	\
 					   $(IO_STRUCTURAL_SRC_FILES)	\
 					   $(CORE_STRUCTURAL_SRC_FILES) \
- 					   $(RTL_ROOT_PATH_INTERNAL)/Everywhere_TOP.sv \
- 					   $(RTL_ROOT_PATH_INTERNAL)/AllAtOnce_TOP.sv \
 
 RTL_DESIGN_STRUCTURAL_HEADERS = \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/common_define.vh \

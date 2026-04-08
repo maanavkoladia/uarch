@@ -68,7 +68,7 @@ end
 `define DELAY(time) #(time)
 
 `define CLK_INIT(cycleTicks) \
-  logic clk = 0; \
+  reg clk = 0; \
   always begin \
     `DELAY(cycleTicks/2); \
     clk = ~clk; \

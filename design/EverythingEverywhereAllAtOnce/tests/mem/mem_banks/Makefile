@@ -3,12 +3,12 @@ STRUCTRURAL := true
 include ../../../Make.vars
 include ../../../Make.build
 
-TARGET = Stages_Test
+TARGET = MemBankTest_Structural
 
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_stages
+TOP_MODULE_NAME = tb_memBanks
 
 STARTUP_FILES = \
 
