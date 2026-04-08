@@ -34,6 +34,8 @@ module predecode(
     wire inst_length_cout;
     wire [3:0] inst_valid;
     wire true_inst_valid;
+    wire [15:0] adder_cout;
+    wire [15:0][31:0] possible_eips;
 
     assign sext_inst_length = {28'b0, inst_length};
 
@@ -94,6 +96,24 @@ module predecode(
     pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2), 
         .total_pf_vector(total_pf_vector));
 
-    kogge_stone_adder #(.WIDTH(32)) neip_adder (.a(EIP), .b(sext_inst_length), .cin(1'b0), .sum(NEIP), .cout(inst_length_cout));
+    //kogge_stone_adder #(.WIDTH(32)) neip_adder (.a(EIP), .b(sext_inst_length), .cin(1'b0), .sum(NEIP), .cout(inst_length_cout));
+    
+
+    genvar i;
+    generate
+        for (i = 1; i < 16; i++) begin : possible_eip_adders
+            kogge_stone_adder #(
+                .WIDTH(32)
+            ) IR_index_adder (
+                .a   (EIP),
+                .b   (32'(i)),       // cast loop index to 6-bit
+                .cin (1'b0),
+                .sum (possible_eips[i]),
+                .cout(adder_cout[i])             // unused
+            );
+        end
+    endgenerate 
+
+    mux16_32 neip_picker_mux(.in(possible_eips), .sel0(inst_length[0]), .sel1(inst_length[1]), .sel2(inst_length[2]), .sel3(inst_length[3]), .out(NEIP));
 
 endmodule
