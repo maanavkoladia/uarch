@@ -14,3 +14,6 @@ DC_SRC_FILES = \
 	$(DC_PATH_INTERNAL)/req_gen_logic.sv \
 	$(DC_PATH_INTERNAL)/data_size_vec_logic.sv \
 	$(DC_PATH_INTERNAL)/DC.sv \
+
+DC_STRUCTURAL_SRC_FILES = \
+						  $(GEN_DC_SRC_FILES) \

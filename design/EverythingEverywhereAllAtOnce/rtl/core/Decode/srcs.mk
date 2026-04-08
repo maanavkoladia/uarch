@@ -34,4 +34,5 @@ DECODE_SRC_FILES = \
 						$(DECODE_PATH_INTERNAL)/rep_controller.sv \
 						$(DECODE_PATH_INTERNAL)/Decode.sv \
 
-
+DECODE_STRUCTURAL_SRC_FILES = \
+							  $(GEN_DECODE_SRC_FILES) \

@@ -8,7 +8,6 @@ UARCH_GATES_LIB = \
 
 #$(ROOT)/lib/Gates/time.v \
 
-
 COMMON_GATES_LIB = \
 				   $(ROOT)/lib/Common/LOG.v \
 				   $(ROOT)/lib/Common/utils.v 
@@ -20,6 +19,7 @@ STD_CELLS_LIB = \
 				$(ROOT)/lib/STDCells/reg1b.v \
 				$(ROOT)/lib/STDCells/KoggeStone.v \
 				$(ROOT)/lib/STDCells/triple_adder.v \
+				$(ROOT)/lib/STDCells/PortingLib.v 
 
 LIB_SRC_FILES = \
 				$(UARCH_GATES_LIB) \

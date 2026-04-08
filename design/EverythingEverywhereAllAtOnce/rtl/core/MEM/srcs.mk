@@ -10,3 +10,5 @@ MEM_STAGE_SRC_FILES = \
 	$(MEM_PATH_INTERNAL)/mem_miss_stall_logic.sv \
 	$(MEM_PATH_INTERNAL)/MEM.sv \
 
+MEM_STAGE_STRUCTURAL_SRC_FILES = \
+								 $(GEN_MEM_SRC_FILES) \

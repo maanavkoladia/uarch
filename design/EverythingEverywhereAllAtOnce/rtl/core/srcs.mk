@@ -26,10 +26,10 @@ CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/SegmentTranslation/SegmentTranslation.sv \
 				 $(FETCH_SRC_FILES) \
 				 $(DECODE_SRC_FILES) \
-				 $(EXE_SRC_FILES)\
 				 $(RR_SRC_FILES) \
 				 $(DC_SRC_FILES) \
 				 $(MEM_STAGE_SRC_FILES) \
+				 $(EXE_SRC_FILES)\
 				 $(WB_SRC_FILES) \
 				 $(CORE_PATH_INTERNAL)/StageLatches/DC_Latches.sv \
 				 $(CORE_PATH_INTERNAL)/StageLatches/EXE_Latches.sv \
@@ -54,4 +54,15 @@ CORE_PKGS = \
 			$(WB_PKGS) \
 
 
+
+#tlb/segx/and IDM need to be added here
+CORE_STRUCTURAL_SRC_FILES = \
+							$(CORE_GEN_SRC_FILES) \
+							$(FETCH_STRUCTURAL_SRC_FILES) \
+							$(DECODE_STRUCTURAL_SRC_FILES) \
+							$(RR_STRUCTURAL_SRC_FILES) \
+							$(DC_STRUCTURAL_SRC_FILES) \
+							$(MEM_STAGE_STRUCTURAL_SRC_FILES) \
+							$(EXE_STRUCTURAL_SRC_FILES)\
+							$(WB_STRUCTURAL_SRC_FILES) \
 

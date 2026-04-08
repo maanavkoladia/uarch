@@ -9,3 +9,13 @@ RTL_SRC_FILES = \
                 $(LIB_SRC_FILES) \
                 $(RTL_DESIGN_SRC_FILES) \
 
+
+
+RTL_STRUCTURAL_HEADERS = $(RTL_DESIGN_STRUCTURAL_HEADERS)
+
+RTL_STRUCTURAL_SRC_FILES = \
+                $(LIB_SRC_FILES) \
+                $(RTL_DESIGN_STRUCTURAL_SRC_FILES) \
+
+
+

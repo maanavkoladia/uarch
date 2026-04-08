@@ -53,3 +53,6 @@ EXE_SRC_FILES = \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/sbb_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/xchg_op.sv \
     $(EXE_PATH_INTERNAL)/EXE.sv \
+
+EXE_STRUCTURAL_SRC_FILES = \
+						   $(GEN_EXE_SRC_FILES)
