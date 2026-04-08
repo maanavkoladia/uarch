@@ -1,16 +1,19 @@
-MEM_SRC_FILES_BANKS = \
-					  $(ROOT)/rtl/mem/Mem_Banks/mem_bank.sv \
-					  $(ROOT)/rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.sv
+MAIN_MEM_PATH_INTERNAL = $(ROOT)/rtl/mem/
 
+MEM_SRC_FILES_GEN = \
+					$(MAIN_MEM_PATH_INTERNAL)/Mem_Banks/gen/bank_controller_fsm_logic.sv \
+					$(MAIN_MEM_PATH_INTERNAL)/Mem_Controller/gen/mem_controller_fsm.sv	
 
-MEM_SRC_FILES_CONTROLLER = \
-						   $(ROOT)/rtl/mem/Mem_Controller/gen/mem_controller_fsm.sv	\
-						   $(ROOT)/rtl/mem/Mem_Controller/mem_controller.sv \
 
 MEM_SRC_FILES = \
-				$(MEM_SRC_FILES_BANKS)	\
-				$(MEM_SRC_FILES_CONTROLLER)	\
-				$(ROOT)/rtl/mem/mem_TOP.sv	\
+				$(MEM_SRC_FILES_GEN) \
+				$(MAIN_MEM_PATH_INTERNAL)/Mem_Banks/mem_bank.sv \
+				$(MAIN_MEM_PATH_INTERNAL)/Mem_Controller/mem_controller.sv \
+				$(MAIN_MEM_PATH_INTERNAL)/mem_TOP.sv	\
 
 MEM_PKGS = \
-		   $(ROOT)/rtl/mem/pkg/mem_common_pkg.sv 
+		   $(MAIN_MEM_PATH_INTERNAL)/pkg/mem_common_pkg.sv 
+
+MEM_STRUCTURAL_SRC_FILES = \
+						   $(MEM_SRC_FILES_GEN)	\
+						   $(MAIN_MEM_PATH_INTERNAL)/Mem_Banks/structural/MemBank_Structural.v \
