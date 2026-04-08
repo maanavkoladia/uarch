@@ -150,6 +150,8 @@ module DC (
     assign dc_outs_o = '{
             valid: latches_i.valid,
             stall: dc_stall,
+            exp_pf: 0, //TODO
+            exp_present: 0, //TODO  
             ld_addr_0_V: ld_addr_0_V,
             ld_addr_0: ld_addr_0,
             ld_addr_1_V: ld_addr_1_V,

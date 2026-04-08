@@ -32,7 +32,6 @@ module RR (
     //6 bc 6 seg regs and their respctive limits
     uint32_t SEGMENT_LIMITS[6];  //CS, DS, ES, FS, GS, SS
 
-    bool RR_GP, RR_PF;
 
     //SB Oouts
     bool ecx_sb;
@@ -42,7 +41,7 @@ module RR (
     bool dc_latches_we;
     bool next_dc_valid;
     bool rr_stall;
-    assign rr_stall = latchesInUse.valid && (depstall || (RR_PF || RR_GP));
+    assign rr_stall = latchesInUse.valid && depstall;
 
     //32 bit bc mmx sare the data areg
     uint32_t addygen_input_addy;
@@ -203,9 +202,7 @@ module RR (
 
     assign outs_o = '{
             valid   : latchesInUse.valid,
-            stall   : latchesInUse.valid && (depstall || (RR_PF || RR_GP)),
-            exp_present : RR_PF || RR_GP,
-            exp_pf  : RR_PF,
+            stall   : latchesInUse.valid && depstall,
             ecx_sb  : ecx_sb,
             ecx     : reg_out.ECX_data,
             eax     : reg_out.EAX_data,

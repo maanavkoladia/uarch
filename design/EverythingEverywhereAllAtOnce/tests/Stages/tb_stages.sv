@@ -301,9 +301,8 @@ module tb_stages();
     // --- RR OUTPUTS ---
     task automatic print_rr_outputs();
         $fdisplay(log_fd, "[RR OUTS]");
-        $fdisplay(log_fd, "  valid=%0b  stall=%0b  exp=%0b  exp_pf=%0b  ecx_sb=%0b  cs_sb=%0b  dc_we=%0b",
+        $fdisplay(log_fd, "  valid=%0b  stall=%0b ecx_sb=%0b  cs_sb=%0b  dc_we=%0b",
             uut_core.rr_outputs.valid, uut_core.rr_outputs.stall,
-            uut_core.rr_outputs.exp_present, uut_core.rr_outputs.exp_pf,
             uut_core.rr_outputs.ecx_sb, uut_core.rr_outputs.codeSeg_sb,
             uut_core.rr_outputs.dc_stage_latch_we);
     endtask
@@ -335,6 +334,7 @@ module tb_stages();
         $fdisplay(log_fd, "[DC OUTS]");
         $fdisplay(log_fd, "  valid=%0b  stall=%0b  mem_we=%0b",
             uut_core.dc_outputs.valid, uut_core.dc_outputs.stall,
+            uut_core.dc_outputs.exp_present, uut_core.dc_outputs.exp_pf,
             uut_core.dc_outputs.mem_stage_latch_we);
         $fdisplay(log_fd, "  ld0: V=%0b addr=0x%04h   ld1: V=%0b addr=0x%04h   mio: V=%0b addr=0x%04h",
             uut_core.dc_outputs.ld_addr_0_V, uut_core.dc_outputs.ld_addr_0,
@@ -461,8 +461,8 @@ module tb_stages();
             uut_core.fetch_unit.exp_set_logic_outs.exp_pipe_clear,
             uut_core.fetch_unit.exp_set_logic_outs.int_pipe_clear);
         $fdisplay(log_fd, "  RR_exp=%0b  RR_exp_pf=%0b  decode_invalid=%0b  decode_gp=%0b",
-            uut_core.rr_outputs.exp_present,
-            uut_core.rr_outputs.exp_pf,
+            uut_core.dc_outputs.exp_present,
+            uut_core.dc_outputs.exp_pf,
             uut_core.decode_outputs.invalid_instruction,
             uut_core.decode_outputs.decode_gp);
     endtask

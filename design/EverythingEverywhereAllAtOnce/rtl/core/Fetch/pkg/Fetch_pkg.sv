@@ -4,16 +4,17 @@ package Fetch_pkg;
     import core_common_pkg::*;
 
     typedef struct {
-        address_t btfn_target;
-        address_t spc;
+        address_t btfn_target; //unused
 
+        //from fetch
+        address_t spc;
+        bool btb_hit;
         //execute info
         bool exe_br_valid;
         address_t exe_br_target;
-        //address_t exe_br_eip;
+        address_t exe_br_eip;
+        bool misprediction;
         bool exe_br_taken;
-        //proably not needed
-        bool exe_br_hit;
     } predictor_input_t;
 
     typedef struct {bool taken;} predictor_output_t;
