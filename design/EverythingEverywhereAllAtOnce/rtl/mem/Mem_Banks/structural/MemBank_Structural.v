@@ -21,6 +21,8 @@ module mem_bank (
     input wire clear_writebufV
 
 );
+    localparam NUM_SRAM_CELLS = 4;
+
     wire mem_bank_controller_oe;
     wire mem_bank_controller_we;
     wire mem_bank_controller_send_store_address;
@@ -88,7 +90,7 @@ module mem_bank (
 
     genvar i_gen;
     generate
-        for (i_gen = 0; i_gen < `NUM_SRAM_CELLS; i_gen++) begin : g_sram_cells
+        for (i_gen = 0; i_gen < NUM_SRAM_CELLS; i_gen = i_gen + 1) begin : g_sram_cells
 
             sram32x32$ mem_cell (
                 .A(bank_address_i),
