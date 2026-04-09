@@ -43,7 +43,8 @@ module npu_node1 (
     assign shift_result = (SIB_IDX_data << SIB_SCALE_val);
     assign #3 sib_nonsense = shift_result + SIB_BASE_data;
 
-    uint32_t real_seg1_data = (seg1_valid) ? seg1_data : seg0_data;
+    uint32_t real_seg1_data;
+    assign real_seg1_data = (seg1_valid) ? seg1_data : seg0_data;
 
     uint32_t seg0val_plus_displacement, seg1val_plus_displacement;
     assign #3 seg0val_plus_displacement = displacement_out + (seg0_data << 16);

@@ -9,6 +9,7 @@ module DC (
     //stage latches
     input dc_latches_t latches_i,  //assumign load input is not cache aligned
 
+    input fetch_outputs_t fetch_outs_i,
     //miss stall and valid, inflight store addys
     input mem_outputs_t mem_outs_i,
 
@@ -65,7 +66,7 @@ module DC (
                             | (req_rejected_1 & latches_i.cs.LD_OP & ld_neuralnet_out.xcl)
                         ) & latches_i.valid;
 
-    assign exp_stall = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GF 
+    assign exp_stall = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP 
                        |  st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP) 
                        & latches_i.valid;
                        
@@ -179,8 +180,8 @@ module DC (
     assign dc_outs_o = '{
             valid: latches_i.valid,
             stall: dc_stall,
-            exp_pf: exp_stall,
-            exp_present: ld_neuralnet_out.DC_PF | st_neuralnet_out.DC_PF,
+            exp_pf: ld_neuralnet_out.DC_PF | st_neuralnet_out.DC_PF,
+            exp_present: exp_stall,
             ld_addr_0_V: ld_addr_0_V,
             ld_addr_0: ld_addr_0,
             ld_addr_1_V: ld_addr_1_V,
@@ -198,7 +199,7 @@ module DC (
     
 
     assign mem_latches_next_o = '{
-            valid: mem_stage_next_vaild_o,
+            valid: mem_stage_next_vaild_o & ~fetch_outs_i.exp_pipe_clear,
             cs: latches_i.mem_cs,
             exe_cs: latches_i.exe_cs,
             wb_cs: latches_i.wb_cs,

@@ -11,7 +11,9 @@ _start:
     addl %ebx, %ecx
 
     # 3) ADD [EDX*2 + EDI + 0x12345678], ESI
-    addl %esi, 0x00005678(%edi,%edx,2)
+    addl %eax, 0x00005678(%edi,%edx,2)
+
+    addl 0x00005678(%edi,%edx,2), %esi
 
     # 4) ADD EBX, EDI
     addl %edi, %ebx

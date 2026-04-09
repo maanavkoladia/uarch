@@ -399,6 +399,21 @@ endtask
                 L.imm64, L.ld_addy);
             $fdisplay(log_fd, "  WB_CS: ST=%0b DR=%0b SR=%0b",
                 L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
+            // First line (bytes 0–15)
+            $fwrite(log_fd, "RES_BUF: ");
+            for (int i = 0; i < 16; i++) begin
+                $fwrite(log_fd, "%02x", L.ld_buf[i]);
+                if (i != 15) $fwrite(log_fd, "_");
+            end
+            $fwrite(log_fd, "\n");
+
+            // Second line (bytes 16–31)
+            $fwrite(log_fd, "         "); // indent to align
+            for (int i = 16; i < 32; i++) begin
+                $fwrite(log_fd, "%02x", L.ld_buf[i]);
+                if (i != 31) $fwrite(log_fd, "_");
+            end
+            $fdisplay(log_fd, "");
         end
     endtask
 

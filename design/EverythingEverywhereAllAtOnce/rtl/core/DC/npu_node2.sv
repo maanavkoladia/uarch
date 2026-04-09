@@ -16,7 +16,7 @@ module npu_node2 (
 );
 
     v_address_t vaddy_end;
-    bool gp0_exp_temp_seg, gp1_exp_temp_seg;
+
 
     assign #3 vaddy_end = (datasize[1]) ? 
                             ((datasize[0]) ? (vaddy_start + 32'd7) : (vaddy_start + 32'd3)) :
@@ -74,7 +74,7 @@ module npu_node2 (
     // vaddy + datasize < limit
     // vaddy < limit - datasize, if vaddy is good ie, vaddy < limit - datasize, then ofc vaddy < limit, QED (i think)
     bool segx_gp;
-    assign #3 segx_gp = vaddy_start < seg_limit_w_datasize;
+    assign #3 segx_gp = vaddy_start > seg_limit_w_datasize;
 
     // SegmentTranslation segx0 (.l_addr_i(addy0), .segValue(seg_data),
     //     .segLimit(seg_limit), .v_addr_o(vaddy0), .gp_fault_o(gp0_exp_temp_seg));

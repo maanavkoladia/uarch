@@ -153,6 +153,7 @@ module RR (
         .codeSeg_sb    (cs_sb)
     );
 
+    
     dc_valid_logic dc_valid_logic_unit(
         .DC_we_o(dc_latches_we),
         .N_DC_V_o(next_dc_valid),
@@ -199,7 +200,7 @@ module RR (
     //     };
 
     assign dc_latches_next = '{
-        valid                   : next_dc_valid,
+        valid                   : next_dc_valid & ~fetch_outs_i.exp_pipe_clear,
         cs                      : latchesInUse.dc_cs,
         mem_cs                  : latchesInUse.mem_cs,
         exe_cs                  : latchesInUse.exe_cs,
