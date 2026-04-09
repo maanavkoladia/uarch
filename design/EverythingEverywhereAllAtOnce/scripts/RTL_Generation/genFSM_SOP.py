@@ -2,12 +2,12 @@
 fsm2rtl.py  <input.csv>  <output.sv>
 
 CSV column naming conventions:
-  *_i   → primary input signals
-  *_o   → Moore/Mealy output signals
-  *_s   → current-state column  (exactly ONE column, enumerated state names)
-  *_ns  → next-state column     (exactly ONE column, enumerated state names)
+  *_i   -> primary input signals
+  *_o   -> Moore/Mealy output signals
+  *_s   -> current-state column  (exactly ONE column, enumerated state names)
+  *_ns  -> next-state column     (exactly ONE column, enumerated state names)
 
-Staged debug pipeline — intermediate files written after every stage:
+Staged debug pipeline -- intermediate files written after every stage:
   Stage 1 : Structural CSV validation
   Stage 2 : State/next-state semantic checks
               -> <stem>_state_list.txt
@@ -33,6 +33,14 @@ ERROR-state policy
   on all inputs (encoded as a single all-don't-care row).
   The conflict report lists every transition that was undefined and records
   that it was auto-routed to ERROR.
+
+Verilog standard: 2005 (IEEE 1364-2005)
+Cell library:     std_cell_macros.vh
+  Macros used:
+    `INV_N(unit, 1, in, out)
+    `AND_N(unit, 1, out, in0..inN-1)   N in 2..12
+    `OR_N (unit, 1, out, in0..inN-1)   N in 2..12
+    `REG_RST(unit, 1, clk, rst, d, q)  -- always samples D, async rst->0
 """
 
 import sys, os, csv, math, itertools
@@ -41,6 +49,9 @@ from collections import defaultdict
 BANNER = "=" * 72
 IDLE_STATE_NAME  = "IDLE"
 ERROR_STATE_NAME = "ERROR"
+
+# Maximum AND/OR fan-in supported by the macro library (AND_2..AND_12 / OR_2..OR_12)
+MAX_GATE_FANIN = 12
 
 def log(msg=""):
     print(msg)
@@ -51,13 +62,13 @@ def die(msg):
 
 def stage(n, title):
     log()
-    log(f"{'─'*72}")
+    log(f"{'*'*72}")
     log(f"  Stage {n}: {title}")
-    log(f"{'─'*72}")
+    log(f"{'*'*72}")
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
 # 0.  CLI & path setup
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
 if len(sys.argv) != 3:
     die("Usage: python3 fsm2rtl.py <input.csv> <output.sv>")
 
@@ -70,7 +81,6 @@ if not os.path.isfile(csv_path):
 base = os.path.splitext(csv_path)[0]
 stem = os.path.splitext(os.path.basename(csv_path))[0]
 
-# All output paths derived from the input stem
 p_state_list    = base + "_state_list.txt"
 p_expanded_csv  = base + "_expanded.csv"
 p_enumerated    = base + "_enumerated.csv"
@@ -86,9 +96,9 @@ log(BANNER)
 log(f"  Input CSV : {csv_path}")
 log(f"  Output SV : {sv_path}")
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
 # Stage 1: Structural CSV validation
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
 stage(1, "Structural CSV validation")
 
 with open(csv_path, newline='') as fh:
@@ -101,7 +111,6 @@ if not headers:
 if not rows:
     die("CSV has no data rows.")
 
-# Classify columns by suffix
 input_cols   = [h for h in headers if h.endswith('_i')]
 output_cols  = [h for h in headers if h.endswith('_o')]
 state_cols   = [h for h in headers if h.endswith('_s') and not h.endswith('_ns')]
@@ -128,19 +137,16 @@ if not input_cols:
 if not output_cols:
     errors.append("No '_o' output columns found.")
 
-# Validate cell values in _i / _o columns
 valid_io_chars = {'0', '1', '-', 'x', 'X'}
 for lineno, row in enumerate(rows, start=2):
     for col in input_cols:
         v = row[col].strip()
         if v not in valid_io_chars:
-            errors.append(f"Row {lineno} col '{col}': invalid value '{v}' "
-                          f"(expected 0/1/X/-)")
+            errors.append(f"Row {lineno} col '{col}': invalid value '{v}' (expected 0/1/X/-)")
     for col in output_cols:
         v = row[col].strip()
         if v not in valid_io_chars:
-            errors.append(f"Row {lineno} col '{col}': invalid value '{v}' "
-                          f"(expected 0/1/X/-)")
+            errors.append(f"Row {lineno} col '{col}': invalid value '{v}' (expected 0/1/X/-)")
 
 if errors:
     log("\n  Structural errors found:")
@@ -151,12 +157,11 @@ if errors:
 state_col = state_cols[0]
 ns_col    = ns_cols[0]
 
-log(f"\n  {len(rows)} data rows, {len(input_cols)} input(s), "
-    f"{len(output_cols)} output(s)  OK")
+log(f"\n  {len(rows)} data rows, {len(input_cols)} input(s), {len(output_cols)} output(s)  OK")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 2: State / next-state semantic checks  ->  _state_list.txt
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Stage 2: State / next-state semantic checks
+# ---------------------------------------------------------------------------
 stage(2, "State & next-state semantic checks")
 
 defined_states = sorted(set(r[state_col].strip() for r in rows))
@@ -165,7 +170,6 @@ ns_values_seen = sorted(set(r[ns_col].strip() for r in rows))
 log(f"  Defined states ({len(defined_states)}): {defined_states}")
 log(f"  NS values seen ({len(ns_values_seen)}): {ns_values_seen}")
 
-# ── IDLE state check ──────────────────────────────────────────────────────────
 if IDLE_STATE_NAME not in defined_states:
     die(f"No '{IDLE_STATE_NAME}' state found in the '{state_col}' column. "
         f"Every FSM must have an IDLE state (it will be assigned encoding 0). "
@@ -173,7 +177,6 @@ if IDLE_STATE_NAME not in defined_states:
 else:
     log(f"\n  IDLE state found  OK  (will be assigned encoding 0)")
 
-# ── ERROR state check — synthesise if absent ─────────────────────────────────
 error_state_synthesised = False
 if ERROR_STATE_NAME not in defined_states:
     defined_states = sorted(defined_states + [ERROR_STATE_NAME])
@@ -182,9 +185,6 @@ if ERROR_STATE_NAME not in defined_states:
 else:
     log(f"  ERROR state found in CSV  OK")
 
-# Collect all undefined-NS errors before dying
-# (next-states are allowed to reference ERROR even if it wasn't in the CSV,
-#  because we may be about to synthesise it)
 all_valid_states = set(defined_states)
 errors = []
 for lineno, row in enumerate(rows, start=2):
@@ -200,10 +200,6 @@ if errors:
     log(f"\n  Defined states are: {sorted(all_valid_states)}")
     die("All next-states must reference a defined current state.")
 
-# Warnings: states never targeted (possible dead-ends)
-# ERROR is intentionally never a *source* of any user-defined transition, so
-# exclude it from this check only if it was synthesised (user-defined ERROR
-# states should still be checked normally).
 ns_values_for_sink_check = sorted(set(r[ns_col].strip() for r in rows))
 sink_states = [s for s in defined_states
                if s not in ns_values_for_sink_check
@@ -212,7 +208,6 @@ if sink_states:
     log(f"\n  WARNING: These states are never a next-state target "
         f"(possible dead-ends): {sink_states}")
 
-# Write state list file
 n_bits_preview = max(1, math.ceil(math.log2(len(defined_states)))) \
                  if len(defined_states) > 1 else 1
 with open(p_state_list, 'w') as f:
@@ -236,9 +231,9 @@ with open(p_state_list, 'w') as f:
 log(f"\n  State list written -> {p_state_list}  OK")
 log(f"  No undefined next-states found  OK")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 3: X-expansion in state-name space  ->  _expanded.csv
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Stage 3: X-expansion in state-name space
+# ---------------------------------------------------------------------------
 stage(3, "X-expansion (don't-care inputs, state names preserved)")
 
 def expand_row_inputs(row, in_cols):
@@ -290,26 +285,16 @@ if conflicts:
 else:
     log(f"  No conflicts after expansion  OK")
 
-# ── Synthesise missing transitions -> ERROR ───────────────────────────────────
-# Build the set of (state, input_combo) pairs that exist in the user CSV
-# (using the expanded rows so don't-care patterns are already resolved).
-# For every combination that is absent, inject a synthetic row that drives
-# NS = ERROR and all outputs = 0.  Collect those for reporting.
-
 all_input_combos    = list(itertools.product('01', repeat=len(input_cols)))
 zero_outputs        = tuple('0' for _ in output_cols)
-auto_error_routes   = []   # list of (state, input_combo_dict) for the report
-
+auto_error_routes   = []
 user_defined_states = sorted(s for s in defined_states if s != ERROR_STATE_NAME)
 
 for state in user_defined_states:
     for combo in all_input_combos:
         if (state, combo) not in conflict_key:
-            # Record for reporting
             auto_error_routes.append((state, dict(zip(input_cols, combo))))
-            # Inject into conflict_key so Stage 5 picks it up
             conflict_key[(state, combo)] = (ERROR_STATE_NAME, zero_outputs, 'AUTO')
-            # Build a synthetic expanded row
             syn_row = {state_col: state, ns_col: ERROR_STATE_NAME}
             for col, val in zip(input_cols, combo):
                 syn_row[col] = val
@@ -318,9 +303,6 @@ for state in user_defined_states:
             syn_row['_src_row'] = 'AUTO'
             expanded_rows.append(syn_row)
 
-# ── ERROR self-loop: one all-don't-care row ───────────────────────────────────
-# Add a single row  ERROR + ----... -> ERROR, outputs all 0.
-# We expand it here just like any other row (all 2^n combos).
 error_self_loop_row = {state_col: ERROR_STATE_NAME, ns_col: ERROR_STATE_NAME}
 for col in input_cols:
     error_self_loop_row[col] = '-'
@@ -348,17 +330,14 @@ with open(p_expanded_csv, 'w', newline='') as f:
 
 log(f"  Expanded CSV written -> {p_expanded_csv}  OK")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 4: State enumeration  ->  _enumerated.csv  +  _enum_map.txt
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Stage 4: State enumeration
+# ---------------------------------------------------------------------------
 stage(4, "State enumeration (name -> binary, IDLE always = 0)")
 
 n_states     = len(defined_states)
 n_state_bits = max(1, math.ceil(math.log2(n_states))) if n_states > 1 else 1
 
-# IDLE is forced to 0.
-# ERROR gets the last encoding (highest value) so it stands out in waveforms.
-# All other states fill in between in sorted order.
 middle_states  = sorted(s for s in defined_states
                         if s != IDLE_STATE_NAME and s != ERROR_STATE_NAME)
 ordered_states = [IDLE_STATE_NAME] + middle_states + [ERROR_STATE_NAME]
@@ -386,7 +365,7 @@ for exp_row in expanded_rows:
     s_name  = exp_row[state_col].strip()
     ns_name = exp_row[ns_col].strip()
     if s_name not in state_enc or ns_name not in state_enc:
-        continue   # safety guard (should never trigger)
+        continue
     s_enc_val  = state_enc[s_name]
     ns_enc_val = state_enc[ns_name]
     s_bits_str  = format(s_enc_val,  f'0{n_state_bits}b')[::-1]
@@ -429,9 +408,9 @@ with open(p_enum_map, 'w') as f:
 
 log(f"  Enumeration map written -> {p_enum_map}  OK")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 5: PLA construction  ->  <stem>.pla
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Stage 5: PLA construction
+# ---------------------------------------------------------------------------
 stage(5, "PLA construction")
 
 pla_inputs  = state_bit_names + input_cols
@@ -463,9 +442,9 @@ with open(p_pla, 'w') as f:
 
 log(f"  PLA written -> {p_pla}  OK")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 6: Quine-McCluskey minimisation ->  _minimised.pla  +  _equations.txt
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Stage 6: Quine-McCluskey minimisation
+# ---------------------------------------------------------------------------
 stage(6, "Quine-McCluskey minimisation")
 
 def qm_minimise(on_set, dc_set, n_vars):
@@ -604,9 +583,9 @@ with open(p_equations, 'w') as f:
 
 log(f"  Equations written -> {p_equations}  OK")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 7: Coverage & conflict audit  ->  _conflict_report.txt
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Stage 7: Coverage & conflict audit
+# ---------------------------------------------------------------------------
 stage(7, "Coverage & conflict audit")
 
 def covers_cube(cube, minterm):
@@ -616,21 +595,18 @@ coverage_errors = []
 for oi, oname in enumerate(pla_outputs):
     on    = on_sets[oi]
     cubes = minimised[oname]
-    uncov = [m for m in on
-             if not any(covers_cube(c, m) for c in cubes)]
+    uncov = [m for m in on if not any(covers_cube(c, m) for c in cubes)]
     if uncov:
         snippet = ["    " + ''.join(m) for m in uncov[:10]]
         if len(uncov) > 10:
             snippet.append(f"    ... ({len(uncov)-10} more)")
         coverage_errors.append(
-            f"  {oname}: {len(uncov)} ON minterms NOT covered:\n"
-            + "\n".join(snippet)
+            f"  {oname}: {len(uncov)} ON minterms NOT covered:\n" + "\n".join(snippet)
         )
 
 with open(p_conflict, 'w') as f:
     f.write(f"# Conflict & coverage report for FSM: {stem}\n\n")
 
-    # ── Coverage errors ───────────────────────────────────────────────────────
     f.write("## Coverage errors (minimisation did not cover ON minterms)\n")
     if coverage_errors:
         for e in coverage_errors:
@@ -639,7 +615,6 @@ with open(p_conflict, 'w') as f:
         f.write("  None -- all ON-set minterms covered  OK\n")
     f.write("\n")
 
-    # ── Undefined transitions auto-routed to ERROR ────────────────────────────
     f.write("## Undefined transitions (auto-routed to ERROR state)\n")
     if auto_error_routes:
         if error_state_synthesised:
@@ -655,7 +630,6 @@ with open(p_conflict, 'w') as f:
         f.write("  None -- all state/input combinations were explicitly defined  OK\n")
     f.write("\n")
 
-    # ── Sink states ───────────────────────────────────────────────────────────
     f.write("## Sink states (states never targeted as next-state, "
             "excluding synthesised ERROR)\n")
     if sink_states:
@@ -672,19 +646,108 @@ log(f"  Conflict report written -> {p_conflict}  OK")
 if coverage_errors:
     die("Minimisation produced incomplete coverage -- see conflict report.")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 8: Structural SystemVerilog
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
+# Stage 8: Structural SystemVerilog (Verilog-2005, std_cell_macros.vh)
+# ---------------------------------------------------------------------------
 stage(8, "Structural SystemVerilog generation")
 
-def make_module_name(name):
-    return ("m_" + name) if name[0].isdigit() else name
+# ---------------------------------------------------------------------------
+# Macro emission helpers
+# ---------------------------------------------------------------------------
 
 def literal_to_wire(lit):
+    """Map a SOP literal to the Verilog wire name that carries its value."""
     neg = lit.startswith('!')
     sig = lit.lstrip('!')
     return (sig + '_inv') if neg else sig
 
+
+def emit_inv(f, unit, out_wire, in_wire):
+    """`INV_N -- width-1 inverter."""
+    f.write(f"`INV_N({unit}, 1, {in_wire}, {out_wire})\n")
+
+
+def emit_buf_as_double_inv(f, unit_base, out_wire, in_wire):
+    """
+    The macro library has no plain buffer.
+    Implement as two back-to-back INV_N cells which synthesisers
+    will optimise away to a direct connection if unneeded.
+    """
+    mid = f"{unit_base}_mid"
+    f.write(f"wire {mid};\n")
+    emit_inv(f, f"{unit_base}_i0", mid,      in_wire)
+    emit_inv(f, f"{unit_base}_i1", out_wire,  mid)
+
+
+def _chunk_into_gate(f, macro, unit, out_wire, in_wires):
+    """Emit a single AND_N or OR_N macro call for exactly len(in_wires) inputs."""
+    n   = len(in_wires)
+    ins = ", ".join(in_wires)
+    f.write(f"`{macro}_{n}({unit}, 1, {out_wire}, {ins})\n")
+
+
+def _reduce_tree(f, macro, unit_base, out_wire, in_wires):
+    """
+    Recursively reduce in_wires to out_wire using MAX_GATE_FANIN-wide
+    AND or OR gates.  Intermediate wires are declared inline.
+    Layer numbering is appended to unit names for uniqueness.
+    """
+    layer    = list(in_wires)
+    layer_id = 0
+
+    while len(layer) > MAX_GATE_FANIN:
+        next_layer = []
+        chunk_id   = 0
+        i = 0
+        while i < len(layer):
+            chunk  = layer[i : i + MAX_GATE_FANIN]
+            i     += MAX_GATE_FANIN
+            w_out  = f"{unit_base}_L{layer_id}_{chunk_id}"
+            f.write(f"wire {w_out};\n")
+            _chunk_into_gate(f, macro, f"{unit_base}_L{layer_id}_{chunk_id}",
+                             w_out, chunk)
+            next_layer.append(w_out)
+            chunk_id += 1
+        layer     = next_layer
+        layer_id += 1
+
+    # Final gate produces the named output wire directly.
+    _chunk_into_gate(f, macro, f"{unit_base}_L{layer_id}_0", out_wire, layer)
+
+
+def emit_and(f, unit_base, out_wire, in_wires):
+    """
+    Emit AND logic for arbitrary fan-in.
+      1 input  -> double-inverter buffer
+      2..12    -> AND_N macro directly
+      >12      -> balanced AND tree using AND_12 layers
+    """
+    n = len(in_wires)
+    if n == 1:
+        emit_buf_as_double_inv(f, unit_base + "_buf", out_wire, in_wires[0])
+    elif n <= MAX_GATE_FANIN:
+        _chunk_into_gate(f, "AND", unit_base, out_wire, in_wires)
+    else:
+        _reduce_tree(f, "AND", unit_base, out_wire, in_wires)
+
+
+def emit_or(f, unit_base, out_wire, in_wires):
+    """
+    Emit OR logic for arbitrary fan-in.
+      2..12    -> OR_N macro directly
+      >12      -> balanced OR tree using OR_12 layers
+    Note: single-input OR is logically a buffer; caller must guarantee >= 2.
+    """
+    n = len(in_wires)
+    if n <= MAX_GATE_FANIN:
+        _chunk_into_gate(f, "OR", unit_base, out_wire, in_wires)
+    else:
+        _reduce_tree(f, "OR", unit_base, out_wire, in_wires)
+
+
+# ---------------------------------------------------------------------------
+# Collect all signals that appear negated -- they need inverter wires.
+# ---------------------------------------------------------------------------
 negated_signals = set()
 for terms in equations.values():
     for term in terms:
@@ -693,8 +756,17 @@ for terms in equations.values():
                 negated_signals.add(lit.lstrip('!'))
 negated_signals = sorted(negated_signals)
 
+# ---------------------------------------------------------------------------
+# Module name: prefix with m_ if name starts with a digit.
+# ---------------------------------------------------------------------------
+def make_module_name(name):
+    return ("m_" + name) if name[0].isdigit() else name
+
 mod = make_module_name(stem)
 
+# ---------------------------------------------------------------------------
+# Truth-table comment header helper
+# ---------------------------------------------------------------------------
 def tt_header():
     cols_in  = state_bit_names + input_cols
     cols_out = ns_bit_names + output_cols
@@ -703,11 +775,17 @@ def tt_header():
     sep = '-' * (len(in_hdr) + 6 + len(out_hdr))
     return in_hdr, out_hdr, sep
 
+# ---------------------------------------------------------------------------
+# Write the SystemVerilog file
+# ---------------------------------------------------------------------------
 with open(sv_path, 'w') as f:
 
+    # ── File header ---------------------------------------------------------
     f.write(f"// {'='*70}\n")
     f.write(f"// FSM : {stem}\n")
     f.write(f"// Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)\n")
+    f.write(f"// Std : Verilog-2005 (IEEE 1364-2005)\n")
+    f.write(f"// Lib : std_cell_macros.vh\n")
     if error_state_synthesised:
         f.write(f"// NOTE: ERROR state was synthesised automatically.\n")
         f.write(f"//       Any undefined transition lands here (all outputs = 0).\n")
@@ -744,6 +822,10 @@ with open(sv_path, 'w') as f:
                 f"   {row[state_col].strip()} -> {row[ns_col].strip()}\n")
     f.write(f"// {sep}\n//\n\n")
 
+    # ── `include -----------------------------------------------------------
+    f.write('`include "std_cell_macros.vh"\n\n')
+
+    # ── Module declaration --------------------------------------------------
     f.write(f"module {mod} (\n")
     port_lines = [
         "    input  wire clk,",
@@ -752,19 +834,24 @@ with open(sv_path, 'w') as f:
     for inp in input_cols:
         port_lines.append(f"    input  wire {inp},")
     for b in range(n_state_bits):
+        lbl = "LSB" if b == 0 else ("MSB" if b == n_state_bits - 1 else str(b))
         port_lines.append(
-            f"    output wire {state_bit_name(b)},  // current-state bit {b} ({"LSB" if b==0 else "MSB" if b==n_state_bits-1 else str(b)})")
+            f"    output wire {state_bit_name(b)},  // current-state bit {b} ({lbl})")
     for idx, out in enumerate(output_cols):
         comma = "," if idx < len(output_cols) - 1 else ""
         port_lines.append(f"    output wire {out}{comma}")
     f.write("\n".join(port_lines))
     f.write("\n);\n\n")
 
-    f.write("// Next-state wires  (NS_0=LSB ... NS_{N-1}=MSB)\n")
+    # ── Next-state wire declarations ----------------------------------------
+    f.write("// ----------------------------------------------------------------\n")
+    f.write("// Next-state wires  (NS_0 = LSB ... NS_{N-1} = MSB)\n")
+    f.write("// ----------------------------------------------------------------\n")
     for b in range(n_state_bits):
         f.write(f"wire {ns_bit_name(b)};\n")
     f.write("\n")
 
+    # ── State encoding annotation -------------------------------------------
     f.write("// State encoding  (IDLE = 0, ERROR = highest, guaranteed by tool)\n")
     for sname, sval in state_enc.items():
         tags = []
@@ -773,80 +860,91 @@ with open(sv_path, 'w') as f:
             tags.append("ERROR (trap state)")
             if error_state_synthesised: tags.append("synthesised")
         tag_str = "  // " + ", ".join(tags) if tags else ""
-        f.write(f"//   {sname:<28} = {format(sval, f'0{n_state_bits}b')}  (decimal {sval}){tag_str}\n")
+        f.write(f"//   {sname:<28} = {format(sval, f'0{n_state_bits}b')}"
+                f"  (decimal {sval}){tag_str}\n")
     f.write("\n")
 
-    f.write("// State flip-flops  (reg1b, active-low async reset)\n")
-    f.write("// Reset drives all state bits to 0, which is IDLE by construction.\n")
+    # ── State flip-flops via REG_RST ----------------------------------------
+    # REG_RST always samples D on the rising clock edge.
+    # Async active-high rst drives Q to 0, which equals IDLE by construction.
+    f.write("// ----------------------------------------------------------------\n")
+    f.write("// State flip-flops\n")
+    f.write("// `REG_RST samples D on every rising clk edge.\n")
+    f.write("// Active-high rst drives all state bits to 0 (= IDLE encoding).\n")
+    f.write("// ----------------------------------------------------------------\n")
     for b in range(n_state_bits):
-        f.write(
-            f"reg1b ff_{b} (\n"
-            f"    .clk(clk),\n"
-            f"    .rst(rst),\n"
-            f"    .d({ns_bit_name(b)}),\n"
-            f"    .q({state_bit_name(b)})\n"
-            f");\n"
-        )
+        f.write(f"`REG_RST(ff_{b}, 1, clk, rst, {ns_bit_name(b)}, {state_bit_name(b)})\n")
     f.write("\n")
 
+    # ── Inverters for negated literals --------------------------------------
     if negated_signals:
-        f.write("// Inverters\n")
+        f.write("// ----------------------------------------------------------------\n")
+        f.write("// Inverters for negated literals\n")
+        f.write("// ----------------------------------------------------------------\n")
         for s in negated_signals:
             f.write(f"wire {s}_inv;\n")
         f.write("\n")
         for s in negated_signals:
-            f.write(f"inv1$ inv_{s} ({s}_inv, {s});\n")
+            emit_inv(f, f"inv_{s}", f"{s}_inv", s)
         f.write("\n")
 
-    f.write("// Next-state and output SOP logic\n\n")
+    # ── SOP logic for every next-state bit and output -----------------------
+    f.write("// ----------------------------------------------------------------\n")
+    f.write("// Next-state and output SOP logic\n")
+    f.write("// ----------------------------------------------------------------\n\n")
 
     for sig in pla_outputs:
         terms   = equations[sig]
         n_terms = len(terms)
 
-        if n_terms == 0:
-            f.write(f"// {sig} = 0  (no ON-set minterms)\n")
-            f.write(f"assign {sig} = 1'b0;\n\n")
-            continue
-
+        # Human-readable equation comment
         expr_comment = ' | '.join(
             ('(' + ' & '.join(t) + ')') if len(t) > 1 else t[0]
             for t in terms
-        )
+        ) if terms else '0'
         f.write(f"// {sig} = {expr_comment}\n")
 
-        if n_terms > 1:
-            for i in range(n_terms):
-                f.write(f"wire {sig}_t{i};\n")
-            f.write("\n")
+        # ── Constant zero: no ON-set minterms --------------------------------
+        if n_terms == 0:
+            # Use assign; synthesiser will tie the port low.
+            f.write(f"assign {sig} = 1'b0;\n\n")
+            continue
 
-        for i, term in enumerate(terms):
-            wires  = [literal_to_wire(lit) for lit in term]
-            n_in   = len(wires)
-            target = sig if n_terms == 1 else f"{sig}_t{i}"
-
-            if n_in == 1 and wires[0] == '1':
-                f.write(f"assign {target} = 1'b1;\n")
-            elif n_in == 1:
-                tag = f"{sig}_buf" if n_terms == 1 else f"{sig}_buf{i}"
-                f.write(f"buffer$ {tag} ({target}, {wires[0]});\n")
+        # ── Single product term (AND only, no OR needed) ---------------------
+        if n_terms == 1:
+            wires = [literal_to_wire(lit) for lit in terms[0]]
+            if terms[0] == ['1']:
+                # Constant one (tautology cube).
+                f.write(f"assign {sig} = 1'b1;\n\n")
             else:
-                tag = f"{sig}_and" if n_terms == 1 else f"{sig}_and{i}"
-                f.write(f"and{n_in}$ {tag} ({target}, {', '.join(wires)});\n")
+                emit_and(f, f"{sig}_and", sig, wires)
+                f.write("\n")
+            continue
 
-        if n_terms > 1:
-            ints = [f"{sig}_t{i}" for i in range(n_terms)]
-            f.write(f"or{n_terms}$  {sig}_or  ({sig}, {', '.join(ints)});\n")
+        # ── Multiple product terms: AND into temps, then OR -----------------
+        term_wires = []
+        for i, term in enumerate(terms):
+            t_wire = f"{sig}_t{i}"
+            f.write(f"wire {t_wire};\n")
+            wires = [literal_to_wire(lit) for lit in term]
+            if term == ['1']:
+                # Tautology product term -- assign constant 1.
+                f.write(f"assign {t_wire} = 1'b1;\n")
+            else:
+                emit_and(f, f"{sig}_and{i}", t_wire, wires)
+            term_wires.append(t_wire)
 
+        f.write("\n")
+        emit_or(f, f"{sig}_or", sig, term_wires)
         f.write("\n")
 
     f.write("endmodule\n")
 
 log(f"  Structural Verilog written -> {sv_path}  OK")
 
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
 # Done
-# ─────────────────────────────────────────────────────────────────────────────
+# ---------------------------------------------------------------------------
 log()
 log(BANNER)
 log("  Pipeline complete -- all output files:")

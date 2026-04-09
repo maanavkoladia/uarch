@@ -1,6 +1,8 @@
 // ======================================================================
 // FSM : ICache_Controller_Logic
 // Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)
+// Std : Verilog-2005 (IEEE 1364-2005)
+// Lib : std_cell_macros.vh
 // NOTE: ERROR state was synthesised automatically.
 //       Any undefined transition lands here (all outputs = 0).
 // ======================================================================
@@ -35,6 +37,8 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //
 
+`include "std_cell_macros.vh"
+
 module ICache_Controller_Logic (
     input  wire clk,
     input  wire rst,
@@ -55,7 +59,9 @@ module ICache_Controller_Logic (
     output wire Fill3EN_o
 );
 
-// Next-state wires  (NS_0=LSB ... NS_{N-1}=MSB)
+// ----------------------------------------------------------------
+// Next-state wires  (NS_0 = LSB ... NS_{N-1} = MSB)
+// ----------------------------------------------------------------
 wire NS_0;
 wire NS_1;
 wire NS_2;
@@ -69,103 +75,95 @@ wire NS_2;
 //   SWAP                         = 101  (decimal 5)
 //   ERROR                        = 110  (decimal 6)  // ERROR (trap state), synthesised
 
-// State flip-flops  (reg1b, active-low async reset)
-// Reset drives all state bits to 0, which is IDLE by construction.
-reg1b ff_0 (
-    .clk(clk),
-    .rst(rst),
-    .d(NS_0),
-    .q(S_0)
-);
-reg1b ff_1 (
-    .clk(clk),
-    .rst(rst),
-    .d(NS_1),
-    .q(S_1)
-);
-reg1b ff_2 (
-    .clk(clk),
-    .rst(rst),
-    .d(NS_2),
-    .q(S_2)
-);
+// ----------------------------------------------------------------
+// State flip-flops
+// `REG_RST samples D on every rising clk edge.
+// Active-high rst drives all state bits to 0 (= IDLE encoding).
+// ----------------------------------------------------------------
+`REG_RST(ff_0, 1, clk, rst, NS_0, S_0)
+`REG_RST(ff_1, 1, clk, rst, NS_1, S_1)
+`REG_RST(ff_2, 1, clk, rst, NS_2, S_2)
 
-// Inverters
+// ----------------------------------------------------------------
+// Inverters for negated literals
+// ----------------------------------------------------------------
 wire I_VC_Miss_i_inv;
 wire S_0_inv;
 wire S_1_inv;
 wire S_2_inv;
 wire mem_valid_i_inv;
 
-inv1$ inv_I_VC_Miss_i (I_VC_Miss_i_inv, I_VC_Miss_i);
-inv1$ inv_S_0 (S_0_inv, S_0);
-inv1$ inv_S_1 (S_1_inv, S_1);
-inv1$ inv_S_2 (S_2_inv, S_2);
-inv1$ inv_mem_valid_i (mem_valid_i_inv, mem_valid_i);
+`INV_N(inv_I_VC_Miss_i, 1, I_VC_Miss_i, I_VC_Miss_i_inv)
+`INV_N(inv_S_0, 1, S_0, S_0_inv)
+`INV_N(inv_S_1, 1, S_1, S_1_inv)
+`INV_N(inv_S_2, 1, S_2, S_2_inv)
+`INV_N(inv_mem_valid_i, 1, mem_valid_i, mem_valid_i_inv)
 
+// ----------------------------------------------------------------
 // Next-state and output SOP logic
+// ----------------------------------------------------------------
 
 // NS_0 = (S_0 & !S_2 & !mem_valid_i) | (!S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i & en_i)
 wire NS_0_t0;
+`AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_2_inv, mem_valid_i_inv)
 wire NS_0_t1;
+`AND_4(NS_0_and1, 1, NS_0_t1, S_0_inv, S_1, S_2_inv, mem_valid_i)
 wire NS_0_t2;
+`AND_5(NS_0_and2, 1, NS_0_t2, S_0_inv, S_1_inv, S_2_inv, IC_miss_i, en_i)
 
-and3$ NS_0_and0 (NS_0_t0, S_0, S_2_inv, mem_valid_i_inv);
-and4$ NS_0_and1 (NS_0_t1, S_0_inv, S_1, S_2_inv, mem_valid_i);
-and5$ NS_0_and2 (NS_0_t2, S_0_inv, S_1_inv, S_2_inv, IC_miss_i, en_i);
-or3$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2);
+`OR_3(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2)
 
 // NS_1 = (!S_0 & S_1) | (S_1 & !S_2 & !mem_valid_i) | (S_0 & !S_1 & !S_2 & mem_valid_i)
 wire NS_1_t0;
+`AND_2(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1)
 wire NS_1_t1;
+`AND_3(NS_1_and1, 1, NS_1_t1, S_1, S_2_inv, mem_valid_i_inv)
 wire NS_1_t2;
+`AND_4(NS_1_and2, 1, NS_1_t2, S_0, S_1_inv, S_2_inv, mem_valid_i)
 
-and2$ NS_1_and0 (NS_1_t0, S_0_inv, S_1);
-and3$ NS_1_and1 (NS_1_t1, S_1, S_2_inv, mem_valid_i_inv);
-and4$ NS_1_and2 (NS_1_t2, S_0, S_1_inv, S_2_inv, mem_valid_i);
-or3$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1, NS_1_t2);
+`OR_3(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2)
 
 // NS_2 = (!S_0 & S_2 & !mem_valid_i) | (!S_0 & S_1 & S_2) | (S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i & !I_VC_Miss_i & en_i)
 wire NS_2_t0;
+`AND_3(NS_2_and0, 1, NS_2_t0, S_0_inv, S_2, mem_valid_i_inv)
 wire NS_2_t1;
+`AND_3(NS_2_and1, 1, NS_2_t1, S_0_inv, S_1, S_2)
 wire NS_2_t2;
+`AND_4(NS_2_and2, 1, NS_2_t2, S_0, S_1, S_2_inv, mem_valid_i)
 wire NS_2_t3;
+`AND_6(NS_2_and3, 1, NS_2_t3, S_0_inv, S_1_inv, S_2_inv, IC_miss_i, I_VC_Miss_i_inv, en_i)
 
-and3$ NS_2_and0 (NS_2_t0, S_0_inv, S_2, mem_valid_i_inv);
-and3$ NS_2_and1 (NS_2_t1, S_0_inv, S_1, S_2);
-and4$ NS_2_and2 (NS_2_t2, S_0, S_1, S_2_inv, mem_valid_i);
-and6$ NS_2_and3 (NS_2_t3, S_0_inv, S_1_inv, S_2_inv, IC_miss_i, I_VC_Miss_i_inv, en_i);
-or4$  NS_2_or  (NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3);
+`OR_4(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3)
 
 // LD_IC_SWAP_BUF_o = (!S_0 & !S_1 & !S_2 & IC_miss_i & !I_VC_Miss_i & en_i)
-and6$ LD_IC_SWAP_BUF_o_and (LD_IC_SWAP_BUF_o, S_0_inv, S_1_inv, S_2_inv, IC_miss_i, I_VC_Miss_i_inv, en_i);
+`AND_6(LD_IC_SWAP_BUF_o_and, 1, LD_IC_SWAP_BUF_o, S_0_inv, S_1_inv, S_2_inv, IC_miss_i, I_VC_Miss_i_inv, en_i)
 
 // RD_I_VC_SWAP_BUF_o = (S_0 & !S_1 & S_2)
-and3$ RD_I_VC_SWAP_BUF_o_and (RD_I_VC_SWAP_BUF_o, S_0, S_1_inv, S_2);
+`AND_3(RD_I_VC_SWAP_BUF_o_and, 1, RD_I_VC_SWAP_BUF_o, S_0, S_1_inv, S_2)
 
-// busy_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2)
+// busy_o = (S_1 & !S_2) | (S_0 & !S_1) | (!S_1 & S_2)
 wire busy_o_t0;
+`AND_2(busy_o_and0, 1, busy_o_t0, S_1, S_2_inv)
 wire busy_o_t1;
+`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_1_inv)
 wire busy_o_t2;
+`AND_2(busy_o_and2, 1, busy_o_t2, S_1_inv, S_2)
 
-and2$ busy_o_and0 (busy_o_t0, S_0, S_1_inv);
-and2$ busy_o_and1 (busy_o_t1, S_1, S_2_inv);
-and2$ busy_o_and2 (busy_o_t2, S_1_inv, S_2);
-or3$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2);
+`OR_3(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1, busy_o_t2)
 
 // MakeReq_o = (S_0 & !S_1 & !S_2 & !mem_valid_i)
-and4$ MakeReq_o_and (MakeReq_o, S_0, S_1_inv, S_2_inv, mem_valid_i_inv);
+`AND_4(MakeReq_o_and, 1, MakeReq_o, S_0, S_1_inv, S_2_inv, mem_valid_i_inv)
 
 // Fill0EN_o = (S_0 & !S_1 & !S_2 & mem_valid_i)
-and4$ Fill0EN_o_and (Fill0EN_o, S_0, S_1_inv, S_2_inv, mem_valid_i);
+`AND_4(Fill0EN_o_and, 1, Fill0EN_o, S_0, S_1_inv, S_2_inv, mem_valid_i)
 
 // Fill1EN_o = (!S_0 & S_1 & !S_2 & mem_valid_i)
-and4$ Fill1EN_o_and (Fill1EN_o, S_0_inv, S_1, S_2_inv, mem_valid_i);
+`AND_4(Fill1EN_o_and, 1, Fill1EN_o, S_0_inv, S_1, S_2_inv, mem_valid_i)
 
 // Fill2EN_o = (S_0 & S_1 & !S_2 & mem_valid_i)
-and4$ Fill2EN_o_and (Fill2EN_o, S_0, S_1, S_2_inv, mem_valid_i);
+`AND_4(Fill2EN_o_and, 1, Fill2EN_o, S_0, S_1, S_2_inv, mem_valid_i)
 
 // Fill3EN_o = (!S_0 & !S_1 & S_2 & mem_valid_i)
-and4$ Fill3EN_o_and (Fill3EN_o, S_0_inv, S_1_inv, S_2, mem_valid_i);
+`AND_4(Fill3EN_o_and, 1, Fill3EN_o, S_0_inv, S_1_inv, S_2, mem_valid_i)
 
 endmodule

@@ -1,7 +1,7 @@
 {
     "script path" : { 
         "Combinational SOP GEN": "scripts/RTL_Generation/genCombinational_SOP.py",
-        "FSM SOP GEN" : "scripts/RTL_Generation/remoteAttempt/genFSM_SOP_Harish.py",
+        "FSM SOP GEN" : "scripts/RTL_Generation/genFSM_SOP.py",
         "Combinational LUT GEN" : "scripts/RTL_Generation/genCombinational_ROM.py",
         "FSM LUT GEN" : "scripts/RTL_Generation/genFSM_LUT.py"
     },
@@ -23,7 +23,7 @@
             "run Combinational SOP Gen": "true"
         },
 
-        "bank_controller_fsm_logic" : {
+        "mem bank_controller_fsm_logic" : {
             "csv": "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.csv",
             "outputFilePath" : "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.sv",
             "run Combinational SOP Gen": "false",
@@ -47,7 +47,7 @@
         "DCache bank fsm" : {
             "csv" : "rtl/DCache/gen/DCache_Bank_FSM.csv",
             "outputFilePath" : "rtl/DCache/gen/DCache_Bank_FSM.sv",
-            "run FSM SOP gen": "false"
+            "run FSM SOP gen": "true"
         },
 
         "VCache bank fsm" : {
@@ -77,7 +77,7 @@
         "REP_FSM": {
             "csv": "rtl/core/Decode/structural/gen/rep_fsm.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rep_fsm.sv",
-            "run FSM SOP gen": "false"
+            "run FSM SOP gen": "true"
         },
 
         "CONTROL_STORE": {

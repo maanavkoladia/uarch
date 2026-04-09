@@ -1,6 +1,8 @@
 // ======================================================================
 // Combinational block : MOD_LUT
 // Tool: csv2rtl.py  (auto-generated -- do not hand-edit)
+// Std : Verilog-2005 (IEEE 1364-2005)
+// Lib : std_cell_macros.vh
 // ======================================================================
 
 // Truth table (expanded, from CSV)
@@ -265,6 +267,8 @@
 //             1             1             1             1             1             1             1             1  |             0             0             1             0             0             0
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+`include "std_cell_macros.vh"
+
 module MOD_LUT (
     output wire msd_size2_o,
     output wire msd_size1_o,
@@ -282,75 +286,79 @@ module MOD_LUT (
     input  wire input0_i
 );
 
-// Inverter wires
+// ----------------------------------------------------------------
+// Inverters for negated literals
+// ----------------------------------------------------------------
 wire input0_i_inv;
 wire input1_i_inv;
 wire input2_i_inv;
 wire input6_i_inv;
 wire input7_i_inv;
 
-inv1$ inv_input0_i (input0_i_inv, input0_i);
-inv1$ inv_input1_i (input1_i_inv, input1_i);
-inv1$ inv_input2_i (input2_i_inv, input2_i);
-inv1$ inv_input6_i (input6_i_inv, input6_i);
-inv1$ inv_input7_i (input7_i_inv, input7_i);
+`INV_N(inv_input0_i, 1, input0_i, input0_i_inv)
+`INV_N(inv_input1_i, 1, input1_i, input1_i_inv)
+`INV_N(inv_input2_i, 1, input2_i, input2_i_inv)
+`INV_N(inv_input6_i, 1, input6_i, input6_i_inv)
+`INV_N(inv_input7_i, 1, input7_i, input7_i_inv)
 
+// ----------------------------------------------------------------
 // SOP logic (Quine-McCluskey minimised)
+// ----------------------------------------------------------------
 
 // msd_size2_o = (input7_i & !input6_i) | (!input6_i & input2_i & !input1_i & input0_i)
 wire msd_size2_o_t0;
+`AND_2(msd_size2_o_and0, 1, msd_size2_o_t0, input7_i, input6_i_inv)
 wire msd_size2_o_t1;
+`AND_4(msd_size2_o_and1, 1, msd_size2_o_t1, input6_i_inv, input2_i, input1_i_inv, input0_i)
 
-and2$ msd_size2_o_and0 (msd_size2_o_t0, input7_i, input6_i_inv);
-and4$ msd_size2_o_and1 (msd_size2_o_t1, input6_i_inv, input2_i, input1_i_inv, input0_i);
-or2$  msd_size2_o_or  (msd_size2_o, msd_size2_o_t0, msd_size2_o_t1);
+`OR_2(msd_size2_o_or, 1, msd_size2_o, msd_size2_o_t0, msd_size2_o_t1)
 
 // msd_size1_o = (!input7_i & input6_i) | (!input6_i & input2_i & !input1_i & !input0_i)
 wire msd_size1_o_t0;
+`AND_2(msd_size1_o_and0, 1, msd_size1_o_t0, input7_i_inv, input6_i)
 wire msd_size1_o_t1;
+`AND_4(msd_size1_o_and1, 1, msd_size1_o_t1, input6_i_inv, input2_i, input1_i_inv, input0_i_inv)
 
-and2$ msd_size1_o_and0 (msd_size1_o_t0, input7_i_inv, input6_i);
-and4$ msd_size1_o_and1 (msd_size1_o_t1, input6_i_inv, input2_i, input1_i_inv, input0_i_inv);
-or2$  msd_size1_o_or  (msd_size1_o, msd_size1_o_t0, msd_size1_o_t1);
+`OR_2(msd_size1_o_or, 1, msd_size1_o, msd_size1_o_t0, msd_size1_o_t1)
 
-// msd_size0_o = (input7_i & input6_i) | (!input6_i & !input2_i) | (!input6_i & input1_i) | (!input6_i & input0_i) | (input6_i & input2_i & !input1_i & !input0_i)
+// msd_size0_o = (!input6_i & !input2_i) | (input7_i & input6_i) | (!input6_i & input0_i) | (!input6_i & input1_i) | (input6_i & input2_i & !input1_i & !input0_i)
 wire msd_size0_o_t0;
+`AND_2(msd_size0_o_and0, 1, msd_size0_o_t0, input6_i_inv, input2_i_inv)
 wire msd_size0_o_t1;
+`AND_2(msd_size0_o_and1, 1, msd_size0_o_t1, input7_i, input6_i)
 wire msd_size0_o_t2;
+`AND_2(msd_size0_o_and2, 1, msd_size0_o_t2, input6_i_inv, input0_i)
 wire msd_size0_o_t3;
+`AND_2(msd_size0_o_and3, 1, msd_size0_o_t3, input6_i_inv, input1_i)
 wire msd_size0_o_t4;
+`AND_4(msd_size0_o_and4, 1, msd_size0_o_t4, input6_i, input2_i, input1_i_inv, input0_i_inv)
 
-and2$ msd_size0_o_and0 (msd_size0_o_t0, input7_i, input6_i);
-and2$ msd_size0_o_and1 (msd_size0_o_t1, input6_i_inv, input2_i_inv);
-and2$ msd_size0_o_and2 (msd_size0_o_t2, input6_i_inv, input1_i);
-and2$ msd_size0_o_and3 (msd_size0_o_t3, input6_i_inv, input0_i);
-and4$ msd_size0_o_and4 (msd_size0_o_t4, input6_i, input2_i, input1_i_inv, input0_i_inv);
-or5$  msd_size0_o_or  (msd_size0_o, msd_size0_o_t0, msd_size0_o_t1, msd_size0_o_t2, msd_size0_o_t3, msd_size0_o_t4);
+`OR_5(msd_size0_o_or, 1, msd_size0_o, msd_size0_o_t0, msd_size0_o_t1, msd_size0_o_t2, msd_size0_o_t3, msd_size0_o_t4)
 
-// sib_needed_o = (!input6_i & input2_i & !input1_i & !input0_i) | (!input7_i & input2_i & !input1_i & !input0_i)
+// sib_needed_o = (!input7_i & input2_i & !input1_i & !input0_i) | (!input6_i & input2_i & !input1_i & !input0_i)
 wire sib_needed_o_t0;
+`AND_4(sib_needed_o_and0, 1, sib_needed_o_t0, input7_i_inv, input2_i, input1_i_inv, input0_i_inv)
 wire sib_needed_o_t1;
+`AND_4(sib_needed_o_and1, 1, sib_needed_o_t1, input6_i_inv, input2_i, input1_i_inv, input0_i_inv)
 
-and4$ sib_needed_o_and0 (sib_needed_o_t0, input6_i_inv, input2_i, input1_i_inv, input0_i_inv);
-and4$ sib_needed_o_and1 (sib_needed_o_t1, input7_i_inv, input2_i, input1_i_inv, input0_i_inv);
-or2$  sib_needed_o_or  (sib_needed_o, sib_needed_o_t0, sib_needed_o_t1);
+`OR_2(sib_needed_o_or, 1, sib_needed_o, sib_needed_o_t0, sib_needed_o_t1)
 
-// disp_needed_o = (!input7_i & input6_i) | (input7_i & !input6_i) | (!input6_i & input2_i & !input1_i & input0_i)
+// disp_needed_o = (input7_i & !input6_i) | (!input7_i & input6_i) | (!input7_i & input2_i & !input1_i & input0_i)
 wire disp_needed_o_t0;
+`AND_2(disp_needed_o_and0, 1, disp_needed_o_t0, input7_i, input6_i_inv)
 wire disp_needed_o_t1;
+`AND_2(disp_needed_o_and1, 1, disp_needed_o_t1, input7_i_inv, input6_i)
 wire disp_needed_o_t2;
+`AND_4(disp_needed_o_and2, 1, disp_needed_o_t2, input7_i_inv, input2_i, input1_i_inv, input0_i)
 
-and2$ disp_needed_o_and0 (disp_needed_o_t0, input7_i_inv, input6_i);
-and2$ disp_needed_o_and1 (disp_needed_o_t1, input7_i, input6_i_inv);
-and4$ disp_needed_o_and2 (disp_needed_o_t2, input6_i_inv, input2_i, input1_i_inv, input0_i);
-or3$  disp_needed_o_or  (disp_needed_o, disp_needed_o_t0, disp_needed_o_t1, disp_needed_o_t2);
+`OR_3(disp_needed_o_or, 1, disp_needed_o, disp_needed_o_t0, disp_needed_o_t1, disp_needed_o_t2)
 
 // disp_size_o = (input7_i & !input6_i) | (!input6_i & input2_i & !input1_i & input0_i)
 wire disp_size_o_t0;
+`AND_2(disp_size_o_and0, 1, disp_size_o_t0, input7_i, input6_i_inv)
 wire disp_size_o_t1;
+`AND_4(disp_size_o_and1, 1, disp_size_o_t1, input6_i_inv, input2_i, input1_i_inv, input0_i)
 
-and2$ disp_size_o_and0 (disp_size_o_t0, input7_i, input6_i_inv);
-and4$ disp_size_o_and1 (disp_size_o_t1, input6_i_inv, input2_i, input1_i_inv, input0_i);
-or2$  disp_size_o_or  (disp_size_o, disp_size_o_t0, disp_size_o_t1);
+`OR_2(disp_size_o_or, 1, disp_size_o, disp_size_o_t0, disp_size_o_t1)
 
 endmodule

@@ -1,6 +1,8 @@
 // ======================================================================
 // FSM : DTE_Core_2_DMA_FSM
 // Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)
+// Std : Verilog-2005 (IEEE 1364-2005)
+// Lib : std_cell_macros.vh
 // NOTE: ERROR state was synthesised automatically.
 //       Any undefined transition lands here (all outputs = 0).
 // ======================================================================
@@ -24,6 +26,8 @@
 // ----------------------------------------------------------------------------------------------------------------------------------------------------
 //
 
+`include "std_cell_macros.vh"
+
 module DTE_Core_2_DMA_FSM (
     input  wire clk,
     input  wire rst,
@@ -38,7 +42,9 @@ module DTE_Core_2_DMA_FSM (
     output wire coreValOnBus_o
 );
 
-// Next-state wires  (NS_0=LSB ... NS_{N-1}=MSB)
+// ----------------------------------------------------------------
+// Next-state wires  (NS_0 = LSB ... NS_{N-1} = MSB)
+// ----------------------------------------------------------------
 wire NS_0;
 wire NS_1;
 
@@ -48,66 +54,65 @@ wire NS_1;
 //   ST_DMA                       = 10  (decimal 2)
 //   ERROR                        = 11  (decimal 3)  // ERROR (trap state), synthesised
 
-// State flip-flops  (reg1b, active-low async reset)
-// Reset drives all state bits to 0, which is IDLE by construction.
-reg1b ff_0 (
-    .clk(clk),
-    .rst(rst),
-    .d(NS_0),
-    .q(S_0)
-);
-reg1b ff_1 (
-    .clk(clk),
-    .rst(rst),
-    .d(NS_1),
-    .q(S_1)
-);
+// ----------------------------------------------------------------
+// State flip-flops
+// `REG_RST samples D on every rising clk edge.
+// Active-high rst drives all state bits to 0 (= IDLE encoding).
+// ----------------------------------------------------------------
+`REG_RST(ff_0, 1, clk, rst, NS_0, S_0)
+`REG_RST(ff_1, 1, clk, rst, NS_1, S_1)
 
-// Inverters
+// ----------------------------------------------------------------
+// Inverters for negated literals
+// ----------------------------------------------------------------
 wire S_0_inv;
 wire S_1_inv;
 wire others_busy_i_inv;
 
-inv1$ inv_S_0 (S_0_inv, S_0);
-inv1$ inv_S_1 (S_1_inv, S_1);
-inv1$ inv_others_busy_i (others_busy_i_inv, others_busy_i);
+`INV_N(inv_S_0, 1, S_0, S_0_inv)
+`INV_N(inv_S_1, 1, S_1, S_1_inv)
+`INV_N(inv_others_busy_i, 1, others_busy_i, others_busy_i_inv)
 
+// ----------------------------------------------------------------
 // Next-state and output SOP logic
+// ----------------------------------------------------------------
 
 // NS_0 = S_1
-buffer$ NS_0_buf (NS_0, S_1);
+wire NS_0_and_buf_mid;
+`INV_N(NS_0_and_buf_i0, 1, S_1, NS_0_and_buf_mid)
+`INV_N(NS_0_and_buf_i1, 1, NS_0_and_buf_mid, NS_0)
 
 // NS_1 = (S_0 & S_1) | (!S_0 & !S_1 & req_hit_i & !others_busy_i)
 wire NS_1_t0;
+`AND_2(NS_1_and0, 1, NS_1_t0, S_0, S_1)
 wire NS_1_t1;
+`AND_4(NS_1_and1, 1, NS_1_t1, S_0_inv, S_1_inv, req_hit_i, others_busy_i_inv)
 
-and2$ NS_1_and0 (NS_1_t0, S_0, S_1);
-and4$ NS_1_and1 (NS_1_t1, S_0_inv, S_1_inv, req_hit_i, others_busy_i_inv);
-or2$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1);
+`OR_2(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1)
 
-// busy_o = (S_0 & !S_1) | (!S_0 & S_1)
+// busy_o = (!S_0 & S_1) | (S_0 & !S_1)
 wire busy_o_t0;
+`AND_2(busy_o_and0, 1, busy_o_t0, S_0_inv, S_1)
 wire busy_o_t1;
+`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_1_inv)
 
-and2$ busy_o_and0 (busy_o_t0, S_0, S_1_inv);
-and2$ busy_o_and1 (busy_o_t1, S_0_inv, S_1);
-or2$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1);
+`OR_2(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1)
 
 // reqServed_o = (!S_0 & S_1)
-and2$ reqServed_o_and (reqServed_o, S_0_inv, S_1);
+`AND_2(reqServed_o_and, 1, reqServed_o, S_0_inv, S_1)
 
 // Drive_Addr_Bus_o = (!S_0 & S_1) | (!S_0 & req_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_t0;
+`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_0_inv, S_1)
 wire Drive_Addr_Bus_o_t1;
+`AND_3(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_0_inv, req_hit_i, others_busy_i_inv)
 
-and2$ Drive_Addr_Bus_o_and0 (Drive_Addr_Bus_o_t0, S_0_inv, S_1);
-and3$ Drive_Addr_Bus_o_and1 (Drive_Addr_Bus_o_t1, S_0_inv, req_hit_i, others_busy_i_inv);
-or2$  Drive_Addr_Bus_o_or  (Drive_Addr_Bus_o, Drive_Addr_Bus_o_t0, Drive_Addr_Bus_o_t1);
+`OR_2(Drive_Addr_Bus_o_or, 1, Drive_Addr_Bus_o, Drive_Addr_Bus_o_t0, Drive_Addr_Bus_o_t1)
 
 // Drv_DB_o = (!S_0 & S_1)
-and2$ Drv_DB_o_and (Drv_DB_o, S_0_inv, S_1);
+`AND_2(Drv_DB_o_and, 1, Drv_DB_o, S_0_inv, S_1)
 
 // coreValOnBus_o = (!S_0 & S_1)
-and2$ coreValOnBus_o_and (coreValOnBus_o, S_0_inv, S_1);
+`AND_2(coreValOnBus_o_and, 1, coreValOnBus_o, S_0_inv, S_1)
 
 endmodule

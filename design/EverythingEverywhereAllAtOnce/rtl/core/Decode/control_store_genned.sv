@@ -1,6 +1,8 @@
 // ======================================================================
 // Combinational block : cs_parsed
 // Tool: csv2rtl.py  (auto-generated -- do not hand-edit)
+// Std : Verilog-2005 (IEEE 1364-2005)
+// Lib : std_cell_macros.vh
 // ======================================================================
 
 // Truth table (expanded, from CSV)
@@ -1033,6 +1035,8 @@
 //             1             1             1             1             1             1             1             1             1             1  |             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0             0
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+`include "std_cell_macros.vh"
+
 module cs_parsed (
     output wire REP_o,
     output wire MODRM_NEEDED_o,
@@ -1094,7 +1098,9 @@ module cs_parsed (
     input  wire in_0_i
 );
 
-// Inverter wires
+// ----------------------------------------------------------------
+// Inverters for negated literals
+// ----------------------------------------------------------------
 wire in_0_i_inv;
 wire in_1_i_inv;
 wire in_2_i_inv;
@@ -1106,185 +1112,187 @@ wire in_7_i_inv;
 wire in_8_i_inv;
 wire in_9_i_inv;
 
-inv1$ inv_in_0_i (in_0_i_inv, in_0_i);
-inv1$ inv_in_1_i (in_1_i_inv, in_1_i);
-inv1$ inv_in_2_i (in_2_i_inv, in_2_i);
-inv1$ inv_in_3_i (in_3_i_inv, in_3_i);
-inv1$ inv_in_4_i (in_4_i_inv, in_4_i);
-inv1$ inv_in_5_i (in_5_i_inv, in_5_i);
-inv1$ inv_in_6_i (in_6_i_inv, in_6_i);
-inv1$ inv_in_7_i (in_7_i_inv, in_7_i);
-inv1$ inv_in_8_i (in_8_i_inv, in_8_i);
-inv1$ inv_in_9_i (in_9_i_inv, in_9_i);
+`INV_N(inv_in_0_i, 1, in_0_i, in_0_i_inv)
+`INV_N(inv_in_1_i, 1, in_1_i, in_1_i_inv)
+`INV_N(inv_in_2_i, 1, in_2_i, in_2_i_inv)
+`INV_N(inv_in_3_i, 1, in_3_i, in_3_i_inv)
+`INV_N(inv_in_4_i, 1, in_4_i, in_4_i_inv)
+`INV_N(inv_in_5_i, 1, in_5_i, in_5_i_inv)
+`INV_N(inv_in_6_i, 1, in_6_i, in_6_i_inv)
+`INV_N(inv_in_7_i, 1, in_7_i, in_7_i_inv)
+`INV_N(inv_in_8_i, 1, in_8_i, in_8_i_inv)
+`INV_N(inv_in_9_i, 1, in_9_i, in_9_i_inv)
 
+// ----------------------------------------------------------------
 // SOP logic (Quine-McCluskey minimised)
+// ----------------------------------------------------------------
 
-// REP_o = 0  (no ON-set minterms)
+// REP_o = 0
 assign REP_o = 1'b0;
 
 // MODRM_NEEDED_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i)
-and7$ MODRM_NEEDED_o_and (MODRM_NEEDED_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv);
+`AND_7(MODRM_NEEDED_o_and, 1, MODRM_NEEDED_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv)
 
 // RM_IS_DR_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i & !in_2_i)
-and8$ RM_IS_DR_o_and (RM_IS_DR_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv, in_2_i_inv);
+`AND_8(RM_IS_DR_o_and, 1, RM_IS_DR_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv, in_2_i_inv)
 
 // REG_IS_DR_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i & in_2_i)
-and8$ REG_IS_DR_o_and (REG_IS_DR_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv, in_2_i);
+`AND_8(REG_IS_DR_o_and, 1, REG_IS_DR_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv, in_2_i)
 
 // HARD_CODED_DR_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i)
-and7$ HARD_CODED_DR_o_and (HARD_CODED_DR_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i);
+`AND_7(HARD_CODED_DR_o_and, 1, HARD_CODED_DR_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i)
 
 // HARD_CODED_DR_ID_4_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i)
-and7$ HARD_CODED_DR_ID_4_o_and (HARD_CODED_DR_ID_4_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv);
+`AND_7(HARD_CODED_DR_ID_4_o_and, 1, HARD_CODED_DR_ID_4_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv)
 
 // HARD_CODED_DR_ID_3_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i)
-and7$ HARD_CODED_DR_ID_3_o_and (HARD_CODED_DR_ID_3_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv);
+`AND_7(HARD_CODED_DR_ID_3_o_and, 1, HARD_CODED_DR_ID_3_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv)
 
 // HARD_CODED_DR_ID_2_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & !in_2_i)
-and8$ HARD_CODED_DR_ID_2_o_and (HARD_CODED_DR_ID_2_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i_inv);
+`AND_8(HARD_CODED_DR_ID_2_o_and, 1, HARD_CODED_DR_ID_2_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i_inv)
 
 // HARD_CODED_DR_ID_1_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i)
-and7$ HARD_CODED_DR_ID_1_o_and (HARD_CODED_DR_ID_1_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i);
+`AND_7(HARD_CODED_DR_ID_1_o_and, 1, HARD_CODED_DR_ID_1_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i)
 
 // HARD_CODED_DR_ID_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i)
-and8$ HARD_CODED_DR_ID_0_o_and (HARD_CODED_DR_ID_0_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i);
+`AND_8(HARD_CODED_DR_ID_0_o_and, 1, HARD_CODED_DR_ID_0_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i)
 
-// HARD_CODED_SR_o = 0  (no ON-set minterms)
+// HARD_CODED_SR_o = 0
 assign HARD_CODED_SR_o = 1'b0;
 
 // HARD_CODED_SR_ID_4_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i)
-and6$ HARD_CODED_SR_ID_4_o_and (HARD_CODED_SR_ID_4_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv);
+`AND_6(HARD_CODED_SR_ID_4_o_and, 1, HARD_CODED_SR_ID_4_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv)
 
 // HARD_CODED_SR_ID_3_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i)
-and6$ HARD_CODED_SR_ID_3_o_and (HARD_CODED_SR_ID_3_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv);
+`AND_6(HARD_CODED_SR_ID_3_o_and, 1, HARD_CODED_SR_ID_3_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv)
 
-// HARD_CODED_SR_ID_2_o = 0  (no ON-set minterms)
+// HARD_CODED_SR_ID_2_o = 0
 assign HARD_CODED_SR_ID_2_o = 1'b0;
 
-// HARD_CODED_SR_ID_1_o = 0  (no ON-set minterms)
+// HARD_CODED_SR_ID_1_o = 0
 assign HARD_CODED_SR_ID_1_o = 1'b0;
 
-// HARD_CODED_SR_ID_0_o = 0  (no ON-set minterms)
+// HARD_CODED_SR_ID_0_o = 0
 assign HARD_CODED_SR_ID_0_o = 1'b0;
 
-// OP_IN_MODRM_o = 0  (no ON-set minterms)
+// OP_IN_MODRM_o = 0
 assign OP_IN_MODRM_o = 1'b0;
 
-// DATA_SIZE_2_o = 0  (no ON-set minterms)
+// DATA_SIZE_2_o = 0
 assign DATA_SIZE_2_o = 1'b0;
 
-// DATA_SIZE_1_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i & !in_1_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i & in_1_i & !in_0_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i & in_1_i & !in_0_i)
+// DATA_SIZE_1_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i & in_1_i & !in_0_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i & !in_1_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i & in_1_i & !in_0_i)
 wire DATA_SIZE_1_o_t0;
+`AND_9(DATA_SIZE_1_o_and0, 1, DATA_SIZE_1_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv, in_1_i, in_0_i_inv)
 wire DATA_SIZE_1_o_t1;
+`AND_9(DATA_SIZE_1_o_and1, 1, DATA_SIZE_1_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i_inv)
 wire DATA_SIZE_1_o_t2;
+`AND_9(DATA_SIZE_1_o_and2, 1, DATA_SIZE_1_o_t2, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv, in_1_i, in_0_i_inv)
 
-and9$ DATA_SIZE_1_o_and0 (DATA_SIZE_1_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i_inv);
-and9$ DATA_SIZE_1_o_and1 (DATA_SIZE_1_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv, in_1_i, in_0_i_inv);
-and9$ DATA_SIZE_1_o_and2 (DATA_SIZE_1_o_t2, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv, in_1_i, in_0_i_inv);
-or3$  DATA_SIZE_1_o_or  (DATA_SIZE_1_o, DATA_SIZE_1_o_t0, DATA_SIZE_1_o_t1, DATA_SIZE_1_o_t2);
+`OR_3(DATA_SIZE_1_o_or, 1, DATA_SIZE_1_o, DATA_SIZE_1_o_t0, DATA_SIZE_1_o_t1, DATA_SIZE_1_o_t2)
 
-// DATA_SIZE_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i & in_1_i & in_0_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i & in_1_i & in_0_i)
+// DATA_SIZE_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i & in_1_i & in_0_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i & in_1_i & in_0_i)
 wire DATA_SIZE_0_o_t0;
+`AND_9(DATA_SIZE_0_o_and0, 1, DATA_SIZE_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv, in_1_i, in_0_i)
 wire DATA_SIZE_0_o_t1;
+`AND_9(DATA_SIZE_0_o_and1, 1, DATA_SIZE_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv, in_1_i, in_0_i)
 
-and9$ DATA_SIZE_0_o_and0 (DATA_SIZE_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv, in_1_i, in_0_i);
-and9$ DATA_SIZE_0_o_and1 (DATA_SIZE_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv, in_1_i, in_0_i);
-or2$  DATA_SIZE_0_o_or  (DATA_SIZE_0_o, DATA_SIZE_0_o_t0, DATA_SIZE_0_o_t1);
+`OR_2(DATA_SIZE_0_o_or, 1, DATA_SIZE_0_o, DATA_SIZE_0_o_t0, DATA_SIZE_0_o_t1)
 
 // HARDCODED_DR_RD_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & !in_2_i)
-and8$ HARDCODED_DR_RD_o_and (HARDCODED_DR_RD_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i_inv);
+`AND_8(HARDCODED_DR_RD_o_and, 1, HARDCODED_DR_RD_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i_inv)
 
-// HARDCODED_SR_RD_o = 0  (no ON-set minterms)
+// HARDCODED_SR_RD_o = 0
 assign HARDCODED_SR_RD_o = 1'b0;
 
-// ST_SEL_o = 0  (no ON-set minterms)
+// ST_SEL_o = 0
 assign ST_SEL_o = 1'b0;
 
-// alu_inputA_sel_4_o = 0  (no ON-set minterms)
+// alu_inputA_sel_4_o = 0
 assign alu_inputA_sel_4_o = 1'b0;
 
-// alu_inputA_sel_3_o = 0  (no ON-set minterms)
+// alu_inputA_sel_3_o = 0
 assign alu_inputA_sel_3_o = 1'b0;
 
-// alu_inputA_sel_2_o = 0  (no ON-set minterms)
+// alu_inputA_sel_2_o = 0
 assign alu_inputA_sel_2_o = 1'b0;
 
 // alu_inputA_sel_1_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i)
-and6$ alu_inputA_sel_1_o_and (alu_inputA_sel_1_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv);
+`AND_6(alu_inputA_sel_1_o_and, 1, alu_inputA_sel_1_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv)
 
 // alu_inputA_sel_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i & in_1_i)
-and9$ alu_inputA_sel_0_o_and (alu_inputA_sel_0_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i);
+`AND_9(alu_inputA_sel_0_o_and, 1, alu_inputA_sel_0_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i)
 
-// alu_inputB_sel_4_o = 0  (no ON-set minterms)
+// alu_inputB_sel_4_o = 0
 assign alu_inputB_sel_4_o = 1'b0;
 
 // alu_inputB_sel_3_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & !in_2_i)
-and8$ alu_inputB_sel_3_o_and (alu_inputB_sel_3_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i_inv);
+`AND_8(alu_inputB_sel_3_o_and, 1, alu_inputB_sel_3_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i_inv)
 
-// alu_inputB_sel_2_o = 0  (no ON-set minterms)
+// alu_inputB_sel_2_o = 0
 assign alu_inputB_sel_2_o = 1'b0;
 
-// alu_inputB_sel_1_o = 0  (no ON-set minterms)
+// alu_inputB_sel_1_o = 0
 assign alu_inputB_sel_1_o = 1'b0;
 
 // alu_inputB_sel_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_2_i)
 wire alu_inputB_sel_0_o_t0;
+`AND_7(alu_inputB_sel_0_o_and0, 1, alu_inputB_sel_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv)
 wire alu_inputB_sel_0_o_t1;
+`AND_7(alu_inputB_sel_0_o_and1, 1, alu_inputB_sel_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i)
 
-and7$ alu_inputB_sel_0_o_and0 (alu_inputB_sel_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv);
-and7$ alu_inputB_sel_0_o_and1 (alu_inputB_sel_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i);
-or2$  alu_inputB_sel_0_o_or  (alu_inputB_sel_0_o, alu_inputB_sel_0_o_t0, alu_inputB_sel_0_o_t1);
+`OR_2(alu_inputB_sel_0_o_or, 1, alu_inputB_sel_0_o, alu_inputB_sel_0_o_t0, alu_inputB_sel_0_o_t1)
 
-// branch_target_sel_4_o = 0  (no ON-set minterms)
+// branch_target_sel_4_o = 0
 assign branch_target_sel_4_o = 1'b0;
 
-// branch_target_sel_3_o = 0  (no ON-set minterms)
+// branch_target_sel_3_o = 0
 assign branch_target_sel_3_o = 1'b0;
 
-// branch_target_sel_2_o = 0  (no ON-set minterms)
+// branch_target_sel_2_o = 0
 assign branch_target_sel_2_o = 1'b0;
 
-// branch_target_sel_1_o = 0  (no ON-set minterms)
+// branch_target_sel_1_o = 0
 assign branch_target_sel_1_o = 1'b0;
 
-// branch_target_sel_0_o = 0  (no ON-set minterms)
+// branch_target_sel_0_o = 0
 assign branch_target_sel_0_o = 1'b0;
 
 // OP_TYPE_4_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i)
-and8$ OP_TYPE_4_o_and (OP_TYPE_4_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i);
+`AND_8(OP_TYPE_4_o_and, 1, OP_TYPE_4_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i)
 
 // OP_TYPE_3_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i & !in_1_i)
-and9$ OP_TYPE_3_o_and (OP_TYPE_3_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i_inv);
+`AND_9(OP_TYPE_3_o_and, 1, OP_TYPE_3_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i_inv)
 
 // OP_TYPE_2_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i & in_1_i)
-and9$ OP_TYPE_2_o_and (OP_TYPE_2_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i);
+`AND_9(OP_TYPE_2_o_and, 1, OP_TYPE_2_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i)
 
 // OP_TYPE_1_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i & in_1_i)
-and9$ OP_TYPE_1_o_and (OP_TYPE_1_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i);
+`AND_9(OP_TYPE_1_o_and, 1, OP_TYPE_1_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i)
 
-// OP_TYPE_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_1_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i)
+// OP_TYPE_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_1_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i)
 wire OP_TYPE_0_o_t0;
+`AND_7(OP_TYPE_0_o_and0, 1, OP_TYPE_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv)
 wire OP_TYPE_0_o_t1;
+`AND_7(OP_TYPE_0_o_and1, 1, OP_TYPE_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_1_i)
 wire OP_TYPE_0_o_t2;
+`AND_7(OP_TYPE_0_o_and2, 1, OP_TYPE_0_o_t2, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv)
 
-and7$ OP_TYPE_0_o_and0 (OP_TYPE_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv);
-and7$ OP_TYPE_0_o_and1 (OP_TYPE_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_1_i);
-and7$ OP_TYPE_0_o_and2 (OP_TYPE_0_o_t2, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv);
-or3$  OP_TYPE_0_o_or  (OP_TYPE_0_o, OP_TYPE_0_o_t0, OP_TYPE_0_o_t1, OP_TYPE_0_o_t2);
+`OR_3(OP_TYPE_0_o_or, 1, OP_TYPE_0_o, OP_TYPE_0_o_t0, OP_TYPE_0_o_t1, OP_TYPE_0_o_t2)
 
-// br_uncond_o = 0  (no ON-set minterms)
+// br_uncond_o = 0
 assign br_uncond_o = 1'b0;
 
-// relative_branch_o = 0  (no ON-set minterms)
+// relative_branch_o = 0
 assign relative_branch_o = 1'b0;
 
-// special_dr_o = 0  (no ON-set minterms)
+// special_dr_o = 0
 assign special_dr_o = 1'b0;
 
-// is_far_o = 0  (no ON-set minterms)
+// is_far_o = 0
 assign is_far_o = 1'b0;
 
-// second_flag_needed_o = 0  (no ON-set minterms)
+// second_flag_needed_o = 0
 assign second_flag_needed_o = 1'b0;
 
 endmodule
