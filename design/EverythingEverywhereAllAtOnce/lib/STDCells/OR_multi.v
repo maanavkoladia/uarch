@@ -90,7 +90,7 @@ module MPS_OR_IN3$ (
     output out;
     input in0, in1, in2;
 
-    and3$ g0 (
+    or3$ g0 (
         .out(out),
         .in0(in0),
         .in1(in1),
@@ -110,7 +110,7 @@ module MPS_OR_IN4$ (
     output out;
     input in0, in1, in2, in3;
 
-    and4$ g0 (
+    or4$ g0 (
         .out(out),
         .in0(in0),
         .in1(in1),
