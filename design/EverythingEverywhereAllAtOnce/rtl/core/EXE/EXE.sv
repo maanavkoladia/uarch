@@ -233,6 +233,7 @@ module EXE (
             ST_PADDR_1: latches_i.ST_PADDR_1,
             ST_BIT_VEC_1: bit_vec_1_next,
             MIO: latches_i.MIO,
+            EIP: latches_i.EIP,
             res_buf: res_buf_next,
             sr_id: latches_i.sr_id,
             sr_data: sr_next,
