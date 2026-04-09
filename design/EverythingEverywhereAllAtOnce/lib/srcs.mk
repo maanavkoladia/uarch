@@ -13,13 +13,19 @@ COMMON_GATES_LIB = \
 				   $(ROOT)/lib/Common/utils.v 
 
 STD_CELLS_LIB = \
-				$(ROOT)/lib/STDCells/and_N.v \
-				$(ROOT)/lib/STDCells/CustomMuxes.v \
-				$(ROOT)/lib/STDCells/or_N.v \
-				$(ROOT)/lib/STDCells/reg1b.v \
-				$(ROOT)/lib/STDCells/KoggeStone.v \
-				$(ROOT)/lib/STDCells/triple_adder.v \
-				$(ROOT)/lib/STDCells/PortingLib.v 
+			$(ROOT)/lib/STDCells/triple_adder.v \
+			$(ROOT)/lib/STDCells/KoggeStone.v \
+			$(ROOT)/lib/STDCells/AND_N.v \
+			$(ROOT)/lib/STDCells/MUX_N.v \
+			$(ROOT)/lib/STDCells/OR_N.v \
+			$(ROOT)/lib/STDCells/4_2_pendcoder.v \
+			$(ROOT)/lib/STDCells/decoder_N.v \
+			$(ROOT)/lib/STDCells/MUX_Multi.v \
+			$(ROOT)/lib/STDCells/Legacy/CustomMuxes.v \
+			$(ROOT)/lib/STDCells/OR_multi.v \
+			$(ROOT)/lib/STDCells/REG_N.v \
+			$(ROOT)/lib/STDCells/AND_multi.v \
+			$(ROOT)/lib/STDCells/UniqueLib.v 
 
 LIB_SRC_FILES = \
 				$(UARCH_GATES_LIB) \

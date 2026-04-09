@@ -27,64 +27,50 @@ module mem_bank (
     wire mem_bank_controller_send_store_address_delayed;
     wire [$clog2(`BANK_CONTROLLER_FSM_LOGIC_STATES) - 1 : 0] mem_bank_controller_states_bits;
     //delay of .24, need four lined up
-    mps_buffer_delay_stages #(
-        .STAGES(4)
-    ) u0 (
-        .out(mem_bank_controller_send_store_address_delayed),
-        .in (mem_bank_controller_send_store_address)
-    );
+    //mps_buffer_delay_stages #(
+    //    .STAGES(4)
+    //) u0 (
+    //    .out(mem_bank_controller_send_store_address_delayed),
+    //    .in (mem_bank_controller_send_store_address)
+    //);
 
+    `BUFFER_DELAY(u0, 4, 1, mem_bank_controller_send_store_address, mem_bank_controller_send_store_address_delayed);
     wire [`NUM_SRAM_ADDRESS_BITS-1:0] bank_address_i;
     wire [`MEM_BUS_SIZE-1:0] bank_bus;
     wire [`MEM_BUS_SIZE-1:0] bank_write_data;
 
-    //assign bank_write_data = {
-    //    controller2bank_i.writeBuf[15],
-    //    controller2bank_i.writeBuf[14],
-    //    controller2bank_i.writeBuf[13],
-    //    controller2bank_i.writeBuf[12],
-    //    controller2bank_i.writeBuf[11],
-    //    controller2bank_i.writeBuf[10],
-    //    controller2bank_i.writeBuf[9],
-    //    controller2bank_i.writeBuf[8],
-    //    controller2bank_i.writeBuf[7],
-    //    controller2bank_i.writeBuf[6],
-    //    controller2bank_i.writeBuf[5],
-    //    controller2bank_i.writeBuf[4],
-    //    controller2bank_i.writeBuf[3],
-    //    controller2bank_i.writeBuf[2],
-    //    controller2bank_i.writeBuf[1],
-    //    controller2bank_i.writeBuf[0]
-    //};
-
     assign bank_write_data = writeBuf_i;
-    mux2_8$ u1 (
-        .Y  (bank_address_i),
-        .IN0(ld_address_i),
-        .IN1(st_address_i),
-        .S0 (mem_bank_controller_send_store_address_delayed)
-    );
 
+    //mux2_8$ u1 (
+    //    .Y  (bank_address_i),
+    //    .IN0(ld_address_i),
+    //    .IN1(st_address_i),
+    //    .S0 (mem_bank_controller_send_store_address_delayed)
+    //);
+
+    `MUX_2(u1, `NUM_SRAM_ADDRESS_BITS, bank_address_i, ld_address_i, st_address_i, mem_bank_controller_send_store_address_delayed);
     // bank internal bus
     //assign bank_bus = !mem_bank_controller_we ? bank_write_data : 'z;
-    mps_tristateL_width#(
-        .WIDTH(`MEM_BUS_SIZE)
-    ) (
-        .enbar(mem_bank_controller_we), .in(bank_write_data), .out(bank_bus)
-    );
-
+    //mps_tristateL_width#(
+    //    .WIDTH(`MEM_BUS_SIZE)
+    //) (
+    //    .enbar(mem_bank_controller_we), .in(bank_write_data), .out(bank_bus)
+    //);
+    `TRISTATE_L(u2, `MEM_BUS_SIZE, mem_bank_controller_we, bank_write_data, bank_bus)
     //assign mem_bus = controller2bank_i.driveMemBus ? bank_bus : 'z;
     wire driveMemBus_bar;
-    inv1$ u2 (
-        .out(driveMemBus_bar),
-        .in (driveMemBus_i)
-    );
-    mps_tristateL_width#(
-        .WIDTH(`MEM_BUS_SIZE)
-    ) (
-        .enbar(driveMemBus_bar), .in(bank_bus), .out(mem_bus)
-    );
+    //inv1$ u2 (
+    //    .out(driveMemBus_bar),
+    //    .in (driveMemBus_i)
+    //);
+    `INV_N(u3, 1, driveMemBus_i, driveMemBus_bar);
 
+    //mps_tristateL_width#(
+    //    .WIDTH(`MEM_BUS_SIZE)
+    //) (
+    //    .enbar(driveMemBus_bar), .in(bank_bus), .out(mem_bus)
+    //);
+    `TRISTATE_L(u4, `MEM_BUS_SIZE, driveMemBus_bar, bank_bus, mem_bus)
     genvar i_gen;
     generate
         for (i_gen = 0; i_gen < NUM_SRAM_CELLS; i_gen = i_gen + 1) begin : g_sram_cells

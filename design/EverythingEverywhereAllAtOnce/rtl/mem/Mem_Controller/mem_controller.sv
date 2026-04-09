@@ -1,4 +1,4 @@
-
+'`default_nettype none
 //module is resposible for managing the various banks, this module should not
 //
 //
@@ -146,7 +146,7 @@ MEM_CONTROLLER_FSM_STATES
         if (!rst) begin
             //we can proabaly cheese here and preload a chunk
             for (int i = 0; i < NUM_OF_BANK_CHIPS; i++) begin
-                chipTable[i].valid   <= 1;
+                chipTable[i].valid   <= 1; //can delete unused
                 chipTable[i].address <= 0;
             end
         end else begin

@@ -119,7 +119,7 @@
 
         "4_2 pencoder" : {
             "csv" : "lib/STDCells/gen/4_2_pendcoder.csv",
-            "outputFilePath" : "lib/STDCells/4_2_pendcoder.sv",
+            "outputFilePath" : "lib/STDCells/4_2_pendcoder.v",
             "run Combinational SOP Gen": "true"
         },
 
