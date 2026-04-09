@@ -127,9 +127,13 @@ module RR (
     //     .outputs(st_neuralnet_out)
     // );
 
+    bool instructionforward;
+    assign instructionforward = dc_latches_we && next_dc_valid;
+
     RegSB reg_sb_unit (
         .clk           (clk),
         .rst           (rst),
+        .instructionforward(instructionforward),
         .dr_id         (latchesInUse.cs.dr_id),
         .sr_id         (latchesInUse.cs.sr_id),
         .flush         (exe_outs_i.br_res_out.flush),

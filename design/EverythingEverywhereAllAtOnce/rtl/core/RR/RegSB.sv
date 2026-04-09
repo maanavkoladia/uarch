@@ -2,6 +2,8 @@ module RegSB (
     input wire clk,
     input wire rst,
 
+    input bool instructionforward,
+
     input reg_ids_e dr_id,
     input reg_ids_e sr_id,
     input reg_ids_e sib_base_id,
@@ -38,6 +40,9 @@ module RegSB (
     regsb_entry_t SCORE_BOARD[NUM_REGS];
     bool depStall_Internal;
 
+    bool updateSB;
+    assign updateSB = !depStall_Internal && instructionforward;
+
     assign dep_stall = depStall_Internal;
     assign ecx_sb = SCORE_BOARD[ECX].counter != 0;
     assign codeSeg_sb = SCORE_BOARD[CS].counter != 0;
@@ -51,8 +56,8 @@ module RegSB (
                 if (!(i == CS)) SCORE_BOARD[i].counter <= 0;
             end
         end else begin
-            if (cs_dr_wr && !depStall_Internal) SCORE_BOARD[dr_id].counter++;
-            if (cs_sr_wr && !depStall_Internal) SCORE_BOARD[sr_id].counter++;
+            if (cs_dr_wr && updateSB) SCORE_BOARD[dr_id].counter++;
+            if (cs_sr_wr && updateSB) SCORE_BOARD[sr_id].counter++;
 
             //dec logic
             if (wb_dr0_we) SCORE_BOARD[wb_dr0_id].counter--;
