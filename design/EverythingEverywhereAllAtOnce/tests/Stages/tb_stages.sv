@@ -291,8 +291,6 @@ module tb_stages();
             if (L.disp_needed)
                 $fdisplay(log_fd, "  DISP: size=%s  val=0x%08h",
                     L.disp_size ? "32" : "8", L.displacement);
-            $fdisplay(log_fd, "  imm64=0x%016h  seg0=%s  seg1=%s (v=%0b)",
-                L.imm64, get_reg_name(L.seg_0_id), get_reg_name(L.seg_1_id), L.seg_1_valid);
             $fdisplay(log_fd, "  WB_CS: ST_OP=%0b  WB_DR=%0b  WB_SR=%0b",
                 L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
         end

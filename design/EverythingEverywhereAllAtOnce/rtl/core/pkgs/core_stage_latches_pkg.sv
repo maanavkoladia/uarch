@@ -56,9 +56,12 @@ package core_stage_latches_pkg;
 
     typedef struct{
         bool REP;
+        bool REP_CMP;
+        bool HALT;
         bool MODRM_NEEDED;
         bool RM_IS_DR;
         bool REG_IS_DR;
+        bool REG_IS_SEGMENT;
         bool HARDCODED_DR;
         reg_ids_e HARDCODED_DR_ID;
         bool HARDCODED_SR;
@@ -89,6 +92,11 @@ package core_stage_latches_pkg;
         logic [1:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 
         bool will_mod_zf;       //need this for zf scoreboard to check during rep instructions
+
+        bool seg_1_valid;  //need two beacuse two segs for movs etc, 
+        reg_ids_e seg_0_id;
+        reg_ids_e seg_1_id;
+
     } rr_cs_t;
 
     typedef struct {
@@ -151,9 +159,6 @@ package core_stage_latches_pkg;
         bool disp_needed;
         bool disp_size; //8 or 32, 0 determined by DISP_NEEDED
         uint32_t displacement;
-        bool seg_1_valid;  //need two beacuse two segs for movs etc, 
-        reg_ids_e seg_0_id;
-        reg_ids_e seg_1_id;
     } rr_latches_general_t;
 
     typedef struct {

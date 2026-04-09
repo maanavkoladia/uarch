@@ -3,7 +3,7 @@
 // Tool: csv2rtl.py  (auto-generated -- do not hand-edit)
 // WARNING: 4 input vector(s) had no CSV row.
 //          Those vectors produce all-zero outputs (OFF-set default).
-//          See: /home/maanav/projects/school_projects/uarch/uarch_project/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/gen/EXE_valid_logic_coverage_report.txt
+//          See: /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/gen/EXE_valid_logic_coverage_report.txt
 // ======================================================================
 
 // Truth table (expanded, from CSV)

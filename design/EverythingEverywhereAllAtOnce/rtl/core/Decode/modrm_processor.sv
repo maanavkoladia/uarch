@@ -4,7 +4,7 @@ import control_store_pkg::*;
 
 module modrm_processor (
     input byte_t modrm_byte,
-    input logic [2:0] datasize,
+    input logic [1:0] datasize,
     input decode_cs_t decode_cs_inputs,
     output modrm_processor_outs_t outputs
 );
@@ -18,13 +18,16 @@ module modrm_processor (
     bool st_op;
     bool rm_reg_is_dr;
     bool reg_is_dr;
+    bool reg_is_segment;
     bool alu_inputA_override;
     bool alu_inputB_override;
+    bool high8;
     source_selector_e alu_inputA_override_sel;
     source_selector_e alu_inputB_override_sel;
 
     assign rm_is_dr = (decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.RM_IS_DR && !decode_cs_inputs.REG_IS_DR);
     assign reg_is_dr = (decode_cs_inputs.MODRM_NEEDED && !decode_cs_inputs.RM_IS_DR && decode_cs_inputs.REG_IS_DR);
+    assign reg_is_segment = (decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.REG_IS_SEGMENT);
 
     assign alu_inputA_override = rm_is_dr && (st_op || ld_op);
     assign alu_inputB_override = reg_is_dr && ld_op;
@@ -89,6 +92,20 @@ module modrm_processor (
                     dr_id = (datasize[1] && datasize[0]) ? MM7 : EDI;
                     high8 = (!datasize[1] && datasize[0]) ? 1'b1 : 1'b0;
                 end
+            endcase
+            dr_rd = 1'b1;
+            dr_wr = 1'b1;
+        end
+        else if(reg_is_segment) begin
+            case(modrm_byte[5:3])    //seg orders, given by chat, idk if i trust
+                3'd0: dr_id = ES;
+                3'd1: dr_id = CS;
+                3'd2: dr_id = SS;
+                3'd3: dr_id = DS;
+                3'd4: dr_id = FS;
+                3'd5: dr_id = GS;
+                3'd6: dr_id = NO_REG;
+                3'd7: dr_id = NO_REG;
             endcase
             dr_rd = 1'b1;
             dr_wr = 1'b1;
