@@ -2,12 +2,16 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import mem_common_pkg::*;
 
-`define CYCLE_TIME (20)
-`define DELAY_CYCLES(cycles) #(`CYCLE_TIME * cycles)
 
 module tb_bankFSM ();
+    localparam int = 10;
+
+    task automatic DelayClks(input int cycles);
+        #(Clk_PERIOD * cycles);
+    endtask
 
     `CLK_INIT(`CYCLE_TIME)
+
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
 
