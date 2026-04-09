@@ -5,7 +5,7 @@ package interconnect_pkg;
     localparam int numWriteBufsInMem = 8;
     localparam int NUM_DCACHE_PORTS = 4;
 
-    localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
+    localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_BITS;
 
     localparam int NUM_REQS = 14;
 
@@ -85,7 +85,7 @@ package interconnect_pkg;
 
     typedef struct {
         bool mem_valid[NUM_DCACHE_PORTS];
-        bool permissionToDriveDataBus_evictionBuf[NUM_DCACHE_PORTS][CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS];
+        bool permissionToDriveDataBus_evictionBuf[NUM_DCACHE_PORTS][CACHE_LINES_SIZE_BITS/DATA_BUS_WIDTH_BITS];
         //bool permissionToDriveAddrBus_eb;
         bool permissionToDriveAddrBus_Ld[NUM_DCACHE_PORTS];
         bool permissionToDriveAddrBus_eb[NUM_DCACHE_PORTS];

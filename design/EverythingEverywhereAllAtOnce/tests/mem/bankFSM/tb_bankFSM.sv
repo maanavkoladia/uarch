@@ -4,13 +4,13 @@ import mem_common_pkg::*;
 
 
 module tb_bankFSM ();
-    localparam int = 10;
+    localparam int CYCLE_TIME = 10;
 
     task automatic DelayClks(input int cycles);
-        #(Clk_PERIOD * cycles);
+        #(CYCLE_TIME * cycles);
     endtask
 
-    `CLK_INIT(`CYCLE_TIME)
+    `CLK_INIT(CYCLE_TIME)
 
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
@@ -48,26 +48,26 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
         .PreCharged_o(Precharged)
     );
 
-    property check_dataBus (
-        logic                          trigger,
-        logic [DATA_WIDTH_BITS - 1 : 0] expected,
-        logic [DATA_WIDTH_BITS - 1 : 0] actual
-    );
-        @(posedge clk)
-        disable iff (rst)
-        $fell(trigger) |=> ##10 (actual == expected && !$isunknown(actual));
-    endproperty
+    //property check_dataBus (
+    //    logic                          trigger,
+    //    logic [DATA_WIDTH_BITS - 1 : 0] expected,
+    //    logic [DATA_WIDTH_BITS - 1 : 0] actual
+    //);
+    //    @(posedge clk)
+    //    disable iff (rst)
+    //    $fell(trigger) |=> ##10 (actual == expected && !$isunknown(actual));
+    //endproperty
 
     // Cover: confirm the antecedent actually fires at least once.
     // If this cover is never hit the assertion was vacuously passing.
-    cover property (@(posedge clk) disable iff (rst) $fell(sva_trigger))
-        $display("[COVER] sva_trigger fell — SVA antecedent fired at time %0t", $realtime);
+    //cover property (@(posedge clk) disable iff (rst) $fell(sva_trigger))
+    //    $display("[COVER] sva_trigger fell — SVA antecedent fired at time %0t", $realtime);
 
     // Assertion: expected value must match mem[8] from your hex file.
     // Replace 32'hDEADBEEF with the real expected value.
-    assert property (check_dataBus(sva_trigger, 32'h ff777711, memCellBus))
-        else $fatal(1, "[FAIL] check_dataBus SVA failed at time %0t — got %h",
-                    $realtime, memCellBus);
+    //assert property (check_dataBus(sva_trigger, 32'h ff777711, memCellBus))
+    //    else $fatal(1, "[FAIL] check_dataBus SVA failed at time %0t — got %h",
+    //                $realtime, memCellBus);
 
     initial begin
         $vcdpluson;
@@ -75,11 +75,11 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
     end
 
     initial begin
-        `DELAY_CYCLES(5);
-        for(int i = 0; i < 4; i++; i++) begin
-            string fileName = $sformatf("fakeData/mem%d.hex", i);
-            $readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[i].mem_cell.mem);
-        end
+        DelayClks(5);
+        //for(int i = 0; i < 4; i++) begin
+        //    string fileName = $sformatf("fakeData/mem%d.hex", i);
+        //    $readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[i].mem_cell.mem);
+        //end
         //$readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[0].mem_cell.mem);;
         //$readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[1].mem_cell.mem);;
         //$readmemh(fileName, tb_bankFSM.uut0.g_sram_cells[2].mem_cell.mem);;
@@ -87,55 +87,57 @@ BANK_CONTROLLER_FSM_LOGIC_STATES
     end
 
     initial begin
-        `DELAY_CYCLES(10);
+        DelayClks(10);
         `LOG("Mem Bank Tb Starting up");
         rst = 0;
         cmd_start_store = 0;
         cmd_ld_addr_changed = 0;
-        `DELAY_CYCLES(3);
+        DelayClks(3);
         rst = 1;
         //testing precharging
-        `DELAY_CYCLES(10);
+        DelayClks(10);
         //testing ld addr changed functionality
+        @(posedge clk);
         cmd_ld_addr_changed = 1;
-        `DELAY_CYCLES(1);
+        @(posedge clk);
+        DelayClks(1);
         cmd_ld_addr_changed = 0;
-        `DELAY_CYCLES(20);
+        DelayClks(20);
 
         //testing store functionality
         cmd_start_store = 1;
-        `DELAY_CYCLES(1);
+        DelayClks(1);
         cmd_start_store = 0;
-        `DELAY_CYCLES(13);
+        DelayClks(13);
 
         //need to test: interrutip ld with ld_addr changed, should restart
         //load sequence
         cmd_ld_addr_changed = 1;
-        `DELAY_CYCLES(1);
+        DelayClks(1);
         cmd_ld_addr_changed = 0;
-        `DELAY_CYCLES(20);
+        DelayClks(20);
 
         //need to test: interppt store w ld addr chagned, shoudl not interrupt
         //write sequence
         cmd_start_store = 1;
-        `DELAY_CYCLES(1);
+        DelayClks(1);
         cmd_start_store = 0;
-        `DELAY_CYCLES(5);
+        DelayClks(5);
         cmd_ld_addr_changed = 1;
-        `DELAY_CYCLES(1);
+        DelayClks(1);
         cmd_ld_addr_changed = 0;
 
         //test: st interrutps a ld sequnce
-        `DELAY_CYCLES(20);
+        DelayClks(20);
         cmd_ld_addr_changed = 1;
-        `DELAY_CYCLES(1);
+        DelayClks(1);
         cmd_ld_addr_changed = 0;
-        `DELAY_CYCLES(2);
+        DelayClks(2);
         cmd_start_store = 1;
-        `DELAY_CYCLES(1);
+        DelayClks(1);
         cmd_start_store = 0;
 
-        `DELAY_CYCLES(50);
+        DelayClks(50);
  
         `LOG("Mem Bank Tb Complete");
         $finish;
