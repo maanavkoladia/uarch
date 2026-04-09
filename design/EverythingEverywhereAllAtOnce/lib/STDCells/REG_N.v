@@ -20,7 +20,7 @@ module MPS_reg_rst_we$ #(
     output wire [WIDTH-1:0] q
 );
 
-    localparam int NUM_REGS = (WIDTH + 63) / 64;
+    localparam NUM_REGS = (WIDTH + 63) / 64;
 
     genvar i;
 

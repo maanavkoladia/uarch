@@ -29,7 +29,7 @@ module DiskWrapper (
         end else begin
             if (ld_write_buf_req) begin
                 loading <= 1;
-                delayCycles_Counter <= DELAY;
+                delayCycles_Counter <= DISK_LOAD_DELAY;
                 disk_ld_Buffer_V <= 0;
             end else if (loading) begin
                 if (delayCycles_Counter == 0) begin

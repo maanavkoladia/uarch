@@ -14,11 +14,13 @@ module tb_memBanks ();
     end
 
     reg rst = 0;
-    reg [`NUM_SRAM_ADDRESS_BITS - 1 : 0] ld_address,
-    //wire [MEM_BUS_SIZE - 1:0] memBus;
-    //mem_controller_2_mem_bank_t bankCmds;
-
-    //mem_bank_out_t bankOut;
+    reg [`NUM_SRAM_ADDRESS_BITS - 1 : 0] ld_address;
+    reg [`NUM_SRAM_ADDRESS_BITS - 1 : 0] st_address;
+    reg startStore;
+    reg ld_address_change;
+    reg driveMemBus;
+    reg [`CACHE_LINES_SIZE_BITS - 1 : 0]writeBuf;
+    wire [`MEM_BUS_SIZE - 1:0] memBus;
 
     ////gate the bus
     //assign memBus = 'z;
@@ -26,13 +28,13 @@ module tb_memBanks ();
     mem_bank uut0 (
         .clk(clk),
         .rst(rst),
-        .ld_address(),
-        .st_address(),
-        .start_store(),
-        .ld_address_change(),
-        .driveMemBus(),
-        .writeBuf(),
-        .mem_bus(),
+        .ld_address(ld_address),
+        .st_address(st_address),
+        .start_store(startStore),
+        .ld_address_change(ld_address_change),
+        .driveMemBus(driveMemBus),
+        .writeBuf(writeBuf),
+        .mem_bus(memBus),
         .precharged(),
         .clear_writebufV ()
     );

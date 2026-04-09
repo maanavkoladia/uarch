@@ -5,7 +5,7 @@ package common_pkg;
 
 
     localparam int CACHE_LINES_SIZE_B = 16;
-    localparam int CACHE_LINES_SIZE_Bits = CACHE_LINES_SIZE_B * 8;
+    localparam int CACHE_LINES_SIZE_BITS = CACHE_LINES_SIZE_B * 8;
     localparam int ADDRESS_BITS = 32;
     localparam int PAGE_SIZE = 4096;
     localparam int PHY_MEM_SIZE = 1 << 15;

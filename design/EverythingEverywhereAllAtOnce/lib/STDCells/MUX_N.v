@@ -38,10 +38,10 @@
 //   input  [5:0]       sel;
 ////////////////////////////////////////////////////////////////////////////////
 
-module mux2_N #(parameter int WIDTH = 1)(
-    output logic [WIDTH-1:0] out,
-    input  logic [WIDTH-1:0] in0, in1,
-    input  logic             sel
+module mux2_N #(parameter WIDTH = 1)(
+    output wire [WIDTH-1:0] out,
+    input  wire [WIDTH-1:0] in0, in1,
+    input  wire             sel
 );
     genvar i;
     generate
@@ -56,10 +56,10 @@ module mux2_N #(parameter int WIDTH = 1)(
     endgenerate
 endmodule
 
-module mux3_N #(parameter int WIDTH = 1)(
-    output logic [WIDTH-1:0] out,
-    input  logic [WIDTH-1:0] in0, in1, in2,
-    input  logic             sel
+module mux3_N #(parameter WIDTH = 1)(
+    output wire [WIDTH-1:0] out,
+    input  wire [WIDTH-1:0] in0, in1, in2,
+    input  wire             sel
 );
     genvar i;
     generate
@@ -126,43 +126,6 @@ module mux8_N #(parameter WIDTH = 1)(
 
 endmodule
 
-module mux16_N #(parameter WIDTH = 1)(
-    output [WIDTH-1:0] out,
-    input  [WIDTH-1:0] in0,  in1,  in2,  in3,
-    input  [WIDTH-1:0] in4,  in5,  in6,  in7,
-    input  [WIDTH-1:0] in8,  in9,  in10, in11,
-    input  [WIDTH-1:0] in12, in13, in14, in15,
-    input  [3:0] sel
-);
-
-    genvar i;
-
-    generate
-        for(i = 0; i < WIDTH; i = i + 1) begin : gen_mux
-            MPS_MUX_IN16 u_mux (
-                .out(out[i]),
-                .in0(in0[i]),
-                .in1(in1[i]),
-                .in2(in2[i]),
-                .in3(in3[i]),
-                .in4(in4[i]),
-                .in5(in5[i]),
-                .in6(in6[i]),
-                .in7(in7[i]),
-                .in8(in8[i]),
-                .in9(in9[i]),
-                .in10(in10[i]),
-                .in11(in11[i]),
-                .in12(in12[i]),
-                .in13(in13[i]),
-                .in14(in14[i]),
-                .in15(in15[i]),
-                .sel(sel)
-            );
-        end
-    endgenerate
-
-endmodule
 
 
 
