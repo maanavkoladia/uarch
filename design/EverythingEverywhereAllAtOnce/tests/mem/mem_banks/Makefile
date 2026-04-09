@@ -3,8 +3,7 @@ STRUCTRURAL := true
 include ../../../Make.vars
 include ../../../Make.build
 
-TARGET = MemBankTest_Structural
-
+TARGET = MemBankTest
 
 GEN_CONF = startUpGen.conf.json
 
