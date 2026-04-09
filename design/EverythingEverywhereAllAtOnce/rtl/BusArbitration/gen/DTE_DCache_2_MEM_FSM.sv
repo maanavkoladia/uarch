@@ -2,7 +2,6 @@
 // FSM : DTE_DCache_2_MEM_FSM
 // Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)
 // Std : Verilog-2005 (IEEE 1364-2005)
-// Lib : std_cell_macros.vh
 // NOTE: ERROR state was synthesised automatically.
 //       Any undefined transition lands here (all outputs = 0).
 // ======================================================================
@@ -30,8 +29,6 @@
 //           1           1           0           x           x           x  |           0           0           0           1           0           1           0           1           0           0           0           1   WR2 -> IDLE
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //
-
-`include "std_cell_macros.vh"
 
 module DTE_DCache_2_MEM_FSM (
     input  wire clk,
@@ -137,11 +134,11 @@ wire busy_o_t2;
 // set_eb_commit_o = (!S_0 & !S_1 & S_2)
 `AND_3(set_eb_commit_o_and, 1, set_eb_commit_o, S_0_inv, S_1_inv, S_2)
 
-// Drive_Addr_Bus_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
+// Drive_Addr_Bus_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_t0;
-`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_0, S_2_inv)
+`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_1, S_2_inv)
 wire Drive_Addr_Bus_o_t1;
-`AND_2(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_1, S_2_inv)
+`AND_2(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_0, S_2_inv)
 wire Drive_Addr_Bus_o_t2;
 `AND_3(Drive_Addr_Bus_o_and2, 1, Drive_Addr_Bus_o_t2, S_0_inv, S_1_inv, S_2)
 wire Drive_Addr_Bus_o_t3;

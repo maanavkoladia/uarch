@@ -2,7 +2,6 @@
 // FSM : DTE_DDR5_2_Core_FSM
 // Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)
 // Std : Verilog-2005 (IEEE 1364-2005)
-// Lib : std_cell_macros.vh
 // NOTE: ERROR state was synthesised automatically.
 //       Any undefined transition lands here (all outputs = 0).
 // ======================================================================
@@ -25,8 +24,6 @@
 //           1           0           x           x  |           0           0           1           0           0           0   DELAY -> IDLE
 // ------------------------------------------------------------------------------------------------------------------------------------
 //
-
-`include "std_cell_macros.vh"
 
 module DTE_DDR5_2_Core_FSM (
     input  wire clk,

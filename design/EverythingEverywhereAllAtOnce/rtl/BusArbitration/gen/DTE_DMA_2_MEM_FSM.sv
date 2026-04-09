@@ -2,7 +2,6 @@
 // FSM : DTE_DMA_2_MEM_FSM
 // Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)
 // Std : Verilog-2005 (IEEE 1364-2005)
-// Lib : std_cell_macros.vh
 // NOTE: ERROR state was synthesised automatically.
 //       Any undefined transition lands here (all outputs = 0).
 // ======================================================================
@@ -29,8 +28,6 @@
 //           1           1           0           x           x  |           0           0           0           1           0           1           1           0           0           0           1   ST2 -> IDLE
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //
-
-`include "std_cell_macros.vh"
 
 module DTE_DMA_2_MEM_FSM (
     input  wire clk,
