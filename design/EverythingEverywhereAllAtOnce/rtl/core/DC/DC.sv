@@ -180,7 +180,7 @@ module DC (
             valid: latches_i.valid,
             stall: dc_stall,
             exp_pf: exp_stall,
-            exp_present: ld_neuralnet_out.DC_PF | st_neuralnet_out.DC_PF;
+            exp_present: ld_neuralnet_out.DC_PF | st_neuralnet_out.DC_PF,
             ld_addr_0_V: ld_addr_0_V,
             ld_addr_0: ld_addr_0,
             ld_addr_1_V: ld_addr_1_V,

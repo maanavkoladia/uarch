@@ -55,14 +55,11 @@ module Decode (
     bool decode_gp;
     rr_latches_general_t temp_rr_latch;
     bool flush, cpaddyx;
-    logic REP_MOV_LATCH, REP_CMP_LATCH;
+    logic REP_LATCH, REP_CMP_LATCH, HALT_REG;
     wire rr_latch_we_o;
 
     assign flush = exe_outs_i.br_res_out.flush;
     assign stall = rr_outs_i.valid && rr_outs_i.stall;
-
-    assign REP_MOV_LATCH = 1'b0;
-    assign REP_CMP_LATCH = 1'b0;
 
     logic [63:0][7:0] queue;
     genvar i;
@@ -117,7 +114,7 @@ module Decode (
     bool rep_reg_value;
     rep_controller piece_of_shit_rep_controller (
         .clk(clk), .rst(rst), .rep_prefix(total_pf_vector[0]),
-        .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb), .set_zf(rr_outs_i.set_ZF_sb), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
+        .mov_inst(!REP_CMP_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb), .set_zf(rr_outs_i.set_ZF_sb), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
         .zf_flag(exe_outs_i.ZF), .stall(stall), .flush(flush), .rep_latches(rep_latch_holder), .rep_register(rep_reg_value)
     );
 
@@ -162,14 +159,16 @@ module Decode (
             EIP <= 32'b0;
             PrevEIP <= 32'b0;
             PrevLength <= 32'b0;
-            //REP_MOV_LATCH <= 1'b0;    //need to save if its mov or cmp so can process next cylce, doing this to save crit path time
-            //REP_CMP_LATCH <= 1'b0;
+            REP_LATCH <= 1'b0;    //need to save if its mov or cmp so can process next cylce, doing this to save crit path time
+            REP_CMP_LATCH <= 1'b0;
+            HALT_REG <= 1'b0;
         end
         else begin
             PrevEIP <= EIP;
             PrevLength <= inst_length;
-            //REP_MOV_LATCH <= cs_rep_mov;
-            //REP_CMP_LATCH <= cs_rep_cmp;
+            REP_LATCH <= temp_decode_cs.REP;
+            REP_CMP_LATCH <= temp_decode_cs.REP_CMP;
+            HALT_REG <= temp_decode_cs.HALT;
 
             if(exe_outs_i.br_res_out.valid && flush) EIP <= exe_outs_i.br_res_out.br_target;
             else begin
@@ -187,7 +186,7 @@ module Decode (
 
 
     assign temp_rr_latch = '{
-        valid           : !invalid_inst,
+        valid           : !invalid_inst && !HALT_REG,
         cs              : temp_rr_cs,
 
         dc_cs           : temp_dc_cs,
@@ -207,10 +206,7 @@ module Decode (
         sib_scale       : sibscale,
         disp_needed     : (temp_rr_cs.MODRM_NEEDED) ? disp_needed : 1'b0,
         disp_size       : (temp_rr_cs.MODRM_NEEDED) ? disp_size : 1'b0,
-        displacement    : displacement,
-        seg_1_valid     : 1'b0,
-        seg_0_id        : segment0,
-        seg_1_id        : DS
+        displacement    : displacement
     };
 
     assign rr_latches_next = '{

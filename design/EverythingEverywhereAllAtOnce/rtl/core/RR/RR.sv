@@ -67,8 +67,8 @@ module RR (
         .WB_DR0_we(wb_outs_i.DR_0_we),
         .WB_DR1_we(wb_outs_i.DR_1_we),
 
-        .Segment0_ID(latchesInUse.seg_0_id),
-        .Segment1_ID(latchesInUse.seg_1_id),
+        .Segment0_ID(latchesInUse.cs.seg_0_id),
+        .Segment1_ID(latchesInUse.cs.seg_1_id),
 
         .outputs(reg_out)
     );
@@ -90,9 +90,9 @@ module RR (
         .displacement(latchesInUse.displacement),
         .datasize(latchesInUse.cs.datasize),
         .seg0_data(reg_out.Segment0_data),
-        .segment0_limit(SEGMENT_LIMITS[latchesInUse.seg_0_id]),
+        .segment0_limit(SEGMENT_LIMITS[latchesInUse.cs.seg_0_id]),
         .seg1_data(reg_out.Segment1_data),
-        .segment1_limit(SEGMENT_LIMITS[latchesInUse.seg_1_id]),
+        .segment1_limit(SEGMENT_LIMITS[latchesInUse.cs.seg_1_id]),
         .seg1_valid(1'b0),
         .modrm_needed(latchesInUse.cs.MODRM_NEEDED),
         .rm_is_dr(latchesInUse.cs.RM_IS_DR),
@@ -145,9 +145,9 @@ module RR (
         .cs_sr_wr      (latchesInUse.cs.sr_wr),
         .cs_dr_rd      (latchesInUse.cs.dr_rd),
         .cs_sr_rd      (latchesInUse.cs.sr_rd),
-        .Segment0_ID   (latchesInUse.seg_0_id),
-        .Segment1_ID   (latchesInUse.seg_1_id),
-        .Segment1_valid(1'b0),
+        .Segment0_ID   (latchesInUse.cs.seg_0_id),
+        .Segment1_ID   (latchesInUse.cs.seg_1_id),
+        .Segment1_valid(latchesInUse.cs.seg_1_valid),
         .dep_stall     (depstall),
         .ecx_sb        (ecx_sb),
         .codeSeg_sb    (cs_sb)
