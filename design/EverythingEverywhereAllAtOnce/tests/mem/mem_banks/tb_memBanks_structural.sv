@@ -12,6 +12,11 @@ module tb_memBanks ();
         forever #(`CYCLE_TIME/2) clk = ~clk;
     end
 
+    initial begin
+        $vcdpluson;
+        $vcdplusmemon;
+    end
+
     // Reset
     reg rst;
 
@@ -26,11 +31,6 @@ module tb_memBanks ();
     wire [`MEM_BUS_SIZE-1:0] memBus;
 
     // Dump waveform
-    initial begin
-        $dumpfile("wave.vcd");
-        $dumpvars(0, tb_memBanks);
-    end
-
     // Instantiate DUT
     mem_bank uut0 (
         .clk(clk),
