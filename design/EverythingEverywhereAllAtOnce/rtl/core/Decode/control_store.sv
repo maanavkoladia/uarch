@@ -161,7 +161,7 @@ module control_store (
         OP_IN_MODRM       : OP_IN_MODRM_o,
         dr_id             : mod_rm_cs_outs.dr_id,
         sr_id             : mod_rm_cs_outs.sr_id,
-        DATA_SIZE         : DATA_SIZE_o
+        DATA_SIZE         : DATA_SIZE_o[1:0]
     };
 
     // RR
@@ -179,7 +179,7 @@ module control_store (
         sr_rd            : mod_rm_cs_outs.sr_rd,
         dr_wr            : mod_rm_cs_outs.dr_wr,
         sr_wr            : mod_rm_cs_outs.sr_wr,
-        datasize         : DATA_SIZE_o,
+        datasize         : DATA_SIZE_o[1:0],
         will_mod_zf      : 1'b0
     };
 
@@ -187,8 +187,8 @@ module control_store (
     assign dc_cs = '{
         LD_OP : mod_rm_cs_outs.ld_op,
         ST_OP : mod_rm_cs_outs.st_op,
-        upper8: 0, //TODO
-        data_size: DATA_SIZE_o
+        upper8: mod_rm_cs_outs.high8,
+        datasize: DATA_SIZE_o[1:0]
     };
 
     // MEM

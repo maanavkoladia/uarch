@@ -9,8 +9,7 @@ RR_GEN_SRC_FILES = \
 
 # RR source files
 RR_SRC_FILES = \
-	$(RR_PATH_INTERNAL)/AddressGen_Logic.sv \
-	$(RR_PATH_INTERNAL)/AddyX_NeuralNet.sv \
+	$(RR_PATH_INTERNAL)/npu_node1.sv \
 	$(RR_PATH_INTERNAL)/RegFile.sv \
 	$(RR_PATH_INTERNAL)/RegSB.sv \
 	$(RR_PATH_INTERNAL)/RR.sv \

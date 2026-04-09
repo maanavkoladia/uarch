@@ -307,27 +307,31 @@ module tb_stages();
             uut_core.rr_outputs.dc_stage_latch_we);
     endtask
 
-    // --- DC LATCHES ---
-    task automatic print_dc_latches();
-        $fdisplay(log_fd, "[DC LATCHES]");
-        begin
-            automatic dc_latches_t L = uut_core.dc_latches;
-            $fdisplay(log_fd, "  valid=%0b  EIP=0x%08h  NEIP=0x%08h", L.valid, L.EIP, L.NEIP);
-            $fdisplay(log_fd, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
-                get_reg_name(L.dr_id), L.dr_data, get_reg_name(L.sr_id), L.sr_data);
-            $fdisplay(log_fd, "  CS: LD=%0b  ST=%0b  upper8=%0b  dsize=%0d",
-                L.cs.LD_OP, L.cs.ST_OP, L.cs.upper8, L.cs.data_size);
-            $fdisplay(log_fd, "  LD: xcl=%0b  paddr0=0x%04h  paddr1=0x%04h  swap=%0b  MIO=%0b",
-                L.LD_XCL, L.LD_PADDR_0, L.LD_PADDR_1, L.swapLines, L.MIO);
-            $fdisplay(log_fd, "  ST: xcl=%0b  paddr0=0x%04h  paddr1=0x%04h",
-                L.ST_XCL, L.ST_PADDR_0, L.ST_PADDR_1);
-            $fdisplay(log_fd, "  br_info: v=%0b  eip=0x%08h  pred_taken=%0b",
-                L.br_info.valid, L.br_info.br_eip, L.br_info.br_pred_taken);
-            $fdisplay(log_fd, "  EXE_CS: OP=%s  WB_CS: ST=%0b DR=%0b SR=%0b",
-                get_op_name(L.exe_cs.OP_TYPE), L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
-            $fdisplay(log_fd, "  imm64=0x%016h", L.imm64);
-        end
-    endtask
+// --- DC LATCHES ---
+task automatic print_dc_latches();
+    $fdisplay(log_fd, "[DC LATCHES]");
+    begin
+        automatic dc_latches_t L = uut_core.dc_latches;
+        $fdisplay(log_fd, "  valid=%0b  EIP=0x%08h  NEIP=0x%08h",
+            L.valid, L.EIP, L.NEIP);
+        $fdisplay(log_fd, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
+            get_reg_name(L.dr_id), L.dr_data,
+            get_reg_name(L.sr_id), L.sr_data);
+        $fdisplay(log_fd, "  CS: LD=%0b  ST=%0b  upper8=%0b  dsize=%0d",
+            L.cs.LD_OP, L.cs.ST_OP, L.cs.upper8, L.cs.datasize);
+        $fdisplay(log_fd, "  LD: vaddr=0x%08h  next_vaddr=0x%08h  limit=0x%08h",
+            L.ld_vaddy, L.next_ld_vaddy, L.seg0_limit_w_datasize);
+        $fdisplay(log_fd, "  ST: vaddr=0x%08h  next_vaddr=0x%08h  limit=0x%08h",
+            L.st_vaddy, L.next_st_vaddy, L.seg1_limit_w_datasize);
+        $fdisplay(log_fd, "  br_info: v=%0b  eip=0x%08h  pred_taken=%0b",
+            L.br_info.valid, L.br_info.br_eip, L.br_info.br_pred_taken);
+        $fdisplay(log_fd, "  EXE_CS: OP=%s  WB_CS: ST=%0b DR=%0b SR=%0b",
+            get_op_name(L.exe_cs.OP_TYPE),
+            L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
+        $fdisplay(log_fd, "  imm64=0x%016h", L.imm64);
+        $fdisplay(log_fd, "  rr_gp=%0b", L.rr_gp);
+    end
+endtask
 
     // --- DC OUTPUTS ---
     task automatic print_dc_outputs();
@@ -774,12 +778,35 @@ module tb_stages();
 
     //task to set limit regs
     task automatic set_limit_regs();
-            uut_core.rr_unit.SEGMENT_LIMITS[CS_LIMIT_ID] = 32'hFFFF_FFFF;
-            uut_core.rr_unit.SEGMENT_LIMITS[DS_LIMIT_ID] = 32'hFFFF_FFFF;
-            uut_core.rr_unit.SEGMENT_LIMITS[SS_LIMIT_ID] = 32'hFFFF_FFFF;
-            uut_core.rr_unit.SEGMENT_LIMITS[ES_LIMIT_ID] = 32'hFFFF_FFFF;
-            uut_core.rr_unit.SEGMENT_LIMITS[FS_LIMIT_ID] = 32'hFFFF_FFFF;
-            uut_core.rr_unit.SEGMENT_LIMITS[GS_LIMIT_ID] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[CS_LIMIT_ID].limit[0] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[CS_LIMIT_ID].limit[1] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[CS_LIMIT_ID].limit[2] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[CS_LIMIT_ID].limit[3] = 32'hFFFF_FFFF;
+
+            uut_core.rr_unit.SEGMENT_LIMITS[DS_LIMIT_ID].limit[0] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[DS_LIMIT_ID].limit[1] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[DS_LIMIT_ID].limit[2] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[DS_LIMIT_ID].limit[3] = 32'hFFFF_FFFF;
+
+            uut_core.rr_unit.SEGMENT_LIMITS[SS_LIMIT_ID].limit[0] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[SS_LIMIT_ID].limit[1] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[SS_LIMIT_ID].limit[2] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[SS_LIMIT_ID].limit[3] = 32'hFFFF_FFFF;
+
+            uut_core.rr_unit.SEGMENT_LIMITS[ES_LIMIT_ID].limit[0] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[ES_LIMIT_ID].limit[1] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[ES_LIMIT_ID].limit[2] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[ES_LIMIT_ID].limit[3] = 32'hFFFF_FFFF;
+
+            uut_core.rr_unit.SEGMENT_LIMITS[FS_LIMIT_ID].limit[0] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[FS_LIMIT_ID].limit[1] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[FS_LIMIT_ID].limit[2] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[FS_LIMIT_ID].limit[3] = 32'hFFFF_FFFF;
+
+            uut_core.rr_unit.SEGMENT_LIMITS[GS_LIMIT_ID].limit[0] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[GS_LIMIT_ID].limit[1] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[GS_LIMIT_ID].limit[2] = 32'hFFFF_FFFF;
+            uut_core.rr_unit.SEGMENT_LIMITS[GS_LIMIT_ID].limit[3] = 32'hFFFF_FFFF;
     endtask
 
 endmodule
