@@ -5,52 +5,52 @@
     inv_N$ #(.WIDTH(width)) unitName ( .in(in), .out(out) );
 
 `define AND_2(unitName, width, out, in0, in1) \
-    and2_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1);
+    and2_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1));
 `define AND_3(unitName, width, out, in0, in1, in2) \
-    and3_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2);
+    and3_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2));
 `define AND_4(unitName, width, out, in0, in1, in2, in3) \
-    and4_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3);
+    and4_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3));
 `define AND_5(unitName, width, out, in0, in1, in2, in3, in4) \
-    and5_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4);
+    and5_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4));
 `define AND_6(unitName, width, out, in0, in1, in2, in3, in4, in5) \
-    and6_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5);
+    and6_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5));
 `define AND_7(unitName, width, out, in0, in1, in2, in3, in4, in5, in6) \
-    and7_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6);
+    and7_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6));
 `define AND_8(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7) \
-    and8_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7);
+    and8_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7));
 `define AND_9(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7, in8) \
-    and9_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8);
+    and9_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8));
 `define AND_10(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7, in8, in9) \
-    and10_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9);
+    and10_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9));
 `define AND_11(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7, in8, in9, in10) \
-    and11_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9),.in10(in10);
+    and11_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9),.in10(in10));
 `define AND_12(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7, in8, in9, in10, in11) \
-    and12_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9),.in10(in10),.in11(in11);
+    and12_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9),.in10(in10),.in11(in11));
 
 /* ---------------- OR_2 to OR_12 macros ---------------- */
 
 `define OR_2(unitName, width, out, in0, in1) \
-    or2_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1);
+    or2_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1));
 `define OR_3(unitName, width, out, in0, in1, in2) \
-    or3_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2);
+    or3_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2));
 `define OR_4(unitName, width, out, in0, in1, in2, in3) \
-    or4_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3);
+    or4_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3));
 `define OR_5(unitName, width, out, in0, in1, in2, in3, in4) \
-    or5_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4);
+    or5_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4));
 `define OR_6(unitName, width, out, in0, in1, in2, in3, in4, in5) \
-    or6_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5);
+    or6_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5));
 `define OR_7(unitName, width, out, in0, in1, in2, in3, in4, in5, in6) \
-    or7_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6);
+    or7_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6));
 `define OR_8(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7) \
-    or8_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7);
+    or8_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7));
 `define OR_9(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7, in8) \
-    or9_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8);
+    or9_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8));
 `define OR_10(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7, in8, in9) \
-    or10_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9);
+    or10_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9));
 `define OR_11(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7, in8, in9, in10) \
-    or11_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9),.in10(in10);
+    or11_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9),.in10(in10));
 `define OR_12(unitName, width, out, in0, in1, in2, in3, in4, in5, in6, in7, in8, in9, in10, in11) \
-    or12_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9),.in10(in10),.in11(in11);
+    or12_N$ #(.WIDTH(width)) unitName (.out(out),.in0(in0),.in1(in1),.in2(in2),.in3(in3),.in4(in4),.in5(in5),.in6(in6),.in7(in7),.in8(in8),.in9(in9),.in10(in10),.in11(in11));
 
 //muxes
 `define MUX_2(unitName, width, out, in0, in1, sel1) \

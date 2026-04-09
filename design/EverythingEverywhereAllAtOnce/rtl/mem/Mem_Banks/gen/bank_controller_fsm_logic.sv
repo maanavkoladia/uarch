@@ -151,15 +151,15 @@ wire start_store_i_inv;
 
 // NS_0 = (!S_0 & S_3 & !S_4) | (!S_0 & !S_4 & !start_store_i) | (!S_3 & !S_4 & ld_address_change_i & !start_store_i) | (!S_0 & !S_1 & !S_2 & !S_3 & S_4) | (S_1 & S_2 & !S_3 & !S_4 & !start_store_i)
 wire NS_0_t0;
-`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_3, S_4_inv)
+`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_3, S_4_inv);
 wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_0_inv, S_4_inv, start_store_i_inv)
+`AND_3(NS_0_and1, 1, NS_0_t1, S_0_inv, S_4_inv, start_store_i_inv);
 wire NS_0_t2;
-`AND_4(NS_0_and2, 1, NS_0_t2, S_3_inv, S_4_inv, ld_address_change_i, start_store_i_inv)
+`AND_4(NS_0_and2, 1, NS_0_t2, S_3_inv, S_4_inv, ld_address_change_i, start_store_i_inv);
 wire NS_0_t3;
-`AND_5(NS_0_and3, 1, NS_0_t3, S_0_inv, S_1_inv, S_2_inv, S_3_inv, S_4)
+`AND_5(NS_0_and3, 1, NS_0_t3, S_0_inv, S_1_inv, S_2_inv, S_3_inv, S_4);
 wire NS_0_t4;
-`AND_5(NS_0_and4, 1, NS_0_t4, S_1, S_2, S_3_inv, S_4_inv, start_store_i_inv)
+`AND_5(NS_0_and4, 1, NS_0_t4, S_1, S_2, S_3_inv, S_4_inv, start_store_i_inv);
 
 `OR_5(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4)
 

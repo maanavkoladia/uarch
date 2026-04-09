@@ -556,7 +556,7 @@ with open(sv_path, 'w') as f:
     f.write(f"// Combinational block : {stem}\n")
     f.write(f"// Tool: csv2rtl.py  (auto-generated -- do not hand-edit)\n")
     f.write(f"// Std : Verilog-2005 (IEEE 1364-2005)\n")
-    f.write(f"// Lib : std_cell_macros.vh\n")
+    #f.write(f"// Lib : std_cell_macros.vh\n")
     if undefined_combos:
         f.write(f"// WARNING: {len(undefined_combos)} input vector(s) had no CSV row.\n")
         f.write(f"//          Those vectors produce all-zero outputs (OFF-set default).\n")
@@ -578,7 +578,7 @@ with open(sv_path, 'w') as f:
     f.write(f"// {sep}\n\n")
 
     # `include
-    f.write('`include "std_cell_macros.vh"\n\n')
+    #f.write('`include "std_cell_macros.vh"\n\n')
 
     # Module declaration
     f.write(f"module {mod} (\n")
