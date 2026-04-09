@@ -54,7 +54,7 @@ module Decode (
     wb_cs_t temp_wb_cs;
     bool decode_gp;
     rr_latches_general_t temp_rr_latch;
-    bool flush, cpaddyx;
+    bool flush; //cpaddyx , i did not put ts here, whats this for
     logic REP_LATCH, REP_CMP_LATCH, HALT_REG;
     wire rr_latch_we_o;
 
@@ -118,10 +118,10 @@ module Decode (
         .zf_flag(exe_outs_i.ZF), .stall(stall), .flush(flush), .rep_latches(rep_latch_holder), .rep_register(rep_reg_value)
     );
 
-    bool rr_valid;
+    bool next_rr_valid;
     rr_valid_logic decode_2_RR_valid_logic(
         .RR_we_o(rr_latch_we_o),
-        .N_RR_V_o(rr_valid),
+        .N_RR_V_o(next_rr_valid),
         .DECODE_V_i(!invalid_inst),
         .RR_stall_i(rr_outs_i.stall),
         .RR_V_i(rr_outs_i.valid),
@@ -135,7 +135,7 @@ module Decode (
 
 
     assign outs_o = '{
-        valid : rr_valid,
+        valid : next_rr_valid,
         stall : invalid_inst || rr_outs_i.stall,
         eip : EIP,
         invalid_instruction : invalid_inst,
@@ -168,7 +168,7 @@ module Decode (
             PrevLength <= inst_length;
             REP_LATCH <= temp_decode_cs.REP;
             REP_CMP_LATCH <= temp_decode_cs.REP_CMP;
-            HALT_REG <= temp_decode_cs.HALT;
+            HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
 
             if(exe_outs_i.br_res_out.valid && flush) EIP <= exe_outs_i.br_res_out.br_target;
             else begin
@@ -177,7 +177,7 @@ module Decode (
                 end
                 else begin
                     //if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
-                    if(!invalid_inst && !stall) EIP <= NEIP;    //need to integrate rep
+                    if(!invalid_inst && !stall && !HALT_REG) EIP <= NEIP;    //need to integrate rep
                     else EIP <= EIP;
                 end
             end

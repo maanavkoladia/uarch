@@ -18,7 +18,7 @@ module tb_memBanks ();
     mem_bank_out_t bankOut;
 
     //gate the bus
-    assign memBus = 'z;
+    assign memBus = 'z;w
 
     mem_bank uut0 (
         .clk(clk),

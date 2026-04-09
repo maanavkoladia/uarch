@@ -93,8 +93,9 @@ module DCache_TOP (
     //end
 
     //line0 line 1 logic
+    bool usedLine0;
     always_comb begin
-        bool usedLine0 = 0;
+        usedLine0 = 1'b0;
         out2Core_o.line_0 = '{default: '0};
         out2Core_o.hit_line_0 = 0;
         out2Core_o.line_1 = '{default: '0};

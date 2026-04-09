@@ -13,14 +13,21 @@ _start:
     # 3) ADD [EDX*2 + EDI + 0x12345678], EAX x1006
     addl %eax, 0x00005678(%edi,%edx,2)
 
+<<<<<<< HEAD
     # 4) x100d
     addl 0x00005678(%edi,%edx,2), %esi 
+=======
+    # 3) ADD ESI, [EDX*2 + EDI + 0x12345678]
+    addl 0x00005678(%edi,%edx,2), %esi
+>>>>>>> 092ccefeba40bd12f97cd06dfb88c904c12ccb03
 
     # 4) ADD EBX, EDI x1014
     addl %edi, %ebx
 
+    hlt
 
-    .org 0x5670
+
+    .org 0x2000
     .data
 val_1:  .long  0x11111111
 val_2:  .long  0x22222222

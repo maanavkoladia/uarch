@@ -16,7 +16,7 @@ module modrm_processor (
     bool sr_wr;
     bool ld_op;
     bool st_op;
-    bool rm_reg_is_dr;
+    bool rm_is_dr;
     bool reg_is_dr;
     bool reg_is_segment;
     bool alu_inputA_override;
@@ -150,7 +150,11 @@ module modrm_processor (
             sr_rd = 1'b1;
             sr_wr = 1'b0;
         end
-        else if(reg_is_dr) begin
+        else if(reg_is_dr && 
+            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00100) &&
+            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00101) &&
+            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b01100) &&
+            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b10100)) begin
             case(modrm_byte[2:0])    //reg id
                 3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;

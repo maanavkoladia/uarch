@@ -281,6 +281,8 @@ package core_stage_latches_pkg;
         uint16_t ST_BIT_VEC_1;  //where to write
         bool MIO;
 
+        uint32_t EIP; //used for tagging insts, for edebugging
+
         byte_t res_buf[CACHE_LINES_SIZE_B*2];  //32 byte buf
 
         reg_ids_e sr_id;
