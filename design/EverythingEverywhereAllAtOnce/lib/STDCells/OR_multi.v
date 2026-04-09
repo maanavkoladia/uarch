@@ -74,7 +74,7 @@ module MPS_OR_IN2$ (
     mux2$ g0 (
         .outb(out),   // match your mux port name
         .in0 (in1),
-        .in1 (1),
+        .in1 (1'b1),
         .s0  (in0)
     );
 

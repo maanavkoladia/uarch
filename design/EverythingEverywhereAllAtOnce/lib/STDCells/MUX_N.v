@@ -47,9 +47,9 @@ module mux2_N #(parameter WIDTH = 1)(
     generate
         for(i = 0; i < WIDTH; i = i + 1) begin
             MPS_MUX_IN2 u_mux (
-                .out(out),
-                .in0(in0),
-                .in1(in1),
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i]),
                 .sel(sel)
             );
         end
@@ -65,10 +65,10 @@ module mux3_N #(parameter WIDTH = 1)(
     generate
         for(i = 0; i < WIDTH; i = i + 1) begin
             MPS_MUX_IN3 u_mux (
-                .out(out),
-                .in0(in0),
-                .in1(in1),
-                .in2(in2),
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i]),
+                .in2(in2[i]),
                 .sel(sel)
             );
         end

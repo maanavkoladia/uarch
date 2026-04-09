@@ -24,30 +24,33 @@ module MPS_reg_rst_we$ #(
 
     genvar i;
 
-    generate
-        for (i = 0; i < NUM_REGS; i = i + 1) begin : g_reg64
+generate
+    for (i = 0; i < NUM_REGS; i = i + 1) begin : g_reg64
 
-            // Slice signals
-            wire [63:0] d_slice;
-            wire [63:0] q_slice;
+        localparam integer REMAIN = WIDTH - i*64;
+        localparam integer SLICE_W = (REMAIN >= 64) ? 64 : REMAIN;
 
-            // Assign input slice (zero-padded if needed)
+        wire [63:0] d_slice;
+        wire [63:0] q_slice;
+
+        if (REMAIN >= 64) begin
             assign d_slice = d[i*64 +: 64];
-
-            // Assign output slice
             assign q[i*64 +: 64] = q_slice;
-
-            reg64e$ u_reg (
-                .CLK(clk),
-                .Din(d_slice),
-                .Q(q_slice),
-                .QBAR(),
-                .CLR(rst),      // active low reset
-                .PRE(1'b1),
-                .en(we)
-            );
-
+        end else begin
+            assign d_slice = {{(64-SLICE_W){1'b0}}, d[i*64 +: SLICE_W]};
+            assign q[i*64 +: SLICE_W] = q_slice[SLICE_W-1:0];
         end
-    endgenerate
 
+        reg64e$ u_reg (
+            .CLK(clk),
+            .Din(d_slice),
+            .Q(q_slice),
+            .QBAR(),
+            .CLR(rst),
+            .PRE(1'b1),
+            .en(we)
+        );
+
+    end
+endgenerate
 endmodule

@@ -1,129 +1,84 @@
-
-`define CYCLE_TIME (10)
+`define CYCLE_TIME 10
 `define DELAY_CYCLES(cycles) #(`CYCLE_TIME * cycles)
 
 module tb_memBanks ();
 
-    `CLK_INIT(`CYCLE_TIME)
-    //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
-    //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
+    // Clock
+    reg clk;
 
+    // Clock generation
     initial begin
-        $vcdpluson;
-        $vcdplusmemon;
+        clk = 0;
+        forever #(`CYCLE_TIME/2) clk = ~clk;
     end
 
-    reg rst = 0;
-    reg [`NUM_SRAM_ADDRESS_BITS - 1 : 0] ld_address;
-    reg [`NUM_SRAM_ADDRESS_BITS - 1 : 0] st_address;
+    // Reset
+    reg rst;
+
+    // Signals
+    reg [`NUM_SRAM_ADDRESS_BITS-1:0] ld_address;
+    reg [`NUM_SRAM_ADDRESS_BITS-1:0] st_address;
     reg startStore;
     reg ld_address_change;
     reg driveMemBus;
-    reg [`CACHE_LINES_SIZE_BITS - 1 : 0]writeBuf;
-    wire [`MEM_BUS_SIZE - 1:0] memBus;
+    reg [`CACHE_LINES_SIZE_BITS-1:0] writeBuf;
 
-    ////gate the bus
-    //assign memBus = 'z;
+    wire [`MEM_BUS_SIZE-1:0] memBus;
 
+    // Dump waveform
+    initial begin
+        $dumpfile("wave.vcd");
+        $dumpvars(0, tb_memBanks);
+    end
+
+    // Instantiate DUT
     mem_bank uut0 (
         .clk(clk),
         .rst(rst),
-        .ld_address(ld_address),
-        .st_address(st_address),
-        .start_store(startStore),
-        .ld_address_change(ld_address_change),
-        .driveMemBus(driveMemBus),
-        .writeBuf(writeBuf),
+        .ld_address_i(ld_address),
+        .st_address_i(st_address),
+        .start_store_i(startStore),
+        .ld_address_change_i(ld_address_change),
+        .driveMemBus_i(driveMemBus),
+        .writeBuf_i(writeBuf),
         .mem_bus(memBus),
-        .precharged(),
-        .clear_writebufV ()
+        .precharged_o(),
+        .clear_writebufV_o()
     );
 
-    //initial begin
-    //    `DELAY_CYCLES(3);
-    //    $readmemh("fakeData/mem0.hex", tb_memBanks.uut0.g_sram_cells[0].mem_cell.mem);
-    //    $readmemh("fakeData/mem1.hex", tb_memBanks.uut0.g_sram_cells[1].mem_cell.mem);
-    //    $readmemh("fakeData/mem2.hex", tb_memBanks.uut0.g_sram_cells[2].mem_cell.mem);
-    //    $readmemh("fakeData/mem3.hex", tb_memBanks.uut0.g_sram_cells[3].mem_cell.mem);
-    //end
+    // Test sequence
+    initial begin
+        rst = 0;
+        ld_address = 0;
+        st_address = 0;
+        startStore = 0;
+        ld_address_change = 0;
+        driveMemBus = 0;
+        writeBuf = 0;
 
-    //initial begin
-    //    `LOG("Mem Bank Tb Starting up");
-    //    rst = 0;
-    //    bankCmds.ld_address = 1;
-    //    bankCmds.st_address = 3;
-    //    bankCmds.start_store = 0;
-    //    bankCmds.ld_address_change = 0;
-    //    bankCmds.driveMemBus = 0;
+        `DELAY_CYCLES(3);
 
-    //    bankCmds.writeBuf = '{
-    //        8'h00,
-    //        8'h11,
-    //        8'h22,
-    //        8'h33,
-    //        8'h44,
-    //        8'h55,
-    //        8'h66,
-    //        8'h77,
-    //        8'h88,
-    //        8'h99,
-    //        8'hAA,
-    //        8'hBB,
-    //        8'hCC,
-    //        8'hDD,
-    //        8'hEE,
-    //        8'hFF
-    //    };
+        // Release reset
+        rst = 1;
 
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    //Give some time for start up, and precharging
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    `DELAY_CYCLES(10);
-    //    rst = 1;
-    //    `DELAY_CYCLES(20);
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    //testing ld_addr_changed;
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    bankCmds.ld_address = 20;
-    //    bankCmds.ld_address_change = 1;
-    //    `DELAY_CYCLES(1);
-    //    bankCmds.ld_address_change = 0;
-    //    `DELAY_CYCLES(20);
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    //testing ld_addr_changed while not precharged, shoudl restart
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    bankCmds.ld_address = 5;
-    //    bankCmds.ld_address_change = 1;
-    //    `DELAY_CYCLES(1);
-    //    bankCmds.ld_address_change = 0;
-    //    `DELAY_CYCLES(2);
-    //    bankCmds.ld_address = 6;
-    //    bankCmds.ld_address_change = 1;
-    //    `DELAY_CYCLES(1);
-    //    bankCmds.ld_address_change = 0;
-    //    `DELAY_CYCLES(20);
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    //Doing store work and testing to make sure that the data is correct
-    //    //also making sure that ld addr changed doesmnt fuck anything up
-    //    //shoudlnt bc i tested the bankcontrller module seperatly
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    //start store
-    //    bankCmds.start_store = 1;
-    //    `DELAY_CYCLES(1);
-    //    bankCmds.start_store = 0;
-    //    `DELAY_CYCLES(2);
-    //    //signal that the ld addr has changed
-    //    bankCmds.ld_address = bankCmds.st_address;
-    //    bankCmds.ld_address_change = 1;
-    //    `DELAY_CYCLES(1);
-    //    bankCmds.ld_address_change = 0;
-    //    `DELAY_CYCLES(20);
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    //Extra completion time
-    //    /////////////////////////////////////////////////////////////////////////////////////
-    //    `DELAY_CYCLES(30);
-    //    `LOG("Mem Bank Tb Complete");
-    //    $finish;
-    //end
+        `DELAY_CYCLES(10);
+
+        // Example stimulus (you can expand this)
+        //ld_address = 20;
+        //ld_address_change = 1;
+        //`DELAY_CYCLES(1);
+        //ld_address_change = 0;
+
+        //`DELAY_CYCLES(10);
+
+        //st_address = 3;
+        //startStore = 1;
+        //`DELAY_CYCLES(1);
+        //startStore = 0;
+
+        //`DELAY_CYCLES(20);
+
+        $finish;
+    end
 
 endmodule

@@ -26,6 +26,7 @@ module mem_bank (
     wire mem_bank_controller_send_store_address;
     wire mem_bank_controller_send_store_address_delayed;
     wire [$clog2(`BANK_CONTROLLER_FSM_LOGIC_STATES) - 1 : 0] mem_bank_controller_states_bits;
+
     //delay of .24, need four lined up
     //mps_buffer_delay_stages #(
     //    .STAGES(4)
