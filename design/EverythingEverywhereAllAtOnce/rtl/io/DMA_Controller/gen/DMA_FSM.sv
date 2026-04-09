@@ -91,13 +91,13 @@ wire write_Complete_i_inv;
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (S_0 & S_1 & !S_2) | (S_0 & !S_2 & !write_Complete_i) | (S_1 & !S_2 & ld_buf_data_V_i)
+// NS_0 = (S_0 & !S_2 & !write_Complete_i) | (S_1 & !S_2 & ld_buf_data_V_i) | (S_0 & S_1 & !S_2)
 wire NS_0_t0;
-`AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_1, S_2_inv)
+`AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_2_inv, write_Complete_i_inv)
 wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_0, S_2_inv, write_Complete_i_inv)
+`AND_3(NS_0_and1, 1, NS_0_t1, S_1, S_2_inv, ld_buf_data_V_i)
 wire NS_0_t2;
-`AND_3(NS_0_and2, 1, NS_0_t2, S_1, S_2_inv, ld_buf_data_V_i)
+`AND_3(NS_0_and2, 1, NS_0_t2, S_0, S_1, S_2_inv)
 
 `OR_3(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2)
 
@@ -136,13 +136,13 @@ wire NS_1_t4;
 // req_bus_o = (S_0 & S_1 & !S_2 & writeBuf_V_i)
 `AND_4(req_bus_o_and, 1, req_bus_o, S_0, S_1, S_2_inv, writeBuf_V_i)
 
-// busy_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_2 & start_write_i)
+// busy_o = (!S_2 & start_write_i) | (S_0 & !S_2) | (S_1 & !S_2)
 wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_1, S_2_inv)
+`AND_2(busy_o_and0, 1, busy_o_t0, S_2_inv, start_write_i)
 wire busy_o_t1;
 `AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_2_inv)
 wire busy_o_t2;
-`AND_2(busy_o_and2, 1, busy_o_t2, S_2_inv, start_write_i)
+`AND_2(busy_o_and2, 1, busy_o_t2, S_1, S_2_inv)
 
 `OR_3(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1, busy_o_t2)
 

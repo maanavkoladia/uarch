@@ -2,7 +2,6 @@
 // Combinational block : pf_gen
 // Tool: csv2rtl.py  (auto-generated -- do not hand-edit)
 // Std : Verilog-2005 (IEEE 1364-2005)
-// Lib : std_cell_macros.vh
 // ======================================================================
 
 // Truth table (expanded, from CSV)
@@ -18,8 +17,6 @@
 //             1             1             0  |             0             0
 //             1             1             1  |             1             1
 // ----------------------------------------------------------------------------
-
-`include "std_cell_macros.vh"
 
 module pf_gen (
     output wire num_pfs_1_o,
