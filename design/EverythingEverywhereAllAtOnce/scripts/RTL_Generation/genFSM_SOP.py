@@ -785,7 +785,7 @@ with open(sv_path, 'w') as f:
     f.write(f"// FSM : {stem}\n")
     f.write(f"// Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)\n")
     f.write(f"// Std : Verilog-2005 (IEEE 1364-2005)\n")
-    f.write(f"// Lib : std_cell_macros.vh\n")
+    #f.write(f"// Lib : std_cell_macros.vh\n")
     if error_state_synthesised:
         f.write(f"// NOTE: ERROR state was synthesised automatically.\n")
         f.write(f"//       Any undefined transition lands here (all outputs = 0).\n")
@@ -823,7 +823,7 @@ with open(sv_path, 'w') as f:
     f.write(f"// {sep}\n//\n\n")
 
     # ── `include -----------------------------------------------------------
-    f.write('`include "std_cell_macros.vh"\n\n')
+    #f.write('`include "std_cell_macros.vh"\n\n')
 
     # ── Module declaration --------------------------------------------------
     f.write(f"module {mod} (\n")
