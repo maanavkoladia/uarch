@@ -76,13 +76,11 @@ module TLB (
     // General protection exception
     // ------------------------
     always_comb begin
-        outputs.gp_exp = 1;  // default: exception
+        outputs.gp_exp = 0;  // default: exception
         for (int i = 0; i < entries; i++) begin
             if (tlb[i].valid && tlb[i].VPN == inputs.virtual_addr[ADDRESS_BITS-1:OFFSET_BITS]) begin
                 // if write, check r_w
-                if (inputs.write_intention && tlb[i].r_w) outputs.gp_exp = 0;
-                // if read, always allow
-                else if (!inputs.write_intention) outputs.gp_exp = 0;
+                if (inputs.write_intention && !tlb[i].r_w) outputs.gp_exp = 1;                
             end
         end
     end

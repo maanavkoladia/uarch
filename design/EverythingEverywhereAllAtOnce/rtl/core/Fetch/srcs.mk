@@ -7,7 +7,8 @@ FETCH_PKGS = \
 
 # Fetch source files
 FETCH_SRC_FILES = \
-	$(FETCH_PATH_INTERNAL)/Predictor/BTFN.sv \
+	$(FETCH_PATH_INTERNAL)/Predictor/GShare.sv \
+	$(FETCH_PATH_INTERNAL)/Predictor/two_bit_sat_count.sv \
 	$(FETCH_PATH_INTERNAL)/Predictor/Predictor.sv \
 	$(FETCH_PATH_INTERNAL)/BTB.sv \
 	$(FETCH_PATH_INTERNAL)/SPC_Sel_Logic.sv \

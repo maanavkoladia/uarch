@@ -1,10 +1,9 @@
 TODO:
 
 - IRETD for EXE
-- Data size vector creation
+
 - Decode to add the upper8 lower 8 for data size conversion
 - decode kogge stone with muxes rather than instruction length 
-- writeback
 
 - mem bank port
 - mem controller port

@@ -1,11 +1,11 @@
 include ../../Make.vars
 include ../../Make.build
 
-TARGET = test_Fetch
+TARGET = test_Gshare
 
 
 TB_FILES = \
-		   tb_Fetch.sv
+		   tb_Gshare.sv
 
 PKGS = $(RTL_PKGS)
 

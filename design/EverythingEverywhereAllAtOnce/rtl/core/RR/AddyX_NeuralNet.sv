@@ -2,13 +2,7 @@ import RegisterRead_pkg::*;
 import DCache_common_pkg::*;
 
 module AddyX_NeuralNet (
-    input logic[2:0] data_size,
-    input l_address_t addy0,
-    input bool mem_op,
-    input uint32_t seg_data,
-    input uint32_t seg_limit,
-    input bool write_intent,
-    output neuralnet_outputs_t outputs
+
 );
 
     l_address_t addy1;

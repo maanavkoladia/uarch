@@ -47,13 +47,29 @@ module control_store (
     // Packed fields
     logic [4:0] HARD_CODED_DR_ID_o;
     logic [4:0] HARD_CODED_SR_ID_o;
-    logic [2:0] DATA_SIZE_o;
+    logic [1:0] DATA_SIZE_o;
 
     logic [4:0] alu_inputA_sel_o;
     logic [4:0] alu_inputB_sel_o;
     logic [4:0] branch_target_sel_o;
 
     logic [4:0] OP_TYPE_o; // (fix width to 5 unless you truly have 6 bits)
+
+    // =====================
+    // Additional wires (needed for cs_parsed)
+    // =====================
+    // New single-bit outputs
+    logic REP_CMP_o;
+    logic HALT_o;
+    logic REG_IS_SEGMENT_o;
+    logic will_mod_zf_o;
+
+    // Segment 0 hardcoding
+    logic [4:0] HARDCODED_SEGMENT0_o;
+
+    // Segment 1 hardcoding
+    logic HARDCODED_SEGMENT1_V_o;
+    logic [4:0] HARDCODED_SEGMENT1_o;
     // =====================
     // Module instantiation
     // =====================
@@ -101,7 +117,6 @@ module control_store (
         .HARD_CODED_SR_ID_0_o(HARD_CODED_SR_ID_o[0]),
 
         // DATA SIZE
-        .DATA_SIZE_2_o(DATA_SIZE_o[2]),
         .DATA_SIZE_1_o(DATA_SIZE_o[1]),
         .DATA_SIZE_0_o(DATA_SIZE_o[0]),
 
@@ -138,7 +153,24 @@ module control_store (
         .relative_branch_o(relative_branch_o),
         .special_dr_o(special_dr_o),
         .is_far_o(is_far_o),
-        .second_flag_needed_o(second_flag_needed_o)
+        .second_flag_needed_o(second_flag_needed_o),
+
+        .REP_CMP_o(REP_CMP_o),
+        .HALT_o(HALT_o),
+        .REG_IS_SEGMENT_o(REG_IS_SEGMENT_o),
+        .will_mod_zf_o(will_mod_zf_o),
+        .HARDCODED_SEGMENT0_4_o(HARDCODED_SEGMENT0_o[4]),
+        .HARDCODED_SEGMENT0_3_o(HARDCODED_SEGMENT0_o[3]),
+        .HARDCODED_SEGMENT0_2_o(HARDCODED_SEGMENT0_o[2]),
+        .HARDCODED_SEGMENT0_1_o(HARDCODED_SEGMENT0_o[1]),
+        .HARDCODED_SEGMENT0_0_o(HARDCODED_SEGMENT0_o[0]),
+        .HARDCODED_SEGMENT1_V_o(HARDCODED_SEGMENT1_V_o),
+        .HARDCODED_SEGMENT1_4_o(HARDCODED_SEGMENT1_o[4]),
+        .HARDCODED_SEGMENT1_3_o(HARDCODED_SEGMENT1_o[3]),
+        .HARDCODED_SEGMENT1_2_o(HARDCODED_SEGMENT1_o[2]),
+        .HARDCODED_SEGMENT1_1_o(HARDCODED_SEGMENT1_o[1]),
+        .HARDCODED_SEGMENT1_0_o(HARDCODED_SEGMENT1_o[0])
+
     );
 
     modrm_processor_outs_t mod_rm_cs_outs;
@@ -149,9 +181,12 @@ module control_store (
     // DECODE
     assign decode_cs = '{
         REP               : REP_o,
+        REP_CMP           : REP_CMP_o,
+        HALT              : HALT_o,
         MODRM_NEEDED      : MODRM_NEEDED_o,
         RM_IS_DR          : RM_IS_DR_o,
         REG_IS_DR         : REG_IS_DR_o,
+        REG_IS_SEGMENT    : REG_IS_SEGMENT_o,
         HARDCODED_DR      : HARD_CODED_DR_o,
         HARDCODED_DR_ID   : HARD_CODED_DR_ID_o,
         HARDCODED_SR      : HARD_CODED_SR_o,
@@ -180,15 +215,18 @@ module control_store (
         dr_wr            : mod_rm_cs_outs.dr_wr,
         sr_wr            : mod_rm_cs_outs.sr_wr,
         datasize         : DATA_SIZE_o,
-        will_mod_zf      : 1'b0
+        will_mod_zf      : will_mod_zf_o,
+        seg_1_valid      : HARDCODED_SEGMENT1_V_o,
+        seg_0_id         : HARDCODED_SEGMENT0_o,
+        seg_1_id         : HARDCODED_SEGMENT1_o
     };
 
     // DC
     assign dc_cs = '{
         LD_OP : mod_rm_cs_outs.ld_op,
         ST_OP : mod_rm_cs_outs.st_op,
-        upper8: 0, //TODO
-        data_size: DATA_SIZE_o
+        upper8: mod_rm_cs_outs.high8,
+        datasize: DATA_SIZE_o
     };
 
     // MEM

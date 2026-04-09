@@ -127,6 +127,7 @@ module EveryThing_TOP (
         .clk(clk),
         .rst(rst),
         .latches_i(dc_latches),
+        .fetch_outs_i(fetch_outputs),
         .mem_outs_i(mem_outputs),
         .exe_outs_i(exe_outputs),
         .wb_outs_i(wb_outputs),

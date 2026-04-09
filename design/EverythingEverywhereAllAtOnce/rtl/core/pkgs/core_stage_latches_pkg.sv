@@ -56,9 +56,12 @@ package core_stage_latches_pkg;
 
     typedef struct{
         bool REP;
+        bool REP_CMP;
+        bool HALT;
         bool MODRM_NEEDED;
         bool RM_IS_DR;
         bool REG_IS_DR;
+        bool REG_IS_SEGMENT;
         bool HARDCODED_DR;
         reg_ids_e HARDCODED_DR_ID;
         bool HARDCODED_SR;
@@ -68,7 +71,7 @@ package core_stage_latches_pkg;
         bool OP_IN_MODRM;
         reg_ids_e dr_id;
         reg_ids_e sr_id;
-        logic [2:0] DATA_SIZE;
+        logic [1:0] DATA_SIZE;
     } decode_cs_t;
 
     typedef struct {
@@ -86,16 +89,21 @@ package core_stage_latches_pkg;
         bool dr_wr;
         bool sr_wr;
 
-        logic [2:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
+        logic [1:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 
         bool will_mod_zf;       //need this for zf scoreboard to check during rep instructions
+
+        bool seg_1_valid;  //need two beacuse two segs for movs etc, 
+        reg_ids_e seg_0_id;
+        reg_ids_e seg_1_id;
+
     } rr_cs_t;
 
     typedef struct {
         bool LD_OP;
         bool ST_OP;
         bool upper8;
-        logic [1:0] data_size;
+        logic [1:0] datasize;
     } dc_cs_t;
 
     typedef struct {
@@ -151,9 +159,6 @@ package core_stage_latches_pkg;
         bool disp_needed;
         bool disp_size; //8 or 32, 0 determined by DISP_NEEDED
         uint32_t displacement;
-        bool seg_1_valid;  //need two beacuse two segs for movs etc, 
-        reg_ids_e seg_0_id;
-        reg_ids_e seg_1_id;
     } rr_latches_general_t;
 
     typedef struct {
@@ -172,23 +177,23 @@ package core_stage_latches_pkg;
 
         br_info_t br_info;
 
-        bool ST_XCL;  //valid bit or second set of st info if st_op
-        p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
-        p_address_t ST_PADDR_1;  //cacheline algned
-        bool MIO;  //this a write to mem_io
+        bool rr_gp;
+
+        //these are for limit checking for gp
+        v_address_t ld_vaddy;
+        uint32_t seg0_limit_w_datasize;
+        v_address_t next_ld_vaddy;
+
+        v_address_t st_vaddy;
+        uint32_t seg1_limit_w_datasize;
+        v_address_t next_st_vaddy;
 
 
         l_address_t NEIP;
         l_address_t EIP;
         uint32_t EAX;
 
-
         uint64_t imm64;
-
-        bool LD_XCL;
-        p_address_t LD_PADDR_0;  //cacheline unalgned, ie actual addr
-        p_address_t LD_PADDR_1;  //cacheline algned
-        bool swapLines;
 
         reg_ids_e sr_id;
         uint64_t  sr_data;

@@ -40,7 +40,7 @@ module MIO_Q(
     end
 //work to do, if push
     always_ff @(posedge clk) begin
-        if (rst) begin
+        if (!rst) begin
             full <= 0;
             empty <= 1;
             mio_q <= '{default: '0};

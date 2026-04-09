@@ -41,6 +41,8 @@ package core_common_pkg;
         core_2_icache_t fetch_2_icache;
         fetch_idm_ctrl_2_idm_t idm_reqs;
         bool exp_pipe_clear;
+        bool exp_present;
+        bool exp_pf;
     } fetch_outputs_t;
 
     typedef struct {
@@ -55,8 +57,7 @@ package core_common_pkg;
     typedef struct {
         bool valid;
         bool stall;  //dep stall or exp present
-        bool exp_present;  //if present and not pf, then gp
-        bool exp_pf;
+
 
         //outputs to decode
         bool ecx_sb;
@@ -75,7 +76,8 @@ package core_common_pkg;
         bool valid;
 
         bool stall;  //dep stall or req rejected
-
+        bool exp_present;  //if present and not pf, then gp
+        bool exp_pf;
         //outputs to D$ arb
         bool ld_addr_0_V;
         p_address_t ld_addr_0;

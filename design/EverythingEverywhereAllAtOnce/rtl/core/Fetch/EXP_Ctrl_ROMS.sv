@@ -10,8 +10,8 @@ module EXP_Ctrl_ROMS (
     input clk,
     input bool exp_pipe_clear,
     input bool int_pipe_clear,
-    input logic RR_pf,
-    input logic RR_exp,
+    input logic DC_pf,
+    input logic DC_exp,
     input logic Fetch_pf,
 
     //probably from the dma jk 
@@ -35,11 +35,11 @@ module EXP_Ctrl_ROMS (
     wire [2:0] fetch_exp_out;
     mux2_3 fetchP_pf_mux(.in0(GP_IDT), .in1(PF_IDT), .sel(Fetch_pf), .out(fetch_exp_out));
 
-    wire [2:0] rr_exp_out;
-    mux2_3 rr_pf_mux(.in0(GP_IDT), .in1(PF_IDT), .sel(RR_pf), .out(rr_exp_out));
+    wire [2:0] DC_exp_out;
+    mux2_3 DC_pf_mux(.in0(GP_IDT), .in1(PF_IDT), .sel(DC_pf), .out(DC_exp_out));
 
     wire [2:0] exp_idx;
-    mux2_3 exp_sel_mux(.in0(fetch_exp_out), .in1(rr_exp_out), .sel(RR_exp), .out(exp_idx));
+    mux2_3 exp_sel_mux(.in0(fetch_exp_out), .in1(DC_exp_out), .sel(DC_exp), .out(exp_idx));
 
     wire [2:0] int_idx;
     mux2_3 dma_int_mux(.in0(DDR_IDT), .in1(DMA_IDT), .sel(DMA_int), .out(int_idx));
