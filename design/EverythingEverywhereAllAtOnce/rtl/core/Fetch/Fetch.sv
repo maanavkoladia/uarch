@@ -79,6 +79,8 @@ module Fetch (
         outs_o.fetch_2_icache.p_addr = tlb_outs.physical_addr;
         outs_o.fetch_2_icache.v_addr_i = seg_xlation_out;
         outs_o.fetch_2_icache.num_valid_IDM_slots = idm_info_i.valid_slots;
+        outs_o.exp_present = f_exp;
+        outs_o.exp_pf = tlb_outs.pageFault;
     end
 
     assign f_exp = (tlb_outs.gp_exp | tlb_outs.pageFault) & ~exp_mode_jk;

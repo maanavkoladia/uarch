@@ -41,6 +41,8 @@ package core_common_pkg;
         core_2_icache_t fetch_2_icache;
         fetch_idm_ctrl_2_idm_t idm_reqs;
         bool exp_pipe_clear;
+        bool exp_present;
+        bool exp_pf;
     } fetch_outputs_t;
 
     typedef struct {

@@ -28,6 +28,8 @@ import Predictor_pkg::*;
     logic [BHR_SIZE-1: 0] pht_index_spec;
     logic [BHR_SIZE-1: 0] pht_index_update;
 
+    logic [1:0] pht_contents_debug[PHT_SIZE];
+
 
 
     genvar i;
@@ -40,13 +42,15 @@ import Predictor_pkg::*;
             .dec(dec_inputs[i]),
             .taken(taken[i])
         );
+        assign pht_contents_debug[i] = g_two_bit[i].sat_count.sat_count;
     end
     endgenerate
 
     
-    assign pht_index_spec = bhr_spec ^ inputs.spc[BHR_SIZE-1:$clog2(CACHE_LINES_SIZE_B)];
-    assign pht_index_update = bhr_real ^ inputs.exe_br_eip[BHR_SIZE-1:$clog2(CACHE_LINES_SIZE_B)];
-
+    assign pht_index_spec = bhr_spec ^ inputs.spc[$clog2(CACHE_LINES_SIZE_B) +: BHR_SIZE];
+                                                        //need to take bits 4 to 11 (8 bits)
+    assign pht_index_update = bhr_real ^ inputs.exe_br_eip[$clog2(CACHE_LINES_SIZE_B) +: BHR_SIZE];
+                                                          
     // Prediction output
     assign outputs.taken = taken[pht_index_spec];
 

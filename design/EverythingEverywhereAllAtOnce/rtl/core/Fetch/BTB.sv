@@ -16,7 +16,7 @@ module BTB (
 );
 
 
-    localparam int btb_entries = 8;
+    localparam int btb_entries = 64 ;
     localparam int btb_entries_bits = $clog2(btb_entries);
     localparam int tagBits = ADDRESS_BITS - $clog2(CACHE_LINES_SIZE_B) - btb_entries_bits;
     localparam int indexIdx = $clog2(CACHE_LINES_SIZE_B);
