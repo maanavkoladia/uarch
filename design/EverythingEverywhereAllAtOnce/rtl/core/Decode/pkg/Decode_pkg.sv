@@ -12,6 +12,7 @@ package Decode_pkg;
         bool sr_wr;
         bool st_op;
         bool ld_op;
+        bool high8;
         bool alu_inputA_override;
         bool alu_inputB_override;
         source_selector_e alu_inputA_override_sel;

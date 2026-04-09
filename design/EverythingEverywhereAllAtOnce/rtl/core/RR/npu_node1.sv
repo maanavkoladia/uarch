@@ -1,3 +1,4 @@
+import RegisterRead_pkg::*;
 module npu_node1 (
     input uint32_t register_data,   //does not need to be 64 but input since we will never pull address from mmx reg
     input uint32_t regout_sr_data,
@@ -10,26 +11,32 @@ module npu_node1 (
     input bool dispsize,
     input uint32_t displacement,
 
-    input logic [2:0] datasize;
+    input logic [1:0] datasize,
 
     input uint32_t seg0_data,
-    input segment_limit_reg_entry_t segment0_limit;
+    input segment_limit_reg_entry_t segment0_limit,
     input uint32_t seg1_data,
-    input segment_limit_reg_entry_t segment1_limit;
-    input bool seg1_valid
+    input segment_limit_reg_entry_t segment1_limit,
+    input bool seg1_valid,
 
-    input bool modrm_needed;
-    input bool rm_is_dr;
-    input bool st_sel;
+    input bool modrm_needed,
+    input bool rm_is_dr,
+    input bool st_sel,
 
-    output v_address_t ld_vaddy;
-    output uint32_t seg0_limit_w_datasize;
-    output v_address_t actual_st_vaddy;
-    output uint32_t seg1_limit_w_datasize;
-);
+    output v_address_t ld_vaddy,
+    output uint32_t seg0_limit_w_datasize,
+    output v_address_t next_ld_vaddy, //need for finding next page for tlb
+    
+    output v_address_t actual_st_vaddy,
+    output uint32_t seg1_limit_w_datasize,
+    output v_address_t actual_next_st_vaddy
+);  
 
-    assign seg0_limit_w_datasize = segment0_limit[datasize[1:0]];
-    assign seg1_limit_w_datasize = segment1_limit[datasize[1:0]];
+    uint32_t displacement_out;
+    uint32_t sib_or_reg;
+
+    assign seg0_limit_w_datasize = segment0_limit.limit[datasize[1:0]];
+    assign seg1_limit_w_datasize = segment1_limit.limit[datasize[1:0]];
 
     uint32_t sib_nonsense;
     uint32_t shift_result;
@@ -89,14 +96,42 @@ module npu_node1 (
     //we sill essentially do the segment translation for all paths and pick the right one
     //instead of picking then translating
 
+    v_address_t st_vaddy;
     assign #3 ld_vaddy = sib_or_reg + seg0val_plus_displacement;
     assign #3 st_vaddy = sib_or_reg + seg1val_plus_displacement;
 
-    uint32_t shifted_sr_data, shifted_dr_data;
-    assign #3 shifted_sr_data = regout_sr_data + (real_seg1_data << 16);
-    assign #3 shifted_dr_data = regout_dr_data + (real_seg1_data << 16);
+    uint32_t shifted_sr_data, shifted_dr_data, shifted_seg1_data;
+    assign shifted_seg1_data = (real_seg1_data << 16);
+    assign #3 shifted_sr_data = regout_sr_data + shifted_seg1_data;
+    assign #3 shifted_dr_data = regout_dr_data + shifted_seg1_data;
+    
     assign actual_st_vaddy = (st_sel) ? 
-                                ((modrm_needed && rm_is_dr) ? shifter_sr_data : shifted_dr_data) :
+                                ((modrm_needed && rm_is_dr) ? shifted_sr_data : shifted_dr_data) :
                                 st_vaddy;
+
+    //next ld VPN and vaddy
+    logic [VPN_BITS - 1 : 0] next_ld_VPN;
+    assign #3 next_ld_VPN = sib_or_reg[VPN_UB : VPN_LB] + seg0val_plus_displacement[VPN_UB : VPN_LB] + 1'b1;
+    assign next_ld_vaddy = {next_ld_VPN, {NUM_OFFSET_BITS{1'b0}}};
+
+    //computations for all three different next st VPN and vaddy sources
+    v_address_t next_st_vaddy;
+    logic [VPN_BITS - 1 : 0] next_st_VPN;
+    assign #3 next_st_VPN = sib_or_reg[VPN_UB : VPN_LB] + seg1val_plus_displacement[VPN_UB : VPN_LB] + 1'b1;
+    assign next_st_vaddy = {next_st_VPN, {NUM_OFFSET_BITS{1'b0}}};
+
+    v_address_t next_shifted_sr_data;
+    logic [VPN_BITS - 1 : 0] next_shifted_sr_VPN;
+    assign #3 next_shifted_sr_VPN = regout_sr_data[VPN_UB : VPN_LB] + shifted_seg1_data[VPN_UB : VPN_LB] + 1'b1;
+    assign next_shifted_sr_data = {next_shifted_sr_VPN, {NUM_OFFSET_BITS{1'b0}}};
+
+    v_address_t next_shifted_dr_data;
+    logic [VPN_BITS - 1 : 0] next_shifted_dr_VPN;
+    assign #3 next_shifted_dr_VPN = regout_dr_data[VPN_UB : VPN_LB] + shifted_seg1_data[VPN_UB : VPN_LB] + 1'b1;
+    assign next_shifted_dr_data = {next_shifted_dr_VPN, {NUM_OFFSET_BITS{1'b0}}};
+
+    assign actual_next_st_vaddy = (st_sel) ? 
+                                ((modrm_needed && rm_is_dr) ? next_shifted_sr_data : next_shifted_dr_data) :
+                                next_st_vaddy;
 
 endmodule

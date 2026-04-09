@@ -4,6 +4,12 @@ package RegisterRead_pkg;
 
     localparam NUM_SEG_REGS = 6;
 
+    localparam int VPN_UB = 31;
+    localparam int VPN_LB = 12;
+    localparam int PAGE_OFFSET_UB = 11;
+    localparam int PAGE_OFFSET_LB = 0;
+    localparam int NUM_OFFSET_BITS = PAGE_OFFSET_UB - PAGE_OFFSET_LB + 1;
+
     typedef struct {
         uint64_t DR_data;
         uint64_t SR_data;
@@ -15,20 +21,6 @@ package RegisterRead_pkg;
         uint32_t Segment0_data;
         uint32_t Segment1_data;
     } regfile_output_t;
-
-    typedef struct {
-        bool gp0_exception;
-        bool pf0_exception;
-        bool gp1_exception;
-        bool pf1_exception;
-        bool valid_mem_op;
-        p_address_t paddy_aligned;
-        bool bank_hi;
-        bool xcl;
-        p_address_t paddy;
-        bool mio;
-    } neuralnet_outputs_t;
-
 
     typedef struct {
         //bool sb; //may not need is jsut use counter as >1 == dependency

@@ -13,6 +13,6 @@ module ICache_En_Logic(
 
 );
 
-    assign out = !exp_mode && !cs_sb && !int_mode && !f_ex && !DMA_int && rst;
+    assign out = !exp_mode && !cs_sb && !int_mode && !f_exp && !DMA_int && rst;
 
 endmodule
