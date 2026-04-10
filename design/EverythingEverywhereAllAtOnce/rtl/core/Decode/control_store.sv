@@ -55,7 +55,6 @@ module control_store (
     logic is_far_o;
     logic second_flag_needed_o;
 
-<<<<<<< HEAD
     logic will_mod_zf_o;
 
     logic HARDCODED_SEGMENT1_V_o;
@@ -63,11 +62,6 @@ module control_store (
     // =====================
     // Packed outputs
     // =====================
-=======
-    logic REP_o;
-
-    // Packed fields
->>>>>>> s_comp
     logic [4:0] HARD_CODED_DR_ID_o;
     logic [4:0] HARD_CODED_SR_ID_o;
 
