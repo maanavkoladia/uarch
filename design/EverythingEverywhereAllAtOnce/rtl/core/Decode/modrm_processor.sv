@@ -23,6 +23,7 @@ module modrm_processor (
     source_selector_e alu_inputA_override_sel;
     source_selector_e alu_inputB_override_sel;
 
+    bool rm_is_dr;
     assign rm_is_dr = (decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.RM_IS_DR && !decode_cs_inputs.REG_IS_DR);
     assign reg_is_dr = (decode_cs_inputs.MODRM_NEEDED && !decode_cs_inputs.RM_IS_DR && decode_cs_inputs.REG_IS_DR);
 

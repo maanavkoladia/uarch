@@ -22,6 +22,7 @@ module add_op(
     uint64_t merged_result;
     logic ld_16;
     logic ld_32;
+    logic ld_8;
     logic [32:0] sum32;
     
 

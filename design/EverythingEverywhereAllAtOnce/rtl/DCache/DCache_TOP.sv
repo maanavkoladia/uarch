@@ -73,7 +73,7 @@ module DCache_TOP (
         .ld_addr_MIO_V(inFromCore_i.ld_addr_MIO_V),
         .ld_addr_MIO(inFromCore_i.ld_addr_MIO),
         .stq_info_mio(inFromCore_i.stq_info_mio),
-        .memStalling_FromCore(inFromCore_i.memStalling),
+        .memStage_CLR_REQ_MIO(inFromCore_i.memStage_CLR_REQ_MIO),
         .address_bus(address_bus),
         .dataBus(dataBus),
         .outputs_o(mio_block_outputs)

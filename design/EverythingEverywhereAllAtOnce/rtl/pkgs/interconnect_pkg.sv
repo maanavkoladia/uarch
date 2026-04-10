@@ -182,8 +182,6 @@ package interconnect_pkg;
         bool ld_addr_1_V;
         p_address_t ld_addr_1;
 
-        //for d$ arb logic, 
-        bool memStage_CLR_REQ[NUM_DCACHE_PORTS];
 
         //for wb
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
@@ -193,12 +191,14 @@ package interconnect_pkg;
         bool ld_addr_MIO_V;
         p_address_t ld_addr_MIO;
 
+        //for d$ arb logic,
+        bool memStage_CLR_REQ[NUM_DCACHE_PORTS];
         bool memStage_CLR_REQ_MIO;
         //from WB
         st_q_2_dcache_t stq_info_mio;
 
     } core_2_dcache_t;
-
+    
     typedef struct {
         //for DC Stage
         bool   reqServed_0;
