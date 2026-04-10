@@ -3,7 +3,7 @@ include ../../../Make.build
 
 TARGET = MainMem_Test
 
-GEN_CONF = startUpGen.conf.json
+GEN_CONF = startUp_gen.conf.json
 
 TOP_FILE_NAME = tb_mainMem 
 
