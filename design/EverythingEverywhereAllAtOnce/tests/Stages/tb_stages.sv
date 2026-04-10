@@ -400,7 +400,7 @@ endtask
             $fdisplay(log_fd, "  WB_CS: ST=%0b DR=%0b SR=%0b",
                 L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
             // First line (bytes 0–15)
-            $fwrite(log_fd, "RES_BUF: ");
+            $fwrite(log_fd, "LD_BUF: ");
             for (int i = 0; i < 16; i++) begin
                 $fwrite(log_fd, "%02x", L.ld_buf[i]);
                 if (i != 15) $fwrite(log_fd, "_");
@@ -446,6 +446,21 @@ endtask
             $fdisplay(log_fd, "  ST: xcl=%0b  paddr0=0x%04h  bv0=0x%04h  paddr1=0x%04h  bv1=0x%04h  MIO=%0b",
                 L.ST_XCL, L.ST_PADDR_0, L.ST_BIT_VEC_0,
                 L.ST_PADDR_1, L.ST_BIT_VEC_1, L.MIO);
+            // First line (bytes 0–15)
+            $fwrite(log_fd, "RES_BUF: ");
+            for (int i = 0; i < 16; i++) begin
+                $fwrite(log_fd, "%02x", L.res_buf[i]);
+                if (i != 15) $fwrite(log_fd, "_");
+            end
+            $fwrite(log_fd, "\n");
+
+            // Second line (bytes 16–31)
+            $fwrite(log_fd, "         "); // indent to align
+            for (int i = 16; i < 32; i++) begin
+                $fwrite(log_fd, "%02x", L.res_buf[i]);
+                if (i != 31) $fwrite(log_fd, "_");
+            end
+            $fdisplay(log_fd, "");
         end
     endtask
 
