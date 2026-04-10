@@ -1,4 +1,3 @@
-`include "STDCell_Macros.vh"
 
 // ============================================================================
 // mem_TOP_structural.v
@@ -114,7 +113,7 @@ module mem_TOP (
     genvar i_gen;
     generate
         for (i_gen = 0; i_gen < 64; i_gen = i_gen + 1) begin : g_mem_banks
-            mem_bank u_bank (
+            mem_bank mem_bank (
                 .clk                 (clk),
                 .rst                 (rst),
                 .ld_address_i        (bank_cmd_ld_address        [i_gen*5 +: 5]),
@@ -175,9 +174,9 @@ module mem_TOP (
 
 
     `BUS_TRISTATE(memBus_tri_0, 32, perm2DriveBus_bar[0], mem_bus[31:0], data_bus);
-    `BUS_TRISTATE(memBus_tri_0, 32, perm2DriveBus_bar[1], mem_bus[63:32], data_bus);
-    `BUS_TRISTATE(memBus_tri_0, 32, perm2DriveBus_bar[2], mem_bus[95:64], data_bus);
-    `BUS_TRISTATE(memBus_tri_0, 32, perm2DriveBus_bar[3], mem_bus[127:96], data_bus);
+    `BUS_TRISTATE(memBus_tri_1, 32, perm2DriveBus_bar[1], mem_bus[63:32], data_bus);
+    `BUS_TRISTATE(memBus_tri_2, 32, perm2DriveBus_bar[2], mem_bus[95:64], data_bus);
+    `BUS_TRISTATE(memBus_tri_3, 32, perm2DriveBus_bar[3], mem_bus[127:96], data_bus);
 
 
 

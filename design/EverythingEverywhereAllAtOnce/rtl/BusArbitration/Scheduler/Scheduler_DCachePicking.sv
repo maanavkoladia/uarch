@@ -1,13 +1,14 @@
 import common_pkg::*;
 import interconnect_pkg::*;
 import BusArbitration_common_pkg::*;
+import mem_common_pkg::*;
 
 module Scheduler_DCachePicking (
     // For EB addresses
     input p_address_t d_Cache_eb_addr[NUM_DCACHE_PORTS],
 
     input req_2_sch_t d_cache_reqs_dirty_i[NUM_DCACHE_PORTS],
-    input logic writeBuf_V[numWriteBufsInMem],
+    input logic [numWriteBufsInMem-1: 0] writeBuf_V,
 
     output req_2_sch_t bestPick_o,
     output logic [$clog2(NUM_DCACHE_PORTS)-1:0] bestPick_BK_ID_o

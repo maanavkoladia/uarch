@@ -6,10 +6,27 @@ module MPS_decoder$ #(
 );
 
     // ============================================================
-    // Base cases
+    // Base cases and cap at 8 inputs
     // ============================================================
     generate
-        if (INPUTS == 2) begin : GEN_DEC2
+        if (INPUTS > 8) begin : GEN_ERROR
+            // Error: decoder limited to 8 inputs maximum
+            initial begin
+                $fatal(1, "MPS_decoder$: INPUTS=%0d exceeds maximum of 8", INPUTS);
+            end
+        end else if (INPUTS == 1) begin : GEN_DEC1
+            // 1-to-2 decoder: out[0] = ~in[0], out[1] = in[0]
+            wire in_bar;
+            
+            inv1$ u_inv (
+                .out(in_bar),
+                .in(in[0])
+            );
+            
+            assign out[0] = in_bar;
+            assign out[1] = in[0];
+
+        end else if (INPUTS == 2) begin : GEN_DEC2
             wire [3:0] y, ybar;
 
             decoder2_4$ u_dec (
@@ -34,17 +51,18 @@ module MPS_decoder$ #(
         end else begin : GEN_DEC_N
 
             // ========================================================
-            // Recursive split: use a 3-bit decoder as building block
+            // Recursive split for 4-8 bits
+            // Split into high and low portions, ensuring both >= 1 bit
             // ========================================================
-            localparam integer HIGH_BITS = INPUTS - 3;
-            localparam integer LOW_BITS  = 3;
+            localparam integer LOW_BITS  = (INPUTS >= 6) ? 3 : (INPUTS / 2);
+            localparam integer HIGH_BITS = INPUTS - LOW_BITS;
 
             wire [(1<<HIGH_BITS)-1:0] high_out;
             wire [(1<<LOW_BITS)-1:0]  low_out;
 
             // Split input
-            wire [HIGH_BITS-1:0] high_in = in[INPUTS-1:3];
-            wire [LOW_BITS-1:0]  low_in  = in[2:0];
+            wire [HIGH_BITS-1:0] high_in = in[INPUTS-1:LOW_BITS];
+            wire [LOW_BITS-1:0]  low_in  = in[LOW_BITS-1:0];
 
             // High-level decode (recursive)
             MPS_decoder$ #(.INPUTS(HIGH_BITS)) u_high (
@@ -52,11 +70,10 @@ module MPS_decoder$ #(
                 .out(high_out)
             );
 
-            // Low-level decode (3 → 8)
-            decoder3_8$ u_low (
-                .SEL(low_in),
-                .Y(low_out),
-                .YBAR()
+            // Low-level decode (recursive)
+            MPS_decoder$ #(.INPUTS(LOW_BITS)) u_low (
+                .in(low_in),
+                .out(low_out)
             );
 
             // ========================================================
@@ -65,19 +82,15 @@ module MPS_decoder$ #(
             genvar i, j;
 
             for (i = 0; i < (1 << HIGH_BITS); i = i + 1) begin : GEN_HIGH
-                for (j = 0; j < 8; j = j + 1) begin : GEN_LOW
+                for (j = 0; j < (1 << LOW_BITS); j = j + 1) begin : GEN_LOW
 
-                    localparam integer OUT_IDX = (i << 3) + j;
+                    localparam integer OUT_IDX = (i << LOW_BITS) + j;
 
-                    if (OUT_IDX < (1 << INPUTS)) begin : VALID
-
-                        MPS_AND_IN2 u_and (
-                            .in0(high_out[i]),
-                            .in1(low_out[j]),
-                            .out(out[OUT_IDX])
-                        );
-
-                    end
+                    MPS_AND_IN2 u_and (
+                        .in0(high_out[i]),
+                        .in1(low_out[j]),
+                        .out(out[OUT_IDX])
+                    );
 
                 end
             end

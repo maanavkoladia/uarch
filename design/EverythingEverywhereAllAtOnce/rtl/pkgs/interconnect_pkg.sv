@@ -110,7 +110,7 @@ package interconnect_pkg;
     } dte_2_dcache_t;
 
     //MEM interconnect//////////////////////////////
-    typedef struct {bool writeBuf_V[numWriteBufsInMem];} mem_2_scheduler_t;
+    typedef struct {bool [numWriteBufsInMem-1: 0] writeBuf_V;} mem_2_scheduler_t;
 
     typedef struct {bool mem_Ready;} mem_2_dte_t;
 
@@ -118,7 +118,7 @@ package interconnect_pkg;
         bool ld_req;
         bool st_req;
         //bool start_transaction;
-        bool permission2DriveBus[MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
+        bool [MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS -1 : 0] permission2DriveBus;
     } dte_2_mem_t;
 
 

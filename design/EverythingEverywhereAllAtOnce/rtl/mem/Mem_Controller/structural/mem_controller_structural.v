@@ -10,7 +10,6 @@
 // genvars/generate used for repeated structures.
 // ============================================================================
 
-`include "std_cell_macros.vh"
 
 module mem_controller_structural (
     input wire clk,

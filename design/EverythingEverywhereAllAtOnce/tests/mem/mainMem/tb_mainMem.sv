@@ -2,6 +2,7 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import mem_common_pkg::*;
 
+
 /*
 typedef struct {
     bool ld_req;
@@ -24,7 +25,7 @@ typedef struct {
 
 module tb_mainMem ();
 
-    localparam int CLK_PERIOD = 10;
+    localparam int CLK_PERIOD = 8;
     `CLK_INIT(CLK_PERIOD)
     //`GEN_WAVEFORM_VCD("wave.vcd", tb_memBanks, 10);
     //`GEN_WAVEFORM_VPD("wave.vpd", tb_memBanks, 10);
@@ -38,19 +39,19 @@ module tb_mainMem ();
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus;
 
     //to give the memmodule and addr
-    p_address_t addrForBus;
-    bool driveAddrBus;
+   
 
-    logic [31 : 0] data2Bus;
-    bool driveDataBus;
 
     dte_2_mem_t fromDte;
     mem_2_dte_t mem2dte;
     mem_2_scheduler_t mem2Sch;
+    req_2_sch_t bestPick_i;
+    core_2_icache_t core_2_icache;
 
-    //gate the bus
-    assign dataBus = driveDataBus ? data2Bus : 'z;
-    assign addrBus = driveAddrBus ? addrForBus : 'z;
+    dte_2_icache_t dte_2_icache;
+
+
+
 
 
     initial begin
@@ -63,79 +64,56 @@ module tb_mainMem ();
         .rst(rst),
         .address_bus(addrBus),
         .data_bus(dataBus),
-        .inFromDte(fromDte),
-        .out2Dte(mem2dte),
-        .out2Sch(mem2Sch)
+        .inFromDte_ld_req(fromDte.ld_req),
+        .inFromDte_st_req(fromDte.st_req),
+        .inFromDte_permission2DriveBus(fromDte.permission2DriveBus),
+        .out2Dte_mem_Ready(mem2dte.mem_Ready),
+        .out2Sch_writeBuf_V(mem2Sch.writeBuf_V)
     );
 
+    ICache uut_icache(
+        .clk(clk),
+        .rst(rst),
+        .inFromCore_i(core_2_icache),
+        .out2Core_o(),
+        .inFromDte_i(dte_2_icache),
+        .out2Sch_o(),
+        .dataBus(dataBus),
+        .addrBus(addrBus)
+    );
+
+    DTE dte(
+        .clk(clk),
+        .rst(rst),
+        .bestPick_i(bestPick_i),
+        .bestPick_bk_id_i(0),
+        .dte_out_2_icache_o(dte_2_icache),
+        .dte_out_2_dcache_o(),
+        .mem_2_dte_i(mem2dte),
+        .dte_2_mem_o(fromDte),
+        .dte_2_dma_o(),
+        .dte_2_ddr5_o()
+    );
+    
     //init module to initMem
     tb_memGen_InitRitual memLoader ();
 
     initial begin
         `LOG("Main Mem Tb Starting up");
-        fromDte.ld_req = 0;
-        fromDte.st_req = 0;
-        //fromDte.start_transaction = 0;
-        fromDte.permission2DriveBus[0] = 0;
-        fromDte.permission2DriveBus[1] = 0;
-        fromDte.permission2DriveBus[2] = 0;
-        fromDte.permission2DriveBus[3] = 0;
-        addrForBus = 32'h1000;
-        //addrForBus = 32'h1290;
-        driveAddrBus = 0;
-        driveDataBus = 0;
-        rst = 0;  //actve low
-
+        rst = 0;
+        core_2_icache = '{default: '0};
+        bestPick_i = NO_REQ;
+        DelayCLKs(10);
+        @(posedge clk)
+        rst = 1;
         DelayCLKs(5);
-        rst = 1;  //actve low
-        DelayCLKs(20);
-
-        /////////////////////////////////////////////////////////////////////////////////////
-        //LD_REQ logic//
-        /////////////////////////////////////////////////////////////////////////////////////
-        DelayCLKs(20);
-        addrForBus = 32'h1000;
-        driveAddrBus = 1;
-        fromDte.ld_req = 1;
-        @(posedge mem2dte.mem_Ready);
-        @(posedge clk);
-        fromDte.ld_req = 0;
-        fromDte.permission2DriveBus[0] = 1;  //lsb onto bus
-        @(posedge clk);
-        fromDte.permission2DriveBus[0] = 0;
-        fromDte.permission2DriveBus[1] = 1;
-        @(posedge clk);
-        fromDte.permission2DriveBus[1] = 0;
-        fromDte.permission2DriveBus[2] = 1;
-        @(posedge clk);
-        fromDte.permission2DriveBus[2] = 0;
-        fromDte.permission2DriveBus[3] = 1;  //msb onto bus
-        @(posedge clk);
-        fromDte.permission2DriveBus[3] = 0;
-        @(posedge clk);
-        driveAddrBus = 0;
-        DelayCLKs(30);
-
-
-        /////////////////////////////////////////////////////////////////////////////////////
-        //ST_Req
-        /////////////////////////////////////////////////////////////////////////////////////
-        @(negedge clk);
-        addrForBus = 32'h0400;
-        data2Bus = 32'h33221100;  //lsb
-        driveAddrBus = 1;
-        driveDataBus = 1;
-        fromDte.st_req = 1;
-        @(posedge clk);
-        fromDte.st_req = 0;
-        data2Bus = 32'h77665544;  //lsb
-        @(posedge clk);
-        data2Bus = 32'hbbaa9988;  //lsb
-        @(posedge clk);
-        data2Bus = 32'hffeeddcc;  //lsb
-        @(posedge clk);
-        driveAddrBus = 0;
-        driveDataBus = 0;
+        @(posedge clk)
+        bestPick_i = ICACHE_HIGH_PRI;
+        core_2_icache.icache_en = 1;
+        core_2_icache.p_addr = 15'h1000;
+        core_2_icache.v_addr_i = 32'h1000;
+        @(posedge clk)
+        bestPick_i = NO_REQ;
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time

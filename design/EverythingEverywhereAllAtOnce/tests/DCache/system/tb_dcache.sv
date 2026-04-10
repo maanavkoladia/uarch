@@ -23,8 +23,6 @@ module tb_dcache ();
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus;
 
     //to give the memmodule and addr
-    p_address_t addrForBus;
-    bool driveAddrBus;
 
     icache_2_scheduler_t icache_2_sch;
     dcache_2_scheduler_t dcache_2_sch;
@@ -52,14 +50,17 @@ module tb_dcache ();
         .address_bus(addrBus)
     );
 
+
     mem_TOP uut1_mem (
         .clk(clk),
         .rst(rst),
         .address_bus(addrBus),
         .data_bus(dataBus),
-        .inFromDte(dte_2_mem),
-        .out2Dte(mem_2_dte),
-        .out2Sch(mem_2_sch)
+        .inFromDte_ld_req(dte_2_mem.ld_req),
+        .inFromDte_st_req(dte_2_mem.st_req),
+        .inFromDte_permission2DriveBus(dte_2_mem.permission2DriveBus),
+        .out2Dte_mem_Ready(mem_2_dte.mem_Ready),
+        .out2Sch_writeBuf_V(mem_2_sch.writeBuf_V)
     );
 
  
