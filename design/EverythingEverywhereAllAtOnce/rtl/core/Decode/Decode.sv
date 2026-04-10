@@ -57,6 +57,7 @@ module Decode (
     bool flush; //cpaddyx , i did not put ts here, whats this for
     logic REP_LATCH, REP_CMP_LATCH, HALT_REG;
     wire rr_latch_we_o;
+    bool stall;
 
     assign flush = exe_outs_i.br_res_out.flush;
     assign stall = rr_outs_i.valid && rr_outs_i.stall;

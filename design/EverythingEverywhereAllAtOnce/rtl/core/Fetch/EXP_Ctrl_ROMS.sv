@@ -32,21 +32,60 @@ module EXP_Ctrl_ROMS (
     localparam logic [2:0] DDR_IDT = 3'b100; // DDR (placeholder)
 
     // Exception/interrupt selection logic
+    // =====================
+    // Fetch exception mux
+    // =====================
     wire [2:0] fetch_exp_out;
-    mux2_3 fetchP_pf_mux(.in0(GP_IDT), .in1(PF_IDT), .sel(Fetch_pf), .out(fetch_exp_out));
+    `MUX_2(fetchP_pf_mux, 3,
+        fetch_exp_out,
+        GP_IDT,
+        PF_IDT,
+        Fetch_pf
+    )
 
+    // =====================
+    // DC exception mux
+    // =====================
     wire [2:0] DC_exp_out;
-    mux2_3 DC_pf_mux(.in0(GP_IDT), .in1(PF_IDT), .sel(DC_pf), .out(DC_exp_out));
+    `MUX_2(DC_pf_mux, 3,
+        DC_exp_out,
+        GP_IDT,
+        PF_IDT,
+        DC_pf
+    )
 
+    // =====================
+    // Exception select mux (DC priority)
+    // =====================
     wire [2:0] exp_idx;
-    mux2_3 exp_sel_mux(.in0(fetch_exp_out), .in1(DC_exp_out), .sel(DC_exp), .out(exp_idx));
+    `MUX_2(exp_sel_mux, 3,
+        exp_idx,
+        fetch_exp_out,
+        DC_exp_out,
+        DC_exp
+    )
 
+    // =====================
+    // Interrupt mux
+    // =====================
     wire [2:0] int_idx;
-    mux2_3 dma_int_mux(.in0(DDR_IDT), .in1(DMA_IDT), .sel(DMA_int), .out(int_idx));
+    `MUX_2(dma_int_mux, 3,
+        int_idx,
+        DDR_IDT,
+        DMA_IDT,
+        DMA_int
+    )
 
+    // =====================
+    // Final ROM index mux
+    // =====================
     wire [2:0] rom_idx;
-    mux2_3 exp_mode_mux(.in0(int_idx), .in1(exp_idx), .sel(exp_pipe_clear), .out(rom_idx));
-
+    `MUX_2(exp_mode_mux, 3,
+        rom_idx,
+        int_idx,
+        exp_idx,
+        exp_pipe_clear
+    )
   
 
 

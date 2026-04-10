@@ -22,7 +22,7 @@ module cs_post_processor (
 
     exe_cs_operation_type_e overriden_op_type;
     logic [2:0] reg_field;
-    assing reg_field = modrm_byte[5:3];
+    assign reg_field = modrm_byte[5:3];
 
     //op_type setting
     always_comb begin

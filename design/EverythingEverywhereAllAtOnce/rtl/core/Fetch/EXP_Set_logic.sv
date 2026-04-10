@@ -11,40 +11,19 @@ module EXP_Set_logic(
     input exe_valid,
     input wb_valid,
 
-// ispresent
+    // ispresent
     input f_exp,
     input dc_exp,
     input int_set,
-        //exp mux sels
 
     output exp_set_logic_output_t outputs
 );
 
-/*
-notes on logic 
-There are two places where exceptions can be generated
-- fetch
-- register read 
-
-The problem:
-When an exeception is generated we need to take it only once it is certain it is not specualative.
-Basically, we take the exception once all instructions downstream are finished
-
-this logic block checks for that 
-
-if there is an exception in fetch, we wait till all stages upstream are cleared (and_exp)
-if there is an exceptio in RR we wait till mem, excecute and wb are cleared (and_rr)
-
-if an RR exception and a fetch exception both happen at the same time the RR exception gets priority (mux)
-
-an interrupt register lives in fetch. The same rules apply for interrupt - we wait for the downstream to clear
-
-The registers that actually signal we are servicing the interrupt are in the fetch stage itself
-*/
-
+// =====================
+// Internal wires
+// =====================
 wire f_pipe_clear;
 wire dc_pipe_clear;
-wire int_pipe_clear;
 
 wire not_rr_valid;
 wire not_dc_valid;
@@ -52,33 +31,56 @@ wire not_mem_valid;
 wire not_exe_valid;
 wire not_wb_valid;
 
+// =====================
+// Inverters
+// =====================
+`INV_N(inv0, 1, rr_valid,  not_rr_valid)
+`INV_N(inv1, 1, dc_valid,  not_dc_valid)
+`INV_N(inv2, 1, mem_valid, not_mem_valid)
+`INV_N(inv3, 1, exe_valid, not_exe_valid)
+`INV_N(inv4, 1, wb_valid,  not_wb_valid)
 
-inv1$ not0 (.out(not_rr_valid), .in(rr_valid));
-inv1$ not1 (.out(not_dc_valid), .in(dc_valid));
-inv1$ not2 (.out(not_mem_valid), .in(mem_valid));
-inv1$ not3 (.out(not_exe_valid), .in(exe_valid));
-inv1$ not4 (.out(not_wb_valid), .in(wb_valid));
+// =====================
+// AND trees
+// =====================
+`AND_7(and_exp, 1, f_pipe_clear,
+    invalid_instruction,
+    not_rr_valid,
+    not_dc_valid,
+    not_mem_valid,
+    not_exe_valid,
+    not_wb_valid,
+    f_exp
+)
 
-and7$ and_exp (.out(f_pipe_clear), .in0(invalid_instruction),
-                .in1(not_rr_valid), .in2(not_dc_valid), .in3(not_mem_valid), 
-                .in4(not_exe_valid), .in5(not_wb_valid), .in6(f_exp));
+`AND_4(and_dc, 1, dc_pipe_clear,
+    not_mem_valid,
+    not_exe_valid,
+    not_wb_valid,
+    dc_exp
+)
 
+// =====================
+// MUX (dc_exp priority)
+// =====================
+`MUX_2(mux_exp_sel, 1,
+    outputs.exp_pipe_clear,
+    f_pipe_clear,
+    dc_pipe_clear,
+    dc_exp
+)
 
-and4$ and_dc (.out(dc_pipe_clear), .in0(not_mem_valid),
-                .in1(not_exe_valid), .in2(not_wb_valid), .in3(dc_exp));
-
-mux2$ mux_exp_sel (.outb(outputs.exp_pipe_clear),
-                    .in0(f_pipe_clear),
-                    .in1(dc_pipe_clear),
-                    .s0(dc_exp)
-                );
-
-
-and7$ and_int (.out(outputs.int_pipe_clear), .in0(invalid_instruction),
-                .in1(not_rr_valid), .in2(not_dc_valid), .in3(not_mem_valid),
-                .in4(not_exe_valid), .in5(not_wb_valid), .in6(int_set));
-
-
-
+// =====================
+// Interrupt logic
+// =====================
+`AND_7(and_int, 1, outputs.int_pipe_clear,
+    invalid_instruction,
+    not_rr_valid,
+    not_dc_valid,
+    not_mem_valid,
+    not_exe_valid,
+    not_wb_valid,
+    int_set
+)
 
 endmodule
