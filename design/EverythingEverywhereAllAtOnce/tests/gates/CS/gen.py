@@ -12,6 +12,11 @@ Column naming convention in the CSV:
 ROM primitive  (32 words × 64-bit output, active-high OE):
     `ROM_32W_64b(__unitName__, __ADDR__, __OE__, __dout__)
 
+Behavioral assumptions:
+    - When OE=1 → dout actively drives
+    - When OE=0 → dout is high-impedance (Z)
+    - Multiple ROM dout pins can be wired together safely
+
 Gate macros available (from std-lib header):
     `INV_N  `AND_2 … `AND_12  `OR_2 … `OR_12
 
@@ -24,9 +29,9 @@ Design rules
 * Total ROMs    = num_addr_banks × num_out_slices
 * OE logic      : if 1 bank → tied 1'b1
                   if >1 bank → minterm AND gate for each bank (pure structural)
-* Output mux    : per output bit: AND each bank's dout bit with its OE,
-                  then OR all bank contributions together (gate tree, max 12 inputs
-                  per gate, so stages are inserted for >12 banks).
+* Output wiring : ROM dout pins directly assigned to outputs (no masking/muxing)
+                  ROM tri-state behavior handles multiplexing automatically
+                  Multiple ROM outputs connect to same wire (wired bus)
 * No == operator, no for-loops in generated Verilog, no $readmemh.
 """
 
@@ -222,7 +227,6 @@ def oe_wire(bank):              return f"oe_bank{bank}"
 def dout_wire(bank, sl):        return f"dout_b{bank}_s{sl}"
 def inv_addr_wire(bit):         return f"addr_upper_inv{bit}"
 def oe_and_name(bank):          return f"oe_bank{bank}_gate"
-def masked_wire(bank, sl, bit): return f"masked_b{bank}_s{sl}_bit{bit}"
 
 # ---------------------------------------------------------------------------
 # Verilog emission
@@ -351,47 +355,32 @@ def emit_rom_init(out, rom_data, num_addr_banks, num_out_slices):
 
 def emit_output_assigns(out, output_cols, num_addr_banks, num_out_slices, n_outputs):
     """
+    Direct wired connection from ROM tri-state outputs to module outputs.
+    
+    No masking, no muxing logic needed. The ROM primitive handles tri-stating
+    internally based on OE. Multiple ROM dout pins connect to the same output
+    wire, creating a wired bus. Only one ROM drives at a time (others are Z).
+    
     For each output bit:
-      Single bank  : assign directly from dout (OE is tied 1'b1)
-      Multiple banks:
-        1. AND each bank's dout bit with that bank's OE  → masked wire
-        2. Build an OR gate-tree across all masked wires → output port
+      - Find which ROM slice it belongs to
+      - Create assign statements from each bank's corresponding dout bit
+      - Multiple assigns to same wire create wired connection
     """
-    out.append("    // -- Output assignments (structural) --")
-
-    # Pre-declare masked wires
-    if num_addr_banks > 1:
-        for i in range(n_outputs):
-            sl     = (n_outputs - 1 - i) // 64
-            bit_sl = (n_outputs - 1 - i) % 64
-            for b in range(num_addr_banks):
-                out.append(f"    wire {masked_wire(b, sl, bit_sl)};")
-        out.append("")
+    out.append("    // -- Output assignments (direct wired connection, no muxing) --")
+    out.append("    // ROM tri-state outputs handle multiplexing automatically")
+    out.append("")
 
     for i, col in enumerate(output_cols):
         bit_idx = n_outputs - 1 - i   # bit 0 = LSB
-        sl      = bit_idx // 64
-        bit_sl  = bit_idx % 64
+        sl      = bit_idx // 64        # which 64-bit slice
+        bit_sl  = bit_idx % 64         # bit within that slice
 
-        if num_addr_banks == 1:
-            out.append(f"    assign {col} = {dout_wire(0, sl)}[{bit_sl}];")
-        else:
-            # Step 1: mask per bank
-            masked_list = []
-            for b in range(num_addr_banks):
-                mw = masked_wire(b, sl, bit_sl)
-                out.append(
-                    gate_macro('AND', mw + "_gate", 1, mw,
-                               [oe_wire(b), f"{dout_wire(b, sl)}[{bit_sl}]"])
-                )
-                masked_list.append(mw)
-
-            # Step 2: OR-tree
-            # Use a safe prefix (strip special chars from col name)
-            safe = col.replace('[','_').replace(']','_').replace(' ','_')
-            final = build_gate_tree('OR', f"out_{safe}", 1, masked_list, out)
-            if final != col:
-                out.append(f"    assign {col} = {final};")
+        # Direct connection from each bank's ROM to the output
+        for b in range(num_addr_banks):
+            out.append(f"    assign {col} = {dout_wire(b, sl)}[{bit_sl}];")
+        
+        if num_addr_banks > 1:
+            out.append(f"    // ^ {num_addr_banks} ROMs wired together (one drives, others Z)")
 
     out.append("")
 
@@ -433,6 +422,7 @@ def generate(csv_path, v_path, module_name):
     out.append(f"// Source CSV : {os.path.basename(csv_path)}")
     out.append(f"// Inputs     : {n_inputs}   Outputs : {n_outputs}")
     out.append(f"// ROM banks  : {num_addr_banks}   Out slices: {num_out_slices}   Total ROMs: {total_roms}")
+    out.append(f"// Architecture: Direct wired ROM outputs (tri-state muxing, no logic)")
     out.append("")
 
     emit_module_header(out, module_name, input_cols, output_cols)
