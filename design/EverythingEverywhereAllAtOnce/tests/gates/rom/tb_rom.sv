@@ -2,7 +2,7 @@
 
 module tb_rom ();
 
-    localparam int Clk_PERIOD = 11;
+    localparam int Clk_PERIOD = 10;
 
     task automatic DelayClks(input int cycles);
         #(Clk_PERIOD * cycles);
@@ -54,17 +54,20 @@ uut0.mem[30] = 64'hEEEEEEEE;
 uut0.mem[31] = 64'hFFFFFFFF;
     end
 
+
     initial begin
         `LOG("Starting ROM tb");
+        addr = 6;
+        OE = 0;
 
-     rom64b32w$ uut0 (
-         .A(addr),
-         .OE(OE),
-         .DOUT(dout)
-     );
-
+        DelayClks(3);
+        @(posedge clk);
+        OE = 1;
+        @(posedge clk);
+        OE = 0;
         DelayClks(30);
         `LOG("Done with ROM tb");
+        $finish;
     end
     // Test signals
 
