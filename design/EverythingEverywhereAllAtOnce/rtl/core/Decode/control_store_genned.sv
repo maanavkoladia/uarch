@@ -1267,11 +1267,11 @@ assign branch_target_sel_0_o = 1'b0;
 // OP_TYPE_1_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_3_i & in_2_i & in_1_i)
 `AND_9(OP_TYPE_1_o_and, 1, OP_TYPE_1_o, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i, in_2_i, in_1_i)
 
-// OP_TYPE_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_1_i)
+// OP_TYPE_0_o = (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_2_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & !in_3_i) | (!in_9_i & !in_8_i & !in_7_i & !in_6_i & !in_5_i & !in_4_i & in_1_i)
 wire OP_TYPE_0_o_t0;
-`AND_7(OP_TYPE_0_o_and0, 1, OP_TYPE_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv)
+`AND_7(OP_TYPE_0_o_and0, 1, OP_TYPE_0_o_t0, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv)
 wire OP_TYPE_0_o_t1;
-`AND_7(OP_TYPE_0_o_and1, 1, OP_TYPE_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_2_i_inv)
+`AND_7(OP_TYPE_0_o_and1, 1, OP_TYPE_0_o_t1, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_3_i_inv)
 wire OP_TYPE_0_o_t2;
 `AND_7(OP_TYPE_0_o_and2, 1, OP_TYPE_0_o_t2, in_9_i_inv, in_8_i_inv, in_7_i_inv, in_6_i_inv, in_5_i_inv, in_4_i_inv, in_1_i)
 

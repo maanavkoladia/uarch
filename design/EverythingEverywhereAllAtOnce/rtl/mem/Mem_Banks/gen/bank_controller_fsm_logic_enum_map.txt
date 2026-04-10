@@ -1,5 +1,5 @@
 # Enumeration map for FSM: bank_controller_fsm_logic
-# 21 states -> 5 bit(s)
+# 22 states -> 5 bit(s)
 # IDLE is always assigned encoding 0
 # ERROR is always assigned the highest encoding
 # ERROR was synthesised (not present in source CSV)
@@ -18,12 +18,13 @@
   ST_ADDR_WAIT_0                        9  01001
   ST_ADDR_WAIT_1                       10  01010
   ST_ADDR_WAIT_2                       11  01011
-  ST_WRITE_WAIT_0                      12  01100
-  ST_WRITE_WAIT_1                      13  01101
-  ST_WRITE_WAIT_2                      14  01110
-  ST_WRITE_WAIT_3                      15  01111
-  ST_WRITE_WAIT_4                      16  10000
-  ST_WRITE_WAIT_5                      17  10001
-  ST_WRITE_WAIT_6                      18  10010
-  ST_WRITE_WAIT_7                      19  10011
-  ERROR                                20  10100  # ERROR (highest), synthesised
+  ST_ADDR_WAIT_3                       12  01100
+  ST_WRITE_WAIT_0                      13  01101
+  ST_WRITE_WAIT_1                      14  01110
+  ST_WRITE_WAIT_2                      15  01111
+  ST_WRITE_WAIT_3                      16  10000
+  ST_WRITE_WAIT_4                      17  10001
+  ST_WRITE_WAIT_5                      18  10010
+  ST_WRITE_WAIT_6                      19  10011
+  ST_WRITE_WAIT_7                      20  10100
+  ERROR                                21  10101  # ERROR (highest), synthesised
