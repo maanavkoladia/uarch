@@ -2,7 +2,9 @@ module ret_imm_op(
     input uint64_t imm64,
     input uint64_t stack_ptr,
     
-    //eip is sent to branch
+    //eip is sent to branch,
+    //eip thats popped off the stack so actually buffer is sent to branch unit - harish
+    // correct this if this is wrong - harish
     output uint64_t sr_o
 );
 

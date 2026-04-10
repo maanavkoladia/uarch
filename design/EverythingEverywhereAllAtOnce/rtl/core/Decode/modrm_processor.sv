@@ -96,7 +96,7 @@ module modrm_processor (
             dr_rd = 1'b1;
             dr_wr = 1'b1;
         end
-        else if(reg_is_segment) begin
+        else if(reg_is_segment && reg_is_dr) begin
             case(modrm_byte[5:3])    //seg orders, given by chat, idk if i trust
                 3'd0: dr_id = ES;
                 3'd1: dr_id = CS;
@@ -114,6 +114,7 @@ module modrm_processor (
             dr_id = decode_cs_inputs.HARDCODED_DR_ID;
             dr_rd = decode_cs_inputs.HARDCODED_DR_RD;
             //gonna assume for now that if youre reading this reg then youre gonna write back to it since this is dr
+            //actually not true for fuck ass movs case, but gonna mux outside of here cause fuck that instruction
             dr_wr = decode_cs_inputs.HARDCODED_DR_RD;
         end
         else begin
@@ -179,6 +180,20 @@ module modrm_processor (
             endcase
             sr_rd = 1'b1;
             sr_wr = 1'b0;
+        end
+        else if(reg_is_segment && rm_is_dr) begin
+            case(modrm_byte[5:3])    //seg orders, given by chat, idk if i trust
+                3'd0: sr_id = ES;
+                3'd1: sr_id = CS;
+                3'd2: sr_id = SS;
+                3'd3: sr_id = DS;
+                3'd4: sr_id = FS;
+                3'd5: sr_id = GS;
+                3'd6: sr_id = NO_REG;
+                3'd7: sr_id = NO_REG;
+            endcase
+            sr_rd = 1'b1;
+            sr_wr = 1'b1;
         end
         else if(!decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.HARDCODED_SR) begin
             sr_id = decode_cs_inputs.HARDCODED_SR_ID;

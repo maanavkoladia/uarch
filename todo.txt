@@ -15,3 +15,5 @@ TODO:
 - dcache victim cache stress testing 
 - IO testing 
 - might have to updated bit vector with new datasize vector
+
+- MOD LUT/OPCODE LUT for the fucked instructions

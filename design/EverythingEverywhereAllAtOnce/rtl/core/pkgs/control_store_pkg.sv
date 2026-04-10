@@ -20,94 +20,94 @@ package control_store_pkg;
         // ID_IDX   = 21   // ID Flag (CPUID instruction support)
     } flags_idx_e;
     
-typedef enum {
-    //----------------------------------------------------------
-    // AAA — ASCII Adjust AL after Addition (aaa.sv)
-    //----------------------------------------------------------
-    AAA          = 0,
+    typedef enum {
+        //----------------------------------------------------------
+        // AAA — ASCII Adjust AL after Addition (aaa.sv)
+        //----------------------------------------------------------
+        AAA          = 0,
 
-    //----------------------------------------------------------
-    // ADD — Addition (add.sv)
-    //  Plain variants:  full-width immediate or register
-    //  Sign  variants:  imm8 sign-extended to the target width
-    //----------------------------------------------------------
-    ADD          = 1,
+        //----------------------------------------------------------
+        // ADD — Addition (add.sv)
+        //  Plain variants:  full-width immediate or register
+        //  Sign  variants:  imm8 sign-extended to the target width
+        //----------------------------------------------------------
+        ADD          = 1,
 
-    //----------------------------------------------------------
-    // ADC — Add with Carry (add_w_c.sv)
-    //----------------------------------------------------------
-    ADC          = 2,
+        //----------------------------------------------------------
+        // ADC — Add with Carry (add_w_c.sv)
+        //----------------------------------------------------------
+        ADC          = 2,
 
-    //----------------------------------------------------------
-    // AND — Bitwise AND (and.sv)
-    //----------------------------------------------------------
-    AND          = 3,
+        //----------------------------------------------------------
+        // AND — Bitwise AND (and.sv)
+        //----------------------------------------------------------
+        AND          = 3,
 
-    //----------------------------------------------------------
-    // NOT — Bitwise NOT (not.sv)
-    //----------------------------------------------------------
-    NOT          = 4,
+        //----------------------------------------------------------
+        // NOT — Bitwise NOT (not.sv)
+        //----------------------------------------------------------
+        NOT          = 4,
 
-    //----------------------------------------------------------
-    // OR — Bitwise OR (or.sv)
-    //----------------------------------------------------------
-    OR           = 5,
+        //----------------------------------------------------------
+        // OR — Bitwise OR (or.sv)
+        //----------------------------------------------------------
+        OR           = 5,
 
-    //----------------------------------------------------------
-    // SAL — Shift Arithmetic Left (sal.sv)
-    //----------------------------------------------------------
-    SAL          = 6,
+        //----------------------------------------------------------
+        // SAL — Shift Arithmetic Left (sal.sv)
+        //----------------------------------------------------------
+        SAL          = 6,
 
-    //----------------------------------------------------------
-    // SAR — Shift Arithmetic Right (sar.sv)
-    //----------------------------------------------------------
-    SAR          = 7,
+        //----------------------------------------------------------
+        // SAR — Shift Arithmetic Right (sar.sv)
+        //----------------------------------------------------------
+        SAR          = 7,
 
-    //----------------------------------------------------------
-    // SBB — Subtract with Borrow (sub_w_b.sv)
-    //----------------------------------------------------------
-    SBB          = 8,
+        //----------------------------------------------------------
+        // SBB — Subtract with Borrow (sub_w_b.sv)
+        //----------------------------------------------------------
+        SBB          = 8,
 
-    //----------------------------------------------------------
-    // BSF — Bit Scan Forward (bsf.sv)
-    //----------------------------------------------------------
-    BSF          = 9,
+        //----------------------------------------------------------
+        // BSF — Bit Scan Forward (bsf.sv)
+        //----------------------------------------------------------
+        BSF          = 9,
 
-    //----------------------------------------------------------
-    // SIMD — Packed / MMX operations (simd.sv)
-    //----------------------------------------------------------
-    PADDW        = 10,  // Add packed word integers      (mm + mm/m64, 16-bit lanes)
-    PADDD        = 11,  // Add packed dword integers     (mm + mm/m64, 32-bit lanes)
-    PAVGB        = 12,  // Average packed unsigned bytes (mm + mm/m64,  8-bit lanes)
-    PAVGW        = 13,  // Average packed unsigned words (mm + mm/m64, 16-bit lanes)
-    PACKSSWB     = 14,  // Pack 4×i16 → 8×i8  with signed saturation
-    PACKSSDW     = 15,  // Pack 2×i32 → 4×i16 with signed saturation
+        //----------------------------------------------------------
+        // SIMD — Packed / MMX operations (simd.sv)
+        //----------------------------------------------------------
+        PADDW        = 10,  // Add packed word integers      (mm + mm/m64, 16-bit lanes)
+        PADDD        = 11,  // Add packed dword integers     (mm + mm/m64, 32-bit lanes)
+        PAVGB        = 12,  // Average packed unsigned bytes (mm + mm/m64,  8-bit lanes)
+        PAVGW        = 13,  // Average packed unsigned words (mm + mm/m64, 16-bit lanes)
+        PACKSSWB     = 14,  // Pack 4×i16 → 8×i8  with signed saturation
+        PACKSSDW     = 15,  // Pack 2×i32 → 4×i16 with signed saturation
 
-    //----------------------------------------------------------
-    // CMP — Compare (cmp.sv)
-    //----------------------------------------------------------
-    CMP          = 16,
+        //----------------------------------------------------------
+        // CMP — Compare (cmp.sv)
+        //----------------------------------------------------------
+        CMP          = 16,
 
-    //----------------------------------------------------------
-    // Non-ALU / Control Flow Operations
-    //----------------------------------------------------------
-    STD          = 17,
-    CALL         = 18,
-    FAR_CALL     = 19,
-    CMPXCHG      = 20,
-    IRETD        = 21,
-    MOV          = 22,
-    POP          = 23,
-    PUSH         = 24,
-    RET          = 25,
-    RET_IMM      = 26,
-    RET_FAR      = 27,
-    RET_FAR_IMM  = 28,
-    XCHG         = 29,
-    CLD          = 30,
-    CMOVC        = 31
+        //----------------------------------------------------------
+        // Non-ALU / Control Flow Operations
+        //----------------------------------------------------------
+        STD          = 17,
+        CALL         = 18,
+        FAR_CALL     = 19,
+        CMPXCHG      = 20,
+        IRETD        = 21,
+        MOV          = 22,
+        POP          = 23,
+        PUSH         = 24,
+        RET          = 25,
+        RET_IMM      = 26,
+        RET_FAR      = 27,
+        RET_FAR_IMM  = 28,
+        XCHG         = 29,
+        CLD          = 30,
+        CMOVC        = 31
 
-} exe_cs_operation_type_e;
+    } exe_cs_operation_type_e;
 
     typedef enum{
         //register 
@@ -131,7 +131,7 @@ typedef enum {
         FLAGS = 15,
         EIP = 16,           //similar to NEIP but for EIP
         CMPXCHG_SEL = 17,       //cmpxchg operation
-        IRETD_SEL = 18          //iretd operation  
+        IRETD_SEL = 18          //iretd operation  p
     // How source selection works in the ALU input selector:
     //refined comment with claude so its coherent buddy
     // 1. All sources first get assigned to a 128-bit wire (srA_128/srB_128)
@@ -157,5 +157,12 @@ typedef enum {
 
 
     } source_selector_e;
+
+    typedef enum {
+        NONE = 0,
+        CTRL = 1,
+        SHF = 2,
+        ALU = 3
+    } op_in_modrm_subset_t;
 
 endpackage

@@ -28,6 +28,7 @@ DECODE_SRC_FILES = \
 						$(DECODE_PATH_INTERNAL)/br_info_processing.sv \
 						$(DECODE_PATH_INTERNAL)/control_store_genned.sv \
 						$(DECODE_PATH_INTERNAL)/control_store.sv \
+						$(DECODE_PATH_INTERNAL)/cs_post_processor.sv \
 						$(DECODE_PATH_INTERNAL)/decode_gp_gen.sv \
 						$(DECODE_PATH_INTERNAL)/modrm_processor.sv \
 						$(DECODE_PATH_INTERNAL)/sib_processor.sv \

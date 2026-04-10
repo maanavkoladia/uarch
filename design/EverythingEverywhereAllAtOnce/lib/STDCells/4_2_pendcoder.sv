@@ -41,12 +41,12 @@ inv1$ inv_in2_i (in2_i_inv, in2_i);
 
 // SOP logic (Quine-McCluskey minimised)
 
-// out1_o =  in3_i | in2_i
+// out1_o = in2_i |  in3_i
 wire out1_o_t0;
 wire out1_o_t1;
 
-buffer$ out1_o_buf0 (out1_o_t0,  in3_i);
-buffer$ out1_o_buf1 (out1_o_t1, in2_i);
+buffer$ out1_o_buf0 (out1_o_t0, in2_i);
+buffer$ out1_o_buf1 (out1_o_t1,  in3_i);
 or2$  out1_o_or  (out1_o, out1_o_t0, out1_o_t1);
 
 //  out0_o =  in3_i | (!in2_i & in1_i)

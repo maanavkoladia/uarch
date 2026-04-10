@@ -13,25 +13,36 @@ module control_store (
     output exe_cs_t exe_cs,
     output wb_cs_t wb_cs
 );
-    //wire [63:0] cs_out[2];
-    //logic [9:0] rom_index;
-    //assign rom_index = {(total_pf_vector[0] || total_pf_vector[1]), opcode, total_pf_vector[3]};
+
+    decode_cs_t temp_decode_cs;
+    rr_cs_t temp_rr_cs;
+    dc_cs_t temp_dc_cs;
+    mem_cs_t temp_mem_cs;
+    exe_cs_t temp_exe_cs;
+    wb_cs_t temp_wb_cs;
 
     // =====================
     // Input wires
     // =====================
     logic [9:0] input_bus;
-    assign input_bus = {(total_pf_vector[0] || total_pf_vector[1]), opcode, total_pf_vector[3]};
-    // =====================
-    // Packed output wires (FROM cs_parsed)
-    // =====================
 
-    // Single-bit
+    // =====================
+    // Single-bit outputs
+    // =====================
+    logic REP_o;
+    logic REP_CMP_o;
+    logic HALT_o;
+    logic MOVS_o;
+    logic SHIFT_BY_ONE_o;
+
     logic MODRM_NEEDED_o;
     logic RM_IS_DR_o;
     logic REG_IS_DR_o;
+    logic REG_IS_SEGMENT_o;
+
     logic HARD_CODED_DR_o;
     logic HARD_CODED_SR_o;
+
     logic OP_IN_MODRM_o;
 
     logic HARDCODED_DR_RD_o;
@@ -40,41 +51,37 @@ module control_store (
 
     logic br_uncond_o;
     logic relative_branch_o;
-    logic special_dr_o;
+    logic special_br_o;
     logic is_far_o;
     logic second_flag_needed_o;
 
-    // Packed fields
+    logic will_mod_zf_o;
+
+    logic HARDCODED_SEGMENT1_V_o;
+
+    // =====================
+    // Packed outputs
+    // =====================
     logic [4:0] HARD_CODED_DR_ID_o;
     logic [4:0] HARD_CODED_SR_ID_o;
+
     logic [1:0] DATA_SIZE_o;
+
+    logic [1:0] OP_IN_MODRM_SUBSET_o;
 
     logic [4:0] alu_inputA_sel_o;
     logic [4:0] alu_inputB_sel_o;
     logic [4:0] branch_target_sel_o;
 
-    logic [4:0] OP_TYPE_o; // (fix width to 5 unless you truly have 6 bits)
+    logic [4:0] OP_TYPE_o;
 
-    // =====================
-    // Additional wires (needed for cs_parsed)
-    // =====================
-    // New single-bit outputs
-    logic REP_CMP_o;
-    logic HALT_o;
-    logic REG_IS_SEGMENT_o;
-    logic will_mod_zf_o;
-
-    // Segment 0 hardcoding
     logic [4:0] HARDCODED_SEGMENT0_o;
-
-    // Segment 1 hardcoding
-    logic HARDCODED_SEGMENT1_V_o;
     logic [4:0] HARDCODED_SEGMENT1_o;
     // =====================
     // Module instantiation
     // =====================
 
-    cs_parsed control_store (
+    control_store_genned control_store (
         // Input bits
         .in_9_i(input_bus[9]),
         .in_8_i(input_bus[8]),
@@ -89,11 +96,21 @@ module control_store (
 
         // General Control
         .REP_o(REP_o),
+        .REP_CMP_o(REP_CMP_o),
+        .HALT_o(HALT_o),
+        .MOVS_o(MOVS_o),
+        .SHIFT_BY_ONE_o(SHIFT_BY_ONE_o),
+
         .MODRM_NEEDED_o(MODRM_NEEDED_o),
         .RM_IS_DR_o(RM_IS_DR_o),
         .REG_IS_DR_o(REG_IS_DR_o),
-        
+        .REG_IS_SEGMENT_o(REG_IS_SEGMENT_o),
+
         .OP_IN_MODRM_o(OP_IN_MODRM_o),
+
+        // Packed subset wiring
+        .OP_IN_MODRM_SUBSET_1_o(OP_IN_MODRM_SUBSET_o[1]),
+        .OP_IN_MODRM_SUBSET_0_o(OP_IN_MODRM_SUBSET_o[0]),
 
         // Op Enables / Selects
         .HARDCODED_DR_RD_o(HARDCODED_DR_RD_o),
@@ -151,35 +168,39 @@ module control_store (
         // Branch / Execution Flags
         .br_uncond_o(br_uncond_o),
         .relative_branch_o(relative_branch_o),
-        .special_dr_o(special_dr_o),
+        .special_br_o(special_br_o),
         .is_far_o(is_far_o),
         .second_flag_needed_o(second_flag_needed_o),
 
-        .REP_CMP_o(REP_CMP_o),
-        .HALT_o(HALT_o),
-        .REG_IS_SEGMENT_o(REG_IS_SEGMENT_o),
+        // Misc
         .will_mod_zf_o(will_mod_zf_o),
+
+        // Segment 0
         .HARDCODED_SEGMENT0_4_o(HARDCODED_SEGMENT0_o[4]),
         .HARDCODED_SEGMENT0_3_o(HARDCODED_SEGMENT0_o[3]),
         .HARDCODED_SEGMENT0_2_o(HARDCODED_SEGMENT0_o[2]),
         .HARDCODED_SEGMENT0_1_o(HARDCODED_SEGMENT0_o[1]),
         .HARDCODED_SEGMENT0_0_o(HARDCODED_SEGMENT0_o[0]),
+
+        // Segment 1
         .HARDCODED_SEGMENT1_V_o(HARDCODED_SEGMENT1_V_o),
         .HARDCODED_SEGMENT1_4_o(HARDCODED_SEGMENT1_o[4]),
         .HARDCODED_SEGMENT1_3_o(HARDCODED_SEGMENT1_o[3]),
         .HARDCODED_SEGMENT1_2_o(HARDCODED_SEGMENT1_o[2]),
         .HARDCODED_SEGMENT1_1_o(HARDCODED_SEGMENT1_o[1]),
         .HARDCODED_SEGMENT1_0_o(HARDCODED_SEGMENT1_o[0])
-
     );
 
     modrm_processor_outs_t mod_rm_cs_outs;
-    modrm_processor mod_rm_cs_gen(.modrm_byte(modrm), .datasize(DATA_SIZE_o), .decode_cs_inputs(decode_cs), .outputs(mod_rm_cs_outs));
-
-
+    modrm_processor mod_rm_cs_gen(
+        .modrm_byte(modrm), 
+        .datasize(DATA_SIZE_o), 
+        .decode_cs_inputs(decode_cs), 
+        .outputs(mod_rm_cs_outs)
+    );
 
     // DECODE
-    assign decode_cs = '{
+    assign temp_decode_cs = '{
         REP               : REP_o,
         REP_CMP           : REP_CMP_o,
         HALT              : HALT_o,
@@ -200,7 +221,7 @@ module control_store (
     };
 
     // RR
-    assign rr_cs = '{
+    assign temp_rr_cs = '{
         HARDCODED_DR_RD  : HARDCODED_DR_RD_o,
         HARDCODED_SR_RD  : HARDCODED_SR_RD_o,
         ST_SEL           : ST_SEL_o,
@@ -222,7 +243,7 @@ module control_store (
     };
 
     // DC
-    assign dc_cs = '{
+    assign temp_dc_cs = '{
         LD_OP : mod_rm_cs_outs.ld_op,
         ST_OP : mod_rm_cs_outs.st_op,
         upper8: mod_rm_cs_outs.high8,
@@ -230,13 +251,13 @@ module control_store (
     };
 
     // MEM
-    assign mem_cs = '{
+    assign temp_mem_cs = '{
         ST_OP  : mod_rm_cs_outs.st_op,
         LD_OP  : mod_rm_cs_outs.ld_op
     };
 
     // EXE
-    assign exe_cs = '{
+    assign temp_exe_cs = '{
         ST_OP               : mod_rm_cs_outs.st_op,
         OP_TYPE             : OP_TYPE_o,
 
@@ -250,83 +271,38 @@ module control_store (
 
         branch_target_sel   : branch_target_sel_o,
 
+        shift_by_one        : SHIFT_BY_ONE_o,
+
         br_ucond            : br_uncond_o,
         relative_branch     : relative_branch_o,
-        special_br          : special_dr_o,
+        special_br          : special_br_o,
         is_far              : is_far_o,
         second_flag_needed  : second_flag_needed_o
     };
 
     // WB
-    assign wb_cs = '{
+    assign temp_wb_cs = '{
         ST_OP : mod_rm_cs_outs.st_op,
         WB_DR : mod_rm_cs_outs.dr_wr,
         WB_SR : mod_rm_cs_outs.sr_wr
     };
 
+    cs_post_processor cs_post_prossesing_unit(
+        .movs(MOVS_o),
+        .op_in_modrm(OP_IN_MODRM_o),
+        .op_in_modrm_subset(OP_IN_MODRM_SUBSET_o),
+        .decode_cs_i(temp_decode_cs),
+        .rr_cs_i(temp_rr_cs),
+        .dc_cs_i(temp_dc_cs),
+        .mem_cs_i(temp_mem_cs),
+        .exe_cs_i(temp_exe_cs),
+        .wb_cs_i(temp_wb_cs),
+        .decode_cs_o(decode_cs),
+        .rr_cs_o(rr_cs),
+        .dc_cs_i(dc_cs),
+        .mem_cs_o(mem_cs),
+        .exe_cs_(exe_cs),
+        .wb_cs_o(wb_cs)
+    );
 
-
-
-
-    // assign rr_cs = '{
-    //     RR_OP       : cs_out[0][0],
-    //     DR_RD      : cs_out[0][1],
-    //     SR_RD   : cs_out[0][2],
-    //     SIB_NEEDED  : cs_out[0][3],
-    //     DISP_NEEDED : cs_out[0][4],
-    //     DR_WR       : cs_out[0][5],
-    //     SR_WR       : cs_out[0][6],
-    //     ST_SEL      : cs_out[0][7],
-    //     DR_SEL      : cs_out[0][8],
-    //     LD_OP       : cs_out[0][9],
-    //     ST_OP       : cs_out[0][10],
-    //     datasize    : cs_out[0][11 +: 3],
-    //     ld_flags    : 1'b0,                 //need to fill out
-    //     flag_modified_vector : 32'b0       //need to fill out
-    // };
-
-    // assign dc_cs = '{
-    //     DC_OP  : cs_out[0][14],
-    //     LD_OP  : cs_out[0][15],
-    //     ST_OP  : cs_out[0][16],
-    //     MEM_OP : cs_out[0][17]
-    // };
-
-    // assign mem_cs = '{
-    //     MEM_OP : cs_out[0][18],
-    //     ST_OP  : cs_out[0][19],
-    //     LD_OP  : cs_out[0][20]
-    // };
-
-    // assign exe_cs = '{
-    //     EXE_OP              : cs_out[0][21],
-    //     ST_OP               : cs_out[0][22],
-    //     ld_flags            : cs_out[0][23],
-    //     flag_modified_vector: cs_out[0][24 +: 32],
-    //     xchg                : cs_out[0][56],
-    //     DATA_SIZE           : cs_out[0][57 +: 3],
-    //     alu_inputA_sel      : cs_out[0][60 +: 4],
-
-    //     //start of second rom (horizontal stacking)
-    //     alu_inputB_sel      : cs_out[1][0 +: 4],
-    //     branch_target_sel   : cs_out[1][4 +: 4],
-    //     OP_TYPE             : cs_out[1][8 +: 6],
-    //     cmpxchg             : cs_out[1][14],
-    //     cmovc               : cs_out[1][15],
-
-
-    //     clear_df            : cs_out[1][16],
-    //     set_df              : cs_out[1][17],
-    //     br_ucond            : cs_out[1][18],
-    //     relative_branch     : cs_out[1][19],
-    //     special_br          : cs_out[1][20],
-    //     is_far              : cs_out[1][21],
-    //     second_flag_needed  : cs_out[1][22]
-    // };
-
-    // assign wb_cs = '{
-    //     ST_OP : cs_out[1][23],
-    //     WB_DR : cs_out[1][24],
-    //     WB_SR : cs_out[1][25]
-    // };
 endmodule

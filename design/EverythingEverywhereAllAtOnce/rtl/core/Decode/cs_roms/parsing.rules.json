@@ -3,6 +3,8 @@
     "REP" : "1",
     "REP_CMP" : "1",
     "HALT" : "1",
+    "MOVS" : "1",
+    "SHIFT_BY_ONE" : "1",
     "MODRM_NEEDED" : "1",
     "RM_IS_DR" : "1",
     "REG_IS_DR" : "1",
@@ -68,6 +70,14 @@
     },
 
     "OP_IN_MODRM" : "1",
+
+    "OP_IN_MODRM_SUBSET" : {
+        "NONE" : "0",
+        "CTRL" : "1",
+        "SHF" : "2",
+        "ALU" : "3"
+    },
+
     "DATA_SIZE" : "2",
     "will_mod_zf" : "1",
 
@@ -236,7 +246,7 @@
 
     "br_uncond" : "1",
     "relative_branch" : "1",
-    "special_dr" : "1",
+    "special_br" : "1",
     "is_far" : "1",
     "second_flag_needed" : "1"
 }

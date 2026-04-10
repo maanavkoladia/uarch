@@ -65,7 +65,7 @@ package core_stage_latches_pkg;
         bool HARDCODED_DR;
         reg_ids_e HARDCODED_DR_ID;
         bool HARDCODED_SR;
-        bool HARDCODED_SR_ID;      //ik this is a bool rn, but cs has it as bool rn, will hcnage later
+        reg_ids_e HARDCODED_SR_ID;
         bool HARDCODED_DR_RD;
         bool HARDCODED_SR_RD;
         bool OP_IN_MODRM;
@@ -118,6 +118,8 @@ package core_stage_latches_pkg;
         source_selector_e alu_inputA_sel;
         source_selector_e alu_inputB_sel;
         source_selector_e branch_target_sel;
+
+        bool shift_by_one;
 
         //branch cs
         bool br_ucond;
