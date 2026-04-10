@@ -83,10 +83,14 @@ module tb_CS_gen ();
         CS_input = 0;
 
 
+        DelayClks(20);
         @(posedge clk);
         CS_input = 10;
+        DelayClks(20);
+        CS_input = 2;
         DelayClks(30);
         `LOG("Done with ROM tb");
+        $finish;
     end
     // Test signals
 

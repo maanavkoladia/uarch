@@ -11,8 +11,10 @@ TOP_MODULE_NAME = tb_CS_gen
 
 STARTUP_FILES = \
 
+
 TB_FILES = \
 		   $(STARTUP_FILES) \
+		   gen.v \
 		   tb_CS_gen.sv
 
 SRC_FILES :=
