@@ -29,16 +29,16 @@ module DCache_TOP (
     block_req_t req_2_blocks[DCACHE_NUM_BLOCKS];
     mio_block_outputs_t mio_block_outputs;
     bool arb_st_override_Out[NUM_WB_ST_QS];
-    bool arb_req_rejected_0_out;
-    bool arb_req_rejected_1_out;
+    bool arb_req_served_0_out;
+    bool arb_req_served_1_out;
 
     DCache_Arbitration dcache_arbitration (
         .clk_i(clk),
         .rst(rst),  // active low
         .core_i(inFromCore_i),
         .block_hit_i(hitVec),
-        .req_rejected_0_o(arb_req_rejected_0_out),
-        .req_rejected_1_o(arb_req_rejected_1_out),
+        .reqServed_0_o(arb_req_served_0_out),
+        .reqServed_1_o(arb_req_served_1_out),
         .reqs_2_blocks_o(req_2_blocks),
         .st_override_o(arb_st_override_Out),
         .writeSuccess_o(out2Core_o.writeSuccess)
@@ -73,48 +73,23 @@ module DCache_TOP (
         .ld_addr_MIO_V(inFromCore_i.ld_addr_MIO_V),
         .ld_addr_MIO(inFromCore_i.ld_addr_MIO),
         .stq_info_mio(inFromCore_i.stq_info_mio),
-        .memStalling_FromCore(inFromCore_i.memStalling),
+        .memStage_CLR_REQ_MIO(inFromCore_i.memStage_CLR_REQ_MIO),
         .address_bus(address_bus),
         .dataBus(dataBus),
         .outputs_o(mio_block_outputs)
     );
 
-    //need to add bus arb stuff
+    //D$ arb hit signals for req clearing business from the blocks hit signals
+    //second for loop is jsut wiring hit signals out to memStage
     always_comb begin
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) hitVec[i] = blockOutputs[i].hit_o;
+        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) out2Core_o.hit[i] = blockOutputs[i].hit_o;
+        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) out2Core_o.cacheline[i] = blockOutputs[i].dataLineOut;
+
     end
 
-    //deal w the outputs
-    //st_q write uccess logic
-    //always_comb begin
-    //    for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-    //        if (req_2_blocks[i].we && blockOutputs[i].hit_o) out2Core_o.writeSuccess[i] = 1;
-    //    end
-    //end
-
-    //line0 line 1 logic
-    bool usedLine0;
-    always_comb begin
-        usedLine0 = 1'b0;
-        out2Core_o.line_0 = '{default: '0};
-        out2Core_o.hit_line_0 = 0;
-        out2Core_o.line_1 = '{default: '0};
-        out2Core_o.hit_line_1 = 0;
-
-        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            if (req_2_blocks[i].oe && blockOutputs[i].hit_o) begin
-                if (!usedLine0) begin
-                    out2Core_o.hit_line_0 = 1;
-                    out2Core_o.line_0 = blockOutputs[i].dataLineOut;
-                    usedLine0 = 1;
-                end else begin
-                    out2Core_o.hit_line_1 = 1;
-                    out2Core_o.line_1 = blockOutputs[i].dataLineOut;
-                end
-
-            end
-        end
-    end
+    assign out2Core_o.reqServed_0 = arb_req_served_0_out;
+    assign out2Core_o.reqServed_1  = arb_req_served_0_out;
 
     //out 2 sch stuff
     always_comb begin
@@ -126,10 +101,9 @@ module DCache_TOP (
 
     //mio block out wiring
     assign out2Core_o.writeSuccess_MIO = mio_block_outputs.writeSuccess;
-    assign out2Core_o.hit_line_MIO = mio_block_outputs.hit_o;
-    assign out2Core_o.req_rejected_mio = mio_block_outputs.req_rejected;
-    assign out2Core_o.req_rejected_0 = arb_req_rejected_0_out;
-    assign out2Core_o.req_rejected_1 = arb_req_rejected_1_out;
+    assign out2Core_o.hit_MIO = mio_block_outputs.hit_o;
+    assign out2Core_o.line_MIO = mio_block_outputs.dataLineOut;
+    assign out2Core_o.reqServed_MIO = mio_block_outputs.reqServed;
     assign out2Sch_o.req_mio = mio_block_outputs.req_2_sch;
 
 endmodule

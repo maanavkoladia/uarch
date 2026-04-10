@@ -1,6 +1,7 @@
 // ======================================================================
 // Combinational block : simple
 // Tool: csv2rtl.py  (auto-generated -- do not hand-edit)
+// Std : Verilog-2005 (IEEE 1364-2005)
 // ======================================================================
 
 // Truth table (expanded, from CSV)
@@ -19,9 +20,11 @@ module simple (
     input  wire  b_i
 );
 
+// ----------------------------------------------------------------
 // SOP logic (Quine-McCluskey minimised)
+// ----------------------------------------------------------------
 
 //  y_o = (a_i &  b_i)
-and2$  y_o_and ( y_o, a_i,  b_i);
+`AND_2( y_o_and, 1,  y_o, a_i,  b_i)
 
 endmodule

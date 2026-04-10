@@ -1,6 +1,7 @@
 // ======================================================================
 // Combinational block : dc_valid_logic
 // Tool: csv2rtl.py  (auto-generated -- do not hand-edit)
+// Std : Verilog-2005 (IEEE 1364-2005)
 // ======================================================================
 
 // Truth table (expanded, from CSV)
@@ -278,7 +279,9 @@ module dc_valid_logic (
     input  wire WB_stall_i
 );
 
-// Inverter wires
+// ----------------------------------------------------------------
+// Inverters for negated literals
+// ----------------------------------------------------------------
 wire DC_V_i_inv;
 wire DC_stall_i_inv;
 wire EXE_V_i_inv;
@@ -287,29 +290,41 @@ wire MEM_stall_i_inv;
 wire RR_stall_i_inv;
 wire WB_stall_i_inv;
 
-inv1$ inv_DC_V_i (DC_V_i_inv, DC_V_i);
-inv1$ inv_DC_stall_i (DC_stall_i_inv, DC_stall_i);
-inv1$ inv_EXE_V_i (EXE_V_i_inv, EXE_V_i);
-inv1$ inv_MEM_V_i (MEM_V_i_inv, MEM_V_i);
-inv1$ inv_MEM_stall_i (MEM_stall_i_inv, MEM_stall_i);
-inv1$ inv_RR_stall_i (RR_stall_i_inv, RR_stall_i);
-inv1$ inv_WB_stall_i (WB_stall_i_inv, WB_stall_i);
+`INV_N(inv_DC_V_i, 1, DC_V_i, DC_V_i_inv)
+`INV_N(inv_DC_stall_i, 1, DC_stall_i, DC_stall_i_inv)
+`INV_N(inv_EXE_V_i, 1, EXE_V_i, EXE_V_i_inv)
+`INV_N(inv_MEM_V_i, 1, MEM_V_i, MEM_V_i_inv)
+`INV_N(inv_MEM_stall_i, 1, MEM_stall_i, MEM_stall_i_inv)
+`INV_N(inv_RR_stall_i, 1, RR_stall_i, RR_stall_i_inv)
+`INV_N(inv_WB_stall_i, 1, WB_stall_i, WB_stall_i_inv)
 
+// ----------------------------------------------------------------
 // SOP logic (Quine-McCluskey minimised)
+// ----------------------------------------------------------------
 
 // DC_we_o = !DC_V_i | (!DC_stall_i & !MEM_V_i) | (!DC_stall_i & !MEM_stall_i & !EXE_V_i) | (!DC_stall_i & !MEM_stall_i & !WB_stall_i)
 wire DC_we_o_t0;
+wire DC_we_o_and0_buf_mid;
+`INV_N(DC_we_o_and0_buf_i0, 1, DC_V_i_inv, DC_we_o_and0_buf_mid)
+`INV_N(DC_we_o_and0_buf_i1, 1, DC_we_o_and0_buf_mid, DC_we_o_t0)
 wire DC_we_o_t1;
+`AND_2(DC_we_o_and1, 1, DC_we_o_t1, DC_stall_i_inv, MEM_V_i_inv)
 wire DC_we_o_t2;
+`AND_3(DC_we_o_and2, 1, DC_we_o_t2, DC_stall_i_inv, MEM_stall_i_inv, WB_stall_i_inv)
 wire DC_we_o_t3;
+`AND_3(DC_we_o_and3, 1, DC_we_o_t3, DC_stall_i_inv, MEM_stall_i_inv, EXE_V_i_inv)
 
+<<<<<<< HEAD
 buffer$ DC_we_o_buf0 (DC_we_o_t0, DC_V_i_inv);
 and2$ DC_we_o_and1 (DC_we_o_t1, DC_stall_i_inv, MEM_V_i_inv);
 and3$ DC_we_o_and2 (DC_we_o_t2, DC_stall_i_inv, MEM_stall_i_inv, EXE_V_i_inv);
 and3$ DC_we_o_and3 (DC_we_o_t3, DC_stall_i_inv, MEM_stall_i_inv, WB_stall_i_inv);
 or4$  DC_we_o_or  (DC_we_o, DC_we_o_t0, DC_we_o_t1, DC_we_o_t2, DC_we_o_t3);
+=======
+`OR_4(DC_we_o_or, 1, DC_we_o, DC_we_o_t0, DC_we_o_t1, DC_we_o_t2, DC_we_o_t3)
+>>>>>>> s_comp
 
 // N_DC_V_o = (!RR_stall_i & RR_V_i)
-and2$ N_DC_V_o_and (N_DC_V_o, RR_stall_i_inv, RR_V_i);
+`AND_2(N_DC_V_o_and, 1, N_DC_V_o, RR_stall_i_inv, RR_V_i)
 
 endmodule

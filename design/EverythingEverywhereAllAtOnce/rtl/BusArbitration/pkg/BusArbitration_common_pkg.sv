@@ -40,7 +40,7 @@ NUM_TRANSACTIONS
         req_2_sch_t dma_req;
         p_address_t dma_write_addr;
 
-        bool writeBuf_V_List[numWriteBufsInMem];
+        bool [numWriteBufsInMem-1: 0] writeBuf_V_List;
 
     } sch_latched_reqs_t;
 

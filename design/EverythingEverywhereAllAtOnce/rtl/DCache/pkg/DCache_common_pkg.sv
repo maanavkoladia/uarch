@@ -82,7 +82,7 @@ package DCache_common_pkg;
         bool hit_o;
         byte_t dataLineOut[CACHE_LINES_SIZE_B];
         req_2_sch_t req_2_sch;
-        bool req_rejected;
+        bool reqServed;
     } mio_block_outputs_t;
 
     typedef struct {

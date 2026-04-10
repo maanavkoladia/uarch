@@ -52,10 +52,6 @@ module mem_TOP (
         .banks_i(bank_out_2_controller)
     );
 
-    initial begin
-        //need to load in the program
-    end
-
     bool drive_Data_Bus;
     logic [DATA_BUS_WIDTH_BITS-1:0] dataToDrive;
     assign #5 data_bus = drive_Data_Bus ? dataToDrive : 'z;

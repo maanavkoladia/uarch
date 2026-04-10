@@ -88,7 +88,7 @@ module predecode(
 
     assign invalid_inst = !true_inst_valid;
 
-
+    wire pf0, pf1, pf2;
     pf_checker checker0(.IRbyte(IR[0]), .pf(pf0), .pf_vector(pf_vector0));
     pf_checker checker1(.IRbyte(IR[1]), .pf(pf1), .pf_vector(pf_vector1));
     pf_checker checker2(.IRbyte(IR[2]), .pf(pf2), .pf_vector(pf_vector2));

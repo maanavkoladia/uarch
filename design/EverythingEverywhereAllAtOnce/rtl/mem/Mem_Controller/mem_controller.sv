@@ -1,4 +1,4 @@
-
+`default_nettype none
 //module is resposible for managing the various banks, this module should not
 //
 //

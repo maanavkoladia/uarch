@@ -1,6 +1,7 @@
 import common_pkg::*;
 import interconnect_pkg::*;
 import BusArbitration_common_pkg::*;
+import mem_common_pkg::*;
 
 module Scheduler (
     input wire clk,

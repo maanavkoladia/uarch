@@ -1,6 +1,7 @@
 // ======================================================================
 // Combinational block : ex1
 // Tool: csv2rtl.py  (auto-generated -- do not hand-edit)
+// Std : Verilog-2005 (IEEE 1364-2005)
 // WARNING: 12 input vector(s) had no CSV row.
 //          Those vectors produce all-zero outputs (OFF-set default).
 //          See: /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/scripts/RTL_Generation/test/ex1_coverage_report.txt
@@ -43,29 +44,44 @@ module ex1 (
     input  wire  y_i
 );
 
-// Inverter wires
+// ----------------------------------------------------------------
+// Inverters for negated literals
+// ----------------------------------------------------------------
 wire  v_i_inv;
 wire  w_i_inv;
 wire  x_i_inv;
 wire  y_i_inv;
 wire u_i_inv;
 
-inv1$ inv_ v_i ( v_i_inv,  v_i);
-inv1$ inv_ w_i ( w_i_inv,  w_i);
-inv1$ inv_ x_i ( x_i_inv,  x_i);
-inv1$ inv_ y_i ( y_i_inv,  y_i);
-inv1$ inv_u_i (u_i_inv, u_i);
+`INV_N(inv_ v_i, 1,  v_i,  v_i_inv)
+`INV_N(inv_ w_i, 1,  w_i,  w_i_inv)
+`INV_N(inv_ x_i, 1,  x_i,  x_i_inv)
+`INV_N(inv_ y_i, 1,  y_i,  y_i_inv)
+`INV_N(inv_u_i, 1, u_i, u_i_inv)
 
+// ----------------------------------------------------------------
 // SOP logic (Quine-McCluskey minimised)
+// ----------------------------------------------------------------
 
+<<<<<<< HEAD
 //  k0_o = (u_i &  w_i &  x_i &  y_i) | (!u_i &  w_i & ! x_i &  y_i) | (u_i &  w_i & ! x_i & ! y_i) | ( v_i & ! w_i &  x_i & ! y_i) | (!u_i &  v_i &  w_i &  y_i) | (!u_i & ! v_i & ! w_i &  x_i &  y_i)
+=======
+//  k0_o = (!u_i &  v_i &  w_i &  y_i) | (u_i &  w_i &  x_i &  y_i) | (u_i &  w_i & ! x_i & ! y_i) | ( v_i & ! w_i &  x_i & ! y_i) | (!u_i &  w_i & ! x_i &  y_i) | (!u_i & ! v_i & ! w_i &  x_i &  y_i)
+>>>>>>> s_comp
 wire  k0_o_t0;
+`AND_4( k0_o_and0, 1,  k0_o_t0, u_i_inv,  v_i,  w_i,  y_i)
 wire  k0_o_t1;
+`AND_4( k0_o_and1, 1,  k0_o_t1, u_i,  w_i,  x_i,  y_i)
 wire  k0_o_t2;
+`AND_4( k0_o_and2, 1,  k0_o_t2, u_i,  w_i,  x_i_inv,  y_i_inv)
 wire  k0_o_t3;
+`AND_4( k0_o_and3, 1,  k0_o_t3,  v_i,  w_i_inv,  x_i,  y_i_inv)
 wire  k0_o_t4;
+`AND_4( k0_o_and4, 1,  k0_o_t4, u_i_inv,  w_i,  x_i_inv,  y_i)
 wire  k0_o_t5;
+`AND_5( k0_o_and5, 1,  k0_o_t5, u_i_inv,  v_i_inv,  w_i_inv,  x_i,  y_i)
 
+<<<<<<< HEAD
 and4$  k0_o_and0 ( k0_o_t0, u_i,  w_i,  x_i,  y_i);
 and4$  k0_o_and1 ( k0_o_t1, u_i_inv,  w_i,  x_i_inv,  y_i);
 and4$  k0_o_and2 ( k0_o_t2, u_i,  w_i,  x_i_inv,  y_i_inv);
@@ -75,15 +91,29 @@ and5$  k0_o_and5 ( k0_o_t5, u_i_inv,  v_i_inv,  w_i_inv,  x_i,  y_i);
 or6$   k0_o_or  ( k0_o,  k0_o_t0,  k0_o_t1,  k0_o_t2,  k0_o_t3,  k0_o_t4,  k0_o_t5);
 
 //  k1_o = ( w_i & ! x_i &  y_i) | ( v_i &  w_i &  y_i) | (u_i &  w_i &  y_i) | (!u_i &  v_i &  x_i &  y_i) | (u_i & ! v_i & ! x_i &  y_i) | (!u_i & ! v_i & ! w_i & ! x_i & ! y_i) | (u_i &  v_i & ! w_i &  x_i & ! y_i) | (!u_i & ! v_i &  w_i &  x_i & ! y_i)
-wire  k1_o_t0;
-wire  k1_o_t1;
-wire  k1_o_t2;
-wire  k1_o_t3;
-wire  k1_o_t4;
-wire  k1_o_t5;
-wire  k1_o_t6;
-wire  k1_o_t7;
+=======
+`OR_6( k0_o_or, 1,  k0_o,  k0_o_t0,  k0_o_t1,  k0_o_t2,  k0_o_t3,  k0_o_t4,  k0_o_t5)
 
+//  k1_o = ( v_i &  w_i &  y_i) | (u_i &  w_i &  y_i) | ( w_i & ! x_i &  y_i) | (u_i & ! v_i & ! x_i &  y_i) | (!u_i &  v_i &  x_i &  y_i) | (!u_i & ! v_i & ! w_i & ! x_i & ! y_i) | (u_i &  v_i & ! w_i &  x_i & ! y_i) | (!u_i & ! v_i &  w_i &  x_i & ! y_i)
+>>>>>>> s_comp
+wire  k1_o_t0;
+`AND_3( k1_o_and0, 1,  k1_o_t0,  v_i,  w_i,  y_i)
+wire  k1_o_t1;
+`AND_3( k1_o_and1, 1,  k1_o_t1, u_i,  w_i,  y_i)
+wire  k1_o_t2;
+`AND_3( k1_o_and2, 1,  k1_o_t2,  w_i,  x_i_inv,  y_i)
+wire  k1_o_t3;
+`AND_4( k1_o_and3, 1,  k1_o_t3, u_i,  v_i_inv,  x_i_inv,  y_i)
+wire  k1_o_t4;
+`AND_4( k1_o_and4, 1,  k1_o_t4, u_i_inv,  v_i,  x_i,  y_i)
+wire  k1_o_t5;
+`AND_5( k1_o_and5, 1,  k1_o_t5, u_i_inv,  v_i_inv,  w_i_inv,  x_i_inv,  y_i_inv)
+wire  k1_o_t6;
+`AND_5( k1_o_and6, 1,  k1_o_t6, u_i,  v_i,  w_i_inv,  x_i,  y_i_inv)
+wire  k1_o_t7;
+`AND_5( k1_o_and7, 1,  k1_o_t7, u_i_inv,  v_i_inv,  w_i,  x_i,  y_i_inv)
+
+<<<<<<< HEAD
 and3$  k1_o_and0 ( k1_o_t0,  w_i,  x_i_inv,  y_i);
 and3$  k1_o_and1 ( k1_o_t1,  v_i,  w_i,  y_i);
 and3$  k1_o_and2 ( k1_o_t2, u_i,  w_i,  y_i);
@@ -95,14 +125,27 @@ and5$  k1_o_and7 ( k1_o_t7, u_i_inv,  v_i_inv,  w_i,  x_i,  y_i_inv);
 or8$   k1_o_or  ( k1_o,  k1_o_t0,  k1_o_t1,  k1_o_t2,  k1_o_t3,  k1_o_t4,  k1_o_t5,  k1_o_t6,  k1_o_t7);
 
 //  k2_o = (u_i &  w_i &  x_i &  y_i) | ( v_i & ! w_i & ! x_i & ! y_i) | (u_i & ! v_i &  w_i &  y_i) | (!u_i & ! v_i &  w_i &  x_i & ! y_i) | (!u_i &  v_i &  w_i & ! x_i &  y_i) | (u_i & ! v_i & ! w_i &  x_i & ! y_i) | (!u_i & ! v_i & ! w_i & ! x_i &  y_i)
-wire  k2_o_t0;
-wire  k2_o_t1;
-wire  k2_o_t2;
-wire  k2_o_t3;
-wire  k2_o_t4;
-wire  k2_o_t5;
-wire  k2_o_t6;
+=======
+`OR_8( k1_o_or, 1,  k1_o,  k1_o_t0,  k1_o_t1,  k1_o_t2,  k1_o_t3,  k1_o_t4,  k1_o_t5,  k1_o_t6,  k1_o_t7)
 
+//  k2_o = (u_i & ! v_i &  w_i &  y_i) | ( v_i & ! w_i & ! x_i & ! y_i) | (u_i &  w_i &  x_i &  y_i) | (!u_i & ! v_i & ! w_i & ! x_i &  y_i) | (!u_i &  v_i &  w_i & ! x_i &  y_i) | (u_i & ! v_i & ! w_i &  x_i & ! y_i) | (!u_i & ! v_i &  w_i &  x_i & ! y_i)
+>>>>>>> s_comp
+wire  k2_o_t0;
+`AND_4( k2_o_and0, 1,  k2_o_t0, u_i,  v_i_inv,  w_i,  y_i)
+wire  k2_o_t1;
+`AND_4( k2_o_and1, 1,  k2_o_t1,  v_i,  w_i_inv,  x_i_inv,  y_i_inv)
+wire  k2_o_t2;
+`AND_4( k2_o_and2, 1,  k2_o_t2, u_i,  w_i,  x_i,  y_i)
+wire  k2_o_t3;
+`AND_5( k2_o_and3, 1,  k2_o_t3, u_i_inv,  v_i_inv,  w_i_inv,  x_i_inv,  y_i)
+wire  k2_o_t4;
+`AND_5( k2_o_and4, 1,  k2_o_t4, u_i_inv,  v_i,  w_i,  x_i_inv,  y_i)
+wire  k2_o_t5;
+`AND_5( k2_o_and5, 1,  k2_o_t5, u_i,  v_i_inv,  w_i_inv,  x_i,  y_i_inv)
+wire  k2_o_t6;
+`AND_5( k2_o_and6, 1,  k2_o_t6, u_i_inv,  v_i_inv,  w_i,  x_i,  y_i_inv)
+
+<<<<<<< HEAD
 and4$  k2_o_and0 ( k2_o_t0, u_i,  w_i,  x_i,  y_i);
 and4$  k2_o_and1 ( k2_o_t1,  v_i,  w_i_inv,  x_i_inv,  y_i_inv);
 and4$  k2_o_and2 ( k2_o_t2, u_i,  v_i_inv,  w_i,  y_i);
@@ -111,5 +154,8 @@ and5$  k2_o_and4 ( k2_o_t4, u_i_inv,  v_i,  w_i,  x_i_inv,  y_i);
 and5$  k2_o_and5 ( k2_o_t5, u_i,  v_i_inv,  w_i_inv,  x_i,  y_i_inv);
 and5$  k2_o_and6 ( k2_o_t6, u_i_inv,  v_i_inv,  w_i_inv,  x_i_inv,  y_i);
 or7$   k2_o_or  ( k2_o,  k2_o_t0,  k2_o_t1,  k2_o_t2,  k2_o_t3,  k2_o_t4,  k2_o_t5,  k2_o_t6);
+=======
+`OR_7( k2_o_or, 1,  k2_o,  k2_o_t0,  k2_o_t1,  k2_o_t2,  k2_o_t3,  k2_o_t4,  k2_o_t5,  k2_o_t6)
+>>>>>>> s_comp
 
 endmodule

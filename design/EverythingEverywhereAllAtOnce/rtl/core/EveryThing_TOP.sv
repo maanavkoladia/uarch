@@ -49,7 +49,9 @@ module EveryThing_TOP (
             ld_addr_MIO : dc_outputs.ld_addr_MIO,
             memStalling : mem_outputs.stall,
             stq_heads : wb_outputs.stq_heads,
-            stq_info_mio : wb_outputs.mio_head
+            stq_info_mio : wb_outputs.mio_head,
+            memStage_CLR_REQ: mem_outputs.clr_dcache_arb_latches,
+            memStage_CLR_REQ_MIO: mem_outputs.clr_dcache_mio_latch
         };
 
 
@@ -132,11 +134,13 @@ module EveryThing_TOP (
         .exe_outs_i(exe_outputs),
         .wb_outs_i(wb_outputs),
         .mem_latches_next_o(mem_latches_next),
-        .req_rejected_mio(DCacheIn_i.req_rejected_mio),
-        .req_rejected_0(DCacheIn_i.req_rejected_0),
-        .req_rejected_1(DCacheIn_i.req_rejected_1),
+        .req_served_mio(DCacheIn_i.reqServed_MIO),
+        .req_served_0(DCacheIn_i.reqServed_0),
+        .req_served_1(DCacheIn_i.reqServed_1),
         .dc_outs_o(dc_outputs)
     );
+
+
 
     MEM_Latches mem_latches_unit (
         .clk(clk),
@@ -157,10 +161,8 @@ module EveryThing_TOP (
         .exe_outs_i(exe_outputs),
         .wb_outs_i (wb_outputs),
 
-        .hit_line_0(DCacheIn_i.hit_line_0),  //this onyl goes high if valid
-        .line_0(DCacheIn_i.line_0),
-        .hit_line_1(DCacheIn_i.hit_line_1),
-        .line_1(DCacheIn_i.line_1),
+        .hit(DCacheIn_i.hit),
+        .cacheline(DCacheIn_i.cacheline),
         .exe_latches_next_o(exe_latches_next),
         .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
         .line_MMIO(DCacheIn_i.line_MIO),

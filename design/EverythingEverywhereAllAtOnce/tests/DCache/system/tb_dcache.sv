@@ -23,8 +23,6 @@ module tb_dcache ();
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addrBus;
 
     //to give the memmodule and addr
-    p_address_t addrForBus;
-    bool driveAddrBus;
 
     icache_2_scheduler_t icache_2_sch;
     dcache_2_scheduler_t dcache_2_sch;
@@ -52,14 +50,17 @@ module tb_dcache ();
         .address_bus(addrBus)
     );
 
+
     mem_TOP uut1_mem (
         .clk(clk),
         .rst(rst),
         .address_bus(addrBus),
         .data_bus(dataBus),
-        .inFromDte(dte_2_mem),
-        .out2Dte(mem_2_dte),
-        .out2Sch(mem_2_sch)
+        .inFromDte_ld_req(dte_2_mem.ld_req),
+        .inFromDte_st_req(dte_2_mem.st_req),
+        .inFromDte_permission2DriveBus(dte_2_mem.permission2DriveBus),
+        .out2Dte_mem_Ready(mem_2_dte.mem_Ready),
+        .out2Sch_writeBuf_V(mem_2_sch.writeBuf_V)
     );
 
  
@@ -93,7 +94,7 @@ module tb_dcache ();
         core_2_dcache.stq_info_mio.empty = 1;
         dma_2_sch = '{default: '0};
         icache_2_sch = '{default: '0};
-    
+
         DelayCLKs(10);
 
         rst = 1;
@@ -104,7 +105,15 @@ module tb_dcache ();
         @(posedge clk)
         DelayCLKs(20);
         core_2_dcache.ld_addr_0_V = 0;
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.stq_heads[0].address = 15'h2000;
+        core_2_dcache.stq_heads[0].bit_vec = 16'hFFFF;
+        core_2_dcache.stq_heads[0].data = '{default: 8'hDE};
+        @(posedge clk)
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        core_2_dcache.ld_addr_0_V = 1;
         core_2_dcache.ld_addr_0 = 15'h2000;
+
 
 
 

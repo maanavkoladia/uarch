@@ -19,9 +19,10 @@ module DC (
     //in flight store addys and stq addys/entries 
     input wb_outputs_t wb_outs_i,
 
-    input bool req_rejected_mio,
-    input bool req_rejected_0,
-    input bool req_rejected_1,
+    input bool req_served_mio,
+    input bool req_served_0,
+    input bool req_served_1,
+
 
     output mem_latches_t mem_latches_next_o,
 
@@ -29,6 +30,8 @@ module DC (
 
 );
 
+    bool mem_stage_we_valid_unit_o;
+    bool mem_stage_next_vaild_o;
 
     bool in_flight_stall;
     bool stq_stall;
@@ -40,8 +43,10 @@ module DC (
 
     bool ld_addr_0_V;
     bool ld_addr_1_V;
+    bool ld_addr_mio_V;
     p_address_t ld_addr_0;
     p_address_t ld_addr_1;
+    p_address_t ld_addr_mio;
 
     bool rh_into_mem_o;
     bool mem_into_rh_o;
@@ -53,6 +58,8 @@ module DC (
     bool exe_ST_OP;
     bool wb_ST_OP;
 
+
+
     assign dc_ST_OP = latches_i.cs.ST_OP;
     assign mem_ST_OP = mem_outs_i.ST_OP;
     assign exe_ST_OP = exe_outs_i.ST_OP;
@@ -61,10 +68,6 @@ module DC (
     //in store flight and stq stall logic accounts for valid bits
     assign dep_stall = in_flight_stall | stq_stall;
 
-    assign arb_stall = ((req_rejected_mio & ld_neuralnet_out.mio & latches_i.cs.LD_OP) 
-                            | (req_rejected_0 & latches_i.cs.LD_OP)
-                            | (req_rejected_1 & latches_i.cs.LD_OP & ld_neuralnet_out.xcl)
-                        ) & latches_i.valid;
 
     assign exp_stall = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP 
                        |  st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP) 
@@ -116,21 +119,31 @@ module DC (
 
     // Generate load request outputs
     req_gen_logic req_gen (
+        .clk(clk),
+        .rst(rst),
         .valid(latches_i.valid),
         .LD_OP(latches_i.cs.LD_OP),
         .XCL(ld_neuralnet_out.xcl),
         .dep_stall(dep_stall),
-        .MIO(ld_neuralnet_out.mio),
-        .ld_addr0(ld_neuralnet_out.PADDR0),
-        .ld_addr1(ld_neuralnet_out.PADDR1),
+        .MIO(latches_i.MIO),
+        .ld_addr0(latches_i.LD_PADDR_0),
+        .ld_addr1(latches_i.LD_PADDR_1),
+        .ld_addrMIO(latches_i.LD_PADDR_0),
+        .req_served_0(req_served_0),
+        .req_served_1(req_served_1),
+        .req_served_mio(req_served_mio),
+        .mem_stage_we_valid_unit_o(mem_stage_we_valid_unit_o),
+        .mem_stage_next_valid_o(mem_stage_next_vaild_o),
         .ld_addr_0_V(ld_addr_0_V),
         .ld_addr_1_V(ld_addr_1_V),
+        .ld_addr_mio_V(ld_addr_mio_V),
+        .ld_addr_mio(ld_addr_mio),
         .ld_addr_0(ld_addr_0),
-        .ld_addr_1(ld_addr_1)
+        .ld_addr_1(ld_addr_1),
+        .arb_stall(arb_stall)
     );
 
-    bool mem_stage_we_valid_unit_o;
-    bool mem_stage_next_vaild_o;
+
     mem_valid_logic mem_valid_unit (
         .MEM_we_o(mem_stage_we_valid_unit_o),
         .N_MEM_V_o(mem_stage_next_vaild_o),
@@ -187,11 +200,8 @@ module DC (
             ld_addr_1_V: ld_addr_1_V,
             ld_addr_1: ld_addr_1,
             //mio sent to mio block not arbitration.. I think 
-            ld_addr_MIO_V :
-            (
-            ld_neuralnet_out.mio & latches_i.cs.LD_OP & ~dep_stall
-            ),
-            ld_addr_MIO : ld_addr_0,
+            ld_addr_MIO_V: ld_addr_mio_V,
+            ld_addr_MIO: ld_addr_mio,
             mem_stage_latch_we : mem_stage_we_valid_unit_o
         };
 

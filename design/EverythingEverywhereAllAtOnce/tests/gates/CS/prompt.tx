@@ -1,0 +1,34 @@
+#this pyhton script is suppoed to take in a cvs and prodecude a pure strucural verilog file. 
+
+#the way the csv is strucuted is all input rows columns headers will be marked with _i, and outsputs with _o repctivelty
+
+#roms dont require any sort of logic optimization so no expresso or quin-mcklusky
+
+#so rows mark with x on the input, jsut expand them, and outputs marked with x just 0 them. if there are rows missing, write that in a log file.
+
+#now, in terms of storing data, we will be using ROMs. they are 32words by 64 bits outputs. so 5 bit address and 64 bt output lines. they also 
+#have a active high OE signal will tristates if not high
+
+
+
+# module rom64b32w$(A,OE,DOUT);
+
+#we will build the whole strucral file out of these and logic to drive the output enable signals
+
+#the final file shoudl look like this
+
+#the script will take in a path to a csv and output path for the .v output file, these are both reuqired
+
+#i will give you a tb to show how the rom is used and loaded. we will not be using readmmeh because it lead to many problems in my generation framework, 
+#we will be loading directyl in intial begins
+
+# `define ROM_32W_64b(__unitName__, __ADDR__, __OE__, __dout__)  use this macro to instiate ROMS
+# do not use for loops to write data into the ROMs in the final verilog final, i need to be able to see what is getting loaded in
+#
+#
+#now getting into implementation details, if there are more than 5 input bits, then we will need to have more than 1 ROM, so 6 bits means 2 rom, 7 means 4 roms
+
+#use logic on the OE line to drive the correct rom out. if only one rom is needed, always output. 
+#if there are more than 64 output bits, use 2 ROMs with the same OE signal and aissng accordingly
+
+#so if there are 7 inpput bits and 70 output bits, we need i think 8 ROM in total

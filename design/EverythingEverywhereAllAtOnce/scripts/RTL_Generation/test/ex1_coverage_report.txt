@@ -6,7 +6,7 @@
 # Defined in CSV             : 20
 # Undefined (no CSV row)     : 12
 
-## Section 1 — Undefined input vectors
+## Section 1 -- Undefined input vectors
 #
 # These input combinations have no row in the CSV (after X-expansion).
 # The generated Verilog treats them as OFF (output = 0) by default.
@@ -27,15 +27,15 @@
       11           1           1           0           1           1   UNDEFINED -> outputs all 0
       12           1           1           1           1           0   UNDEFINED -> outputs all 0
 
-## Section 2 — Input/output conflicts detected during expansion
+## Section 2 -- Input/output conflicts detected during expansion
 #
-  None — no conflicting rows found.  OK
+  None -- no conflicting rows found.  OK
 
-## Section 3 — Quine-McCluskey minimisation coverage check
+## Section 3 -- Quine-McCluskey minimisation coverage check
 #
-  None — all ON-set minterms are covered by the minimised SOP.  OK
+  None -- all ON-set minterms are covered by the minimised SOP.  OK
 
-## Section 4 — Summary
+## Section 4 -- Summary
   Input combinations : 32
   Defined            : 20
   Undefined          : 12  <-- action recommended

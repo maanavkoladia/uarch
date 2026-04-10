@@ -1,6 +1,7 @@
 // ======================================================================
 // FSM : mem_controller_fsm
 // Tool: fsm2rtl.py  (auto-generated -- do not hand-edit)
+// Std : Verilog-2005 (IEEE 1364-2005)
 // ======================================================================
 //
 // State Enumeration  (4 bits, 10 states)
@@ -59,7 +60,9 @@ module mem_controller_fsm (
     output wire fill3_o
 );
 
-// Next-state wires  (NS_0=LSB ... NS_{N-1}=MSB)
+// ----------------------------------------------------------------
+// Next-state wires  (NS_0 = LSB ... NS_{N-1} = MSB)
+// ----------------------------------------------------------------
 wire NS_0;
 wire NS_1;
 wire NS_2;
@@ -77,34 +80,19 @@ wire NS_3;
 //   W2                           = 1000  (decimal 8)
 //   ERROR                        = 1001  (decimal 9)  // ERROR (trap state)
 
-// State flip-flops  (reg1b, active-low async reset)
-// Reset drives all state bits to 0, which is IDLE by construction.
-reg1b ff_0 (
-    .clk(clk),
-    .rst(rst),
-    .d(NS_0),
-    .q(S_0)
-);
-reg1b ff_1 (
-    .clk(clk),
-    .rst(rst),
-    .d(NS_1),
-    .q(S_1)
-);
-reg1b ff_2 (
-    .clk(clk),
-    .rst(rst),
-    .d(NS_2),
-    .q(S_2)
-);
-reg1b ff_3 (
-    .clk(clk),
-    .rst(rst),
-    .d(NS_3),
-    .q(S_3)
-);
+// ----------------------------------------------------------------
+// State flip-flops
+// `REG_RST samples D on every rising clk edge.
+// Active-high rst drives all state bits to 0 (= IDLE encoding).
+// ----------------------------------------------------------------
+`REG_RST(ff_0, 1, clk, rst, NS_0, S_0)
+`REG_RST(ff_1, 1, clk, rst, NS_1, S_1)
+`REG_RST(ff_2, 1, clk, rst, NS_2, S_2)
+`REG_RST(ff_3, 1, clk, rst, NS_3, S_3)
 
-// Inverters
+// ----------------------------------------------------------------
+// Inverters for negated literals
+// ----------------------------------------------------------------
 wire S_0_inv;
 wire S_1_inv;
 wire S_2_inv;
@@ -113,24 +101,37 @@ wire hit_i_inv;
 wire ld_req_i_inv;
 wire write_req_i_inv;
 
-inv1$ inv_S_0 (S_0_inv, S_0);
-inv1$ inv_S_1 (S_1_inv, S_1);
-inv1$ inv_S_2 (S_2_inv, S_2);
-inv1$ inv_S_3 (S_3_inv, S_3);
-inv1$ inv_hit_i (hit_i_inv, hit_i);
-inv1$ inv_ld_req_i (ld_req_i_inv, ld_req_i);
-inv1$ inv_write_req_i (write_req_i_inv, write_req_i);
+`INV_N(inv_S_0, 1, S_0, S_0_inv)
+`INV_N(inv_S_1, 1, S_1, S_1_inv)
+`INV_N(inv_S_2, 1, S_2, S_2_inv)
+`INV_N(inv_S_3, 1, S_3, S_3_inv)
+`INV_N(inv_hit_i, 1, hit_i, hit_i_inv)
+`INV_N(inv_ld_req_i, 1, ld_req_i, ld_req_i_inv)
+`INV_N(inv_write_req_i, 1, write_req_i, write_req_i_inv)
 
+// ----------------------------------------------------------------
 // Next-state and output SOP logic
+// ----------------------------------------------------------------
 
+<<<<<<< HEAD
 // NS_0 = (!S_0 & S_1 & !S_3) | (!S_0 & S_2 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_1 & S_2 & !S_3 & !hit_i) | (!S_0 & !S_3 & ld_req_i & write_req_i) | (!S_0 & !S_3 & ld_req_i & !hit_i)
+=======
+// NS_0 = (!S_0 & S_2 & !S_3) | (!S_0 & S_1 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_1 & S_2 & !S_3 & !hit_i) | (!S_0 & !S_3 & ld_req_i & !hit_i) | (!S_0 & !S_3 & ld_req_i & write_req_i)
+>>>>>>> s_comp
 wire NS_0_t0;
+`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_2, S_3_inv)
 wire NS_0_t1;
+`AND_3(NS_0_and1, 1, NS_0_t1, S_0_inv, S_1, S_3_inv)
 wire NS_0_t2;
+`AND_4(NS_0_and2, 1, NS_0_t2, S_0, S_1_inv, S_2_inv, S_3)
 wire NS_0_t3;
+`AND_4(NS_0_and3, 1, NS_0_t3, S_1_inv, S_2, S_3_inv, hit_i_inv)
 wire NS_0_t4;
+`AND_4(NS_0_and4, 1, NS_0_t4, S_0_inv, S_3_inv, ld_req_i, hit_i_inv)
 wire NS_0_t5;
+`AND_4(NS_0_and5, 1, NS_0_t5, S_0_inv, S_3_inv, ld_req_i, write_req_i)
 
+<<<<<<< HEAD
 and3$ NS_0_and0 (NS_0_t0, S_0_inv, S_1, S_3_inv);
 and3$ NS_0_and1 (NS_0_t1, S_0_inv, S_2, S_3_inv);
 and4$ NS_0_and2 (NS_0_t2, S_0, S_1_inv, S_2_inv, S_3);
@@ -138,80 +139,90 @@ and4$ NS_0_and3 (NS_0_t3, S_1_inv, S_2, S_3_inv, hit_i_inv);
 and4$ NS_0_and4 (NS_0_t4, S_0_inv, S_3_inv, ld_req_i, write_req_i);
 and4$ NS_0_and5 (NS_0_t5, S_0_inv, S_3_inv, ld_req_i, hit_i_inv);
 or6$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5);
+=======
+`OR_6(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5)
+>>>>>>> s_comp
 
 // NS_1 = (!S_0 & S_1 & !S_3) | (S_0 & !S_1 & !S_2 & !S_3) | (!S_1 & !S_2 & !S_3 & !ld_req_i & write_req_i)
 wire NS_1_t0;
+`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1, S_3_inv)
 wire NS_1_t1;
+`AND_4(NS_1_and1, 1, NS_1_t1, S_0, S_1_inv, S_2_inv, S_3_inv)
 wire NS_1_t2;
+`AND_5(NS_1_and2, 1, NS_1_t2, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i)
 
-and3$ NS_1_and0 (NS_1_t0, S_0_inv, S_1, S_3_inv);
-and4$ NS_1_and1 (NS_1_t1, S_0, S_1_inv, S_2_inv, S_3_inv);
-and5$ NS_1_and2 (NS_1_t2, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i);
-or3$  NS_1_or  (NS_1, NS_1_t0, NS_1_t1, NS_1_t2);
+`OR_3(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2)
 
-// NS_2 = (S_0 & !S_1 & S_2 & !S_3) | (!S_0 & S_1 & S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & !write_req_i) | (!S_0 & !S_1 & !S_2 & !S_3 & !ld_req_i & write_req_i)
+// NS_2 = (!S_0 & S_1 & S_2 & !S_3) | (S_0 & !S_1 & S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & !ld_req_i & write_req_i) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & !write_req_i)
 wire NS_2_t0;
+`AND_4(NS_2_and0, 1, NS_2_t0, S_0_inv, S_1, S_2, S_3_inv)
 wire NS_2_t1;
+`AND_4(NS_2_and1, 1, NS_2_t1, S_0, S_1_inv, S_2, S_3_inv)
 wire NS_2_t2;
+`AND_6(NS_2_and2, 1, NS_2_t2, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i)
 wire NS_2_t3;
+`AND_6(NS_2_and3, 1, NS_2_t3, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv)
 
-and4$ NS_2_and0 (NS_2_t0, S_0, S_1_inv, S_2, S_3_inv);
-and4$ NS_2_and1 (NS_2_t1, S_0_inv, S_1, S_2, S_3_inv);
-and6$ NS_2_and2 (NS_2_t2, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv);
-and6$ NS_2_and3 (NS_2_t3, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i);
-or4$  NS_2_or  (NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3);
+`OR_4(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3)
 
 // NS_3 = (S_0 & !S_1 & !S_2 & S_3) | (S_0 & S_1 & S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & write_req_i)
 wire NS_3_t0;
+`AND_4(NS_3_and0, 1, NS_3_t0, S_0, S_1, S_2, S_3_inv)
 wire NS_3_t1;
+`AND_4(NS_3_and1, 1, NS_3_t1, S_0, S_1_inv, S_2_inv, S_3)
 wire NS_3_t2;
+`AND_6(NS_3_and2, 1, NS_3_t2, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i)
 
+<<<<<<< HEAD
 and4$ NS_3_and0 (NS_3_t0, S_0, S_1_inv, S_2_inv, S_3);
 and4$ NS_3_and1 (NS_3_t1, S_0, S_1, S_2, S_3_inv);
 and6$ NS_3_and2 (NS_3_t2, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i);
 or3$  NS_3_or  (NS_3, NS_3_t0, NS_3_t1, NS_3_t2);
+=======
+`OR_3(NS_3_or, 1, NS_3, NS_3_t0, NS_3_t1, NS_3_t2)
+>>>>>>> s_comp
 
 // mem_ready_o = (S_0 & !S_1 & S_2 & !S_3 & hit_i) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & !write_req_i & hit_i)
 wire mem_ready_o_t0;
+`AND_5(mem_ready_o_and0, 1, mem_ready_o_t0, S_0, S_1_inv, S_2, S_3_inv, hit_i)
 wire mem_ready_o_t1;
+`AND_7(mem_ready_o_and1, 1, mem_ready_o_t1, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i)
 
-and5$ mem_ready_o_and0 (mem_ready_o_t0, S_0, S_1_inv, S_2, S_3_inv, hit_i);
-and7$ mem_ready_o_and1 (mem_ready_o_t1, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i);
-or2$  mem_ready_o_or  (mem_ready_o, mem_ready_o_t0, mem_ready_o_t1);
+`OR_2(mem_ready_o_or, 1, mem_ready_o, mem_ready_o_t0, mem_ready_o_t1)
 
 // set_ld_tristate_o = (S_0 & !S_2 & !S_3) | (S_1 & !S_2 & !S_3) | (!S_0 & !S_1 & S_2 & !S_3) | (!S_1 & S_2 & !S_3 & hit_i) | (!S_1 & !S_3 & ld_req_i & !write_req_i & hit_i)
 wire set_ld_tristate_o_t0;
+`AND_3(set_ld_tristate_o_and0, 1, set_ld_tristate_o_t0, S_0, S_2_inv, S_3_inv)
 wire set_ld_tristate_o_t1;
+`AND_3(set_ld_tristate_o_and1, 1, set_ld_tristate_o_t1, S_1, S_2_inv, S_3_inv)
 wire set_ld_tristate_o_t2;
+`AND_4(set_ld_tristate_o_and2, 1, set_ld_tristate_o_t2, S_0_inv, S_1_inv, S_2, S_3_inv)
 wire set_ld_tristate_o_t3;
+`AND_4(set_ld_tristate_o_and3, 1, set_ld_tristate_o_t3, S_1_inv, S_2, S_3_inv, hit_i)
 wire set_ld_tristate_o_t4;
+`AND_5(set_ld_tristate_o_and4, 1, set_ld_tristate_o_t4, S_1_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i)
 
-and3$ set_ld_tristate_o_and0 (set_ld_tristate_o_t0, S_0, S_2_inv, S_3_inv);
-and3$ set_ld_tristate_o_and1 (set_ld_tristate_o_t1, S_1, S_2_inv, S_3_inv);
-and4$ set_ld_tristate_o_and2 (set_ld_tristate_o_t2, S_0_inv, S_1_inv, S_2, S_3_inv);
-and4$ set_ld_tristate_o_and3 (set_ld_tristate_o_t3, S_1_inv, S_2, S_3_inv, hit_i);
-and5$ set_ld_tristate_o_and4 (set_ld_tristate_o_t4, S_1_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i);
-or5$  set_ld_tristate_o_or  (set_ld_tristate_o, set_ld_tristate_o_t0, set_ld_tristate_o_t1, set_ld_tristate_o_t2, set_ld_tristate_o_t3, set_ld_tristate_o_t4);
+`OR_5(set_ld_tristate_o_or, 1, set_ld_tristate_o, set_ld_tristate_o_t0, set_ld_tristate_o_t1, set_ld_tristate_o_t2, set_ld_tristate_o_t3, set_ld_tristate_o_t4)
 
 // start_store_o = (!S_0 & !S_1 & !S_2 & S_3)
-and4$ start_store_o_and (start_store_o, S_0_inv, S_1_inv, S_2_inv, S_3);
+`AND_4(start_store_o_and, 1, start_store_o, S_0_inv, S_1_inv, S_2_inv, S_3)
 
 // ld_address_changed_o = (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & !write_req_i & !hit_i)
-and7$ ld_address_changed_o_and (ld_address_changed_o, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i_inv);
+`AND_7(ld_address_changed_o_and, 1, ld_address_changed_o, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i_inv)
 
 // set_WriteBuf_V_o = (!S_0 & !S_1 & !S_2 & !S_3 & !ld_req_i & write_req_i)
-and6$ set_WriteBuf_V_o_and (set_WriteBuf_V_o, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i);
+`AND_6(set_WriteBuf_V_o_and, 1, set_WriteBuf_V_o, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i)
 
 // fill0_o = (!S_0 & !S_1 & !S_2 & !S_3 & !ld_req_i & write_req_i)
-and6$ fill0_o_and (fill0_o, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i);
+`AND_6(fill0_o_and, 1, fill0_o, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i)
 
 // fill1_o = (!S_0 & S_1 & S_2 & !S_3)
-and4$ fill1_o_and (fill1_o, S_0_inv, S_1, S_2, S_3_inv);
+`AND_4(fill1_o_and, 1, fill1_o, S_0_inv, S_1, S_2, S_3_inv)
 
 // fill2_o = (S_0 & S_1 & S_2 & !S_3)
-and4$ fill2_o_and (fill2_o, S_0, S_1, S_2, S_3_inv);
+`AND_4(fill2_o_and, 1, fill2_o, S_0, S_1, S_2, S_3_inv)
 
 // fill3_o = (!S_0 & !S_1 & !S_2 & S_3)
-and4$ fill3_o_and (fill3_o, S_0_inv, S_1_inv, S_2_inv, S_3);
+`AND_4(fill3_o_and, 1, fill3_o, S_0_inv, S_1_inv, S_2_inv, S_3)
 
 endmodule

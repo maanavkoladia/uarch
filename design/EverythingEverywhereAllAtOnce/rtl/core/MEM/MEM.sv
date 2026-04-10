@@ -18,43 +18,128 @@ module MEM (
     //not sure if valid are needed, leaving for now
     //if not XCL, then wait for line_0 to hit, if XCL, wait for both line_0
     //and C1
-    input bool hit_line_0,  //this onyl goes high if valid
-    input byte_t line_0[CACHE_LINES_SIZE_B],
 
-    input bool hit_line_1,
-    input byte_t line_1[CACHE_LINES_SIZE_B],
+    //from dcache
+    input bool hit[NUM_DCACHE_PORTS],
+    input byte_t cacheline[NUM_DCACHE_PORTS][CACHE_LINES_SIZE_B],
 
-    input bool hit_line_MMIO,
-    input byte_t line_MMIO[CACHE_LINES_SIZE_B],
+    input bool hit_MIO,
+    input byte_t line_MIO[CACHE_LINES_SIZE_B],
 
     output exe_latches_t exe_latches_next_o,
     output mem_outputs_t outs_o
 );
+    //imteral buffers
+    bool hit_buf_mio_v;
+    byte_t hit_buf_mio[CACHE_LINES_SIZE_B];
+
+    bool hit_buf_v[NUM_DCACHE_PORTS];
+    byte_t hit_buf[NUM_DCACHE_PORTS][CACHE_LINES_SIZE_B];
+
+    bool clr_dcache_arb_latches[NUM_DCACHE_PORTS];
+    bool clr_dcache_mio_latch;
+
     byte_t ld_buf[EXE_BUFFER_SIZE];
+
     byte_t C0[CACHE_LINES_SIZE_B];
     byte_t up_buf[CACHE_LINES_SIZE_B];
     byte_t low_buf[CACHE_LINES_SIZE_B];
+
     bool miss_stall;
 
-    always_comb begin
-        C0 = latches_i.MIO ? line_MMIO : line_0;  //mux
-        up_buf = latches_i.swapLines ? C0 : line_1;
-        low_buf = latches_i.swapLines ? line_1 : C0;
+    bool exe_stage_we_valid_unit_o;
+    bool exe_stage_next_vaild_o;
+    bool forward_valid;
+
+
+
+    logic [1:0] bank_num_0;
+    logic [1:0] bank_num_1;
+
+
+
+    assign forward_valid = exe_stage_we_valid_unit_o &
+                           exe_stage_next_vaild_o;
+
+    assign bank_num_0 = latches_i.LD_PADDR_0[$clog2(CACHE_LINES_SIZE_B) +: 2];
+    assign bank_num_1 = latches_i.LD_PADDR_1[$clog2(CACHE_LINES_SIZE_B) +: 2];
+
+    always_ff @(posedge clk) begin
+        if(!rst)begin
+            hit_buf_v <= '0;
+            hit_buf_mio_v <= 0; 
+        end
+        else begin
+            for(int i = 0; i < NUM_DCACHE_PORTS; i++)begin
+                if(forward_valid)begin
+                    hit_buf_v <= '0;
+                    hit_buf_mio_v <= 0;
+                end
+                else begin
+                    if(hit[i])begin
+                        hit_buf_v[i] <= 1;
+                        hit_buf[i] <= cacheline[i];
+                    end
+                end
+            end
+            if(hit_MIO)begin
+                hit_buf_mio_v <= 1;
+                hit_buf_mio <= line_MIO;
+            end
+        end
     end
+
+
+    byte_t line_in_0[CACHE_LINES_SIZE_B];
+    assign line_in_0 = hit_buf_v[bank_num_0] ? hit_buf[bank_num_0] : cacheline[bank_num_0];
+
+    byte_t line_in_1[CACHE_LINES_SIZE_B];
+    assign line_in_1 = hit_buf_v[bank_num_1] ? hit_buf[bank_num_1] : cacheline[bank_num_1];
+
+    byte_t line_in_mio[CACHE_LINES_SIZE_B];
+    assign line_in_mio = hit_buf_mio_v ? hit_buf_mio : line_MIO;
+
+    always_comb begin
+        C0 = latches_i.MIO ? line_in_mio : line_in_0;
+        up_buf = latches_i.swapLines ? line_in_0 : line_in_1;
+        low_buf = latches_i.swapLines ? line_in_1 : C0;
+    end
+
+
+    always_comb begin
+        clr_dcache_arb_latches = '{default : '0};
+        clr_dcache_mio_latch = 0;
+        for(int i = 0; i < NUM_DCACHE_PORTS; i++)begin
+            if(bank_num_0 == i && latches_i.cs.LD_OP && hit[i] && ~hit_buf_v[i] && latches_i.valid)begin
+                clr_dcache_arb_latches[i] = 1;
+            end
+            if(bank_num_1 == i && latches_i.cs.LD_OP && latches_i.LD_XCL && hit[i] && ~hit_buf_v[i] && latches_i.valid)begin
+                clr_dcache_arb_latches[i] = 1;
+            end
+        end
+        if(latches_i.MIO && latches_i.cs.LD_OP && hit_MIO && ~hit_buf_mio_v && latches_i.valid)begin
+            clr_dcache_mio_latch = 1;
+        end
+    end
+
+
 
     mem_miss_stall_logic mem_stall (
         .valid(latches_i.valid),
         .LD_XCL(latches_i.LD_XCL),
         .LD_OP(latches_i.cs.LD_OP),
-        .hit0(hit_line_0),
-        .hit1(hit_line_1),
-        .hit_MIO(hit_line_MMIO),
         .MIO(latches_i.MIO),
+        .hits(hit), //from dcache
+        .hit_MIO(hit_MIO), //from dcache
+
+        .hit_buf_v(hit_buf_v), //from internal reg
+        .hit_buf_mio_v(hit_buf_mio_v), //from internal reg
+        .bank_num_0(bank_num_0),
+        .bank_num_1(bank_num_1),
         .miss_stall(miss_stall)
     );
 
-    bool exe_stage_we_valid_unit_o;
-    bool exe_stage_next_vaild_o;
+
     EXE_valid_logic exe_valid_logic_unit (
         .EXE_we_o(exe_stage_we_valid_unit_o),
         .N_EXE_V_o(exe_stage_next_vaild_o),
@@ -103,7 +188,9 @@ module MEM (
             ST_PADDR_0: latches_i.ST_PADDR_0,  //cacheline unalgned, ie actual addr
             ST_PADDR_1: latches_i.ST_PADDR_1,  //cacheline algned
             ST_OP: latches_i.cs.ST_OP,
-            exe_stage_latch_we: exe_stage_we_valid_unit_o
+            exe_stage_latch_we: exe_stage_we_valid_unit_o,
+            clr_dcache_arb_latches: clr_dcache_arb_latches,
+            clr_dcache_mio_latch: clr_dcache_mio_latch
         };
 
 

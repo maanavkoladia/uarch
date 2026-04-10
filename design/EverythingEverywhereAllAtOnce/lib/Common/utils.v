@@ -1,5 +1,6 @@
 `ifndef UTILS_V
 `define UTILS_V
+`default_nettype none
 
 // ============================================================
 // Exit control

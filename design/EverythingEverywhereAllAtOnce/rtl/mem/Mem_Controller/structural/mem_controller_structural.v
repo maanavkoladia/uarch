@@ -4,30 +4,27 @@
 // Structural Verilog-2005 conversion of mem_controller.sv
 //
 // All struct interfaces flattened to packed bit vectors.
-// All always_ff -> reg_rst_we cells.
+// All always_ff -> REG_RST_WE cells.
 // All always_comb -> assign + gate instantiations.
 // mem_controller_fsm instantiated directly (already structural).
 // genvars/generate used for repeated structures.
 // ============================================================================
 
 
-
-`default_nettype none
-
 module mem_controller_structural (
-    input  wire clk,
-    input  wire rst,  // active low
+    input wire clk,
+    input wire rst,  // active low
 
     // address bus (input only, mem never drives)
-    input  wire [14:0] address_bus,
+    input wire [14:0] address_bus,
 
     // data bus
-    inout  wire [31:0] data_bus,
+    inout wire [31:0] data_bus,
 
     // DTE inputs (dte_2_mem_t flattened)
-    input  wire dte_ld_req,
-    input  wire dte_st_req,
-    input  wire [3:0] dte_permission2DriveBus,
+    input wire dte_ld_req,
+    input wire dte_st_req,
+    input wire [3:0] dte_permission2DriveBus,
 
     // DTE output (mem_2_dte_t flattened)
     output wire ToDTE_mem_Ready,
@@ -37,37 +34,37 @@ module mem_controller_structural (
 
     // Bank command outputs (64 banks, all packed)
     // ld_address:  64 banks x 5 bits = 320 bits
-    output wire [64*5-1:0] bank_cmd_ld_address,
+    output wire [ 64*5-1:0] bank_cmd_ld_address,
     // st_address:  64 banks x 5 bits = 320 bits
-    output wire [64*5-1:0] bank_cmd_st_address,
+    output wire [ 64*5-1:0] bank_cmd_st_address,
     // start_store: 64 banks x 1 bit
-    output wire [63:0]     bank_cmd_start_store,
+    output wire [     63:0] bank_cmd_start_store,
     // ld_address_change: 64 banks x 1 bit
-    output wire [63:0]     bank_cmd_ld_address_change,
+    output wire [     63:0] bank_cmd_ld_address_change,
     // driveMemBus: 64 banks x 1 bit
-    output wire [63:0]     bank_cmd_driveMemBus,
+    output wire [     63:0] bank_cmd_driveMemBus,
     // writeBuf: 8 groups x 128 bits = 1024 bits (banks in same group share)
     output wire [8*128-1:0] bank_cmd_writeBuf,
 
     // Bank inputs (mem_bank_out_t flattened, 64 banks)
-    input  wire [63:0] banks_precharged,
-    input  wire [63:0] banks_clear_writebufV
+    input wire [63:0] banks_precharged,
+    input wire [63:0] banks_clear_writebufV
 );
 
     // ================================================================
     // ADDRESS FIELD EXTRACTION
     // ================================================================
-    wire [3:0] chipNum;           // address_bus[9:6], selects 1-of-16 chips
-    wire [1:0] bankBits_InChip;   // address_bus[5:4], selects bank within chip
-    wire [4:0] rowBit;            // address_bus[14:10], SRAM row address
-    wire [5:0] bank_num_for_chip; // {chipNum, bankBits_InChip}, 1-of-64 bank
-    wire [2:0] bankGroup;         // address_bus[6:4], selects 1-of-8 bank groups
+    wire [3:0] chipNum;  // address_bus[9:6],  selects 1-of-16 chips
+    wire [1:0] bankBits_InChip;  // address_bus[5:4],  selects bank within chip
+    wire [4:0] rowBit;  // address_bus[14:10], SRAM row address
+    wire [5:0] bank_num_for_chip;  // {chipNum, bankBits_InChip}, 1-of-64 bank
+    wire [2:0] bankGroup;  // address_bus[6:4],  selects 1-of-8 bank groups
 
-    assign chipNum          = address_bus[9:6];
-    assign bankBits_InChip  = address_bus[5:4];
-    assign rowBit           = address_bus[14:10];
+    assign chipNum           = address_bus[9:6];
+    assign bankBits_InChip   = address_bus[5:4];
+    assign rowBit            = address_bus[14:10];
     assign bank_num_for_chip = {chipNum, bankBits_InChip};
-    assign bankGroup        = address_bus[6:4];
+    assign bankGroup         = address_bus[6:4];
 
     // ================================================================
     // FSM (already structural, instantiate directly)
@@ -82,24 +79,24 @@ module mem_controller_structural (
     wire hit_into_fsm;
 
     mem_controller_fsm u0_fsm (
-        .clk(clk),
-        .rst(rst),
-        .ld_req_i(dte_ld_req),
-        .write_req_i(dte_st_req),
-        .hit_i(hit_into_fsm),
-        .S_0(fsm_state_bits[0]),
-        .S_1(fsm_state_bits[1]),
-        .S_2(fsm_state_bits[2]),
-        .S_3(fsm_state_bits[3]),
-        .mem_ready_o(fsm_mem_ready),
-        .set_ld_tristate_o(fsm_set_ld_tristate),
-        .start_store_o(fsm_start_store),
+        .clk                 (clk),
+        .rst                 (rst),
+        .ld_req_i            (dte_ld_req),
+        .write_req_i         (dte_st_req),
+        .hit_i               (hit_into_fsm),
+        .S_0                 (fsm_state_bits[0]),
+        .S_1                 (fsm_state_bits[1]),
+        .S_2                 (fsm_state_bits[2]),
+        .S_3                 (fsm_state_bits[3]),
+        .mem_ready_o         (fsm_mem_ready),
+        .set_ld_tristate_o   (fsm_set_ld_tristate),
+        .start_store_o       (fsm_start_store),
         .ld_address_changed_o(fsm_ld_address_changed),
-        .set_WriteBuf_V_o(fsm_set_WriteBuf_V),
-        .fill0_o(fsm_fill0),
-        .fill1_o(fsm_fill1),
-        .fill2_o(fsm_fill2),
-        .fill3_o(fsm_fill3)
+        .set_WriteBuf_V_o    (fsm_set_WriteBuf_V),
+        .fill0_o             (fsm_fill0),
+        .fill1_o             (fsm_fill1),
+        .fill2_o             (fsm_fill2),
+        .fill3_o             (fsm_fill3)
     );
 
     // ================================================================
@@ -110,27 +107,21 @@ module mem_controller_structural (
 
     // One-hot chip select
     wire [15:0] chip_sel_oh;
-    decoder_onehot #(.WIDTH(16)) u_chip_dec (
-        .sel(chipNum),
-        .out(chip_sel_oh)
-    );
+    `DECODER_N(u_chip_dec, 4, chipNum, chip_sel_oh)
 
     // Per-chip WE = chip_sel_oh[i] & fsm_ld_address_changed
     wire [15:0] chip_addr_we;
     // Chip address registers: packed as 16 x 15 bits
-    wire [14:0] chip_addr [0:15];
+    wire [14:0] chip_addr[0:15];
     // Row address from each chip = chip_addr[i][14:10]
-    wire [4:0]  chip_row  [0:15];
+    wire [4:0] chip_row[0:15];
 
     genvar ci;
     generate
         for (ci = 0; ci < 16; ci = ci + 1) begin : g_chip
-            and2$ u_we (.out(chip_addr_we[ci]),
-                        .in0(chip_sel_oh[ci]),
-                        .in1(fsm_ld_address_changed));
+            `AND_2(u_we, 1, chip_addr_we[ci], chip_sel_oh[ci], fsm_ld_address_changed)
 
-            `REG_RST_WE(u_addr, clk, rst, chip_addr_we[ci],
-                         address_bus[14:0], chip_addr[ci], 15);
+            `REG_RST_WE(u_addr, 15, clk, rst, chip_addr_we[ci], address_bus[14:0], chip_addr[ci])
 
             assign chip_row[ci] = chip_addr[ci][14:10];
         end
@@ -142,10 +133,7 @@ module mem_controller_structural (
 
     // ---- One-hot bank-group select ----
     wire [7:0] bg_sel_oh;
-    decoder_onehot #(.WIDTH(8)) u_bg_dec (
-        .sel(bankGroup),
-        .out(bg_sel_oh)
-    );
+    `DECODER_N(u_bg_dec, 3, bankGroup, bg_sel_oh)
 
     // ---- writeBuf_Valid (1-bit per group) ----
     //   SET   = fsm_set_WriteBuf_V & bg_sel_oh[i]
@@ -160,56 +148,34 @@ module mem_controller_structural (
         for (ci = 0; ci < 8; ci = ci + 1) begin : g_wbv
 
             // SET
-            and2$ u_set (.out(bg_set[ci]),
-                         .in0(fsm_set_WriteBuf_V),
-                         .in1(bg_sel_oh[ci]));
-            //need to change this to 8 input or gate
+            `AND_2(u_set, 1, bg_set[ci], fsm_set_WriteBuf_V, bg_sel_oh[ci])
+
             // CLEAR: OR-reduce 8 clear_writebufV signals for banks ci*8 .. ci*8+7
-            wire [3:0] clr_pair;
-            or2$ u_c01 (.out(clr_pair[0]),
-                        .in0(banks_clear_writebufV[ci*8+0]),
-                        .in1(banks_clear_writebufV[ci*8+1]));
-            or2$ u_c23 (.out(clr_pair[1]),
-                        .in0(banks_clear_writebufV[ci*8+2]),
-                        .in1(banks_clear_writebufV[ci*8+3]));
-            or2$ u_c45 (.out(clr_pair[2]),
-                        .in0(banks_clear_writebufV[ci*8+4]),
-                        .in1(banks_clear_writebufV[ci*8+5]));
-            or2$ u_c67 (.out(clr_pair[3]),
-                        .in0(banks_clear_writebufV[ci*8+6]),
-                        .in1(banks_clear_writebufV[ci*8+7]));
-            wire clr_ab, clr_cd;
-            or2$ u_cab (.out(clr_ab), .in0(clr_pair[0]), .in1(clr_pair[1]));
-            or2$ u_ccd (.out(clr_cd), .in0(clr_pair[2]), .in1(clr_pair[3]));
-            or2$ u_cfn (.out(bg_clr[ci]), .in0(clr_ab), .in1(clr_cd));
+            `OR_8(u_cfn, 1, bg_clr[ci], banks_clear_writebufV[ci*8+0],
+                  banks_clear_writebufV[ci*8+1], banks_clear_writebufV[ci*8+2],
+                  banks_clear_writebufV[ci*8+3], banks_clear_writebufV[ci*8+4],
+                  banks_clear_writebufV[ci*8+5], banks_clear_writebufV[ci*8+6],
+                  banks_clear_writebufV[ci*8+7])
 
             // D logic
-            or2$  u_any (.out(bg_any_chg[ci]), .in0(bg_set[ci]), .in1(bg_clr[ci]));
-            inv1$ u_ci  (.out(bg_clr_inv[ci]),  .in(bg_clr[ci]));
-            and2$ u_nv  (.out(bg_new_val[ci]), .in0(bg_set[ci]), .in1(bg_clr_inv[ci]));
+            `OR_2(u_any, 1, bg_any_chg[ci], bg_set[ci], bg_clr[ci])
+            `INV_N(u_ci, 1, bg_clr[ci], bg_clr_inv[ci])
+            `AND_2(u_nv, 1, bg_new_val[ci], bg_set[ci], bg_clr_inv[ci])
 
-            //this is for setting the write buffer valid bit
-            //it takes in an incoming clear bit from any bank and any write enable bit from the fsm to a given bank
-            // if valid and not clear -> sets valid
-            //otherwise sets clear 
-            `REG_RST_WE(u_wbv, clk, rst, bg_any_chg[ci],
-                         bg_new_val[ci], bg_writeBufV[ci], 1);
+            `REG_RST_WE(u_wbv, 1, clk, rst, bg_any_chg[ci], bg_new_val[ci], bg_writeBufV[ci])
         end
     endgenerate
 
     // ---- bankGroup address registers (15 bits each) ----
-    wire [14:0] bg_addr [0:7];
-    wire [7:0]  bg_addr_we;
-    wire [4:0]  bg_row  [0:7];
+    wire [14:0] bg_addr[0:7];
+    wire [7:0] bg_addr_we;
+    wire [4:0] bg_row[0:7];
 
     generate
         for (ci = 0; ci < 8; ci = ci + 1) begin : g_bg_addr
-            and2$ u_we (.out(bg_addr_we[ci]),
-                        .in0(fsm_set_WriteBuf_V),
-                        .in1(bg_sel_oh[ci]));
+            `AND_2(u_we, 1, bg_addr_we[ci], fsm_set_WriteBuf_V, bg_sel_oh[ci])
 
-            `REG_RST_WE(u_ar, clk, rst, bg_addr_we[ci],
-                         address_bus[14:0], bg_addr[ci], 15);
+            `REG_RST_WE(u_ar, 15, clk, rst, bg_addr_we[ci], address_bus[14:0], bg_addr[ci])
 
             assign bg_row[ci] = bg_addr[ci][14:10];
         end
@@ -221,36 +187,36 @@ module mem_controller_structural (
     // Each fill loads 4 bytes from data_bus[31:0].
     // WE for byte in group i = fillX & bg_sel_oh[i]
 
-    wire [127:0] bg_wb [0:7];
+    wire [127:0] bg_wb[0:7];
 
     generate
         for (ci = 0; ci < 8; ci = ci + 1) begin : g_bg_wb
             wire f0_we, f1_we, f2_we, f3_we;
-            and2$ u_f0 (.out(f0_we), .in0(fsm_fill0), .in1(bg_sel_oh[ci]));
-            and2$ u_f1 (.out(f1_we), .in0(fsm_fill1), .in1(bg_sel_oh[ci]));
-            and2$ u_f2 (.out(f2_we), .in0(fsm_fill2), .in1(bg_sel_oh[ci]));
-            and2$ u_f3 (.out(f3_we), .in0(fsm_fill3), .in1(bg_sel_oh[ci]));
+            `AND_2(u_f0, 1, f0_we, fsm_fill0, bg_sel_oh[ci])
+            `AND_2(u_f1, 1, f1_we, fsm_fill1, bg_sel_oh[ci])
+            `AND_2(u_f2, 1, f2_we, fsm_fill2, bg_sel_oh[ci])
+            `AND_2(u_f3, 1, f3_we, fsm_fill3, bg_sel_oh[ci])
 
             // fill0: bytes 0-3
-            `REG_RST_WE(u_b0,  clk, rst, f0_we, data_bus[7:0],   bg_wb[ci][7:0],     8);
-            `REG_RST_WE(u_b1,  clk, rst, f0_we, data_bus[15:8],  bg_wb[ci][15:8],    8);
-            `REG_RST_WE(u_b2,  clk, rst, f0_we, data_bus[23:16], bg_wb[ci][23:16],   8);
-            `REG_RST_WE(u_b3,  clk, rst, f0_we, data_bus[31:24], bg_wb[ci][31:24],   8);
+            `REG_RST_WE(u_b0, 8, clk, rst, f0_we, data_bus[7:0], bg_wb[ci][7:0])
+            `REG_RST_WE(u_b1, 8, clk, rst, f0_we, data_bus[15:8], bg_wb[ci][15:8])
+            `REG_RST_WE(u_b2, 8, clk, rst, f0_we, data_bus[23:16], bg_wb[ci][23:16])
+            `REG_RST_WE(u_b3, 8, clk, rst, f0_we, data_bus[31:24], bg_wb[ci][31:24])
             // fill1: bytes 4-7
-            `REG_RST_WE(u_b4,  clk, rst, f1_we, data_bus[7:0],   bg_wb[ci][39:32],   8);
-            `REG_RST_WE(u_b5,  clk, rst, f1_we, data_bus[15:8],  bg_wb[ci][47:40],   8);
-            `REG_RST_WE(u_b6,  clk, rst, f1_we, data_bus[23:16], bg_wb[ci][55:48],   8);
-            `REG_RST_WE(u_b7,  clk, rst, f1_we, data_bus[31:24], bg_wb[ci][63:56],   8);
+            `REG_RST_WE(u_b4, 8, clk, rst, f1_we, data_bus[7:0], bg_wb[ci][39:32])
+            `REG_RST_WE(u_b5, 8, clk, rst, f1_we, data_bus[15:8], bg_wb[ci][47:40])
+            `REG_RST_WE(u_b6, 8, clk, rst, f1_we, data_bus[23:16], bg_wb[ci][55:48])
+            `REG_RST_WE(u_b7, 8, clk, rst, f1_we, data_bus[31:24], bg_wb[ci][63:56])
             // fill2: bytes 8-11
-            `REG_RST_WE(u_b8,  clk, rst, f2_we, data_bus[7:0],   bg_wb[ci][71:64],   8);
-            `REG_RST_WE(u_b9,  clk, rst, f2_we, data_bus[15:8],  bg_wb[ci][79:72],   8);
-            `REG_RST_WE(u_b10, clk, rst, f2_we, data_bus[23:16], bg_wb[ci][87:80],   8);
-            `REG_RST_WE(u_b11, clk, rst, f2_we, data_bus[31:24], bg_wb[ci][95:88],   8);
+            `REG_RST_WE(u_b8, 8, clk, rst, f2_we, data_bus[7:0], bg_wb[ci][71:64])
+            `REG_RST_WE(u_b9, 8, clk, rst, f2_we, data_bus[15:8], bg_wb[ci][79:72])
+            `REG_RST_WE(u_b10, 8, clk, rst, f2_we, data_bus[23:16], bg_wb[ci][87:80])
+            `REG_RST_WE(u_b11, 8, clk, rst, f2_we, data_bus[31:24], bg_wb[ci][95:88])
             // fill3: bytes 12-15
-            `REG_RST_WE(u_b12, clk, rst, f3_we, data_bus[7:0],   bg_wb[ci][103:96],  8);
-            `REG_RST_WE(u_b13, clk, rst, f3_we, data_bus[15:8],  bg_wb[ci][111:104], 8);
-            `REG_RST_WE(u_b14, clk, rst, f3_we, data_bus[23:16], bg_wb[ci][119:112], 8);
-            `REG_RST_WE(u_b15, clk, rst, f3_we, data_bus[31:24], bg_wb[ci][127:120], 8);
+            `REG_RST_WE(u_b12, 8, clk, rst, f3_we, data_bus[7:0], bg_wb[ci][103:96])
+            `REG_RST_WE(u_b13, 8, clk, rst, f3_we, data_bus[15:8], bg_wb[ci][111:104])
+            `REG_RST_WE(u_b14, 8, clk, rst, f3_we, data_bus[23:16], bg_wb[ci][119:112])
+            `REG_RST_WE(u_b15, 8, clk, rst, f3_we, data_bus[31:24], bg_wb[ci][127:120])
         end
     endgenerate
 
@@ -261,7 +227,7 @@ module mem_controller_structural (
     genvar bi;
     generate
         for (bi = 0; bi < 64; bi = bi + 1) begin : g_ld_addr
-            assign bank_cmd_ld_address[bi*5 +: 5] = chip_row[bi/4];
+            assign bank_cmd_ld_address[bi*5+:5] = chip_row[bi/4];
         end
     endgenerate
 
@@ -272,9 +238,8 @@ module mem_controller_structural (
     // bank b: ld_addr_change = chip_sel_oh[b/4] & fsm_ld_address_changed
     generate
         for (bi = 0; bi < 64; bi = bi + 1) begin : g_ld_chg
-            and2$ u_lc (.out(bank_cmd_ld_address_change[bi]),
-                        .in0(chip_sel_oh[bi/4]),
-                        .in1(fsm_ld_address_changed));
+            `AND_2(u_lc, 1, bank_cmd_ld_address_change[bi], chip_sel_oh[bi/4],
+                   fsm_ld_address_changed)
         end
     endgenerate
 
@@ -283,25 +248,21 @@ module mem_controller_structural (
     // ================================================================
     // Default 0. When fsm_set_ld_tristate, set for bank_num_for_chip.
     wire [63:0] bank_oh;
-    decoder_onehot #(.WIDTH(64)) u_bank_dec (
-        .sel(bank_num_for_chip),
-        .out(bank_oh)
-    );
-    generate
-        for (bi = 0; bi < 64; bi = bi + 1) begin : g_drive
-            and2$ u_dm (.out(bank_cmd_driveMemBus[bi]),
-                        .in0(bank_oh[bi]),
-                        .in1(fsm_set_ld_tristate));
-        end
-    endgenerate
+    `DECODER_N(u_bank_dec, 6, bank_num_for_chip, bank_oh)
 
+    // replicate scalar to 64 bits
+    wire [63:0] fsm_set_ld_tristate_vec;
+    assign fsm_set_ld_tristate_vec = {64{fsm_set_ld_tristate}};
+
+    // single wide AND
+    `AND_2(u_dm, 64, bank_cmd_driveMemBus, bank_oh, fsm_set_ld_tristate_vec)
     // ================================================================
     // OUTPUT: bank_cmd_st_address  (64 banks x 5 bits)
     // ================================================================
     // Bank b is in bank-group b/8.  st_address = bg_row[b/8].
     generate
         for (bi = 0; bi < 64; bi = bi + 1) begin : g_st_addr
-            assign bank_cmd_st_address[bi*5 +: 5] = bg_row[bi/8];
+            assign bank_cmd_st_address[bi*5+:5] = bg_row[bi/8];
         end
     endgenerate
 
@@ -313,18 +274,16 @@ module mem_controller_structural (
     wire [5:0] store_bank_idx;
     assign store_bank_idx = address_bus[9:4];
 
+    // ---- decoder ----
     wire [63:0] store_oh;
-    decoder_onehot #(.WIDTH(64)) u_store_dec (
-        .sel(store_bank_idx),
-        .out(store_oh)
-    );
-    generate
-        for (bi = 0; bi < 64; bi = bi + 1) begin : g_ss
-            and2$ u_ss (.out(bank_cmd_start_store[bi]),
-                        .in0(store_oh[bi]),
-                        .in1(fsm_start_store));
-        end
-    endgenerate
+    `DECODER_N(u_store_dec, 6, store_bank_idx, store_oh)
+
+    // ---- replicate FSM signal ----
+    wire [63:0] fsm_start_store_vec;
+    assign fsm_start_store_vec = {64{fsm_start_store}};
+
+    // ---- single wide AND ----
+    `AND_2(u_ss, 64, bank_cmd_start_store, store_oh, fsm_start_store_vec)
 
     // ================================================================
     // OUTPUT: bank_cmd_writeBuf  (8 groups x 128 bits)
@@ -332,7 +291,7 @@ module mem_controller_structural (
     // Banks in same group share the same writeBuf.
     generate
         for (ci = 0; ci < 8; ci = ci + 1) begin : g_wb_out
-            assign bank_cmd_writeBuf[ci*128 +: 128] = bg_wb[ci];
+            assign bank_cmd_writeBuf[ci*128+:128] = bg_wb[ci];
         end
     endgenerate
 
@@ -361,113 +320,35 @@ module mem_controller_structural (
     // ---- 16:1 mux of chip_row, selected by chipNum ----
     wire [4:0] sel_chip_row;
 
-    //NOT AI NOTE: needs to be become 16x1 mux of width 5. this is selecting which chip to compare against the address
-    // Level 0: 8 x 5-bit 2:1 mux (select by chipNum[0])
-    wire [4:0] cr_L0 [0:7];
-    mux_n #(.WIDTH(5)) u_cr0 (.out(cr_L0[0]), .in0(chip_row[0]),  .in1(chip_row[1]),  .sel(chipNum[0]));
-    mux_n #(.WIDTH(5)) u_cr1 (.out(cr_L0[1]), .in0(chip_row[2]),  .in1(chip_row[3]),  .sel(chipNum[0]));
-    mux_n #(.WIDTH(5)) u_cr2 (.out(cr_L0[2]), .in0(chip_row[4]),  .in1(chip_row[5]),  .sel(chipNum[0]));
-    mux_n #(.WIDTH(5)) u_cr3 (.out(cr_L0[3]), .in0(chip_row[6]),  .in1(chip_row[7]),  .sel(chipNum[0]));
-    mux_n #(.WIDTH(5)) u_cr4 (.out(cr_L0[4]), .in0(chip_row[8]),  .in1(chip_row[9]),  .sel(chipNum[0]));
-    mux_n #(.WIDTH(5)) u_cr5 (.out(cr_L0[5]), .in0(chip_row[10]), .in1(chip_row[11]), .sel(chipNum[0]));
-    mux_n #(.WIDTH(5)) u_cr6 (.out(cr_L0[6]), .in0(chip_row[12]), .in1(chip_row[13]), .sel(chipNum[0]));
-    mux_n #(.WIDTH(5)) u_cr7 (.out(cr_L0[7]), .in0(chip_row[14]), .in1(chip_row[15]), .sel(chipNum[0]));
-
-    // Level 1 (select by chipNum[1])
-    wire [4:0] cr_L1 [0:3];
-    mux_n #(.WIDTH(5)) u_cr10 (.out(cr_L1[0]), .in0(cr_L0[0]), .in1(cr_L0[1]), .sel(chipNum[1]));
-    mux_n #(.WIDTH(5)) u_cr11 (.out(cr_L1[1]), .in0(cr_L0[2]), .in1(cr_L0[3]), .sel(chipNum[1]));
-    mux_n #(.WIDTH(5)) u_cr12 (.out(cr_L1[2]), .in0(cr_L0[4]), .in1(cr_L0[5]), .sel(chipNum[1]));
-    mux_n #(.WIDTH(5)) u_cr13 (.out(cr_L1[3]), .in0(cr_L0[6]), .in1(cr_L0[7]), .sel(chipNum[1]));
-
-    // Level 2 (select by chipNum[2])
-    wire [4:0] cr_L2 [0:1];
-    mux_n #(.WIDTH(5)) u_cr20 (.out(cr_L2[0]), .in0(cr_L1[0]), .in1(cr_L1[1]), .sel(chipNum[2]));
-    mux_n #(.WIDTH(5)) u_cr21 (.out(cr_L2[1]), .in0(cr_L1[2]), .in1(cr_L1[3]), .sel(chipNum[2]));
-
-    // Level 3 (select by chipNum[3])
-    mux_n #(.WIDTH(5)) u_cr30 (.out(sel_chip_row), .in0(cr_L2[0]), .in1(cr_L2[1]), .sel(chipNum[3]));
-
+    `MUX_16(u_chiprow, 5, sel_chip_row, chip_row[0], chip_row[1], chip_row[2], chip_row[3],
+            chip_row[4], chip_row[5], chip_row[6], chip_row[7], chip_row[8], chip_row[9],
+            chip_row[10], chip_row[11], chip_row[12], chip_row[13], chip_row[14], chip_row[15],
+            chipNum)
     // ---- 5-bit comparator ----
     wire addr_match;
-    bit_compare_n #(.WIDTH(5)) u_cmp (
-        .eq(addr_match),
-        .a(sel_chip_row),
-        .b(rowBit)
-    );
+    `CMP_N(u_cmp, 5, addr_match, sel_chip_row, rowBit)
 
-
-    //checking if the bank that we need to read from is precharged
-    //TODO: convert to 64 to 1 mux
-    // ---- 64:1 mux of banks_precharged, selected by bank_num_for_chip ----
     wire sel_precharge;
 
-    // Level 0: 32 x 1-bit 2:1 mux (select by bank_num_for_chip[0])
-    wire [31:0] pr_L0;
-    genvar pi;
-    generate
-        for (pi = 0; pi < 32; pi = pi + 1) begin : g_pr0
-            mux2_1b u_m (.out(pr_L0[pi]),
-                         .in0(banks_precharged[pi*2]),
-                         .in1(banks_precharged[pi*2+1]),
-                         .sel(bank_num_for_chip[0]));
-        end
-    endgenerate
-
-    // Level 1: 16 (select by [1])
-    wire [15:0] pr_L1;
-    generate
-        for (pi = 0; pi < 16; pi = pi + 1) begin : g_pr1
-            mux2_1b u_m (.out(pr_L1[pi]),
-                         .in0(pr_L0[pi*2]),
-                         .in1(pr_L0[pi*2+1]),
-                         .sel(bank_num_for_chip[1]));
-        end
-    endgenerate
-
-    // Level 2: 8 (select by [2])
-    wire [7:0] pr_L2;
-    generate
-        for (pi = 0; pi < 8; pi = pi + 1) begin : g_pr2
-            mux2_1b u_m (.out(pr_L2[pi]),
-                         .in0(pr_L1[pi*2]),
-                         .in1(pr_L1[pi*2+1]),
-                         .sel(bank_num_for_chip[2]));
-        end
-    endgenerate
-
-    // Level 3: 4 (select by [3])
-    wire [3:0] pr_L3;
-    generate
-        for (pi = 0; pi < 4; pi = pi + 1) begin : g_pr3
-            mux2_1b u_m (.out(pr_L3[pi]),
-                         .in0(pr_L2[pi*2]),
-                         .in1(pr_L2[pi*2+1]),
-                         .sel(bank_num_for_chip[3]));
-        end
-    endgenerate
-
-    // Level 4: 2 (select by [4])
-    wire [1:0] pr_L4;
-    generate
-        for (pi = 0; pi < 2; pi = pi + 1) begin : g_pr4
-            mux2_1b u_m (.out(pr_L4[pi]),
-                         .in0(pr_L3[pi*2]),
-                         .in1(pr_L3[pi*2+1]),
-                         .sel(bank_num_for_chip[4]));
-        end
-    endgenerate
-
-    // Level 5: final (select by [5])
-    mux2_1b u_pr5 (.out(sel_precharge),
-                   .in0(pr_L4[0]),
-                   .in1(pr_L4[1]),
-                   .sel(bank_num_for_chip[5]));
+    `MUX_64(u_pre, 1, sel_precharge, banks_precharged[0], banks_precharged[1], banks_precharged[2],
+            banks_precharged[3], banks_precharged[4], banks_precharged[5], banks_precharged[6],
+            banks_precharged[7], banks_precharged[8], banks_precharged[9], banks_precharged[10],
+            banks_precharged[11], banks_precharged[12], banks_precharged[13], banks_precharged[14],
+            banks_precharged[15], banks_precharged[16], banks_precharged[17], banks_precharged[18],
+            banks_precharged[19], banks_precharged[20], banks_precharged[21], banks_precharged[22],
+            banks_precharged[23], banks_precharged[24], banks_precharged[25], banks_precharged[26],
+            banks_precharged[27], banks_precharged[28], banks_precharged[29], banks_precharged[30],
+            banks_precharged[31], banks_precharged[32], banks_precharged[33], banks_precharged[34],
+            banks_precharged[35], banks_precharged[36], banks_precharged[37], banks_precharged[38],
+            banks_precharged[39], banks_precharged[40], banks_precharged[41], banks_precharged[42],
+            banks_precharged[43], banks_precharged[44], banks_precharged[45], banks_precharged[46],
+            banks_precharged[47], banks_precharged[48], banks_precharged[49], banks_precharged[50],
+            banks_precharged[51], banks_precharged[52], banks_precharged[53], banks_precharged[54],
+            banks_precharged[55], banks_precharged[56], banks_precharged[57], banks_precharged[58],
+            banks_precharged[59], banks_precharged[60], banks_precharged[61], banks_precharged[62],
+            banks_precharged[63], bank_num_for_chip)
 
     // ---- Final hit AND ----
-    and3$ u_hit (.out(hit_into_fsm),
-                 .in0(dte_ld_req),
-                 .in1(addr_match),
-                 .in2(sel_precharge));
+    `AND_3(u_hit, 1, hit_into_fsm, dte_ld_req, addr_match, sel_precharge)
 
 endmodule

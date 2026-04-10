@@ -5,7 +5,7 @@ package interconnect_pkg;
     localparam int numWriteBufsInMem = 8;
     localparam int NUM_DCACHE_PORTS = 4;
 
-    localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_Bits;
+    localparam int MEM_BUS_SIZE = CACHE_LINES_SIZE_BITS;
 
     localparam int NUM_REQS = 14;
 
@@ -85,7 +85,7 @@ package interconnect_pkg;
 
     typedef struct {
         bool mem_valid[NUM_DCACHE_PORTS];
-        bool permissionToDriveDataBus_evictionBuf[NUM_DCACHE_PORTS][CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS];
+        bool permissionToDriveDataBus_evictionBuf[NUM_DCACHE_PORTS][CACHE_LINES_SIZE_BITS/DATA_BUS_WIDTH_BITS];
         //bool permissionToDriveAddrBus_eb;
         bool permissionToDriveAddrBus_Ld[NUM_DCACHE_PORTS];
         bool permissionToDriveAddrBus_eb[NUM_DCACHE_PORTS];
@@ -110,7 +110,7 @@ package interconnect_pkg;
     } dte_2_dcache_t;
 
     //MEM interconnect//////////////////////////////
-    typedef struct {bool writeBuf_V[numWriteBufsInMem];} mem_2_scheduler_t;
+    typedef struct {bool [numWriteBufsInMem-1: 0] writeBuf_V;} mem_2_scheduler_t;
 
     typedef struct {bool mem_Ready;} mem_2_dte_t;
 
@@ -118,7 +118,7 @@ package interconnect_pkg;
         bool ld_req;
         bool st_req;
         //bool start_transaction;
-        bool permission2DriveBus[MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
+        bool [MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS -1 : 0] permission2DriveBus;
     } dte_2_mem_t;
 
 
@@ -182,8 +182,6 @@ package interconnect_pkg;
         bool ld_addr_1_V;
         p_address_t ld_addr_1;
 
-        //for d$ arb logic
-        bool memStalling;
 
         //for wb
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
@@ -192,21 +190,23 @@ package interconnect_pkg;
         //from DC
         bool ld_addr_MIO_V;
         p_address_t ld_addr_MIO;
+
+        //for d$ arb logic,
+        bool memStage_CLR_REQ[NUM_DCACHE_PORTS];
+        bool memStage_CLR_REQ_MIO;
         //from WB
         st_q_2_dcache_t stq_info_mio;
 
     } core_2_dcache_t;
-
+    
     typedef struct {
-        //for mem
-        //bool   valid_0;
-        bool   hit_line_0;
-        bool   req_rejected_0;
-        byte_t line_0[CACHE_LINES_SIZE_B];
-        //bool   valid_1;
-        bool   hit_line_1;
-        bool   req_rejected_1;
-        byte_t line_1[CACHE_LINES_SIZE_B];
+        //for DC Stage
+        bool   reqServed_0;
+        bool   reqServed_1;
+
+        //for mem Stage
+        bool   hit[NUM_DCACHE_PORTS];
+        byte_t cacheline[NUM_DCACHE_PORTS][CACHE_LINES_SIZE_B];
 
         //for wb
         bool writeSuccess[NUM_WB_ST_QS];
@@ -214,8 +214,8 @@ package interconnect_pkg;
         //
         //for MIO
         bool writeSuccess_MIO;  //for pop MIO
-        bool hit_line_MIO;  //for ld_mem stage 
-        bool req_rejected_mio;  //for dc stage 
+        bool hit_MIO;  //for ld_mem stage 
+        bool reqServed_MIO;  //for dc stage 
         byte_t line_MIO[CACHE_LINES_SIZE_B];
     } dcache_2_core_t;
 
