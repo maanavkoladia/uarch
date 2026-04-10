@@ -172,6 +172,7 @@
 
 //////////////////// BUFFER DELAY ////////////////////
 
+//stages are .25 ns timeunits each
 `define BUFFER_DELAY(__unitName__, __stages__, __width__, __in__, __out__) \
     MPS_buffer_delay$ #(.STAGES(__stages__), .WIDTH(__width__)) __unitName__ ( \
         .in(__in__), \
@@ -186,6 +187,7 @@
         .in(__in__), \
         .out(__out__) \
     );
+
 
 `define BUS_TRISTATE(__unitName__, __width__, __enbar__, __in__, __out__) \
     MPS_bus_tristate #(.WIDTH(__width__)) __unitName__ ( \

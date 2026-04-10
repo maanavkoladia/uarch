@@ -10,9 +10,7 @@
 // genvars/generate used for repeated structures.
 // ============================================================================
 
-`include "mem_controller_macros.vh"
 `include "std_cell_macros.vh"
-
 
 module mem_controller_structural (
     input wire clk,
@@ -253,12 +251,12 @@ module mem_controller_structural (
     wire [63:0] bank_oh;
     `DECODER_N(u_bank_dec, 6, bank_num_for_chip, bank_oh)
 
-    generate
-        for (bi = 0; bi < 64; bi = bi + 1) begin : g_drive
-            `AND_2(u_dm, 1, bank_cmd_driveMemBus[bi], bank_oh[bi], fsm_set_ld_tristate)
-        end
-    endgenerate
+    // replicate scalar to 64 bits
+    wire [63:0] fsm_set_ld_tristate_vec;
+    assign fsm_set_ld_tristate_vec = {64{fsm_set_ld_tristate}};
 
+    // single wide AND
+    `AND_2(u_dm, 64, bank_cmd_driveMemBus, bank_oh, fsm_set_ld_tristate_vec)
     // ================================================================
     // OUTPUT: bank_cmd_st_address  (64 banks x 5 bits)
     // ================================================================
@@ -277,14 +275,16 @@ module mem_controller_structural (
     wire [5:0] store_bank_idx;
     assign store_bank_idx = address_bus[9:4];
 
+    // ---- decoder ----
     wire [63:0] store_oh;
     `DECODER_N(u_store_dec, 6, store_bank_idx, store_oh)
 
-    generate
-        for (bi = 0; bi < 64; bi = bi + 1) begin : g_ss
-            `AND_2(u_ss, 1, bank_cmd_start_store[bi], store_oh[bi], fsm_start_store)
-        end
-    endgenerate
+    // ---- replicate FSM signal ----
+    wire [63:0] fsm_start_store_vec;
+    assign fsm_start_store_vec = {64{fsm_start_store}};
+
+    // ---- single wide AND ----
+    `AND_2(u_ss, 64, bank_cmd_start_store, store_oh, fsm_start_store_vec)
 
     // ================================================================
     // OUTPUT: bank_cmd_writeBuf  (8 groups x 128 bits)
@@ -321,83 +321,33 @@ module mem_controller_structural (
     // ---- 16:1 mux of chip_row, selected by chipNum ----
     wire [4:0] sel_chip_row;
 
-    // Level 0: 8 x 5-bit 2:1 mux (select by chipNum[0])
-    wire [4:0] cr_L0[0:7];
-    `MUX_2(u_cr0, 5, cr_L0[0], chip_row[0], chip_row[1], chipNum[0])
-    `MUX_2(u_cr1, 5, cr_L0[1], chip_row[2], chip_row[3], chipNum[0])
-    `MUX_2(u_cr2, 5, cr_L0[2], chip_row[4], chip_row[5], chipNum[0])
-    `MUX_2(u_cr3, 5, cr_L0[3], chip_row[6], chip_row[7], chipNum[0])
-    `MUX_2(u_cr4, 5, cr_L0[4], chip_row[8], chip_row[9], chipNum[0])
-    `MUX_2(u_cr5, 5, cr_L0[5], chip_row[10], chip_row[11], chipNum[0])
-    `MUX_2(u_cr6, 5, cr_L0[6], chip_row[12], chip_row[13], chipNum[0])
-    `MUX_2(u_cr7, 5, cr_L0[7], chip_row[14], chip_row[15], chipNum[0])
-
-    // Level 1: 4 x 5-bit 2:1 mux (select by chipNum[1])
-    wire [4:0] cr_L1[0:3];
-    `MUX_2(u_cr10, 5, cr_L1[0], cr_L0[0], cr_L0[1], chipNum[1])
-    `MUX_2(u_cr11, 5, cr_L1[1], cr_L0[2], cr_L0[3], chipNum[1])
-    `MUX_2(u_cr12, 5, cr_L1[2], cr_L0[4], cr_L0[5], chipNum[1])
-    `MUX_2(u_cr13, 5, cr_L1[3], cr_L0[6], cr_L0[7], chipNum[1])
-
-    // Level 2: 2 x 5-bit 2:1 mux (select by chipNum[2])
-    wire [4:0] cr_L2[0:1];
-    `MUX_2(u_cr20, 5, cr_L2[0], cr_L1[0], cr_L1[1], chipNum[2])
-    `MUX_2(u_cr21, 5, cr_L2[1], cr_L1[2], cr_L1[3], chipNum[2])
-
-    // Level 3: final 5-bit 2:1 mux (select by chipNum[3])
-    `MUX_2(u_cr30, 5, sel_chip_row, cr_L2[0], cr_L2[1], chipNum[3])
-
+    `MUX_16(u_chiprow, 5, sel_chip_row, chip_row[0], chip_row[1], chip_row[2], chip_row[3],
+            chip_row[4], chip_row[5], chip_row[6], chip_row[7], chip_row[8], chip_row[9],
+            chip_row[10], chip_row[11], chip_row[12], chip_row[13], chip_row[14], chip_row[15],
+            chipNum)
     // ---- 5-bit comparator ----
     wire addr_match;
     `CMP_N(u_cmp, 5, addr_match, sel_chip_row, rowBit)
 
-    // ---- 64:1 mux of banks_precharged, selected by bank_num_for_chip ----
     wire sel_precharge;
 
-    // Level 0: 32 x 1-bit 2:1 mux (select by bank_num_for_chip[0])
-    wire [31:0] pr_L0;
-    genvar pi;
-    generate
-        for (pi = 0; pi < 32; pi = pi + 1) begin : g_pr0
-            `MUX_2(u_m, 1, pr_L0[pi], banks_precharged[pi*2], banks_precharged[pi*2+1],
-                   bank_num_for_chip[0])
-        end
-    endgenerate
-
-    // Level 1: 16 x 1-bit 2:1 mux (select by [1])
-    wire [15:0] pr_L1;
-    generate
-        for (pi = 0; pi < 16; pi = pi + 1) begin : g_pr1
-            `MUX_2(u_m, 1, pr_L1[pi], pr_L0[pi*2], pr_L0[pi*2+1], bank_num_for_chip[1])
-        end
-    endgenerate
-
-    // Level 2: 8 x 1-bit 2:1 mux (select by [2])
-    wire [7:0] pr_L2;
-    generate
-        for (pi = 0; pi < 8; pi = pi + 1) begin : g_pr2
-            `MUX_2(u_m, 1, pr_L2[pi], pr_L1[pi*2], pr_L1[pi*2+1], bank_num_for_chip[2])
-        end
-    endgenerate
-
-    // Level 3: 4 x 1-bit 2:1 mux (select by [3])
-    wire [3:0] pr_L3;
-    generate
-        for (pi = 0; pi < 4; pi = pi + 1) begin : g_pr3
-            `MUX_2(u_m, 1, pr_L3[pi], pr_L2[pi*2], pr_L2[pi*2+1], bank_num_for_chip[3])
-        end
-    endgenerate
-
-    // Level 4: 2 x 1-bit 2:1 mux (select by [4])
-    wire [1:0] pr_L4;
-    generate
-        for (pi = 0; pi < 2; pi = pi + 1) begin : g_pr4
-            `MUX_2(u_m, 1, pr_L4[pi], pr_L3[pi*2], pr_L3[pi*2+1], bank_num_for_chip[4])
-        end
-    endgenerate
-
-    // Level 5: final 1-bit 2:1 mux (select by [5])
-    `MUX_2(u_pr5, 1, sel_precharge, pr_L4[0], pr_L4[1], bank_num_for_chip[5])
+    `MUX_64(u_pre, 1, sel_precharge, banks_precharged[0], banks_precharged[1], banks_precharged[2],
+            banks_precharged[3], banks_precharged[4], banks_precharged[5], banks_precharged[6],
+            banks_precharged[7], banks_precharged[8], banks_precharged[9], banks_precharged[10],
+            banks_precharged[11], banks_precharged[12], banks_precharged[13], banks_precharged[14],
+            banks_precharged[15], banks_precharged[16], banks_precharged[17], banks_precharged[18],
+            banks_precharged[19], banks_precharged[20], banks_precharged[21], banks_precharged[22],
+            banks_precharged[23], banks_precharged[24], banks_precharged[25], banks_precharged[26],
+            banks_precharged[27], banks_precharged[28], banks_precharged[29], banks_precharged[30],
+            banks_precharged[31], banks_precharged[32], banks_precharged[33], banks_precharged[34],
+            banks_precharged[35], banks_precharged[36], banks_precharged[37], banks_precharged[38],
+            banks_precharged[39], banks_precharged[40], banks_precharged[41], banks_precharged[42],
+            banks_precharged[43], banks_precharged[44], banks_precharged[45], banks_precharged[46],
+            banks_precharged[47], banks_precharged[48], banks_precharged[49], banks_precharged[50],
+            banks_precharged[51], banks_precharged[52], banks_precharged[53], banks_precharged[54],
+            banks_precharged[55], banks_precharged[56], banks_precharged[57], banks_precharged[58],
+            banks_precharged[59], banks_precharged[60], banks_precharged[61], banks_precharged[62],
+            banks_precharged[63], bank_num_for_chip)
 
     // ---- Final hit AND ----
     `AND_3(u_hit, 1, hit_into_fsm, dte_ld_req, addr_match, sel_precharge)

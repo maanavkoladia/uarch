@@ -9,7 +9,7 @@ GEN_CONF = startUp_gen.conf.json
 TEST_PROG = testProg.s
 
 TB_FILES = \
-		   ./gen/memLoader.sv \
+		   gen/memLoader.sv \
 		   tb_mainMem.sv
 
 PKGS = $(RTL_PKGS)

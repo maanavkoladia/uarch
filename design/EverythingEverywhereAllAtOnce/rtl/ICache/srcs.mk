@@ -14,6 +14,8 @@ ICACHE_SRC_FILES = \
 ICACHE_PKGS = \
 			  $(ICACHE_PATH_INTERNAL)/pkg/ICache_common_pkg.sv
 
+
+#dont forget to add gen files when removing the icache sv files from the strucral build
 ICACHE_STRUCTURAL_SRC_FILES = \
-							  $(ICACHE_GEN_SRC_FILES)
+							  $(ICACHE_SRC_FILES)
 
