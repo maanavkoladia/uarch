@@ -11,10 +11,11 @@ module DCache_Arbitration (
     input core_2_dcache_t core_i,
 
     input bool block_hit_i[DCACHE_NUM_BLOCKS],
+    input bool memStage_CLR_REQ[DCACHE_NUM_BLOCKS],
 
     //for req rejeced signales
-    output bool req_rejected_0_o,
-    output bool req_rejected_1_o,
+    output bool reqServed_0_o,
+    output bool reqServed_1_o,
 
     output block_req_t reqs_2_blocks_o[DCACHE_NUM_BLOCKS],
     output bool st_override_o[NUM_WB_ST_QS],
@@ -124,13 +125,15 @@ module DCache_Arbitration (
     reqs_2_blocks_o[i].oe && block_hit_i[i] && !core_i.memStalling --> we are currently doing a read. It is done and that hit signal has stopped the core from stalling.
     This means that mem was causing the stall and not something downstream
 
-    reqs_2_blocks_o[i].we && block_hit_i[i] -> means that 
+    reqs_2_blocks_o[i].we && block_hit_i[i] -> means that
 
     */
+    //oe doee not need ot be checked in the first conditional
     always_comb begin
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            readyForNewReq[i] = (reqs_2_blocks_o[i].oe && block_hit_i[i] && !core_i.memStalling) //this case is if are currently doing a read that 
-            || (reqs_2_blocks_o[i].we && block_hit_i[i]) || block_idleness[i];
+            readyForNewReq[i] = (memStage_CLR_REQ[i] && reqs_2_blocks_o[i].oe)
+            || (reqs_2_blocks_o[i].we && block_hit_i[i])
+            || block_idleness[i];
         end
     end
 
