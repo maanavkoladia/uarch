@@ -224,5 +224,13 @@
         .q(__dout__) \
     );
 
+//ROMS
+`define ROM_32W_64b(__unitName__, __ADDR__, __OE__, __dout__) \
+    rom64b32w$ __unitName__ ( \
+        .A(__ADDR__), \
+        .OE(__OE__), \
+        .DOUT(__dout__) \
+    );
+
 `endif
 
