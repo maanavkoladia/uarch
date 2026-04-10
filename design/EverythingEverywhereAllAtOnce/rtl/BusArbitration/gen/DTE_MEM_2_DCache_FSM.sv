@@ -97,22 +97,15 @@ wire others_busy_i_inv;
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (S_0 & !S_1 & S_2) | (!S_0 & S_1 & !S_2) | (!S_0 & !S_2 & req_hit_i & bank_hit_i & !others_busy_i)
+// NS_0 = (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & S_2) | (!S_0 & !S_2 & req_hit_i & bank_hit_i & !others_busy_i)
 wire NS_0_t0;
-`AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_1_inv, S_2)
+`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_1, S_2_inv)
 wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_0_inv, S_1, S_2_inv)
+`AND_3(NS_0_and1, 1, NS_0_t1, S_0, S_1_inv, S_2)
 wire NS_0_t2;
 `AND_5(NS_0_and2, 1, NS_0_t2, S_0_inv, S_2_inv, req_hit_i, bank_hit_i, others_busy_i_inv)
 
-<<<<<<< HEAD
-and3$ NS_0_and0 (NS_0_t0, S_0, S_1_inv, S_2);
-and3$ NS_0_and1 (NS_0_t1, S_0_inv, S_1, S_2_inv);
-and5$ NS_0_and2 (NS_0_t2, S_0_inv, S_2_inv, req_hit_i, bank_hit_i, others_busy_i_inv);
-or3$  NS_0_or  (NS_0, NS_0_t0, NS_0_t1, NS_0_t2);
-=======
 `OR_3(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2)
->>>>>>> s_comp
 
 // NS_1 = (!S_0 & S_1) | (S_0 & !S_1 & !S_2)
 wire NS_1_t0;
@@ -122,11 +115,11 @@ wire NS_1_t1;
 
 `OR_2(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1)
 
-// NS_2 = (S_0 & S_1 & !S_2) | (!S_0 & S_1 & S_2) | (S_0 & !S_1 & S_2 & !mem_ready_i) | (!S_0 & !S_1 & !S_2 & req_hit_i & bank_hit_i & !others_busy_i)
+// NS_2 = (!S_0 & S_1 & S_2) | (S_0 & S_1 & !S_2) | (S_0 & !S_1 & S_2 & !mem_ready_i) | (!S_0 & !S_1 & !S_2 & req_hit_i & bank_hit_i & !others_busy_i)
 wire NS_2_t0;
-`AND_3(NS_2_and0, 1, NS_2_t0, S_0, S_1, S_2_inv)
+`AND_3(NS_2_and0, 1, NS_2_t0, S_0_inv, S_1, S_2)
 wire NS_2_t1;
-`AND_3(NS_2_and1, 1, NS_2_t1, S_0_inv, S_1, S_2)
+`AND_3(NS_2_and1, 1, NS_2_t1, S_0, S_1, S_2_inv)
 wire NS_2_t2;
 `AND_4(NS_2_and2, 1, NS_2_t2, S_0, S_1_inv, S_2, mem_ready_i_inv)
 wire NS_2_t3;
@@ -134,54 +127,36 @@ wire NS_2_t3;
 
 `OR_4(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3)
 
-<<<<<<< HEAD
-// busy_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2)
-=======
-// busy_o = (!S_1 & S_2) | (S_0 & !S_2) | (S_1 & !S_2)
->>>>>>> s_comp
+// busy_o = (S_0 & !S_2) | (!S_1 & S_2) | (S_1 & !S_2)
 wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_1_inv, S_2)
+`AND_2(busy_o_and0, 1, busy_o_t0, S_0, S_2_inv)
 wire busy_o_t1;
-`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_2_inv)
+`AND_2(busy_o_and1, 1, busy_o_t1, S_1_inv, S_2)
 wire busy_o_t2;
 `AND_2(busy_o_and2, 1, busy_o_t2, S_1, S_2_inv)
 
-<<<<<<< HEAD
-and2$ busy_o_and0 (busy_o_t0, S_0, S_1_inv);
-and2$ busy_o_and1 (busy_o_t1, S_1, S_2_inv);
-and2$ busy_o_and2 (busy_o_t2, S_1_inv, S_2);
-or3$  busy_o_or  (busy_o, busy_o_t0, busy_o_t1, busy_o_t2);
-=======
 `OR_3(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1, busy_o_t2)
->>>>>>> s_comp
 
-// mem_valid_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
+// mem_valid_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2)
 wire mem_valid_o_t0;
-`AND_2(mem_valid_o_and0, 1, mem_valid_o_t0, S_1, S_2_inv)
+`AND_2(mem_valid_o_and0, 1, mem_valid_o_t0, S_0, S_2_inv)
 wire mem_valid_o_t1;
-`AND_2(mem_valid_o_and1, 1, mem_valid_o_t1, S_0, S_2_inv)
+`AND_2(mem_valid_o_and1, 1, mem_valid_o_t1, S_1, S_2_inv)
 wire mem_valid_o_t2;
 `AND_3(mem_valid_o_and2, 1, mem_valid_o_t2, S_0_inv, S_1_inv, S_2)
 
-<<<<<<< HEAD
-and2$ mem_valid_o_and0 (mem_valid_o_t0, S_1, S_2_inv);
-and2$ mem_valid_o_and1 (mem_valid_o_t1, S_0, S_2_inv);
-and3$ mem_valid_o_and2 (mem_valid_o_t2, S_0_inv, S_1_inv, S_2);
-or3$  mem_valid_o_or  (mem_valid_o, mem_valid_o_t0, mem_valid_o_t1, mem_valid_o_t2);
-=======
 `OR_3(mem_valid_o_or, 1, mem_valid_o, mem_valid_o_t0, mem_valid_o_t1, mem_valid_o_t2)
->>>>>>> s_comp
 
 // ld_req_o = (S_0 & !S_1 & S_2)
 `AND_3(ld_req_o_and, 1, ld_req_o, S_0, S_1_inv, S_2)
 
-// Drive_Addr_Bus_o = (S_0 & !S_2) | (!S_1 & S_2) | (S_1 & !S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
+// Drive_Addr_Bus_o = (!S_1 & S_2) | (S_1 & !S_2) | (S_0 & !S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_t0;
-`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_0, S_2_inv)
+`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_1_inv, S_2)
 wire Drive_Addr_Bus_o_t1;
-`AND_2(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_1_inv, S_2)
+`AND_2(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_1, S_2_inv)
 wire Drive_Addr_Bus_o_t2;
-`AND_2(Drive_Addr_Bus_o_and2, 1, Drive_Addr_Bus_o_t2, S_1, S_2_inv)
+`AND_2(Drive_Addr_Bus_o_and2, 1, Drive_Addr_Bus_o_t2, S_0, S_2_inv)
 wire Drive_Addr_Bus_o_t3;
 `AND_4(Drive_Addr_Bus_o_and3, 1, Drive_Addr_Bus_o_t3, S_2_inv, req_hit_i, bank_hit_i, others_busy_i_inv)
 

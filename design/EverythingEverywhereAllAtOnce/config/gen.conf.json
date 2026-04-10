@@ -8,21 +8,6 @@
 
     "genFiles" : {
 
-        "simple" : {
-            "csv": "scripts/RTL_Generation/test/simple.csv",
-            "outputFilePath" : "scripts/RTL_Generation/test/rtl/simple.sv",
-            "run Combinational SOP Gen": "true",
-            "run FSM SOP gen": "false",
-            "run Combinational LUT Gen": "false",
-            "run FSM LUT Gen": "false"
-        },
-
-        "ex1" : {
-            "csv": "scripts/RTL_Generation/test/ex1.csv",
-            "outputFilePath" : "scripts/RTL_Generation/test/rtl/ex1.sv",
-            "run Combinational SOP Gen": "true"
-        },
-
         "mem bank_controller_fsm_logic" : {
             "csv": "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.csv",
             "outputFilePath" : "rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.sv",
@@ -59,7 +44,7 @@
         "PreDecode MOD LUT" : {
             "csv" : "rtl/core/Decode/structural/gen/MOD_LUT.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/MOD_LUT.v",
-            "run Combinational SOP Gen": "false"
+            "run Combinational SOP Gen": "true"
         },
 
         "Predecode OP LUT" : {
@@ -90,7 +75,7 @@
         "RR_valid_logic" : {
             "csv" : "rtl/core/Decode/structural/gen/rr_valid_logic.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rr_valid_logic.v",
-            "run Combinational SOP Gen": "false"
+            "run Combinational SOP Gen": "true"
         },
 
         "DC_valid_logic" : {

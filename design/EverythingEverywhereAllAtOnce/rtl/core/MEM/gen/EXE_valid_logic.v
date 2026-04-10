@@ -4,7 +4,7 @@
 // Std : Verilog-2005 (IEEE 1364-2005)
 // WARNING: 4 input vector(s) had no CSV row.
 //          Those vectors produce all-zero outputs (OFF-set default).
-//          See: /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/gen/EXE_valid_logic_coverage_report.txt
+//          See: /home/ecelrc/students/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/gen/EXE_valid_logic_coverage_report.txt
 // ======================================================================
 
 // Truth table (expanded, from CSV)
@@ -49,29 +49,17 @@ wire WB_stall_i_inv;
 // SOP logic (Quine-McCluskey minimised)
 // ----------------------------------------------------------------
 
-<<<<<<< HEAD
-// EXE_we_o = (MEM_V_i & !WB_stall_i) | (!MEM_stall_i & !EXE_V_i) | (MEM_V_i & !EXE_V_i) | (!MEM_stall_i & !WB_stall_i)
-=======
-// EXE_we_o = (!MEM_stall_i & !WB_stall_i) | (MEM_V_i & !EXE_V_i) | (!MEM_stall_i & !EXE_V_i) | (MEM_V_i & !WB_stall_i)
->>>>>>> s_comp
+// EXE_we_o = (!MEM_stall_i & !EXE_V_i) | (MEM_V_i & !WB_stall_i) | (!MEM_stall_i & !WB_stall_i) | (MEM_V_i & !EXE_V_i)
 wire EXE_we_o_t0;
-`AND_2(EXE_we_o_and0, 1, EXE_we_o_t0, MEM_stall_i_inv, WB_stall_i_inv)
+`AND_2(EXE_we_o_and0, 1, EXE_we_o_t0, MEM_stall_i_inv, EXE_V_i_inv)
 wire EXE_we_o_t1;
-`AND_2(EXE_we_o_and1, 1, EXE_we_o_t1, MEM_V_i, EXE_V_i_inv)
+`AND_2(EXE_we_o_and1, 1, EXE_we_o_t1, MEM_V_i, WB_stall_i_inv)
 wire EXE_we_o_t2;
-`AND_2(EXE_we_o_and2, 1, EXE_we_o_t2, MEM_stall_i_inv, EXE_V_i_inv)
+`AND_2(EXE_we_o_and2, 1, EXE_we_o_t2, MEM_stall_i_inv, WB_stall_i_inv)
 wire EXE_we_o_t3;
-`AND_2(EXE_we_o_and3, 1, EXE_we_o_t3, MEM_V_i, WB_stall_i_inv)
+`AND_2(EXE_we_o_and3, 1, EXE_we_o_t3, MEM_V_i, EXE_V_i_inv)
 
-<<<<<<< HEAD
-and2$ EXE_we_o_and0 (EXE_we_o_t0, MEM_V_i, WB_stall_i_inv);
-and2$ EXE_we_o_and1 (EXE_we_o_t1, MEM_stall_i_inv, EXE_V_i_inv);
-and2$ EXE_we_o_and2 (EXE_we_o_t2, MEM_V_i, EXE_V_i_inv);
-and2$ EXE_we_o_and3 (EXE_we_o_t3, MEM_stall_i_inv, WB_stall_i_inv);
-or4$  EXE_we_o_or  (EXE_we_o, EXE_we_o_t0, EXE_we_o_t1, EXE_we_o_t2, EXE_we_o_t3);
-=======
 `OR_4(EXE_we_o_or, 1, EXE_we_o, EXE_we_o_t0, EXE_we_o_t1, EXE_we_o_t2, EXE_we_o_t3)
->>>>>>> s_comp
 
 // N_EXE_V_o = (MEM_V_i & !MEM_stall_i)
 `AND_2(N_EXE_V_o_and, 1, N_EXE_V_o, MEM_V_i, MEM_stall_i_inv)
