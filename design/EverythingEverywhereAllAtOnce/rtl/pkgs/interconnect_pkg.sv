@@ -182,8 +182,6 @@ package interconnect_pkg;
         bool ld_addr_1_V;
         p_address_t ld_addr_1;
 
-        //for d$ arb logic
-        bool memStalling;
 
         //for wb
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
@@ -192,21 +190,23 @@ package interconnect_pkg;
         //from DC
         bool ld_addr_MIO_V;
         p_address_t ld_addr_MIO;
+
+        //for d$ arb logic,
+        bool memStage_CLR_REQ[NUM_DCACHE_PORTS];
+        bool memStage_CLR_REQ_MIO;
         //from WB
         st_q_2_dcache_t stq_info_mio;
 
     } core_2_dcache_t;
-
+    
     typedef struct {
-        //for mem
-        //bool   valid_0;
-        bool   hit_line_0;
-        bool   req_rejected_0;
-        byte_t line_0[CACHE_LINES_SIZE_B];
-        //bool   valid_1;
-        bool   hit_line_1;
-        bool   req_rejected_1;
-        byte_t line_1[CACHE_LINES_SIZE_B];
+        //for DC Stage
+        bool   reqServed_0;
+        bool   reqServed_1;
+
+        //for mem Stage
+        bool   hit[NUM_DCACHE_PORTS];
+        byte_t cacheline[NUM_DCACHE_PORTS][CACHE_LINES_SIZE_B];
 
         //for wb
         bool writeSuccess[NUM_WB_ST_QS];
@@ -214,8 +214,8 @@ package interconnect_pkg;
         //
         //for MIO
         bool writeSuccess_MIO;  //for pop MIO
-        bool hit_line_MIO;  //for ld_mem stage 
-        bool req_rejected_mio;  //for dc stage 
+        bool hit_MIO;  //for ld_mem stage 
+        bool reqServed_MIO;  //for dc stage 
         byte_t line_MIO[CACHE_LINES_SIZE_B];
     } dcache_2_core_t;
 

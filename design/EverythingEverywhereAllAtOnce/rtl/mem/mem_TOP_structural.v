@@ -1,6 +1,8 @@
 import common_pkg::*;
 import mem_common_pkg::*;
 
+
+//unroll these
 module mem_TOP (
     input wire clk,
     input wire rst,
@@ -24,8 +26,8 @@ module mem_TOP (
     //mem never needs to drive address bus
     assign address_bus = 'z;
 
-    //wire [ADDRESS_BUS_WIDTH_BITS -1 : 0] add
-    //create the banks
+    //create the banks, note that the port is different because the structs
+    //were unrolled
     genvar i_gen;
     generate
         for (i_gen = 0; i_gen < NUM_BANKS; i_gen++) begin : g_mem_banks
@@ -39,7 +41,8 @@ module mem_TOP (
         end
     endgenerate
 
-    //create the controller,
+    //create the controller, note that the port is differnet bc th structs were
+    //unrolled
     mem_controller controller (
         .clk(clk),
         .rst(rst),
@@ -51,7 +54,9 @@ module mem_TOP (
         .bank_cmds_o(controller_2_bank_Cmds),
         .banks_i(bank_out_2_controller)
     );
-
+    
+    //the assign 5 is here becuase you need to use the bustristate here, which
+    //will create a 5ns delay
     bool drive_Data_Bus;
     logic [DATA_BUS_WIDTH_BITS-1:0] dataToDrive;
     assign #5 data_bus = drive_Data_Bus ? dataToDrive : 'z;

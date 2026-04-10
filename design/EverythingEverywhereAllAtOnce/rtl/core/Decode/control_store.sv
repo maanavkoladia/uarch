@@ -44,6 +44,8 @@ module control_store (
     logic is_far_o;
     logic second_flag_needed_o;
 
+    logic REP_o;
+
     // Packed fields
     logic [4:0] HARD_CODED_DR_ID_o;
     logic [4:0] HARD_CODED_SR_ID_o;

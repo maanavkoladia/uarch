@@ -95,7 +95,8 @@ package core_common_pkg;
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
         p_address_t ST_PADDR_1;  //cacheline algned
         bool ST_OP;
-
+        bool clr_dcache_arb_latches[NUM_DCACHE_PORTS];
+        bool clr_dcache_mio_latch;
         bool exe_stage_latch_we;
     } mem_outputs_t;
 

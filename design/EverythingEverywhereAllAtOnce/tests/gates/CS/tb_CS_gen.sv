@@ -105,11 +105,11 @@ module tb_CS_gen ();
         @(posedge clk);
         print_state();
 
-        CS_input = 10;
+        CS_input = 512;
         @(posedge clk);
         print_state();
 
-        CS_input = 2;
+        CS_input = 1023;
         @(posedge clk);
         print_state();
 

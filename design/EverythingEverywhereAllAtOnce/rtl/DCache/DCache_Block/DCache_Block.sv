@@ -13,7 +13,7 @@ module DCache_Block (
     input bool mem_Valid_FromDte_i,
     input bool evictionBuf_clr_FromDTE_i,
     input bool evictionBuf_setCommiting_FromDTE_i,
-    input bool permissionToDriveDataBus_evictionBuf[CACHE_LINES_SIZE_Bits/DATA_BUS_WIDTH_BITS],
+    input bool permissionToDriveDataBus_evictionBuf[CACHE_LINES_SIZE_BITS/DATA_BUS_WIDTH_BITS],
     input bool permissionToDriveAddrBus_Ld,
     input bool permissionToDriveAddrBus_eb,
 
@@ -38,6 +38,8 @@ module DCache_Block (
     output dcache_block_outputs_t outputs_o
 
 );
+
+
     d_cache_bank_outputs_t dcache_bank_outputs;
     v_cache_outputs_t vcache_outputs;
     eb_outputs_t eb_outputs;
@@ -104,6 +106,7 @@ module DCache_Block (
     //assign outputs_o.eb_V_o = eb_outputs.valid;
     //assign outputs_o.eb_line_O = eb_outputs.lineOut;
 
+    bool makeBlockReq, eb_blockingVCache, eb_V, eb_curr_commiting,eb_blocking_Bank;
     assign makeBlockReq = dcache_bank_outputs.MakeReq;
     assign eb_blockingVCache = vcache_outputs.beingBlocked;
     assign eb_V = eb_outputs.valid;
@@ -150,10 +153,10 @@ module DCache_Block (
     //data bus
     always_comb begin
         startingOffset = 0;
-        for (int i = 0; i < CACHE_LINES_SIZE_Bits / DATA_BUS_WIDTH_BITS; i++) begin
+        for (int i = 0; i < CACHE_LINES_SIZE_BITS / DATA_BUS_WIDTH_BITS; i++) begin
             dataBus_fake = '0;
             if (permissionToDriveDataBus_evictionBuf[i]) begin
-                startingOffset = i * CACHE_LINES_SIZE_Bits / DATA_BUS_WIDTH_BITS;
+                startingOffset = i * CACHE_LINES_SIZE_BITS / DATA_BUS_WIDTH_BITS;
                 dataBus_fake = {
                     eb_outputs.lineOut[startingOffset],
                     eb_outputs.lineOut[startingOffset+1],

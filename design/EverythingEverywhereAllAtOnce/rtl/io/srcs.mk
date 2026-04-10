@@ -14,4 +14,4 @@ IO_PKGS = \
 		  $(IO_PATH_INTERNAL)/pkg/io_common_pkg.sv
 
 IO_STRUCTURAL_SRC_FILES = \
-						  $(IO_GEN_SRC_FILES)
+						  $(IO_SRC_FILES)

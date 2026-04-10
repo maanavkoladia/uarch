@@ -16,7 +16,7 @@ module MIO_Block (
     input bool ld_addr_MIO_V,
     input p_address_t ld_addr_MIO,
     input st_q_2_dcache_t stq_info_mio,
-    input bool memStalling_FromCore,
+    input bool memStage_CLR_REQ_MIO,
 
     //only the address in the block req from mio arb
     inout [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus,
@@ -31,45 +31,58 @@ module MIO_Block (
     //0x0010, DMA: write dest addr, 32 bit
     //0x0020, DMA: write num bytes to transfer, up to 12KB, 32 bit though
     //0x0030 DMA: start transfer, 1 bit, 32 bit though
-    //0x0040 DDR5: write power gating 1 bit 32 bit though
+    //0x0040 DDR5: write power gating 1 bit 32 bit thoughd
     //0x0050 DDR5: ld temperature value
 
     block_req_mio_t block_req;
+    block_req_mio_t next_block_req;
     bool block_idle;
     assign block_idle = !block_req.oe && !block_req.we;
     bool readyForNewReq;
-    assign readyForNewReq = (block_req.we && reqServed_FromDTE_i) || (block_req.oe && reqServed_FromDTE_i && !memStalling_FromCore) || block_idle;
 
-    //arb
+    //TODO need to updated readyForNew Req
+    assign readyForNewReq = (block_req.we && reqServed_FromDTE_i) || (memStage_CLR_REQ_MIO && block_req.oe) || block_idle;
+
+    //arb - combinational logic
+    always_comb begin
+        next_block_req = block_req;
+        outputs_o.writeSuccess = 0;
+        outputs_o.reqServed = 0;
+        if (block_req.oe && block_req.we && rst) $fatal;
+        if (readyForNewReq) begin
+            if (ld_addr_MIO_V) begin
+                next_block_req = '{
+                    oe: 1,
+                    we: 0,
+                    p_addr: ld_addr_MIO,
+                    st_q_data: '{default: '0}
+                };
+                outputs_o.reqServed = 0;
+            end
+            else if (!stq_info_mio.empty) begin
+                next_block_req = '{
+                    oe: 0,
+                    we: 1,
+                    p_addr: stq_info_mio.address,
+                    st_q_data: '{default: '0}
+                };
+                outputs_o.writeSuccess = 1;
+            end
+            else next_block_req = '{default: '0};
+        end
+    end
+
+    //register update
     always_ff @(posedge clk) begin
         if (!rst) block_req <= '{default: '0};
-        else begin
-            if (block_req.oe && block_req.we && rst) $fatal;
-            if (readyForNewReq) begin
-                if (ld_addr_MIO_V)
-                    block_req <= '{
-                        oe: 1,
-                        we: 0,
-                        p_addr: ld_addr_MIO,
-                        st_q_data: '{default: '0}
-                    };
-                else if (!stq_info_mio.empty)
-                    block_req <= '{
-                        oe: 0,
-                        we: 1,
-                        p_addr: stq_info_mio.address,
-                        st_q_data: '{default: '0}
-                    };
-                else block_req <= '{default: '0};
-            end
-        end
+        else block_req <= next_block_req;
     end
 
     //outputs
 
     assign outputs_o.hit_o = reqServed_FromDTE_i && block_req.oe;
-    assign outputs_o.writeSuccess = reqServed_FromDTE_i && block_req.we;
-    assign outputs_o.req_rejected = ld_addr_MIO_V && !readyForNewReq;
+
+
 
     always_comb begin
         outputs_o.dataLineOut = '{default: '0};  // zero all 16 bytes
