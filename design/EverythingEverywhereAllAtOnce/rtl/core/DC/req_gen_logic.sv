@@ -68,11 +68,11 @@ module req_gen_logic(
                 is_served_mio <=0;
             end
             else begin
-                if(req_served_0)
+                if(req_served_0 && valid)
                     is_served_0 <= 1;
-                if(req_served_1)
+                if(req_served_1 && valid)
                     is_served_1 <= 1;
-                if(req_served_mio)
+                if(req_served_mio && valid)
                     is_served_mio <=1;
             end
         end

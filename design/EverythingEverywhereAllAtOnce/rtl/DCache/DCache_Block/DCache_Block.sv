@@ -143,7 +143,7 @@ module DCache_Block (
     assign address_bus_fake = permissionToDriveAddrBus_Ld ? block_req_i.p_addr : eb_outputs.addr;
     assign #5 address_bus = permissionToDriveAddrBus_Ld || permissionToDriveAddrBus_eb ? address_bus_fake : 'z;
     int startingOffset;
-    logic [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
+    //logic [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
 
     // assign dataBus =
     //     permissionToDriveDataBus_evictionBuf[0]
