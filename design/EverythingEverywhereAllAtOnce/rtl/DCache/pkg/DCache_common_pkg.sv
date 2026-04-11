@@ -35,6 +35,8 @@ package DCache_common_pkg;
     localparam int DCACHE_BANK_NUM_LINES = 1 << DCACHE_BANK_INDEX_WIDTH;
     localparam int VCACHE_NUM_LINES = 4;
 
+    localparam int CLK_PHASE_DELAY = 2.5;
+
     typedef struct {
         logic [DCACHE_BANK_TAG_WIDTH-1:0]    tag;
         logic [DCACHE_BANK_INDEX_WIDTH-1:0]  index;

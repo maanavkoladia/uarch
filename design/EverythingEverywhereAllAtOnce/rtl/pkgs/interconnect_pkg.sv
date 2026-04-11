@@ -172,7 +172,7 @@ package interconnect_pkg;
         p_address_t address;
         uint16_t bit_vec;
         byte_t data[CACHE_LINES_SIZE_B];
-
+        
     } st_q_2_dcache_t;
 
     typedef struct {

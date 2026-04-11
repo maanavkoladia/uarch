@@ -105,7 +105,7 @@ module DCache_Bank_TagStore (
 
         //write window
   
-    assign #2.5 clk_45_phase = clk;
+    assign #CLK_PHASE_DELAY clk_45_phase = clk;
 
     assign WR_2_TagStore_clk = !rst ? 1 : ld_From_V_Swap_i || fill3_i ? 1'b0 : 1'b1;
 

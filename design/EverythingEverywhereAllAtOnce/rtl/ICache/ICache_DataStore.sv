@@ -34,7 +34,7 @@ module ICache_DataStore (
     assign v_addr_i_index = v_addr_i[ICACHE_INDEX_UB : ICACHE_INDEX_LB];
 
     wire clk_45_phase;
-    assign #2.5 clk_45_phase = clk;
+    assign #CLK_PHASE_DELAY clk_45_phase = clk;
 
     // Use virtual address for indexing into tag store (VIPT)
     // Lower bits select the RAM cell address, MSB selects which of the 2 RAM cells

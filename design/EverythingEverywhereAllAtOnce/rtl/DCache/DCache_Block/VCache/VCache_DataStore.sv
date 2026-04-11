@@ -49,7 +49,7 @@ module VCache_DataStore (
     //ADDRESS_2_DataStore logic, comes from either the saved swapBuf idx,
     //hitidx, or eviction lru idx
     wire clk_phase_45; 
-    assign #2.5 clk_phase_45 = clk_i;
+    assign #CLK_PHASE_DELAY clk_phase_45 = clk_i;
 
     always_comb begin
         ADDRESS_2_DataStore = hitIDX_i;

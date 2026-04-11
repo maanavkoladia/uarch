@@ -65,7 +65,7 @@ module DCache_Bank_DataStore (
 
     //write window
     wire clk_45_phase;
-    assign #2.5 clk_45_phase = clk;
+    assign #CLK_PHASE_DELAY clk_45_phase = clk;
 
     //DOUT can go to D$ swap buf or up to ld_mem (so D$ output)
     byte_t DOUT_DataStore[NUM_CELL_IN_DATA_STORE];
