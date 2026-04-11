@@ -129,19 +129,24 @@ module tb_dcache ();
         core_2_dcache.memStage_CLR_REQ[0] = 0;
 
 
-        @(posedge dcache_2_core.hit[0]) core_2_dcache.memStage_CLR_REQ[0] = 1;
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
         core_2_dcache.ld_addr_0_V = 1;
         core_2_dcache.ld_addr_0   = 15'h2C00;  //2800 and 2400 in vcache
 
-        @(posedge clk) core_2_dcache.ld_addr_0_V = 0;  //arb has latched in dcache req
+        @(posedge clk);
+        core_2_dcache.ld_addr_0_V = 0;  //arb has latched in dcache req
         core_2_dcache.memStage_CLR_REQ[0] = 0;
-        @(posedge dcache_2_core.hit[0]) core_2_dcache.memStage_CLR_REQ[0] = 1;
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
         core_2_dcache.ld_addr_0_V = 1;
         core_2_dcache.ld_addr_0   = 15'h3000;  //24000 2800 2c00 in victim
 
-        @(posedge clk) core_2_dcache.ld_addr_0_V = 0;  //arb has latched in dcache req
+        @(posedge clk); 
+        core_2_dcache.ld_addr_0_V = 0;  //arb has latched in dcache req
         core_2_dcache.memStage_CLR_REQ[0] = 0;
-        @(posedge dcache_2_core.hit[0]) core_2_dcache.memStage_CLR_REQ[0] = 1;
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
         core_2_dcache.ld_addr_0_V = 1;
         core_2_dcache.ld_addr_0   = 15'h3400;  //2400 2800 2c00 3000 in victim
 
@@ -175,19 +180,75 @@ module tb_dcache ();
         @(posedge clk) //2c00 in dcache and 2400 moved to victim. current victim //2400, 3400, 2800, 3000 in victim
         core_2_dcache.stq_heads[0].empty = 1;  //store should be in arb
         core_2_dcache.memStage_CLR_REQ[0] = 0;
-        core_2_dcache.ld_addr_0_V = 1;  //2c00 in swap and 2400 in dswap
+        core_2_dcache.ld_addr_0_V = 1;  //
         core_2_dcache.ld_addr_0 = 15'h3400;
         @(posedge clk)
         @(posedge clk)
         @(posedge dcache_2_core.hit[0])//hit in d$ for x2c00 to verify the v$ write
         core_2_dcache.ld_addr_0_V = 0;  //2c00 in swap and 2400 in dswap
         core_2_dcache.memStage_CLR_REQ[0] = 1;
-
         
 
-        //current state D$, bank has x2c00, v$ has x2400, 3400, 2800, 3000,
-        //testing the eb hit, need to evticit x2c00 bc its dirty, so need to
+
+        //current state D$, bank has x3400, v$ has x2400, x2c00, 2800, 3000,
+        //testing the eb hit, need to evticit x3400 bc its dirty, so need to
         //load 5 lines to get it there, and then do a load from it
+        //load from 
+        //x4800
+        //x4C00
+        //x5000
+        //x5400
+        //x5800
+
+        @(posedge clk);
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge clk);
+        @(posedge clk);
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h4800;
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 0;  //arb has latched in dcache req 4800 in vcache
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0   = 15'h4C00;  //2800 and 2400 in vcache
+
+        @(posedge clk);
+        core_2_dcache.ld_addr_0_V = 0;  //arb has latched in dcache req
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0   = 15'h5000;  //24000 2800 2c00 in victim
+
+        @(posedge clk); 
+        core_2_dcache.ld_addr_0_V = 0;  //arb has latched in dcache req
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0   = 15'h5400;  //
+
+        @(posedge clk);
+        core_2_dcache.ld_addr_0_V = 0;  //arb has latched in dcache req
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0   = 15'h5800;  //
+        @(posedge clk);
+        core_2_dcache.ld_addr_0_V = 0;
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0   = 15'h3400;  //
+        @(posedge clk);
+        core_2_dcache.ld_addr_0_V = 0;
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time

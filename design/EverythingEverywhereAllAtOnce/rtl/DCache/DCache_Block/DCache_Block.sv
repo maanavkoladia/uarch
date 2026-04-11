@@ -111,27 +111,50 @@ module DCache_Block (
     assign eb_curr_commiting = eb_outputs.commiting;
     assign eb_blocking_Bank = dcache_bank_outputs.eb_stalling;
 
-    //need to add support for DCACHE_EB_BLOCKING_BANK
+    //purely fo testing
+    //note to future people reading this, to test eb hit, bc it so fucking
+    //hard to sim, i mask out second eb writes to force the eb hit case
+    //
+    //bool madeEBWriteReq;
+    //always @(posedge clk_i) begin
+    //    if(!rst_i) madeEBWriteReq <= 0;
+    //    if(eb_curr_commiting) madeEBWriteReq <=1;
+    //end
     always_comb begin
+        //outputs_o.req_2_sch = NO_REQ;
+        //if (eb_V) begin
+        //    if (eb_blocking_Bank && !eb_curr_commiting) begin
+        //        //outputs_o.req_2_sch = DCACHE_EB_BLOCKING_BANK;
+        //        outputs_o.req_2_sch = NO_REQ;
+        //    end else if (eb_blockingVCache && !eb_curr_commiting) begin  //blocking
+        //        if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_ST_OVERRIDE;
+        //        else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_LD;
+        //        else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_EB_BLOCK_ST;
+        //    end else if (eb_blockingVCache && eb_curr_commiting) begin
+        //        outputs_o.req_2_sch = NO_REQ;
+        //    end else if (!eb_curr_commiting) begin
+        //        outputs_o.req_2_sch = DCACHE_EB_WR;
+        //    end
+        //end else if (makeBlockReq) begin
+        //    if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_FILL_ST_OVERRIDE;
+        //    else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_FILL_LD;
+        //    else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_FILL_ST;
+        //end
+        //highest pri
         outputs_o.req_2_sch = NO_REQ;
-        if (eb_V) begin
-            if (eb_blocking_Bank && !eb_curr_commiting) begin
-                outputs_o.req_2_sch = DCACHE_EB_BLOCKING_BANK;
-            end else if (eb_blockingVCache && !eb_curr_commiting) begin  //blocking
-                if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_ST_OVERRIDE;
-                else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_LD;
-                else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_EB_BLOCK_ST;
-            end else if (eb_blockingVCache && eb_curr_commiting) begin
-                if (st_override_for_sch_req) outputs_o.req_2_sch = NO_REQ;
-                else if (block_req_i.oe) outputs_o.req_2_sch = NO_REQ;
-                else if (block_req_i.we) outputs_o.req_2_sch = NO_REQ;
-            end else if (!eb_curr_commiting) begin
-                outputs_o.req_2_sch = DCACHE_EB_WR;
-            end
-        end else if (makeBlockReq) begin
+        if (eb_blocking_Bank && !eb_curr_commiting) begin
+            outputs_o.req_2_sch = DCACHE_EB_BLOCKING_BANK;
+        end else if(eb_blockingVCache && !eb_curr_commiting) begin
+            if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_ST_OVERRIDE;
+            else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_LD;
+            else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_EB_BLOCK_ST;
+        end else if(makeBlockReq) begin
             if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_FILL_ST_OVERRIDE;
             else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_FILL_LD;
             else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_FILL_ST;
+        //end else if(eb_V && !eb_curr_commiting && !madeEBWriteReq) begin
+        end else if(eb_V && !eb_curr_commiting) begin
+            outputs_o.req_2_sch = DCACHE_EB_WR;
         end
     end
 
