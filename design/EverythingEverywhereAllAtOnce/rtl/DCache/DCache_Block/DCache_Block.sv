@@ -82,7 +82,7 @@ module DCache_Block (
     
     always_comb begin
         outputs_o.dataLineOut = '{default: '0};  // default (or leave if you prefer fail-fast X)
-        unique case ({
+        case ({
             dcache_bank_outputs.hit, vcache_outputs.hit
         })
             2'b00, 2'b10: begin
@@ -92,11 +92,9 @@ module DCache_Block (
             2'b01: begin
                 outputs_o.dataLineOut = vcache_outputs.lineOut;
             end
-
-            2'b11: begin
-                if (rst_i) $fatal;
+            default begin
+                if(rst_i) $fatal;
             end
-            default: if(rst_i) $fatal;
         endcase
     end
 
