@@ -46,7 +46,7 @@ module VCache_TagStore (
     localparam int NUM_CELLS_NEEDED = 2;  //bc 9 tag bits wide
     localparam int CELL_WIDTH_BITS = 8;
     wire clk_phase_45;
-    assign #2.5 clk_phase_45 = clk;
+    assign #CLK_PHASE_DELAY clk_phase_45 = clk;
 
     typedef struct {
         bool valid;
@@ -271,9 +271,9 @@ module VCache_TagStore (
     assign hit_o = hit;
     assign miss_o = miss;
 
-    assign hitIDX_o = hitIdx;
-    assign savedIDX_o = savedIDX;
-    assign evictionIDX_o = use_savedIDX ? savedIDX : hitIdx;
+    assign hitIDX_o = hitIdx; //used for swap or passing out
+    assign savedIDX_o = savedIDX; //used any time we are not doing a direct write to eb or hit to swap and writes are incoming
+    assign evictionIDX_o = use_savedIDX ? savedIDX : currLRU_IDX; //only used when writing to eviction buffer
 
     assign currLine_Dirty_o = tagMetaStore[currLine_Dirty_idx].dirty;//for loading swap buf one cytcle late or curr idle cycle
     assign VC_Will_Need_ToEvict_o = tagMetaStore[currLRU_IDX].dirty && tagMetaStore[currLRU_IDX].valid;//for evciton so lru

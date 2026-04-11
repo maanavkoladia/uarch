@@ -35,7 +35,7 @@ module ddr5 (
 
     //drive the bus
     logic [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
-    assign dataBus = inFromDTE_i.driveDataBus ? dataBus_fake : 'z;
+    assign #5 dataBus = inFromDTE_i.driveDataBus ? dataBus_fake : 'z;
     assign dataBus_fake = tempValue;
 
 endmodule

@@ -22,7 +22,7 @@ module ICache_TagStore (
     localparam int NUM_CELLS = 3;
 
     wire clk_45_phase;
-    assign #2.5 clk_45_phase = clk;
+    assign #CLK_PHASE_DELAY clk_45_phase = clk;
 
     // VIPT: Virtual address for INDEX, Physical address for TAG
     v_addr_icache_fields_t v_addr_i_fields;

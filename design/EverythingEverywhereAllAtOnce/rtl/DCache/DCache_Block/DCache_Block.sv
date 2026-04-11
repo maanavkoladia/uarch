@@ -141,30 +141,68 @@ module DCache_Block (
     //addr bus
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
     assign address_bus_fake = permissionToDriveAddrBus_Ld ? block_req_i.p_addr : eb_outputs.addr;
-    assign address_bus = permissionToDriveAddrBus_Ld || permissionToDriveAddrBus_eb ? address_bus_fake : 'z;
+    assign #5 address_bus = permissionToDriveAddrBus_Ld || permissionToDriveAddrBus_eb ? address_bus_fake : 'z;
     int startingOffset;
     logic [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
 
-    assign dataBus =
-        permissionToDriveDataBus_evictionBuf[0]
-        || permissionToDriveDataBus_evictionBuf[1]
-        || permissionToDriveDataBus_evictionBuf[2]
-        || permissionToDriveDataBus_evictionBuf[3]? dataBus_fake : 'z;
-    //data bus
-    always_comb begin
-        startingOffset = 0;
-        for (int i = 0; i < CACHE_LINES_SIZE_BITS / DATA_BUS_WIDTH_BITS; i++) begin
-            dataBus_fake = '0;
-            if (permissionToDriveDataBus_evictionBuf[i]) begin
-                startingOffset = i * CACHE_LINES_SIZE_BITS / DATA_BUS_WIDTH_BITS;
-                dataBus_fake = {
-                    eb_outputs.lineOut[startingOffset],
-                    eb_outputs.lineOut[startingOffset+1],
-                    eb_outputs.lineOut[startingOffset+2],
-                    eb_outputs.lineOut[startingOffset+3]
-                };
-            end
-        end
-    end
+    // assign dataBus =
+    //     permissionToDriveDataBus_evictionBuf[0]
+    //     || permissionToDriveDataBus_evictionBuf[1]
+    //     || permissionToDriveDataBus_evictionBuf[2]
+    //     || permissionToDriveDataBus_evictionBuf[3]? dataBus_fake : 'z;
+    // //data bus
+    // always_comb begin
+    //     startingOffset = 0;
+    //     for (int i = 0; i < CACHE_LINES_SIZE_BITS / DATA_BUS_WIDTH_BITS; i++) begin
+    //         dataBus_fake = '0;
+    //         if (permissionToDriveDataBus_evictionBuf[i]) begin
+    //             startingOffset = i * CACHE_LINES_SIZE_BITS / DATA_BUS_WIDTH_BITS;
+    //             dataBus_fake = {
+    //                 eb_outputs.lineOut[startingOffset],
+    //                 eb_outputs.lineOut[startingOffset+1],
+    //                 eb_outputs.lineOut[startingOffset+2],
+    //                 eb_outputs.lineOut[startingOffset+3]
+    //             };
+    //         end
+    //     end
+    // end
+
+    wire [3:0] perm2DriveDataBus_bar;
+
+    assign perm2DriveDataBus_bar = {
+        ~permissionToDriveDataBus_evictionBuf[3],
+        ~permissionToDriveDataBus_evictionBuf[2],
+        ~permissionToDriveDataBus_evictionBuf[1],
+        ~permissionToDriveDataBus_evictionBuf[0]
+    };
+
+    logic [127:0] eb_lineOut_vec;
+    assign eb_lineOut_vec = {
+        eb_outputs.lineOut[15],
+        eb_outputs.lineOut[14],
+        eb_outputs.lineOut[13],
+        eb_outputs.lineOut[12],
+        eb_outputs.lineOut[11],
+        eb_outputs.lineOut[10],
+        eb_outputs.lineOut[9],
+        eb_outputs.lineOut[8],
+        eb_outputs.lineOut[7],
+        eb_outputs.lineOut[6],
+        eb_outputs.lineOut[5],
+        eb_outputs.lineOut[4],
+        eb_outputs.lineOut[3],
+        eb_outputs.lineOut[2],
+        eb_outputs.lineOut[1],
+        eb_outputs.lineOut[0]
+    };
+
+    `BUS_TRISTATE(memBus_tri_0, 32, perm2DriveDataBus_bar[0], eb_lineOut_vec[31:0], dataBus);
+    `BUS_TRISTATE(memBus_tri_1, 32, perm2DriveDataBus_bar[1], eb_lineOut_vec[63:32], dataBus);
+    `BUS_TRISTATE(memBus_tri_2, 32, perm2DriveDataBus_bar[2], eb_lineOut_vec[95:64], dataBus);
+    `BUS_TRISTATE(memBus_tri_3, 32, perm2DriveDataBus_bar[3], eb_lineOut_vec[127:96], dataBus);
+
+
+
+
 
 endmodule

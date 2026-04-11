@@ -3,7 +3,7 @@ import interconnect_pkg::*;
 
 module tb_dcache ();
 
-    localparam CLK_PERIOD = 10;
+    localparam CLK_PERIOD = 8;
 
     task automatic DelayCLKs(input int cycles);
         #(CLK_PERIOD * cycles);
@@ -36,6 +36,7 @@ module tb_dcache ();
     // ================= MEMORY =================
     mem_2_dte_t mem_2_dte;
     dte_2_mem_t dte_2_mem;
+
 
 
 
@@ -97,22 +98,94 @@ module tb_dcache ();
 
         DelayCLKs(10);
 
+    
         rst = 1;
         DelayCLKs(5);
         @(posedge clk)
+        //miss to x2000
         core_2_dcache.ld_addr_0_V = 1;
-        core_2_dcache.ld_addr_0 = 15'h2000;
+        core_2_dcache.ld_addr_0 = 15'h2400;
         @(posedge clk)
-        DelayCLKs(20);
         core_2_dcache.ld_addr_0_V = 0;
+
+
+        @(posedge dcache_2_core.hit[0])
         core_2_dcache.memStage_CLR_REQ[0] = 1;
-        core_2_dcache.stq_heads[0].address = 15'h2000;
-        core_2_dcache.stq_heads[0].bit_vec = 16'hFFFF;
+        //hit and write to x2000
+        core_2_dcache.stq_heads[0].empty = 0;
+        core_2_dcache.stq_heads[0].address = 15'h2400;
+        core_2_dcache.stq_heads[0].bit_vec = 16'hFF00;
         core_2_dcache.stq_heads[0].data = '{default: 8'hDE};
         @(posedge clk)
-        core_2_dcache.memStage_CLR_REQ[0] = 0;
         core_2_dcache.ld_addr_0_V = 1;
-        core_2_dcache.ld_addr_0 = 15'h2000;
+        core_2_dcache.ld_addr_0 = 15'h2400;
+        core_2_dcache.stq_heads[0].empty = 1;
+        @(posedge clk)
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 0;
+        @(posedge clk)
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+
+        DelayCLKs(20);
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h2800;
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 0; //arb has latched in dcache req
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+
+
+        @(posedge dcache_2_core.hit[0])
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h2C00;
+
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 0; //arb has latched in dcache req
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0])
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h3000;
+
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 0; //arb has latched in dcache req
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0])
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h3400;
+
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 0; //arb has latched in dcache req
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0])
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h3800;
+
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 0; //arb has latched in dcache req
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0])
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h2400;
+
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 0;
+        core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0])
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h2C00;
+
+
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 0;
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+
+
 
 
 

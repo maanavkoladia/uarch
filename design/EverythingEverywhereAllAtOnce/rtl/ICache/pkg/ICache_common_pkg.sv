@@ -27,6 +27,8 @@ package ICache_common_pkg;
     localparam int NUM_ICACHE_LINES = 16;
     localparam int NUM_I_VCACHE_LINES = 4;
 
+    localparam int CLK_PHASE_DELAY = 2.5;
+
     typedef struct {
         bool valid;
         v_address_t lineAddr;

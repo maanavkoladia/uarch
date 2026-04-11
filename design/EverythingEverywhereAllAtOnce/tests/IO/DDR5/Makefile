@@ -7,13 +7,13 @@ TARGET = dcache_Test
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_dcache 
+TOP_MODULE_NAME = tb_ddr5 
 
 STARTUP_FILES = gen/memLoader.sv gen/dcache_loader.sv
 
 TB_FILES = \
 		   $(STARTUP_FILES) \
-		   tb_dcache.sv
+		   tb_ddr5.sv
 
 SRC_FILES :=
 
