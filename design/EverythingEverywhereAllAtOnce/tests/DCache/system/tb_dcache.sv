@@ -175,7 +175,15 @@ module tb_dcache ();
         @(posedge clk)
         core_2_dcache.ld_addr_0_V = 0;
         core_2_dcache.memStage_CLR_REQ[0] = 0;
+        @(posedge dcache_2_core.hit[0])
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h2C00;
 
+
+        @(posedge clk)
+        core_2_dcache.ld_addr_0_V = 0;
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
 
 
 
