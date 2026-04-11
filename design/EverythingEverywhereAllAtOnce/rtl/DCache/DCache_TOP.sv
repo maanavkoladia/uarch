@@ -89,7 +89,7 @@ module DCache_TOP (
     end
 
     assign out2Core_o.reqServed_0 = arb_req_served_0_out;
-    assign out2Core_o.reqServed_1  = arb_req_served_0_out;
+    assign out2Core_o.reqServed_1  = arb_req_served_1_out;
 
     //out 2 sch stuff
     always_comb begin
