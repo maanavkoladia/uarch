@@ -12,7 +12,7 @@ import WriteBack_pkg::*;
 
 module tb_stages();
 
-    localparam int Clk_PERIOD = 11;
+    localparam int Clk_PERIOD = 8;
 
     initial begin
         $vcdpluson;
