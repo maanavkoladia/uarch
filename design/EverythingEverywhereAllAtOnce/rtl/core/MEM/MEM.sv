@@ -99,10 +99,16 @@ module MEM (
     byte_t line_in_mio[CACHE_LINES_SIZE_B];
     assign line_in_mio = hit_buf_mio_v ? hit_buf_mio : line_MIO;
 
+    byte_t line_in_0_masked[CACHE_LINES_SIZE_B];
+    assign line_in_0_masked = (latches_i.cs.LD_OP) ? line_in_0 : '{default: '0};
+
+    byte_t line_in_1_masked[CACHE_LINES_SIZE_B];
+    assign line_in_1_masked = (latches_i.LD_XCL) ? line_in_1 : '{default: '0};
+
     always_comb begin
         C0 = latches_i.MIO ? line_in_mio : line_in_0;
-        up_buf = latches_i.swapLines ? line_in_0 : line_in_1;
-        low_buf = latches_i.swapLines ? line_in_1 : C0;
+        up_buf = latches_i.swapLines ? line_in_0_masked : line_in_1_masked;
+        low_buf = latches_i.swapLines ? line_in_1_masked : C0;
     end
 
 
@@ -150,10 +156,12 @@ module MEM (
     );
 
     always_comb begin
+        ld_buf = '{default: '0};
         for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
             ld_buf[i] = low_buf[i];
             ld_buf[i+CACHE_LINES_SIZE_B] = up_buf[i];
         end
+        if(!forward_valid) ld_buf = '{default: '0};
     end
 
 
