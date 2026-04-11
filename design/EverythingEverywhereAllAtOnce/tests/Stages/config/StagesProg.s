@@ -1,22 +1,16 @@
 .org 0x1000
-    .text
+    .code
 
     .global _start
 _start:
 
-    # 1) ADD AX, 0xABCD x1000
     addw $0xDEAD, %ax
-
-    # 2) ADD ECX, EBX x1004
     addl %ebx, %ecx
 
     # 3) ADD [EDX*2 + EDI + 0x12345678], EAX x1006
     addl %eax, 0x00005678(%edi,%edx,2)
-
-    # 3) ADD ESI, [EDX*2 + EDI + 0x12345678]
     addl 0x00005678(%edi,%edx,2), %esi
 
-    # 4) ADD EBX, EDI x1014
     addl %edi, %ebx
 
     hlt

@@ -25,7 +25,7 @@ module MPS_reg_rst_we$ #(
     genvar i;
 
 generate
-    for (i = 0; i < NUM_REGS; i = i + 1) begin : g_reg64
+    for (i = 0; i < NUM_REGS; i = i + 1) begin : gen_reg64
 
         localparam integer REMAIN = WIDTH - i*64;
         localparam integer SLICE_W = (REMAIN >= 64) ? 64 : REMAIN;
@@ -33,10 +33,10 @@ generate
         wire [63:0] d_slice;
         wire [63:0] q_slice;
 
-        if (REMAIN >= 64) begin
+        if (REMAIN >= 64) begin : gen_reg64_if_block
             assign d_slice = d[i*64 +: 64];
             assign q[i*64 +: 64] = q_slice;
-        end else begin
+        end else begin : gen_reg64_else_block
             assign d_slice = {{(64-SLICE_W){1'b0}}, d[i*64 +: SLICE_W]};
             assign q[i*64 +: SLICE_W] = q_slice[SLICE_W-1:0];
         end

@@ -374,8 +374,9 @@ endtask
             uut_core.mem_outputs.ST_OP, uut_core.mem_outputs.ST_XCL);
         $fdisplay(log_fd, "  ST_PADDR_0=0x%04h  ST_PADDR_1=0x%04h",
             uut_core.mem_outputs.ST_PADDR_0, uut_core.mem_outputs.ST_PADDR_1);
-        $fdisplay(log_fd, "  DCache: hit0=%0b  hit1=%0b  hitMIO=%0b",
-            dcache_2_core.hit_line_0, dcache_2_core.hit_line_1, dcache_2_core.hit_line_MIO);
+        $fdisplay(log_fd, "  DCache: hit0=%0b  hit1=%0b  hit2=%0b  hit3=%0b  hitMIO=%0b",
+            dcache_2_core.hit[0], dcache_2_core.hit[1], dcache_2_core.hit[2], 
+            dcache_2_core.hit[3], dcache_2_core.hit_MIO);
     endtask
 
     // --- EXE LATCHES ---
@@ -574,10 +575,10 @@ endtask
     // --- DCACHE ARBITRATION ---
     task automatic print_dcache_arb();
         $fdisplay(log_fd, "[DCACHE ARB]");
-        $fdisplay(log_fd, "  req_rej_0=%0b  req_rej_1=%0b  req_rej_mio=%0b",
-            dcache_2_core.req_rejected_0,
-            dcache_2_core.req_rejected_1,
-            dcache_2_core.req_rejected_mio);
+        $fdisplay(log_fd, "  req_served_0=%0b  req_served_1=%0b  req_served_mio=%0b",
+            dcache_2_core.reqServed_0,
+            dcache_2_core.reqServed_1,
+            dcache_2_core.reqServed_MIO);
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
             $fdisplay(log_fd, "  blk[%0d]: oe=%0b  we=%0b  addr=0x%04h  hit=%0b  ws=%0b  sch_req=%0d",
                 i,

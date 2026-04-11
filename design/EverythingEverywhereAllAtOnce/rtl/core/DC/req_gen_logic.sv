@@ -22,7 +22,7 @@ module req_gen_logic(
     output bool ld_addr_1_V,
     output bool ld_addr_mio_V,
 
-    output bool ld_addr_mio,
+    output p_address_t ld_addr_mio,
     output p_address_t ld_addr_0,
     output p_address_t ld_addr_1,
     output bool arb_stall

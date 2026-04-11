@@ -7,8 +7,8 @@ GEN_DECODE_SRC_FILES = \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/MOD_LUT.v \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/OP_LUT.v	\
 						  $(DECODE_PATH_INTERNAL)/structural/gen/PF_LUT.v \
-						  $(DECODE_PATH_INTERNAL)/structural/gen/ir_logic.v \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/rep_fsm.sv \
+						  $(DECODE_PATH_INTERNAL)/structural/gen/ir_logic.v \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/rr_valid_logic.v \
 
 DECODE_SRC_FILES_STRUCTURAL = \

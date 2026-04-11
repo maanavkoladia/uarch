@@ -166,7 +166,7 @@ module MPS_MUX_IN64 (
 
     // Level 1
     generate
-        for (i = 0; i < 16; i = i + 1) begin
+        for (i = 0; i < 16; i = i + 1) begin : g_mux_level1
             mux4$ u (
                 .outb(w1[i]),
                 .in0(i==0  ? in0  : i==1  ? in4  : i==2  ? in8  : i==3  ? in12 :
@@ -193,7 +193,7 @@ module MPS_MUX_IN64 (
 
     // Level 2
     generate
-        for (i = 0; i < 4; i = i + 1) begin
+        for (i = 0; i < 4; i = i + 1) begin : g_mux_level2
             mux4$ u (
                 .outb(w2[i]),
                 .in0(w1[i*4]),

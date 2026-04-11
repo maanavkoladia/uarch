@@ -186,16 +186,28 @@ module pg_cell (
     output wire g,
     output wire p
 );
-    and2$ u_gen (
-        g,
-        a,
+    // and2$ u_gen (
+    //     g,
+    //     a,
+    //     b
+    // );
+    // xor2$ u_prop (
+    //     p,
+    //     a,
+    //     b
+    // );
+    `AND_2(u_gen, 1, 
+        g, 
+        a, 
         b
-    );
+    )
     xor2$ u_prop (
         p,
         a,
         b
     );
+
+
 endmodule
 
 
@@ -219,21 +231,37 @@ module black_cell (
     output wire p_out
 );
     wire p_and_g;
-    and2$ u_and1 (
-        p_and_g,
-        p_hi,
+    // and2$ u_and1 (
+    //     p_and_g,
+    //     p_hi,
+    //     g_lo
+    // );  // P_hi & G_lo
+    // or2$ u_or (
+    //     g_out,
+    //     g_hi,
+    //     p_and_g
+    // );  // G_hi | (P_hi & G_lo)
+    // and2$ u_and2 (
+    //     p_out,
+    //     p_hi,
+    //     p_lo
+    // );  // P_hi & P_lo
+
+    `AND_2(u_and1, 1, 
+        p_and_g, 
+        p_hi, 
         g_lo
-    );  // P_hi & G_lo
-    or2$ u_or (
-        g_out,
-        g_hi,
+    )
+    `OR_2(u_or, 1, 
+        g_out, 
+        g_hi, 
         p_and_g
-    );  // G_hi | (P_hi & G_lo)
-    and2$ u_and2 (
-        p_out,
-        p_hi,
+    )
+    `AND_2(u_and2, 1, 
+        p_out, 
+        p_hi, 
         p_lo
-    );  // P_hi & P_lo
+    )
 endmodule
 
 
@@ -252,16 +280,27 @@ module gray_cell (
     output wire g_out
 );
     wire p_and_g;
-    and2$ u_and (
-        p_and_g,
-        p_hi,
+    // and2$ u_and (
+    //     p_and_g,
+    //     p_hi,
+    //     g_lo
+    // );  // P_hi & G_lo
+    // or2$ u_or (
+    //     g_out,
+    //     g_hi,
+    //     p_and_g
+    // );  // G_hi | (P_hi & G_lo)
+
+    `AND_2(u_and, 1, 
+        p_and_g, 
+        p_hi, 
         g_lo
-    );  // P_hi & G_lo
-    or2$ u_or (
-        g_out,
-        g_hi,
+    )
+    `OR_2(u_or, 1, 
+        g_out, 
+        g_hi, 
         p_and_g
-    );  // G_hi | (P_hi & G_lo)
+    )
 endmodule
 
 

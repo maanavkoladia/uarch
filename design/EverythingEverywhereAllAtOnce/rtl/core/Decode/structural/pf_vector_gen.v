@@ -7,17 +7,27 @@ module pf_vector_gen (
     wire [9:0] real_vector0, real_vector1, real_vector2;
     wire sel0, sel2;
 
-    mux2_10 mux0(.in0(10'b0), .in1(pf_vector0), .sel(sel0), .out(real_vector0));
-    mux2_10 mux1(.in0(10'b0), .in1(pf_vector1), .sel(pfs[1]), .out(real_vector1));
-    mux2_10 mux2(.in0(10'b0), .in1(pf_vector2), .sel(sel2), .out(real_vector2));
+    //mux2_10 mux0(.in0(10'b0), .in1(pf_vector0), .sel(sel0), .out(real_vector0));
+    `MUX_2(mux0, 10, real_vector0, 10'b0, pf_vector0, sel0)
 
-    or2$ or0(sel0, pfs[0], pfs[1]);
-    and2$ and0(sel2, pfs[0], pfs[1]);
+    //mux2_10 mux1(.in0(10'b0), .in1(pf_vector1), .sel(pfs[1]), .out(real_vector1));
+    `MUX_2(mux1, 10, real_vector1, 10'b0, pf_vector1, pfs[1])
+
+    //mux2_10 mux2(.in0(10'b0), .in1(pf_vector2), .sel(sel2), .out(real_vector2));
+    `MUX_2(mux2, 10, real_vector2, 10'b0, pf_vector2, sel2)
+
+
+    //or2$ or0(sel0, pfs[0], pfs[1]);
+    `OR_2(or0, 1, sel0, pfs[0], pfs[1])
+
+    //and2$ and0(sel2, pfs[0], pfs[1]);
+    `AND_2(and0, 1, sel2, pfs[0], pfs[1])
 
     genvar i;
     generate
-        for(i=0; i<10; i=i+1) begin : g_harish_name_this_3
-            or3$ orX(total_pf_vector[i], real_vector0[i], real_vector1[i], real_vector2[i]);
+        for(i=0; i<10; i=i+1) begin : total_pf_vector_g
+            //or3$ orX(total_pf_vector[i], real_vector0[i], real_vector1[i], real_vector2[i]);
+            `OR_3(orX, 1, total_pf_vector[i], real_vector0[i], real_vector1[i], real_vector2[i])
         end
     endgenerate
 

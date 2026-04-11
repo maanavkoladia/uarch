@@ -47,7 +47,7 @@ module EveryThing_TOP (
             ld_addr_1 : dc_outputs.ld_addr_1,
             ld_addr_MIO_V : dc_outputs.ld_addr_MIO_V,
             ld_addr_MIO : dc_outputs.ld_addr_MIO,
-            memStalling : mem_outputs.stall,
+            //memStalling : mem_outputs.stall,
             stq_heads : wb_outputs.stq_heads,
             stq_info_mio : wb_outputs.mio_head,
             memStage_CLR_REQ: mem_outputs.clr_dcache_arb_latches,
@@ -164,8 +164,8 @@ module EveryThing_TOP (
         .hit(DCacheIn_i.hit),
         .cacheline(DCacheIn_i.cacheline),
         .exe_latches_next_o(exe_latches_next),
-        .hit_line_MMIO(DCacheIn_i.hit_line_MIO),
-        .line_MMIO(DCacheIn_i.line_MIO),
+        .hit_MIO(DCacheIn_i.hit_MIO),
+        .line_MIO(DCacheIn_i.line_MIO),
         .outs_o(mem_outputs)
     );
 

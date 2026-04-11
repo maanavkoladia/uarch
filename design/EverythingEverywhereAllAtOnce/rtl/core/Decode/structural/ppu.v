@@ -35,8 +35,11 @@ module ppu (
     modrm_size mod_size(.mod_byte(IR[modrm_index]), .msd_size(msd_size_fake), .sib_needed(sib_size), .disp_needed(disp_needed), .disp_size(disp_size));
     assign mod_valid = needrm ? IR_valid_vect[modrm_index] : 1'b1;
 
-    mux2_3 immmux(.in0(imm_size_fake), .in1(3'b010), .sel(total_pf_vector[3]), .out(imm_size));
-    mux2_3 msdmux(.in0(3'b000), .in1(msd_size_fake), .sel(needrm), .out(msd_size));
+    //mux2_3 immmux(.in0(imm_size_fake), .in1(3'b010), .sel(total_pf_vector[3]), .out(imm_size));
+    `MUX_2(immmux, 3, imm_size, imm_size_fake, 3'b010, total_pf_vector[3])
+    
+    //mux2_3 msdmux(.in0(3'b000), .in1(msd_size_fake), .sel(needrm), .out(msd_size));
+    `MUX_2(msdmux, 3, msd_size, 3'b000, msd_size_fake, needrm)
 
     triple_adder adder0 (.in0(num_pfs_plusone), .in1(msd_size), .in2(imm_size), .result(inst_length));
 

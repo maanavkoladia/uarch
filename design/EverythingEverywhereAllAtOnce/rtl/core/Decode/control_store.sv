@@ -24,7 +24,9 @@ module control_store (
     // =====================
     // Input wires
     // =====================
+    //MSB --> 2e, 36, 3e, 26, 64, 65, 66, 67, 0f, f3  <-- LSB vector
     logic [9:0] input_bus;
+    assign input_bus = {(total_pf_vector[0] || total_pf_vector[1]), opcode, total_pf_vector[3]};
 
     // =====================
     // Single-bit outputs
@@ -288,6 +290,7 @@ module control_store (
     };
 
     cs_post_processor cs_post_prossesing_unit(
+        .modrm_byte(modrm),
         .movs(MOVS_o),
         .op_in_modrm(OP_IN_MODRM_o),
         .op_in_modrm_subset(OP_IN_MODRM_SUBSET_o),
@@ -299,9 +302,9 @@ module control_store (
         .wb_cs_i(temp_wb_cs),
         .decode_cs_o(decode_cs),
         .rr_cs_o(rr_cs),
-        .dc_cs_i(dc_cs),
+        .dc_cs_o(dc_cs),
         .mem_cs_o(mem_cs),
-        .exe_cs_(exe_cs),
+        .exe_cs_o(exe_cs),
         .wb_cs_o(wb_cs)
     );
 

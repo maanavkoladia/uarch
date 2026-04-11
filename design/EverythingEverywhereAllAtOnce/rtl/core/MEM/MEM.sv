@@ -66,13 +66,13 @@ module MEM (
 
     always_ff @(posedge clk) begin
         if(!rst)begin
-            hit_buf_v <= '0;
+            hit_buf_v <= '{default: '0};
             hit_buf_mio_v <= 0; 
         end
         else begin
             for(int i = 0; i < NUM_DCACHE_PORTS; i++)begin
                 if(forward_valid)begin
-                    hit_buf_v <= '0;
+                    hit_buf_v <= '{default: '0};
                     hit_buf_mio_v <= 0;
                 end
                 else begin

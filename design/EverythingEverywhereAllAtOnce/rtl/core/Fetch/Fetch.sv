@@ -245,7 +245,7 @@ module Fetch (
         .eip(decode_outs_i.eip),
         .flush(exe_outs_i.br_res_out.flush),
         .exp_pipeclear(exp_set_logic_outs.exp_pipe_clear),
-        .int_pipe_clear(exp_set_logic.int_pipe_clear),
+        .int_pipe_clear(exp_set_logic_outs.int_pipe_clear),
         .decode_stall(decode_outs_i.stall),
         .idm_meta(idm_info_i),
 

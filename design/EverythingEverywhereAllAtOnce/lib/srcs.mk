@@ -22,9 +22,9 @@ STD_CELLS_LIB = \
 			$(ROOT)/lib/STDCells/decoder_N.v \
 			$(ROOT)/lib/STDCells/UniqueLib.v \
 			$(ROOT)/lib/STDCells/REG_N.v \
+			$(ROOT)/lib/STDCells/STDCell_Macros.vh	\
 			$(ROOT)/lib/STDCells/triple_adder.v \
 			$(ROOT)/lib/STDCells/KoggeStone.v \
-			$(ROOT)/lib/STDCells/STDCell_Macros.vh	\
 
 			#$(ROOT)/lib/STDCells/4_2_pendcoder.v 
 

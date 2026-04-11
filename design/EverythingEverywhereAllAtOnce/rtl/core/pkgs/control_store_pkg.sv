@@ -158,7 +158,7 @@ package control_store_pkg;
 
     } source_selector_e;
 
-    typedef enum {
+    typedef enum logic [1:0] {
         NONE = 0,
         CTRL = 1,
         SHF = 2,

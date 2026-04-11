@@ -54,7 +54,27 @@ module selection_logic (
 
     generate
         for(i = 0; i < 16; i=i+1) begin : IR_sel_mux
-            mux64_8 sixtyfourmux(.in(queue), .sel(sel_index[i]), .out(IR[i]));
+            //mux64_8 sixtyfourmux(.in(queue), .sel(sel_index[i]), .out(IR[i]));
+            `MUX_64(IR_sel_mux_inst, 8,
+                IR[i],
+                queue[0],  queue[1],  queue[2],  queue[3],
+                queue[4],  queue[5],  queue[6],  queue[7],
+                queue[8],  queue[9],  queue[10], queue[11],
+                queue[12], queue[13], queue[14], queue[15],
+                queue[16], queue[17], queue[18], queue[19],
+                queue[20], queue[21], queue[22], queue[23],
+                queue[24], queue[25], queue[26], queue[27],
+                queue[28], queue[29], queue[30], queue[31],
+                queue[32], queue[33], queue[34], queue[35],
+                queue[36], queue[37], queue[38], queue[39],
+                queue[40], queue[41], queue[42], queue[43],
+                queue[44], queue[45], queue[46], queue[47],
+                queue[48], queue[49], queue[50], queue[51],
+                queue[52], queue[53], queue[54], queue[55],
+                queue[56], queue[57], queue[58], queue[59],
+                queue[60], queue[61], queue[62], queue[63],
+                sel_index[i]
+            )
         end
     endgenerate
 

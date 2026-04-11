@@ -65,26 +65,86 @@ module predecode(
         .imm_size(ppu_imm_size[3]), .disp_size(ppu_disp_size[3]), .disp_needed(ppu_disp_needed[3]), .sib_size(ppu_sib_size[3]), .needrm(ppu_needrm[3]), .sib_byte(ppu_sib_byte[3]), .disp(ppu_displacement[3]), .imm64(ppu_imm[3]),
         .inst_valid(inst_valid[3]));
 
-    mux4_4 length_mux(.in0(ppu_inst_length[0]), .in1(ppu_inst_length[1]), .in2(ppu_inst_length[2]), .in3(ppu_inst_length[3]), 
-        .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(inst_length));
-    mux4_8$ sib_mux(.IN0(ppu_sib_byte[0]), .IN1(ppu_sib_byte[1]), .IN2(ppu_sib_byte[2]), .IN3(ppu_sib_byte[3]), 
-        .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(sib_byte));
-    mux4_8$ opcode_mux(.IN0(IR[0]), .IN1(IR[1]), .IN2(IR[2]), .IN3(IR[3]), 
-        .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(opcode_byte));
-    mux4_8$ modrm_mux(.IN0(IR[1]), .IN1(IR[2]), .IN2(IR[3]), .IN3(IR[4]), 
-        .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(modrm_byte));
-    mux4_32 disp_mux(.in0(ppu_displacement[0]), .in1(ppu_displacement[1]), .in2(ppu_displacement[2]), .in3(ppu_displacement[3]), 
-        .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(disp));
-    mux4$ disp_size_mux(.in0(ppu_disp_size[0]), .in1(ppu_disp_size[1]), .in2(ppu_disp_size[2]), .in3(ppu_disp_size[3]), 
-        .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_size));
-    mux4$ disp_needed_mux(.in0(ppu_disp_needed[0]), .in1(ppu_disp_needed[1]), .in2(ppu_disp_needed[2]), .in3(ppu_disp_needed[3]), 
-        .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_needed));
-    mux4_64 imm_mux(.in0(ppu_imm[0]), .in1(ppu_imm[1]), .in2(ppu_imm[2]), .in3(ppu_imm[3]),
-        .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(imm64));
-    mux4$ valid_inst_mux(.in0(inst_valid[0]), .in1(inst_valid[1]), .in2(inst_valid[2]),
-        .in3(inst_valid[3]), .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(true_inst_valid));
-    mux4$ sib_size_mux(.in0(ppu_sib_size[0]), .in1(ppu_sib_size[1]), .in2(ppu_sib_size[2]), .in3(ppu_sib_size[3]), 
-        .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(sib_size));
+    // mux4_4 length_mux(.in0(ppu_inst_length[0]), .in1(ppu_inst_length[1]), .in2(ppu_inst_length[2]), .in3(ppu_inst_length[3]), 
+    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(inst_length));
+    // mux4_8$ sib_mux(.IN0(ppu_sib_byte[0]), .IN1(ppu_sib_byte[1]), .IN2(ppu_sib_byte[2]), .IN3(ppu_sib_byte[3]), 
+    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(sib_byte));
+    // mux4_8$ opcode_mux(.IN0(IR[0]), .IN1(IR[1]), .IN2(IR[2]), .IN3(IR[3]), 
+    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(opcode_byte));
+    // mux4_8$ modrm_mux(.IN0(IR[1]), .IN1(IR[2]), .IN2(IR[3]), .IN3(IR[4]), 
+    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(modrm_byte));
+    // mux4_32 disp_mux(.in0(ppu_displacement[0]), .in1(ppu_displacement[1]), .in2(ppu_displacement[2]), .in3(ppu_displacement[3]), 
+    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(disp));
+    // mux4$ disp_size_mux(.in0(ppu_disp_size[0]), .in1(ppu_disp_size[1]), .in2(ppu_disp_size[2]), .in3(ppu_disp_size[3]), 
+    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_size));
+    // mux4$ disp_needed_mux(.in0(ppu_disp_needed[0]), .in1(ppu_disp_needed[1]), .in2(ppu_disp_needed[2]), .in3(ppu_disp_needed[3]), 
+    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_needed));
+    // mux4_64 imm_mux(.in0(ppu_imm[0]), .in1(ppu_imm[1]), .in2(ppu_imm[2]), .in3(ppu_imm[3]),
+    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(imm64));
+    // mux4$ valid_inst_mux(.in0(inst_valid[0]), .in1(inst_valid[1]), .in2(inst_valid[2]),
+    //     .in3(inst_valid[3]), .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(true_inst_valid));
+    // mux4$ sib_size_mux(.in0(ppu_sib_size[0]), .in1(ppu_sib_size[1]), .in2(ppu_sib_size[2]), .in3(ppu_sib_size[3]), 
+    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(sib_size));
+
+    // =====================
+    // Instruction length (4-bit)
+    // =====================
+    `MUX_4(length_mux, 4, inst_length, ppu_inst_length[0], ppu_inst_length[1], ppu_inst_length[2],
+        ppu_inst_length[3], {num_pfs[1], num_pfs[0]})
+
+    // =====================
+    // SIB byte (8-bit)
+    // =====================
+    `MUX_4(sib_mux, 8, sib_byte, ppu_sib_byte[0], ppu_sib_byte[1], ppu_sib_byte[2], ppu_sib_byte[3],
+        {num_pfs[1], num_pfs[0]})
+
+    // =====================
+    // Opcode byte (8-bit)
+    // =====================
+    `MUX_4(opcode_mux, 8, opcode_byte, IR[0], IR[1], IR[2],
+        IR[3], {num_pfs[1], num_pfs[0]})
+
+    // =====================
+    // ModRM byte (8-bit)
+    // =====================
+    `MUX_4(modrm_mux, 8, modrm_byte, IR[1], IR[2], IR[3],
+        IR[4], {num_pfs[1], num_pfs[0]})
+
+    // =====================
+    // Displacement (32-bit)
+    // =====================
+    `MUX_4(disp_mux, 32, disp, ppu_displacement[0], ppu_displacement[1], ppu_displacement[2],
+        ppu_displacement[3], {num_pfs[1], num_pfs[0]})
+
+    // =====================
+    // Displacement size (1-bit)
+    // =====================
+    `MUX_4(disp_size_mux, 1, disp_size, ppu_disp_size[0], ppu_disp_size[1], ppu_disp_size[2],
+        ppu_disp_size[3], {num_pfs[1], num_pfs[0]})
+
+    // =====================
+    // Displacement needed (1-bit)
+    // =====================
+    `MUX_4(disp_needed_mux, 1, disp_needed, ppu_disp_needed[0], ppu_disp_needed[1], ppu_disp_needed[2],
+        ppu_disp_needed[3], {num_pfs[1], num_pfs[0]})
+
+    // =====================
+    // Immediate (64-bit)
+    // =====================
+    `MUX_4(imm_mux, 64, imm64, ppu_imm[0], ppu_imm[1], ppu_imm[2],
+        ppu_imm[3], {num_pfs[1], num_pfs[0]})
+
+    // =====================
+    // Valid instruction (1-bit)
+    // =====================
+    `MUX_4(valid_inst_mux, 1, true_inst_valid, inst_valid[0], inst_valid[1], inst_valid[2],
+        inst_valid[3], {num_pfs[1], num_pfs[0]})
+
+    // =====================
+    // SIB size (1-bit)
+    // =====================
+    `MUX_4(sib_size_mux, 1, sib_size, ppu_sib_size[0], ppu_sib_size[1], ppu_sib_size[2],
+        ppu_sib_size[3], {num_pfs[1], num_pfs[0]})
 
     assign invalid_inst = !true_inst_valid;
 
@@ -98,7 +158,7 @@ module predecode(
 
     //kogge_stone_adder #(.WIDTH(32)) neip_adder (.a(EIP), .b(sext_inst_length), .cin(1'b0), .sum(NEIP), .cout(inst_length_cout));
     
-
+    assign possible_eips[0] = EIP;
     genvar i;
     generate
         for (i = 1; i < 16; i++) begin : possible_eip_adders
@@ -114,6 +174,12 @@ module predecode(
         end
     endgenerate 
 
-    mux16_32 neip_picker_mux(.in(possible_eips), .sel0(inst_length[0]), .sel1(inst_length[1]), .sel2(inst_length[2]), .sel3(inst_length[3]), .out(NEIP));
+    //mux16_32 neip_picker_mux(.in(possible_eips), .sel0(inst_length[0]), .sel1(inst_length[1]), .sel2(inst_length[2]), .sel3(inst_length[3]), .out(NEIP));
+    `MUX_16(neip_picker_mux, 32, NEIP, 
+        possible_eips[0], possible_eips[1], possible_eips[2], possible_eips[3], 
+        possible_eips[4], possible_eips[5], possible_eips[6], possible_eips[7], 
+        possible_eips[8], possible_eips[9], possible_eips[10], possible_eips[11], 
+        possible_eips[12], possible_eips[13], possible_eips[14], possible_eips[15], 
+        {inst_length[3], inst_length[2], inst_length[1], inst_length[0]})
 
 endmodule

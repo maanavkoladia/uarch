@@ -45,7 +45,7 @@ module mux2_N #(parameter WIDTH = 1)(
 );
     genvar i;
     generate
-        for(i = 0; i < WIDTH; i = i + 1) begin
+        for(i = 0; i < WIDTH; i = i + 1) begin : gen_mux
             MPS_MUX_IN2 u_mux (
                 .out(out[i]),
                 .in0(in0[i]),
@@ -63,7 +63,7 @@ module mux3_N #(parameter WIDTH = 1)(
 );
     genvar i;
     generate
-        for(i = 0; i < WIDTH; i = i + 1) begin
+        for(i = 0; i < WIDTH; i = i + 1) begin : gen_mux
             MPS_MUX_IN3 u_mux (
                 .out(out[i]),
                 .in0(in0[i]),
