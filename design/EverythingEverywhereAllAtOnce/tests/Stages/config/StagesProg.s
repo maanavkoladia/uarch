@@ -16,7 +16,7 @@ _start:
     hlt
 
 
-    .org 0x2000
+    .org 0x5670
     .data
 val_1:  .long  0x11111111
 val_2:  .long  0x22222222
