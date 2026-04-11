@@ -37,9 +37,6 @@ module tb_dcache ();
     mem_2_dte_t mem_2_dte;
     dte_2_mem_t dte_2_mem;
 
-
-
-
     DCache_TOP uut0_dcache (
         .clk(clk),
         .rst(rst),
@@ -50,7 +47,6 @@ module tb_dcache ();
         .dataBus(dataBus),
         .address_bus(addrBus)
     );
-
 
     mem_TOP uut1_mem (
         .clk(clk),
@@ -63,8 +59,6 @@ module tb_dcache ();
         .out2Dte_mem_Ready(mem_2_dte.mem_Ready),
         .out2Sch_writeBuf_V(mem_2_sch.writeBuf_V)
     );
-
-
 
     BusArbitration busArb (
         .clk(clk),
@@ -81,11 +75,8 @@ module tb_dcache ();
         .dte_2_ddr5_o()
     );
 
-
-
     dcache_loader dcache_loader_unit ();
     tb_memGen_InitRitual mem_loader_unit ();
-
 
     initial begin
         rst = 0;

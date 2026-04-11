@@ -69,13 +69,19 @@ module tb_ddr5 ();
         .dataBus(dataBus),
         .addrBus(dataBus)
     );
+
     dcache_loader dcache_loader_unit ();
     tb_memGen_InitRitual mem_loader_unit ();
 
-
     initial begin
         rst = 0;
+        icache_2_sch = '{default: '0};
+        dma_2_sch = '{default: '0};
+        core_2_dcache = '{default: '0};
+        for (int i = 0; i < NUM_DCACHE_PORTS; i++) core_2_dcache.stq_heads[i].empty = 1;
+        core_2_dcache.stq_info_mio.empty = 1;
 
+        rst = 1;
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
