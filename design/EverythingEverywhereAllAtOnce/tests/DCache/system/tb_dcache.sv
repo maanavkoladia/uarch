@@ -99,7 +99,8 @@ module tb_dcache ();
         @(posedge clk) core_2_dcache.ld_addr_0_V = 0;
 
 
-        @(posedge dcache_2_core.hit[0]) core_2_dcache.memStage_CLR_REQ[0] = 1;
+        @(posedge dcache_2_core.hit[0]);
+        core_2_dcache.memStage_CLR_REQ[0] = 1;
         //hit and write to x2000
         core_2_dcache.stq_heads[0].empty = 0;
         core_2_dcache.stq_heads[0].address = 15'h2400;

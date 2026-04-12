@@ -137,7 +137,7 @@ module tb_dma ();
         //writing num bytes
         @(posedge clk);
         core_2_dcache.stq_info_mio.address = 32'h0020;
-        core_2_dcache.stq_info_mio.data = {8'h10, 8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00};
+        core_2_dcache.stq_info_mio.data = {8'h00, 8'h10,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00};
         core_2_dcache.stq_info_mio.empty = 0;
         @(posedge clk);
         core_2_dcache.stq_info_mio.empty = 1;
@@ -150,13 +150,19 @@ module tb_dma ();
         core_2_dcache.stq_info_mio.empty = 0;
         @(posedge clk);
         core_2_dcache.stq_info_mio.empty = 1;
-        
+         
         @(posedge dma_2_core.intOut);
+        core_2_dcache.ld_addr_0_V = 1;
+        core_2_dcache.ld_addr_0 = 15'h2ff0;
+        @(posedge clk);
+        core_2_dcache.ld_addr_0_V = 0;
+        @(posedge dcache_2_core.hit[3]);
+        core_2_dcache.memStage_CLR_REQ[3] = 1;
 
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayCLKs(500);
+        DelayCLKs(20);
         `LOG("DCache  Tb Complete");
         $finish;
 

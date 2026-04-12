@@ -36,8 +36,8 @@ module DiskWrapper (
                     loading <= 0;
                     disk_ld_Buffer_V <= 1;
                     // copy disk → buffer (instant after delay)
-                    for (int i = 0; i < ld_num_bytes % PAGE_SIZE; i = i + 1) begin
-                        disk_ld_Buffer[i] <= disk[(ld_diskAddr+i)%DISK_SIZE];
+                    for (int i = 0; i < (ld_num_bytes % PAGE_SIZE == 0 ? PAGE_SIZE : ld_num_bytes % PAGE_SIZE); i = i + 1) begin
+                        disk_ld_Buffer[i] <= disk[(ld_diskAddr + i) % DISK_SIZE];
                     end
                 end else begin
                     delayCycles_Counter <= delayCycles_Counter - 1;
