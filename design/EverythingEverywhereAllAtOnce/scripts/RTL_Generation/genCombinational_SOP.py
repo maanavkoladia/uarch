@@ -461,6 +461,12 @@ def _reduce_tree(f, macro, unit_base, out_wire, in_wires):
     Reduce in_wires to out_wire through a balanced tree of
     MAX_GATE_FANIN-wide AND or OR macro cells.
     Intermediate wires are declared inline before each gate.
+
+    Two invariants upheld:
+      1. Single-element chunks are forwarded directly to the next layer
+         without emitting a gate, avoiding the non-existent AND_1/OR_1 macros.
+      2. Intermediate gate instance names carry a '_g' suffix so they never
+         collide with the wire of the same base name.
     """
     layer    = list(in_wires)
     layer_id = 0
@@ -472,17 +478,23 @@ def _reduce_tree(f, macro, unit_base, out_wire, in_wires):
         while i < len(layer):
             chunk  = layer[i : i + MAX_GATE_FANIN]
             i     += MAX_GATE_FANIN
-            w_out  = f"{unit_base}_L{layer_id}_{chunk_id}"
-            f.write(f"wire {w_out};\n")
-            _chunk_into_gate(f, macro, f"{unit_base}_L{layer_id}_{chunk_id}",
-                             w_out, chunk)
-            next_layer.append(w_out)
+            if len(chunk) == 1:
+                # No gate needed — single wire passes straight to the next layer.
+                next_layer.append(chunk[0])
+            else:
+                w_out = f"{unit_base}_L{layer_id}_{chunk_id}"
+                f.write(f"wire {w_out};\n")
+                # '_g' suffix keeps the instance name distinct from the wire name.
+                _chunk_into_gate(f, macro, f"{unit_base}_L{layer_id}_{chunk_id}_g",
+                                 w_out, chunk)
+                next_layer.append(w_out)
             chunk_id += 1
         layer     = next_layer
         layer_id += 1
 
     # Final layer: produce the named output wire directly.
-    _chunk_into_gate(f, macro, f"{unit_base}_L{layer_id}_0", out_wire, layer)
+    # '_g' suffix keeps every gate instance name distinct from any wire name.
+    _chunk_into_gate(f, macro, f"{unit_base}_L{layer_id}_0_g", out_wire, layer)
 
 
 def emit_and(f, unit_base, out_wire, in_wires):

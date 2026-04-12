@@ -50,7 +50,7 @@
         "Predecode OP LUT" : {
             "csv" : "rtl/core/Decode/structural/gen/OP_LUT.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/OP_LUT.v",
-            "run Combinational SOP Gen": "false"
+            "run Combinational SOP Gen": "true"
         },
 
         "Predecode pf LUT" : {

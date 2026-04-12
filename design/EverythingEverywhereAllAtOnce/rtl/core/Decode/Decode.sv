@@ -171,7 +171,8 @@ module Decode (
             PrevLength <= inst_length;
             REP_LATCH <= temp_decode_cs.REP;
             REP_CMP_LATCH <= temp_decode_cs.REP_CMP;
-            HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
+            if(flush) HALT_REG <= 1'b0;
+            else HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
 
             if(exe_outs_i.br_res_out.valid && flush) EIP <= exe_outs_i.br_res_out.br_target;
             else begin
