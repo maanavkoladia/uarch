@@ -1,0 +1,8 @@
+{
+    "diskMemPath" : "rtl path will be here, use this in the for loop",
+    "metaDataFilePath": "gen/disk/meta.txt",
+    "diskSize" : "bytes in disk",
+    "startupDelay" : "30",
+    "loadFilePath" : "gen/diskLoader.v"
+
+}

@@ -167,7 +167,7 @@ module DMA_Controller (
 
     assign addrBus_drv = dma_Regs.destAddr + counter;
 
-    assign addrBus = (inFromDTE_i.permission2DriveADDRBus) ? addrBus_drv : 'z;
+    assign #5 addrBus = (inFromDTE_i.permission2DriveADDRBus) ? addrBus_drv : 'z;
 
     // =============================
     // Data Bus

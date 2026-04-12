@@ -13,7 +13,6 @@ module DiskWrapper (
     output byte_t disk_ld_Buffer_o[PAGE_SIZE]
 );
 
-
     byte_t disk[DISK_SIZE];
     byte_t disk_ld_Buffer[PAGE_SIZE];
     uint32_t delayCycles_Counter;
