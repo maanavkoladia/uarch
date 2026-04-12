@@ -63,6 +63,8 @@ module cs_post_processor (
         HARDCODED_SR_ID         : decode_cs_i.HARDCODED_SR_ID,
         HARDCODED_DR_RD         : decode_cs_i.HARDCODED_DR_RD,
         HARDCODED_SR_RD         : decode_cs_i.HARDCODED_SR_RD,
+        HARDCODED_DR_WR         : decode_cs_i.HARDCODED_DR_WR,
+        HARDCODED_SR_WR         : decode_cs_i.HARDCODED_SR_WR,
         OP_IN_MODRM             : decode_cs_i.OP_IN_MODRM,
         dr_id                   : decode_cs_i.dr_id,
         sr_id                   : decode_cs_i.sr_id,
@@ -73,8 +75,8 @@ module cs_post_processor (
     // RR
     // =====================
     assign rr_cs_o = '{
-        HARDCODED_DR_RD : rr_cs_i.HARDCODED_DR_RD,
-        HARDCODED_SR_RD : rr_cs_i.HARDCODED_SR_RD,
+        //HARDCODED_DR_RD : rr_cs_i.HARDCODED_DR_RD,
+        //HARDCODED_SR_RD : rr_cs_i.HARDCODED_SR_RD,
         ST_SEL          : rr_cs_i.ST_SEL,
         MODRM_NEEDED    : rr_cs_i.MODRM_NEEDED,
         RM_IS_DR        : rr_cs_i.RM_IS_DR,

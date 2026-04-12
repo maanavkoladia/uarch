@@ -101,8 +101,10 @@ module Decode (
                             idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP);
     l_address_t predicted_target;
     assign predicted_target = predicted_taken ? idm_outs_i.idm_slots[EIP[5:4]].br_btb_target : 32'b0;
+    bool branch_present;
+    assign branch_present = temp_exe_cs.br_ucond || temp_exe_cs.relative_branch || temp_exe_cs.special_br;
     br_info_processing br_info_gen(
-        .cs_branch(1'b0), .eip(EIP), .br_length(inst_length),
+        .cs_branch(branch_present), .eip(EIP), .br_length(inst_length),
         .pred_taken(predicted_taken), .pred_target(predicted_target), .branch_output(br_info_for_latches)
     );
     //need to add if branch or not to cs excel sheet

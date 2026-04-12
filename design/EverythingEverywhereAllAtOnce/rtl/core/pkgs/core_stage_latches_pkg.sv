@@ -67,7 +67,9 @@ package core_stage_latches_pkg;
         bool HARDCODED_SR;
         reg_ids_e HARDCODED_SR_ID;
         bool HARDCODED_DR_RD;
+        bool HARDCODED_DR_WR;
         bool HARDCODED_SR_RD;
+        bool HARDCODED_SR_WR;
         bool OP_IN_MODRM;
         reg_ids_e dr_id;
         reg_ids_e sr_id;
@@ -75,8 +77,8 @@ package core_stage_latches_pkg;
     } decode_cs_t;
 
     typedef struct {
-        bool HARDCODED_DR_RD;
-        bool HARDCODED_SR_RD;
+        //bool HARDCODED_DR_RD;
+        //bool HARDCODED_SR_RD;
         bool ST_SEL;
         bool MODRM_NEEDED;
         bool RM_IS_DR;

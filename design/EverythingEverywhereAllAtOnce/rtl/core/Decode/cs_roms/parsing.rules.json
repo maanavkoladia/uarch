@@ -140,7 +140,9 @@
     },
 
     "HARDCODED_DR_RD" : "1",
+    "HARDCODED_DR_WR" : "1",
     "HARDCODED_SR_RD" : "1",
+    "HARDCODED_SR_WR" : "1",
     "ST_SEL" : "1",
 
     "alu_inputA_sel" : {

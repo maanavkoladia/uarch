@@ -48,7 +48,9 @@ module control_store (
     logic OP_IN_MODRM_o;
 
     logic HARDCODED_DR_RD_o;
+    logic HARDCODED_DR_WR_o;
     logic HARDCODED_SR_RD_o;
+    logic HARDCODED_SR_WR_o;
     logic ST_SEL_o;
 
     logic br_uncond_o;
@@ -116,7 +118,9 @@ module control_store (
 
         // Op Enables / Selects
         .HARDCODED_DR_RD_o(HARDCODED_DR_RD_o),
+        .HARDCODED_DR_WR_o(HARDCODED_DR_WR_o),
         .HARDCODED_SR_RD_o(HARDCODED_SR_RD_o),
+        .HARDCODED_SR_WR_o(HARDCODED_SR_WR_o),
         .ST_SEL_o(ST_SEL_o),
 
         // Destination Register Hardcoding
@@ -215,7 +219,9 @@ module control_store (
         HARDCODED_SR      : HARD_CODED_SR_o,
         HARDCODED_SR_ID   : HARD_CODED_SR_ID_o,
         HARDCODED_DR_RD   : HARDCODED_DR_RD_o,
+        HARDCODED_DR_WR   : HARDCODED_DR_WR_o,
         HARDCODED_SR_RD   : HARDCODED_SR_RD_o,
+        HARDCODED_SR_WR   : HARDCODED_SR_WR_o,
         OP_IN_MODRM       : OP_IN_MODRM_o,
         dr_id             : mod_rm_cs_outs.dr_id,
         sr_id             : mod_rm_cs_outs.sr_id,
@@ -224,8 +230,8 @@ module control_store (
 
     // RR
     assign temp_rr_cs = '{
-        HARDCODED_DR_RD  : HARDCODED_DR_RD_o,
-        HARDCODED_SR_RD  : HARDCODED_SR_RD_o,
+        //HARDCODED_DR_RD  : HARDCODED_DR_RD_o,
+        //HARDCODED_SR_RD  : HARDCODED_SR_RD_o,
         ST_SEL           : ST_SEL_o,
         MODRM_NEEDED     : MODRM_NEEDED_o,
         RM_IS_DR         : RM_IS_DR_o,

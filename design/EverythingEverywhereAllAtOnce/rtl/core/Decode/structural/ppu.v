@@ -2,7 +2,7 @@ module ppu (
     input [3:0] opcode_index, modrm_index,
     input [15:0][7:0] IR,
     input [15:0] IR_valid_vect,
-    input [9:0] total_pf_vector,
+    input [9:0] total_pf_vector,     //MSB --> 2e, 36, 3e, 26, 64, 65, 66, 67, 0f, f3  <-- LSB vector
     input [2:0] num_pfs_plusone,
     output [3:0] inst_length,
     output [2:0] msd_size,
@@ -29,14 +29,16 @@ module ppu (
     wire [7:0] imm_valid;
     wire [7:0][3:0] imm_valid_index;
 
-    op_size opcode_size(.opcode_byte(IR[opcode_index]), .needr_m(needrm), .imm_size(imm_size_fake));
+    op_size opcode_size(.opcode_byte(IR[opcode_index]), .zero_f_prefix(total_pf_vector[1]), .needr_m(needrm), .imm_size(imm_size_fake));
     assign op_valid = IR_valid_vect[opcode_index];
 
     modrm_size mod_size(.mod_byte(IR[modrm_index]), .msd_size(msd_size_fake), .sib_needed(sib_size), .disp_needed(disp_needed), .disp_size(disp_size));
     assign mod_valid = needrm ? IR_valid_vect[modrm_index] : 1'b1;
 
     //mux2_3 immmux(.in0(imm_size_fake), .in1(3'b010), .sel(total_pf_vector[3]), .out(imm_size));
-    `MUX_2(immmux, 3, imm_size, imm_size_fake, 3'b010, total_pf_vector[3])
+    wire [2:0] imm_size_override;
+    `MUX_2(immmux, 3, imm_size_override, imm_size_fake, 3'b010, total_pf_vector[3])
+    assign imm_size = (imm_size_fake == 3'b000) ? imm_size_fake : imm_size_override;
     
     //mux2_3 msdmux(.in0(3'b000), .in1(msd_size_fake), .sel(needrm), .out(msd_size));
     `MUX_2(msdmux, 3, msd_size, 3'b000, msd_size_fake, needrm)
