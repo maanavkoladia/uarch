@@ -133,6 +133,7 @@ package interconnect_pkg;
         bool permission2DriveDataBus[MEM_BUS_SIZE/DATA_BUS_WIDTH_BITS];
         //for driving the addr bus when writing to main mem for the st_req
         bool permission2DriveADDRBus;
+        bool commiting;
         //ste signals the dma that it is about to write to the bus,
         //only happens if the dma made the req to sch, so the dma cacheline
         //should be right

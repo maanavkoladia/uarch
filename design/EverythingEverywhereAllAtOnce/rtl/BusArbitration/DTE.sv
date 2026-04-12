@@ -390,6 +390,7 @@ DTE_DCACHE_2_MEM_FSM_NUM_STATES
         // FIX 2: intermediate wire, OR-reduced above
         .st_req_o        (dma_2_mem_st_req_fsmOut),
         .WriteComplete_o (dte_2_dma_o.writeComplete),
+        .Commiting_o(dte_2_dma_o.commiting),
         .Drive_Addr_Bus_o(dte_2_dma_o.permission2DriveADDRBus),
         // FIX 9: DMA data-bus permissions are separate from ADDR bus
         .Drv_DB_0_o      (dte_2_dma_o.permission2DriveDataBus[0]),

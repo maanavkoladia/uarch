@@ -64,7 +64,7 @@ module mem_controller (
         bool writeBuf_Valid;  //reg
         logic [PHY_MEM_ADDRESS_SIZE - 1 : 0] address;  //address this chip is representing, reg, needs to be wired to the banks in the group
         byte_t writeBuf[CACHE_LINES_SIZE_B];  //reg
-        bool startStore[NUM_BANKS_PER_BANK_GROUP];  //this should be not a reg
+        //bool startStore[NUM_BANKS_PER_BANK_GROUP];  //this should be not a reg
     } bankgroup_table_entry_t;
 
     typedef struct {
@@ -260,7 +260,8 @@ MEM_CONTROLLER_FSM_STATES
 
             for (int i = 0; i < NUM_BANKS; i++) begin
                 if (banks_i[i].clear_writebufV) begin
-                    bankGroupTable[i[MEM_BANKGROUP_BITS_UB : MEM_BANKGROUP_BITS_LD ]].writeBuf_Valid <= 0;
+                    int bankGroupIdx;
+                    bankGroupTable[i / NUM_BANKS_PER_BANK_GROUP].writeBuf_Valid <= 0;
                 end
             end
         end
@@ -288,7 +289,7 @@ MEM_CONTROLLER_FSM_STATES
         // 2. Set the selected bank
         if (fsm_outs.start_store) begin
             int idx;
-            idx = {address_bus[9:7], bankGroup};  // make sure this is valid indexing!
+            idx = {bankGroup, address_bus[9:7]};  // make sure this is valid indexing!
             bank_cmds_o[idx].start_store = 1;
         end
     end

@@ -12,7 +12,7 @@ package io_common_pkg;
 
     localparam int MIO_DATA_SIZE_B = 4;
 
-    localparam int DISK_SIZE = 8 * PAGE_SIZE;
+    localparam int DISK_SIZE = 1 * PAGE_SIZE;
     localparam int DISK_LOAD_DELAY = 75;
 
     localparam int DMA_FSM_NUM_STATES = 5;

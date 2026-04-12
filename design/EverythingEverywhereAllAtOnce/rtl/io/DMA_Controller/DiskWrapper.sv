@@ -20,9 +20,10 @@ module DiskWrapper (
 
     assign disk_ld_Buffer_o = disk_ld_Buffer;
 
-    always @(posedge clk or negedge rst) begin
+    always @(posedge clk) begin
         if (!rst) begin
             disk_ld_Buffer_V <= 0;
+            disk_ld_Buffer <= '{default : '0};
             delayCycles_Counter <= 0;
             loading <= 0;
         end else begin

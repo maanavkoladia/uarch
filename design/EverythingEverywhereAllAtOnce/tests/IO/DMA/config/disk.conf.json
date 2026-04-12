@@ -1,7 +1,7 @@
 {
     "diskMemPath" : "uut_dma.diskWrapper_Unit.disk",
     "metaDataFilePath": "gen/disk/meta.txt",
-    "diskSize" : "32768",
+    "diskSize" : "4096",
     "startupDelay" : "30",
     "Output_FilePath" : "gen/diskLoader.v"
 

@@ -68,12 +68,22 @@ module tb_dma ();
         .rst(rst),
         .address_bus(addrBus),
         .data_bus(dataBus),
-        .inFromDte_ld_req(dte_2_mem.ld_req),
-        .inFromDte_st_req(dte_2_mem.st_req),
-        .inFromDte_permission2DriveBus(dte_2_mem.permission2DriveBus),
-        .out2Dte_mem_Ready(mem_2_dte.mem_Ready),
-        .out2Sch_writeBuf_V(mem_2_sch.writeBuf_V)
+        .inFromDte(dte_2_mem),
+        .out2Dte(mem_2_dte),
+        .out2Sch(mem_2_sch)
     );
+
+    //mem_TOP u_mainMem (
+    //    .clk(clk),
+    //    .rst(rst),
+    //    .address_bus(addrBus),
+    //    .data_bus(dataBus),
+    //    .inFromDte_ld_req(dte_2_mem.ld_req),
+    //    .inFromDte_st_req(dte_2_mem.st_req),
+    //    .inFromDte_permission2DriveBus(dte_2_mem.permission2DriveBus),
+    //    .out2Dte_mem_Ready(mem_2_dte.mem_Ready),
+    //    .out2Sch_writeBuf_V(mem_2_sch.writeBuf_V)
+    //);
 
     DMA_Controller uut_dma (
         .clk(clk),
@@ -95,6 +105,7 @@ module tb_dma ();
 
     dcache_loader dcache_loader_unit ();
     tb_memGen_InitRitual mem_loader_unit ();
+    diskLoader disk_loader_unit();
 
     initial begin
         rst = 0;
@@ -105,10 +116,47 @@ module tb_dma ();
         DelayCLKs(10);
         rst = 1;
 
+        //writing disk src addr
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.address = 32'h0000;
+        core_2_dcache.stq_info_mio.data = '{default: 8'h00};
+        core_2_dcache.stq_info_mio.empty = 0;
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.empty = 1;
+        DelayCLKs(10);
+        
+        //writing mem destination addr
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.address = 32'h0010;
+        core_2_dcache.stq_info_mio.data = {8'h10, 8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00};
+        core_2_dcache.stq_info_mio.empty = 0;
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.empty = 1;
+        DelayCLKs(10);
+
+        //writing num bytes
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.address = 32'h0020;
+        core_2_dcache.stq_info_mio.data = {8'h00, 8'h10,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00};
+        core_2_dcache.stq_info_mio.empty = 0;
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.empty = 1;
+        DelayCLKs(10);
+        
+        //starting the dma transfer
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.address = 32'h0030;
+        core_2_dcache.stq_info_mio.data = {default : '1};
+        core_2_dcache.stq_info_mio.empty = 0;
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.empty = 1;
+        
+        @(posedge dma_2_core.intOut);
+
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayCLKs(30);
+        DelayCLKs(500);
         `LOG("DCache  Tb Complete");
         $finish;
 
