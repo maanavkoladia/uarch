@@ -3,17 +3,17 @@ STRUCTRURAL := true
 include ../../../Make.vars
 include ../../../Make.build
 
-TARGET = DDR5_Test
+TARGET = DMA_Test
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_ddr5 
+TOP_MODULE_NAME = tb_dma
 
 STARTUP_FILES = gen/memLoader.sv gen/dcache_loader.sv
 
 TB_FILES = \
 		   $(STARTUP_FILES) \
-		   tb_ddr5.sv
+		   tb_dma.sv
 
 SRC_FILES :=
 

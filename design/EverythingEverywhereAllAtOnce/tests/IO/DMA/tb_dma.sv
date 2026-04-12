@@ -1,7 +1,7 @@
 import common_pkg::*;
 import interconnect_pkg::*;
 
-module tb_ddr5 ();
+module tb_dma ();
 
     localparam int CLK_PERIOD = 8;
 
