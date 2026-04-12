@@ -1,3 +1,0 @@
-package PrintICache;
-
-endpackage

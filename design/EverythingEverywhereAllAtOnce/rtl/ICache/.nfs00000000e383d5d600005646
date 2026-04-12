@@ -134,7 +134,7 @@ module ICache (
     //do the swapbuf latch logic
     always_ff @(posedge clk) begin
         if (!rst) icache_swapbuf <= '{default: '0};
-        else if (fsmOuts.LD_IC_SWAP_BUF && icache_tag_V) begin
+        else if (fsmOuts.LD_IC_SWAP_BUF) begin
             icache_swapbuf.valid <= 1;
             icache_swapbuf.lineAddr <= {
                 icache_tag, inFromCore_i.v_addr_i[ICACHE_INDEX_UB : ICACHE_INDEX_LB], 4'b0000
