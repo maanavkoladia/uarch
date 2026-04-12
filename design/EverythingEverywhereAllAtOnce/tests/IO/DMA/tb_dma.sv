@@ -128,7 +128,7 @@ module tb_dma ();
         //writing mem destination addr
         @(posedge clk);
         core_2_dcache.stq_info_mio.address = 32'h0010;
-        core_2_dcache.stq_info_mio.data = {8'h10, 8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00};
+        core_2_dcache.stq_info_mio.data = {8'h00, 8'h20,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00};
         core_2_dcache.stq_info_mio.empty = 0;
         @(posedge clk);
         core_2_dcache.stq_info_mio.empty = 1;
@@ -137,7 +137,7 @@ module tb_dma ();
         //writing num bytes
         @(posedge clk);
         core_2_dcache.stq_info_mio.address = 32'h0020;
-        core_2_dcache.stq_info_mio.data = {8'h00, 8'h10,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00};
+        core_2_dcache.stq_info_mio.data = {8'h10, 8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00};
         core_2_dcache.stq_info_mio.empty = 0;
         @(posedge clk);
         core_2_dcache.stq_info_mio.empty = 1;
