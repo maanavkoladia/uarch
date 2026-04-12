@@ -63,27 +63,27 @@ module tb_dma ();
         .dte_2_ddr5_o(dte_2_ddr5)
     );
 
+    //azmem_TOP u_mainMem (
+    //az    .clk(clk),
+    //az    .rst(rst),
+    //az    .address_bus(addrBus),
+    //az    .data_bus(dataBus),
+    //az    .inFromDte(dte_2_mem),
+    //az    .out2Dte(mem_2_dte),
+    //az    .out2Sch(mem_2_sch)
+    //az);
+
     mem_TOP u_mainMem (
         .clk(clk),
         .rst(rst),
         .address_bus(addrBus),
         .data_bus(dataBus),
-        .inFromDte(dte_2_mem),
-        .out2Dte(mem_2_dte),
-        .out2Sch(mem_2_sch)
+        .inFromDte_ld_req(dte_2_mem.ld_req),
+        .inFromDte_st_req(dte_2_mem.st_req),
+        .inFromDte_permission2DriveBus(dte_2_mem.permission2DriveBus),
+        .out2Dte_mem_Ready(mem_2_dte.mem_Ready),
+        .out2Sch_writeBuf_V(mem_2_sch.writeBuf_V)
     );
-
-    //mem_TOP u_mainMem (
-    //    .clk(clk),
-    //    .rst(rst),
-    //    .address_bus(addrBus),
-    //    .data_bus(dataBus),
-    //    .inFromDte_ld_req(dte_2_mem.ld_req),
-    //    .inFromDte_st_req(dte_2_mem.st_req),
-    //    .inFromDte_permission2DriveBus(dte_2_mem.permission2DriveBus),
-    //    .out2Dte_mem_Ready(mem_2_dte.mem_Ready),
-    //    .out2Sch_writeBuf_V(mem_2_sch.writeBuf_V)
-    //);
 
     DMA_Controller uut_dma (
         .clk(clk),
