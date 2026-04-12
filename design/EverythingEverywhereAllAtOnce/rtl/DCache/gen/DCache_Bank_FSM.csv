@@ -7,8 +7,8 @@ IDLE,1,1,0,1,x,x,x,EVICTING,1,1,0,0,0,0,0,0,0,0,0
 IDLE,1,1,1,1,x,x,x,EB_BLOCKING,0,0,0,0,0,0,0,0,0,0,0
 EVICTING,x,x,x,x,x,1,x,EVICTING,0,0,0,0,0,0,1,0,0,0,0
 EVICTING,x,x,x,x,x,0,x,Req0,0,0,0,0,0,0,1,0,0,0,0
-SWAPPING_LD,x,x,x,x,x,x,x,IDLE,0,0,1,1,0,0,0,0,0,0,0
-SWAPPING_ST0,x,x,x,x,x,x,x,SWAPPING_LD,0,0,0,0,0,0,0,0,0,0,0
+SWAPPING_LD,x,x,x,x,x,x,x,IDLE,0,0,1,1,0,0,1,0,0,0,0
+SWAPPING_ST0,x,x,x,x,x,x,x,SWAPPING_LD,0,0,0,0,0,0,1,0,0,0,0
 EB_BLOCKING,x,x,1,x,x,x,x,EB_BLOCKING,0,0,0,0,0,1,1,0,0,0,0
 EB_BLOCKING,x,x,0,x,x,x,x,IDLE,0,0,0,0,0,0,1,0,0,0,0
 Req0,x,x,x,x,0,x,x,Req0,0,0,0,0,1,0,1,0,0,0,0

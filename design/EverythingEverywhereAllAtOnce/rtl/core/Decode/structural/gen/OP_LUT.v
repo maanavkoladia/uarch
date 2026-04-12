@@ -310,6 +310,7 @@ wire input7_i_inv;
 // SOP logic (Quine-McCluskey minimised)
 // ----------------------------------------------------------------
 
+<<<<<<< HEAD
 // needr_m_o = (!input7_i & !input6_i & !input4_i & !input3_i & !input2_i) | (input7_i & !input6_i & !input5_i & !input4_i & !input2_i & input0_i) | (input7_i & !input6_i & !input5_i & !input4_i & input3_i & !input0_i) | (!input7_i & !input6_i & !input5_i & !input3_i & !input2_i & input0_i) | (!input7_i & input6_i & input5_i & input3_i & input2_i & input1_i & input0_i) | (input6_i & input5_i & !input4_i & !input3_i & !input2_i & input1_i & input0_i) | (input7_i & input6_i & !input5_i & !input4_i & !input3_i & input2_i & input1_i) | (input7_i & !input6_i & !input5_i & !input4_i & !input2_i & !input1_i) | (!input7_i & input6_i & input5_i & !input4_i & !input2_i & input1_i & input0_i) | (input6_i & input5_i & input4_i & input3_i & input2_i & input1_i & input0_i) | (!input7_i & !input5_i & !input4_i & !input3_i & !input2_i & input1_i & !input0_i) | (input7_i & input6_i & input5_i & !input4_i & !input3_i & !input2_i & !input1_i & !input0_i)
 wire needr_m_o_t0;
 `AND_5(needr_m_o_and0, 1, needr_m_o_t0, input7_i_inv, input6_i_inv, input4_i_inv, input3_i_inv, input2_i_inv)
@@ -335,9 +336,33 @@ wire needr_m_o_t10;
 `AND_7(needr_m_o_and10, 1, needr_m_o_t10, input7_i_inv, input5_i_inv, input4_i_inv, input3_i_inv, input2_i_inv, input1_i, input0_i_inv)
 wire needr_m_o_t11;
 `AND_8(needr_m_o_and11, 1, needr_m_o_t11, input7_i, input6_i, input5_i, input4_i_inv, input3_i_inv, input2_i_inv, input1_i_inv, input0_i_inv)
+=======
+// needrm_o = (!input_7_i & !input_6_i & !input_4_i & !input_3_i & !input_2_i) | (input_7_i & !input_6_i & !input_5_i & !input_4_i & input_3_i & !input_0_i) | (input_7_i & !input_6_i & !input_5_i & !input_4_i & !input_2_i & input_0_i) | (!input_7_i & !input_6_i & !input_5_i & !input_3_i & !input_2_i & input_0_i) | (input_7_i & !input_6_i & input_5_i & input_4_i & !input_3_i & !input_2_i & !input_1_i) | (input_7_i & input_6_i & !input_5_i & !input_4_i & !input_3_i & input_2_i & input_1_i) | (input_7_i & !input_6_i & !input_5_i & !input_4_i & !input_2_i & !input_1_i) | (!input_7_i & !input_5_i & !input_4_i & !input_3_i & !input_2_i & input_1_i & !input_0_i) | (input_7_i & !input_6_i & input_5_i & input_4_i & input_3_i & input_2_i & !input_1_i & !input_0_i) | (input_7_i & input_6_i & input_5_i & input_4_i & input_3_i & input_2_i & input_1_i & input_0_i)
+wire needrm_o_t0;
+`AND_5(needrm_o_and0, 1, needrm_o_t0, input_7_i_inv, input_6_i_inv, input_4_i_inv, input_3_i_inv, input_2_i_inv)
+wire needrm_o_t1;
+`AND_6(needrm_o_and1, 1, needrm_o_t1, input_7_i, input_6_i_inv, input_5_i_inv, input_4_i_inv, input_3_i, input_0_i_inv)
+wire needrm_o_t2;
+`AND_6(needrm_o_and2, 1, needrm_o_t2, input_7_i, input_6_i_inv, input_5_i_inv, input_4_i_inv, input_2_i_inv, input_0_i)
+wire needrm_o_t3;
+`AND_6(needrm_o_and3, 1, needrm_o_t3, input_7_i_inv, input_6_i_inv, input_5_i_inv, input_3_i_inv, input_2_i_inv, input_0_i)
+wire needrm_o_t4;
+`AND_7(needrm_o_and4, 1, needrm_o_t4, input_7_i, input_6_i_inv, input_5_i, input_4_i, input_3_i_inv, input_2_i_inv, input_1_i_inv)
+wire needrm_o_t5;
+`AND_7(needrm_o_and5, 1, needrm_o_t5, input_7_i, input_6_i, input_5_i_inv, input_4_i_inv, input_3_i_inv, input_2_i, input_1_i)
+wire needrm_o_t6;
+`AND_6(needrm_o_and6, 1, needrm_o_t6, input_7_i, input_6_i_inv, input_5_i_inv, input_4_i_inv, input_2_i_inv, input_1_i_inv)
+wire needrm_o_t7;
+`AND_7(needrm_o_and7, 1, needrm_o_t7, input_7_i_inv, input_5_i_inv, input_4_i_inv, input_3_i_inv, input_2_i_inv, input_1_i, input_0_i_inv)
+wire needrm_o_t8;
+`AND_8(needrm_o_and8, 1, needrm_o_t8, input_7_i, input_6_i_inv, input_5_i, input_4_i, input_3_i, input_2_i, input_1_i_inv, input_0_i_inv)
+wire needrm_o_t9;
+`AND_8(needrm_o_and9, 1, needrm_o_t9, input_7_i, input_6_i, input_5_i, input_4_i, input_3_i, input_2_i, input_1_i, input_0_i)
+>>>>>>> 3843a02ce0a903d593838800021bffc4c143370e
 
 `OR_12(needr_m_o_or, 1, needr_m_o, needr_m_o_t0, needr_m_o_t1, needr_m_o_t2, needr_m_o_t3, needr_m_o_t4, needr_m_o_t5, needr_m_o_t6, needr_m_o_t7, needr_m_o_t8, needr_m_o_t9, needr_m_o_t10, needr_m_o_t11)
 
+<<<<<<< HEAD
 // imm_size2_o = (input7_i & !input6_i & input5_i & input4_i & input3_i) | (input7_i & input6_i & input5_i & !input4_i & input3_i & !input2_i & !input1_i) | (input7_i & !input6_i & !input5_i & !input4_i & !input3_i & input2_i & input0_i) | (!input7_i & !input6_i & !input4_i & !input3_i & input2_i & !input1_i & input0_i) | (input7_i & !input6_i & !input5_i & !input4_i & !input3_i & !input1_i & input0_i) | (input7_i & input6_i & input5_i & !input4_i & input3_i & !input2_i & !input0_i) | (input7_i & !input6_i & input4_i & input3_i & !input2_i & input1_i & !input0_i)
 wire imm_size2_o_t0;
 `AND_5(imm_size2_o_and0, 1, imm_size2_o_t0, input7_i, input6_i_inv, input5_i, input4_i, input3_i)
@@ -353,6 +378,23 @@ wire imm_size2_o_t5;
 `AND_7(imm_size2_o_and5, 1, imm_size2_o_t5, input7_i, input6_i, input5_i, input4_i_inv, input3_i, input2_i_inv, input0_i_inv)
 wire imm_size2_o_t6;
 `AND_7(imm_size2_o_and6, 1, imm_size2_o_t6, input7_i, input6_i_inv, input4_i, input3_i, input2_i_inv, input1_i, input0_i_inv)
+=======
+// imm_size_2_o = (input_7_i & input_6_i & input_5_i & !input_4_i & input_3_i & !input_2_i & !input_1_i) | (!input_7_i & !input_6_i & !input_4_i & !input_3_i & input_2_i & !input_1_i & input_0_i) | (input_7_i & input_6_i & input_5_i & !input_4_i & input_3_i & !input_2_i & !input_0_i) | (!input_7_i & input_6_i & !input_5_i & !input_4_i & !input_3_i & !input_2_i & input_1_i & !input_0_i) | (input_7_i & !input_6_i & !input_5_i & !input_4_i & !input_3_i & input_2_i & input_1_i & input_0_i) | (input_7_i & !input_6_i & !input_5_i & input_4_i & input_3_i & !input_2_i & input_1_i & !input_0_i) | (input_7_i & !input_6_i & !input_5_i & !input_4_i & !input_3_i & !input_2_i & !input_1_i & input_0_i)
+wire imm_size_2_o_t0;
+`AND_7(imm_size_2_o_and0, 1, imm_size_2_o_t0, input_7_i, input_6_i, input_5_i, input_4_i_inv, input_3_i, input_2_i_inv, input_1_i_inv)
+wire imm_size_2_o_t1;
+`AND_7(imm_size_2_o_and1, 1, imm_size_2_o_t1, input_7_i_inv, input_6_i_inv, input_4_i_inv, input_3_i_inv, input_2_i, input_1_i_inv, input_0_i)
+wire imm_size_2_o_t2;
+`AND_7(imm_size_2_o_and2, 1, imm_size_2_o_t2, input_7_i, input_6_i, input_5_i, input_4_i_inv, input_3_i, input_2_i_inv, input_0_i_inv)
+wire imm_size_2_o_t3;
+`AND_8(imm_size_2_o_and3, 1, imm_size_2_o_t3, input_7_i_inv, input_6_i, input_5_i_inv, input_4_i_inv, input_3_i_inv, input_2_i_inv, input_1_i, input_0_i_inv)
+wire imm_size_2_o_t4;
+`AND_8(imm_size_2_o_and4, 1, imm_size_2_o_t4, input_7_i, input_6_i_inv, input_5_i_inv, input_4_i_inv, input_3_i_inv, input_2_i, input_1_i, input_0_i)
+wire imm_size_2_o_t5;
+`AND_8(imm_size_2_o_and5, 1, imm_size_2_o_t5, input_7_i, input_6_i_inv, input_5_i_inv, input_4_i, input_3_i, input_2_i_inv, input_1_i, input_0_i_inv)
+wire imm_size_2_o_t6;
+`AND_8(imm_size_2_o_and6, 1, imm_size_2_o_t6, input_7_i, input_6_i_inv, input_5_i_inv, input_4_i_inv, input_3_i_inv, input_2_i_inv, input_1_i_inv, input_0_i)
+>>>>>>> 3843a02ce0a903d593838800021bffc4c143370e
 
 `OR_7(imm_size2_o_or, 1, imm_size2_o, imm_size2_o_t0, imm_size2_o_t1, imm_size2_o_t2, imm_size2_o_t3, imm_size2_o_t4, imm_size2_o_t5, imm_size2_o_t6)
 
@@ -364,6 +406,7 @@ wire imm_size1_o_t1;
 
 `OR_2(imm_size1_o_or, 1, imm_size1_o, imm_size1_o_t0, imm_size1_o_t1)
 
+<<<<<<< HEAD
 // imm_size0_o = (input7_i & !input6_i & input5_i & input4_i & !input3_i) | (!input7_i & input6_i & input5_i & input4_i & !input3_i & input2_i & input0_i) | (!input7_i & !input6_i & !input4_i & !input3_i & input2_i & !input1_i & !input0_i) | (input7_i & !input6_i & !input5_i & !input4_i & !input3_i & !input2_i & input1_i & input0_i) | (input7_i & input6_i & input5_i & !input4_i & input3_i & !input2_i & input1_i & input0_i) | (input7_i & !input6_i & !input5_i & !input4_i & !input3_i & !input2_i & !input1_i & !input0_i)
 wire imm_size0_o_t0;
 `AND_5(imm_size0_o_and0, 1, imm_size0_o_t0, input7_i, input6_i_inv, input5_i, input4_i, input3_i_inv)
@@ -377,6 +420,19 @@ wire imm_size0_o_t4;
 `AND_8(imm_size0_o_and4, 1, imm_size0_o_t4, input7_i, input6_i, input5_i, input4_i_inv, input3_i, input2_i_inv, input1_i, input0_i)
 wire imm_size0_o_t5;
 `AND_8(imm_size0_o_and5, 1, imm_size0_o_t5, input7_i, input6_i_inv, input5_i_inv, input4_i_inv, input3_i_inv, input2_i_inv, input1_i_inv, input0_i_inv)
+=======
+// imm_size_0_o = (!input_7_i & input_6_i & input_5_i & input_4_i & !input_3_i & input_2_i & input_0_i) | (!input_7_i & !input_6_i & !input_4_i & !input_3_i & input_2_i & !input_1_i & !input_0_i) | (input_7_i & !input_6_i & !input_5_i & !input_4_i & !input_3_i & !input_2_i & input_1_i & input_0_i) | (input_7_i & !input_6_i & !input_5_i & !input_4_i & !input_3_i & !input_2_i & !input_1_i & !input_0_i) | (input_7_i & input_6_i & input_5_i & !input_4_i & input_3_i & !input_2_i & input_1_i & input_0_i)
+wire imm_size_0_o_t0;
+`AND_7(imm_size_0_o_and0, 1, imm_size_0_o_t0, input_7_i_inv, input_6_i, input_5_i, input_4_i, input_3_i_inv, input_2_i, input_0_i)
+wire imm_size_0_o_t1;
+`AND_7(imm_size_0_o_and1, 1, imm_size_0_o_t1, input_7_i_inv, input_6_i_inv, input_4_i_inv, input_3_i_inv, input_2_i, input_1_i_inv, input_0_i_inv)
+wire imm_size_0_o_t2;
+`AND_8(imm_size_0_o_and2, 1, imm_size_0_o_t2, input_7_i, input_6_i_inv, input_5_i_inv, input_4_i_inv, input_3_i_inv, input_2_i_inv, input_1_i, input_0_i)
+wire imm_size_0_o_t3;
+`AND_8(imm_size_0_o_and3, 1, imm_size_0_o_t3, input_7_i, input_6_i_inv, input_5_i_inv, input_4_i_inv, input_3_i_inv, input_2_i_inv, input_1_i_inv, input_0_i_inv)
+wire imm_size_0_o_t4;
+`AND_8(imm_size_0_o_and4, 1, imm_size_0_o_t4, input_7_i, input_6_i, input_5_i, input_4_i_inv, input_3_i, input_2_i_inv, input_1_i, input_0_i)
+>>>>>>> 3843a02ce0a903d593838800021bffc4c143370e
 
 `OR_6(imm_size0_o_or, 1, imm_size0_o, imm_size0_o_t0, imm_size0_o_t1, imm_size0_o_t2, imm_size0_o_t3, imm_size0_o_t4, imm_size0_o_t5)
 

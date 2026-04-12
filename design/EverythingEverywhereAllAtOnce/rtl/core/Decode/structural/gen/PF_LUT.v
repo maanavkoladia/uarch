@@ -40,11 +40,11 @@ wire pf_1_i_inv;
 // num_pfs_1_o = (pf_1_i & pf_0_i)
 `AND_2(num_pfs_1_o_and, 1, num_pfs_1_o, pf_1_i, pf_0_i)
 
-// num_pfs_0_o = (!pf_1_i & pf_0_i) | (pf_2_i & pf_0_i)
+// num_pfs_0_o = (pf_2_i & pf_0_i) | (!pf_1_i & pf_0_i)
 wire num_pfs_0_o_t0;
-`AND_2(num_pfs_0_o_and0, 1, num_pfs_0_o_t0, pf_1_i_inv, pf_0_i)
+`AND_2(num_pfs_0_o_and0, 1, num_pfs_0_o_t0, pf_2_i, pf_0_i)
 wire num_pfs_0_o_t1;
-`AND_2(num_pfs_0_o_and1, 1, num_pfs_0_o_t1, pf_2_i, pf_0_i)
+`AND_2(num_pfs_0_o_and1, 1, num_pfs_0_o_t1, pf_1_i_inv, pf_0_i)
 
 `OR_2(num_pfs_0_o_or, 1, num_pfs_0_o, num_pfs_0_o_t0, num_pfs_0_o_t1)
 
