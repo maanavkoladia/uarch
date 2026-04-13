@@ -142,12 +142,14 @@ module tb_ICache ();
 
         @(posedge icache_2_core.hit)
         @(posedge clk)
+        #1
         core_2_icache.icache_en = 1;
         core_2_icache.p_addr = 15'h20D0;
         core_2_icache.v_addr_i = 32'h2d2d2dC0;
  
         @(posedge icache_2_core.hit)
         @(posedge clk)
+        #1
         core_2_icache.icache_en = 1;
         core_2_icache.p_addr = 15'h10D0; //hit in victim 
         core_2_icache.v_addr_i = 32'h123456C0;
@@ -168,6 +170,7 @@ module tb_ICache ();
 
         @(posedge icache_2_core.hit)
         @(posedge clk)
+        #1
         core_2_icache.icache_en = 1;
         core_2_icache.p_addr = 15'h40D0;
         core_2_icache.v_addr_i = 32'h444444C0;
@@ -177,6 +180,7 @@ module tb_ICache ();
 
         @(posedge icache_2_core.hit)
         @(posedge clk)
+        #1
         core_2_icache.icache_en = 1;
         core_2_icache.p_addr = 15'h50D0;
         core_2_icache.v_addr_i = 32'h555555C0;
@@ -186,6 +190,7 @@ module tb_ICache ();
 
         @(posedge icache_2_core.hit)
         @(posedge clk)
+        #1
         core_2_icache.icache_en = 1;
         core_2_icache.p_addr = 15'h60D0;
         core_2_icache.v_addr_i = 32'h666666C0;
@@ -195,6 +200,7 @@ module tb_ICache ();
 
         @(posedge icache_2_core.hit)
         @(posedge clk)
+        #1
         core_2_icache.icache_en = 1;
         core_2_icache.p_addr = 15'h20D0;
         core_2_icache.v_addr_i = 32'h2d2d2dC0;
@@ -205,7 +211,7 @@ module tb_ICache ();
         /////////////////////////////////////////////////////////////////////////////////////
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayCLKs(20);
+        DelayCLKs(100);
         `LOG("DCache  Tb Complete");
         $finish;
 
