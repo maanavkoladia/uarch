@@ -5,10 +5,8 @@ module MIO_Q(
 
     output st_q_2_dcache_t outs
 );
-    
-    //MIO queue is currently updated combinationally so if dte services the queue updatees to empty combinationally
-    //
-    //currently 1
+
+
     mio_entry_t mio_q;
     bool full;
     bool empty;
@@ -32,10 +30,10 @@ module MIO_Q(
             next_full = 1;
             next_empty = 0;
         end
-        else if (valid_pop) begin 
+        else if (valid_pop) begin
             next_empty = 1;
             next_full = 0;
-        end  
+        end
 
     end
 //work to do, if push
@@ -56,8 +54,8 @@ module MIO_Q(
     end
 
     assign outs = '{
-        full: next_full,
-        empty: next_empty,
+        full: full,
+        empty: empty,
         address: mio_q.address,
         bit_vec: '0,
         data: mio_q.data
