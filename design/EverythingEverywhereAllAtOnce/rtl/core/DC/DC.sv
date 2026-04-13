@@ -68,10 +68,10 @@ module DC (
     //in store flight and stq stall logic accounts for valid bits
     assign dep_stall = in_flight_stall | stq_stall;
 
-
-    assign exp_stall = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP 
-                       |  st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP) 
-                       & latches_i.valid;
+    bool ld_exception, st_exception;
+    assign ld_exception = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP) && latches_i.cs.LD_OP;
+    assign st_exception = (st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP) && latches_i.cs.ST_OP;
+    assign exp_stall = (ld_exception | st_exception) & latches_i.valid;
                        
 
     assign dc_stall = dep_stall | arb_stall | exp_stall;

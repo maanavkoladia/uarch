@@ -51,6 +51,8 @@ module control_store (
     logic HARDCODED_DR_WR_o;
     logic HARDCODED_SR_RD_o;
     logic HARDCODED_SR_WR_o;
+    logic HARDCODED_LD_OP_o;
+    logic HARDCODED_ST_OP_o;
     logic ST_SEL_o;
 
     logic br_uncond_o;
@@ -121,6 +123,8 @@ module control_store (
         .HARDCODED_DR_WR_o(HARDCODED_DR_WR_o),
         .HARDCODED_SR_RD_o(HARDCODED_SR_RD_o),
         .HARDCODED_SR_WR_o(HARDCODED_SR_WR_o),
+        .HARDCODED_LD_OP_o(HARDCODED_LD_OP_o),
+        .HARDCODED_ST_OP_o(HARDCODED_ST_OP_o),
         .ST_SEL_o(ST_SEL_o),
 
         // Destination Register Hardcoding
@@ -222,6 +226,8 @@ module control_store (
         HARDCODED_DR_WR   : HARDCODED_DR_WR_o,
         HARDCODED_SR_RD   : HARDCODED_SR_RD_o,
         HARDCODED_SR_WR   : HARDCODED_SR_WR_o,
+        HARDCODED_LD_OP   : HARDCODED_LD_OP_o,
+        HARDCODED_ST_OP   : HARDCODED_ST_OP_o,
         OP_IN_MODRM       : OP_IN_MODRM_o,
         dr_id             : mod_rm_cs_outs.dr_id,
         sr_id             : mod_rm_cs_outs.sr_id,

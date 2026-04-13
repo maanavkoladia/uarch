@@ -84,7 +84,7 @@ module ppu (
     assign imm_valid[7] = 1'b1;
 
 
-    assign inst_valid = |disp_valid && |imm_valid && op_valid && mod_valid && sib_valid;
+    assign inst_valid = &disp_valid && &imm_valid && op_valid && mod_valid && sib_valid;
 
 
 

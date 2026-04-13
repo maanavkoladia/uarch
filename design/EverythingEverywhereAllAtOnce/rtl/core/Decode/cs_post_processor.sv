@@ -65,6 +65,8 @@ module cs_post_processor (
         HARDCODED_SR_RD         : decode_cs_i.HARDCODED_SR_RD,
         HARDCODED_DR_WR         : decode_cs_i.HARDCODED_DR_WR,
         HARDCODED_SR_WR         : decode_cs_i.HARDCODED_SR_WR,
+        HARDCODED_LD_OP         : decode_cs_i.HARDCODED_LD_OP,
+        HARDCODED_ST_OP         : decode_cs_i.HARDCODED_ST_OP,
         OP_IN_MODRM             : decode_cs_i.OP_IN_MODRM,
         dr_id                   : decode_cs_i.dr_id,
         sr_id                   : decode_cs_i.sr_id,

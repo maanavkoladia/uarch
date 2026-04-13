@@ -89,8 +89,8 @@ module npu_node2 (
     assign outputs.xcl = (vaddy_start_fields.bank[0] ^ vaddy_end_fields.bank[0]) && mem_op;
     assign outputs.PADDR1 = {tlb1_out.physical_addr[$clog2(PHY_MEM_SIZE) - 1 : 4], 4'b0};
 
-    assign outputs.DC_PF = tlb0_pagefault || tlb1_pagefault;
-    assign outputs.DC_GP = tlb0_generalprotection || tlb1_generalprotection || segx_gp || rr_gp;
+    assign outputs.DC_PF = (tlb0_pagefault || tlb1_pagefault);
+    assign outputs.DC_GP = (tlb0_generalprotection || tlb1_generalprotection || segx_gp || rr_gp);
 
     //if both addresses are valid and we are doing a ld/st op
     assign outputs.valid_mem_op = tlb0_out.physical_addr_valid && tlb1_out.physical_addr_valid && mem_op;

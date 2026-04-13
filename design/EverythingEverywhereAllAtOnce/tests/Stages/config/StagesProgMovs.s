@@ -16,7 +16,7 @@ _start:
     # opcode 89
     # 0x1002
     # ----------------------------------------
-    movl %ebx, %ecx
+    movl %ebx, %esp
 
     # ----------------------------------------
     # 8E: MOV Sreg, r/m16
@@ -24,7 +24,7 @@ _start:
     # opcode 8E
     # 0x1004
     # ----------------------------------------
-    movw %cx, %es
+    movw %bx, %es
 
     # ----------------------------------------
     # 8C: MOV r/m16, Sreg
@@ -52,11 +52,13 @@ _start:
     jmp target
 
     # some filler instructions (won’t execute)
-    movl %eax, %eax
+    movl %eax, %edi
     movl %ebx, %ebx
 
 target:
-    addl %edi, %ebx
+    push %ebx
+    pop %esi
+    addl %esi, %eax
 
     hlt
 

@@ -139,6 +139,8 @@
         "NO_REG" : "24"
     },
 
+    "HARDCODED_LD_OP" : "1",
+    "HARDCODED_ST_OP" : "1",
     "HARDCODED_DR_RD" : "1",
     "HARDCODED_DR_WR" : "1",
     "HARDCODED_SR_RD" : "1",

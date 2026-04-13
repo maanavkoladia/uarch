@@ -209,8 +209,8 @@ module modrm_processor (
 
 
         //st/ld op setting
-        ld_op = (modrm_byte[7:6] != 2'b11) && decode_cs_inputs.MODRM_NEEDED;
-        st_op = (rm_is_dr && (modrm_byte[7:6] != 2'b11));
+        ld_op = ((modrm_byte[7:6] != 2'b11) && decode_cs_inputs.MODRM_NEEDED) || decode_cs_inputs.HARDCODED_LD_OP;
+        st_op = (rm_is_dr && (modrm_byte[7:6] != 2'b11)) || decode_cs_inputs.HARDCODED_ST_OP;
     end
 
 

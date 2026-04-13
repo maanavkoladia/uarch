@@ -27,6 +27,9 @@ module cs_change_logic(
         if(op_type == CMOVC)begin
             st_op_o = curr_cf_flag ? 1 : 0;
         end
+        if(op_type == XCHG) begin
+            wb_sr_o = 1'b1;
+        end
     end
 
 

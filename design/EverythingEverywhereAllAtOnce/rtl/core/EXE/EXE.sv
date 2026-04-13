@@ -223,10 +223,16 @@ module EXE (
     //==========================================================================
     // NEXT LATCH ASSIGNMENT
     //==========================================================================
+    wb_cs_t next_wb_cs;
+    assign next_wb_cs = '{
+        ST_OP : st_op_next,
+        WB_DR : wb_dr_next,
+        WB_SR : wb_sr_next 
+    };
 
     assign wb_latches_next_o = '{
             valid: wb_stage_next_vaild_o,  
-            cs: latches_i.wb_cs,
+            cs: next_wb_cs,
             ST_XCL: latches_i.ST_XCL,
             ST_PADDR_0: latches_i.ST_PADDR_0,
             ST_BIT_VEC_0: bit_vec_0_next,

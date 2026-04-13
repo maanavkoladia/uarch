@@ -70,6 +70,8 @@ package core_stage_latches_pkg;
         bool HARDCODED_DR_WR;
         bool HARDCODED_SR_RD;
         bool HARDCODED_SR_WR;
+        bool HARDCODED_LD_OP;
+        bool HARDCODED_ST_OP;
         bool OP_IN_MODRM;
         reg_ids_e dr_id;
         reg_ids_e sr_id;
