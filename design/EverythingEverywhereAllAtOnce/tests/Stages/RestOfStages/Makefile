@@ -14,10 +14,9 @@ STARTUP_FILES = \
 				gen/dcache_loader.sv \
 				gen/icache_loader.sv
 
-
 TB_FILES = \
 		   $(STARTUP_FILES) \
-		   tb_stages
+		   tb_restOfStages.sv
 
 SRC_FILES :=
 
