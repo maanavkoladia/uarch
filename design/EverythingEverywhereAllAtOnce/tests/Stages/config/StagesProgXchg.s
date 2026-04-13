@@ -34,7 +34,7 @@ _start:
     # ----------------------------
     # 86 /r : XCHG r/m8, r8
     # ----------------------------
-    xchgb %al, (%edi)         # al <-> lowest byte of [edi]
+    xchgb %al, (%edi)         # al <-> lowest byte of [edi]P
 
     # ----------------------------
     # 90+rw : XCHG AX, r16
