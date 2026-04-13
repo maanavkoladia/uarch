@@ -1,38 +1,39 @@
+STRUCTRURAL := true
 
-STRUCTURAL = true
 include ../../Make.vars
 include ../../Make.build
 
-TARGET = Stages_Test
+TARGET = StagesTest
 
 GEN_CONF = startUpGen.conf.json
 
-PYTHON_LOCAL = python3.11
-
-TOP_FILE_NAME = tb_stages
+TOP_MODULE_NAME = tb_stages
 
 STARTUP_FILES = \
-				gen/memLoader.sv	\
-				gen/icache_loader.sv \
-				gen/dcache_loader.sv
+				gen/memLoader.sv \
+				gen/dcache_loader.sv \
+				gen/icache_loader.sv
+
 
 TB_FILES = \
-		   $(STARTUP_FILES)	\
-		   tb_stages.sv \
+		   $(STARTUP_FILES) \
+		   tb_stages.sv
 
-PKGS = $(RTL_PKGS)
+SRC_FILES :=
 
-SRC_FILES = \
-			$(PKGS)	\
-			$(RTL_SRC_FILES) \
-			$(TB_FILES)	\
+ifeq ($(STRUCTRURAL), true)
+	SRC_FILES += $(RTL_PKGS) $(RTL_STRUCTURAL_HEADERS) $(RTL_STRUCTURAL_SRC_FILES) $(TB_FILES)	
+else
+	SRC_FILES += $(RTL_PKGS) $(RTL_SRC_FILES) $(TB_FILES)	
+endif
+
 
 .PHONY: all run clean see gen
 
 all: $(TARGET)
 	
 $(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -top $(TOP_FILE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee compile.log
+	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee compile.log
 
 run: $(TARGET)
 	./$< 2>&1| tee sim.log
@@ -43,7 +44,7 @@ view: run
 
 gen:
 	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
-	@$(PYTHON_LOCAL) $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@python3.11 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
 	@rm -f cleaned_scripts.json
 
 see:
