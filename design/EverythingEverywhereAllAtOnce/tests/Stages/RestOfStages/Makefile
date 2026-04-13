@@ -1,13 +1,13 @@
 STRUCTRURAL := true
 
-include ../../Make.vars
-include ../../Make.build
+include ../../../Make.vars
+include ../../../Make.build
 
-TARGET = StagesTest
+TARGET = RestOfStages
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_stages
+TOP_MODULE_NAME = tb_restOfStages
 
 STARTUP_FILES = \
 				gen/memLoader.sv \
@@ -17,7 +17,7 @@ STARTUP_FILES = \
 
 TB_FILES = \
 		   $(STARTUP_FILES) \
-		   tb_stages.sv
+		   tb_stages
 
 SRC_FILES :=
 
