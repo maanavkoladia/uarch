@@ -84,14 +84,26 @@ module tb_stages();
         .dte_2_ddr5_o()
     );
     
+    // mem_TOP uut_mem (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .address_bus(address_bus),
+    //     .data_bus(data_bus),
+    //     .inFromDte(dte_2_mem),
+    //     .out2Dte(mem_2_dte),
+    //     .out2Sch(mem_2_sch)
+    // );
+
     mem_TOP uut_mem (
         .clk(clk),
         .rst(rst),
         .address_bus(address_bus),
         .data_bus(data_bus),
-        .inFromDte(dte_2_mem),
-        .out2Dte(mem_2_dte),
-        .out2Sch(mem_2_sch)
+        .inFromDte_ld_req(dte_2_mem.ld_req),
+        .inFromDte_st_req(dte_2_mem.st_req),
+        .inFromDte_permission2DriveBus(dte_2_mem.permission2DriveBus),
+        .out2Dte_mem_Ready(mem_2_dte.mem_Ready),
+        .out2Sch_writeBuf_V(mem_2_sch.writeBuf_V)
     );
 
     DCache_TOP uut_dcache (
