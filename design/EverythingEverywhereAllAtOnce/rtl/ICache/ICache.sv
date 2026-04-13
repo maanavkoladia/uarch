@@ -134,7 +134,7 @@ module ICache (
     //do the swapbuf latch logic
     always_ff @(posedge clk) begin
         if (!rst) icache_swapbuf <= '{default: '0};
-        else if (fsmOuts.LD_IC_SWAP_BUF) begin
+        else if (fsmOuts.LD_IC_SWAP_BUF && icache_tag_V) begin
             icache_swapbuf.valid <= 1;
             icache_swapbuf.lineAddr <= {
                 icache_tag, inFromCore_i.v_addr_i[ICACHE_INDEX_UB : ICACHE_INDEX_LB], 4'b0000
@@ -146,7 +146,7 @@ module ICache (
     end
 
     //INTERNAL SIGNALS
-
+    
     assign icache_hit =
         inFromCore_i.icache_en
         && (!fsmOuts.busy)
@@ -162,11 +162,14 @@ module ICache (
     assign useSaved_v_Addr = fsmOuts.busy;
     assign curr_v_addr_to_use = useSaved_v_Addr ? saved_vAddr : inFromCore_i.v_addr_i;
 
+    logic save_v_addr;
+    assign save_v_addr = !fsmOuts.busy;
+
     always_ff @(posedge clk) begin
         if (!rst) begin
             saved_vAddr <= 0;
             saved_pAddr <= 0;
-        end else if (!fsmOuts.busy) begin
+        end else if (save_v_addr) begin
             saved_pAddr <= inFromCore_i.p_addr;
             saved_vAddr <= inFromCore_i.v_addr_i;
         end

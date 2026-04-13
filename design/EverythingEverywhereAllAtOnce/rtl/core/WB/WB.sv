@@ -153,7 +153,7 @@ module WB (
         .outs(reg_wb_logic_outs)
     );
 
-    
+
 
 
 

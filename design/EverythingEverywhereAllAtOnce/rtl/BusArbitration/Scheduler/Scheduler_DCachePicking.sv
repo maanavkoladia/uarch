@@ -16,8 +16,10 @@ module Scheduler_DCachePicking (
 
     // Cleaning
     req_2_sch_t d_cache_req[NUM_DCACHE_PORTS];
+    bool eb_clashing[NUM_DCACHE_PORTS];
 
     always_comb begin
+        eb_clashing = '{default : 0};
         for (int i = 0; i < NUM_DCACHE_PORTS; i++) begin
             // Default assignment to avoid latches
             d_cache_req[i] = d_cache_reqs_dirty_i[i];
@@ -31,6 +33,7 @@ module Scheduler_DCachePicking (
                 && writeBuf_V[d_Cache_eb_addr[i][MEM_BANKGROUP_BITS_UB : MEM_BANKGROUP_BITS_LD]]
             ) begin
                 d_cache_req[i] = NO_REQ;
+                eb_clashing[i] = 1;
             end
         end
     end

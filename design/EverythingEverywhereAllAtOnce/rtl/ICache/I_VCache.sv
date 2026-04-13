@@ -110,6 +110,7 @@ module I_VCache (
 
     assign IDX_2_Write = hitHappened ? currMRU_IDX : currLRU_IDX;
 
+
     always_comb begin
         currLRU_IDX[1] = !tagStore.LRU[LRU_ROOT];
         currLRU_IDX[0] = !tagStore.LRU[LRU_ROOT] ? !tagStore.LRU[LRU_RIGHT_LEAF] : !tagStore.LRU[LRU_LEFT_LEAF] ;

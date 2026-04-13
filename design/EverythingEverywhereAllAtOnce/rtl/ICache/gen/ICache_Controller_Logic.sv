@@ -22,7 +22,7 @@
 // ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //           0           0           0           x           x           x           0  |           0           0           0           0           0           0           0           0           0           0           0   IDLE -> IDLE
 //           0           0           0           0           x           x           1  |           0           0           0           0           0           0           0           0           0           0           0   IDLE -> IDLE
-//           0           0           0           1           1           x           1  |           1           0           0           0           0           0           0           0           0           0           0   IDLE -> Fill0
+//           0           0           0           1           1           x           1  |           1           0           0           1           0           0           0           0           0           0           0   IDLE -> Fill0
 //           0           0           0           1           0           x           1  |           1           0           1           1           0           0           0           0           0           0           0   IDLE -> SWAP
 //           1           0           1           x           x           x           x  |           0           0           0           0           1           1           0           0           0           0           0   SWAP -> IDLE
 //           1           0           0           x           x           0           x  |           1           0           0           0           0           1           1           0           0           0           0   Fill0 -> Fill0
@@ -132,19 +132,19 @@ wire NS_2_t3;
 
 `OR_4(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3)
 
-// LD_IC_SWAP_BUF_o = (!S_0 & !S_1 & !S_2 & IC_miss_i & !I_VC_Miss_i & en_i)
-`AND_6(LD_IC_SWAP_BUF_o_and, 1, LD_IC_SWAP_BUF_o, S_0_inv, S_1_inv, S_2_inv, IC_miss_i, I_VC_Miss_i_inv, en_i)
+// LD_IC_SWAP_BUF_o = (!S_0 & !S_1 & !S_2 & IC_miss_i & en_i)
+`AND_5(LD_IC_SWAP_BUF_o_and, 1, LD_IC_SWAP_BUF_o, S_0_inv, S_1_inv, S_2_inv, IC_miss_i, en_i)
 
 // RD_I_VC_SWAP_BUF_o = (S_0 & !S_1 & S_2)
 `AND_3(RD_I_VC_SWAP_BUF_o_and, 1, RD_I_VC_SWAP_BUF_o, S_0, S_1_inv, S_2)
 
-// busy_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2)
+// busy_o = (S_1 & !S_2) | (!S_1 & S_2) | (S_0 & !S_1)
 wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_0, S_1_inv)
+`AND_2(busy_o_and0, 1, busy_o_t0, S_1, S_2_inv)
 wire busy_o_t1;
-`AND_2(busy_o_and1, 1, busy_o_t1, S_1, S_2_inv)
+`AND_2(busy_o_and1, 1, busy_o_t1, S_1_inv, S_2)
 wire busy_o_t2;
-`AND_2(busy_o_and2, 1, busy_o_t2, S_1_inv, S_2)
+`AND_2(busy_o_and2, 1, busy_o_t2, S_0, S_1_inv)
 
 `OR_3(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1, busy_o_t2)
 

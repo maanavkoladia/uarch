@@ -36,7 +36,7 @@ module tb_ddr5 ();
     mem_2_dte_t mem_2_dte;
     dte_2_mem_t dte_2_mem;
 
-    DCache_TOP uut_dcache (
+    DCache_TOP u_dcache (
         .clk(clk),
         .rst(rst),
         .inFromCore_i(core_2_dcache),
@@ -47,7 +47,7 @@ module tb_ddr5 ();
         .address_bus(addrBus)
     );
 
-    BusArbitration busArb (
+    BusArbitration u_BusArb (
         .clk(clk),
         .rst(rst),
         .iCache_2_Sch_i(icache_2_sch),
@@ -62,19 +62,78 @@ module tb_ddr5 ();
         .dte_2_ddr5_o(dte_2_ddr5)
     );
 
-    ddr5 uut_ddr5 (
+    mem_TOP u_mainMem ( 
+        .clk(clk),
+        .rst(rst),
+        .address_bus(addrBus),
+        .data_bus(dataBus),
+        .inFromDte_ld_req(dte_2_mem.ld_req),
+        .inFromDte_st_req(dte_2_mem.st_req),
+        .inFromDte_permission2DriveBus(dte_2_mem.permission2DriveBus),
+        .out2Dte_mem_Ready(mem_2_dte.mem_Ready),
+        .out2Sch_writeBuf_V(mem_2_sch.writeBuf_V)
+    );
+
+    ddr5 uut_ddr5  (
         .clk(clk),
         .rst(rst),  //active low
         .inFromDTE_i(dte_2_ddr5),
         .dataBus(dataBus),
         .addrBus(dataBus)
     );
+
     dcache_loader dcache_loader_unit ();
     tb_memGen_InitRitual mem_loader_unit ();
 
-
     initial begin
         rst = 0;
+        icache_2_sch = '{default: '0};
+        dma_2_sch = '{default: '0};
+        core_2_dcache = '{default: '0};
+        for (int i = 0; i < NUM_DCACHE_PORTS; i++) core_2_dcache.stq_heads[i].empty = 1;
+        core_2_dcache.stq_info_mio.empty = 1;
+        DelayCLKs(10);
+        rst = 1;
+        
+
+        //doing a write to the ddr5
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.address = 32'h0040;
+        core_2_dcache.stq_info_mio.data = '{default: 8'hFF};
+        core_2_dcache.stq_info_mio.empty = 0;
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.empty = 1;
+
+        DelayCLKs(3);
+        @(posedge clk);
+        core_2_dcache.ld_addr_MIO = 32'h0050;
+        core_2_dcache.ld_addr_MIO_V = 1;
+        @(posedge clk);
+        core_2_dcache.ld_addr_MIO_V = 0;
+        @(posedge dcache_2_core.hit_MIO);
+        core_2_dcache.memStage_CLR_REQ_MIO = 1;
+        @(posedge clk);
+        core_2_dcache.memStage_CLR_REQ_MIO = 0;
+
+        DelayCLKs(10);
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.address = 32'h0040;
+        core_2_dcache.stq_info_mio.data = '{default: 8'h00};
+        core_2_dcache.stq_info_mio.empty = 0;
+        @(posedge clk);
+        core_2_dcache.stq_info_mio.empty = 1;
+        
+        //doing a load from the ddr5 
+        DelayCLKs(3);
+        @(posedge clk);
+        core_2_dcache.ld_addr_MIO = 32'h0050;
+        core_2_dcache.ld_addr_MIO_V = 1;
+        @(posedge clk);
+        core_2_dcache.ld_addr_MIO_V = 0;
+        @(posedge dcache_2_core.hit_MIO);
+        core_2_dcache.memStage_CLR_REQ_MIO = 1;
+        @(posedge clk);
+        core_2_dcache.memStage_CLR_REQ_MIO = 0;
 
 
         /////////////////////////////////////////////////////////////////////////////////////

@@ -3,7 +3,7 @@ STRUCTRURAL := true
 include ../../../Make.vars
 include ../../../Make.build
 
-TARGET = dcache_Test
+TARGET = DDR5_Test
 
 GEN_CONF = startUpGen.conf.json
 

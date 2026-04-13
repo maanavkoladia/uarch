@@ -43,11 +43,12 @@ module DMA_Controller (
     dma_control_regs_t dma_Regs;
 
     dma_fsm_states_e fsmState;
-    logic [DMA_FSM_NUM_STATES-1:0] fsmState_bits;
+    logic [$clog2(DMA_FSM_NUM_STATES) -1:0] fsmState_bits;
     assign fsmState = fsmState_bits;
 
     fsm_outs_t fsmOuts;
 
+    logic commiting;
     logic disk_ld_Buffer_V;
     byte_t disk_ld_Buffer[PAGE_SIZE];
 
@@ -67,10 +68,10 @@ module DMA_Controller (
     logic write2_numBytes_req;
     logic write2_startWrite_req;
 
-    assign write2_srcAddr_req    = (addrBus == DMA_WRITE_SRC_ADDRESS);
-    assign write2_destAddr_req   = (addrBus == DMA_WRITE_DEST_ADDRESS);
-    assign write2_numBytes_req   = (addrBus == DMA_WRITE_NUM_BYTES_ADDRESS);
-    assign write2_startWrite_req = (addrBus == DMA_WRITE_START_TRANSFER_ADDRESS);
+    assign write2_srcAddr_req    = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_SRC_ADDRESS);;
+    assign write2_destAddr_req   = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_DEST_ADDRESS);
+    assign write2_numBytes_req   = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_NUM_BYTES_ADDRESS);
+    assign write2_startWrite_req = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_START_TRANSFER_ADDRESS);
 
     assign writeComplete = (counter >= dma_Regs.numBytes);
 
@@ -147,7 +148,8 @@ module DMA_Controller (
     always_ff @(posedge clk) begin
         if (!rst) begin
             writeBuf_V <= 0;
-            for (int i = 0; i < CACHE_LINES_SIZE_B; i++) writeBuf[i] <= '0;
+            writeBuf_addr  <= 0;
+            writeBuf <= '{default: '0};
         end else if (fsmOuts.ld_writeBuf) begin
             for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
                 if ((counter + i) < dma_Regs.numBytes) writeBuf[i] <= disk_ld_Buffer[counter+i];
@@ -160,6 +162,12 @@ module DMA_Controller (
         end
     end
 
+    always_ff @(posedge clk) begin
+        if(!rst) commiting <= 0;
+        else if(inFromDTE_i.commiting) commiting <= 1;
+        else if(inFromDTE_i.writeComplete) commiting <= 0;
+    end
+
     // =============================
     // Address Bus
     // =============================
@@ -167,7 +175,7 @@ module DMA_Controller (
 
     assign addrBus_drv = dma_Regs.destAddr + counter;
 
-    assign addrBus = (inFromDTE_i.permission2DriveADDRBus) ? addrBus_drv : 'z;
+    assign #5 addrBus = (inFromDTE_i.permission2DriveADDRBus) ? addrBus_drv : 'z;
 
     // =============================
     // Data Bus
@@ -193,7 +201,7 @@ module DMA_Controller (
     // Outputs
     // =============================
     assign out2Core_o.intOut = fsmOuts.interrupt;
-    assign out2Sch_o.dma_req = fsmOuts.req_bus ? DMA_WRITE_REQ : NO_REQ;
+    assign out2Sch_o.dma_req = fsmOuts.req_bus && !commiting ? DMA_WRITE_REQ : NO_REQ;
     assign out2Sch_o.writeBuf_Address = writeBuf_addr;
 
 endmodule
