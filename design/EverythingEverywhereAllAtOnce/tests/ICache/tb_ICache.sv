@@ -67,15 +67,15 @@ module tb_ICache ();
         .dte_2_ddr5_o(dte_2_ddr5)
     );
 
-    //azmem_TOP u_mainMem (
-    //az    .clk(clk),
-    //az    .rst(rst),
-    //az    .address_bus(addrBus),
-    //az    .data_bus(dataBus),
-    //az    .inFromDte(dte_2_mem),
-    //az    .out2Dte(mem_2_dte),
-    //az    .out2Sch(mem_2_sch)
-    //az);
+    // mem_TOP u_mainMem (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .address_bus(addrBus),
+    //     .data_bus(dataBus),
+    //     .inFromDte(dte_2_mem),
+    //     .out2Dte(mem_2_dte),
+    //     .out2Sch(mem_2_sch)
+    // );
 
     mem_TOP u_mainMem (
         .clk(clk),
@@ -134,11 +134,71 @@ module tb_ICache ();
 
         DelayCLKs(10);
         rst = 1;
-        DelayCLKs(5);
+        DelayCLKs(6);
         @(posedge clk);
         core_2_icache.icache_en = 1;
-        core_2_icache.p_addr = 15'h0000;
-        core_2_icache.v_addr_i = 32'h12345678;
+        core_2_icache.p_addr = 15'h10D0;
+        core_2_icache.v_addr_i = 32'h123456C0;
+
+        @(posedge icache_2_core.hit)
+        @(posedge clk)
+        core_2_icache.icache_en = 1;
+        core_2_icache.p_addr = 15'h20D0;
+        core_2_icache.v_addr_i = 32'h2d2d2dC0;
+ 
+        @(posedge icache_2_core.hit)
+        @(posedge clk)
+        core_2_icache.icache_en = 1;
+        core_2_icache.p_addr = 15'h10D0; //hit in victim 
+        core_2_icache.v_addr_i = 32'h123456C0;
+
+        //in cache h123456C0
+        //in victim: 2d2d2dc0 //at index 3
+        
+        @(posedge icache_2_core.hit)
+        @(posedge clk)
+        #1
+        core_2_icache.icache_en = 1;
+        core_2_icache.p_addr = 15'h30D0;
+        core_2_icache.v_addr_i = 32'h333333C0;
+        //in cache 3333333c0
+        //LRU MRU
+                //3     1
+        //in v$ 2d2d2d 123456c0 
+
+        @(posedge icache_2_core.hit)
+        @(posedge clk)
+        core_2_icache.icache_en = 1;
+        core_2_icache.p_addr = 15'h40D0;
+        core_2_icache.v_addr_i = 32'h444444C0;
+        //in cache 3333333c0
+        //       3      1         2
+        //in v$ 2d2d2d 123456c0  333333C0
+
+        @(posedge icache_2_core.hit)
+        @(posedge clk)
+        core_2_icache.icache_en = 1;
+        core_2_icache.p_addr = 15'h50D0;
+        core_2_icache.v_addr_i = 32'h555555C0;
+        //in cache 555555c0
+                    // 3       1        2        0
+        //in victim: 2d2d2d 123456c0 333333c0 444444c0
+
+        @(posedge icache_2_core.hit)
+        @(posedge clk)
+        core_2_icache.icache_en = 1;
+        core_2_icache.p_addr = 15'h60D0;
+        core_2_icache.v_addr_i = 32'h666666C0;
+        //in cache 555555c0
+                     // 3       1        2        0
+        //in victim: 555555c0 123456c0 333333c0 444444c0
+
+        @(posedge icache_2_core.hit)
+        @(posedge clk)
+        core_2_icache.icache_en = 1;
+        core_2_icache.p_addr = 15'h20D0;
+        core_2_icache.v_addr_i = 32'h2d2d2dC0;
+
 
 
          

@@ -146,71 +146,71 @@ wire stall_i_inv;
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (S_0 & !S_3 & stall_i) | (S_0 & !S_1 & stall_i) | (!S_0 & !S_3 & rep_prefix_i & !stall_i) | (!S_0 & !S_2 & S_3 & !stall_i) | (S_1 & S_2 & !S_3 & !stall_i) | (S_0 & !S_2 & stall_i) | (!S_0 & S_2 & !S_3 & !stall_i) | (!S_0 & S_1 & !S_3 & !stall_i) | (S_0 & !S_1 & S_2 & S_3 & cs_cmp_i) | (S_0 & !S_1 & S_2 & S_3 & !cs_mov_i)
+// NS_0 = (S_0 & !S_3 & stall_i) | (S_0 & !S_2 & stall_i) | (!S_0 & S_2 & !S_3 & !stall_i) | (!S_0 & !S_2 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & stall_i) | (!S_0 & !S_2 & S_3 & !stall_i) | (S_1 & S_2 & !S_3 & !stall_i) | (!S_0 & S_1 & !S_2 & !stall_i) | (S_0 & !S_1 & S_2 & S_3 & !cs_mov_i) | (S_0 & !S_1 & S_2 & S_3 & cs_cmp_i)
 wire NS_0_t0;
 `AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_3_inv, stall_i)
 wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_0, S_1_inv, stall_i)
+`AND_3(NS_0_and1, 1, NS_0_t1, S_0, S_2_inv, stall_i)
 wire NS_0_t2;
-`AND_4(NS_0_and2, 1, NS_0_t2, S_0_inv, S_3_inv, rep_prefix_i, stall_i_inv)
+`AND_4(NS_0_and2, 1, NS_0_t2, S_0_inv, S_2, S_3_inv, stall_i_inv)
 wire NS_0_t3;
-`AND_4(NS_0_and3, 1, NS_0_t3, S_0_inv, S_2_inv, S_3, stall_i_inv)
+`AND_4(NS_0_and3, 1, NS_0_t3, S_0_inv, S_2_inv, rep_prefix_i, stall_i_inv)
 wire NS_0_t4;
-`AND_4(NS_0_and4, 1, NS_0_t4, S_1, S_2, S_3_inv, stall_i_inv)
+`AND_3(NS_0_and4, 1, NS_0_t4, S_0, S_1_inv, stall_i)
 wire NS_0_t5;
-`AND_3(NS_0_and5, 1, NS_0_t5, S_0, S_2_inv, stall_i)
+`AND_4(NS_0_and5, 1, NS_0_t5, S_0_inv, S_2_inv, S_3, stall_i_inv)
 wire NS_0_t6;
-`AND_4(NS_0_and6, 1, NS_0_t6, S_0_inv, S_2, S_3_inv, stall_i_inv)
+`AND_4(NS_0_and6, 1, NS_0_t6, S_1, S_2, S_3_inv, stall_i_inv)
 wire NS_0_t7;
-`AND_4(NS_0_and7, 1, NS_0_t7, S_0_inv, S_1, S_3_inv, stall_i_inv)
+`AND_4(NS_0_and7, 1, NS_0_t7, S_0_inv, S_1, S_2_inv, stall_i_inv)
 wire NS_0_t8;
-`AND_5(NS_0_and8, 1, NS_0_t8, S_0, S_1_inv, S_2, S_3, cs_cmp_i)
+`AND_5(NS_0_and8, 1, NS_0_t8, S_0, S_1_inv, S_2, S_3, cs_mov_i_inv)
 wire NS_0_t9;
-`AND_5(NS_0_and9, 1, NS_0_t9, S_0, S_1_inv, S_2, S_3, cs_mov_i_inv)
+`AND_5(NS_0_and9, 1, NS_0_t9, S_0, S_1_inv, S_2, S_3, cs_cmp_i)
 
 `OR_10(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5, NS_0_t6, NS_0_t7, NS_0_t8, NS_0_t9)
 
-// NS_1 = (!S_0 & S_1 & S_3) | (S_1 & !S_3 & stall_i) | (S_0 & S_2 & !S_3 & !stall_i) | (S_1 & !S_2 & stall_i) | (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2 & cont_cmp_i & !stall_i) | (S_0 & !S_1 & !S_2 & S_3 & !stall_i) | (S_0 & !S_1 & S_3 & !cs_mov_i & !cs_cmp_i & !stall_i) | (S_0 & !S_1 & S_3 & cs_mov_i & cs_cmp_i & !stall_i)
+// NS_1 = (S_1 & !S_3 & stall_i) | (!S_0 & S_1 & S_3) | (S_0 & S_2 & !S_3 & !stall_i) | (!S_0 & S_1 & !S_2) | (S_1 & !S_2 & stall_i) | (S_0 & !S_1 & !S_2 & S_3 & !stall_i) | (S_0 & !S_1 & !S_2 & cont_cmp_i & !stall_i) | (S_0 & !S_1 & S_3 & cs_mov_i & cs_cmp_i & !stall_i) | (S_0 & !S_1 & S_3 & !cs_mov_i & !cs_cmp_i & !stall_i)
 wire NS_1_t0;
-`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1, S_3)
+`AND_3(NS_1_and0, 1, NS_1_t0, S_1, S_3_inv, stall_i)
 wire NS_1_t1;
-`AND_3(NS_1_and1, 1, NS_1_t1, S_1, S_3_inv, stall_i)
+`AND_3(NS_1_and1, 1, NS_1_t1, S_0_inv, S_1, S_3)
 wire NS_1_t2;
 `AND_4(NS_1_and2, 1, NS_1_t2, S_0, S_2, S_3_inv, stall_i_inv)
 wire NS_1_t3;
-`AND_3(NS_1_and3, 1, NS_1_t3, S_1, S_2_inv, stall_i)
+`AND_3(NS_1_and3, 1, NS_1_t3, S_0_inv, S_1, S_2_inv)
 wire NS_1_t4;
-`AND_3(NS_1_and4, 1, NS_1_t4, S_0_inv, S_1, S_2_inv)
+`AND_3(NS_1_and4, 1, NS_1_t4, S_1, S_2_inv, stall_i)
 wire NS_1_t5;
-`AND_5(NS_1_and5, 1, NS_1_t5, S_0, S_1_inv, S_2_inv, cont_cmp_i, stall_i_inv)
+`AND_5(NS_1_and5, 1, NS_1_t5, S_0, S_1_inv, S_2_inv, S_3, stall_i_inv)
 wire NS_1_t6;
-`AND_5(NS_1_and6, 1, NS_1_t6, S_0, S_1_inv, S_2_inv, S_3, stall_i_inv)
+`AND_5(NS_1_and6, 1, NS_1_t6, S_0, S_1_inv, S_2_inv, cont_cmp_i, stall_i_inv)
 wire NS_1_t7;
-`AND_6(NS_1_and7, 1, NS_1_t7, S_0, S_1_inv, S_3, cs_mov_i_inv, cs_cmp_i_inv, stall_i_inv)
+`AND_6(NS_1_and7, 1, NS_1_t7, S_0, S_1_inv, S_3, cs_mov_i, cs_cmp_i, stall_i_inv)
 wire NS_1_t8;
-`AND_6(NS_1_and8, 1, NS_1_t8, S_0, S_1_inv, S_3, cs_mov_i, cs_cmp_i, stall_i_inv)
+`AND_6(NS_1_and8, 1, NS_1_t8, S_0, S_1_inv, S_3, cs_mov_i_inv, cs_cmp_i_inv, stall_i_inv)
 
 `OR_9(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4, NS_1_t5, NS_1_t6, NS_1_t7, NS_1_t8)
 
-// NS_2 = (S_0 & S_2 & !S_3) | (!S_0 & S_2 & stall_i) | (S_0 & S_1 & !S_2 & !stall_i) | (!S_1 & S_2 & stall_i) | (!S_1 & S_2 & !S_3) | (!S_0 & S_1 & S_2 & S_3) | (S_0 & !S_1 & S_2 & cs_mov_i) | (!S_0 & !S_1 & !S_3 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & S_2 & !cs_cmp_i)
+// NS_2 = (!S_0 & S_2 & stall_i) | (S_0 & S_2 & !S_3) | (S_0 & S_1 & !S_2 & !stall_i) | (!S_1 & S_2 & !S_3) | (!S_1 & S_2 & stall_i) | (!S_0 & S_1 & S_2 & S_3) | (S_0 & !S_1 & S_2 & !cs_cmp_i) | (!S_0 & !S_1 & !S_3 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & S_2 & cs_mov_i)
 wire NS_2_t0;
-`AND_3(NS_2_and0, 1, NS_2_t0, S_0, S_2, S_3_inv)
+`AND_3(NS_2_and0, 1, NS_2_t0, S_0_inv, S_2, stall_i)
 wire NS_2_t1;
-`AND_3(NS_2_and1, 1, NS_2_t1, S_0_inv, S_2, stall_i)
+`AND_3(NS_2_and1, 1, NS_2_t1, S_0, S_2, S_3_inv)
 wire NS_2_t2;
 `AND_4(NS_2_and2, 1, NS_2_t2, S_0, S_1, S_2_inv, stall_i_inv)
 wire NS_2_t3;
-`AND_3(NS_2_and3, 1, NS_2_t3, S_1_inv, S_2, stall_i)
+`AND_3(NS_2_and3, 1, NS_2_t3, S_1_inv, S_2, S_3_inv)
 wire NS_2_t4;
-`AND_3(NS_2_and4, 1, NS_2_t4, S_1_inv, S_2, S_3_inv)
+`AND_3(NS_2_and4, 1, NS_2_t4, S_1_inv, S_2, stall_i)
 wire NS_2_t5;
 `AND_4(NS_2_and5, 1, NS_2_t5, S_0_inv, S_1, S_2, S_3)
 wire NS_2_t6;
-`AND_4(NS_2_and6, 1, NS_2_t6, S_0, S_1_inv, S_2, cs_mov_i)
+`AND_4(NS_2_and6, 1, NS_2_t6, S_0, S_1_inv, S_2, cs_cmp_i_inv)
 wire NS_2_t7;
 `AND_5(NS_2_and7, 1, NS_2_t7, S_0_inv, S_1_inv, S_3_inv, rep_prefix_i, stall_i_inv)
 wire NS_2_t8;
-`AND_4(NS_2_and8, 1, NS_2_t8, S_0, S_1_inv, S_2, cs_cmp_i_inv)
+`AND_4(NS_2_and8, 1, NS_2_t8, S_0, S_1_inv, S_2, cs_mov_i)
 
 `OR_9(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3, NS_2_t4, NS_2_t5, NS_2_t6, NS_2_t7, NS_2_t8)
 
@@ -233,11 +233,11 @@ wire NS_3_t5;
 // set_rep_o = (!S_0 & !S_1 & !S_2 & !S_3 & rep_prefix_i & !stall_i)
 `AND_6(set_rep_o_and, 1, set_rep_o, S_0_inv, S_1_inv, S_2_inv, S_3_inv, rep_prefix_i, stall_i_inv)
 
-// clear_rep_o = (S_0 & !S_1 & !S_2 & !S_3 & !cont_cmp_i & !stall_i) | (!S_0 & !S_1 & S_2 & S_3 & !cont_mov_i & !stall_i)
+// clear_rep_o = (!S_0 & !S_1 & S_2 & S_3 & !cont_mov_i & !stall_i) | (S_0 & !S_1 & !S_2 & !S_3 & !cont_cmp_i & !stall_i)
 wire clear_rep_o_t0;
-`AND_6(clear_rep_o_and0, 1, clear_rep_o_t0, S_0, S_1_inv, S_2_inv, S_3_inv, cont_cmp_i_inv, stall_i_inv)
+`AND_6(clear_rep_o_and0, 1, clear_rep_o_t0, S_0_inv, S_1_inv, S_2, S_3, cont_mov_i_inv, stall_i_inv)
 wire clear_rep_o_t1;
-`AND_6(clear_rep_o_and1, 1, clear_rep_o_t1, S_0_inv, S_1_inv, S_2, S_3, cont_mov_i_inv, stall_i_inv)
+`AND_6(clear_rep_o_and1, 1, clear_rep_o_t1, S_0, S_1_inv, S_2_inv, S_3_inv, cont_cmp_i_inv, stall_i_inv)
 
 `OR_2(clear_rep_o_or, 1, clear_rep_o, clear_rep_o_t0, clear_rep_o_t1)
 
@@ -263,17 +263,17 @@ wire select_line1_o_t2;
 
 `OR_3(select_line1_o_or, 1, select_line1_o, select_line1_o_t0, select_line1_o_t1, select_line1_o_t2)
 
-// select_line0_o = (S_0 & S_1 & !S_2 & !S_3 & !stall_i) | (S_0 & !S_1 & !S_2 & cont_cmp_i & !stall_i) | (!S_0 & !S_1 & S_2 & cont_mov_i & !stall_i) | (!S_0 & !S_1 & S_2 & !S_3 & !stall_i) | (S_0 & !S_1 & !S_2 & S_3 & !stall_i)
+// select_line0_o = (S_0 & !S_2 & !S_3 & cont_cmp_i & !stall_i) | (!S_0 & !S_1 & S_2 & !S_3 & !stall_i) | (S_0 & !S_1 & !S_2 & S_3 & !stall_i) | (!S_0 & !S_1 & S_2 & cont_mov_i & !stall_i) | (S_0 & S_1 & !S_2 & !S_3 & !stall_i)
 wire select_line0_o_t0;
-`AND_5(select_line0_o_and0, 1, select_line0_o_t0, S_0, S_1, S_2_inv, S_3_inv, stall_i_inv)
+`AND_5(select_line0_o_and0, 1, select_line0_o_t0, S_0, S_2_inv, S_3_inv, cont_cmp_i, stall_i_inv)
 wire select_line0_o_t1;
-`AND_5(select_line0_o_and1, 1, select_line0_o_t1, S_0, S_1_inv, S_2_inv, cont_cmp_i, stall_i_inv)
+`AND_5(select_line0_o_and1, 1, select_line0_o_t1, S_0_inv, S_1_inv, S_2, S_3_inv, stall_i_inv)
 wire select_line0_o_t2;
-`AND_5(select_line0_o_and2, 1, select_line0_o_t2, S_0_inv, S_1_inv, S_2, cont_mov_i, stall_i_inv)
+`AND_5(select_line0_o_and2, 1, select_line0_o_t2, S_0, S_1_inv, S_2_inv, S_3, stall_i_inv)
 wire select_line0_o_t3;
-`AND_5(select_line0_o_and3, 1, select_line0_o_t3, S_0_inv, S_1_inv, S_2, S_3_inv, stall_i_inv)
+`AND_5(select_line0_o_and3, 1, select_line0_o_t3, S_0_inv, S_1_inv, S_2, cont_mov_i, stall_i_inv)
 wire select_line0_o_t4;
-`AND_5(select_line0_o_and4, 1, select_line0_o_t4, S_0, S_1_inv, S_2_inv, S_3, stall_i_inv)
+`AND_5(select_line0_o_and4, 1, select_line0_o_t4, S_0, S_1, S_2_inv, S_3_inv, stall_i_inv)
 
 `OR_5(select_line0_o_or, 1, select_line0_o, select_line0_o_t0, select_line0_o_t1, select_line0_o_t2, select_line0_o_t3, select_line0_o_t4)
 

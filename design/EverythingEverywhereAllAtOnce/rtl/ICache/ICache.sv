@@ -146,7 +146,7 @@ module ICache (
     end
 
     //INTERNAL SIGNALS
-
+    
     assign icache_hit =
         inFromCore_i.icache_en
         && (!fsmOuts.busy)
@@ -162,11 +162,14 @@ module ICache (
     assign useSaved_v_Addr = fsmOuts.busy;
     assign curr_v_addr_to_use = useSaved_v_Addr ? saved_vAddr : inFromCore_i.v_addr_i;
 
+    logic save_v_addr;
+    assign save_v_addr = !fsmOuts.busy;
+
     always_ff @(posedge clk) begin
         if (!rst) begin
             saved_vAddr <= 0;
             saved_pAddr <= 0;
-        end else if (!fsmOuts.busy) begin
+        end else if (save_v_addr) begin
             saved_pAddr <= inFromCore_i.p_addr;
             saved_vAddr <= inFromCore_i.v_addr_i;
         end
