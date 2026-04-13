@@ -16,6 +16,8 @@ STARTUP_FILES = \
 
 TB_FILES = \
 		   $(STARTUP_FILES) \
+		   tb_debug_pkg.sv \
+		   tb_debug_tasks.svh \
 		   tb_restOfStages.sv
 
 SRC_FILES :=

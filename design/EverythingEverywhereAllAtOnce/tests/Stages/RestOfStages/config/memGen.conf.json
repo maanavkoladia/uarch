@@ -15,6 +15,6 @@
     "cells_per_bank"          : 4,
 
     "readmemFilePath"         : "gen/memLoader.sv",
-    "memCellPath"             : "uut_mem.g_mem_banks[<bankNum>].mem_bank.g_sram_cells[<cellNum>].mem_cell.mem",
+    "memCellPath"             : "u_everywhere_top.mem_unit.g_mem_banks[<bankNum>].mem_bank.g_sram_cells[<cellNum>].mem_cell.mem",
     "startUpDelay"            : "30"
 }
