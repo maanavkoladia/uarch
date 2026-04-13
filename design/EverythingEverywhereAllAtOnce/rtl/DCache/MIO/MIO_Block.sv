@@ -64,7 +64,7 @@ module MIO_Block (
                     oe: 0,
                     we: 1,
                     p_addr: stq_info_mio.address,
-                    st_q_data: '{default: '0}
+                    st_q_data: stq_info_mio.data
                 };
                 outputs_o.writeSuccess = 1;
             end
@@ -82,8 +82,7 @@ module MIO_Block (
 
     assign outputs_o.hit_o = reqServed_FromDTE_i && block_req.oe;
 
-
-
+    //assign the output to the core, this is gonna be from ddr5
     always_comb begin
         outputs_o.dataLineOut = '{default: '0};  // zero all 16 bytes
 
@@ -113,15 +112,18 @@ module MIO_Block (
     //wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake = block_req.p_addr;
     assign address_bus = PermissionToDriveAddrBus ? block_req.p_addr : 'z;
 
-    wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] data_bus_fake;
-    
-    assign data_bus_fake = {
+
+    logic permission2DriveDataBus_bar;
+    assign permission2DriveDataBus_bar = ~permission2DriveDataBus;
+    logic [ADDRESS_BUS_WIDTH_BITS - 1 : 0] dataBus_drv;
+    assign dataBus_drv = {
         block_req.st_q_data[3],
         block_req.st_q_data[2],
         block_req.st_q_data[1],
         block_req.st_q_data[0]
     };
 
-    assign dataBus = permission2DriveDataBus ? data_bus_fake : 'z;
+    `BUS_TRISTATE(u_mio_block_busTristate, 32, permission2DriveDataBus_bar, dataBus_drv, dataBus);
+
 
 endmodule

@@ -272,7 +272,7 @@ module mem_controller_structural (
     // Default 0. When fsm_start_store, set for bank {addr[9:7], bankGroup}.
     // store_bank_idx = {address_bus[9:7], address_bus[6:4]} = address_bus[9:4]
     wire [5:0] store_bank_idx;
-    assign store_bank_idx = address_bus[9:4];
+    assign store_bank_idx = {bankGroup, address_bus[9:7]};
 
     // ---- decoder ----
     wire [63:0] store_oh;

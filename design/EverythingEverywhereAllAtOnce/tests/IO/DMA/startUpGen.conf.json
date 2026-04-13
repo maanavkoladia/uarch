@@ -1,0 +1,5 @@
+{
+    "dcache_conf_path": "config/dcache_startup.conf.json",
+    "mem_conf_path": "config/mem.conf.json",
+    "disk_conf_path": "config/disk.conf.json"
+}

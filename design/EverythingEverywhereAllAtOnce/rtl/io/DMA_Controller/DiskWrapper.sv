@@ -13,7 +13,6 @@ module DiskWrapper (
     output byte_t disk_ld_Buffer_o[PAGE_SIZE]
 );
 
-
     byte_t disk[DISK_SIZE];
     byte_t disk_ld_Buffer[PAGE_SIZE];
     uint32_t delayCycles_Counter;
@@ -21,9 +20,10 @@ module DiskWrapper (
 
     assign disk_ld_Buffer_o = disk_ld_Buffer;
 
-    always @(posedge clk or negedge rst) begin
+    always @(posedge clk) begin
         if (!rst) begin
             disk_ld_Buffer_V <= 0;
+            disk_ld_Buffer <= '{default : '0};
             delayCycles_Counter <= 0;
             loading <= 0;
         end else begin
@@ -36,8 +36,8 @@ module DiskWrapper (
                     loading <= 0;
                     disk_ld_Buffer_V <= 1;
                     // copy disk → buffer (instant after delay)
-                    for (int i = 0; i < ld_num_bytes % PAGE_SIZE; i = i + 1) begin
-                        disk_ld_Buffer[i] <= disk[(ld_diskAddr+i)%DISK_SIZE];
+                    for (int i = 0; i < (ld_num_bytes % PAGE_SIZE == 0 ? PAGE_SIZE : ld_num_bytes % PAGE_SIZE); i = i + 1) begin
+                        disk_ld_Buffer[i] <= disk[(ld_diskAddr + i) % DISK_SIZE];
                     end
                 end else begin
                     delayCycles_Counter <= delayCycles_Counter - 1;

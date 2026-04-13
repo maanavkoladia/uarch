@@ -16,17 +16,17 @@
 //   ERROR                         101  (decimal 5)  // ERROR (trap state), synthesised
 //
 // Truth Table (pre-expansion, original CSV rows)
-// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//         S_0         S_1         S_2   req_hit_i  others_busy_i  |        NS_0        NS_1        NS_2      busy_o    st_req_o  WriteComplete_o  Drive_Addr_Bus_o  Drv_DB_0_o  Drv_DB_1_o  Drv_DB_2_o  Drv_DB_3_o   transition
-// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//           0           0           0           x           1  |           0           0           0           0           0           0           0           0           0           0           0   IDLE -> IDLE
-//           0           0           0           0           x  |           0           0           0           0           0           0           0           0           0           0           0   IDLE -> IDLE
-//           0           0           0           1           0  |           0           0           1           1           0           0           1           0           0           0           0   IDLE -> ST_REQ
-//           0           0           1           x           x  |           1           0           0           1           1           0           1           1           0           0           0   ST_REQ -> ST0
-//           1           0           0           x           x  |           0           1           0           1           0           0           1           0           1           0           0   ST0 -> ST1
-//           0           1           0           x           x  |           1           1           0           1           0           0           1           0           0           1           0   ST1 -> ST2
-//           1           1           0           x           x  |           0           0           0           1           0           1           1           0           0           0           1   ST2 -> IDLE
-// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//         S_0         S_1         S_2   req_hit_i  others_busy_i  |        NS_0        NS_1        NS_2      busy_o    st_req_o  WriteComplete_o  Commiting_o  Drive_Addr_Bus_o  Drv_DB_0_o  Drv_DB_1_o  Drv_DB_2_o  Drv_DB_3_o   transition
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//           0           0           0           x           1  |           0           0           0           0           0           0           0           0           0           0           0           0   IDLE -> IDLE
+//           0           0           0           0           x  |           0           0           0           0           0           0           0           0           0           0           0           0   IDLE -> IDLE
+//           0           0           0           1           0  |           0           0           1           0           0           0           0           1           0           0           0           0   IDLE -> ST_REQ
+//           0           0           1           x           x  |           1           0           0           1           1           0           1           1           1           0           0           0   ST_REQ -> ST0
+//           1           0           0           x           x  |           0           1           0           1           0           0           0           1           0           1           0           0   ST0 -> ST1
+//           0           1           0           x           x  |           1           1           0           1           0           0           0           1           0           0           1           0   ST1 -> ST2
+//           1           1           0           x           x  |           0           0           0           1           0           1           0           1           0           0           0           1   ST2 -> IDLE
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //
 
 module DTE_DMA_2_MEM_FSM (
@@ -40,6 +40,7 @@ module DTE_DMA_2_MEM_FSM (
     output wire busy_o,
     output wire st_req_o,
     output wire WriteComplete_o,
+    output wire Commiting_o,
     output wire Drive_Addr_Bus_o,
     output wire Drv_DB_0_o,
     output wire Drv_DB_1_o,
@@ -112,23 +113,24 @@ wire NS_2_t1;
 
 `OR_2(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1)
 
-// busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & !others_busy_i)
+// busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2)
 wire busy_o_t0;
 `AND_2(busy_o_and0, 1, busy_o_t0, S_0, S_2_inv)
 wire busy_o_t1;
 `AND_2(busy_o_and1, 1, busy_o_t1, S_1, S_2_inv)
 wire busy_o_t2;
 `AND_3(busy_o_and2, 1, busy_o_t2, S_0_inv, S_1_inv, S_2)
-wire busy_o_t3;
-`AND_3(busy_o_and3, 1, busy_o_t3, S_2_inv, req_hit_i, others_busy_i_inv)
 
-`OR_4(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1, busy_o_t2, busy_o_t3)
+`OR_3(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1, busy_o_t2)
 
 // st_req_o = (!S_0 & !S_1 & S_2)
 `AND_3(st_req_o_and, 1, st_req_o, S_0_inv, S_1_inv, S_2)
 
 // WriteComplete_o = (S_0 & S_1 & !S_2)
 `AND_3(WriteComplete_o_and, 1, WriteComplete_o, S_0, S_1, S_2_inv)
+
+// Commiting_o = (!S_0 & !S_1 & S_2)
+`AND_3(Commiting_o_and, 1, Commiting_o, S_0_inv, S_1_inv, S_2)
 
 // Drive_Addr_Bus_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_t0;

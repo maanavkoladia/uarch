@@ -1,0 +1,25 @@
+we will be working on a rtl genreation script. it has to be fully complient with
+2005 verilog in structural, this python script needs to take in the json config that
+i gave you and create a verilog file.
+
+
+{
+    "diskMemPath" : "rtl path will be here, use this in the for loop",
+    "metaDataFilePath": "gen/disk/meta.txt",
+    "diskSize" : "bytes in disk",
+    "startupDelay" : "30",
+    "Output_FilePath" : "gen/diskLoader.v"
+
+}
+
+here is the json:
+
+the file should look like 
+
+module <Output_FilePath base and stripped of extensions>
+intial begin
+#<startupDelay>
+for(diskSize) 
+    <path>[i] = <random data>
+end
+endmodule
