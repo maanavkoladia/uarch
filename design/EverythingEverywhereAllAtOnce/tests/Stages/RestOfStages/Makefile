@@ -16,9 +16,12 @@ STARTUP_FILES = \
 				gen/dcache_loader.sv \
 				gen/icache_loader.sv
 
+
+		   #$(DEBUG_UTILS) \
+
 TB_FILES = \
 		   $(STARTUP_FILES) \
-		   $(DEBUG_UTILS) \
+		   debugUtils/debug_pkg.sv \
 		   tb_restOfStages.sv
 
 SRC_FILES :=

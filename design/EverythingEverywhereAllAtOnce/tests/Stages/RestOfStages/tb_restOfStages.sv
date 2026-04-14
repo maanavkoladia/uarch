@@ -9,24 +9,27 @@ import Fetch_pkg::*;
 import DCache_common_pkg::*;
 import WriteBack_pkg::*;
 
-`include "debugUtils/tb_utils_defs.svh"
+`define CLK_PERIOD (8)
+
 
 module tb_restOfStages ();
-    localparam int Clk_PERIOD = 8;
+
+    //localparam int Clk_PERIOD = 8;
+    `include "debugUtils/tb_utils_defs.svh"
+
+    //task automatic DelayClks(input int cycles);
+    //    #(Clk_PERIOD * cycles);
+    //endtask
+
     `DEBUG_UTILS_INIT;
-    `PRINT_CYCLE_HEADER;
 
     initial begin
         $vcdpluson;
         $vcdplusmemon;
     end
 
-    task automatic DelayClks(input int cycles);
-        #(Clk_PERIOD * cycles);
-    endtask
 
     // ================= CLOCK / RESET =================
-    `CLK_INIT(Clk_PERIOD);
     logic rst;
     wire [ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
     wire [DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
@@ -105,11 +108,12 @@ module tb_restOfStages ();
         DelayClks(20);
         @(posedge clk)
         rst = 1;
+        DelayClks(20);
         print_cycle_header();
         print_wb_info();
 
-        @(posedge clk)
-        DelayClks(300);
+        //@(posedge clk)
+        //DelayClks();
         $finish;
     end
 endmodule
