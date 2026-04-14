@@ -2,9 +2,9 @@
 `define TB_UTILS_WB_PATH
 
 
-`ifndef WB_UNIT_PATH
-    `error "WB_UNIT_PATH not defined"
-`endif
+//`ifndef WB_UNIT_PATH
+//    `error "WB_UNIT_PATH not defined"
+//`endif
 
 // --- WB LATCHES ---
 `ifdef WB_UNIT_PATH
@@ -97,8 +97,11 @@
     endtask
 `endif
 
+`PRINT_WB_LATCHES
+`PRINT_WB_OUTPUTS
+`PRINT_STORE_QUEUES
 
-task automatic print_wb_info();
+`PRINT_MIO_QUEUEtask automatic print_wb_info();
     print_wb_latches();
     print_wb_outputs();
     print_store_queues();

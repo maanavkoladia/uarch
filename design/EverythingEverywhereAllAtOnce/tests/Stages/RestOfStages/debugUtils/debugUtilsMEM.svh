@@ -2,9 +2,9 @@
 `define TB_UTILS_MEM_PATH
 
 
-`ifndef MEM_UNIT_PATH
-    `error "WB_UNIT_PATH not defined"
-`endif
+//`ifndef MEM_UNIT_PATH
+//    `error "WB_UNIT_PATH not defined"
+//`endif
 
 
 // --- MEM LATCHES ---

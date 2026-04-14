@@ -2,6 +2,8 @@ STRUCTRURAL := true
 
 include ../../../Make.vars
 include ../../../Make.build
+include debugUtils/srcs.mk
+
 
 TARGET = RestOfStages
 
@@ -16,8 +18,7 @@ STARTUP_FILES = \
 
 TB_FILES = \
 		   $(STARTUP_FILES) \
-		   tb_debug_pkg.sv \
-		   tb_debug_tasks.svh \
+		   $(DEBUG_UTILS) \
 		   tb_restOfStages.sv
 
 SRC_FILES :=

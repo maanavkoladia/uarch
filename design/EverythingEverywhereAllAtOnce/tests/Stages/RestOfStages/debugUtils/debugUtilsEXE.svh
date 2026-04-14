@@ -2,9 +2,9 @@
 `define TB_UTILS_EXE_PATH
 
 
-`ifndef EXE_UNIT_PATH
-    `error "WB_UNIT_PATH not defined"
-`endif
+//`ifndef EXE_UNIT_PATH
+//    `error "WB_UNIT_PATH not defined"
+//`endif
 
 
 

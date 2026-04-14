@@ -2,9 +2,9 @@
 `define TB_UTILS_RR_PATH
 
 
-`ifndef RR_UNIT_PATH
-    `error "WB_UNIT_PATH not defined"
-`endif
+//`ifndef RR_UNIT_PATH
+//    `error "WB_UNIT_PATH not defined"
+//`endif
 
 
 // --- RR LATCHES ---

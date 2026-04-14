@@ -13,6 +13,8 @@ import WriteBack_pkg::*;
 
 module tb_restOfStages ();
     localparam int Clk_PERIOD = 8;
+    `DEBUG_UTILS_INIT;
+    `PRINT_CYCLE_HEADER;
 
     initial begin
         $vcdpluson;
@@ -103,7 +105,7 @@ module tb_restOfStages ();
         DelayClks(20);
         @(posedge clk)
         rst = 1;
-
+        print_cycle_header();
         print_wb_info();
 
         @(posedge clk)

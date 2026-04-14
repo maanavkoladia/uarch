@@ -1,9 +1,9 @@
 `ifndef TB_UTILS_DECODE_PATH
 `define TB_UTILS_DECODE_PATH
 
-`ifndef DECODE_UNIT_PATH
-    `error "WB_UNIT_PATH not defined"
-`endif
+//`ifndef DECODE_UNIT_PATH
+//    `error "WB_UNIT_PATH not defined"
+//`endif
 
 `ifdef DECODE_UNIT_PATH
 `define PRINT_DECODE \

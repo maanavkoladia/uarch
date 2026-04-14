@@ -2,9 +2,9 @@
 `define TB_UTILS_FETCH_PATH
 
 
-`ifndef FETCH_UNIT_PATH
-    `error "WB_UNIT_PATH not defined"
-`endif
+//`ifndef FETCH_UNIT_PATH
+//    `error "WB_UNIT_PATH not defined"
+//`endif
 
 // --- FETCH ---
 `ifdef FETCH_UNIT_PATH

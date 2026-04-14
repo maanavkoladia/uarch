@@ -2,9 +2,9 @@
 `define TB_UTILS_DC_PATH
 
 
-`ifndef DC_UNIT_PATH
-    `error "WB_UNIT_PATH not defined"
-`endif
+//`ifndef DC_UNIT_PATH
+//    `error "WB_UNIT_PATH not defined"
+//`endif
 
 // --- DC LATCHES ---
 `ifdef DC_UNIT_PATH
