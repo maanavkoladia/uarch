@@ -40,7 +40,7 @@ module Everywhere_TOP (
     //    .out2Sch(mem2sched)
     //);
 
-    mem_TOP u_mainMem (
+    mem_TOP mem_unit (
         .clk(clk),
         .rst(rst),
         .address_bus(addressBus),
@@ -49,7 +49,7 @@ module Everywhere_TOP (
         .inFromDte_st_req(dte2mem.st_req),
         .inFromDte_permission2DriveBus(dte2mem.permission2DriveBus),
         .out2Dte_mem_Ready(mem2dte.mem_Ready),
-        .out2Sch_writeBuf_V(mem2dte.writeBuf_V)
+        .out2Sch_writeBuf_V(mem2sched.writeBuf_V)
     );
 
     //dcache

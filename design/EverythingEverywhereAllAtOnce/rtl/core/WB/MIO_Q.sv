@@ -56,8 +56,8 @@ module MIO_Q(
     end
 
     assign outs = '{
-        full: next_full,
-        empty: next_empty,
+        full: full,
+        empty: empty,
         address: mio_q.address,
         bit_vec: '0,
         data: mio_q.data
