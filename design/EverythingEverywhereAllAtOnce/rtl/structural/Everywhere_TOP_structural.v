@@ -43,7 +43,7 @@ module Everywhere_TOP (
     mem_TOP u_mainMem (
         .clk(clk),
         .rst(rst),
-        .address_bus(addrBus),
+        .address_bus(addressBus),
         .data_bus(dataBus),
         .inFromDte_ld_req(dte2mem.ld_req),
         .inFromDte_st_req(dte2mem.st_req),
