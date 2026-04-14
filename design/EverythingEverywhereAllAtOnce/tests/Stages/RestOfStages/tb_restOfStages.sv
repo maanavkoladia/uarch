@@ -9,6 +9,8 @@ import Fetch_pkg::*;
 import DCache_common_pkg::*;
 import WriteBack_pkg::*;
 
+`include "debugUtils/tb_utils_defs.svh"
+
 module tb_restOfStages ();
     localparam int Clk_PERIOD = 8;
 
@@ -102,9 +104,12 @@ module tb_restOfStages ();
         @(posedge clk)
         rst = 1;
 
+        print_wb_info();
 
         @(posedge clk)
         DelayClks(300);
         $finish;
     end
 endmodule
+
+
