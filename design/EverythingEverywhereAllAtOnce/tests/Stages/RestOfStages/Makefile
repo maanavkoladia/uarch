@@ -5,11 +5,11 @@ include ../../../Make.build
 include debugUtils/srcs.mk
 
 
-TARGET = RestOfStages
+TARGET = Execute_Test
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_restOfStages
+TOP_MODULE_NAME = tb_execute
 
 STARTUP_FILES = \
 				gen/memLoader.sv \
@@ -22,7 +22,7 @@ STARTUP_FILES = \
 TB_FILES = \
 		   $(STARTUP_FILES) \
 		   debugUtils/debug_pkg.sv \
-		   tb_restOfStages.sv
+		   tb_execute.sv
 
 SRC_FILES :=
 

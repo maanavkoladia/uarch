@@ -17,8 +17,9 @@ import tb_debug_pkg::*;
 `define RR_UNIT_PATH (temp)
 `define DC_UNIT_PATH (temp)
 `define MEM_UNIT_PATH (temp)
-`define EXE_UNIT_PATH (temp)
+`define EXE_UNIT_PATH execute_stage
 `define WB_UNIT_PATH wb_stage
+`define WB_UNIT_PATH (temp)
 `define DCACHE_UNIT_PATH (temp)
 
 
@@ -66,8 +67,9 @@ import tb_debug_pkg::*;
 //`include "debugUtils/debugUtilsRR.svh"
 //`include "debugUtils/debugUtilsDC.svh"
 //`include "debugUtils/debugUtilsMEM.svh"
-//`include "debugUtils/debugUtilsEXE.svh"
+`include "debugUtils/debugUtilsEXE.svh"
 //`include "debugUtils/debugUtils_Dcache.svh"
-`include "debugUtils/debugUtils_WB.svh"
+//`include "debugUtils/debugUtils_WB.svh"
+//`include "debugUtils/debugUtilsWBLatches.svh"
 
 `endif
