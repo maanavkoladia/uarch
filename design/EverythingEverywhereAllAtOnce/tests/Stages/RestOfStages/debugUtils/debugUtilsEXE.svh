@@ -13,6 +13,10 @@ task automatic print_exe_latches();
 `ifdef EXE_UNIT_PATH
     begin
         automatic exe_latches_t L = `EXE_UNIT_PATH.latches_i;
+        automatic string sel_a, sel_b, sel_br;
+        sel_a  = tb_debug_pkg::get_source_selector_name(L.cs.alu_inputA_sel);
+        sel_b  = tb_debug_pkg::get_source_selector_name(L.cs.alu_inputB_sel);
+        sel_br = tb_debug_pkg::get_source_selector_name(L.cs.branch_target_sel);
 
         $fdisplay(`LOG_FD, "  valid=%0b  EIP=0x%08h  NEIP=0x%08h",
                   L.valid, L.EIP, L.NEIP);
@@ -25,10 +29,8 @@ task automatic print_exe_latches();
                   tb_debug_pkg::get_op_name(L.cs.OP_TYPE),
                   L.cs.ST_OP, L.data_size_vec);
 
-        $fdisplay(`LOG_FD, "  inputA_sel=%0d  inputB_sel=%0d  br_tgt_sel=%0d",
-                  L.cs.alu_inputA_sel,
-                  L.cs.alu_inputB_sel,
-                  L.cs.branch_target_sel);
+        $fdisplay(`LOG_FD, "  inputA_sel=%s  inputB_sel=%s  br_tgt_sel=%s",
+                    sel_a, sel_b, sel_br);
 
         $fdisplay(`LOG_FD,
             "  br_info: v=%0b  eip=0x%08h  xcl=%0b  pred_taken=%0b  spec_tgt=0x%08h",
@@ -46,6 +48,17 @@ task automatic print_exe_latches();
         $fdisplay(`LOG_FD,
             "  WB_CS: ST=%0b DR=%0b SR=%0b",
             L.wb_cs.ST_OP, L.wb_cs.WB_DR, L.wb_cs.WB_SR);
+
+        $fdisplay(`LOG_FD,
+            "  FLAGS: AF=%0b CF=%0b DF=%0b OF=%0b PF=%0b SF=%0b ZF=%0b",
+            `EXE_UNIT_PATH.af_flag_o,
+            `EXE_UNIT_PATH.cf_flag_o,
+            `EXE_UNIT_PATH.df_flag_o,
+            `EXE_UNIT_PATH.of_flag_o,
+            `EXE_UNIT_PATH.pf_flag_o,
+            `EXE_UNIT_PATH.sf_flag_o,
+            `EXE_UNIT_PATH.zf_flag_o
+        );
 
         // LD BUFFER (same formatting as WB RES_BUF)
         $fwrite(`LOG_FD, "LD_BUF: ");

@@ -33,43 +33,40 @@ module cmp (
 
     always_comb begin
         // Default flags
-        CF = 0; OF = 0; SF = 0; ZF = 0; AF = 0; PF = 0;
+        CF = 0; OF = 0; SF = 0; ZF = 0; AF = 0;
+        PF = ~^lower8;
 
         case (data_size[2:0])
-            3'b001: begin // lower 8 bits
+            4'b0001: begin // lower 8 bits
                 ZF = (lower8 == 8'h0);
                 SF = lower8[7];
-                PF = ~^lower8;
 
                 CF = diff32[8];
                 AF = (srA[3:0] < srB[3:0]);
                 OF = (srA[7] ^ srB[7]) & (srA[7] ^ lower8[7]);
             end
 
-            3'b010: begin // upper 8 bits
+            4'b0010: begin // upper 8 bits
                 ZF = (upper8 == 8'h0);
                 SF = upper8[7];
-                PF = ~^upper8;
 
                 CF = diff32[16];
                 AF = (srA[11:8] < srB[11:8]);
                 OF = (srA[15] ^ srB[15]) & (srA[15] ^ upper8[7]);
             end
 
-            3'b011: begin // lower 16 bits
+            4'b0011: begin // lower 16 bits
                 ZF = (lower16 == 16'h0);
                 SF = lower16[15];
-                PF = ~^lower16[7:0];
 
                 CF = diff32[16];
                 AF = (srA[3:0] < srB[3:0]);
                 OF = (srA[15] ^ srB[15]) & (srA[15] ^ lower16[15]);
             end
 
-            3'b111: begin // full 32 bits
+            4'b0111: begin // full 32 bits
                 ZF = (full32 == 32'h0);
                 SF = full32[31];
-                PF = ~^full32[7:0];
 
                 CF = diff32[32];
                 AF = (srA[3:0] < srB[3:0]);

@@ -39,21 +39,27 @@ module and_op(
 
     always_comb begin
         OF = 0;
+        PF = ~^merged_result[7:0];
         case (data_size)
-            2'b00: begin
+            4'b0001: begin
                 ZF = (merged_result[7:0] == 8'h0);
                 SF = merged_result[7];
-                PF = ~^merged_result[7:0];
             end
-            2'b01: begin
+            4'b0010: begin
+                ZF = (merged_result[15:8] == 8'h0);
+                SF = merged_result[15];
+            end
+            4'b0011: begin
                 ZF = (merged_result[15:0] == 16'h0);
                 SF = merged_result[15];
-                PF = ~^merged_result[7:0];
             end
-            default: begin
+            4'b0111: begin
                 ZF = (merged_result[31:0] == 32'h0);
                 SF = merged_result[31];
-                PF = ~^merged_result[7:0];
+            end
+            default: begin
+                ZF = 0;
+                SF = 0;
             end
         endcase
     end

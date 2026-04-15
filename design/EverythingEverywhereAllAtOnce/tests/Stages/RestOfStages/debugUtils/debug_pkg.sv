@@ -83,6 +83,36 @@ package tb_debug_pkg;
         endcase
     endfunction
 
+// ===================== SOURCE SELECTOR NAME HELPER =====================
+function automatic string get_source_selector_name(source_selector_e sel);
+    case (sel)
+        // register sources
+        control_store_pkg::NO_EXE        : return "NO_EXE";
+        control_store_pkg::SR_REGISTER   : return "SR_REG";
+        control_store_pkg::DR_REGISTER   : return "DR_REG";
+        control_store_pkg::BUFFER        : return "BUFFER";
+        control_store_pkg::NEIP          : return "NEIP";
+        control_store_pkg::EAX_REG       : return "EAX_REG";
+        control_store_pkg::SEXT8         : return "SEXT8";
+        control_store_pkg::SEGMENT_NEIP  : return "SEG_NEIP";
+        control_store_pkg::IMM64         : return "IMM64";
+
+        // branch sources
+        control_store_pkg::IMM32         : return "IMM32";
+        control_store_pkg::ZEXT_IMM8     : return "ZIMM8";
+        control_store_pkg::BUF32         : return "BUF32";
+        control_store_pkg::ZEXT_BUF16    : return "ZBUF16";
+        control_store_pkg::ZEXT_IMM16    : return "ZIMM16";
+        control_store_pkg::SEGMENT_EIP   : return "SEG_EIP";
+        control_store_pkg::FLAGS         : return "FLAGS";
+        control_store_pkg::EIP           : return "EIP";
+        control_store_pkg::CMPXCHG_SEL   : return "CMPXCHG";
+        control_store_pkg::IRETD_SEL     : return "IRETD";
+
+        default       : return "???";
+    endcase
+endfunction
+
     function automatic string get_spc_sel_name(spc_sel_logic_output_options_e sel);
         case (sel)
             Fetch_pkg::SPC: return "SPC     ";

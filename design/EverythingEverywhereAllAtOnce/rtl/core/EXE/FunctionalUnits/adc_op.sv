@@ -44,9 +44,9 @@ module adc_op (
         // 4. Flag Logic based on msb_ptr
         CF = sum[msb_ptr + 1];
         SF = sum[msb_ptr];
-        ZF = (data_size == 4'b0001 || data_size == 4'b0010) ? (sum[7:0]  == 8'h0) :
-             (data_size == 4'b0011)                         ? (sum[15:0] == 16'h0) :
-                                                              (sum[31:0] == 32'h0);
+        ZF = (data_size == 4'b0001)  ? (sum[7:0]  == 8'h0) :
+             (data_size == 4'b0010)  ? (sum[15:8] == 8'h0) :
+             (data_size == 4'b0011)                         ? (sum[15:0] == 16'h0) : (sum[31:0] == 32'h0);
         
         PF = ~^sum[7:0]; // Always low 8 bits of the result segment
         AF = (opA[3:0] + opB[3:0] + {3'd0, CF_in}) > 4'hF;
