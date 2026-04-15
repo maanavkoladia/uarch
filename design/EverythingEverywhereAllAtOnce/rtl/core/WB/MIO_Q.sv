@@ -2,7 +2,7 @@ module MIO_Q(
     input clk,
     input rst,
     input mio_inputs_t mio_input,
-
+    output bool push_fail,
     output st_q_2_dcache_t outs
 );
     
@@ -19,8 +19,10 @@ module MIO_Q(
     bool valid_push;
     bool valid_pop;
 
+
     assign valid_push = mio_input.push &  (~full | mio_input.pop);
     assign valid_pop =  mio_input.pop & (~empty);
+    assign push_fail = mio_input.push & (full & ~mio_input.pop);
 
 //else if because if we have a valid push then the queue will be full no matter what
     always_comb begin

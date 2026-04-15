@@ -13,14 +13,14 @@ task automatic print_wb_latches();
     begin
         automatic wb_latches_t L = `WB_UNIT_PATH.wb_latches;
 
-        $fdisplay(`LOG_FD, "  valid=%0b  CS: ST=%0b  WB_DR=%0b  WB_SR=%0b",
+        $fdisplay(`LOG_FD, "  valid=%0b  ST_OP=%0b  WB_DR=%0b  WB_SR=%0b",
                   L.valid, L.cs.ST_OP, L.cs.WB_DR, L.cs.WB_SR);
 
         $fdisplay(`LOG_FD, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
                   tb_debug_pkg::get_reg_name(L.dr_id), L.dr_data,
                   tb_debug_pkg::get_reg_name(L.sr_id), L.sr_data);
 
-        $fdisplay(`LOG_FD, "  ST: xcl=%0b  paddr0=0x%04h  bv0=0x%04h  paddr1=0x%04h  bv1=0x%04h  MIO=%0b",
+        $fdisplay(`LOG_FD, "  ST: xcl=%0b  paddr0=0x%04h  v0=0x%04h  paddr1=0x%04h  v1=0x%04h  MIO=%0b",
                   L.ST_XCL, L.ST_PADDR_0, L.ST_BIT_VEC_0,
                   L.ST_PADDR_1, L.ST_BIT_VEC_1, L.MIO);
 
@@ -45,7 +45,6 @@ endtask
 // --- WB OUTPUTS ---
 task automatic print_wb_outputs();
     $fdisplay(`LOG_FD, "[WB OUTS]");
-
 `ifdef WB_UNIT_PATH
     $fdisplay(`LOG_FD, "  valid=%0b  wb_stall=%0b",
               `WB_UNIT_PATH.outputs.valid,
@@ -99,7 +98,6 @@ endtask
 // --- MIO QUEUE ---
 task automatic print_mio_queue();
     $fdisplay(`LOG_FD, "[MIO QUEUE]");
-
 `ifdef WB_UNIT_PATH
     $fdisplay(`LOG_FD, "  full=%0b  empty=%0b",
               `WB_UNIT_PATH.mio_q_inst.full,
@@ -133,6 +131,7 @@ endtask
 
 // Optional wrapper
 task automatic print_wb_info();
+    #(`CLK_PERIOD-1);
     print_wb_latches();
     print_wb_outputs();
     print_store_queues();

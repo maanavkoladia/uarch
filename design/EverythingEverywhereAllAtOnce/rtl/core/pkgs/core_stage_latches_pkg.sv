@@ -279,18 +279,14 @@ package core_stage_latches_pkg;
     typedef struct {
         bool valid;
         wb_cs_t cs;
-
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline algned
         uint16_t ST_BIT_VEC_0;  //where to write
         p_address_t ST_PADDR_1;  //cacheline algned
         uint16_t ST_BIT_VEC_1;  //where to write
         bool MIO;
-
         uint32_t EIP; //used for tagging insts, for edebugging
-
         byte_t res_buf[CACHE_LINES_SIZE_B*2];  //32 byte buf
-
         reg_ids_e sr_id;
         uint64_t  sr_data;
         reg_ids_e dr_id;
