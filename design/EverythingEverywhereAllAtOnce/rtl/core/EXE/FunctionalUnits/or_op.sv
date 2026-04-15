@@ -31,7 +31,7 @@ module or_op(
     assign merged_result[63:32]  = 32'd0;
 
     assign dr_o = merged_result;
-    assign res_buf_o = merged_result[31:0]; // Only lower 32 bits to res_buf_o
+    assign res_buf_o = merged_result; // Only lower 32 bits to res_buf_o
 
    
     // CF and OF are always cleared for OR
@@ -53,7 +53,7 @@ module or_op(
 
     always_comb begin
       case(data_size)
-        4'b0001 : ZF = zf_low8;  
+        4'b0001 : ZF = zf_low8; 
         4'b0010 : ZF = zf_up8;
         4'b0011 : ZF = zf_low16;
         4'b0100 : ZF = zf_low16 & zf_up16;

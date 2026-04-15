@@ -55,7 +55,7 @@ module sal_op(
                 end
                 
                 4'b0111: begin // EAX (32-bit)
-                    result[31:0] = value_i[31:0] << count;
+                    result = {32'd0, value_i[31:0] << count};
                     // For 32-bit, if count > 0, CF is bit 32-count
                     CF = value_i[32 - count]; 
                     SF = result[31];
