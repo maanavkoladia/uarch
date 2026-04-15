@@ -1,29 +1,39 @@
+STRUCTRURAL := true
+
 include ../../../Make.vars
 include ../../../Make.build
 
-TARGET = KoogeStone_Test
+
+TARGET = koggeStoneTest
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_FILE_NAME = tb_KoggeStone 
+TOP_MODULE_NAME = tb_KoggeStone
 
+STARTUP_FILES = \
+
+
+		   #$(DEBUG_UTILS) \
 
 TB_FILES = \
+		   $(STARTUP_FILES) \
 		   tb_KoggeStone.sv
 
-PKGS = $(RTL_PKGS)
+SRC_FILES :=
 
-SRC_FILES = \
-			$(PKGS)	\
-			$(RTL_SRC_FILES) \
-			$(TB_FILES)	\
+ifeq ($(STRUCTRURAL), true)
+	SRC_FILES += $(RTL_PKGS) $(RTL_STRUCTURAL_HEADERS) $(RTL_STRUCTURAL_SRC_FILES) $(TB_FILES)	
+else
+	SRC_FILES += $(RTL_PKGS) $(RTL_SRC_FILES) $(TB_FILES)	
+endif
+
 
 .PHONY: all run clean see gen
 
 all: $(TARGET)
 	
 $(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -top $(TOP_FILE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee compile.log
+	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee compile.log
 
 run: $(TARGET)
 	./$< 2>&1| tee sim.log
@@ -34,7 +44,7 @@ view: run
 
 gen:
 	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
-	@python3 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@python3.11 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
 	@rm -f cleaned_scripts.json
 
 see:
@@ -50,8 +60,7 @@ clean:
 	rm -f master
 	rm -f *.log
 	rm -f ucli.key
-
-	#rm -rf gen/
+	rm -rf gen/
 
 vim:
 	nvim ../../../
