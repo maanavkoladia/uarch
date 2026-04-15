@@ -439,8 +439,8 @@ endtask
         // ECX=0x100, sext(0x7F)=+127 → 0x17F, no flags
         build_exe_cs(0, ADD, DR_REGISTER, SEXT8, IMM32, 0, 0, 0, 0, 0, 0, exe_cs);
         drive_exe_latches(1, exe_cs, wb_cs, 4'h7, 0, 0, 0, 0, 0, 0, br_info,
-            32'h0, 32'h1000, 32'h0, 64'hDEADDEADCAFE007F, ld_buf,
-            ECX, 64'h0, ECX, 64'hCCCC333300000100, 15'h0,
+            32'h0, 32'h1000, 32'h0, 64'hDEADDEADCAFE00FE, ld_buf,
+            ECX, 64'h0, ECX, 64'hCCCC333300000052, 15'h0,
             "ADD r/m32,sext8(+127)(ECX): 0x100+0x7F=0x17F");
         DelayClks(1);
 
