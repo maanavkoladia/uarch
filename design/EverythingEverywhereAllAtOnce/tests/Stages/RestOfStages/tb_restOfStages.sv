@@ -92,16 +92,24 @@ module tb_restOfStages ();
 
 */
 
+
+
     // ===================== TEST SEQUENCE =====================
     initial begin
         `LOG("Starting mem System TB");
         $display("%m");
         rst = 0;
-        wb_latches <= '{default: '0};
+        wb_latches = '{default: '0};
         DelayClks(20);
         @(posedge clk)
         rst = 1;
-
+        //things to test
+        /*
+        -regular store
+        - stall and stall logic latch thing with dr_wb getting disabled and stuff 
+            - this is is in the req gen logic I think 
+        - 
+        */
 
         @(posedge clk)
         DelayClks(300);
