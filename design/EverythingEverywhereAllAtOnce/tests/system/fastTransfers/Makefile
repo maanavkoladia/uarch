@@ -5,7 +5,7 @@ include ../../../Make.build
 include debugUtils/srcs.mk
 
 
-TARGET = Execute_Test
+TARGET = FasterTransfers
 
 GEN_CONF = startUpGen.conf.json
 
@@ -22,7 +22,7 @@ STARTUP_FILES = \
 TB_FILES = \
 		   $(STARTUP_FILES) \
 		   debugUtils/debug_pkg.sv \
-		   tb_execute.sv
+		   tb_fasterTransfers.sv
 
 SRC_FILES :=
 
@@ -49,7 +49,7 @@ view: run
 
 gen:
 	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
-	@python3.11 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@python3 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
 	@rm -f cleaned_scripts.json
 
 see:
