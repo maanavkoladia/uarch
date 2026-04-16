@@ -35,6 +35,8 @@ module control_store (
     logic REP_CMP_o;
     logic HALT_o;
     logic MOVS_o;
+    logic XCHG_o;
+    logic CMPXCHG_o;
     logic SHIFT_BY_ONE_o;
 
     logic MODRM_NEEDED_o;
@@ -107,6 +109,8 @@ module control_store (
         .REP_CMP_o(REP_CMP_o),
         .HALT_o(HALT_o),
         .MOVS_o(MOVS_o),
+        .XCHG_o(XCHG_o),
+        .CMPXCHG_o(CMPXCHG_o),
         .SHIFT_BY_ONE_o(SHIFT_BY_ONE_o),
 
         .MODRM_NEEDED_o(MODRM_NEEDED_o),

@@ -6,7 +6,7 @@ _start:
 
     movl $0x11111111, %eax
     movl $0x22222222, %ebx
-    movl $0x200E, %esi
+    movl $0x2000, %esi
     movl (%esi), %ecx        # ecx now shuld have 0x66660000
     addl $0x4, %esi
 

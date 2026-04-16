@@ -4,6 +4,8 @@
     "REP_CMP" : "1",
     "HALT" : "1",
     "MOVS" : "1",
+    "XCHG" : "1",
+    "CMPXCHG" : "1",
     "SHIFT_BY_ONE" : "1",
     "MODRM_NEEDED" : "1",
     "RM_IS_DR" : "1",
