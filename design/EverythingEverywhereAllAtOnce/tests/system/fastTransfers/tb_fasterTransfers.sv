@@ -39,7 +39,6 @@ module tb_fasterTransfers ();
     dcache_2_core_t dcache_2_core;
     dma_controller_2_core_t dma_2_core;
 
-    assign core_2_icache = '{default: '0};
 
 
     // ================= DUT INSTANTIATION =================
@@ -68,13 +67,17 @@ module tb_fasterTransfers ();
         core_2_dcache = '{default: '0};
         for(int i = 0; i < NUM_DCACHE_PORTS; i++) core_2_dcache.stq_heads[i].empty = 1;
         core_2_dcache.stq_info_mio.empty = 1;
+
         core_2_icache = '{default: '0};
         //for d$ arb logic,
 
         DelayClks(10);
         rst = 1;
         DelayClks(10);
-
+        @(posedge clk);
+        core_2_icache.icache_en = 1;
+        core_2_icache.p_addr = 15'h1000;
+        core_2_icache.v_addr_i = 15'h1000;
         DelayClks(50);
         $finish;
     end

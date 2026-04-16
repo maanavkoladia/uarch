@@ -9,7 +9,7 @@ TARGET = FasterTransfers
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_execute
+TOP_MODULE_NAME = tb_fasterTransfers 
 
 STARTUP_FILES = \
 				gen/memLoader.sv \
@@ -49,7 +49,7 @@ view: run
 
 gen:
 	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
-	@python3 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@python3.11 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
 	@rm -f cleaned_scripts.json
 
 see:
