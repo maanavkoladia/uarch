@@ -43,6 +43,16 @@ module RegSB (
     bool updateSB;
     assign updateSB = !depStall_Internal && instructionforward;
 
+
+    //make sur edecode only sends in valid dr_wr and sr_wr, can't have false scoreboard setting
+    //make sure decode is zeroing out any sensitive cs like sr_wr
+    bool cs_wr_to_both;
+    assign cs_wr_to_both = cs_dr_wr && cs_sr_wr && (dr_id == sr_id);
+
+    bool wb_wr_to_both;
+    assign wb_wr_to_both = wb_dr0_we && wb_dr1_we && (wb_dr0_id == wb_dr1_id);
+
+
     assign dep_stall = depStall_Internal;
     assign ecx_sb = SCORE_BOARD[ECX].counter != 0;
     assign codeSeg_sb = SCORE_BOARD[CS].counter != 0;
@@ -56,12 +66,22 @@ module RegSB (
                 if (!(i == CS)) SCORE_BOARD[i].counter <= 0;
             end
         end else begin
-            if (cs_dr_wr && updateSB) SCORE_BOARD[dr_id].counter++;
-            if (cs_sr_wr && updateSB) SCORE_BOARD[sr_id].counter++;
+            if(cs_wr_to_both) begin
+                if (updateSB) SCORE_BOARD[dr_id].counter++;
+            end
+            else begin
+                if (cs_dr_wr && updateSB) SCORE_BOARD[dr_id].counter++;
+                if (cs_sr_wr && updateSB) SCORE_BOARD[sr_id].counter++;
+            end
 
-            //dec logic
-            if (wb_dr0_we) SCORE_BOARD[wb_dr0_id].counter--;
-            if (wb_dr1_we) SCORE_BOARD[wb_dr1_id].counter--;
+            if(wb_wr_to_both) begin
+                SCORE_BOARD[wb_dr0_id].counter--;
+            end
+            else begin
+                //dec logic
+                if (wb_dr0_we) SCORE_BOARD[wb_dr0_id].counter--;
+                if (wb_dr1_we) SCORE_BOARD[wb_dr1_id].counter--;
+            end
         end
     end
 

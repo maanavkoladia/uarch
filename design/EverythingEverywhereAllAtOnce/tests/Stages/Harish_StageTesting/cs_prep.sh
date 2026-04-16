@@ -1,9 +1,9 @@
 #!/bin/bash
 
-cd ../../rtl/core/Decode/cs_roms/
+cd ../../../rtl/core/Decode/cs_roms/
 ./parse.sh
 cd -
-cd ../../
+cd ../../../
 make gen
 cd -
-echo "must run this in Stages dir"
+echo "must run this in Stages dir\n"

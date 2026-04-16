@@ -27,7 +27,7 @@ module RR (
 );
 
     rr_latches_general_t latchesInUse;
-    assign latchesInUse = latches_i.useRep ? latches_i.rep_latches : latches_i.normal_latches;
+    assign latchesInUse = decode_outs_i.rep_latch ? latches_i.rep_latches : latches_i.normal_latches;
 
     //6 bc 6 seg regs and their respctive limits
     segment_limit_reg_entry_t SEGMENT_LIMITS[NUM_SEG_REGS];  //CS, DS, ES, FS, GS, SS
