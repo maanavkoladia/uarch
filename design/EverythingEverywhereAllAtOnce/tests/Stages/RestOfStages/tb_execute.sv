@@ -21,7 +21,7 @@ module tb_execute ();
     //    #(Clk_PERIOD * cycles);
     //endtask
 
-    `DEBUG_UTILS_INIT;
+    `DEBUG_UTILS_INIT
 
     initial begin
         $vcdpluson;
