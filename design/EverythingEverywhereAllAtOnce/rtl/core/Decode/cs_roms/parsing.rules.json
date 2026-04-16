@@ -4,6 +4,8 @@
     "REP_CMP" : "1",
     "HALT" : "1",
     "MOVS" : "1",
+    "XCHG" : "1",
+    "CMPXCHG" : "1",
     "SHIFT_BY_ONE" : "1",
     "MODRM_NEEDED" : "1",
     "RM_IS_DR" : "1",
@@ -141,6 +143,8 @@
 
     "HARDCODED_LD_OP" : "1",
     "HARDCODED_ST_OP" : "1",
+    "LD_OP_CANCEL" : "1",
+    "ST_OP_CANCEL" : "1",
     "HARDCODED_DR_RD" : "1",
     "HARDCODED_DR_WR" : "1",
     "HARDCODED_SR_RD" : "1",

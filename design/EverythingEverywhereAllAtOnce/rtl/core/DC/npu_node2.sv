@@ -87,13 +87,18 @@ module npu_node2 (
 
     assign outputs.bank_hi = vaddy_start_fields.index != vaddy_end_fields.index;
     assign outputs.xcl = (vaddy_start_fields.bank[0] ^ vaddy_end_fields.bank[0]) && mem_op;
-    assign outputs.PADDR1 = {tlb1_out.physical_addr[$clog2(PHY_MEM_SIZE) - 1 : 4], 4'b0};
+    assign outputs.PADDR1 = cross_page_access ? 
+                            {tlb1_out.physical_addr[$clog2(PHY_MEM_SIZE) - 1 : 4], 4'b0} :
+                            {tlb0_out.physical_addr[$clog2(PHY_MEM_SIZE) - 1 : VPN_LB], vaddy_end[VPN_LB - 1 : 0]};
+                            //i dont think i need to get the page offset bits for the tlb1 access since
+                            //a cross page access will never cross past the first cache line in the page i think
 
     assign outputs.DC_PF = (tlb0_pagefault || tlb1_pagefault);
     assign outputs.DC_GP = (tlb0_generalprotection || tlb1_generalprotection || segx_gp || rr_gp);
 
     //if both addresses are valid and we are doing a ld/st op
-    assign outputs.valid_mem_op = tlb0_out.physical_addr_valid && tlb1_out.physical_addr_valid && mem_op;
+    assign outputs.valid_mem_op = tlb0_out.physical_addr_valid && 
+                                    (cross_page_access ? tlb1_out.physical_addr_valid : tlb0_out.physical_addr_valid) && mem_op;
     assign outputs.mio = tlb0_out.MIO;
 
 endmodule

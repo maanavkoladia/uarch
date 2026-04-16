@@ -36,6 +36,12 @@ module EveryThing_TOP (
     exe_latches_t exe_latches, exe_latches_next;
     wb_latches_t wb_latches, wb_latches_next;
 
+    // assign rr_outputs = '{default: '0};
+    // assign dc_outputs = '{default: '0};
+    // assign mem_outputs = '{default: '0};
+    // assign exe_outputs = '{default: '0};
+    // assign wb_outputs = '{default: '0};
+
     //assign icache out and dache out
     assign out2ICache_o = fetch_outputs.fetch_2_icache;
 

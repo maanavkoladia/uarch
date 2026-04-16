@@ -72,6 +72,8 @@ package core_stage_latches_pkg;
         bool HARDCODED_SR_WR;
         bool HARDCODED_LD_OP;
         bool HARDCODED_ST_OP;
+        bool LD_OP_CANCEL;
+        bool ST_OP_CANCEL;
         bool OP_IN_MODRM;
         reg_ids_e dr_id;
         reg_ids_e sr_id;
@@ -170,7 +172,6 @@ package core_stage_latches_pkg;
     typedef struct {
         rr_latches_general_t normal_latches;
         rr_latches_general_t rep_latches;
-        bool useRep;
     } rr_latches_t;
 
     typedef struct {

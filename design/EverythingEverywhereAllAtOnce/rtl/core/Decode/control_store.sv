@@ -35,6 +35,8 @@ module control_store (
     logic REP_CMP_o;
     logic HALT_o;
     logic MOVS_o;
+    logic XCHG_o;
+    logic CMPXCHG_o;
     logic SHIFT_BY_ONE_o;
 
     logic MODRM_NEEDED_o;
@@ -53,6 +55,8 @@ module control_store (
     logic HARDCODED_SR_WR_o;
     logic HARDCODED_LD_OP_o;
     logic HARDCODED_ST_OP_o;
+    logic LD_OP_CANCEL_o;
+    logic ST_OP_CANCEL_o;
     logic ST_SEL_o;
 
     logic br_uncond_o;
@@ -105,6 +109,8 @@ module control_store (
         .REP_CMP_o(REP_CMP_o),
         .HALT_o(HALT_o),
         .MOVS_o(MOVS_o),
+        .XCHG_o(XCHG_o),
+        .CMPXCHG_o(CMPXCHG_o),
         .SHIFT_BY_ONE_o(SHIFT_BY_ONE_o),
 
         .MODRM_NEEDED_o(MODRM_NEEDED_o),
@@ -125,6 +131,8 @@ module control_store (
         .HARDCODED_SR_WR_o(HARDCODED_SR_WR_o),
         .HARDCODED_LD_OP_o(HARDCODED_LD_OP_o),
         .HARDCODED_ST_OP_o(HARDCODED_ST_OP_o),
+        .LD_OP_CANCEL_o(LD_OP_CANCEL_o),
+        .ST_OP_CANCEL_o(ST_OP_CANCEL_o),
         .ST_SEL_o(ST_SEL_o),
 
         // Destination Register Hardcoding
@@ -228,6 +236,8 @@ module control_store (
         HARDCODED_SR_WR   : HARDCODED_SR_WR_o,
         HARDCODED_LD_OP   : HARDCODED_LD_OP_o,
         HARDCODED_ST_OP   : HARDCODED_ST_OP_o,
+        LD_OP_CANCEL      : LD_OP_CANCEL_o,
+        ST_OP_CANCEL      : ST_OP_CANCEL_o,
         OP_IN_MODRM       : OP_IN_MODRM_o,
         dr_id             : mod_rm_cs_outs.dr_id,
         sr_id             : mod_rm_cs_outs.sr_id,

@@ -1,6 +1,6 @@
 {
     "useProgram"              : "true",
-    "input_Program_Path"      : "config/StagesProgXchg.s",
+    "input_Program_Path"      : "config/StagesProgTA.s",
 
     "input_hex_file"          : "not_needed",
     "output_LoadableHex_Path" : "gen/memGen/hexLoad",
@@ -15,6 +15,6 @@
     "cells_per_bank"          : 4,
 
     "readmemFilePath"         : "gen/memLoader.sv",
-    "memCellPath"             : "uut_mem.g_mem_banks[<bankNum>].mem_bank.g_sram_cells[<cellNum>].mem_cell.mem",
+    "memCellPath"             : "uut_offcore.mem_unit.g_mem_banks[<bankNum>].mem_bank.g_sram_cells[<cellNum>].mem_cell.mem",
     "startUpDelay"            : "30"
 }

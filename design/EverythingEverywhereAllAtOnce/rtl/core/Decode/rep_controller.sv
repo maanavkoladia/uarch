@@ -11,11 +11,8 @@ module rep_controller (
     input bool stall,
     input bool flush,
     output rr_latches_general_t rep_latches,
-    output bool rep_register
+    output bool clear_rep
 );
-
-    reg REP_IN_PROGRESS;
-    assign rep_register = REP_IN_PROGRESS;
 
     bool continue_mov, continue_cmp;
     assign continue_mov = !ecx_sb && ecx != 32'b0;
@@ -24,30 +21,13 @@ module rep_controller (
     regsb_entry_t zf_sb;
 
     logic [2:0] inst_select;
-    bool s0, s1, s2, s3, set_rep, clear_rep;
-    rep_fsm fsm_rep(.clk(clk), .rst(rst), .cont_mov_i(continue_mov), .cont_cmp_i(continue_cmp), .rep_prefix_i(rep_prefix),
-        .cs_mov_i(mov_inst), .cs_cmp_i(cmp_inst), .stall_i(stall),
+    bool s0, s1, s2, s3, set_rep;
+    rep_fsm fsm_rep(.clk(clk), .rst(rst), .cont_mov_i(continue_mov), .cont_cmp_i(continue_cmp), 
+        .rep_prefix_i(rep_prefix), .cs_mov_i(mov_inst), .cs_cmp_i(cmp_inst), .stall_i(stall),
         .S_0(s0), .S_1(s1), .S_2(s2), .S_3(s3), .set_rep_o(set_rep),
         .clear_rep_o(clear_rep), .select_line2_o(inst_select[2]),
         .select_line1_o(inst_select[1]), .select_line0_o(inst_select[0])
     );
-
-    always_ff @(posedge clk) begin
-        if(!rst) begin
-            REP_IN_PROGRESS <= 1'b0;
-        end
-        else begin
-            if(flush) REP_IN_PROGRESS <= 1'b0;
-            else begin
-                case ({set_rep, clear_rep})
-                    2'b00: REP_IN_PROGRESS <= REP_IN_PROGRESS;
-                    2'b01: REP_IN_PROGRESS <= 1'b0;
-                    2'b10: REP_IN_PROGRESS <= 1'b1;
-                    2'b11: REP_IN_PROGRESS <= REP_IN_PROGRESS;
-                endcase
-            end
-        end
-    end
 
     always_ff @(posedge clk) begin
         if(!rst) begin
@@ -89,6 +69,532 @@ module rep_controller (
         endcase
     end
 
+        
+    
+    
+    assign idle_output = '{
+        valid : 1'b1,
+        cs : '{
+            ST_SEL         : 1'b0,
+            MODRM_NEEDED   : 1'b0,
+            RM_IS_DR       : 1'b0,
+            LD_OP          : 1'b0,
+            ST_OP          : 1'b0,
+            dr_id          : NO_REG,
+            sr_id          : NO_REG,
+            dr_rd          : 1'b0,
+            sr_rd          : 1'b0,
+            dr_wr          : 1'b0,
+            sr_wr          : 1'b0,
+            datasize       : 2'b00,
+            will_mod_zf    : 1'b0,
+            seg_1_valid    : 1'b0,
+            seg_0_id       : NO_REG,
+            seg_1_id       : NO_REG
+        },
+        dc_cs : '{
+            LD_OP     : 1'b0,
+            ST_OP     : 1'b0,
+            upper8    : 1'b0,
+            datasize  : 2'b00
+        },
+        mem_cs : '{
+            ST_OP : 1'b0,
+            LD_OP : 1'b0
+        },
+        exe_cs : '{
+            ST_OP               : 1'b0,
+            OP_TYPE             : ADD,
+            alu_inputA_sel      : NO_EXE,
+            alu_inputB_sel      : NO_EXE,
+            branch_target_sel   : NO_EXE,
+            shift_by_one        : 1'b0,
+            br_ucond            : 1'b0,
+            relative_branch     : 1'b0,
+            special_br          : 1'b0,
+            is_far              : 1'b0,
+            second_flag_needed  : 1'b0
+        },
+        wb_cs : '{
+            ST_OP : 1'b0,
+            WB_DR : 1'b0,
+            WB_SR : 1'b0
+        },
+        br_info      : '{default:'0},  // per your requirement
+        NEIP         : 32'h0,
+        EIP          : 32'h0,
+        EAX          : 32'h0,
+        imm64        : 64'h0,
+        sib_idx_id   : NO_REG,
+        sib_base_id  : NO_REG,
+        sib_needed   : 1'b0,
+        sib_scale    : 8'h0,
+        disp_needed  : 1'b0,
+        disp_size    : 1'b0,
+        displacement : 32'h0
+    };
+
+
+
+
+
+    assign movs_edi_esi = '{
+        valid : 1'b1,
+        cs : '{
+            ST_SEL         : 1'b0,
+            MODRM_NEEDED   : 1'b0,
+            RM_IS_DR       : 1'b0,
+            LD_OP          : 1'b0,
+            ST_OP          : 1'b0,
+            dr_id          : NO_REG,
+            sr_id          : NO_REG,
+            dr_rd          : 1'b0,
+            sr_rd          : 1'b0,
+            dr_wr          : 1'b0,
+            sr_wr          : 1'b0,
+            datasize       : 2'b00,
+            will_mod_zf    : 1'b0,
+            seg_1_valid    : 1'b0,
+            seg_0_id       : NO_REG,
+            seg_1_id       : NO_REG
+        },
+        dc_cs : '{
+            LD_OP     : 1'b0,
+            ST_OP     : 1'b0,
+            upper8    : 1'b0,
+            datasize  : 2'b00
+        },
+        mem_cs : '{
+            ST_OP : 1'b0,
+            LD_OP : 1'b0
+        },
+        exe_cs : '{
+            ST_OP               : 1'b0,
+            OP_TYPE             : ADD,
+            alu_inputA_sel      : NO_EXE,
+            alu_inputB_sel      : NO_EXE,
+            branch_target_sel   : NO_EXE,
+            shift_by_one        : 1'b0,
+            br_ucond            : 1'b0,
+            relative_branch     : 1'b0,
+            special_br          : 1'b0,
+            is_far              : 1'b0,
+            second_flag_needed  : 1'b0
+        },
+        wb_cs : '{
+            ST_OP : 1'b0,
+            WB_DR : 1'b0,
+            WB_SR : 1'b0
+        },
+        br_info      : '{default:'0},  // per your requirement
+        NEIP         : 32'h0,
+        EIP          : 32'h0,
+        EAX          : 32'h0,
+        imm64        : 64'h0,
+        sib_idx_id   : NO_REG,
+        sib_base_id  : NO_REG,
+        sib_needed   : 1'b0,
+        sib_scale    : 8'h0,
+        disp_needed  : 1'b0,
+        disp_size    : 1'b0,
+        displacement : 32'h0
+    };
+
+
+
+
+
+    assign decrement_ecx = '{
+        valid : 1'b1,
+        cs : '{
+            ST_SEL         : 1'b0,
+            MODRM_NEEDED   : 1'b0,
+            RM_IS_DR       : 1'b0,
+            LD_OP          : 1'b0,
+            ST_OP          : 1'b0,
+            dr_id          : NO_REG,
+            sr_id          : NO_REG,
+            dr_rd          : 1'b0,
+            sr_rd          : 1'b0,
+            dr_wr          : 1'b0,
+            sr_wr          : 1'b0,
+            datasize       : 2'b00,
+            will_mod_zf    : 1'b0,
+            seg_1_valid    : 1'b0,
+            seg_0_id       : NO_REG,
+            seg_1_id       : NO_REG
+        },
+        dc_cs : '{
+            LD_OP     : 1'b0,
+            ST_OP     : 1'b0,
+            upper8    : 1'b0,
+            datasize  : 2'b00
+        },
+        mem_cs : '{
+            ST_OP : 1'b0,
+            LD_OP : 1'b0
+        },
+        exe_cs : '{
+            ST_OP               : 1'b0,
+            OP_TYPE             : ADD,
+            alu_inputA_sel      : NO_EXE,
+            alu_inputB_sel      : NO_EXE,
+            branch_target_sel   : NO_EXE,
+            shift_by_one        : 1'b0,
+            br_ucond            : 1'b0,
+            relative_branch     : 1'b0,
+            special_br          : 1'b0,
+            is_far              : 1'b0,
+            second_flag_needed  : 1'b0
+        },
+        wb_cs : '{
+            ST_OP : 1'b0,
+            WB_DR : 1'b0,
+            WB_SR : 1'b0
+        },
+        br_info      : '{default:'0},  // per your requirement
+        NEIP         : 32'h0,
+        EIP          : 32'h0,
+        EAX          : 32'h0,
+        imm64        : 64'h0,
+        sib_idx_id   : NO_REG,
+        sib_base_id  : NO_REG,
+        sib_needed   : 1'b0,
+        sib_scale    : 8'h0,
+        disp_needed  : 1'b0,
+        disp_size    : 1'b0,
+        displacement : 32'h0
+    };
+
+
+
+
+
+    assign add_df_edi = '{
+        valid : 1'b1,
+        cs : '{
+            ST_SEL         : 1'b0,
+            MODRM_NEEDED   : 1'b0,
+            RM_IS_DR       : 1'b0,
+            LD_OP          : 1'b0,
+            ST_OP          : 1'b0,
+            dr_id          : NO_REG,
+            sr_id          : NO_REG,
+            dr_rd          : 1'b0,
+            sr_rd          : 1'b0,
+            dr_wr          : 1'b0,
+            sr_wr          : 1'b0,
+            datasize       : 2'b00,
+            will_mod_zf    : 1'b0,
+            seg_1_valid    : 1'b0,
+            seg_0_id       : NO_REG,
+            seg_1_id       : NO_REG
+        },
+        dc_cs : '{
+            LD_OP     : 1'b0,
+            ST_OP     : 1'b0,
+            upper8    : 1'b0,
+            datasize  : 2'b00
+        },
+        mem_cs : '{
+            ST_OP : 1'b0,
+            LD_OP : 1'b0
+        },
+        exe_cs : '{
+            ST_OP               : 1'b0,
+            OP_TYPE             : ADD,
+            alu_inputA_sel      : NO_EXE,
+            alu_inputB_sel      : NO_EXE,
+            branch_target_sel   : NO_EXE,
+            shift_by_one        : 1'b0,
+            br_ucond            : 1'b0,
+            relative_branch     : 1'b0,
+            special_br          : 1'b0,
+            is_far              : 1'b0,
+            second_flag_needed  : 1'b0
+        },
+        wb_cs : '{
+            ST_OP : 1'b0,
+            WB_DR : 1'b0,
+            WB_SR : 1'b0
+        },
+        br_info      : '{default:'0},  // per your requirement
+        NEIP         : 32'h0,
+        EIP          : 32'h0,
+        EAX          : 32'h0,
+        imm64        : 64'h0,
+        sib_idx_id   : NO_REG,
+        sib_base_id  : NO_REG,
+        sib_needed   : 1'b0,
+        sib_scale    : 8'h0,
+        disp_needed  : 1'b0,
+        disp_size    : 1'b0,
+        displacement : 32'h0
+    };
+
+
+
+
+
+    assign add_df_esi = '{
+        valid : 1'b1,
+        cs : '{
+            ST_SEL         : 1'b0,
+            MODRM_NEEDED   : 1'b0,
+            RM_IS_DR       : 1'b0,
+            LD_OP          : 1'b0,
+            ST_OP          : 1'b0,
+            dr_id          : NO_REG,
+            sr_id          : NO_REG,
+            dr_rd          : 1'b0,
+            sr_rd          : 1'b0,
+            dr_wr          : 1'b0,
+            sr_wr          : 1'b0,
+            datasize       : 2'b00,
+            will_mod_zf    : 1'b0,
+            seg_1_valid    : 1'b0,
+            seg_0_id       : NO_REG,
+            seg_1_id       : NO_REG
+        },
+        dc_cs : '{
+            LD_OP     : 1'b0,
+            ST_OP     : 1'b0,
+            upper8    : 1'b0,
+            datasize  : 2'b00
+        },
+        mem_cs : '{
+            ST_OP : 1'b0,
+            LD_OP : 1'b0
+        },
+        exe_cs : '{
+            ST_OP               : 1'b0,
+            OP_TYPE             : ADD,
+            alu_inputA_sel      : NO_EXE,
+            alu_inputB_sel      : NO_EXE,
+            branch_target_sel   : NO_EXE,
+            shift_by_one        : 1'b0,
+            br_ucond            : 1'b0,
+            relative_branch     : 1'b0,
+            special_br          : 1'b0,
+            is_far              : 1'b0,
+            second_flag_needed  : 1'b0
+        },
+        wb_cs : '{
+            ST_OP : 1'b0,
+            WB_DR : 1'b0,
+            WB_SR : 1'b0
+        },
+        br_info      : '{default:'0},  // per your requirement
+        NEIP         : 32'h0,
+        EIP          : 32'h0,
+        EAX          : 32'h0,
+        imm64        : 64'h0,
+        sib_idx_id   : NO_REG,
+        sib_base_id  : NO_REG,
+        sib_needed   : 1'b0,
+        sib_scale    : 8'h0,
+        disp_needed  : 1'b0,
+        disp_size    : 1'b0,
+        displacement : 32'h0
+    };
+
+
+
+
+
+    assign mov_etr = '{
+        valid : 1'b1,
+        cs : '{
+            ST_SEL         : 1'b0,
+            MODRM_NEEDED   : 1'b0,
+            RM_IS_DR       : 1'b0,
+            LD_OP          : 1'b0,
+            ST_OP          : 1'b0,
+            dr_id          : NO_REG,
+            sr_id          : NO_REG,
+            dr_rd          : 1'b0,
+            sr_rd          : 1'b0,
+            dr_wr          : 1'b0,
+            sr_wr          : 1'b0,
+            datasize       : 2'b00,
+            will_mod_zf    : 1'b0,
+            seg_1_valid    : 1'b0,
+            seg_0_id       : NO_REG,
+            seg_1_id       : NO_REG
+        },
+        dc_cs : '{
+            LD_OP     : 1'b0,
+            ST_OP     : 1'b0,
+            upper8    : 1'b0,
+            datasize  : 2'b00
+        },
+        mem_cs : '{
+            ST_OP : 1'b0,
+            LD_OP : 1'b0
+        },
+        exe_cs : '{
+            ST_OP               : 1'b0,
+            OP_TYPE             : ADD,
+            alu_inputA_sel      : NO_EXE,
+            alu_inputB_sel      : NO_EXE,
+            branch_target_sel   : NO_EXE,
+            shift_by_one        : 1'b0,
+            br_ucond            : 1'b0,
+            relative_branch     : 1'b0,
+            special_br          : 1'b0,
+            is_far              : 1'b0,
+            second_flag_needed  : 1'b0
+        },
+        wb_cs : '{
+            ST_OP : 1'b0,
+            WB_DR : 1'b0,
+            WB_SR : 1'b0
+        },
+        br_info      : '{default:'0},  // per your requirement
+        NEIP         : 32'h0,
+        EIP          : 32'h0,
+        EAX          : 32'h0,
+        imm64        : 64'h0,
+        sib_idx_id   : NO_REG,
+        sib_base_id  : NO_REG,
+        sib_needed   : 1'b0,
+        sib_scale    : 8'h0,
+        disp_needed  : 1'b0,
+        disp_size    : 1'b0,
+        displacement : 32'h0
+    };
+
+
+
+
+
+    assign add_etr = '{
+        valid : 1'b1,
+        cs : '{
+            ST_SEL         : 1'b0,
+            MODRM_NEEDED   : 1'b0,
+            RM_IS_DR       : 1'b0,
+            LD_OP          : 1'b0,
+            ST_OP          : 1'b0,
+            dr_id          : NO_REG,
+            sr_id          : NO_REG,
+            dr_rd          : 1'b0,
+            sr_rd          : 1'b0,
+            dr_wr          : 1'b0,
+            sr_wr          : 1'b0,
+            datasize       : 2'b00,
+            will_mod_zf    : 1'b0,
+            seg_1_valid    : 1'b0,
+            seg_0_id       : NO_REG,
+            seg_1_id       : NO_REG
+        },
+        dc_cs : '{
+            LD_OP     : 1'b0,
+            ST_OP     : 1'b0,
+            upper8    : 1'b0,
+            datasize  : 2'b00
+        },
+        mem_cs : '{
+            ST_OP : 1'b0,
+            LD_OP : 1'b0
+        },
+        exe_cs : '{
+            ST_OP               : 1'b0,
+            OP_TYPE             : ADD,
+            alu_inputA_sel      : NO_EXE,
+            alu_inputB_sel      : NO_EXE,
+            branch_target_sel   : NO_EXE,
+            shift_by_one        : 1'b0,
+            br_ucond            : 1'b0,
+            relative_branch     : 1'b0,
+            special_br          : 1'b0,
+            is_far              : 1'b0,
+            second_flag_needed  : 1'b0
+        },
+        wb_cs : '{
+            ST_OP : 1'b0,
+            WB_DR : 1'b0,
+            WB_SR : 1'b0
+        },
+        br_info      : '{default:'0},  // per your requirement
+        NEIP         : 32'h0,
+        EIP          : 32'h0,
+        EAX          : 32'h0,
+        imm64        : 64'h0,
+        sib_idx_id   : NO_REG,
+        sib_base_id  : NO_REG,
+        sib_needed   : 1'b0,
+        sib_scale    : 8'h0,
+        disp_needed  : 1'b0,
+        disp_size    : 1'b0,
+        displacement : 32'h0
+    };
+
+
+
+
+
+    assign add_nf = '{
+        valid : 1'b1,
+        cs : '{
+            ST_SEL         : 1'b0,
+            MODRM_NEEDED   : 1'b0,
+            RM_IS_DR       : 1'b0,
+            LD_OP          : 1'b0,
+            ST_OP          : 1'b0,
+            dr_id          : NO_REG,
+            sr_id          : NO_REG,
+            dr_rd          : 1'b0,
+            sr_rd          : 1'b0,
+            dr_wr          : 1'b0,
+            sr_wr          : 1'b0,
+            datasize       : 2'b00,
+            will_mod_zf    : 1'b0,
+            seg_1_valid    : 1'b0,
+            seg_0_id       : NO_REG,
+            seg_1_id       : NO_REG
+        },
+        dc_cs : '{
+            LD_OP     : 1'b0,
+            ST_OP     : 1'b0,
+            upper8    : 1'b0,
+            datasize  : 2'b00
+        },
+        mem_cs : '{
+            ST_OP : 1'b0,
+            LD_OP : 1'b0
+        },
+        exe_cs : '{
+            ST_OP               : 1'b0,
+            OP_TYPE             : ADD,
+            alu_inputA_sel      : NO_EXE,
+            alu_inputB_sel      : NO_EXE,
+            branch_target_sel   : NO_EXE,
+            shift_by_one        : 1'b0,
+            br_ucond            : 1'b0,
+            relative_branch     : 1'b0,
+            special_br          : 1'b0,
+            is_far              : 1'b0,
+            second_flag_needed  : 1'b0
+        },
+        wb_cs : '{
+            ST_OP : 1'b0,
+            WB_DR : 1'b0,
+            WB_SR : 1'b0
+        },
+        br_info      : '{default:'0},  // per your requirement
+        NEIP         : 32'h0,
+        EIP          : 32'h0,
+        EAX          : 32'h0,
+        imm64        : 64'h0,
+        sib_idx_id   : NO_REG,
+        sib_base_id  : NO_REG,
+        sib_needed   : 1'b0,
+        sib_scale    : 8'h0,
+        disp_needed  : 1'b0,
+        disp_size    : 1'b0,
+        displacement : 32'h0
+    };
 
 
 endmodule

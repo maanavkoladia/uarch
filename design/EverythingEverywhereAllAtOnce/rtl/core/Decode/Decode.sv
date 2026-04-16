@@ -55,7 +55,7 @@ module Decode (
     bool decode_gp;
     rr_latches_general_t temp_rr_latch;
     bool flush; //cpaddyx , i did not put ts here, whats this for
-    logic REP_LATCH, REP_CMP_LATCH, HALT_REG;
+    logic REP_LATCH, REP_CMP_LATCH, REP_MOV_LATCH, HALT_REG;
     wire rr_latch_we_o;
     bool stall;
 
@@ -111,14 +111,18 @@ module Decode (
 
     reg_ids_e sibbase, sibidx;
     uint8_t sibscale;
-    sib_processor sib_processing(.sib_byte(sib_byte), .sib_idx_id(sibidx), .sib_base_id(sibbase), .sib_scale(sibscale));
+    sib_processor sib_processing(.sib_byte(sib_byte), .sib_idx_id(sibidx), 
+        .sib_base_id(sibbase), .sib_scale(sibscale)
+    );
 
     rr_latches_general_t rep_latch_holder;
-    bool rep_reg_value;
+    bool clear_rep;
     rep_controller piece_of_shit_rep_controller (
         .clk(clk), .rst(rst), .rep_prefix(total_pf_vector[0]),
-        .mov_inst(!REP_CMP_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb), .set_zf(rr_outs_i.set_ZF_sb), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
-        .zf_flag(exe_outs_i.ZF), .stall(stall), .flush(flush), .rep_latches(rep_latch_holder), .rep_register(rep_reg_value)
+        .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb),
+        .set_zf(temp_rr_cs.will_mod_zf), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
+        .zf_flag(exe_outs_i.ZF), .stall(stall), .flush(flush),
+        .rep_latches(rep_latch_holder), .clear_rep(clear_rep)
     );
 
     bool next_rr_valid;
@@ -135,16 +139,6 @@ module Decode (
         .EXE_V_i(exe_outs_i.valid),
         .WB_stall_i(wb_outs_i.wb_stall)
     );
-
-
-    assign outs_o = '{
-        valid : next_rr_valid,
-        stall : invalid_inst || rr_outs_i.stall,
-        eip : EIP,
-        invalid_instruction : invalid_inst,
-        decode_gp : decode_gp,
-        rr_stage_latch_we : rr_latch_we_o
-    };
 
     reg_ids_e segment0;
     always_comb begin
@@ -164,13 +158,21 @@ module Decode (
             PrevLength <= 32'b0;
             REP_LATCH <= 1'b0;    //need to save if its mov or cmp so can process next cylce, doing this to save crit path time
             REP_CMP_LATCH <= 1'b0;
+            REP_MOV_LATCH <= 1'b0;
             HALT_REG <= 1'b0;
         end
         else begin
             PrevEIP <= EIP;
             PrevLength <= inst_length;
-            REP_LATCH <= temp_decode_cs.REP;
+            case ({temp_decode_cs.REP, clear_rep})
+                2'b00: REP_LATCH <= REP_LATCH;
+                2'b01: REP_LATCH <= 1'b0;
+                2'b10: REP_LATCH <= 1'b1;
+                2'b11: REP_LATCH <= 1'b0;
+            endcase
             REP_CMP_LATCH <= temp_decode_cs.REP_CMP;
+            REP_MOV_LATCH <= temp_decode_cs.REP && !temp_decode_cs.REP_CMP;
+
             if(flush) HALT_REG <= 1'b0;
             else HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
 
@@ -181,7 +183,8 @@ module Decode (
                 end
                 else begin
                     //if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
-                    if(!invalid_inst && !stall && !HALT_REG) EIP <= NEIP;    //need to integrate rep
+                    if(!invalid_inst && !stall && !HALT_REG && rr_latch_we_o && !REP_LATCH) EIP <= NEIP;    //need to integrate rep
+                    //if(!invalid_inst && !HALT_REG) EIP <= NEIP;
                     else EIP <= EIP;
                 end
             end
@@ -190,7 +193,7 @@ module Decode (
 
 
     assign temp_rr_latch = '{
-        valid           : !invalid_inst && !HALT_REG && ~fetch_outs_i.exp_pipe_clear,
+        valid           : !invalid_inst && !HALT_REG && ~fetch_outs_i.exp_pipe_clear && !(REP_LATCH || temp_decode_cs.REP),
         cs              : temp_rr_cs,
 
         dc_cs           : temp_dc_cs,
@@ -215,9 +218,17 @@ module Decode (
 
     assign rr_latches_next = '{
         normal_latches : temp_rr_latch,
-        rep_latches : temp_rr_latch,
-        //useRep  : rep_reg_value
-        useRep : 1'b0
+        rep_latches : rep_latch_holder
+    };
+
+    assign outs_o = '{
+        valid : next_rr_valid,
+        stall : invalid_inst || rr_outs_i.stall,
+        eip : EIP,
+        invalid_instruction : invalid_inst,
+        decode_gp : decode_gp && rr_outs_i.valid,
+        rr_stage_latch_we : rr_latch_we_o,
+        rep_latch : REP_LATCH
     };
 
 

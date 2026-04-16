@@ -49,29 +49,31 @@ module cs_post_processor (
     // =====================
     // DECODE
     // =====================
-    assign decode_cs_o = '{
-        REP                     : decode_cs_i.REP,
-        REP_CMP                 : decode_cs_i.REP_CMP,
-        HALT                    : decode_cs_i.HALT,
-        MODRM_NEEDED            : decode_cs_i.MODRM_NEEDED,
-        RM_IS_DR                : decode_cs_i.RM_IS_DR,
-        REG_IS_DR               : decode_cs_i.REG_IS_DR,
-        REG_IS_SEGMENT          : decode_cs_i.REG_IS_SEGMENT,
-        HARDCODED_DR            : decode_cs_i.HARDCODED_DR,
-        HARDCODED_DR_ID         : decode_cs_i.HARDCODED_DR_ID,
-        HARDCODED_SR            : decode_cs_i.HARDCODED_SR,
-        HARDCODED_SR_ID         : decode_cs_i.HARDCODED_SR_ID,
-        HARDCODED_DR_RD         : decode_cs_i.HARDCODED_DR_RD,
-        HARDCODED_SR_RD         : decode_cs_i.HARDCODED_SR_RD,
-        HARDCODED_DR_WR         : decode_cs_i.HARDCODED_DR_WR,
-        HARDCODED_SR_WR         : decode_cs_i.HARDCODED_SR_WR,
-        HARDCODED_LD_OP         : decode_cs_i.HARDCODED_LD_OP,
-        HARDCODED_ST_OP         : decode_cs_i.HARDCODED_ST_OP,
-        OP_IN_MODRM             : decode_cs_i.OP_IN_MODRM,
-        dr_id                   : decode_cs_i.dr_id,
-        sr_id                   : decode_cs_i.sr_id,
-        DATA_SIZE               : decode_cs_i.DATA_SIZE
-    };
+    assign decode_cs_o = decode_cs_i;
+    // assign decode_cs_o = '{
+    //     REP                     : decode_cs_i.REP,
+    //     REP_CMP                 : decode_cs_i.REP_CMP,
+    //     HALT                    : decode_cs_i.HALT,
+    //     MODRM_NEEDED            : decode_cs_i.MODRM_NEEDED,
+    //     RM_IS_DR                : decode_cs_i.RM_IS_DR,
+    //     REG_IS_DR               : decode_cs_i.REG_IS_DR,
+    //     REG_IS_SEGMENT          : decode_cs_i.REG_IS_SEGMENT,
+    //     HARDCODED_DR            : decode_cs_i.HARDCODED_DR,
+    //     HARDCODED_DR_ID         : decode_cs_i.HARDCODED_DR_ID,
+    //     HARDCODED_SR            : decode_cs_i.HARDCODED_SR,
+    //     HARDCODED_SR_ID         : decode_cs_i.HARDCODED_SR_ID,
+    //     HARDCODED_DR_RD         : decode_cs_i.HARDCODED_DR_RD,
+    //     HARDCODED_SR_RD         : decode_cs_i.HARDCODED_SR_RD,
+    //     HARDCODED_DR_WR         : decode_cs_i.HARDCODED_DR_WR,
+    //     HARDCODED_SR_WR         : decode_cs_i.HARDCODED_SR_WR,
+    //     HARDCODED_LD_OP         : decode_cs_i.HARDCODED_LD_OP,
+    //     HARDCODED_ST_OP         : decode_cs_i.HARDCODED_ST_OP,
+    //     LD_OP_CANCEL            : decode_cs_i.
+    //     OP_IN_MODRM             : decode_cs_i.OP_IN_MODRM,
+    //     dr_id                   : decode_cs_i.dr_id,
+    //     sr_id                   : decode_cs_i.sr_id,
+    //     DATA_SIZE               : decode_cs_i.DATA_SIZE
+    // };
 
     // =====================
     // RR

@@ -1,4 +1,4 @@
-STRUCTRURAL := true
+STRUCTRURAL := false
 
 include ../../../Make.vars
 include ../../../Make.build
