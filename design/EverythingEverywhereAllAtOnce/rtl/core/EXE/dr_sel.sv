@@ -28,6 +28,7 @@ module dr_sel (
     input uint64_t sar_dr_i,
     input uint64_t sbb_dr_i,
     input uint64_t xchg_dr_i,
+    input uint64_t dr_data,
     
     // Selected output
     output uint64_t dr_o
@@ -58,7 +59,7 @@ module dr_sel (
             SAR:      dr_o = sar_dr_i;
             SBB:      dr_o = sbb_dr_i;
             XCHG:     dr_o = xchg_dr_i;
-            default:     dr_o = 64'h0;
+            default:  dr_o = dr_data;
         endcase
     end
 
