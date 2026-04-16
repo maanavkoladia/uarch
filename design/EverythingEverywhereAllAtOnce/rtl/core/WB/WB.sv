@@ -22,6 +22,7 @@ module WB (
 
     bool stall_flop;
     bool stall_flop_next;
+    bool mio_push_fail;
 
     st_q_inputs_t stq_info[NUM_WB_ST_QS];
     st_q_outputs_t stq_outputs[NUM_WB_ST_QS];
@@ -64,6 +65,7 @@ module WB (
         for (int i = 0; i < NUM_WB_ST_QS; i++) begin
             stall_flop_next |= stq_outputs[i].push_fail;  // or whatever signal you need
         end
+        stall_flop_next |= mio_push_fail;
     end
 
     //WB outputs
@@ -82,7 +84,8 @@ module WB (
 
         //to DCACHE
         stq_heads : stq_heads,
-        mio_head : mio_q_output,  
+        mio_head : mio_q_output,
+        
 
         dep_check : dc_dep,
 
@@ -142,6 +145,7 @@ module WB (
         .clk(clk),
         .rst(rst),
         .mio_input(mio_q_input),
+        .push_fail(mio_push_fail),
         .outs(mio_q_output)
     );
 

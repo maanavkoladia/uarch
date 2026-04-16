@@ -105,7 +105,8 @@ module cs_post_processor (
     assign dc_cs_o = '{
         LD_OP    : dc_cs_i.LD_OP,
         ST_OP    : dc_cs_i.ST_OP,
-        upper8   : dc_cs_i.upper8,
+        dr_upper8   : dc_cs_i.dr_upper8,
+        sr_upper8 : dc_cs_i.sr_upper8,
         datasize : dc_cs_i.datasize
     };
 

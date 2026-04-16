@@ -6,12 +6,12 @@ package TLB_pkg;
     localparam int VPN_BITS = ADDRESS_BITS - OFFSET_BITS;
 
     typedef struct {
-        logic [VPN_BITS-1:0] VPN;
-        logic [VPN_BITS-1:0] PFN;
         bool valid;
         bool present;
         bool r_w; // write permission: 1 = writable
         bool MMIO;
+        logic [VPN_BITS-1:0] VPN;
+        logic [VPN_BITS-1:0] PFN;
     } tlb_entries_t;
 
 endpackage

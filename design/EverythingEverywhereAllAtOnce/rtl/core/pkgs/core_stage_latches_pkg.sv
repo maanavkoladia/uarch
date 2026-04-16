@@ -108,7 +108,8 @@ package core_stage_latches_pkg;
     typedef struct {
         bool LD_OP;
         bool ST_OP;
-        bool upper8;
+        bool dr_upper8;
+        bool sr_upper8;
         logic [1:0] datasize;
     } dc_cs_t;
 
@@ -143,6 +144,7 @@ package core_stage_latches_pkg;
         bool ST_OP;
         bool WB_DR;
         bool WB_SR;
+        bool WB_EAX;
     } wb_cs_t;
 
     typedef struct {
@@ -216,8 +218,9 @@ package core_stage_latches_pkg;
         br_info_t br_info;
 
         logic [3:0] data_size_vec;
-        bool rh_into_mem;
-        bool mem_into_rh;
+        logic [3:0] sr_data_size_vec;
+        bool shift_sr_up;
+        bool shift_sr_down;
 
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
@@ -249,8 +252,9 @@ package core_stage_latches_pkg;
         wb_cs_t wb_cs;
 
         logic [3:0] data_size_vec;
-        bool rh_into_mem;
-        bool mem_into_rh;
+        logic [3:0] sr_data_size_vec;
+        bool shift_sr_up;
+        bool shift_sr_down;
 
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline unalgned, ie actual addr
@@ -258,6 +262,7 @@ package core_stage_latches_pkg;
         bool MIO;
 
         br_info_t br_info;
+        l_address_t br_rel_target;
 
         l_address_t NEIP;
         l_address_t EIP;
@@ -280,22 +285,19 @@ package core_stage_latches_pkg;
     typedef struct {
         bool valid;
         wb_cs_t cs;
-
         bool ST_XCL;  //valid bit or second set of st info if st_op
         p_address_t ST_PADDR_0;  //cacheline algned
         uint16_t ST_BIT_VEC_0;  //where to write
         p_address_t ST_PADDR_1;  //cacheline algned
         uint16_t ST_BIT_VEC_1;  //where to write
         bool MIO;
-
         uint32_t EIP; //used for tagging insts, for edebugging
-
         byte_t res_buf[CACHE_LINES_SIZE_B*2];  //32 byte buf
-
         reg_ids_e sr_id;
         uint64_t  sr_data;
         reg_ids_e dr_id;
         uint64_t  dr_data;
+        uint32_t EAX;
 
     } wb_latches_t;
 

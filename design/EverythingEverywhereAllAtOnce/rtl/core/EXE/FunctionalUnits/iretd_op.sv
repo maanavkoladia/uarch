@@ -14,7 +14,7 @@ module iretd_op(
     output bool ZF,
     output bool SF,
     output bool OF
-    
+
 );
 
     assign dr_o = {32'd0, cs};

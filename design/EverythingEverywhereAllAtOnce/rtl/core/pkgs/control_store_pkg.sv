@@ -19,7 +19,7 @@ package control_store_pkg;
         // VIP_IDX  = 20,  // Virtual Interrupt Pending
         // ID_IDX   = 21   // ID Flag (CPUID instruction support)
     } flags_idx_e;
-    
+
     typedef enum {
         //----------------------------------------------------------
         // AAA — ASCII Adjust AL after Addition (aaa.sv)

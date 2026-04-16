@@ -2,12 +2,14 @@ STRUCTRURAL := true
 
 include ../../../Make.vars
 include ../../../Make.build
+include debugUtils/srcs.mk
 
-TARGET = RestOfStages
+
+TARGET = Execute_Test
 
 GEN_CONF = startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_restOfStages
+TOP_MODULE_NAME = tb_execute
 
 STARTUP_FILES = \
 				gen/memLoader.sv \
@@ -15,9 +17,12 @@ STARTUP_FILES = \
 				gen/icache_loader.sv
 
 
+		   #$(DEBUG_UTILS) \
+
 TB_FILES = \
 		   $(STARTUP_FILES) \
-		   tb_stages
+		   debugUtils/debug_pkg.sv \
+		   tb_execute.sv
 
 SRC_FILES :=
 

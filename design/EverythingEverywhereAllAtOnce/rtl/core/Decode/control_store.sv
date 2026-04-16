@@ -270,7 +270,8 @@ module control_store (
     assign temp_dc_cs = '{
         LD_OP : mod_rm_cs_outs.ld_op,
         ST_OP : mod_rm_cs_outs.st_op,
-        upper8: mod_rm_cs_outs.high8,
+        dr_upper8: mod_rm_cs_outs.high8,
+        sr_upper8: 0,
         datasize: DATA_SIZE_o
     };
 

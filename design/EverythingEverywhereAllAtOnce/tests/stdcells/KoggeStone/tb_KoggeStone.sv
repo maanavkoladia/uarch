@@ -19,15 +19,14 @@ module tb_KoggeStone ();
 
     logic rst;
 
-    logic [KS_WIDTH - 1 : 0] a_i;
-    logic [KS_WIDTH - 1 : 0] b_i;
-    logic cin_i;
-    logic [KS_WIDTH - 1 : 0] sum_o;
-    logic cout_o;
+    logic [KS_WIDTH - 1 : 0] a_i, a_i_r4;
+    logic [KS_WIDTH - 1 : 0] b_i, b_i_r4;
+    logic cin_i, cin_i_r4;
+    logic [KS_WIDTH - 1 : 0] sum_o, sum_o_r4;
+    logic cout_o, cout_o_r4;
 
 
-<<<<<<< HEAD
-    kogge_stone_adder  uut_KS #(
+    kogge_stone_adder #(
         .WIDTH(KS_WIDTH)
     ) uut_KS (
         .a(a_i),
@@ -35,6 +34,16 @@ module tb_KoggeStone ();
         .cin(cin_i),
         .sum(sum_o),
         .cout(cout_o)
+    );
+
+    kogge_stone_r4 #(
+        .WIDTH(KS_WIDTH)
+    ) uut_ks_r4 (
+        .a(a_i_r4),
+        .b(b_i_r4),
+        .cin(cin_i_r4),
+        .sum(sum_o_r4),
+        .cout(cout_o_r4)
     );
 
     logic [KS_WIDTH:0] expected;

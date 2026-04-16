@@ -1,4 +1,3 @@
-
 import common_pkg::*;
 import WriteBack_pkg::*;
 
@@ -73,7 +72,7 @@ module ST_Q (
             end
             if(valid_pop)begin
                 q[head_ptr].valid <= 1'b0;
-                head <= head + 1;          
+                head <= head + 1; 
             end 
         end
     end

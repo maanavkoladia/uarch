@@ -14,24 +14,20 @@ module alu_input_sel(
     input uint32_t flags,
     input source_selector_e alu_inputA_sel,
     input source_selector_e alu_inputB_sel,
-    input bool rh_into_mem,
-    input bool mem_into_rh,
+    input bool shift_sr_down,
+    input bool shift_sr_up,
     
     input source_selector_e br_input_sel,
 
-
-    //
     output uint64_t srA_64,
     output uint64_t srB_64,
-
     output uint32_t br_sel
-
 );
 
     uintCL_t res_buf_out;  // 128 bits
     uint64_t srB;
 
-    logic[$clog2(CACHE_LINES_SIZE_B)-1: 0] res_buf_offset; 
+    logic[$clog2(CACHE_LINES_SIZE_B)-1: 0] res_buf_offset;
     assign res_buf_offset = ld_addr_0[$clog2(CACHE_LINES_SIZE_B)-1: 0];
 
     always_comb begin
@@ -91,23 +87,18 @@ module alu_input_sel(
     //add ah mem means that we are putting mem into ah. this means we need to shift UP mem
     always_comb begin
         srB_64 = srB;
-        if(rh_into_mem) srB_64 = {8'd0, srB[63:7]};
-        if(mem_into_rh) srB_64 = {srB[56:0], 8'd0};
+        if(shift_sr_down) srB_64 = {8'd0, srB[63:8]};
+        if(shift_sr_up) srB_64 = {srB[56:0], 8'd0};
     end
 
-    //logic for BR 
+    //logic for BR  //relative offsets calculated in mem
     always_comb begin
         case (br_input_sel)
-            SR_REGISTER: br_sel = sr_data[31:0];
-            DR_REGISTER: br_sel = dr_data[31:0];
-            IMM32        : br_sel = imm64[31:0];
-            ZEXT_IMM16   : br_sel = {16'd0, imm64[16:0]};
-            ZEXT_IMM8    : br_sel = {24'd0, imm64[7:0]};
-
-            //stack grows toward lower mem addresses. EIP always pushed last so its at lowest address always bottom 32 bits 
-            BUF32     : br_sel = res_buf_out[31:0]; 
-            ZEXT_BUF16 : br_sel = {16'd0, res_buf_out[15:0]};
-            default: br_sel = '0;
+            SR_REGISTER:   br_sel = sr_data[31:0];
+            DR_REGISTER:   br_sel = dr_data[31:0];
+            BUF32      :   br_sel = res_buf_out[31:0];
+            ZEXT_BUF16 :   br_sel = {16'd0, res_buf_out[15:0]};
+            default    :   br_sel = '0;
         endcase
     end
 

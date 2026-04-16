@@ -11,20 +11,20 @@ module Everywhere_TOP (
     output dma_controller_2_core_t dma2core_o
 );
 
-    icache_2_scheduler_t                                          icache2sched;
-    dte_2_icache_t                                                dte2icache;
+    icache_2_scheduler_t                                          icache_2_sched;
+    dte_2_icache_t                                                dte_2_icache;
 
-    dcache_2_scheduler_t                                          dcache2sched;
-    dte_2_dcache_t                                                dte2dcache;
+    dcache_2_scheduler_t                                          dcache_2_sched;
+    dte_2_dcache_t                                                dte_2_dcache;
 
-    mem_2_scheduler_t                                             mem2sched;
-    mem_2_dte_t                                                   mem2dte;
-    dte_2_mem_t                                                   dte2mem;
+    mem_2_scheduler_t                                             mem_2_sched;
+    mem_2_dte_t                                                   mem_2_dte;
+    dte_2_mem_t                                                   dte_2_mem;
 
-    dma_controller_2_scheduler_t                                  dma2sched;
-    dte_2_dma_controller_t                                        dte2dma;
+    dma_controller_2_scheduler_t                                  dma_2_sched;
+    dte_2_dma_controller_t                                        dte_2_dma;
 
-    dte_2_ddr5_t                                                  dte2ddr5;
+    dte_2_ddr5_t                                                  dte_2_ddr5;
 
     wire                         [   DATA_BUS_WIDTH_BITS - 1 : 0] dataBus;
     wire                         [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addressBus;
@@ -35,9 +35,9 @@ module Everywhere_TOP (
         .rst(rst),
         .address_bus(addressBus),
         .data_bus(dataBus),
-        .inFromDte(dte2mem),
-        .out2Dte(mem2dte),
-        .out2Sch(mem2sched)
+        .inFromDte(dte_2_mem),
+        .out2Dte(mem_2_dte),
+        .out2Sch(mem_2_sched)
     );
 
     //dcache
@@ -46,8 +46,8 @@ module Everywhere_TOP (
         .rst(rst),
         .inFromCore_i(core2dcache_i),
         .out2Core_o(dcache2core_o),
-        .inFromDTE_i(dte2dcache),
-        .out2Sch_o(dcache2sched),
+        .inFromDTE_i(dte_2_dcache),
+        .out2Sch_o(dcache_2_sched),
         .address_bus(addressBus),
         .dataBus(dataBus)
     );
@@ -58,8 +58,8 @@ module Everywhere_TOP (
         .rst(rst),
         .inFromCore_i(core2icache_i),
         .out2Core_o(icache2core_o),
-        .inFromDte_i(dte2icache),
-        .out2Sch_o(icache2sched),
+        .inFromDte_i(dte_2_icache),
+        .out2Sch_o(icache_2_sched),
         .addrBus(addressBus),
         .dataBus(dataBus)
     );
@@ -68,25 +68,25 @@ module Everywhere_TOP (
     BusArbitration bus_arbitration_unit (
         .clk(clk),
         .rst(rst),
-        .iCache_2_Sch_i(icache2sched),
-        .dte_out_2_icache_o(dte2icache),
-        .dCache_2_Sch_i(dcache2sched),
-        .dte_out_2_dcache_o(dte2dcache),
-        .mem_2_Sch_i(mem2sched),
-        .mem_2_dte_i(mem2dte),
-        .dte_2_mem_o(dte2mem),
-        .dma_2_sch_i(dma2sched),
-        .dte_2_dma_o(dte2dma),
-        .dte_2_ddr5_o(dte2ddr5)
+        .iCache_2_Sch_i(icache_2_sched),
+        .dte_out_2_icache_o(dte_2_icache),
+        .dCache_2_Sch_i(dcache_2_sched),
+        .dte_out_2_dcache_o(dte_2_dcache),
+        .mem_2_Sch_i(mem_2_sched),
+        .mem_2_dte_i(mem_2_dte),
+        .dte_2_mem_o(dte_2_mem),
+        .dma_2_sch_i(dma_2_sched),
+        .dte_2_dma_o(dte_2_dma),
+        .dte_2_ddr5_o(dte_2_ddr5)
     );
 
     //dma
     DMA_Controller dma_controller_unit (
         .clk(clk),
         .rst(rst),
-        .inFromDTE_i(dte2dma),
+        .inFromDTE_i(dte_2_dma),
         .out2Core_o(dma2core_o),
-        .out2Sch_o(dma2sched),
+        .out2Sch_o(dma_2_sched),
         .dataBus(dataBus),
         .addrBus(addressBus)
     );
@@ -95,7 +95,7 @@ module Everywhere_TOP (
     ddr5 ddr5_unit (
         .clk(clk),
         .rst(rst),
-        .inFromDTE_i(dte2ddr5),
+        .inFromDTE_i(dte_2_ddr5),
         .dataBus(dataBus),
         .addrBus(addressBus)
 
