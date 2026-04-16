@@ -1,0 +1,30 @@
+{
+    "Module Name"   : "coreRegLoader",
+    "outputPath"    : "gen/",
+    "startUpDelay"  : "30",
+
+    "EIP" : {
+        "load" : "true",
+        "path" : "dut.u_core.eip_reg",
+        "val"  : "32'h00001000"
+    },
+    "SPC" : {
+        "load" : "true",
+        "path" : "dut.u_core.spc_reg",
+        "val"  : "32'h00000100"
+    },
+    "IDTR" : {
+        "load" : "false",
+        "path" : "dut.u_core.idtr_reg",
+        "val"  : "32'h00000000"
+    },
+    "SegLimitVals" : {
+        "load" : "true",
+        "CS"   : ["20'hFFFFF", "dut.u_mmu.seg_cs.limit"],
+        "DS"   : ["20'hFFFFF", "dut.u_mmu.seg_ds.limit"],
+        "SS"   : ["20'hFFFFF", "dut.u_mmu.seg_ss.limit"],
+        "ES"   : ["20'h00000", "dut.u_mmu.seg_es.limit"],
+        "FS"   : ["20'h00000", "dut.u_mmu.seg_fs.limit"],
+        "GS"   : ["20'h00000", "dut.u_mmu.seg_gs.limit"]
+    }
+}

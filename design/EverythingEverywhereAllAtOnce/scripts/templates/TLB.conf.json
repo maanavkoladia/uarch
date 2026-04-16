@@ -1,0 +1,87 @@
+{
+    "Module Name"   : "tlb_init",
+    
+    "outputPath"    : "gen/",
+
+    "startUpDelay"  : "30",
+
+    "num tlbs"      : "3",
+
+    "num entries"   : "8",
+
+    "paths" : [
+        "dut.u_itlb.entries",
+        "dut.u_dtlb.entries",
+        "dut.u_l2tlb.entries"
+    ],
+
+    "entries" : {
+        "0" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "0",
+            "MMIO"    : "0",
+            "VPN"     : "20'hAAAA1",
+            "PFN"     : "3'h1"
+        },
+
+        "1" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "0",
+            "VPN"     : "20'hAAAA2",
+            "PFN"     : "3'h2"
+        },
+
+        "2" : {
+            "valid"   : "1",
+            "present" : "0",
+            "r_w"     : "0",
+            "MMIO"    : "0",
+            "VPN"     : "20'hAAAA3",
+            "PFN"     : "3'h3"
+        },
+
+        "3" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "1",
+            "VPN"     : "20'hAAAA4",
+            "PFN"     : "3'h4"
+        },
+        "4" : {
+            "valid"   : "0",
+            "present" : "0",
+            "r_w"     : "0",
+            "MMIO"    : "0",
+            "VPN"     : "20'h00000",
+            "PFN"     : "3'h0"
+        },
+        "5" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "0",
+            "MMIO"    : "1",
+            "VPN"     : "20'hBBBB5",
+            "PFN"     : "3'h5"
+        },
+        "6" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "0",
+            "VPN"     : "20'hCCCC6",
+            "PFN"     : "3'h6"
+        },
+        "7" : {
+            "valid"   : "0",
+            "present" : "0",
+            "r_w"     : "0",
+            "MMIO"    : "0",
+            "VPN"     : "20'h00000",
+            "PFN"     : "3'h7"
+        }
+    }
+}
