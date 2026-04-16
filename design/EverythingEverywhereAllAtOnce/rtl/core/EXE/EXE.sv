@@ -393,6 +393,7 @@ module EXE (
         .second_flag_needed_i(latches_i.cs.second_flag_needed),
         .br_source_i         (br_sel),
         .NEIP_i              (latches_i.NEIP),
+        .br_rel_target       (latches_i.br_rel_target),
         .CF                  (flags_reg[CF_IDX]),
         .ZF                  (flags_reg[ZF_IDX]),
         .outs_o              (branch_resolution_o)

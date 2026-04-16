@@ -288,24 +288,61 @@ endtask
         `LOG("Starting mem System TB");
         $display("%m");
         rst = 0;
-    
 
         DelayClks(10);
         rst = 1;
 
+        //add AH AL
+        br_info = '{valid: 0, br_eip: 0, br_xcl: 0, br_pred_taken: 0, speculative_target: 0};
+        wb_cs   = '{ST_OP: 0, WB_DR: 1, WB_SR: 0, WB_EAX: 0};
+        for (int i = 0; i < EXE_BUFFER_SIZE; i++) ld_buf[i] = i;
+
+        build_exe_cs(.ST_OP(0), .OP_TYPE(ADD), .alu_inputA_sel(DR_REGISTER), .alu_inputB_sel(SR_REGISTER),
+                    .branch_target_sel(IMM32), .shift_by_one(0), .br_ucond(0), .relative_branch(0),
+                    .special_br(0), .is_far(0), .second_flag_needed(0), .cs(exe_cs)
+                    );
+
+        drive_exe_latches(.valid(1), .exe_cs(exe_cs), .wb_cs(wb_cs), .data_size_vec(4'b0010),
+                        .sr_data_size_vec(4'b0001), .shift_sr_up(1), .shift_sr_down(0), .ST_XCL(0),
+                        .ST_PADDR_0(15'h0), .ST_PADDR_1(15'h0), .MIO(0), .br_info(br_info), .NEIP(32'h1000), 
+                        .EIP(32'h0FFC), .EAX(32'hDEADBEEF), .imm64(64'hAABBCCDDEEFF), .ld_buf(ld_buf), .sr_id(EAX), 
+                        .sr_data(64'hDEADBEEFFFAAFF), .dr_id(EAX), .dr_data(64'hDEADBEEFFFAAFF), .ld_addy(15'h40), .test_name("ADD test")
+                        );
 
 
-
-        // =============================================
-        // ADD ENCODING TESTS
-        // Covers all 14 encodings from the x86 manual.
-        // For each: result visible in [WB NEXT LATCHES] dr_data.
-        // Flags visible in [EXE OUTS] ZF (updated after posedge).
-        // =============================================
+        //add MEM AH
         br_info = '{valid: 0, br_eip: 0, br_xcl: 0, br_pred_taken: 0, speculative_target: 0};
         wb_cs   = '{ST_OP: 1, WB_DR: 0, WB_SR: 0, WB_EAX: 0};
-
         for (int i = 0; i < EXE_BUFFER_SIZE; i++) ld_buf[i] = i;
+
+        build_exe_cs(.ST_OP(1), .OP_TYPE(ADD), .alu_inputA_sel(BUFFER), .alu_inputB_sel(SR_REGISTER),
+                    .branch_target_sel(IMM32), .shift_by_one(0), .br_ucond(0), .relative_branch(0),
+                    .special_br(0), .is_far(0), .second_flag_needed(0), .cs(exe_cs)
+                    );
+
+        drive_exe_latches(.valid(1), .exe_cs(exe_cs), .wb_cs(wb_cs), .data_size_vec(4'b0001),
+                        .sr_data_size_vec(4'b0010), .shift_sr_up(0), .shift_sr_down(1), .ST_XCL(0),
+                        .ST_PADDR_0(15'h1018), .ST_PADDR_1(15'h1020), .MIO(0), .br_info(br_info), .NEIP(32'h1000), 
+                        .EIP(32'h0FFC), .EAX(32'hDEADBEEF), .imm64(64'hAABBCCDDEEFF), .ld_buf(ld_buf), .sr_id(EAX), 
+                        .sr_data(64'hDEADBEEFFFAAFF), .dr_id(EAX), .dr_data(64'hDEADBEEFFFAAFF), .ld_addy(15'h40), .test_name("ADD test")
+                        );
+
+       //add MEM AL
+        br_info = '{valid: 0, br_eip: 0, br_xcl: 0, br_pred_taken: 0, speculative_target: 0};
+        wb_cs   = '{ST_OP: 1, WB_DR: 0, WB_SR: 0, WB_EAX: 0};
+        for (int i = 0; i < EXE_BUFFER_SIZE; i++) ld_buf[i] = i;
+
+        build_exe_cs(.ST_OP(1), .OP_TYPE(ADD), .alu_inputA_sel(BUFFER), .alu_inputB_sel(SR_REGISTER),
+                    .branch_target_sel(IMM32), .shift_by_one(0), .br_ucond(0), .relative_branch(0),
+                    .special_br(0), .is_far(0), .second_flag_needed(0), .cs(exe_cs)
+                    );
+
+        drive_exe_latches(.valid(1), .exe_cs(exe_cs), .wb_cs(wb_cs), .data_size_vec(4'b0001),
+                        .sr_data_size_vec(4'b0001), .shift_sr_up(0), .shift_sr_down(0), .ST_XCL(0),
+                        .ST_PADDR_0(15'h101F), .ST_PADDR_1(15'h1020), .MIO(0), .br_info(br_info), .NEIP(32'h1000), 
+                        .EIP(32'h0FFC), .EAX(32'hDEADBEEF), .imm64(64'hAABBCCDDEEFF), .ld_buf(ld_buf), .sr_id(EAX), 
+                        .sr_data(64'hDEADBEEFFFAAFF), .dr_id(EAX), .dr_data(64'hDEADBEEFFFAAFF), .ld_addy(15'h40), .test_name("ADD test")
+                        );
 
 
         DelayClks(5);

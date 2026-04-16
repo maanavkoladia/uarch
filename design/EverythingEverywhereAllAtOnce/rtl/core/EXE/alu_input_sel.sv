@@ -91,19 +91,14 @@ module alu_input_sel(
         if(shift_sr_up) srB_64 = {srB[56:0], 8'd0};
     end
 
-    //logic for BR 
+    //logic for BR  //relative offsets calculated in mem
     always_comb begin
         case (br_input_sel)
-            SR_REGISTER: br_sel = sr_data[31:0];
-            DR_REGISTER: br_sel = dr_data[31:0];
-            IMM32        : br_sel = imm64[31:0];
-            ZEXT_IMM16   : br_sel = {16'd0, imm64[16:0]};
-            ZEXT_IMM8    : br_sel = {24'd0, imm64[7:0]};
-
-            //stack grows toward lower mem addresses. EIP always pushed last so its at lowest address always bottom 32 bits 
-            BUF32     : br_sel = res_buf_out[31:0]; 
-            ZEXT_BUF16 : br_sel = {16'd0, res_buf_out[15:0]};
-            default: br_sel = '0;
+            SR_REGISTER:   br_sel = sr_data[31:0];
+            DR_REGISTER:   br_sel = dr_data[31:0];
+            BUF32      :   br_sel = res_buf_out[31:0];
+            ZEXT_BUF16 :   br_sel = {16'd0, res_buf_out[15:0]};
+            default    :   br_sel = '0;
         endcase
     end
 

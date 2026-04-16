@@ -57,6 +57,21 @@ module MEM (
     logic [1:0] bank_num_1;
 
 
+    l_address_t rel_offset;
+    l_address_t br_rel_target;
+
+    always_comb begin
+        rel_offset = 32'd0;
+        case(latches_i.exe_cs.branch_target_sel)
+            ZEXT_IMM8: rel_offset = {24'd0, latches_i.imm64[7:0]};
+            ZEXT_IMM16: rel_offset = {16'd0, latches_i.imm64[15:0]};
+            IMM32: rel_offset = latches_i.imm64[31:0];
+            default: rel_offset = 0;
+        endcase
+
+        br_rel_target = rel_offset + latches_i.NEIP;
+    end
+
 
     assign forward_valid = exe_stage_we_valid_unit_o &
                            exe_stage_next_vaild_o;
@@ -176,6 +191,7 @@ module MEM (
             ST_PADDR_1: latches_i.ST_PADDR_1,
             MIO: latches_i.MIO,
             br_info: latches_i.br_info,
+            br_rel_target: br_rel_target,
             NEIP: latches_i.NEIP,
             EIP: latches_i.EIP,
             EAX: latches_i.EAX,

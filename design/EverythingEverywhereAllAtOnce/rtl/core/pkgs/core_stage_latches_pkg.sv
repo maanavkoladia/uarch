@@ -261,6 +261,7 @@ package core_stage_latches_pkg;
         bool MIO;
 
         br_info_t br_info;
+        l_address_t br_rel_target;
 
         l_address_t NEIP;
         l_address_t EIP;
