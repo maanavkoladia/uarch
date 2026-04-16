@@ -48,9 +48,10 @@ module DC (
     p_address_t ld_addr_1;
     p_address_t ld_addr_mio;
 
-    bool rh_into_mem_o;
-    bool mem_into_rh_o;
+    bool shift_sr_up;
+    bool shift_sr_down;
     logic [3:0] data_size_vec;
+    logic [3:0] sr_data_size_vec;
 
     // Derive ST_OP signals (store operation present)
     bool dc_ST_OP;
@@ -157,12 +158,14 @@ module DC (
 
     data_size_vec_logic data_vec_uint(
         .data_size(latches_i.cs.datasize),
-        .upper8(latches_i.cs.upper8),
+        .dr_upper8(latches_i.cs.dr_upper8),
+        .sr_upper8(latches_i.cs.sr_upper8),
         .ST_OP(latches_i.cs.ST_OP),
         .LD_OP(latches_i.cs.LD_OP),
-        .rh_into_mem_o(rh_into_mem_o),
-        .mem_into_rh_o(mem_into_rh_o),
-        .data_size_vec_o(data_size_vec)
+        .shift_sr_up(shift_sr_up),
+        .shift_sr_down(shift_sr_down),
+        .data_size_vec_o(data_size_vec),
+        .sr_data_size_vec_o(sr_data_size_vec)
     );
 
     npu_node2_outputs_t ld_neuralnet_out, st_neuralnet_out;
@@ -215,8 +218,9 @@ module DC (
             wb_cs: latches_i.wb_cs,
             br_info: latches_i.br_info,
             data_size_vec: data_size_vec,
-            rh_into_mem: rh_into_mem_o,
-            mem_into_rh: mem_into_rh_o,
+            sr_data_size_vec: sr_data_size_vec,
+            shift_sr_down: shift_sr_down,
+            shift_sr_up: shift_sr_up,
             ST_XCL: st_neuralnet_out.xcl,
             ST_PADDR_0: st_neuralnet_out.PADDR0,
             ST_PADDR_1: st_neuralnet_out.PADDR1,

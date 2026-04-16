@@ -23,13 +23,14 @@ module branch_res(
 //from exe stage
     input uint32_t br_source_i,
     input l_address_t NEIP_i,
+    input l_address_t br_rel_target,
     input bool CF,
     input bool ZF,
 
     output exe_br_resolution_outputs_t outs_o
 );
 
-    
+
     l_address_t br_target;
     bool taken;
     bool clr_exp_mode;
@@ -47,48 +48,34 @@ module branch_res(
     assign taken = (br_ucond_i || cond_br_res) & valid_i;
 
     //target logic
-    assign br_target = relative_branch_i ? (NEIP_i + br_source_i) : br_source_i;
+    assign br_target = relative_branch_i ? (br_rel_target) : br_source_i;
 
     //target match check
     assign target_match = speculative_target_i == br_target;
 
     //misprediction logic
     always_comb begin
-        miss_prediction = 1'b0;
-        flush = 1'b0;
-        far_flush = 0;
-        if(taken & br_pred_taken_i & target_match) begin
-            miss_prediction = 1'b0;
-            flush = 1'b0;
-        end
-        else if(~taken & ~br_pred_taken_i) begin
-            miss_prediction = 1'b0;
-            flush = 1'b0;
-        end
-        else begin
-            miss_prediction = 1'b1;
-            flush = 1'b1;
-        end
-        
-        if(is_far_i) begin
-            miss_prediction = 1'b1;
-            far_flush = 1'b1;
-        end
+        miss_prediction = (taken ^ br_pred_taken_i) |
+                          (taken & br_pred_taken_i & ~target_match) |
+                           is_far_i;
+
+        flush     = miss_prediction;
+        far_flush = is_far_i;
     end
 
     assign clr_exp_mode = special_br_i;
-    
+
     assign outs_o = '{
         valid: valid_i,
-        flush: flush, 
-        farFlush: far_flush, 
-        miss_prediction: miss_prediction,  
-        br_eip: br_eip_i,  
-        neip: NEIP_i, 
-        br_target: br_target, 
-        taken: taken,  
-        br_XCL: br_xcl_i,  
-        clr_exp_mode: clr_exp_mode,  
+        flush: flush,
+        farFlush: far_flush,
+        miss_prediction: miss_prediction,
+        br_eip: br_eip_i,
+        neip: NEIP_i,
+        br_target: br_target,
+        taken: taken,
+        br_XCL: br_xcl_i,
+        clr_exp_mode: clr_exp_mode,
         br_ucond: br_ucond_i
     };
 

@@ -33,9 +33,13 @@ module EXE (
     // --- Control Signals ---
     exe_cs_operation_type_e           op_type;
     logic                       [3:0] data_size;
+    logic                       [3:0] sr_data_size_vec;
     uint32_t                          flags_reg;
 
     // --- ALU Input Buffers ---
+    uint64_t                          sr_data;
+    uint64_t                          dr_data;
+    uint32_t                          eax_data;
     uint64_t                          srA;  // ALU input A (DR/MEM/IMM)
     uint64_t                          srB;  // ALU input B (SR/MEM/IMM)
     uint32_t                          br_sel;  // Branch source selection
@@ -46,8 +50,6 @@ module EXE (
     uint16_t                          bit_vec_1_next;
     uint64_t                          dr_next;
     uint64_t                          sr_next;
-    bool                              wb_dr_next;
-    bool                              wb_sr_next;
     bool                              st_op_next;
 
     // --- Branch Resolution Outputs ---
@@ -91,7 +93,7 @@ module EXE (
     uint64_t                          call_res_buf;
 
     // CMPXCHG Outputs
-    uint64_t                          cmpxchg_sr_o;
+    uint64_t                          cmpxchg_EAX_o;
     uint64_t                          cmpxchg_dr_o;
     uint64_t                          cmpxchg_buf_o;
 
@@ -218,6 +220,11 @@ module EXE (
 
     assign op_type = latches_i.cs.OP_TYPE;
     assign data_size = latches_i.data_size_vec;
+    assign sr_data_size_vec = latches_i.sr_data_size_vec;
+
+    assign sr_data = latches_i.sr_data;
+    assign dr_data = latches_i.dr_data;
+    assign eax_data = latches_i.EAX;
 
 
     //==========================================================================
@@ -226,8 +233,9 @@ module EXE (
     wb_cs_t next_wb_cs;
     assign next_wb_cs = '{
         ST_OP : st_op_next,
-        WB_DR : wb_dr_next,
-        WB_SR : wb_sr_next 
+        WB_DR : latches_i.wb_cs.WB_DR,
+        WB_SR : latches_i.wb_cs.WB_SR,
+        WB_EAX: latches_i.wb_cs.WB_EAX
     };
 
     assign wb_latches_next_o = '{
@@ -244,7 +252,8 @@ module EXE (
             sr_id: latches_i.sr_id,
             sr_data: sr_next,
             dr_id: latches_i.dr_id,
-            dr_data: dr_next
+            dr_data: dr_next,
+            EAX: latches_i.wb_cs.WB_EAX ? cmpxchg_EAX_o : latches_i.EAX
     };
 
     assign outs_o = '{
@@ -275,8 +284,8 @@ module EXE (
         .flags         (flags_reg),
         .alu_inputA_sel(latches_i.cs.alu_inputA_sel),
         .alu_inputB_sel(latches_i.cs.alu_inputB_sel),
-        .rh_into_mem   (latches_i.rh_into_mem),
-        .mem_into_rh   (latches_i.mem_into_rh),
+        .shift_sr_up   (latches_i.shift_sr_up),
+        .shift_sr_down (latches_i.shift_sr_down),
         .br_input_sel  (latches_i.cs.branch_target_sel),
         .srA_64        (srA),
         .srB_64        (srB),
@@ -350,12 +359,13 @@ module EXE (
         .sar_dr_i        (sar_dr_o),
         .sbb_dr_i        (sbb_dr_o),
         .xchg_dr_i       (xchg_dr_o),
+        .dr_data         (dr_data),
         .dr_o            (dr_next)
     );
 
     sr_sel u_sr_sel (
         .op_type         (op_type),
-        .cmpxchg_sr_i    (cmpxchg_sr_o),
+        .sr_data         (sr_data),
         .pop_sr_i        (pop_sr_o),
         .push_sr_i       (push_sr_o),
         .ret_far_imm_sr_i(ret_far_imm_sr_o),
@@ -383,6 +393,7 @@ module EXE (
         .second_flag_needed_i(latches_i.cs.second_flag_needed),
         .br_source_i         (br_sel),
         .NEIP_i              (latches_i.NEIP),
+        .br_rel_target       (latches_i.br_rel_target),
         .CF                  (flags_reg[CF_IDX]),
         .ZF                  (flags_reg[ZF_IDX]),
         .outs_o              (branch_resolution_o)
@@ -395,15 +406,8 @@ module EXE (
 
     cs_change_logic u_cs_change_logic (
         .op_type     (op_type),
-        .cancel_dr_we(cancel_dr_we),
-        .cancel_sr_we(cancel_sr_we),
-        .cancel_store(cancel_store),
         .curr_cf_flag(flags_reg[CF_IDX]),
-        .cs_wb_dr    (latches_i.wb_cs.WB_DR),
-        .cs_wb_sr    (latches_i.wb_cs.WB_SR),
         .cs_st_op    (latches_i.wb_cs.ST_OP),
-        .wb_dr_o     (wb_dr_next),
-        .wb_sr_o     (wb_sr_next),
         .st_op_o     (st_op_next)
     );
 
@@ -632,14 +636,10 @@ module EXE (
         .rm(srB[31:0]),  //srB <- CMPXCHG
         .r(srB[63:32]),
         .data_size(data_size),
-
+        .sr_data_size_vec(sr_data_size_vec),
         .dr_o(cmpxchg_dr_o),
-        .sr_o(cmpxchg_sr_o),
+        .EAX_o(cmpxchg_EAX_o),
         .res_buf(cmpxchg_buf_o),
-
-        .cancel_sr_we(cancel_sr_we),  //goes to cs change unit
-        .cancel_store(cancel_store),
-        .cancel_dr_we(cancel_dr_we),
         .ZF          (cmpxchg_zf_o),
         .SF          (cmpxchg_sf_o),
         .PF          (cmpxchg_pf_o),
@@ -735,6 +735,7 @@ module EXE (
         .srA      (srA),
         .srB      (srB),
         .data_size(data_size),
+        .sr_data_size_vec(sr_data_size_vec),
         .res_buf  (xchg_res_buf),
         .dr_o     (xchg_dr_o),
         .sr_o     (xchg_sr_o)
