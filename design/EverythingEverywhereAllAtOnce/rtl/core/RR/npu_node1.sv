@@ -35,8 +35,13 @@ module npu_node1 (
     uint32_t displacement_out;
     uint32_t sib_or_reg;
 
-    assign seg0_limit_w_datasize = segment0_limit.limit[datasize[1:0]];
-    assign seg1_limit_w_datasize = segment1_limit.limit[datasize[1:0]];
+    assign #3 seg0_limit_w_datasize = (datasize[1] == 1'b1) ? 
+                                        (datasize[0] == 1'b1) ? segment0_limit.limit - 32'd7 : segment0_limit.limit - 32'd3 :
+                                        (datasize[0] == 1'b1) ? segment0_limit.limit - 32'd1 : segment0_limit.limit;
+
+    assign #3 seg1_limit_w_datasize = (datasize[1] == 1'b1) ? 
+                                        (datasize[0] == 1'b1) ? segment1_limit.limit - 32'd7 : segment1_limit.limit - 32'd3 :
+                                        (datasize[0] == 1'b1) ? segment1_limit.limit - 32'd1 : segment1_limit.limit;
 
     uint32_t sib_nonsense;
     uint32_t shift_result;
