@@ -6,10 +6,11 @@ Stage 1 of the memGen pipeline.
 
 Reads a JSON config, assembles an x86-32 .s source file (via GNU as + ld),
 and produces:
-  1. <metaDir>/program_flat.hex     – full 32 KB flat image, annotated by cache line
-  2. <metaDir>/program_sections.hex – only the code+data regions, annotated
-  3. <metaDir>/program.bin          – raw 32 KB binary (used by genHexMem.py)
-  4. <metaDir>/program_readmemh.hex – $readmemh-compatible hex of the full image
+  1. <metaDir>/program_flat.hex         – full 32 KB flat image, annotated by cache line
+  2. <metaDir>/program_sections.hex     – only the code+data regions, annotated
+  3. <metaDir>/program.bin              – raw 32 KB binary (used by genHexMem.py)
+  4. <metaDir>/program_readmemh.hex     – $readmemh-compatible hex of the full image
+  5. <metaDir>/program_instructions.txt – every instruction with EIP and hex encoding
 
 JSON config keys consumed here:
   useProgram          : "true" / "false"
@@ -181,6 +182,9 @@ def assemble_to_binary(src_path: str, mem_size: int) -> tuple:
         One past the highest byte of any section.
     sections  : list[dict]
         [{'name': str, 'start': int}, ...]  – for annotations
+    elf_path_out : str
+        Path to a temporary ELF file (caller must clean up).  Used by the
+        instruction-listing pass.  Caller is responsible for deleting it.
     """
     with open(src_path) as f:
         raw = f.read()
@@ -191,88 +195,89 @@ def assemble_to_binary(src_path: str, mem_size: int) -> tuple:
 
     gas_src = convert_pseudo_to_gas(raw, sections_meta)
 
-    with tempfile.TemporaryDirectory() as tmp:
-        s_file   = os.path.join(tmp, 'prog.s')
-        o_file   = os.path.join(tmp, 'prog.o')
-        ld_file  = os.path.join(tmp, 'prog.ld')
-        elf_file = os.path.join(tmp, 'prog.elf')
+    # Use a persistent temp dir so the ELF survives for the disassembly pass.
+    tmp = tempfile.mkdtemp()
 
-        with open(s_file, 'w') as f:
-            f.write(gas_src)
+    s_file   = os.path.join(tmp, 'prog.s')
+    o_file   = os.path.join(tmp, 'prog.o')
+    ld_file  = os.path.join(tmp, 'prog.ld')
+    elf_file = os.path.join(tmp, 'prog.elf')
 
-        # ── assemble ──────────────────────────────────────────────────────────
-        r = subprocess.run(['as', '--32', '-o', o_file, s_file],
-                           capture_output=True, text=True)
-        if r.returncode != 0:
-            sys.exit(f"[compile] GNU as failed:\n{r.stderr}")
+    with open(s_file, 'w') as f:
+        f.write(gas_src)
 
-        # ── build linker script ───────────────────────────────────────────────
-        # One OUTPUT_SECTION per parsed section, each pinned to its .org addr.
-        section_lines = []
-        for sec in sections_meta:
-            sname = _section_name(sec)          # .code0, .data1, …
-            section_lines.append(
-                f"  {sname} 0x{sec['org']:x} : {{ *({sname}) }}"
-            )
+    # ── assemble ──────────────────────────────────────────────────────────
+    r = subprocess.run(['as', '--32', '-o', o_file, s_file],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        shutil.rmtree(tmp, ignore_errors=True)
+        sys.exit(f"[compile] GNU as failed:\n{r.stderr}")
 
-        ld_script = (
-            "OUTPUT_FORMAT(elf32-i386)\n"
-            "ENTRY(_start)\n"
-            "SECTIONS {\n"
-            + "\n".join(section_lines) + "\n"
-            "  /DISCARD/ : { *(.note*) *(.comment) *(.eh_frame) }\n"
-            "}\n"
+    # ── build linker script ───────────────────────────────────────────────
+    section_lines = []
+    for sec in sections_meta:
+        sname = _section_name(sec)
+        section_lines.append(
+            f"  {sname} 0x{sec['org']:x} : {{ *({sname}) }}"
         )
-        with open(ld_file, 'w') as f:
-            f.write(ld_script)
 
-        # ── link ──────────────────────────────────────────────────────────────
-        r = subprocess.run(['ld', '-m', 'elf_i386', '-T', ld_file,
-                            '-o', elf_file, o_file],
-                           capture_output=True, text=True)
-        if r.returncode != 0:
-            sys.exit(f"[compile] ld failed:\n{r.stderr}")
+    ld_script = (
+        "OUTPUT_FORMAT(elf32-i386)\n"
+        "ENTRY(_start)\n"
+        "SECTIONS {\n"
+        + "\n".join(section_lines) + "\n"
+        "  /DISCARD/ : { *(.note*) *(.comment) *(.eh_frame) }\n"
+        "}\n"
+    )
+    with open(ld_file, 'w') as f:
+        f.write(ld_script)
 
-        # ── extract section VMAs + bytes via objdump ──────────────────────────
-        r = subprocess.run(['objdump', '-h', elf_file],
-                           capture_output=True, text=True)
-        if r.returncode != 0:
-            sys.exit(f"[compile] objdump -h failed:\n{r.stderr}")
+    # ── link ──────────────────────────────────────────────────────────────
+    r = subprocess.run(['ld', '-m', 'elf_i386', '-T', ld_file,
+                        '-o', elf_file, o_file],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        shutil.rmtree(tmp, ignore_errors=True)
+        sys.exit(f"[compile] ld failed:\n{r.stderr}")
 
-        # Build set of section names we care about
-        wanted = {_section_name(s) for s in sections_meta}
+    # ── extract section VMAs + bytes via objdump ──────────────────────────
+    r = subprocess.run(['objdump', '-h', elf_file],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        shutil.rmtree(tmp, ignore_errors=True)
+        sys.exit(f"[compile] objdump -h failed:\n{r.stderr}")
 
-        sec_info = []   # [(elf_name, vma, size, fileoff), ...]
-        for line in r.stdout.splitlines():
-            m = re.match(
-                r'\s*\d+\s+(\S+)\s+([0-9a-fA-F]+)\s+([0-9a-fA-F]+)'
-                r'\s+[0-9a-fA-F]+\s+([0-9a-fA-F]+)', line)
-            if m:
-                name    = m.group(1)
-                size    = int(m.group(2), 16)
-                vma     = int(m.group(3), 16)
-                fileoff = int(m.group(4), 16)
-                if name in wanted and size > 0:
-                    sec_info.append((name, vma, size, fileoff))
+    wanted = {_section_name(s) for s in sections_meta}
 
-        if not sec_info:
-            sys.exit("[compile] No relevant sections found in ELF – "
-                     "check that .code/.data regions contain actual content.")
+    sec_info = []   # [(elf_name, vma, size, fileoff), ...]
+    for line in r.stdout.splitlines():
+        m = re.match(
+            r'\s*\d+\s+(\S+)\s+([0-9a-fA-F]+)\s+([0-9a-fA-F]+)'
+            r'\s+[0-9a-fA-F]+\s+([0-9a-fA-F]+)', line)
+        if m:
+            name    = m.group(1)
+            size    = int(m.group(2), 16)
+            vma     = int(m.group(3), 16)
+            fileoff = int(m.group(4), 16)
+            if name in wanted and size > 0:
+                sec_info.append((name, vma, size, fileoff))
 
-        # read raw ELF bytes
-        with open(elf_file, 'rb') as f:
-            elf_raw = f.read()
+    if not sec_info:
+        shutil.rmtree(tmp, ignore_errors=True)
+        sys.exit("[compile] No relevant sections found in ELF – "
+                 "check that .code/.data regions contain actual content.")
 
-    # ── build sparse overlay ──────────────────────────────────────────────────
-    # We don't create one contiguous bytearray from base→top because sections
-    # can be far apart (e.g. 0x1000 and 0x3000 with a 4 KB gap).  Instead we
-    # return a mem_size-sized buffer with only the section bytes filled in.
-    overlay = bytearray(mem_size)   # zeros; caller merges with fill image
+    with open(elf_file, 'rb') as f:
+        elf_raw = f.read()
+
+    # ── build sparse overlay ──────────────────────────────────────────────
+    overlay   = bytearray(mem_size)
     base_addr = mem_size
     top_addr  = 0
 
     for name, vma, size, fileoff in sec_info:
         if vma + size > mem_size:
+            shutil.rmtree(tmp, ignore_errors=True)
             sys.exit(f"[compile] Section {name} (0x{vma:x}+{size}) "
                      f"exceeds memory size ({mem_size} B).")
         overlay[vma : vma + size] = elf_raw[fileoff : fileoff + size]
@@ -280,15 +285,13 @@ def assemble_to_binary(src_path: str, mem_size: int) -> tuple:
         top_addr  = max(top_addr,  vma + size)
         print(f"[compile]   {name:<10s}  VMA=0x{vma:04x}  size={size} B")
 
-    # Export section list for annotations
-    # Map ELF section name back to human kind label
     name_to_kind = {_section_name(s): s['kind'] for s in sections_meta}
     sections_out = [
         {'name': name_to_kind.get(n, n), 'start': v}
         for n, v, _, _ in sorted(sec_info, key=lambda x: x[1])
     ]
 
-    return overlay, base_addr, top_addr, sections_out
+    return overlay, base_addr, top_addr, sections_out, elf_file, tmp
 
 
 # ── flat image builder ───────────────────────────────────────────────────────
@@ -297,28 +300,12 @@ def build_flat_image(overlay: bytearray, base_addr: int, top_addr: int,
                      mem_size: int, randomize: bool) -> bytearray:
     """
     Merge the section overlay onto a randomised/zero background image.
-
-    overlay is already mem_size bytes with zeros everywhere except the
-    assembled sections.  We therefore:
-      1. Create the background fill.
-      2. Copy only the section bytes (base_addr..top_addr) from overlay.
-         Gaps between sections inherit the background fill.
     """
     if randomize:
         image = random_fill(mem_size)
     else:
         image = zero_fill(mem_size)
 
-    # Overwrite only the bytes that belong to actual sections.
-    # We rely on the sec_info loop in assemble_to_binary having validated bounds.
-    # To avoid clobbering gaps with zeros we need to know which bytes are "real".
-    # The simplest correct approach: just copy the overlay's non-zero bytes —
-    # but that would silently drop legitimate 0x00 data bytes.
-    # Instead we re-use the original overlay wholesale for the covered span;
-    # any inter-section gap in the overlay is 0x00 and will overwrite the fill.
-    # For randomize==True this is intentional: gap bytes are deterministically 0
-    # to keep output reproducible.  If true gap randomisation is needed a caller
-    # can pass a custom overlay.
     image[base_addr:top_addr] = overlay[base_addr:top_addr]
     return image
 
@@ -357,7 +344,6 @@ def write_sections_hex(image: bytearray, sections: list,
     mem_size = len(image)
     n_lines  = mem_size // line_bytes
 
-    # build a quick lookup: addr → section name (for annotation)
     addr_to_sec = {}
     for s in sections:
         addr_to_sec[s['start']] = s['name']
@@ -370,14 +356,12 @@ def write_sections_hex(image: bytearray, sections: list,
         for ln in range(n_lines):
             addr     = ln * line_bytes
             line_end = addr + line_bytes
-            # only emit lines that overlap [base_addr, top_addr)
             if line_end <= base_addr or addr >= top_addr:
                 continue
             chunk  = image[addr: addr + line_bytes]
             groups = []
             for g in range(0, line_bytes, 4):
                 groups.append(' '.join(f'{b:02x}' for b in chunk[g:g+4]))
-            # annotate if a section starts on this line
             note = ''
             for byte_off in range(line_bytes):
                 a = addr + byte_off
@@ -405,6 +389,173 @@ def write_readmemh_flat(image: bytearray, line_bytes: int, out_path: str):
     print(f"[compile] Wrote readmemh flat  → {out_path}")
 
 
+# ── instruction listing ───────────────────────────────────────────────────────
+
+def write_instruction_listing(elf_path: str, sections: list, out_path: str):
+    """
+    Disassemble all executable (.code) sections from the ELF using
+    ``objdump -d`` and write a structured listing to *out_path*.
+
+    Output format (one instruction per line, preceded by a section header):
+
+        ──────────────────────────────────────────
+        Section: code  base: 0x1000
+        ──────────────────────────────────────────
+        EIP       hex encoding          mnemonic + operands
+        0x001000  55                    push   %ebp
+        0x001001  89 e5                 mov    %esp,%ebp
+        0x001003  83 ec 10              sub    $0x10,%esp
+        ...
+
+    Data sections are listed as raw byte dumps (no disassembly) so the
+    file is complete even when data lives between code regions.
+
+    Parameters
+    ----------
+    elf_path : str
+        Path to the linked ELF binary.
+    sections : list[dict]
+        [{'name': 'code'|'data', 'start': int}, ...]  – from assemble_to_binary.
+    out_path : str
+        Destination file path.
+    """
+    # Run objdump -d  (disassemble only code sections, i386 syntax)
+    r = subprocess.run(
+        ['objdump', '-d', '-M', 'intel', '--no-show-raw-insn', elf_path],
+        capture_output=True, text=True
+    )
+    # We'll also get the raw-bytes version for the hex encoding column.
+    r_raw = subprocess.run(
+        ['objdump', '-d', elf_path],   # AT&T + raw bytes (default)
+        capture_output=True, text=True
+    )
+    if r.returncode != 0:
+        print(f"[compile] WARNING: objdump -d failed, skipping instruction listing.\n"
+              f"          {r.stderr.strip()}")
+        return
+
+    # ── parse the raw-bytes objdump to build  addr → (hex_bytes, mnemonic) ──
+    # Example raw line:
+    #   1000:       55                      push   %ebp
+    #   1001:       89 e5                   mov    %esp,%ebp
+    insn_map: dict[int, tuple[str, str]] = {}   # addr → (hex_bytes, mnemonic_at&t)
+
+    for line in r_raw.stdout.splitlines():
+        # Match:  <hex_addr>:  <hex bytes>       <mnemonic...>
+        m = re.match(
+            r'\s*([0-9a-fA-F]+):\s+'     # address
+            r'((?:[0-9a-fA-F]{2}\s)+)'   # one or more hex byte pairs
+            r'\s*(.*)',                   # mnemonic (may be empty for data)
+            line
+        )
+        if m:
+            addr     = int(m.group(1), 16)
+            hex_enc  = m.group(2).strip()
+            mnemonic = m.group(3).strip()
+            insn_map[addr] = (hex_enc, mnemonic)
+
+    # ── parse the intel-syntax objdump to get clean mnemonic lines ──────────
+    # We use the intel output for the mnemonic column (cleaner for most readers)
+    # and the AT&T raw output only for the hex encoding.
+    #
+    # Structure of objdump -d output:
+    #   <elf_name>:     file format elf32-i386
+    #
+    #   Disassembly of section .code0:
+    #
+    #   00001000 <_start>:
+    #      1000:	push   ebp
+    #      1001:	mov    ebp,esp
+    intel_insn_map: dict[int, str] = {}  # addr → intel mnemonic
+
+    for line in r.stdout.splitlines():
+        m = re.match(r'\s*([0-9a-fA-F]+):\s+(.*)', line)
+        if m:
+            addr     = int(m.group(1), 16)
+            mnemonic = m.group(2).strip()
+            if mnemonic:
+                intel_insn_map[addr] = mnemonic
+
+    # ── build section address ranges from objdump -h ─────────────────────────
+    rh = subprocess.run(['objdump', '-h', elf_path], capture_output=True, text=True)
+    sec_ranges: list[dict] = []   # [{'name', 'kind', 'vma', 'size'}, ...]
+
+    for line in rh.stdout.splitlines():
+        m = re.match(
+            r'\s*\d+\s+(\S+)\s+([0-9a-fA-F]+)\s+([0-9a-fA-F]+)'
+            r'\s+[0-9a-fA-F]+\s+([0-9a-fA-F]+)', line)
+        if m:
+            name = m.group(1)
+            size = int(m.group(2), 16)
+            vma  = int(m.group(3), 16)
+            if size > 0 and re.match(r'\.(code|data)\d+', name):
+                kind = 'code' if name.startswith('.code') else 'data'
+                sec_ranges.append({'elf_name': name, 'kind': kind,
+                                   'vma': vma, 'size': size})
+
+    sec_ranges.sort(key=lambda s: s['vma'])
+
+    # ── write the listing ────────────────────────────────────────────────────
+    DIVIDER = '─' * 72
+
+    with open(out_path, 'w') as f:
+        f.write("Instruction Listing\n")
+        f.write("Generated by compile.py  (x86-32, Intel syntax)\n")
+        f.write(f"ELF: {elf_path}\n\n")
+        f.write(f"{'EIP':<10}  {'Hex Encoding':<24}  Mnemonic\n")
+        f.write(DIVIDER + "\n\n")
+
+        if not sec_ranges:
+            f.write("(no sections found)\n")
+        else:
+            for sec in sec_ranges:
+                vma  = sec['vma']
+                size = sec['size']
+                kind = sec['kind']
+                f.write(DIVIDER + "\n")
+                f.write(f"Section: {sec['elf_name']}  "
+                        f"kind={kind}  base=0x{vma:04x}  size={size} B\n")
+                f.write(DIVIDER + "\n")
+
+                if kind == 'data':
+                    # Emit raw bytes for data sections – no disassembly.
+                    f.write(f"  (data section – raw bytes)\n")
+                    for addr in range(vma, vma + size):
+                        if addr in insn_map:
+                            hex_enc, _ = insn_map[addr]
+                            f.write(f"  0x{addr:08x}  {hex_enc}\n")
+                        # Data sections may not appear in disassembly at all;
+                        # if we have no byte info just note the range.
+                    if not any(a in insn_map for a in range(vma, vma + size)):
+                        f.write(f"  0x{vma:08x} – 0x{vma+size-1:08x}  "
+                                f"({size} bytes, no disassembly available)\n")
+                    f.write("\n")
+                    continue
+
+                # code section – walk every address that objdump decoded
+                addrs_in_sec = sorted(
+                    a for a in insn_map if vma <= a < vma + size
+                )
+
+                if not addrs_in_sec:
+                    f.write("  (no instructions decoded)\n\n")
+                    continue
+
+                for addr in addrs_in_sec:
+                    hex_enc, _        = insn_map[addr]
+                    intel_mnemonic    = intel_insn_map.get(addr, '???')
+                    f.write(f"  0x{addr:08x}  {hex_enc:<24}  {intel_mnemonic}\n")
+
+                f.write("\n")
+
+        f.write(DIVIDER + "\n")
+        total = sum(1 for s in sec_ranges if s['kind'] == 'code'
+                    for a in insn_map if s['vma'] <= a < s['vma'] + s['size'])
+        f.write(f"Total instructions decoded: {total}\n")
+
+    print(f"[compile] Wrote instruction listing → {out_path}")
+
+
 # ── main ─────────────────────────────────────────────────────────────────────
 
 def main():
@@ -422,10 +573,14 @@ def main():
 
     make_dir(meta_dir)
 
+    elf_path = None
+    tmp_dir  = None
+
     if use_program:
         src_path = cfg['input_Program_Path']
         print(f"[compile] Assembling {src_path} ...")
-        overlay, base_addr, top_addr, sections = assemble_to_binary(src_path, mem_size)
+        overlay, base_addr, top_addr, sections, elf_path, tmp_dir = \
+            assemble_to_binary(src_path, mem_size)
         print(f"[compile] Assembled span 0x{base_addr:04x}–0x{top_addr:04x}  "
               f"({top_addr - base_addr} B across {len(sections)} section(s))")
     else:
@@ -471,6 +626,21 @@ def main():
 
     write_readmemh_flat(image, line_bytes,
                         os.path.join(meta_dir, 'program_readmemh.hex'))
+
+    # ── instruction listing (only when we have an ELF to disassemble) ─────────
+    if elf_path and os.path.isfile(elf_path):
+        write_instruction_listing(
+            elf_path,
+            sections,
+            os.path.join(meta_dir, 'program_instructions.txt')
+        )
+    else:
+        print("[compile] Skipping instruction listing "
+              "(no ELF available for pre-built hex mode).")
+
+    # clean up the temporary directory that holds the ELF
+    if tmp_dir:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
 
     print("[compile] Done.")
 
