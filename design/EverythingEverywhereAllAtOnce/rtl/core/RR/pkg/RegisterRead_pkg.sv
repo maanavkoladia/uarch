@@ -37,7 +37,7 @@ package RegisterRead_pkg;
     } seg_limit_reg_ids_e;
 
     typedef struct {
-        uint32_t limit[4];           //actual limit, same as datasize 8b
+        uint32_t limit;           //actual limit, same as datasize 8b
           //effective limit for datasize of 00, 8b access, same as regular access
           //effective limit for datasize of 01, 16b access, limit - 1
           //effective limit for datasize of 10, 32b access, limit - 3
