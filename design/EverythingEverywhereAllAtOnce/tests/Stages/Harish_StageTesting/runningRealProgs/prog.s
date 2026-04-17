@@ -126,6 +126,8 @@ secondBreak:
     add %ch, %dh
     add %dh, %ch
 
+thirdBreak:
+
     # --- mixed high/low (valid but tricky cases) ---
     add %al, %ah
     add %ah, %al
