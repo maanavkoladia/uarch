@@ -17,8 +17,7 @@ import tb_debug_pkg::*;
 `define RR_UNIT_PATH (temp)
 `define DC_UNIT_PATH (temp)
 `define MEM_UNIT_PATH (temp)
-`define EXE_UNIT_PATH execute_stage
-`define WB_UNIT_PATH wb_stage
+`define EXE_UNIT_PATH (temp)
 `define WB_UNIT_PATH (temp)
 `define DCACHE_UNIT_PATH (temp)
 

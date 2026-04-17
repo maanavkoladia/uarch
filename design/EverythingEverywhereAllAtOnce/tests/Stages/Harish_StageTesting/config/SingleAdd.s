@@ -293,7 +293,7 @@ _start:
     # DATA REGIONS (scattered)
     # =========================
 
-    .org 0x56559000
+    .org 0x2000
     .data
     dataA:
         .long 0xAAAAAAAA
