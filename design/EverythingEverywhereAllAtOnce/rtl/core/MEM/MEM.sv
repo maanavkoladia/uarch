@@ -143,12 +143,12 @@ module MEM (
         end
     end
 
-    push_address_gen pus_addr_gen(
+    push_address_gen push_addr_gen(
         .ST_PADDR_0(latches_i.ST_PADDR_0),
         .ST_PADDR_1(latches_i.ST_PADDR_1),
         .ST_XCL(latches_i.ST_XCL),
         .data_size_vec(latches_i.data_size_vec),
-        .OP_TYPE(latches_i.data_size_vec),
+        .OP_TYPE(latches_i.exe_cs.OP_TYPE),
         .ST_PADDR_0_o(next_st_addr_0),
         .ST_PADDR_1_o(next_st_addr_1),
         .ST_XCL_o(next_xcl)

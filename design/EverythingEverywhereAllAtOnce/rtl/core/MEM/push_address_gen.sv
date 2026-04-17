@@ -5,9 +5,9 @@ module push_address_gen(
     input logic [3:0] data_size_vec,
     input exe_cs_operation_type_e OP_TYPE,
     
-    output ST_PADDR_0_o,
-    output ST_PADDR_1_o,
-    output ST_XCL_o
+    output p_address_t ST_PADDR_0_o,
+    output p_address_t ST_PADDR_1_o,
+    output bool ST_XCL_o
 );
 
     //Stack grows down so input address is the "high address"
@@ -32,7 +32,7 @@ module push_address_gen(
 
     assign ST_PADDR_0_o = (OP_TYPE == PUSH) ? low_address : ST_PADDR_0;
     assign ST_PADDR_1_o = (OP_TYPE == PUSH) ? ST_PADDR_0 & 15'h000F : ST_PADDR_1;
-    assign ST_XCL       = (OP_TYPE == PUSH) ? (low_address[4] ^ ST_PADDR_0[4]) : ST_XCL;
+    assign ST_XCL_o       = (OP_TYPE == PUSH) ? (low_address[4] ^ ST_PADDR_0[4]) : ST_XCL;
 
 
 endmodule
