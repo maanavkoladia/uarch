@@ -86,6 +86,8 @@ module rep_controller (
             sr_rd          : 1'b0,
             dr_wr          : 1'b0,
             sr_wr          : 1'b0,
+			eax_wr			: 1'b0,
+			eax_rd			: 1'b0,
             datasize       : 2'b00,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
@@ -95,7 +97,8 @@ module rep_controller (
         dc_cs : '{
             LD_OP     : 1'b0,
             ST_OP     : 1'b0,
-            upper8    : 1'b0,
+            dr_upper8    : 1'b0,
+            sr_upper8   : 1'b0,
             datasize  : 2'b00
         },
         mem_cs : '{
@@ -118,7 +121,8 @@ module rep_controller (
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b0,
-            WB_SR : 1'b0
+            WB_SR : 1'b0,
+			WB_EAX			: 1'b0
         },
         br_info      : '{default:'0},  // per your requirement
         NEIP         : 32'h0,
@@ -152,6 +156,8 @@ module rep_controller (
             sr_rd          : 1'b0,
             dr_wr          : 1'b0,
             sr_wr          : 1'b0,
+			eax_wr			: 1'b0,
+			eax_rd			: 1'b0,
             datasize       : 2'b00,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
@@ -161,7 +167,8 @@ module rep_controller (
         dc_cs : '{
             LD_OP     : 1'b0,
             ST_OP     : 1'b0,
-            upper8    : 1'b0,
+            dr_upper8    : 1'b0,
+            sr_upper8 : 1'b0,
             datasize  : 2'b00
         },
         mem_cs : '{
@@ -184,7 +191,8 @@ module rep_controller (
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b0,
-            WB_SR : 1'b0
+            WB_SR : 1'b0,
+			WB_EAX			: 1'b0
         },
         br_info      : '{default:'0},  // per your requirement
         NEIP         : 32'h0,
@@ -218,6 +226,8 @@ module rep_controller (
             sr_rd          : 1'b0,
             dr_wr          : 1'b0,
             sr_wr          : 1'b0,
+			eax_wr			: 1'b0,
+			eax_rd			: 1'b0,
             datasize       : 2'b00,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
@@ -227,7 +237,8 @@ module rep_controller (
         dc_cs : '{
             LD_OP     : 1'b0,
             ST_OP     : 1'b0,
-            upper8    : 1'b0,
+            dr_upper8    : 1'b0,
+            sr_upper8   : 1'b0,
             datasize  : 2'b00
         },
         mem_cs : '{
@@ -250,7 +261,8 @@ module rep_controller (
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b0,
-            WB_SR : 1'b0
+            WB_SR : 1'b0,
+			WB_EAX			: 1'b0
         },
         br_info      : '{default:'0},  // per your requirement
         NEIP         : 32'h0,
@@ -284,6 +296,8 @@ module rep_controller (
             sr_rd          : 1'b0,
             dr_wr          : 1'b0,
             sr_wr          : 1'b0,
+			eax_wr			: 1'b0,
+			eax_rd			: 1'b0,
             datasize       : 2'b00,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
@@ -293,7 +307,8 @@ module rep_controller (
         dc_cs : '{
             LD_OP     : 1'b0,
             ST_OP     : 1'b0,
-            upper8    : 1'b0,
+            dr_upper8 	 : 1'b0,
+			sr_upper8 	 : 1'b0,
             datasize  : 2'b00
         },
         mem_cs : '{
@@ -316,7 +331,8 @@ module rep_controller (
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b0,
-            WB_SR : 1'b0
+            WB_SR : 1'b0,
+			WB_EAX			: 1'b0
         },
         br_info      : '{default:'0},  // per your requirement
         NEIP         : 32'h0,
@@ -350,6 +366,8 @@ module rep_controller (
             sr_rd          : 1'b0,
             dr_wr          : 1'b0,
             sr_wr          : 1'b0,
+			eax_wr			: 1'b0,
+			eax_rd			: 1'b0,
             datasize       : 2'b00,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
@@ -359,7 +377,8 @@ module rep_controller (
         dc_cs : '{
             LD_OP     : 1'b0,
             ST_OP     : 1'b0,
-            upper8    : 1'b0,
+            dr_upper8 	 : 1'b0,
+			sr_upper8 	 : 1'b0,
             datasize  : 2'b00
         },
         mem_cs : '{
@@ -382,7 +401,8 @@ module rep_controller (
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b0,
-            WB_SR : 1'b0
+            WB_SR : 1'b0,
+			WB_EAX			: 1'b0
         },
         br_info      : '{default:'0},  // per your requirement
         NEIP         : 32'h0,
@@ -416,6 +436,8 @@ module rep_controller (
             sr_rd          : 1'b0,
             dr_wr          : 1'b0,
             sr_wr          : 1'b0,
+			eax_wr			: 1'b0,
+			eax_rd			: 1'b0,
             datasize       : 2'b00,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
@@ -425,7 +447,8 @@ module rep_controller (
         dc_cs : '{
             LD_OP     : 1'b0,
             ST_OP     : 1'b0,
-            upper8    : 1'b0,
+            dr_upper8 	 : 1'b0,
+			sr_upper8 	 : 1'b0,
             datasize  : 2'b00
         },
         mem_cs : '{
@@ -448,7 +471,8 @@ module rep_controller (
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b0,
-            WB_SR : 1'b0
+            WB_SR : 1'b0,
+			WB_EAX			: 1'b0
         },
         br_info      : '{default:'0},  // per your requirement
         NEIP         : 32'h0,
@@ -482,6 +506,8 @@ module rep_controller (
             sr_rd          : 1'b0,
             dr_wr          : 1'b0,
             sr_wr          : 1'b0,
+			eax_wr			: 1'b0,
+			eax_rd			: 1'b0,
             datasize       : 2'b00,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
@@ -491,7 +517,8 @@ module rep_controller (
         dc_cs : '{
             LD_OP     : 1'b0,
             ST_OP     : 1'b0,
-            upper8    : 1'b0,
+            dr_upper8 	 : 1'b0,
+			sr_upper8 	 : 1'b0,
             datasize  : 2'b00
         },
         mem_cs : '{
@@ -514,7 +541,8 @@ module rep_controller (
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b0,
-            WB_SR : 1'b0
+            WB_SR : 1'b0,
+			WB_EAX			: 1'b0
         },
         br_info      : '{default:'0},  // per your requirement
         NEIP         : 32'h0,
@@ -548,6 +576,8 @@ module rep_controller (
             sr_rd          : 1'b0,
             dr_wr          : 1'b0,
             sr_wr          : 1'b0,
+			eax_wr			: 1'b0,
+			eax_rd			: 1'b0,
             datasize       : 2'b00,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
@@ -557,7 +587,8 @@ module rep_controller (
         dc_cs : '{
             LD_OP     : 1'b0,
             ST_OP     : 1'b0,
-            upper8    : 1'b0,
+            dr_upper8 	 : 1'b0,
+			sr_upper8 	 : 1'b0,
             datasize  : 2'b00
         },
         mem_cs : '{
@@ -580,7 +611,8 @@ module rep_controller (
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b0,
-            WB_SR : 1'b0
+            WB_SR : 1'b0,
+			WB_EAX			: 1'b0
         },
         br_info      : '{default:'0},  // per your requirement
         NEIP         : 32'h0,
