@@ -4,48 +4,50 @@
 
 _start:
 
-; --- imm to accumulator ---
-add $0x1, %al
-add $0x7F, %al
-add $0x12, %al
-add $0x34, %al
+    # --- imm to accumulator ---
+    add $0x1, %al
+    add $0x7F, %al
+    add $0x12, %al
+    add $0x34, %al
 
-add $0x1234, %ax
-add $0x00FF, %ax
-add $0xABCD, %ax
-add $0x0101, %ax
+    add $0x1234, %ax
+    add $0x00FF, %ax
+    add $0xABCD, %ax
+    add $0x0101, %ax
 
-add $0x12345678, %eax
-add $0x1, %eax
-add $0x7FFFFFFF, %eax
-add $0x80000000, %eax
+    add $0x12345678, %eax
+    add $0x1, %eax
+    add $0x7FFFFFFF, %eax
+    add $0x80000000, %eax
 
-; --- imm8 sign-extended to 32 ---
-add $0x7F, %eax
-add $0x80, %eax
-add $0x01, %ebx
-add $0xFF, %ebx
-add $0x7F, %ecx
-add $0x80, %ecx
-add $0x01, %edx
-add $0xFF, %edx
+    # --- imm8 sign-extended to 32 ---
+    add $0x7F, %eax
+    add $0x80, %eax
+    add $0x01, %ebx
+    add $0xFF, %ebx
+    add $0x7F, %ecx
+    add $0x80, %ecx
+    add $0x01, %edx
+    add $0xFF, %edx
 
-; --- 32-bit reg to reg (dest += src) ---
-add %eax, %ebx
+    hlt
+
+    # --- 32-bit reg to reg (dest += src) ---
+    add %eax, %ebx
+    add %ebx, %eax
+    add %ecx, %eax
+    add %edx, %eax
+    add %eax, %ecx
+    add %ebx, %ecx
+    add %ecx, %ebx
+    add %edx, %ebx
+    add %eax, %edx
+    add %ebx, %edx
+    add %ecx, %edx
+    add %edx, %ecx
+
+# --- reverse encoding form (r32 += r/m32) ---
 add %ebx, %eax
-add %ecx, %eax
-add %edx, %eax
-add %eax, %ecx
-add %ebx, %ecx
-add %ecx, %ebx
-add %edx, %ebx
-add %eax, %edx
-add %ebx, %edx
-add %ecx, %edx
-add %edx, %ecx
-
-; --- reverse encoding form (r32 += r/m32) ---
-add %ebx, %eax
 add %eax, %ebx
 add %eax, %ecx
 add %eax, %edx
@@ -58,7 +60,7 @@ add %edx, %ebx
 add %edx, %ecx
 add %ecx, %edx
 
-    ; --- 16-bit reg to reg ---
+    # --- 16-bit reg to reg ---
     add %ax, %bx
     add %bx, %ax
     add %cx, %ax
@@ -72,7 +74,7 @@ add %ecx, %edx
     add %cx, %dx
     add %dx, %cx
 
-    ; --- reverse 16-bit ---
+    # --- reverse 16-bit ---
     add %bx, %ax
     add %ax, %bx
     add %ax, %cx
@@ -86,7 +88,7 @@ add %ecx, %edx
     add %dx, %cx
     add %cx, %dx
 
-    ; --- 8-bit low regs ---
+    # --- 8-bit low regs ---
     add %al, %bl
     add %bl, %al
     add %cl, %al
@@ -100,7 +102,7 @@ add %ecx, %edx
     add %cl, %dl
     add %dl, %cl
 
-    ; --- 8-bit high regs ---
+    # --- 8-bit high regs ---
     add %ah, %bh
     add %bh, %ah
     add %ch, %ah
@@ -114,7 +116,7 @@ add %ecx, %edx
     add %ch, %dh
     add %dh, %ch
 
-    ; --- mixed high/low (valid but tricky cases) ---
+    # --- mixed high/low (valid but tricky cases) ---
     add %al, %ah
     add %ah, %al
     add %bl, %bh
@@ -124,7 +126,7 @@ add %ecx, %edx
     add %dl, %dh
     add %dh, %dl
 
-    ; --- extra coverage to reach 100 ---
+    # --- extra coverage to reach 100 ---
     add %eax, %eax
     add %ebx, %ebx
     add %ecx, %ecx
