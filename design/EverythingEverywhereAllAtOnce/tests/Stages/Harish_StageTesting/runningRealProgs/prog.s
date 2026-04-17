@@ -1,10 +1,19 @@
-.org 0x1000
-.code
+.section .text
 .global _start
 
 _start:
+    xor %eax, %eax
+    xor %ebx, %ebx
+    xor %ecx, %ecx
+    xor %edx, %edx
+    xor %esi, %esi
+    xor %edi, %edi
+    xor %ebp, %ebp
+    cld
+    clc
+    xor %eax, %eax
 
-    # --- imm to accumulator ---
+main:
     add $0x1, %al
     add $0x7F, %al
     add $0x12, %al
@@ -14,30 +23,25 @@ _start:
     add $0x00FF, %ax
     add $0xABCD, %ax
     add $0x0101, %ax
-    # 1018
+
     add $0x12345678, %eax
     add $0x1, %eax
     add $0x7FFFFFFF, %eax
     add $0x80000000, %eax
+    
+firstBreak:
 
     # --- imm8 sign-extended to 32 ---
     add $0x7F, %eax
     add $0x80, %eax
     add $0x01, %ebx
     add $0xFF, %ebx
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
     add $0x7F, %ecx
     add $0x80, %ecx
     add $0x01, %edx
     add $0xFF, %edx
 
-    hlt
-
+secondBreak:
     # --- 32-bit reg to reg (dest += src) ---
     add %eax, %ebx
     add %ebx, %eax
@@ -52,19 +56,19 @@ _start:
     add %ecx, %edx
     add %edx, %ecx
 
-# --- reverse encoding form (r32 += r/m32) ---
-add %ebx, %eax
-add %eax, %ebx
-add %eax, %ecx
-add %eax, %edx
-add %ecx, %eax
-add %ecx, %ebx
-add %ebx, %ecx
-add %ebx, %edx
-add %edx, %eax
-add %edx, %ebx
-add %edx, %ecx
-add %ecx, %edx
+    # --- reverse encoding form (r32 += r/m32) ---
+    add %ebx, %eax
+    add %eax, %ebx
+    add %eax, %ecx
+    add %eax, %edx
+    add %ecx, %eax
+    add %ecx, %ebx
+    add %ebx, %ecx
+    add %ebx, %edx
+    add %edx, %eax
+    add %edx, %ebx
+    add %edx, %ecx
+    add %ecx, %edx
 
     # --- 16-bit reg to reg ---
     add %ax, %bx
@@ -147,10 +151,6 @@ add %ecx, %edx
     add %bl, %bl
     add %cl, %cl
     add %dl, %dl
-    hlt
 
-
-.org 0x2000
-.data
-memval:
-    .long 0xAAAAAAAA
+termination:
+    jmp termination
