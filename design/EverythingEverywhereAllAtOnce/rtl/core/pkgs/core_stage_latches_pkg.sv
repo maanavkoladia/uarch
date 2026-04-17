@@ -97,6 +97,8 @@ package core_stage_latches_pkg;
         bool sr_wr;
         bool eax_wr;
 
+        bool MOVS_OP; //need for store addy gen
+
         logic [1:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 
         bool will_mod_zf;       //need this for zf scoreboard to check during rep instructions

@@ -57,9 +57,9 @@ module tlb_loader ();
     uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[5].PFN = 3'h6;
 
         // Entry 6
-    uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[6].valid = 1'b0;
-    uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[6].present = 1'b0;
-    uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[6].r_w = 1'b0;
+    uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[6].valid = 1'b1;
+    uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[6].present = 1'b1;
+    uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[6].r_w = 1'b1;
     uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[6].MMIO = 1'b0;
     uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[6].VPN = 20'h00000;
     uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb[6].PFN = 3'h0;
@@ -122,9 +122,9 @@ module tlb_loader ();
     uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[5].PFN = 3'h6;
 
         // Entry 6
-    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[6].valid = 1'b0;
-    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[6].present = 1'b0;
-    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[6].r_w = 1'b0;
+    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[6].valid = 1'b1;
+    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[6].present = 1'b1;
+    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[6].r_w = 1'b1;
     uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[6].MMIO = 1'b0;
     uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[6].VPN = 20'h00000;
     uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb[6].PFN = 3'h0;
@@ -187,9 +187,9 @@ module tlb_loader ();
     uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[5].PFN = 3'h6;
 
         // Entry 6
-    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[6].valid = 1'b0;
-    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[6].present = 1'b0;
-    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[6].r_w = 1'b0;
+    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[6].valid = 1'b1;
+    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[6].present = 1'b1;
+    uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[6].r_w = 1'b1;
     uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[6].MMIO = 1'b0;
     uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[6].VPN = 20'h00000;
     uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb[6].PFN = 3'h0;
@@ -252,9 +252,9 @@ module tlb_loader ();
     uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[5].PFN = 3'h6;
 
         // Entry 6
-    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[6].valid = 1'b0;
-    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[6].present = 1'b0;
-    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[6].r_w = 1'b0;
+    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[6].valid = 1'b1;
+    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[6].present = 1'b1;
+    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[6].r_w = 1'b1;
     uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[6].MMIO = 1'b0;
     uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[6].VPN = 20'h00000;
     uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb[6].PFN = 3'h0;
@@ -317,9 +317,9 @@ module tlb_loader ();
     uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[5].PFN = 3'h6;
 
         // Entry 6
-    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[6].valid = 1'b0;
-    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[6].present = 1'b0;
-    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[6].r_w = 1'b0;
+    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[6].valid = 1'b1;
+    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[6].present = 1'b1;
+    uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[6].r_w = 1'b1;
     uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[6].MMIO = 1'b0;
     uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[6].VPN = 20'h00000;
     uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb[6].PFN = 3'h0;
