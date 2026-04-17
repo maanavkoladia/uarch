@@ -3,6 +3,7 @@ import reg_ids_pkg::*;
 import Decode_pkg::*;
 import control_store_pkg::*;
 module control_store (
+    input bool invalid_inst,
     input logic [9:0] total_pf_vector,
     input byte_t opcode,
     input byte_t modrm,
@@ -259,6 +260,8 @@ module control_store (
         sr_rd            : mod_rm_cs_outs.sr_rd,
         dr_wr            : mod_rm_cs_outs.dr_wr,
         sr_wr            : mod_rm_cs_outs.sr_wr,
+        eax_wr           : 1'b0,                //will be overriden in cs_post_processor
+        eax_rd           : 1'b0,                //will be overriden in cs_post_processor
         datasize         : DATA_SIZE_o,
         will_mod_zf      : will_mod_zf_o,
         seg_1_valid      : HARDCODED_SEGMENT1_V_o,
@@ -309,12 +312,16 @@ module control_store (
     assign temp_wb_cs = '{
         ST_OP : mod_rm_cs_outs.st_op,
         WB_DR : mod_rm_cs_outs.dr_wr,
-        WB_SR : mod_rm_cs_outs.sr_wr
+        WB_SR : mod_rm_cs_outs.sr_wr,
+        WB_EAX : 1'b0               //will be overriden in cs_post_processor
     };
 
     cs_post_processor cs_post_prossesing_unit(
+        .invalid_inst(invalid_inst),
         .modrm_byte(modrm),
         .movs(MOVS_o),
+        .xchg(XCHG_o),
+        .cmpxchg(CMPXCHG_o),
         .op_in_modrm(OP_IN_MODRM_o),
         .op_in_modrm_subset(OP_IN_MODRM_SUBSET_o),
         .decode_cs_i(temp_decode_cs),

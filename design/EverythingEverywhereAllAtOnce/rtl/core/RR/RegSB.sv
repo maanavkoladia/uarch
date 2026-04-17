@@ -21,6 +21,9 @@ module RegSB (
     input bool cs_dr_rd,  //read dr
     input bool cs_sr_rd,  //read dr
 
+    input bool cs_eax_rd,
+    input bool cs_eax_wr,
+
     input reg_ids_e Segment0_ID,  //reads regfile
     input reg_ids_e Segment1_ID,  //readregfile
     input bool Segment1_valid,  //inidcated wether or not we need to read the regfile for the scond Segment1_ID
@@ -72,6 +75,7 @@ module RegSB (
             else begin
                 if (cs_dr_wr && updateSB) SCORE_BOARD[dr_id].counter++;
                 if (cs_sr_wr && updateSB) SCORE_BOARD[sr_id].counter++;
+                if (cs_eax_wr && updateSB) SCORE_BOARD[EAX].counter++;
             end
 
             if(wb_wr_to_both) begin
@@ -86,7 +90,7 @@ module RegSB (
     end
 
     //dr_rd, sr_rd, sib_rd if rd(sib_base_id, sib_idx_id), Segment0_ID, Segment1_ID
-    logic dr_stall, sr_stall, seg0_stall, seg1_stall, sib_base_stall, sib_idx_stall;
+    logic dr_stall, sr_stall, seg0_stall, seg1_stall, sib_base_stall, sib_idx_stall, eax_stall;
     always_comb begin
         // Stall logic (ALL using match-aware rule)
         dr_stall = cs_dr_rd &&
@@ -94,6 +98,9 @@ module RegSB (
 
         sr_stall = cs_sr_rd &&
         (SCORE_BOARD[sr_id].counter != 0);
+
+        eax_stall = cs_eax_rd &&
+        (SCORE_BOARD[EAX].counter != 0);
 
         seg0_stall =
         (SCORE_BOARD[Segment0_ID].counter != 0);
@@ -108,7 +115,7 @@ module RegSB (
         (SCORE_BOARD[sib_idx_id].counter != 0);
 
         // Final OR
-        depStall_Internal = dr_stall || sr_stall || seg0_stall || seg1_stall || sib_base_stall || sib_idx_stall;
+        depStall_Internal = dr_stall || sr_stall || seg0_stall || seg1_stall || sib_base_stall || sib_idx_stall || eax_stall;
     end
 
 endmodule

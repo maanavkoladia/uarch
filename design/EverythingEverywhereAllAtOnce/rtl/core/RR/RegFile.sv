@@ -15,7 +15,7 @@ module RegFile (
     input bool WB_DR1_we,
     input reg_ids_e Segment0_ID,
     input reg_ids_e Segment1_ID,
-    output regfile_output_t outputs
+output regfile_output_t outputs
 );
 
     uint64_t REGISTERS[NUM_REGS];

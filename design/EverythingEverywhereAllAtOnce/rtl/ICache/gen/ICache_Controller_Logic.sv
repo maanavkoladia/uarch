@@ -138,13 +138,13 @@ wire NS_2_t3;
 // RD_I_VC_SWAP_BUF_o = (S_0 & !S_1 & S_2)
 `AND_3(RD_I_VC_SWAP_BUF_o_and, 1, RD_I_VC_SWAP_BUF_o, S_0, S_1_inv, S_2)
 
-// busy_o = (!S_1 & S_2) | (S_0 & !S_2) | (S_1 & !S_2)
+// busy_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2)
 wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_1_inv, S_2)
+`AND_2(busy_o_and0, 1, busy_o_t0, S_0, S_1_inv)
 wire busy_o_t1;
-`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_2_inv)
+`AND_2(busy_o_and1, 1, busy_o_t1, S_1, S_2_inv)
 wire busy_o_t2;
-`AND_2(busy_o_and2, 1, busy_o_t2, S_1, S_2_inv)
+`AND_2(busy_o_and2, 1, busy_o_t2, S_1_inv, S_2)
 
 `OR_3(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1, busy_o_t2)
 

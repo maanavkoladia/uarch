@@ -85,6 +85,7 @@ module Decode (
     );
 
     control_store cs(
+        .invalid_inst(invalid_inst), //might need temp_rr_latch.valid here but I might be able tio get away with this
         .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .decode_cs(temp_decode_cs),
         .rr_cs(temp_rr_cs), .dc_cs(temp_dc_cs), .mem_cs(temp_mem_cs), .exe_cs(temp_exe_cs), .wb_cs(temp_wb_cs)
     );

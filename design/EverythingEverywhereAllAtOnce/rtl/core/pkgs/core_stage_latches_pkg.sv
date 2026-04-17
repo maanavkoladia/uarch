@@ -92,8 +92,10 @@ package core_stage_latches_pkg;
         reg_ids_e sr_id;
         bool dr_rd;
         bool sr_rd;
+        bool eax_rd;
         bool dr_wr;
         bool sr_wr;
+        bool eax_wr;
 
         logic [1:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 

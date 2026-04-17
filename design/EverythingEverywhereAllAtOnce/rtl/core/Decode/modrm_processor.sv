@@ -23,7 +23,8 @@ module modrm_processor (
     bool reg_is_segment;
     bool alu_inputA_override;
     bool alu_inputB_override;
-    bool high8;
+    bool dr_high8;
+    bool sr_high8;
     source_selector_e alu_inputA_override_sel;
     source_selector_e alu_inputB_override_sel;
 
@@ -39,7 +40,8 @@ module modrm_processor (
 
 
     always_comb begin
-        high8 = 1'b0;
+        dr_high8 = 1'b0;
+        sr_high8 = 1'b0;
         //dr reg setting
         if(rm_is_dr && 
             ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00100) &&
@@ -55,22 +57,22 @@ module modrm_processor (
                 3'd4: begin
                     dr_id = (datasize[1] && datasize[0]) ? MM4 : 
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EAX : ESP;
-                    high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
+                    dr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
                 3'd5: begin
                     dr_id = (datasize[1] && datasize[0]) ? MM5 : 
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? ECX : EBP;
-                    high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
+                    dr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
                 3'd6: begin
                     dr_id = (datasize[1] && datasize[0]) ? MM6 : 
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EDX : ESI;
-                    high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
+                    dr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
                 3'd7: begin
                     dr_id = (datasize[1] && datasize[0]) ? MM7 :
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EBX : EDI;
-                    high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
+                    dr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
             endcase
             dr_rd = 1'b1;
@@ -85,22 +87,22 @@ module modrm_processor (
                 3'd4: begin
                     dr_id = (datasize[1] && datasize[0]) ? MM4 : 
                             (!datasize[1] && !datasize[0]) ? EAX : ESP;
-                    high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
+                    dr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
                 end
                 3'd5: begin
                     dr_id = (datasize[1] && datasize[0]) ? MM5 : 
                             (!datasize[1] && !datasize[0]) ? ECX : EBP;
-                    high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
+                    dr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
                 end
                 3'd6: begin
                     dr_id = (datasize[1] && datasize[0]) ? MM6 : 
                             (!datasize[1] && !datasize[0]) ? EDX : ESI;
-                    high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
+                    dr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
                 end
                 3'd7: begin
                     dr_id = (datasize[1] && datasize[0]) ? MM7 :
                             (!datasize[1] && !datasize[0]) ? EBX : EDI;
-                    high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
+                    dr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
                 end
             endcase
             dr_rd = 1'b1;
@@ -145,22 +147,22 @@ module modrm_processor (
                 3'd4: begin
                     sr_id = (datasize[1] && datasize[0]) ? MM4 : 
                             (!datasize[1] && !datasize[0]) ? EAX : ESP;
-                    high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
+                    sr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
                 end
                 3'd5: begin
                     sr_id = (datasize[1] && datasize[0]) ? MM5 : 
                             (!datasize[1] && !datasize[0]) ? ECX : EBP;
-                    high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
+                    sr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
                 end
                 3'd6: begin
                     sr_id = (datasize[1] && datasize[0]) ? MM6 : 
                             (!datasize[1] && !datasize[0]) ? EDX : ESI;
-                    high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
+                    sr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
                 end
                 3'd7: begin
                     sr_id = (datasize[1] && datasize[0]) ? MM7 :
                             (!datasize[1] && !datasize[0]) ? EBX : EDI;
-                    high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
+                    sr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
                 end
             endcase
             sr_rd = 1'b1;
@@ -179,22 +181,22 @@ module modrm_processor (
                 3'd4: begin
                     sr_id = (datasize[1] && datasize[0]) ? MM4 : 
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EAX : ESP;
-                    high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
+                    sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
                 3'd5: begin
                     sr_id = (datasize[1] && datasize[0]) ? MM5 : 
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? ECX : EBP;
-                    high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
+                   sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
                 3'd6: begin
                     sr_id = (datasize[1] && datasize[0]) ? MM6 : 
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EDX : ESI;
-                    high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
+                    sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
                 3'd7: begin
                     sr_id = (datasize[1] && datasize[0]) ? MM7 :
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EBX : EDI;
-                    high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
+                    sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
             endcase
             sr_rd = 1'b1;
@@ -244,7 +246,8 @@ module modrm_processor (
         sr_wr   : sr_wr,
         st_op   : st_op,
         ld_op   : ld_op,
-        high8   : high8,
+        dr_high8   : dr_high8,
+        sr_high8   : sr_high8,
         alu_inputA_override : alu_inputA_override,
         alu_inputB_override : alu_inputB_override,
         alu_inputA_override_sel : alu_inputA_override_sel,

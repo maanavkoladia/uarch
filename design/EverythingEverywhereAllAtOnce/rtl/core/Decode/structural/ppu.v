@@ -37,8 +37,8 @@ module ppu (
 
     //mux2_3 immmux(.in0(imm_size_fake), .in1(3'b010), .sel(total_pf_vector[3]), .out(imm_size));
     wire [2:0] imm_size_override;
-    `MUX_2(immmux, 3, imm_size_override, imm_size_fake, 3'b010, total_pf_vector[3])
-    assign imm_size = (imm_size_fake == 3'b000) ? imm_size_fake : imm_size_override;
+    `MUX_2(immmux, 3, imm_size_override, imm_size_fake, 3'b010, total_pf_vector[3] && (imm_size_fake == 3'b100))
+    `MUX_2(immmux2, 3, imm_size, imm_size_override, 3'b100, total_pf_vector[3] && (imm_size_fake == 3'b110))
     
     //mux2_3 msdmux(.in0(3'b000), .in1(msd_size_fake), .sel(needrm), .out(msd_size));
     `MUX_2(msdmux, 3, msd_size, 3'b000, msd_size_fake, needrm)

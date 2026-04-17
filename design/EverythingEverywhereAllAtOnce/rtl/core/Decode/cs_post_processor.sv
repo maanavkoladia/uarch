@@ -1,7 +1,10 @@
 import control_store_pkg::*;
 
 module cs_post_processor (
+    input bool invalid_inst,
     input bool movs,
+    input bool xchg,
+    input bool cmpxchg,
     input bool op_in_modrm,
     input op_in_modrm_subset_t op_in_modrm_subset,
     input byte modrm_byte,
@@ -84,14 +87,31 @@ module cs_post_processor (
         ST_SEL          : rr_cs_i.ST_SEL,
         MODRM_NEEDED    : rr_cs_i.MODRM_NEEDED,
         RM_IS_DR        : rr_cs_i.RM_IS_DR,
-        LD_OP           : movs ? 1'b1 : rr_cs_i.LD_OP,
-        ST_OP           : movs ? 1'b1 : rr_cs_i.ST_OP,
+
+        LD_OP           : invalid_inst ? 
+                            1'b0 :
+                            movs ? 1'b1 : rr_cs_i.LD_OP,
+
+        ST_OP           : invalid_inst ? 
+                            1'b0 :
+                            movs ? 1'b1 : rr_cs_i.ST_OP,
         dr_id           : rr_cs_i.dr_id,
         sr_id           : rr_cs_i.sr_id,
         dr_rd           : rr_cs_i.dr_rd,
         sr_rd           : rr_cs_i.sr_rd,
-        dr_wr           : movs ? 1'b0 : rr_cs_i.dr_wr,
-        sr_wr           : rr_cs_i.sr_wr,
+        eax_rd          : cmpxchg ? 1'b1 : 1'b0,
+        dr_wr           : invalid_inst ?
+                            1'b0 :
+                            movs ? 1'b0 : rr_cs_i.dr_wr,
+
+        sr_wr           : invalid_inst ? 
+                            1'b0 :
+                            xchg ? 1'b1 : rr_cs_i.sr_wr,
+
+        eax_wr          : invalid_inst ? 
+                            1'b0 :
+                            cmpxchg ? 1'b1 : 1'b0,
+
         datasize        : rr_cs_i.datasize,
         will_mod_zf     : rr_cs_i.will_mod_zf,
         seg_1_valid     : rr_cs_i.seg_1_valid,
@@ -103,8 +123,12 @@ module cs_post_processor (
     // DC
     // =====================
     assign dc_cs_o = '{
-        LD_OP    : dc_cs_i.LD_OP,
-        ST_OP    : dc_cs_i.ST_OP,
+        LD_OP       : invalid_inst ? 
+                            1'b0 :
+                            movs ? 1'b1 : dc_cs_i.LD_OP,
+        ST_OP       : invalid_inst ? 
+                            1'b0 :
+                            movs ? 1'b1 : dc_cs_i.ST_OP,
         dr_upper8   : dc_cs_i.dr_upper8,
         sr_upper8 : dc_cs_i.sr_upper8,
         datasize : dc_cs_i.datasize
@@ -114,15 +138,21 @@ module cs_post_processor (
     // MEM
     // =====================
     assign mem_cs_o = '{
-        ST_OP : mem_cs_i.ST_OP,
-        LD_OP : mem_cs_i.LD_OP
+        LD_OP   : invalid_inst ? 
+                            1'b0 :
+                            movs ? 1'b1 : mem_cs_i.LD_OP,
+        ST_OP   : invalid_inst ? 
+                            1'b0 :
+                            movs ? 1'b1 : mem_cs_i.ST_OP
     };
 
     // =====================
     // EXE
     // =====================
     assign exe_cs_o = '{
-        ST_OP              : exe_cs_i.ST_OP,
+        ST_OP              : invalid_inst ? 
+                                1'b0 :
+                                movs ? 1'b1 : mem_cs_i.ST_OP,
         OP_TYPE            : (op_in_modrm) ? overriden_op_type : exe_cs_i.OP_TYPE,
         alu_inputA_sel     : exe_cs_i.alu_inputA_sel,
         alu_inputB_sel     : exe_cs_i.alu_inputB_sel,
@@ -139,9 +169,18 @@ module cs_post_processor (
     // WB
     // =====================
     assign wb_cs_o = '{
-        ST_OP : wb_cs_i.ST_OP,
-        WB_DR : wb_cs_i.WB_DR,
-        WB_SR : wb_cs_i.WB_SR
+        ST_OP : invalid_inst ? 
+                            1'b0 :
+                            movs ? 1'b1 : mem_cs_i.ST_OP,
+        WB_DR : invalid_inst ? 
+                            1'b0 :
+                            movs ? 1'b0 : rr_cs_i.dr_wr,
+        WB_SR : invalid_inst ? 
+                            1'b0 :
+                            xchg ? 1'b1 : rr_cs_i.sr_wr,
+        WB_EAX : invalid_inst ? 
+                            1'b0 :
+                            cmpxchg ? 1'b1 : 1'b0
     };
     
 endmodule

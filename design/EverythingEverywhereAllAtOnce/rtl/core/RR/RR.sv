@@ -149,6 +149,8 @@ module RR (
         .cs_sr_wr      (latchesInUse.cs.sr_wr),
         .cs_dr_rd      (latchesInUse.cs.dr_rd),
         .cs_sr_rd      (latchesInUse.cs.sr_rd),
+        .cs_eax_rd     (latchesInUse.cs.eax_rd),
+        .cs_eax_wr     (latchesInUse.cs.eax_wr),
         .Segment0_ID   (latchesInUse.cs.seg_0_id),
         .Segment1_ID   (latchesInUse.cs.seg_1_id),
         .Segment1_valid(latchesInUse.cs.seg_1_valid),
