@@ -254,6 +254,7 @@ module control_store (
         RM_IS_DR         : RM_IS_DR_o,
         LD_OP            : mod_rm_cs_outs.ld_op,
         ST_OP            : mod_rm_cs_outs.st_op,
+        MOVS_OP          : MOVS_o,
         dr_id            : mod_rm_cs_outs.dr_id,
         sr_id            : mod_rm_cs_outs.sr_id,
         dr_rd            : mod_rm_cs_outs.dr_rd,
@@ -319,7 +320,6 @@ module control_store (
     cs_post_processor cs_post_prossesing_unit(
         .invalid_inst(invalid_inst),
         .modrm_byte(modrm),
-        .movs(MOVS_o),
         .xchg(XCHG_o),
         .cmpxchg(CMPXCHG_o),
         .op_in_modrm(OP_IN_MODRM_o),
