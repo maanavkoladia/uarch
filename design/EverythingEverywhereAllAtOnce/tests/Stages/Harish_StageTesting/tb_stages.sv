@@ -306,7 +306,7 @@ module tb_stages();
             "    [dc_cs] LD_OP=%0b ST_OP=%0b upper8=%0b datasize=%0d",
             uut_core.rr_latches_next.normal_latches.dc_cs.LD_OP,
             uut_core.rr_latches_next.normal_latches.dc_cs.ST_OP,
-            uut_core.rr_latches_next.normal_latches.dc_cs.upper8,
+            uut_core.rr_latches_next.normal_latches.dc_cs.dr_upper8,
             uut_core.rr_latches_next.normal_latches.dc_cs.datasize
         );
 
