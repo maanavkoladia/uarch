@@ -11,7 +11,7 @@
 # ─────────────────────────────────────────────
 
 SIM_DIR   := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-ROOT_DIR  := $(abspath $(SIM_DIR)/../..)   # repo root
+ROOT_DIR  := $(abspath $(SIM_DIR)/../..)
 TEST_DIR  := $(ROOT_DIR)/tests/Stages/Harish_StageTesting/config
 
 # ── Inputs (override on command line) ──
@@ -26,11 +26,7 @@ OUT_JSON   ?= sim_output.json
 LOG        ?= sim_run.log
 
 # ── Base command ──
-SIM_CMD = python3 $(SIM_DIR)sim.py \
-            --asm $(ASM) \
-            --tlb $(TLB) \
-            --core-regs $(CORE_REGS) \
-            --max-cycles $(MAX_CYCLES)
+SIM_CMD = python3 $(SIM_DIR)sim.py --asm $(ASM) --tlb $(TLB) --core-regs $(CORE_REGS) --max-cycles $(MAX_CYCLES)
 
 # ── Targets ──
 .PHONY: run quiet json dump clean help
