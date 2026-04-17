@@ -194,7 +194,7 @@ module Decode (
 
 
     assign temp_rr_latch = '{
-        valid           : !invalid_inst && !HALT_REG && ~fetch_outs_i.exp_pipe_clear && !(REP_LATCH || temp_decode_cs.REP),
+        valid           : !invalid_inst && !HALT_REG && ~fetch_outs_i.exp_pipe_clear && !(REP_LATCH || temp_decode_cs.REP) & !temp_decode_cs.HALT,
         cs              : temp_rr_cs,
 
         dc_cs           : temp_dc_cs,

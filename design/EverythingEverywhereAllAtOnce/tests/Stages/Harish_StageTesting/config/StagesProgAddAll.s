@@ -3,18 +3,18 @@
 .global _start
 
 _start:
-    # # ========= MOD = 00 =========
-    # # ============================
-    # # r/m = 000 → [EAX]
-    # # ============================
-    # addl %eax, (%eax)
-    # addl %ecx, (%eax)
-    # addl %edx, (%eax)
-    # addl %ebx, (%eax)
-    # addl %esp, (%eax)
-    # addl %ebp, (%eax)
-    # addl %esi, (%eax)
-    # addl %edi, (%eax)
+    # ========= MOD = 00 =========
+    # ============================
+    # r/m = 000 → [EAX]
+    # ============================
+    addl %eax, (%eax)
+    addl %ecx, (%eax)
+    addl %edx, (%eax)
+    addl %ebx, (%eax)
+    addl %esp, (%eax)
+    addl %ebp, (%eax)
+    addl %esi, (%eax)
+    addl %edi, (%eax)
 
     # # ============================
     # # r/m = 001 → [ECX]

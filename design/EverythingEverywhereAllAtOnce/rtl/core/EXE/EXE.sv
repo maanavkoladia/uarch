@@ -59,12 +59,6 @@ module EXE (
     uint64_t                          res_buf_selected;
 
 
-    // --- Control Store Change Signals ---
-    bool                              cancel_dr_we;
-    bool                              cancel_sr_we;
-    bool                              cancel_store;
-
-
     //==========================================================================
     // FUNCTIONAL UNIT OUTPUT WIRES
     //==========================================================================
