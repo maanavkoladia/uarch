@@ -51,7 +51,9 @@ module MEM (
     bool exe_stage_next_vaild_o;
     bool forward_valid;
 
-
+    p_address_t next_st_addr_0;
+    p_address_t next_st_addr_1;
+    bool next_xcl;
 
     logic [1:0] bank_num_0;
     logic [1:0] bank_num_1;
@@ -141,7 +143,16 @@ module MEM (
         end
     end
 
-    
+    push_address_gen pus_addr_gen(
+        .ST_PADDR_0(latches_i.ST_PADDR_0),
+        .ST_PADDR_1(latches_i.ST_PADDR_1),
+        .ST_XCL(latches_i.ST_XCL),
+        .data_size_vec(latches_i.data_size_vec),
+        .OP_TYPE(latches_i.data_size_vec),
+        .ST_PADDR_0_o(next_st_addr_0),
+        .ST_PADDR_1_o(next_st_addr_1),
+        .ST_XCL_o(next_xcl)
+    );
 
 
 
@@ -188,9 +199,9 @@ module MEM (
             sr_data_size_vec : latches_i.sr_data_size_vec,
             shift_sr_up: latches_i.shift_sr_up,
             shift_sr_down: latches_i.shift_sr_down,
-            ST_XCL: latches_i.ST_XCL,
-            ST_PADDR_0: latches_i.ST_PADDR_0,
-            ST_PADDR_1: latches_i.ST_PADDR_1,
+            ST_XCL: next_xcl,
+            ST_PADDR_0: next_st_addr_0,
+            ST_PADDR_1: next_st_addr_1,
             MIO: latches_i.MIO,
             br_info: latches_i.br_info,
             br_rel_target: br_rel_target,

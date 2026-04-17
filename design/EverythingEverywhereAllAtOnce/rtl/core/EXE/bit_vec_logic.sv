@@ -30,7 +30,7 @@ module bit_vec_logic(
         st_vec0 = 0;
         st_vec1 = 0;
 
-        end_of_st_addr_1 = (start_offset + num_bytes);
+        end_of_st_addr_1 = (start_offset + {12'd0, num_bytes});
         offset_xcl = end_of_st_addr_1[3:0];
 
         if (ST_XCL) begin
@@ -39,7 +39,7 @@ module bit_vec_logic(
             st_vec0 = 16'hFFFF << start_offset;
             st_vec1 = ((16'h1 << offset_xcl) + 16'hFFFF);
 
-        end 
+        end
         else begin
             // Stays in one line: Shift a mask of 'num_bytes' length to start_offset then subtract 1
             st_vec0 = ((16'h1 << num_bytes) + 16'hFFFF) << start_offset;
