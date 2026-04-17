@@ -162,6 +162,7 @@ module DC (
         .sr_upper8(latches_i.cs.sr_upper8),
         .ST_OP(latches_i.cs.ST_OP),
         .LD_OP(latches_i.cs.LD_OP),
+        .wb_sr(latches_i.wb_cs.WB_SR),
         .shift_sr_up(shift_sr_up),
         .shift_sr_down(shift_sr_down),
         .data_size_vec_o(data_size_vec),
