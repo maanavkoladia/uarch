@@ -2,6 +2,7 @@ STRUCTRURAL := false
 
 include ../../../Make.vars
 include ../../../Make.build
+include debugUtils/srcs.mk
 
 TARGET = StagesTest
 
@@ -19,6 +20,7 @@ STARTUP_FILES = \
 
 TB_FILES = \
 		   $(STARTUP_FILES) \
+		   debugUtils/debug_pkg.sv \
 		   tb_stages.sv
 
 SRC_FILES :=

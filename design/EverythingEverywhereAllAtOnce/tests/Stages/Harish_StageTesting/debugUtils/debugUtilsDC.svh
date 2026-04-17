@@ -12,7 +12,7 @@
     task automatic print_dc_latches(); \
         $fdisplay(`LOG_FD, "[DC LATCHES]"); \
         begin \
-            automatic dc_latches_t L = `DC_UNIT_PATH.latches_i; \
+            automatic dc_latches_t L = `DC_UNIT_PATH.dc_latches; \
             $fdisplay(`LOG_FD, "  valid=%0b  EIP=0x%08h  NEIP=0x%08h", L.valid, L.EIP, L.NEIP); \
             $fdisplay(`LOG_FD, "  dr=%s(0x%016h)  sr=%s(0x%016h)", \
                       tb_debug_pkg::get_reg_name(L.dr_id), L.dr_data, \
