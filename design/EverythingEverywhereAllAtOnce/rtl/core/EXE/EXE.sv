@@ -826,6 +826,7 @@ module EXE (
     push_op u_push_op (
         .value  (srA),
         .sp     (srB),
+        .data_size_vec(data_size),
         .res_buf(push_res_buf),
         .sr_o   (push_sr_o)
     );
