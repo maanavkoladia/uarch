@@ -12,7 +12,9 @@ TOP_MODULE_NAME = tb_stages
 STARTUP_FILES = \
 				gen/memLoader.sv \
 				gen/dcache_loader.sv \
-				gen/icache_loader.sv
+				gen/icache_loader.sv \
+				gen/coreRegLoader.sv \
+				gen/tlb_loader.sv
 
 
 TB_FILES = \

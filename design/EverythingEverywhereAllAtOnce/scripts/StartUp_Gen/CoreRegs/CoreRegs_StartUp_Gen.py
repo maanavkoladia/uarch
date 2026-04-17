@@ -122,7 +122,7 @@ SEG_REGS = ("CS", "DS", "SS", "ES", "FS", "GS")
 def scalar_assignment(path: str, val_str: str) -> str:
     """Single  path <= literal;  line."""
     w, v, b = parse_verilog_literal(val_str)
-    return f"{I}{path} <= {format_literal(w, v, b)};"
+    return f"{I}{path} = {format_literal(w, v, b)};"
 
 
 def generate_verilog(cfg: dict) -> str:

@@ -1,0 +1,30 @@
+{
+    "Module Name"   : "coreRegLoader",
+    "outputPath"    : "gen/",
+    "startUpDelay"  : "30",
+
+    "EIP" : {
+        "load" : "false",
+        "path" : "uut_AllAtOnce.core_unit.decode_unit.EIP",
+        "val"  : "32'h00001000"
+    },
+    "SPC" : {
+        "load" : "false",
+        "path" : "uut_AllAtOnce.core_unit.fetch_unit.SPC",
+        "val"  : "32'h00000100"
+    },
+    "IDTR" : {
+        "load" : "false",
+        "path" : "dut.u_core.idtr_reg",
+        "val"  : "32'h00000000"
+    },
+    "SegLimitVals" : {
+        "load" : "true",
+        "CS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[0].limit[0]"],
+        "DS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[1].limit[0]"],
+        "SS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[2].limit[0]"],
+        "ES"   : ["20'h00000", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[3].limit[0]"],
+        "FS"   : ["20'h00000", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[4].limit[0]"],
+        "GS"   : ["20'h00000", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[5].limit[0]"]
+    }
+}
