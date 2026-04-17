@@ -5,7 +5,7 @@
 _start:
 
     movl $0x11111111, %eax
-    
+
     hlt
 
     movl $0x22222222, %ebx
@@ -13,7 +13,7 @@ _start:
     movl (%esi), %ecx        # ecx now shuld have 0x66660000
 
     hlt
-
+    
     addl $0x4, %esi
 
     jmp target

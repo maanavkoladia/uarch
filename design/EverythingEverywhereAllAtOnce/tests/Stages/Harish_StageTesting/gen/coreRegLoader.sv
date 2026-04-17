@@ -15,19 +15,6 @@ module coreRegLoader ();
 
         // ---- Segment Limits ----
         // CS
-<<<<<<< HEAD
-        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[0].limit[0] = 20'hFFFFF;
-        // DS
-        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[1].limit[0] = 20'hFFFFF;
-        // SS
-        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[2].limit[0] = 20'hFFFFF;
-        // ES
-        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[3].limit[0] = 20'h00000;
-        // FS
-        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[4].limit[0] = 20'h00000;
-        // GS
-        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[5].limit[0] = 20'h00000;
-=======
         uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[0].limit = 20'hFFFFF;
         // DS
         uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[1].limit = 20'hFFFFF;
@@ -39,7 +26,6 @@ module coreRegLoader ();
         uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[4].limit = 20'h00000;
         // GS
         uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[5].limit = 20'h00000;
->>>>>>> ea43561723ef9e08b9b6ed8678336df02b3cc941
 
     end  // initial
 

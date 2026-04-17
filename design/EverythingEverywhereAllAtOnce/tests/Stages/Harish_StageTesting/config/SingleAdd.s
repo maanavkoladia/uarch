@@ -14,7 +14,7 @@ _start:
     add $0x00FF, %ax
     add $0xABCD, %ax
     add $0x0101, %ax
-
+    # 1018
     add $0x12345678, %eax
     add $0x1, %eax
     add $0x7FFFFFFF, %eax
@@ -25,6 +25,12 @@ _start:
     add $0x80, %eax
     add $0x01, %ebx
     add $0xFF, %ebx
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
     add $0x7F, %ecx
     add $0x80, %ecx
     add $0x01, %edx
