@@ -69,10 +69,12 @@ module DC (
     //in store flight and stq stall logic accounts for valid bits
     assign dep_stall = in_flight_stall | stq_stall;
 
-    bool ld_exception, st_exception;
+    bool ld_exception, st_exception, rr_exception;
+    
     assign ld_exception = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP) && latches_i.cs.LD_OP;
     assign st_exception = (st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP) && latches_i.cs.ST_OP;
-    assign exp_stall = (ld_exception | st_exception) & latches_i.valid;
+    assign rr_exception = latches_i.rr_gp;
+    assign exp_stall = (ld_exception | st_exception | rr_exception) & latches_i.valid;
                        
 
     assign dc_stall = dep_stall | arb_stall | exp_stall;
@@ -177,7 +179,6 @@ module DC (
         .datasize(latches_i.cs.datasize),
         .write_intent(1'b0),
         .mem_op(latches_i.cs.LD_OP),
-        .rr_gp(latches_i.rr_gp),
         .outputs(ld_neuralnet_out)
     );
 
@@ -188,7 +189,6 @@ module DC (
         .datasize(latches_i.cs.datasize),
         .write_intent(latches_i.cs.ST_OP),
         .mem_op(latches_i.cs.ST_OP),
-        .rr_gp(latches_i.rr_gp),
         .outputs(st_neuralnet_out)
     );
 

@@ -242,7 +242,7 @@ module RR (
             set_ZF_sb   : latchesInUse.cs.will_mod_zf,
             codeSeg_sb  : cs_sb,
             codeSeg_data  : reg_out.CS_data,
-            codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID].limit[0],
+            codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID].limit,
             dc_stage_latch_we : dc_latches_we
         };
 

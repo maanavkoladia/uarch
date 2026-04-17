@@ -158,11 +158,13 @@ _start:
     mov $dataD, %edx
     add $0x7, %edx
 
+    
     # =========================
     # 32-bit memory ops
     # =========================
 
     add (%eax), %ebx
+    hlt
     add 0xF(%eax), %ecx
     add 0xD(%eax), %edx
     add 0x3(%eax), %eax
@@ -286,11 +288,12 @@ _start:
     add %edx, (%eax)
     add %eax, 0x3(%eax)
 
+    hlt
     # =========================
     # DATA REGIONS (scattered)
     # =========================
 
-    .org 0x2FED
+    .org 0x56559000
     .data
     dataA:
         .long 0xAAAAAAAA
