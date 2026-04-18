@@ -1,4 +1,3 @@
-import core_common_pkg::*;
 import WriteBack_pkg::*;
 import common_pkg::*;
 import core_stage_latches_pkg::*;
