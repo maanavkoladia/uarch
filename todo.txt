@@ -1,19 +1,34 @@
 TODO:
 
-- IRETD for EXE
+OPCODE CHECK
+- AAA
+- ADC
+- BSF
+- CALL
+- CLD
+- STD
+-IRETD
+- JMP
+- FAR JMP
+- PACKSSWB
+-PACKSSDW
+-PADDW
+-PADDD
+-PAVG
+-PAVGW
+- POP
+-PUSH
+- REP
+- RET
+- SAL 
+- SAR 
+- SBB 
+- STD 
+-MOVQ
+- MOVS
 
-- Decode to add the upper8 lower 8 for data size conversion
-- decode kogge stone with muxes rather than instruction length 
 
-- mem bank port
-- mem controller port
-- mio cache line in dcache logic
 - dma testing
 - ddr5 testing
-- dcache eb testing
-- icache victim cache stress testing
-- dcache victim cache stress testing 
 - IO testing 
-- might have to updated bit vector with new datasize vector
 
-- MOD LUT/OPCODE LUT for the fucked instructions

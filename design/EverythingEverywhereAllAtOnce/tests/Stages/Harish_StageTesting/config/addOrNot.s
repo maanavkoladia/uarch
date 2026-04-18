@@ -1,183 +1,182 @@
-    .org 0x1000
-    .code
-    .global _start
+.org 0x1000
+.code
+.global _start
 
-    _start:
+_start:
 
-    # ============================================================
-    # BASE POINTER SETUP (IMMUTABLE)
-    # ============================================================
+# ============================================================
+# BASE SETUP
+# ============================================================
 
-        mov $data_page, %eax      # base pointer (DO NOT TOUCH)
-        mov %eax, %ebx
-        mov %eax, %ecx
-        mov %eax, %edx
+    mov $data_page, %esi    # canonical base pointer
 
-    # ============================================================
-    # OR TESTS
-    # ============================================================
+# preload general regs with non-trivial values
+    mov $0xFFFFFFFF, %eax
+    mov $0xAAAAAAAA, %ebx
+    mov $0x12345678, %ecx
+    mov $0x0F0F0F0F, %edx
 
-    # --- imm to reg ---
-        or $0x12, %al
-        or $0x1234, %ax
-        or $0x12345678, %edi
+# ============================================================
+# IMM -> REG
+# ============================================================
 
-    # --- mem to reg (SAFE via scratch) ---
-        mov (%eax), %esi
-        or %esi, %edi
+    andb $0xF0, %al
+    andw $0x0FF0, %ax
+    andl $0x00FF00FF, %eax
 
-        mov 0x2(%eax), %si
-        or %si, %di
+# ============================================================
+# IMM -> MEM (SAFE)
+# ============================================================
 
-        mov 0x4(%eax), %esi
-        or %esi, %edi
+    mov %esi, %edi
+    andb $0x0F, (%edi)
 
-    # --- reg to mem ---
-        or %al, (%eax)
-        or %ax, 0x2(%eax)
-        or %edi, 0x4(%eax)
+    mov %esi, %edi
+    add $4, %edi
+    andw $0x00FF, (%edi)
 
-    # --- reg/reg ---
-        or %bl, %al
-        or %bx, %ax
-        or %ebx, %edi
+    mov %esi, %edi
+    add $8, %edi
+    andl $0x0000FFFF, (%edi)
 
-    # --- mem to reg (more coverage) ---
-        mov (%ecx), %esi
-        or %esi, %ebx
+# ============================================================
+# REG -> REG
+# ============================================================
 
-    # --- AH / AL mixing ---
-        or %ah, %al
-        or %al, %ah
+    and %ebx, %eax
+    and %ecx, %ebx
+    and %edx, %ecx
 
-        mov (%edx), %esi
-        or %ah, %bl
+# ============================================================
+# REG -> MEM (SAFE)
+# ============================================================
 
-        or %ah, (%edx)
-        or 0x1(%edx), %ah
-        or %ah, 0x1(%edx)
+    mov %esi, %edi
+    and %eax, (%edi)
 
-    # ============================================================
-    # AND TESTS
-    # ============================================================
+    mov %esi, %edi
+    add $4, %edi
+    and %ebx, (%edi)
 
-    # --- imm to reg ---
-        and $0xF0, %al
-        and $0x0FF0, %ax
-        and $0x00FF00FF, %edi
+    mov %esi, %edi
+    add $8, %edi
+    and %ecx, (%edi)
 
-    # --- mem to reg ---
-        mov (%eax), %esi
-        and %esi, %edi
+# ============================================================
+# MEM -> REG (SAFE)
+# ============================================================
 
-        mov 0x2(%eax), %si
-        and %si, %di
+    mov %esi, %edi
+    and (%edi), %eax
 
-        mov 0x4(%eax), %esi
-        and %esi, %edi
+    mov %esi, %edi
+    add $4, %edi
+    and (%edi), %ecx
 
-    # --- reg to mem ---
-        and %al, (%eax)
-        and %ax, 0x2(%eax)
-        and %edi, 0x4(%eax)
+    mov %esi, %edi
+    add $8, %edi
+    and (%edi), %edx
 
-    # --- reg/reg ---
-        and %cl, %al
-        and %cx, %ax
-        and %ecx, %edi
+# ============================================================
+# BYTE OPS (AL / AH / MEM8)
+# ============================================================
 
-    # --- AH / AL mixing ---
-        and %ah, %al
-        and %al, %ah
+    mov %esi, %edi
+    and (%edi), %al
 
-        mov (%edx), %esi
-        and %ah, %bl
+    mov %esi, %edi
+    add $1, %edi
+    and (%edi), %ah
 
-        and %ah, (%edx)
-        and 0x1(%edx), %ah
-        and %ah, 0x1(%edx)
+    mov %esi, %edi
+    and %al, (%edi)
 
-    # ============================================================
-    # NOT TESTS
-    # ============================================================
+    mov %esi, %edi
+    add $1, %edi
+    and %ah, (%edi)
 
-        not %al
-        not %ah
-        not %ax
-        notl %edi
+# reg ↔ reg (8-bit)
+    and %bl, %al
+    and %bh, %ah
+    and %al, %bl
+    and %ah, %bh
 
-        notl (%eax)
-        notl 0x2(%eax)
-        notl 0x4(%eax)
+# ============================================================
+# WORD OPS (16-bit)
+# ============================================================
 
-    # ============================================================
-    # SAFE AGU TEST (bounded inside page)
-    # ============================================================
+    and %bx, %ax
+    and %cx, %dx
 
-    # Build safe address: base + small offset
-        mov %eax, %esi
-        add $0x10, %esi        # still within page
-        or (%esi), %al
+    mov %esi, %edi
+    and %ax, (%edi)
 
-        mov %eax, %esi
-        add $0x20, %esi
-        and (%esi), %ah
+    mov %esi, %edi
+    and (%edi), %dx
 
-        mov %eax, %esi
-        add $0x30, %esi
-        or %al, (%esi)
+# ============================================================
+# DWORD OPS (32-bit)
+# ============================================================
 
-    # ============================================================
-    # CROSS BYTE STRESS
-    # ============================================================
+    and %eax, %ebx
+    and %ecx, %edx
 
-        or %ah, %bl
-        or %bh, %al
-        and %ah, %bl
-        and %bh, %al
+    mov %esi, %edi
+    and %eax, (%edi)
 
-        mov (%eax), %esi
-        or %bh, %bl
-        and %ch, %bl
+    mov %esi, %edi
+    and (%edi), %edx
 
-        or %bh, (%eax)
-        and %ch, (%eax)
+# ============================================================
+# SAFE "AGU-LIKE" VARIATION (NO FAULT POSSIBLE)
+# ============================================================
 
-    # ============================================================
-    # SAFE WRITEBACK
-    # ============================================================
+    mov %esi, %edi
+    add $0x10, %edi
+    and (%edi), %al
 
-        or %edi, (%eax)
-        and %edi, 0x4(%eax)
+    mov %esi, %edi
+    add $0x20, %edi
+    and %al, (%edi)
 
-        or %ax, 0x2(%eax)
-        and %al, 0x1(%eax)
+# ============================================================
+# EDGE CASES (AH / AL CROSS)
+# ============================================================
 
-    # ============================================================
-    # END
-    # ============================================================
+    and %ah, %al
+    and %al, %ah
 
-        hlt
+    mov %esi, %edi
+    and %ah, (%edi)
+
+    mov %esi, %edi
+    and (%edi), %al
+
+# ============================================================
+# DONE
+# ============================================================
+
+    hlt
 
 
-    # ============================================================
-    # SINGLE PAGE DATA (ALL WITHIN ONE PAGE)
-    # ============================================================
+# ============================================================
+# DATA (ONE PAGE ONLY: 0x2000–0x2FFF)
+# ============================================================
 
-    .org 0x2000
-    .data
+.org 0x2000
+.data
 
-    data_page:
-        .long 0x11111111
-        .long 0x22222222
-        .long 0x33333333
-        .long 0x44444444
-        .long 0x55555555
-        .long 0x66666666
-        .long 0x77777777
-        .long 0x88888888
+data_page:
+    .long 0x11111111
+    .long 0x22222222
+    .long 0x33333333
+    .long 0x44444444
+    .long 0x55555555
+    .long 0x66666666
+    .long 0x77777777
+    .long 0x88888888
 
-        .long 0xAAAAAAAA
-        .long 0xBBBBBBBB
-        .long 0xCCCCCCCC
-        .long 0xDDDDDDDD
+    .long 0xAAAAAAAA
+    .long 0xBBBBBBBB
+    .long 0xCCCCCCCC
+    .long 0xDDDDDDDD

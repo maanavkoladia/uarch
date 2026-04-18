@@ -85,6 +85,8 @@ module MEM (
         if(!rst)begin
             hit_buf_v <= '{default: '0};
             hit_buf_mio_v <= 0;
+            hit_buf <= '{default: '0};
+            hit_buf_mio <= '{default: '0};
         end
         else if (forward_valid) begin
             hit_buf_v <= '{default: '0};

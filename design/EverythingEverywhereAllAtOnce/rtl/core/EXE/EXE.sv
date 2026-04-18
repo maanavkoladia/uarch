@@ -50,7 +50,6 @@ module EXE (
     uint16_t                          bit_vec_1_next;
     uint64_t                          dr_next;
     uint64_t                          sr_next;
-    bool                              st_op_next;
 
     // --- Branch Resolution Outputs ---
     exe_br_resolution_outputs_t       branch_resolution_o;
@@ -227,7 +226,7 @@ module EXE (
     //==========================================================================
     wb_cs_t next_wb_cs;
     assign next_wb_cs = '{
-        ST_OP : st_op_next,
+        ST_OP : latches_i.wb_cs.ST_OP,
         WB_DR : latches_i.wb_cs.WB_DR,
         WB_SR : latches_i.wb_cs.WB_SR,
         WB_EAX: latches_i.wb_cs.WB_EAX

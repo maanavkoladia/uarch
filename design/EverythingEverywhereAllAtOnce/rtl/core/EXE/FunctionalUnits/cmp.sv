@@ -36,7 +36,8 @@ module cmp (
                 SF = al_sum[7];
                 CF = al_sum[8];
                 PF = ~^al_sum[7:0];
-                OF = (~(srA[7] ^ srB[7])) & (srA[7] ^ al_sum[7]);
+                OF = (~(srA[7] ^ low_sr_val[7])) & (srA[7] ^ al_sum[7]);
+                AF = srA[4] ^ low_sr_val[4] ^ al_sum[4];
             end
 //Regarldess of the dr data size from the op code, since we are comparing against EAX it will always be AL - AL/AH
             4'b0010: begin
@@ -44,7 +45,8 @@ module cmp (
                 SF = al_sum[7];
                 CF = al_sum[8];
                 PF = ~^al_sum[7:0];
-                OF = (~(srA[7] ^ srB[7])) & (srA[7] ^ al_sum[7]);
+                OF = (~(srA[7] ^ low_sr_val[7])) & (srA[7] ^ al_sum[7]);
+                AF =  srA[4] ^ low_sr_val[4] ^ al_sum[4];
             end
             4'b0011: begin // AX (16-bit)
                 ZF = (ax_sum[15:0] == 16'h0);
@@ -52,6 +54,7 @@ module cmp (
                 CF = ax_sum[16];
                 PF = ~^ax_sum[7:0];
                 OF = (~(srA[15] ^ srB[15])) & (srA[15] ^ ax_sum[15]);
+                AF = srA[4] ^ srB[4] ^ ax_sum[4];
             end
             4'b0111: begin // EAX (32-bit)
                 ZF = (eax_sum[31:0] == 32'h0);
@@ -59,6 +62,7 @@ module cmp (
                 CF = eax_sum[32];
                 PF = ~^eax_sum[7:0];
                 OF = (~(srA[31] ^ srB[31])) & (srA[31] ^ eax_sum[31]);
+                AF = srA[4] ^ srB[4] ^ eax_sum[4];
             end
             default: begin
                 ZF = 0; SF = 0; CF = 0; OF = 0; PF = 0;
