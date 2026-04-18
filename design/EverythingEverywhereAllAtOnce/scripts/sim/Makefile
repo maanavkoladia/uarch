@@ -15,7 +15,7 @@ ROOT_DIR  := $(abspath $(SIM_DIR)/../..)
 TEST_DIR  := $(ROOT_DIR)/tests/Stages/Harish_StageTesting/config
 
 # ── Inputs (override on command line) ──
-ASM       ?= $(TEST_DIR)/addOrNot.s
+ASM       ?= $(TEST_DIR)/OrNot.s
 TLB       ?= $(TEST_DIR)/TLB.conf.json
 CORE_REGS ?= $(TEST_DIR)/CoreRegs.conf.json
 
