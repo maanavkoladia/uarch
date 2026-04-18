@@ -29,7 +29,7 @@ module tb_stages();
 
 
     // // ================= CLOCK / RESET =================
-    // `CLK_INIT(Clk_PERIOD);
+    //`CLK_INIT(Clk_PERIOD);
     logic                                                     rst;
     // wire                   [   ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
     // wire                   [     DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
