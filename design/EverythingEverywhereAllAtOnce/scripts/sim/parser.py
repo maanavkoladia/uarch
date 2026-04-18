@@ -188,16 +188,20 @@ def assemble_and_disassemble(asm_path):
         with open(asm_path) as f:
             src = f.read()
 
+        # Extract .org addresses BEFORE modifying source
+        text_org, data_org = _extract_orgs(src)
+
         # gas doesn't support .code as section directive; replace with .text
-        # Also fix .org before .data - move it after .data directive
         processed = src.replace(".code", ".text")
-        # Move ".org <addr>\n .data" to ".data\n .org <addr>"
+        # Move ".org <addr>\n .data" to ".data" (strip the .org, linker handles it)
         import re as _re
         processed = _re.sub(
             r'\.org\s+(0x[0-9a-fA-F]+|\d+)\s*\n(\s*\.data)',
-            r'.data\n.org \1',
+            r'\2',
             processed
         )
+        # Strip all remaining .org directives — the linker script places sections
+        processed = _re.sub(r'^\s*\.org\s+(0x[0-9a-fA-F]+|\d+)\s*$', '', processed, flags=_re.MULTILINE)
 
         proc_path = os.path.join(tmpdir, "prog.s")
         with open(proc_path, 'w') as f:
@@ -208,20 +212,15 @@ def assemble_and_disassemble(asm_path):
         if r.returncode != 0:
             raise RuntimeError(f"Assembly failed:\n{r.stderr}")
 
-        # Link (use a simple linker script to place sections correctly)
-        # Extract .org addresses from source to build linker script
-        text_org, data_org = _extract_orgs(src)
-
+        # Link — place sections at their .org addresses so labels resolve correctly
         ld_script = os.path.join(tmpdir, "link.ld")
         with open(ld_script, 'w') as f:
-            # .org in gas sets location within the section, so we place
-            # .text at address 0 so that .org 0x1000 yields address 0x1000.
-            # Similarly for .data.
             f.write('OUTPUT_FORMAT("elf32-i386")\n'
                     'ENTRY(_start)\n'
                     'SECTIONS {\n'
-                    '    . = 0x0;\n'
+                    f'    . = 0x{text_org:X};\n'
                     '    .text : { *(.text) }\n'
+                    f'    . = 0x{data_org:X};\n'
                     '    .data : { *(.data) }\n'
                     '}\n')
 
@@ -250,11 +249,13 @@ def assemble_and_disassemble(asm_path):
 
 
 def _extract_orgs(src):
-    """Extract .org values for text and data sections from source."""
+    """Extract .org values for text and data sections from source.
+    Handles both '.org X / .data' (org before directive) and '.data / .org X' orderings."""
     text_org = 0x1000
     data_org = 0x56559000
     in_data = False
-    for line in src.split("\n"):
+    lines = src.split("\n")
+    for i, line in enumerate(lines):
         stripped = line.strip().lower()
         if stripped.startswith(".data"):
             in_data = True
@@ -265,7 +266,20 @@ def _extract_orgs(src):
             if in_data:
                 data_org = val
             else:
-                text_org = val
+                # Check if the next non-blank line is .data — if so, this org
+                # belongs to the data section, not the text section.
+                is_data_org = False
+                for j in range(i + 1, len(lines)):
+                    next_s = lines[j].strip().lower()
+                    if not next_s or next_s.startswith("#"):
+                        continue
+                    if next_s.startswith(".data"):
+                        is_data_org = True
+                    break
+                if is_data_org:
+                    data_org = val
+                else:
+                    text_org = val
     return text_org, data_org
 
 

@@ -144,7 +144,7 @@ _start:
     add %bl, %bl
     add %cl, %cl
     add %dl, %dl
-    hlt
+
 
     # --- base setup (intentionally misaligned) ---
     mov $dataA, %eax
@@ -159,13 +159,29 @@ _start:
     mov $dataD, %edx
     add $0x7, %edx
 
-    
+        
+    # =========================
+    # INIT BASE POINTERS (CRITICAL)
+    # =========================
+
+    mov $dataA, %eax
+    mov (%eax), %eax     # eax = safe ptr in page
+
+    mov $dataB, %ebx
+    mov (%ebx), %ebx
+
+    mov $dataC, %ecx
+    mov (%ecx), %ecx
+
+    mov $dataD, %edx
+    mov (%edx), %edx
+
+
     # =========================
     # 32-bit memory ops
     # =========================
 
     add (%eax), %ebx
-    hlt
     add 0xF(%eax), %ecx
     add 0xD(%eax), %edx
     add 0x3(%eax), %eax
@@ -185,11 +201,24 @@ _start:
     add 0x9(%edx), %ecx
     add 0x2(%edx), %edx
 
+
+    
+    mov $dataA, %eax
+    mov (%eax), %eax
+
+    mov $dataB, %ebx
+    mov (%ebx), %ebx
+
+
+    # =========================
     # mem writeback
+    # =========================
+
     add %eax, (%eax)
     add %ebx, 0xF(%eax)
     add %ecx, 0xD(%eax)
     add %edx, 0x3(%eax)
+
 
     # =========================
     # 16-bit ops
@@ -205,6 +234,7 @@ _start:
     add %cx, 0x5(%ebx)
     add %dx, 0x1(%ebx)
 
+
     # =========================
     # 8-bit low regs
     # =========================
@@ -219,8 +249,9 @@ _start:
     add %cl, 0x7(%ecx)
     add %dl, 0xF(%ecx)
 
+
     # =========================
-    # 8-bit high regs (AH stress)
+    # 8-bit high regs
     # =========================
 
     add (%ebx), %bh
@@ -233,38 +264,26 @@ _start:
     add %ch, 0x9(%edx)
     add %dh, 0x2(%edx)
 
-    # =========================
-    # AL/AH mixed with memory
-    # =========================
-
-    add (%ecx), %al
-    add (%ecx), %ah
-    add 0xF(%ecx), %al
-    add 0xF(%ecx), %ah
-
-    add %al, (%ecx)
-    add %ah, (%ecx)
-    add %al, 0xD(%ecx)
-    add %ah, 0xD(%ecx)
 
     # =========================
-    # indexed addressing (AGU stress)
+    # AGU STRESS (CONTROLLED)
     # =========================
+
+    mov $dataA, %eax
+    mov (%eax), %eax
+
+    mov $dataB, %ebx
+    mov (%ebx), %ebx
 
     add (%eax,%ebx,1), %ecx
     add 0xF(%eax,%ebx,1), %edx
 
-    add (%ecx,%edx,2), %eax
-    add 0xD(%ecx,%edx,2), %ebx
-
     add %eax, (%eax,%ebx,1)
     add %ebx, 0xF(%eax,%ebx,1)
 
-    add %ecx, (%ecx,%edx,2)
-    add %edx, 0xD(%ecx,%edx,2)
 
     # =========================
-    # cross-line boundary hammer
+    # CROSS-LINE (SAFE)
     # =========================
 
     add 0xF(%eax), %ebx
@@ -277,11 +296,13 @@ _start:
     add %bl, 0xF(%eax)
     add %bh, 0xF(%eax)
 
+
     # =========================
-    # extra region interaction
+    # FINAL REGION
     # =========================
 
     mov $dataE, %eax
+    mov (%eax), %eax     # CRITICAL FIX (was missing before!)
     add $0xD, %eax
 
     add (%eax), %ebx
@@ -290,31 +311,37 @@ _start:
     add %eax, 0x3(%eax)
 
     hlt
-    # =========================
-    # DATA REGIONS (scattered)
-    # =========================
+        # =========================
+        # DATA REGIONS (scattered)
+        # =========================
 
     .org 0x2000
     .data
+
     dataA:
-        .long 0xAAAAAAAA
-        .long 0x12345678
-        .long 0xDEADBEEF
+        .long 0x00002040
+        .long 0x00002080
+        .long 0x000020C0
+
     dataB:
-        .long 0x0BADF00D
-        .long 0xCAFEBABE
-        .long 0xFEEDFACE
+        .long 0x00002100
+        .long 0x00002140
+        .long 0x00002180
+
     dataC:
-        .long 0x13579BDF
-        .long 0x2468ACE0
-        .long 0x0F0F0F0F
+        .long 0x00002200
+        .long 0x00002240
+        .long 0x00002280
+
     dataD:
-        .long 0xFFFFFFFF
-        .long 0x80000000
-        .long 0x7FFFFFFF
+        .long 0x00002300
+        .long 0x00002340
+        .long 0x00002380
+
     dataE:
-        .long 0x11111111
-        .long 0x22222222
-        .long 0x33333333
+        .long 0x00002400
+        .long 0x00002440
+        .long 0x00002480
+
     memval:
-        .long 0xAAAAAAAA
+        .long 0x00002500

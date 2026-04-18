@@ -126,6 +126,47 @@ class CPU:
         val = self._read_operand(src_op, size_bytes)
         self._write_operand(dst_op, val, size_bytes)
 
+    def exec_and(self, inst):
+        """AND src, dst  (AT&T: src is first, dst is second)"""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        src_val = self._read_operand(src_op, size_bytes) & mask
+        dst_val = self._read_operand(dst_op, size_bytes) & mask
+
+        result = src_val & dst_val
+        self.flags.update_logic(result, bits)
+        self._write_operand(dst_op, result & mask, size_bytes)
+
+    def exec_or(self, inst):
+        """OR src, dst  (AT&T: src is first, dst is second)"""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        src_val = self._read_operand(src_op, size_bytes) & mask
+        dst_val = self._read_operand(dst_op, size_bytes) & mask
+
+        result = src_val | dst_val
+        self.flags.update_logic(result, bits)
+        self._write_operand(dst_op, result & mask, size_bytes)
+
+    def exec_not(self, inst):
+        """NOT dst  (single operand — bitwise complement, no flags affected)"""
+        dst_op = inst.operands[0]
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        val = self._read_operand(dst_op, size_bytes)
+        result = (~val) & mask
+        self._write_operand(dst_op, result, size_bytes)
+
     def exec_movs(self, inst):
         """MOVS - move byte/word/dword from DS:ESI to ES:EDI."""
         suffix_map = {'b': 1, 'w': 2, 'l': 4}
@@ -221,6 +262,9 @@ class CPU:
             "movq": self.exec_mov,
             "movs": self.exec_movs,
             "rep_movs": self.exec_rep_movs,
+            "and": self.exec_and,
+            "or": self.exec_or,
+            "not": self.exec_not,
             "hlt": self.exec_hlt,
             "jmp": self.exec_jmp,
             "jnbe": lambda inst: self.exec_jcc(inst, lambda: self.flags.get_cf() == 0 and self.flags.get_zf() == 0),

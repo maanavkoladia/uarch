@@ -71,7 +71,7 @@ module alu_input_sel(
             SEGMENT_NEIP:   srB = {NEIP, dr_data}; 
             SEGMENT_EIP:    srB = {EIP, dr_data}; //not sure when this needs to be used
             EAX_REG:        srB  = {32'd0, EAX}; //send forward EAX
-            CMPXCHG_SEL:    srB = {sr_data, dr_data}; //rm32 r32 on cmpxchg 
+            CMPXCHG_SEL:    srB = {sr_data, EAX}; //rm32 r32 on cmpxchg 
             IRETD_SEL:      srB = res_buf_out[95:32];
             FLAGS:          srB = {32'd0, flags};
             default:        srB = '0;

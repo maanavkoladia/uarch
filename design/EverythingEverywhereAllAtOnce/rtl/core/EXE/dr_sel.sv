@@ -45,6 +45,7 @@ module dr_sel (
             CMPXCHG:  dr_o = cmpxchg_dr_i;
             FAR_CALL: dr_o = far_call_dr_i;
             MOV:      dr_o = mov_dr_i;
+            CMOVC:    dr_o = mov_dr_i; //part of mov unit
             NOT:      dr_o = not_dr_i;
             OR:       dr_o = or_dr_i;
             PACKSSDW: dr_o = packssdw_dr_i;

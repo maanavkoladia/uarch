@@ -54,6 +54,21 @@ class Flags:
         # AF: carry from bit 3 to 4
         self._set_bit(AF, ((a & 0xF) + (b & 0xF)) > 0xF)
 
+    def update_logic(self, result, bits):
+        """Update flags after a logical operation (AND, OR, XOR, TEST).
+        CF and OF are cleared. SF, ZF, PF are set. AF is undefined (cleared here)."""
+        mask = (1 << bits) - 1
+        res_masked = result & mask
+        sign_bit = bits - 1
+
+        self._set_bit(CF, 0)
+        self._set_bit(OF, 0)
+        self._set_bit(ZF, res_masked == 0)
+        self._set_bit(SF, (res_masked >> sign_bit) & 1)
+        low_byte = res_masked & 0xFF
+        self._set_bit(PF, (bin(low_byte).count('1') % 2) == 0)
+        self._set_bit(AF, 0)
+
     def dump(self):
         return {
             "CF": self.get_cf(), "PF": self.get_pf(), "AF": self.get_af(),

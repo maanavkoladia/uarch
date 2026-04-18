@@ -399,13 +399,6 @@ module EXE (
     // CONTROL STORE CHANGE LOGIC
     //==========================================================================
 
-    cs_change_logic u_cs_change_logic (
-        .op_type     (op_type),
-        .curr_cf_flag(flags_reg[CF_IDX]),
-        .cs_st_op    (latches_i.wb_cs.ST_OP),
-        .st_op_o     (st_op_next)
-    );
-
 
     //==========================================================================
     // FLAGS REGISTER & FLAG OUTPUTS
@@ -629,9 +622,9 @@ module EXE (
 
     // --- CMPXCHG: Compare and Exchange ---
     cmpxchg_op u_cmpxchg_op (
-        .EAX(srA),  //srA <- EAX
-        .rm(srB[31:0]),  //srB <- CMPXCHG
-        .r(srB[63:32]),
+        .EAX(srB[31:0]),  //srB <- CMPXCHG
+        .rm(srA),  //srA <- Buffer or DR
+        .r(srB[63:32]), //srB <- CMPXCHG
         .data_size(data_size),
         .sr_data_size_vec(sr_data_size_vec),
         .dr_o(cmpxchg_dr_o),
@@ -723,6 +716,8 @@ module EXE (
         .srA      (srA),
         .srB      (srB),
         .data_size(data_size),
+        .op_type  (op_type),
+        .curr_cf_flag(flags_reg[CF_IDX]),
         .res_buf_o(mov_res_buf_o),
         .dr_o     (mov_dr_o)
     );
