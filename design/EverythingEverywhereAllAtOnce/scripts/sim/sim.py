@@ -175,6 +175,13 @@ def _print_changed(before, after):
     for k in ["eax", "ebx", "ecx", "edx", "esp", "ebp", "esi", "edi"]:
         if before.get(k) != after.get(k):
             print(f"    {k}: 0x{before[k]:08X} -> 0x{after[k]:08X}")
+    for k in ["cs", "ds", "ss", "es", "fs", "gs"]:
+        if before.get(k) != after.get(k):
+            print(f"    {k}: 0x{before.get(k, 0):04X} -> 0x{after.get(k, 0):04X}")
+    for i in range(8):
+        k = f"mm{i}"
+        if before.get(k) != after.get(k):
+            print(f"    {k}: 0x{before.get(k, 0):016X} -> 0x{after.get(k, 0):016X}")
     bf = before.get("flags", {})
     af = after.get("flags", {})
     for f in ["CF", "ZF", "SF", "OF", "PF", "AF"]:

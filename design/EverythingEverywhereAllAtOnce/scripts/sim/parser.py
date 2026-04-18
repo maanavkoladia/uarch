@@ -19,12 +19,13 @@ def _run(cmd):
 
 class Instruction:
     """Parsed instruction representation."""
-    def __init__(self, addr, size, mnemonic, operands, raw=""):
+    def __init__(self, addr, size, mnemonic, operands, raw="", size_suffix=None):
         self.addr = addr              # virtual address of this instruction
         self.size = size              # byte size of encoded instruction
         self.mnemonic = mnemonic      # e.g. "add", "jmp", "hlt"
         self.operands = operands      # list of Operand
         self.raw = raw
+        self.size_suffix = size_suffix  # 'b', 'w', 'l', or None
 
     def __repr__(self):
         ops = ", ".join(str(o) for o in self.operands)
@@ -92,14 +93,32 @@ _MEM_RE = re.compile(
 )
 
 
-def _parse_operand(tok):
-    """Parse a single operand token from objdump output."""
+def _parse_operand(tok, is_branch=False):
+    """Parse a single operand token from objdump output.
+    is_branch: if True, bare hex numbers are branch targets (imm);
+               otherwise they are direct memory addresses (mem)."""
     tok = tok.strip()
 
     # Immediate
     if tok.startswith("$"):
         val_str = tok[1:]
         return Operand('imm', imm_val=_parse_int(val_str))
+
+    # Segment-prefixed memory: %ds:disp(base,index,scale) or %es:(%edi)
+    if tok.startswith("%") and ":" in tok:
+        colon_idx = tok.index(":")
+        seg = tok[1:colon_idx].lower()
+        rest = tok[colon_idx+1:]
+        if seg in ('cs', 'ds', 'ss', 'es', 'fs', 'gs'):
+            m = _MEM_RE.match(rest)
+            if m:
+                disp_s = m.group(2)
+                base = m.group(3)
+                index = m.group(4)
+                scale = int(m.group(5)) if m.group(5) else 1
+                disp = _parse_int(disp_s) if disp_s else 0
+                return Operand('mem', base_reg=base, index_reg=index, scale=scale,
+                               disp=disp, seg_prefix=seg)
 
     # Register
     if tok.startswith("%"):
@@ -124,10 +143,13 @@ def _parse_operand(tok):
         return Operand('mem', base_reg=base, index_reg=index, scale=scale,
                        disp=disp, seg_prefix=seg)
 
-    # Plain hex number (jump target from objdump, e.g. "0x1050")
+    # Plain hex number: branch target (imm) or direct memory address (mem)
     try:
         val = _parse_int(tok)
-        return Operand('imm', imm_val=val)
+        if is_branch:
+            return Operand('imm', imm_val=val)
+        else:
+            return Operand('mem', disp=val)
     except ValueError:
         pass
 
@@ -288,13 +310,34 @@ def parse_objdump(objdump_text, objdump_raw):
         parts = rest.split(None, 1)
         mnemonic = parts[0].lower()
 
+        # Handle REP/REPE/REPNE prefix
+        rep_prefix = None
+        if mnemonic in ('rep', 'repe', 'repz', 'repne', 'repnz'):
+            rep_prefix = mnemonic
+            if len(parts) > 1:
+                sub_rest = parts[1].strip()
+                sub_parts = sub_rest.split(None, 1)
+                mnemonic = sub_parts[0].lower()
+                if len(sub_parts) > 1:
+                    parts = [mnemonic, sub_parts[1]]
+                else:
+                    parts = [mnemonic]
+            else:
+                parts = [mnemonic]
+
         # Strip size suffixes that objdump sometimes adds (addl -> add, movl -> mov)
         # But keep jmp, jne etc as-is
+        size_suffix = None
         clean_mnemonic = mnemonic
         if mnemonic not in ("hlt", "nop") and not mnemonic.startswith("j") and not mnemonic.startswith("call") and not mnemonic.startswith("ret"):
             # Strip trailing b/w/l suffix if present
             if len(mnemonic) > 2 and mnemonic[-1] in ('b', 'w', 'l') and mnemonic[-2:] not in ('al',):
+                size_suffix = mnemonic[-1]
                 clean_mnemonic = mnemonic[:-1]
+
+        # Re-add rep prefix
+        if rep_prefix:
+            clean_mnemonic = "rep_" + clean_mnemonic
 
         operands = []
         if len(parts) > 1:
@@ -307,10 +350,11 @@ def parse_objdump(objdump_text, objdump_raw):
                 op_str = op_str[:op_str.index("<")].strip().rstrip(",").strip()
 
             op_tokens = _split_operands(op_str)
-            operands = [_parse_operand(o) for o in op_tokens if o]
+            is_branch = mnemonic.startswith("j") or mnemonic.startswith("call") or mnemonic.startswith("loop")
+            operands = [_parse_operand(o, is_branch=is_branch) for o in op_tokens if o]
 
         size = size_map.get(addr, 2)  # fallback to 2 bytes
-        instructions.append(Instruction(addr, size, clean_mnemonic, operands, rest))
+        instructions.append(Instruction(addr, size, clean_mnemonic, operands, rest, size_suffix=size_suffix))
 
     return instructions
 

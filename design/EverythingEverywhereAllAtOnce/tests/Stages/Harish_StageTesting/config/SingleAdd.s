@@ -19,7 +19,7 @@ _start:
     add $0x1, %eax
     add $0x7FFFFFFF, %eax
     add $0x80000000, %eax
-
+  
     # --- imm8 sign-extended to 32 ---
     add $0x7F, %eax
     add $0x80, %eax
@@ -144,6 +144,7 @@ _start:
     add %bl, %bl
     add %cl, %cl
     add %dl, %dl
+    hlt
 
     # --- base setup (intentionally misaligned) ---
     mov $dataA, %eax
