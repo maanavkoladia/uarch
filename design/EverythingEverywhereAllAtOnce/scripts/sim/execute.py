@@ -43,11 +43,13 @@ class CPU:
             addr += self.regs.get(op.index_reg) * op.scale
         return addr & 0xFFFFFFFF
 
-    def _operand_size(self, operands):
-        """Infer operand size in bytes from the register operand."""
+    def _operand_size(self, operands, size_suffix=None):
+        """Infer operand size in bytes from the register operand or size suffix."""
         for op in operands:
             if op.typ == 'reg':
                 return self.regs.reg_size(op.reg_name) // 8
+        if size_suffix:
+            return {'b': 1, 'w': 2, 'l': 4, 'q': 8}.get(size_suffix, 4)
         # Default to 32-bit for memory-only
         return 4
 
@@ -117,12 +119,52 @@ class CPU:
         self._write_operand(dst_op, result & mask, size_bytes)
 
     def exec_mov(self, inst):
-        """MOV src, dst"""
+        """MOV src, dst  (handles all MOV variants: reg/mem/imm, segment regs, MMX via movq)"""
         src_op = inst.operands[0]
         dst_op = inst.operands[1]
-        size_bytes = self._operand_size(inst.operands)
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
         val = self._read_operand(src_op, size_bytes)
         self._write_operand(dst_op, val, size_bytes)
+
+    def exec_movs(self, inst):
+        """MOVS - move byte/word/dword from DS:ESI to ES:EDI."""
+        suffix_map = {'b': 1, 'w': 2, 'l': 4}
+        size_bytes = suffix_map.get(getattr(inst, 'size_suffix', None), 4)
+        src_base = self.regs.seg_bases.get('ds', 0)
+        dst_base = self.regs.seg_bases.get('es', 0)
+        src_addr = self.regs.get('esi')
+        dst_addr = self.regs.get('edi')
+        val, err = self.mem.read(src_addr, size_bytes, src_base)
+        if err:
+            raise CPUException(f"MOVS read DS:ESI error: {err}")
+        err = self.mem.write(dst_addr, size_bytes, val, dst_base)
+        if err:
+            raise CPUException(f"MOVS write ES:EDI error: {err}")
+        delta = -size_bytes if self.flags.get_df() else size_bytes
+        self.regs.set('esi', (self.regs.get('esi') + delta) & 0xFFFFFFFF)
+        self.regs.set('edi', (self.regs.get('edi') + delta) & 0xFFFFFFFF)
+
+    def exec_rep_movs(self, inst):
+        """REP MOVS - repeat move string ECX times."""
+        suffix_map = {'b': 1, 'w': 2, 'l': 4}
+        size_bytes = suffix_map.get(getattr(inst, 'size_suffix', None), 4)
+        count = self.regs.get('ecx')
+        src_base = self.regs.seg_bases.get('ds', 0)
+        dst_base = self.regs.seg_bases.get('es', 0)
+        df = self.flags.get_df()
+        delta = -size_bytes if df else size_bytes
+        for _ in range(count):
+            src_addr = self.regs.get('esi')
+            dst_addr = self.regs.get('edi')
+            val, err = self.mem.read(src_addr, size_bytes, src_base)
+            if err:
+                raise CPUException(f"REP MOVS read DS:ESI error: {err}")
+            err = self.mem.write(dst_addr, size_bytes, val, dst_base)
+            if err:
+                raise CPUException(f"REP MOVS write ES:EDI error: {err}")
+            self.regs.set('esi', (self.regs.get('esi') + delta) & 0xFFFFFFFF)
+            self.regs.set('edi', (self.regs.get('edi') + delta) & 0xFFFFFFFF)
+        self.regs.set('ecx', 0)
 
     def exec_hlt(self, inst):
         """HLT - halt processor."""
@@ -176,6 +218,9 @@ class CPU:
         self.DISPATCH = {
             "add": self.exec_add,
             "mov": self.exec_mov,
+            "movq": self.exec_mov,
+            "movs": self.exec_movs,
+            "rep_movs": self.exec_rep_movs,
             "hlt": self.exec_hlt,
             "jmp": self.exec_jmp,
             "jnbe": lambda inst: self.exec_jcc(inst, lambda: self.flags.get_cf() == 0 and self.flags.get_zf() == 0),

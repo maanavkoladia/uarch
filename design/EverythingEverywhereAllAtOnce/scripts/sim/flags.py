@@ -6,6 +6,7 @@ AF = 4   # Auxiliary carry
 ZF = 6   # Zero
 SF = 7   # Sign
 OF = 11  # Overflow
+DF = 10  # Direction
 
 class Flags:
     def __init__(self):
@@ -23,6 +24,7 @@ class Flags:
     def get_zf(self): return (self.eflags >> ZF) & 1
     def get_sf(self): return (self.eflags >> SF) & 1
     def get_of(self): return (self.eflags >> OF) & 1
+    def get_df(self): return (self.eflags >> DF) & 1
 
     def update_add(self, a, b, result, bits):
         """Update flags after an ADD operation."""

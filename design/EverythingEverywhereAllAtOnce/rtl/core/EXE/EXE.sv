@@ -425,13 +425,15 @@ module EXE (
         if (!rst) begin
             flags_reg <= 32'h0;
         end else begin
-            flags_reg[CF_IDX] <= cf_flag_o;
-            flags_reg[PF_IDX] <= pf_flag_o;
-            flags_reg[AF_IDX] <= af_flag_o;
-            flags_reg[ZF_IDX] <= zf_flag_o;
-            flags_reg[SF_IDX] <= sf_flag_o;
-            flags_reg[DF_IDX] <= df_flag_o;
-            flags_reg[OF_IDX] <= of_flag_o;
+            if(latches_i.valid)begin
+                flags_reg[CF_IDX] <= cf_flag_o;
+                flags_reg[PF_IDX] <= pf_flag_o;
+                flags_reg[AF_IDX] <= af_flag_o;
+                flags_reg[ZF_IDX] <= zf_flag_o;
+                flags_reg[SF_IDX] <= sf_flag_o;
+                flags_reg[DF_IDX] <= df_flag_o;
+                flags_reg[OF_IDX] <= of_flag_o;
+            end
         end
     end
 
