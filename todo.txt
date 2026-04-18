@@ -5,8 +5,6 @@ OPCODE CHECK
 - ADC
 - BSF
 - CALL
-- CLD
-- STD
 -IRETD
 - JMP
 - FAR JMP
@@ -22,8 +20,7 @@ OPCODE CHECK
 - RET
 - SAL 
 - SAR 
-- SBB 
-- STD 
+- SBB  
 -MOVQ
 - MOVS
 
