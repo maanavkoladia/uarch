@@ -20,11 +20,19 @@ output regfile_output_t outputs
 
     uint64_t REGISTERS[NUM_REGS];
 
+    bool wb_wr_to_both;
+    assign wb_wr_to_both = WB_DR0_we && WB_DR1_we && (WB_DR0_ID == WB_DR1_ID);
+
     always_ff @(posedge clk) begin
         if(!rst) REGISTERS <= '{default: '0};
         else begin
-            if (WB_DR0_we) REGISTERS[WB_DR0_ID] <= WB_DR0_data;
-            if (WB_DR1_we) REGISTERS[WB_DR1_ID] <= WB_DR1_data;
+            if(wb_wr_to_both) begin
+                REGISTERS[WB_DR0_ID] <= WB_DR0_data;
+            end
+            else begin
+                if (WB_DR0_we) REGISTERS[WB_DR0_ID] <= WB_DR0_data;
+                if (WB_DR1_we) REGISTERS[WB_DR1_ID] <= WB_DR1_data;
+            end
         end
     end
 

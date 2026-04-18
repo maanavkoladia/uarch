@@ -19,43 +19,36 @@ _start:
 
     # hlt
 
-    # ----------------------------
-    # CASE 1: CF = 1 → CMOVC should move
-    # ----------------------------
-    movl $0xFFFFFFFF, %eax      # large value
-    movl $0x1, %ebx
+    # # ----------------------------
+    # # CASE 1: CF = 1 → CMOVC should move
+    # # ----------------------------
+    # movl $0xFFFFFFFF, %eax      # large value
+    # movl $0x1, %ebx
 
-    addl %ebx, %eax             # 0xFFFFFFFF + 1 → 0x00000000, CF = 1
+    # addl %ebx, %eax             # 0xFFFFFFFF + 1 → 0x00000000, CF = 1
 
-    movl $0x12345678, %ecx      # source
-    movl $0x0, %edx             # destination (initially 0)
+    # movl $0x12345678, %ecx      # source
+    # movl $0x0, %edx             # destination (initially 0)
 
-    cmovcl %ecx, %edx           # EXPECT: EDX = 0x12345678
+    # cmovcl %ecx, %edx           # EXPECT: EDX = 0x12345678
 
-    # ----------------------------
-    # CASE 2: CF = 0 → CMOVC should NOT move
-    # ----------------------------
-    movl $0x1, %eax
-    movl $0x1, %ebx
+    # # ----------------------------
+    # # CASE 2: CF = 0 → CMOVC should NOT move
+    # # ----------------------------
+    # movl $0x1, %eax
+    # movl $0x1, %ebx
 
-    addl %ebx, %eax             # 1 + 1 = 2, CF = 0
+    # addl %ebx, %eax             # 1 + 1 = 2, CF = 0
 
-    movl $0xAAAAAAAA, %ecx      # source
-    movl $0x0, %edx             # reset destination
+    # movl $0xAAAAAAAA, %ecx      # source
+    # movl $0x0, %edx             # reset destination
 
-    cmovcl %ecx, %edx           # EXPECT: EDX stays 0
+    # cmovcl %ecx, %edx           # EXPECT: EDX stays 0
 
-    # ----------------------------
-    # CASE 3: CF = 1 again (sanity repeat)
-    # ----------------------------
-    movl $0xFFFFFFFF, %eax
-    movl $0x2, %ebx
-
-    addl %ebx, %eax             # overflow → CF = 1
-
-    movl $0xDEADBEEF, %ecx
-    movl $0x0, %edx
-
-    cmovcl %ecx, %edx           # EXPECT: EDX = 0xDEADBEEF
+    # # ----------------------------
+    # # CASE 3: CF = 1 again (sanity repeat)
+    # # ----------------------------
+    cld
+    std
 
     hlt

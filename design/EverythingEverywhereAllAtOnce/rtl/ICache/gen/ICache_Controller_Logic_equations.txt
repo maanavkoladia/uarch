@@ -12,7 +12,7 @@ LD_IC_SWAP_BUF_o = (!S_0 & !S_1 & !S_2 & IC_miss_i & en_i)
 
 RD_I_VC_SWAP_BUF_o = (S_0 & !S_1 & S_2)
 
-busy_o = (S_0 & !S_2) | (!S_1 & S_2) | (S_1 & !S_2)
+busy_o = (S_1 & !S_2) | (S_0 & !S_1) | (!S_1 & S_2)
 
 MakeReq_o = (S_0 & !S_1 & !S_2 & !mem_valid_i)
 
