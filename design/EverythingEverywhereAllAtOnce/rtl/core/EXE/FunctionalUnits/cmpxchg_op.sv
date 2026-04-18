@@ -54,12 +54,12 @@ module cmpxchg_op (
     //AH and AL can both  be swapped on 8 bit size 
     assign next_dr_o[7:0] = data_size[0] ? r_low : rm[7:0];
     assign next_dr_o[15:8] = data_size[1] ? r_upper : rm[15:8];
-    assign next_dr_o[31:16] = data_size[2] ? r[31:15] : rm[31:15];
+    assign next_dr_o[31:16] = data_size[2] ? r[31:16] : rm[31:16];
 
     assign EAX_o = ~cmp_ZF ? next_EAX : EAX;
     assign dr_o = cmp_ZF ? next_dr_o : rm;
     assign res_buf = cmp_ZF ? next_dr_o : rm;
-   
+
 
     assign ZF = cmp_ZF;
     assign SF = cmp_SF;
