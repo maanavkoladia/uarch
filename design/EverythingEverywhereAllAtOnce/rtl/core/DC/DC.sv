@@ -73,12 +73,12 @@ module DC (
     assign dep_stall = in_flight_stall | stq_stall;
 
     bool ld_exception, st_exception, rr_exception;
-    
+
     assign ld_exception = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP) && latches_i.cs.LD_OP;
     assign st_exception = (st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP) && latches_i.cs.ST_OP;
     assign rr_exception = latches_i.rr_gp;
     assign exp_stall = (ld_exception | st_exception | rr_exception) & latches_i.valid;
-                       
+
 
     assign dc_stall = dep_stall | arb_stall | exp_stall;
 
@@ -168,6 +168,7 @@ module DC (
         .ST_OP(latches_i.cs.ST_OP),
         .LD_OP(latches_i.cs.LD_OP),
         .wb_sr(latches_i.wb_cs.WB_SR),
+        .wb_eax(latches_i.wb_cs.WB_EAX),
         .shift_sr_up(shift_sr_up),
         .shift_sr_down(shift_sr_down),
         .data_size_vec_o(data_size_vec),

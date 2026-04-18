@@ -248,6 +248,174 @@ class CPU:
             return True
         return False
 
+    def exec_aaa(self, inst):
+        """AAA - ASCII adjust AL after addition."""
+        al = self.regs.get('al')
+        af = self.flags.get_af()
+        if (al & 0x0F) > 9 or af == 1:
+            ax = self.regs.get('ax')
+            ax = (ax + 0x106) & 0xFFFF
+            self.regs.set('ax', ax)
+            self.flags._set_bit(4, 1)  # AF
+            self.flags._set_bit(0, 1)  # CF
+        else:
+            self.flags._set_bit(4, 0)  # AF
+            self.flags._set_bit(0, 0)  # CF
+        # AL = AL & 0x0F
+        al = self.regs.get('al') & 0x0F
+        self.regs.set('al', al)
+
+    def exec_adc(self, inst):
+        """ADC src, dst  (AT&T: src is first, dst is second) — add with carry."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        src_val = self._read_operand(src_op, size_bytes) & mask
+        dst_val = self._read_operand(dst_op, size_bytes) & mask
+        carry = self.flags.get_cf()
+
+        result = src_val + dst_val + carry
+        self.flags.update_add(src_val, dst_val, result, bits)
+        self._write_operand(dst_op, result & mask, size_bytes)
+
+    def exec_sbb(self, inst):
+        """SBB src, dst  (AT&T: src is first, dst is second) — subtract with borrow."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        src_val = self._read_operand(src_op, size_bytes) & mask
+        dst_val = self._read_operand(dst_op, size_bytes) & mask
+        borrow = self.flags.get_cf()
+
+        result = dst_val - src_val - borrow
+        self.flags.update_sub(dst_val, src_val, result, bits)
+        self._write_operand(dst_op, result & mask, size_bytes)
+
+    def exec_bsf(self, inst):
+        """BSF src, dst  (AT&T: src is first, dst is second) — bit scan forward."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        src_val = self._read_operand(src_op, size_bytes) & mask
+
+        if src_val == 0:
+            self.flags._set_bit(6, 1)  # ZF = 1
+            # dst is undefined; leave it unchanged
+        else:
+            self.flags._set_bit(6, 0)  # ZF = 0
+            bit_idx = 0
+            while (src_val >> bit_idx) & 1 == 0:
+                bit_idx += 1
+            self._write_operand(dst_op, bit_idx, size_bytes)
+
+    def exec_sal(self, inst):
+        """SAL/SHL dst, count  (AT&T: count is first, dst is second; or implicit 1)"""
+        if len(inst.operands) == 1:
+            dst_op = inst.operands[0]
+            count = 1
+        else:
+            count_op = inst.operands[0]
+            dst_op = inst.operands[1]
+            count = self._read_operand(count_op, 1) & 0x1F  # x86 masks to 5 bits
+
+        size_bytes = self._operand_size([dst_op], getattr(inst, 'size_suffix', None))
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        original = self._read_operand(dst_op, size_bytes) & mask
+
+        if count == 0:
+            return  # no operation, no flags changed
+
+        result = (original << count) & mask
+        self.flags.update_sal(original, result, count, bits)
+        self._write_operand(dst_op, result, size_bytes)
+
+    def exec_sar(self, inst):
+        """SAR dst, count  (AT&T: count is first, dst is second; or implicit 1)"""
+        if len(inst.operands) == 1:
+            dst_op = inst.operands[0]
+            count = 1
+        else:
+            count_op = inst.operands[0]
+            dst_op = inst.operands[1]
+            count = self._read_operand(count_op, 1) & 0x1F  # x86 masks to 5 bits
+
+        size_bytes = self._operand_size([dst_op], getattr(inst, 'size_suffix', None))
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        original = self._read_operand(dst_op, size_bytes) & mask
+
+        if count == 0:
+            return  # no operation, no flags changed
+
+        # Arithmetic right shift: sign-extend to Python int, shift, mask back
+        signed_val = original
+        if original & (1 << (bits - 1)):
+            signed_val = original - (1 << bits)
+        result = (signed_val >> count) & mask
+
+        self.flags.update_sar(original, result, count, bits)
+        self._write_operand(dst_op, result, size_bytes)
+
+    def exec_xchg(self, inst):
+        """XCHG op1, op2  (AT&T order) — exchange values."""
+        op1 = inst.operands[0]
+        op2 = inst.operands[1]
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
+
+        val1 = self._read_operand(op1, size_bytes)
+        val2 = self._read_operand(op2, size_bytes)
+        self._write_operand(op1, val2, size_bytes)
+        self._write_operand(op2, val1, size_bytes)
+
+    def exec_cmovc(self, inst):
+        """CMOVC src, dst  (AT&T: src first, dst second) — move if CF=1."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
+
+        if self.flags.get_cf() == 1:
+            val = self._read_operand(src_op, size_bytes)
+            self._write_operand(dst_op, val, size_bytes)
+
+    def exec_cmpxchg(self, inst):
+        """CMPXCHG r/m, r  (AT&T: r is first, r/m is second).
+        Compare accumulator with dst. If equal, dst = src and ZF=1.
+        Else, ZF=0 and accumulator = dst."""
+        src_op = inst.operands[0]  # register operand (r8/r16/r32)
+        dst_op = inst.operands[1]  # r/m operand
+        size_bytes = self._operand_size(inst.operands, getattr(inst, 'size_suffix', None))
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        # Determine accumulator based on size
+        acc_name = {1: 'al', 2: 'ax', 4: 'eax'}[size_bytes]
+        acc_val = self.regs.get(acc_name) & mask
+        dst_val = self._read_operand(dst_op, size_bytes) & mask
+        src_val = self._read_operand(src_op, size_bytes) & mask
+
+        # Compare accumulator with dst (sets flags like SUB)
+        cmp_result = acc_val - dst_val
+        self.flags.update_sub(acc_val, dst_val, cmp_result, bits)
+
+        if acc_val == dst_val:
+            # Equal: dst = src, ZF already set to 1 by update_sub
+            self._write_operand(dst_op, src_val, size_bytes)
+        else:
+            # Not equal: accumulator = dst, ZF already set to 0 by update_sub
+            self.regs.set(acc_name, dst_val)
+
     # ---------------------------------------------------------------
     # Dispatch
     # ---------------------------------------------------------------
@@ -274,6 +442,16 @@ class CPU:
             "jbe": lambda inst: self.exec_jcc(inst, lambda: self.flags.get_cf() == 1 or self.flags.get_zf() == 1),
             "je":  lambda inst: self.exec_jcc(inst, lambda: self.flags.get_zf() == 1),
             "jz":  lambda inst: self.exec_jcc(inst, lambda: self.flags.get_zf() == 1),
+            "sal": self.exec_sal,
+            "shl": self.exec_sal,
+            "sar": self.exec_sar,
+            "aaa": self.exec_aaa,
+            "adc": self.exec_adc,
+            "sbb": self.exec_sbb,
+            "bsf": self.exec_bsf,
+            "xchg": self.exec_xchg,
+            "cmovc": self.exec_cmovc,
+            "cmpxchg": self.exec_cmpxchg,
         }
 
     def execute(self, inst):

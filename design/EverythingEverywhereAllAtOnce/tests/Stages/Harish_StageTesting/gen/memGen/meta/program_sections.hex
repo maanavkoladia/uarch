@@ -2,55 +2,55 @@
 // Sections: ['code@0x1000', 'data@0x2000']
 
 // $line_256    addr: 0x1000  ← code starts
-  be 00 20 00  00 b8 00 00  ff ff bb ff  ff aa aa b9
+  be 00 20 00  00 81 e6 ff  0f 00 00 83  e3 0f 83 e1
 
 // $line_257    addr: 0x1010
-  00 00 34 12  ba ff ff 00  00 24 f0 0c  0f 66 25 00
+  0f 83 e2 0f  b8 00 00 ff  ff bb ff ff  aa aa b9 00
 
 // $line_258    addr: 0x1020
-  0f 66 0d f0  00 25 ff 00  ff 00 0d 00  00 00 ff 0c
+  00 34 12 ba  ff ff 00 00  0c 11 24 fe  80 cc 22 80
 
 // $line_259    addr: 0x1030
-  11 24 fe 80  cc 22 80 e4  fd 80 cb 33  80 e3 ee 80
+  e4 fd 80 cb  33 80 e3 ee  80 cf 44 80  e7 dd 09 d8
 
 // $line_260    addr: 0x1040
-  cf 44 80 e7  dd 09 d8 21  c8 09 d3 21  c3 09 c1 21
+  21 c8 09 d3  21 c3 09 c1  21 d9 89 f7  09 07 21 1f
 
 // $line_261    addr: 0x1050
-  d9 89 f7 09  07 21 1f 89  f7 83 c7 04  09 0f 21 17
+  83 c7 04 09  0f 21 17 83  c7 04 09 07  21 0f 89 f7
 
 // $line_262    addr: 0x1060
-  89 f7 83 c7  08 66 09 07  66 21 1f 89  f7 0a 07 22
+  83 c7 08 66  09 07 66 21  1f 89 f7 0a  07 22 07 83
 
 // $line_263    addr: 0x1070
-  07 89 f7 83  c7 01 0a 27  22 27 89 f7  08 07 20 27
+  c7 01 0a 27  22 27 89 f7  08 07 20 27  08 c4 20 e0
 
 // $line_264    addr: 0x1080
-  08 c4 20 e0  08 df 20 fb  b8 78 56 34  12 0c ff 25
+  08 df 20 fb  b8 78 56 34  12 0c ff 25  00 ff ff ff
 
 // $line_265    addr: 0x1090
-  00 ff ff ff  b8 78 56 34  12 66 0d 00  ff 25 ff 00
+  b8 78 56 34  12 66 0d 00  ff 25 ff 00  ff ff f7 d0
 
 // $line_266    addr: 0x10a0
-  ff ff f7 d0  f7 d3 f7 d1  f7 d2 66 f7  d0 66 f7 d3
+  f7 d3 f7 d1  f7 d2 66 f7  d0 66 f7 d3  66 f7 d1 66
 
 // $line_267    addr: 0x10b0
-  66 f7 d1 66  f7 d2 f6 d0  f6 d4 f6 d3  f6 d7 f7 d0
+  f7 d2 f6 d0  f6 d4 f6 d3  f6 d7 89 f7  f7 17 83 c7
 
 // $line_268    addr: 0x10c0
-  0d 0f 0f 0f  0f 25 f0 f0  f0 f0 f7 d3  09 d8 21 c3
+  04 f7 17 83  c7 04 f7 17  89 f7 f6 17  83 c7 01 f6
 
 // $line_269    addr: 0x10d0
-  89 f7 f7 17  89 f7 83 c7  04 f7 17 89  f7 83 c7 08
+  17 89 f7 83  e3 0f 0b 04  1f 23 04 1f  83 e1 0f 09
 
 // $line_270    addr: 0x10e0
-  f7 17 89 f7  f6 17 89 f7  83 c7 01 f6  17 89 f7 0b
+  04 0f 21 04  0f 0c ff 24  00 f6 d0 83  c8 ff 83 e0
 
 // $line_271    addr: 0x10f0
-  04 1f 23 04  0f 89 f7 f7  14 17 09 04  17 0c ff 24
+  00 f7 d0 f4  00 00 00 00  00 00 00 00  00 00 00 00
 
 // $line_272    addr: 0x1100
-  00 f6 d0 83  c8 ff 83 e0  00 f7 d0 f4  00 00 00 00
+  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 
 // $line_273    addr: 0x1110
   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00

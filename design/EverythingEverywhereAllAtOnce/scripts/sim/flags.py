@@ -69,6 +69,91 @@ class Flags:
         self._set_bit(PF, (bin(low_byte).count('1') % 2) == 0)
         self._set_bit(AF, 0)
 
+    def update_sub(self, a, b, result, bits):
+        """Update flags after a SUB/SBB operation.
+        a = dst, b = src (what was subtracted), result = a - b (- borrow)."""
+        mask = (1 << bits) - 1
+        res_masked = result & mask
+        sign_bit = bits - 1
+
+        # CF: borrow out (unsigned underflow)
+        self._set_bit(CF, result < 0 or result > mask)
+
+        # ZF
+        self._set_bit(ZF, res_masked == 0)
+
+        # SF
+        self._set_bit(SF, (res_masked >> sign_bit) & 1)
+
+        # OF: signed overflow — different signs on operands and result sign != dst sign
+        a_sign = (a >> sign_bit) & 1
+        b_sign = (b >> sign_bit) & 1
+        r_sign = (res_masked >> sign_bit) & 1
+        self._set_bit(OF, (a_sign != b_sign) and (r_sign != a_sign))
+
+        # PF: parity of low byte
+        low_byte = res_masked & 0xFF
+        self._set_bit(PF, (bin(low_byte).count('1') % 2) == 0)
+
+        # AF: borrow from bit 4
+        self._set_bit(AF, (a & 0xF) < (b & 0xF))
+
+    def update_sal(self, original, result, count, bits):
+        """Update flags after SAL/SHL operation.
+        count has already been masked to 5 bits by the caller."""
+        if count == 0:
+            return  # no flags modified
+        mask = (1 << bits) - 1
+        res_masked = result & mask
+        sign_bit = bits - 1
+
+        # CF = last bit shifted out of the MSB
+        if count <= bits:
+            self._set_bit(CF, (original >> (bits - count)) & 1)
+        else:
+            self._set_bit(CF, 0)
+
+        # SF, ZF, PF
+        self._set_bit(ZF, res_masked == 0)
+        self._set_bit(SF, (res_masked >> sign_bit) & 1)
+        low_byte = res_masked & 0xFF
+        self._set_bit(PF, (bin(low_byte).count('1') % 2) == 0)
+
+        # OF: defined only for 1-bit shifts; MSB(result) XOR CF
+        if count == 1:
+            self._set_bit(OF, ((res_masked >> sign_bit) & 1) ^ self.get_cf())
+
+        # AF is undefined; clear it
+        self._set_bit(AF, 0)
+
+    def update_sar(self, original, result, count, bits):
+        """Update flags after SAR operation.
+        count has already been masked to 5 bits by the caller."""
+        if count == 0:
+            return  # no flags modified
+        mask = (1 << bits) - 1
+        res_masked = result & mask
+        sign_bit = bits - 1
+
+        # CF = last bit shifted out of the LSB
+        if count <= bits:
+            self._set_bit(CF, (original >> (count - 1)) & 1)
+        else:
+            self._set_bit(CF, (original >> sign_bit) & 1)
+
+        # SF, ZF, PF
+        self._set_bit(ZF, res_masked == 0)
+        self._set_bit(SF, (res_masked >> sign_bit) & 1)
+        low_byte = res_masked & 0xFF
+        self._set_bit(PF, (bin(low_byte).count('1') % 2) == 0)
+
+        # OF: defined only for 1-bit shifts; SAR always clears OF
+        if count == 1:
+            self._set_bit(OF, 0)
+
+        # AF is undefined; clear it
+        self._set_bit(AF, 0)
+
     def dump(self):
         return {
             "CF": self.get_cf(), "PF": self.get_pf(), "AF": self.get_af(),

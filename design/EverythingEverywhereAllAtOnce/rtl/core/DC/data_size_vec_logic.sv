@@ -5,6 +5,7 @@ module data_size_vec_logic(
     input bool ST_OP,
     input bool LD_OP,
     input bool wb_sr,
+    input bool wb_eax,
 
     output shift_sr_up,
     output shift_sr_down,
@@ -13,8 +14,8 @@ module data_size_vec_logic(
 );
 
 
-    assign shift_sr_up = dr_upper8 & ~sr_upper8 & ~wb_sr;
-    assign shift_sr_down = ~dr_upper8 & sr_upper8 & ~wb_sr;
+    assign shift_sr_up = dr_upper8 & ~sr_upper8 & ~wb_sr & ~wb_eax;
+    assign shift_sr_down = ~dr_upper8 & sr_upper8 & ~wb_sr & ~wb_eax;
 
     always_comb begin
         data_size_vec_o[0] = 0;
