@@ -113,11 +113,11 @@ wire write_req_i_inv;
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (!S_0 & S_1 & !S_3) | (!S_0 & S_2 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_1 & S_2 & !S_3 & !hit_i) | (!S_0 & !S_3 & ld_req_i & !hit_i) | (!S_0 & !S_3 & ld_req_i & write_req_i)
+// NS_0 = (!S_0 & S_2 & !S_3) | (!S_0 & S_1 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_1 & S_2 & !S_3 & !hit_i) | (!S_0 & !S_3 & ld_req_i & !hit_i) | (!S_0 & !S_3 & ld_req_i & write_req_i)
 wire NS_0_t0;
-`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_1, S_3_inv)
+`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_2, S_3_inv)
 wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_0_inv, S_2, S_3_inv)
+`AND_3(NS_0_and1, 1, NS_0_t1, S_0_inv, S_1, S_3_inv)
 wire NS_0_t2;
 `AND_4(NS_0_and2, 1, NS_0_t2, S_0, S_1_inv, S_2_inv, S_3)
 wire NS_0_t3;
@@ -151,11 +151,11 @@ wire NS_2_t3;
 
 `OR_4(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3)
 
-// NS_3 = (S_0 & !S_1 & !S_2 & S_3) | (S_0 & S_1 & S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & write_req_i)
+// NS_3 = (S_0 & S_1 & S_2 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & write_req_i)
 wire NS_3_t0;
-`AND_4(NS_3_and0, 1, NS_3_t0, S_0, S_1_inv, S_2_inv, S_3)
+`AND_4(NS_3_and0, 1, NS_3_t0, S_0, S_1, S_2, S_3_inv)
 wire NS_3_t1;
-`AND_4(NS_3_and1, 1, NS_3_t1, S_0, S_1, S_2, S_3_inv)
+`AND_4(NS_3_and1, 1, NS_3_t1, S_0, S_1_inv, S_2_inv, S_3)
 wire NS_3_t2;
 `AND_6(NS_3_and2, 1, NS_3_t2, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i)
 

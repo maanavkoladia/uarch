@@ -215,7 +215,7 @@ module RR (
         br_info                 : latchesInUse.br_info,
         NEIP                    : latchesInUse.NEIP,
         EIP                     : latchesInUse.EIP,
-        EAX                     : latchesInUse.EAX,
+        EAX                     : reg_out.EAX_data,
         imm64                   : latchesInUse.imm64,
 
         rr_gp                   : RR_GP,

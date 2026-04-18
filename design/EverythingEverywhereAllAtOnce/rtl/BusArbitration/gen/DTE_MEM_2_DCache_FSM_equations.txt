@@ -14,7 +14,7 @@ mem_valid_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
 
 ld_req_o = (S_0 & !S_1 & S_2)
 
-Drive_Addr_Bus_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2) | (!S_1 & req_hit_i & bank_hit_i & !others_busy_i)
+Drive_Addr_Bus_o = (!S_1 & S_2) | (S_1 & !S_2) | (S_0 & !S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
 
 Drv_DB_0_o = (S_0 & !S_1 & !S_2)
 
