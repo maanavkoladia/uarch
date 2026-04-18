@@ -11,8 +11,10 @@ module cmp (
 );
 
     logic [7:0] low_sr_val;
-    logic [7:0] upper_sr_val;
 
+    logic [8:0] al_sum;
+    logic [16:0] ax_sum;
+    logic [32:0] eax_sum;
     // in the case of compare the "dr input" corresponds to either EAX, AX, AL or rm32
     //This is bc we only use cmp in cmpxchg and REP cmp 32.
     //this means we never subtract AH - AL. its either AL - BH, AL - BL or AX - BX

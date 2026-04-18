@@ -27,7 +27,7 @@ module push_address_gen(
     assign start_address  = ST_PADDR_0 - num_bytes;
 
     assign ST_PADDR_0_o = (OP_TYPE == PUSH || OP_TYPE == FAR_CALL || OP_TYPE == CALL) ? start_address : ST_PADDR_0;
-    assign ST_PADDR_1_o = (OP_TYPE == PUSH || OP_TYPE == FAR_CALL || OP_TYPE == CALL) ? (end_address & 15'hFFF0) : ST_PADDR_1;
+    assign ST_PADDR_1_o = (OP_TYPE == PUSH || OP_TYPE == FAR_CALL || OP_TYPE == CALL) ? (end_address & 15'h7FF0) : ST_PADDR_1;
     assign ST_XCL_o     = (OP_TYPE == PUSH || OP_TYPE == FAR_CALL || OP_TYPE == CALL) ? (start_address[4] ^ end_address[4]) : ST_XCL;
 
 

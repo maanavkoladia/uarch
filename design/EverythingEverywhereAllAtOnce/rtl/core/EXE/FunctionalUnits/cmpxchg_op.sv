@@ -1,6 +1,6 @@
 module cmpxchg_op (
-    input  uint64_t EAX, //passed in from EAX latch
-    input  uint32_t rm,  //passed in from DR/BUF
+    input  uint32_t EAX, //passed in from EAX latch
+    input  uint64_t rm,  //passed in from DR/BUF
     input  uint32_t r,  //passed in through SR
     input  logic [3:0] data_size,  // 2'b00=8b, 2'b01=16b, 2'b10=32b
     input logic [3:0] sr_data_size_vec,
@@ -21,8 +21,8 @@ module cmpxchg_op (
 
     // Instantiate CMP for flag calculation
     cmp u_cmp (
-        .srA({32'd0, EAX[31:0]}),
-        .srB({32'd0,rm}),
+        .srA({32'd0, EAX}),
+        .srB({32'd0,rm[31:0]}),
         .data_size(data_size),
         .CF(cmp_CF),
         .AF(cmp_AF),
