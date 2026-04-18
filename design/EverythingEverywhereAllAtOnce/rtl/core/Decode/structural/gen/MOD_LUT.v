@@ -332,11 +332,11 @@ wire msd_size0_o_t4;
 
 `OR_5(msd_size0_o_or, 1, msd_size0_o, msd_size0_o_t0, msd_size0_o_t1, msd_size0_o_t2, msd_size0_o_t3, msd_size0_o_t4)
 
-// sib_needed_o = (!input6_i & input2_i & !input1_i & !input0_i) | (!input7_i & input2_i & !input1_i & !input0_i)
+// sib_needed_o = (!input7_i & input2_i & !input1_i & !input0_i) | (!input6_i & input2_i & !input1_i & !input0_i)
 wire sib_needed_o_t0;
-`AND_4(sib_needed_o_and0, 1, sib_needed_o_t0, input6_i_inv, input2_i, input1_i_inv, input0_i_inv)
+`AND_4(sib_needed_o_and0, 1, sib_needed_o_t0, input7_i_inv, input2_i, input1_i_inv, input0_i_inv)
 wire sib_needed_o_t1;
-`AND_4(sib_needed_o_and1, 1, sib_needed_o_t1, input7_i_inv, input2_i, input1_i_inv, input0_i_inv)
+`AND_4(sib_needed_o_and1, 1, sib_needed_o_t1, input6_i_inv, input2_i, input1_i_inv, input0_i_inv)
 
 `OR_2(sib_needed_o_or, 1, sib_needed_o, sib_needed_o_t0, sib_needed_o_t1)
 

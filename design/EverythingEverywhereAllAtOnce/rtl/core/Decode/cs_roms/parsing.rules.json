@@ -11,6 +11,7 @@
     "RM_IS_DR" : "1",
     "REG_IS_DR" : "1",
     "REG_IS_SEGMENT" : "1",
+    "MODRM_BUT_NO_SR" : "1",
     "HARD_CODED_DR" : "1",
 
     "HARD_CODED_DR_ID" : {

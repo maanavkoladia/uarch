@@ -45,6 +45,7 @@ _start:
                                  # mem[0x2000] = EDX
                                  # ZF = 1
                                  # EAX unchanged
+    movl (%edi), %esi
 
     # ----------------------------
     # TEST 4: Memory CMPXCHG (FAILURE)
@@ -56,6 +57,7 @@ _start:
                                  # EAX = old mem[0x2004] (0xCCCCCCC0)
                                  # mem unchanged
                                  # ZF = 0
+    movl 4(%edi), %esi
 
     # ----------------------------
     # Optional: Chain test (checks EAX forwarding)
@@ -65,6 +67,11 @@ _start:
     movl $0xEEEEEEE0, %edx
 
     cmpxchgl %edx, 4(%edi)      # should now succeed if EAX matched
+                                # mem[x2004] = edx
+    movl 4(%edi), %esi
+
+    movl $0x11223344, %eax
+    cmpxchg %ah, %al
 
     # ----------------------------
     # Done

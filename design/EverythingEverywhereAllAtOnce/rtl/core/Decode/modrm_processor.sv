@@ -21,6 +21,7 @@ module modrm_processor (
     bool rm_is_dr;
     bool reg_is_dr;
     bool reg_is_segment;
+    bool modrm_but_no_sr;
     bool alu_inputA_override;
     bool alu_inputB_override;
     bool dr_high8;
@@ -31,6 +32,7 @@ module modrm_processor (
     assign rm_is_dr = (decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.RM_IS_DR && !decode_cs_inputs.REG_IS_DR);
     assign reg_is_dr = (decode_cs_inputs.MODRM_NEEDED && !decode_cs_inputs.RM_IS_DR && decode_cs_inputs.REG_IS_DR);
     assign reg_is_segment = (decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.REG_IS_SEGMENT);
+    assign modrm_but_no_sr = decode_cs_inputs.MODRM_BUT_NO_SR;
 
     assign alu_inputA_override = rm_is_dr && (st_op || ld_op);
     assign alu_inputB_override = reg_is_dr && ld_op;
@@ -138,7 +140,7 @@ module modrm_processor (
 
 
         //sr reg setting
-        if(rm_is_dr && !reg_is_segment) begin
+        if(rm_is_dr && !reg_is_segment && !modrm_but_no_sr) begin
             case(modrm_byte[5:3])    //rm id
                 3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;

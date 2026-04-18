@@ -62,6 +62,7 @@ package core_stage_latches_pkg;
         bool RM_IS_DR;
         bool REG_IS_DR;
         bool REG_IS_SEGMENT;
+        bool MODRM_BUT_NO_SR;
         bool HARDCODED_DR;
         reg_ids_e HARDCODED_DR_ID;
         bool HARDCODED_SR;
@@ -75,8 +76,6 @@ package core_stage_latches_pkg;
         bool LD_OP_CANCEL;
         bool ST_OP_CANCEL;
         bool OP_IN_MODRM;
-        reg_ids_e dr_id;
-        reg_ids_e sr_id;
         logic [1:0] DATA_SIZE;
     } decode_cs_t;
 
