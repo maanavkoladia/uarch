@@ -148,13 +148,13 @@ wire mem_valid_o_t2;
 // ld_req_o = (S_0 & !S_1 & S_2)
 `AND_3(ld_req_o_and, 1, ld_req_o, S_0, S_1_inv, S_2)
 
-// Drive_Addr_Bus_o = (S_1 & !S_2) | (!S_1 & S_2) | (S_0 & !S_1) | (!S_1 & req_hit_i & !others_busy_i)
+// Drive_Addr_Bus_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2) | (!S_1 & req_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_t0;
-`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_1, S_2_inv)
+`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_0, S_1_inv)
 wire Drive_Addr_Bus_o_t1;
-`AND_2(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_1_inv, S_2)
+`AND_2(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_1, S_2_inv)
 wire Drive_Addr_Bus_o_t2;
-`AND_2(Drive_Addr_Bus_o_and2, 1, Drive_Addr_Bus_o_t2, S_0, S_1_inv)
+`AND_2(Drive_Addr_Bus_o_and2, 1, Drive_Addr_Bus_o_t2, S_1_inv, S_2)
 wire Drive_Addr_Bus_o_t3;
 `AND_3(Drive_Addr_Bus_o_and3, 1, Drive_Addr_Bus_o_t3, S_1_inv, req_hit_i, others_busy_i_inv)
 

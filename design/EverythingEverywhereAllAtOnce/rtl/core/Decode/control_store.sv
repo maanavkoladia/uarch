@@ -44,6 +44,7 @@ module control_store (
     logic RM_IS_DR_o;
     logic REG_IS_DR_o;
     logic REG_IS_SEGMENT_o;
+    logic MODRM_BUT_NO_SR_o;
 
     logic HARD_CODED_DR_o;
     logic HARD_CODED_SR_o;
@@ -118,6 +119,7 @@ module control_store (
         .RM_IS_DR_o(RM_IS_DR_o),
         .REG_IS_DR_o(REG_IS_DR_o),
         .REG_IS_SEGMENT_o(REG_IS_SEGMENT_o),
+        .MODRM_BUT_NO_SR_o(MODRM_BUT_NO_SR_o),
 
         .OP_IN_MODRM_o(OP_IN_MODRM_o),
 
@@ -214,7 +216,7 @@ module control_store (
     modrm_processor mod_rm_cs_gen(
         .modrm_byte(modrm), 
         .datasize(DATA_SIZE_o), 
-        .decode_cs_inputs(decode_cs), 
+        .decode_cs_inputs(temp_decode_cs), 
         .outputs(mod_rm_cs_outs)
     );
 
@@ -227,6 +229,7 @@ module control_store (
         RM_IS_DR          : RM_IS_DR_o,
         REG_IS_DR         : REG_IS_DR_o,
         REG_IS_SEGMENT    : REG_IS_SEGMENT_o,
+        MODRM_BUT_NO_SR   : MODRM_BUT_NO_SR_o,
         HARDCODED_DR      : HARD_CODED_DR_o,
         HARDCODED_DR_ID   : HARD_CODED_DR_ID_o,
         HARDCODED_SR      : HARD_CODED_SR_o,
@@ -240,8 +243,6 @@ module control_store (
         LD_OP_CANCEL      : LD_OP_CANCEL_o,
         ST_OP_CANCEL      : ST_OP_CANCEL_o,
         OP_IN_MODRM       : OP_IN_MODRM_o,
-        dr_id             : mod_rm_cs_outs.dr_id,
-        sr_id             : mod_rm_cs_outs.sr_id,
         DATA_SIZE         : DATA_SIZE_o
     };
 
