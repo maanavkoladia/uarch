@@ -459,6 +459,6 @@ class CPU:
         self._build_dispatch()
         handler = self.DISPATCH.get(inst.mnemonic)
         if handler is None:
-            raise CPUException(f"Unimplemented instruction: {inst.mnemonic} (line {inst.line_num})")
+            raise CPUException(f"Unimplemented instruction: '{inst.mnemonic}' at 0x{inst.addr:08X} (raw: {inst.raw!r})")
         result = handler(inst)
         return result is True  # True means EIP was explicitly set

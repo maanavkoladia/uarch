@@ -1,8 +1,6 @@
 TODO:
 
 OPCODE CHECK
-- AAA
-- ADC
 - BSF
 - CALL
 -IRETD
