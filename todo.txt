@@ -5,8 +5,6 @@ OPCODE CHECK
 - ADC
 - BSF
 - CALL
-- CLD
-- STD
 -IRETD
 - JMP
 - FAR JMP
@@ -17,13 +15,12 @@ OPCODE CHECK
 -PAVG
 -PAVGW
 - POP
--PUSH
+- PUSH
 - REP
 - RET
 - SAL 
 - SAR 
-- SBB 
-- STD 
+- SBB  
 -MOVQ
 - MOVS
 
