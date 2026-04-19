@@ -39,20 +39,20 @@ module alu_input_sel(
     //logic to determine srA
     always_comb begin
         case (alu_inputA_sel)
-            SR_REGISTER:    srA_64 = sr_data;
-            DR_REGISTER:    srA_64 = dr_data;
-            IMM64:          srA_64 = imm64;
-            BUFFER:         srA_64 = res_buf_out[63:0];
-            NEIP:           srA_64 = {32'd0, NEIP};
-            EIP:            srA_64 = {32'b0, EIP};
-            SEXT8:          srA_64 = {32'd0, 32'(signed'(imm64[7:0]))};
-            NO_EXE:         srA_64 = 0;
-            SEGMENT_NEIP:   srA_64 = {dr_data, NEIP}; 
-            SEGMENT_EIP:    srA_64 = {dr_data, EIP}; //not sure when this needs to be used
-            EAX_REG:        srA_64 = {32'd0, EAX}; //cmpxchg
-            CMPXCHG_SEL:    srA_64 = {sr_data, dr_data}; 
-            IRETD_SEL:      srA_64 = res_buf_out[96:32];
-            FLAGS:          srA_64 = {32'd0, flags};
+            control_store_pkg::SR_REGISTER:    srA_64 = sr_data;
+            control_store_pkg::DR_REGISTER:    srA_64 = dr_data;
+            control_store_pkg::IMM64:          srA_64 = imm64;
+            control_store_pkg::BUFFER:         srA_64 = res_buf_out[63:0];
+            control_store_pkg::NEIP:           srA_64 = {32'd0, NEIP[31:0]};
+            control_store_pkg::EIP:            srA_64 = {32'b0, EIP};
+            control_store_pkg::SEXT8:          srA_64 = {32'd0, 32'(signed'(imm64[7:0]))};
+            control_store_pkg::NO_EXE:         srA_64 = 0;
+            control_store_pkg::SEGMENT_NEIP:   srA_64 = {dr_data, NEIP}; 
+            control_store_pkg::SEGMENT_EIP:    srA_64 = {dr_data, EIP}; //not sure when this needs to be used
+            control_store_pkg::EAX_REG:        srA_64 = {32'd0, EAX}; //cmpxchg
+            control_store_pkg::CMPXCHG_SEL:    srA_64 = {sr_data, dr_data}; 
+            control_store_pkg::IRETD_SEL:      srA_64 = res_buf_out[96:32];
+            control_store_pkg::FLAGS:          srA_64 = {32'd0, flags};
             default:        srA_64 = '0;
         endcase
     end
@@ -60,20 +60,20 @@ module alu_input_sel(
     //logic for srB
     always_comb begin
         case (alu_inputB_sel)
-            SR_REGISTER:    srB = sr_data;
-            DR_REGISTER:    srB = dr_data;
-            IMM64:          srB = imm64;
-            BUFFER:         srB = res_buf_out[63:0];
-            NEIP:           srB = {32'd0, NEIP};
-            EIP:            srB = {32'b0, EIP};
-            SEXT8:          srB = {32'd0, 32'(signed'(imm64[7:0]))};
-            NO_EXE:         srB = 0;
-            SEGMENT_NEIP:   srB = {NEIP, dr_data}; 
-            SEGMENT_EIP:    srB = {EIP, dr_data}; //not sure when this needs to be used
-            EAX_REG:        srB  = {32'd0, EAX}; //send forward EAX
-            CMPXCHG_SEL:    srB = {sr_data, EAX}; //rm32 r32 on cmpxchg 
-            IRETD_SEL:      srB = res_buf_out[95:32];
-            FLAGS:          srB = {32'd0, flags};
+            control_store_pkg::SR_REGISTER:    srB = sr_data;
+            control_store_pkg::DR_REGISTER:    srB = dr_data;
+            control_store_pkg::IMM64:          srB = imm64;
+            control_store_pkg::BUFFER:         srB = res_buf_out[63:0];
+            control_store_pkg::NEIP:           srB = {32'd0, NEIP};
+            control_store_pkg::EIP:            srB = {32'b0, EIP};
+            control_store_pkg::SEXT8:          srB = {32'd0, 32'(signed'(imm64[7:0]))};
+            control_store_pkg::NO_EXE:         srB = 0;
+            control_store_pkg::SEGMENT_NEIP:   srB = {NEIP, dr_data}; 
+            control_store_pkg::SEGMENT_EIP:    srB = {EIP, dr_data}; //not sure when this needs to be used
+            control_store_pkg::EAX_REG:        srB  = {32'd0, EAX}; //send forward EAX
+            control_store_pkg::CMPXCHG_SEL:    srB = {sr_data, EAX}; //rm32 r32 on cmpxchg 
+            control_store_pkg::IRETD_SEL:      srB = res_buf_out[95:32];
+            control_store_pkg::FLAGS:          srB = {32'd0, flags};
             default:        srB = '0;
         endcase
     end
@@ -94,10 +94,10 @@ module alu_input_sel(
     //logic for BR  //relative offsets calculated in mem
     always_comb begin
         case (br_input_sel)
-            SR_REGISTER:   br_sel = sr_data[31:0];
-            DR_REGISTER:   br_sel = dr_data[31:0];
-            BUF32      :   br_sel = res_buf_out[31:0];
-            ZEXT_BUF16 :   br_sel = {16'd0, res_buf_out[15:0]};
+            control_store_pkg::SR_REGISTER:   br_sel = sr_data[31:0];
+            control_store_pkg::DR_REGISTER:   br_sel = dr_data[31:0];
+            control_store_pkg::BUF32      :   br_sel = res_buf_out[31:0];
+            control_store_pkg::ZEXT_BUF16 :   br_sel = {16'd0, res_buf_out[15:0]};
             default    :   br_sel = '0;
         endcase
     end

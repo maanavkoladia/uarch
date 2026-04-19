@@ -752,8 +752,8 @@ module EXE (
 
     // --- CALL: Call Procedure ---
     call_op u_call_op (
-        .NEIP      (srA),
-        .stack_ptr(srB),
+        .NEIP      (srA[31:0]),
+        .stack_ptr(srB[31:0]),
         .sr_o     (call_sr_o),
         .res_buf  (call_res_buf)
     );

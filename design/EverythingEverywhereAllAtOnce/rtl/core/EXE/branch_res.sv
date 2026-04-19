@@ -74,7 +74,7 @@ module branch_res(
     assign clr_exp_mode = special_br_i & valid;
 
 assign outs_o = '{
-        valid: valid & flush_mask,
+        valid: valid & !flush_mask,
         flush: flush,
         farFlush: farFlush,
         callFlush: callFlush,
