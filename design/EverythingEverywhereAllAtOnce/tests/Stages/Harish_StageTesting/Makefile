@@ -69,7 +69,7 @@ clean:
 vim:
 	nvim ../../../
 
-push:
+push: clean
 	git add -A
 	git commit -m "auto make push"
 	git push
