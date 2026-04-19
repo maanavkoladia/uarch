@@ -85,7 +85,7 @@ module control_store (
     logic [4:0] alu_inputB_sel_o;
     logic [4:0] branch_target_sel_o;
 
-    logic [4:0] OP_TYPE_o;
+    logic [5:0] OP_TYPE_o;
 
     logic [4:0] HARDCODED_SEGMENT0_o;
     logic [4:0] HARDCODED_SEGMENT1_o;
@@ -180,6 +180,7 @@ module control_store (
         .branch_target_sel_0_o(branch_target_sel_o[0]),
 
         // OP_TYPE
+        .OP_TYPE_5_o(OP_TYPE_o[5]),
         .OP_TYPE_4_o(OP_TYPE_o[4]),
         .OP_TYPE_3_o(OP_TYPE_o[3]),
         .OP_TYPE_2_o(OP_TYPE_o[2]),
