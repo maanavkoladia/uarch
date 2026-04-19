@@ -65,6 +65,7 @@ module control_store (
     logic relative_branch_o;
     logic special_br_o;
     logic is_far_o;
+    logic is_call_o;
     logic second_flag_needed_o;
 
     logic will_mod_zf_o;
@@ -192,6 +193,7 @@ module control_store (
         .relative_branch_o(relative_branch_o),
         .special_br_o(special_br_o),
         .is_far_o(is_far_o),
+        .is_call_o(is_call_o),
         .second_flag_needed_o(second_flag_needed_o),
 
         // Misc
@@ -308,6 +310,7 @@ module control_store (
         relative_branch     : relative_branch_o,
         special_br          : special_br_o,
         is_far              : is_far_o,
+        is_call             : is_call_o,
         second_flag_needed  : second_flag_needed_o
     };
 

@@ -23,10 +23,12 @@ OPCODE CHECK
 - MOVS
 
 - need to add is_call signal so that esp_sb does not get cleared on a flush
+- need to change stage latches to add is_call and ZEXT_IMM8 -> SEXT_IMM8
 - major bugs solved:
     - not setting scoreboard on a movb or movw, can't bypass cause its a read modify write sequence
     - needing to have is_call signal to not clear esp_sb
     - no need for swaplines in mem, paddr0 is always low addr
+    - backwards jumps not signextending
 
 
 - dma testing

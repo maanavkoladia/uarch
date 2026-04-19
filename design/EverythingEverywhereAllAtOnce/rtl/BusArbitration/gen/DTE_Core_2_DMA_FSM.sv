@@ -87,11 +87,11 @@ wire NS_1_t1;
 
 `OR_2(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1)
 
-// busy_o = (!S_0 & S_1) | (S_0 & !S_1)
+// busy_o = (S_0 & !S_1) | (!S_0 & S_1)
 wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_0_inv, S_1)
+`AND_2(busy_o_and0, 1, busy_o_t0, S_0, S_1_inv)
 wire busy_o_t1;
-`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_1_inv)
+`AND_2(busy_o_and1, 1, busy_o_t1, S_0_inv, S_1)
 
 `OR_2(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1)
 
