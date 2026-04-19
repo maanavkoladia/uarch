@@ -65,21 +65,21 @@ _start:
 # ============================================================
 
 # CF=0: 0x10000000 + 0x20000001 + 0 = 0x30000001
-    mov    $0x10000000, %ebx
-    and    %ebx, %ebx           # clear CF (AND always clears CF/OF)
-    adcl   $0x20000001, %ebx    # EBX = 0x30000001, CF=0
+    mov    $0x10000000, %eax
+    and    %eax, %eax           # clear CF (AND always clears CF/OF)
+    adcl   $0x20000001, %eax    # EAX = 0x30000001, CF=0
 
 # CF=1: 0x00000001 + 0x20000001 + 1 = 0x20000003
     and    %ecx, %ecx           # clear CF
     mov    $0xFFFFFFFF, %ecx
     add    $0x00000001, %ecx    # ECX = 0, CF=1
-    mov    $0x00000001, %ebx
-    adcl   $0x20000001, %ebx    # EBX = 0x20000003
+    mov    $0x00000001, %eax
+    adcl   $0x20000001, %eax    # EAX = 0x20000003
 
 # Carry-out: 0xE0000000 + 0x30000001 + 0 = 0x10000001, CF=1
-    mov    $0xE0000000, %ebx
-    and    %ebx, %ebx           # clear CF
-    adcl   $0x30000001, %ebx    # EAX = 0x10000001, CF=1
+    mov    $0xE0000000, %eax
+    and    %eax, %eax           # clear CF
+    adcl   $0x30000001, %eax    # EAX = 0x10000001, CF=1
 
 # ============================================================
 # ADC — imm8 → REG  (opcode 83 /2)
