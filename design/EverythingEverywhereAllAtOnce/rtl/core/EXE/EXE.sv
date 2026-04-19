@@ -378,6 +378,7 @@ module EXE (
     branch_res u_br_res (
         .stage_valid_i       (latches_i.valid),
         .br_info_valid_i     (latches_i.br_info.valid),
+        .flush_mask          (flush_mask),
         .br_eip_i            (latches_i.br_info.br_eip),
         .br_xcl_i            (latches_i.br_info.br_xcl),
         .br_pred_taken_i     (latches_i.br_info.br_pred_taken),

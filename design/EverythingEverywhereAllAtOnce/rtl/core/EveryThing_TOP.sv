@@ -181,6 +181,7 @@ module EveryThing_TOP (
         .rst(rst),
         .nextLatches_i(exe_latches_next),
         .write_enable_i(mem_outputs.exe_stage_latch_we),
+        .flush(exe_outputs.br_res_out.flush),
         .latches_o(exe_latches)
     );
 
