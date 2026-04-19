@@ -38,7 +38,7 @@ T1_func:
 
     movl $0xAAAAAAAA, %eax
 
-    jmp %ebx     # manual "ret"
+    jmp T1_return     # manual "ret"
 
 
 # =================================================
@@ -65,7 +65,7 @@ T2_func:
 
     movl $0xBBBBBBBB, %ecx
 
-    jmp %edx
+    jmp T2_after
 
 
 # =================================================
