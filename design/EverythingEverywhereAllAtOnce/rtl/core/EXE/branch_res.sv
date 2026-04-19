@@ -48,6 +48,10 @@ module branch_res(
     assign cond_br_res = ~ZF & second_flag_result;
     assign taken = (br_ucond_i || cond_br_res) & valid_i;
 
+    bool farFlush, callFlush;
+    assign farFlush = is_far_i & valid_i;
+    assign callFlush = is_call_i & valid_i;
+
     //target logic
     assign br_target = relative_branch_i ? (br_rel_target) : br_source_i;
 
@@ -56,20 +60,21 @@ module branch_res(
 
     //misprediction logic
     always_comb begin
-        miss_prediction = (taken ^ br_pred_taken_i) |
-                          (taken & br_pred_taken_i & ~target_match) |
-                           is_far_i | is_call_i;
+        miss_prediction = ((taken ^ br_pred_taken_i) |
+                           (taken & br_pred_taken_i & ~target_match) |
+                           (farFlush | callFlush)
+                          ) & valid_i;
 
         flush = miss_prediction;
     end
 
-    assign clr_exp_mode = special_br_i;
+    assign clr_exp_mode = special_br_i & valid_i;
 
 assign outs_o = '{
         valid: valid_i,
         flush: flush,
-        farFlush: is_far_i,
-        callFlush: is_call_i,
+        farFlush: farFlush,
+        callFlush: callFlush,
         miss_prediction: miss_prediction,
         br_eip: br_eip_i,
         neip: NEIP_i,
