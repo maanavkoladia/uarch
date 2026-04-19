@@ -234,7 +234,7 @@ module EXE (
     };
 
     assign wb_latches_next_o = '{
-            valid: wb_stage_next_vaild_o,  
+            valid: wb_stage_next_vaild_o,
             cs: next_wb_cs,
             ST_XCL: latches_i.ST_XCL,
             ST_PADDR_0: latches_i.ST_PADDR_0,

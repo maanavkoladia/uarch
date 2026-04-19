@@ -7,6 +7,7 @@ module branch_res(
 //br_info
     input bool stage_valid_i,
     input bool br_info_valid_i,
+    input bool flush_mask,
     input l_address_t br_eip_i,
     input bool br_xcl_i,
 
@@ -73,7 +74,7 @@ module branch_res(
     assign clr_exp_mode = special_br_i & valid;
 
 assign outs_o = '{
-        valid: valid,
+        valid: valid & flush_mask,
         flush: flush,
         farFlush: farFlush,
         callFlush: callFlush,

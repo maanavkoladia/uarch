@@ -5,8 +5,8 @@ module EXE_Latches (
     input wire rst,
     input exe_latches_t nextLatches_i,
     input wire write_enable_i,
-    // input wire flush,
-    // input wire farFlush,
+    input wire flush,
+    input wire farFlush,
     output exe_latches_t latches_o
 );
 
@@ -15,7 +15,7 @@ module EXE_Latches (
     assign latches_o = latches;
     always_ff @(posedge clk) begin
         if (!rst) latches <= ('{default: 0});
-        // else if (flush || farFlush) latches <= '{default: 0};
+        else if ((flush || farFlush) & write_enable_i) latches <= '{default: 0};
         else if (write_enable_i) latches <= nextLatches_i;
         else latches <= latches;
     end
