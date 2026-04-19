@@ -48,7 +48,7 @@ _start:
     # # ----------------------------
     # # CASE 3: CF = 1 again (sanity repeat)
     # # ----------------------------
-    cld
     std
+    cld
 
     hlt
