@@ -742,7 +742,7 @@ module EXE (
 
     // --- CALL: Call Procedure ---
     call_op u_call_op (
-        .EIP      (srA),
+        .NEIP      (srA),
         .stack_ptr(srB),
         .sr_o     (call_sr_o),
         .res_buf  (call_res_buf)
