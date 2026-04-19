@@ -71,5 +71,5 @@ module or_op(
         default: SF = 0;
       endcase
     end
-
+ 
 endmodule
