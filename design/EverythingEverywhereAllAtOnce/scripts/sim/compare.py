@@ -301,7 +301,13 @@ def parse_rtl_log(path):
 # Comparison logic
 # ---------------------------------------------------------------------------
 def compare(sim_records, rtl_records, out=sys.stdout):
-    """Align sim and RTL records by position (instruction sequence) and diff."""
+    """Align sim and RTL records by position (instruction sequence) and diff.
+
+    The RTL pipeline always writes-back DR/SR through the register file, even
+    for stores or when the value hasn't changed.  The sim only records *real*
+    changes.  To avoid false positives we track register state and suppress
+    RTL-only writes that are no-ops (value == current known state).
+    """
 
     n_sim = len(sim_records)
     n_rtl = len(rtl_records)
@@ -312,6 +318,12 @@ def compare(sim_records, rtl_records, out=sys.stdout):
     failed = 0
     only_sim = 0
     only_rtl = 0
+    noop_suppressed = 0            # no-op RTL write-backs suppressed
+
+    # Track known register state (from agreed / SIM writes) so we can detect
+    # RTL no-op write-backs.  Keys are uppercase register names, values are
+    # the last-known 32-bit integer value.
+    reg_state = {}
 
     def w(line):
         out.write(line + '\n')
@@ -332,20 +344,35 @@ def compare(sim_records, rtl_records, out=sys.stdout):
             only_rtl += 1
             w(f"[ONLY_RTL] #{i:04d}  EIP=0x{rtl['eip']:08X}  "
               f"RTL writes={_fmt_writes(rtl['writes'])}  flags={_fmt_flags(rtl['flags'])}")
+            # Update reg_state from RTL writes (best info we have)
+            reg_state.update(rtl['writes'])
             continue
 
         if rtl is None:
             only_sim += 1
             w(f"[ONLY_SIM] #{i:04d}  EIP=0x{sim['eip']:08X}  {sim['mnemonic']:<12}  "
               f"SIM writes={_fmt_writes(sim['writes'])}  flags={_fmt_flags(sim['flags'])}")
+            # Update reg_state from SIM writes
+            reg_state.update(sim['writes'])
             continue
 
         # Check EIP alignment
         eip_match = sim['eip'] == rtl['eip']
         eip_warn  = "" if eip_match else f"  !! EIP MISMATCH (SIM=0x{sim['eip']:08X} RTL=0x{rtl['eip']:08X})"
 
-        # Compare writes
-        write_diffs = _diff_writes(sim['writes'], rtl['writes'])
+        # --- Filter no-op RTL write-backs before diffing ---
+        # If RTL writes REG=VAL but SIM doesn't, and we already know
+        # REG==VAL from previous instructions, suppress that write.
+        rtl_writes_filtered = dict(rtl['writes'])
+        noop_regs = []
+        for reg, val in list(rtl_writes_filtered.items()):
+            if reg not in sim['writes'] and reg_state.get(reg) == val:
+                noop_regs.append(reg)
+                del rtl_writes_filtered[reg]
+        noop_suppressed += len(noop_regs)
+
+        # Compare writes (using filtered RTL writes)
+        write_diffs = _diff_writes(sim['writes'], rtl_writes_filtered)
         # Compare flags
         flag_diffs  = _diff_flags(sim['flags'], rtl['flags'])
 
@@ -353,13 +380,16 @@ def compare(sim_records, rtl_records, out=sys.stdout):
 
         if all_ok:
             passed += 1
+            noop_note = ""
+            if noop_regs:
+                noop_note = f"  (RTL no-op: {','.join(noop_regs)})"
             w(f"[OK ] #{i:04d}  0x{sim['eip']:08X}  {sim['mnemonic']:<12}  "
-              f"writes={_fmt_writes(sim['writes'])}  flags={_fmt_flags(sim['flags'])}")
+              f"writes={_fmt_writes(sim['writes'])}  flags={_fmt_flags(sim['flags'])}{noop_note}")
         else:
             failed += 1
             w(f"[ERR] #{i:04d}  0x{sim['eip']:08X}  {sim['mnemonic']:<12}{eip_warn}")
             w(f"       SIM  writes={_fmt_writes(sim['writes'])}  flags={_fmt_flags(sim['flags'])}")
-            w(f"       RTL  writes={_fmt_writes(rtl['writes'])}  flags={_fmt_flags(rtl['flags'])}")
+            w(f"       RTL  writes={_fmt_writes(rtl_writes_filtered)}  flags={_fmt_flags(rtl['flags'])}")
             if write_diffs:
                 for d in write_diffs:
                     w(f"       *** WRITE DIFF: {d}")
@@ -367,10 +397,19 @@ def compare(sim_records, rtl_records, out=sys.stdout):
                 for d in flag_diffs:
                     w(f"       *** FLAG  DIFF: {d}")
 
+        # Update reg_state: SIM writes are authoritative; also adopt
+        # RTL writes that SIM agrees with (both wrote same reg+val).
+        reg_state.update(sim['writes'])
+        for reg, val in rtl['writes'].items():
+            if reg in sim['writes'] and sim['writes'][reg] == val:
+                reg_state[reg] = val
+
     w("")
     w("=" * 80)
     w(f"  SUMMARY: {passed}/{total} matched  |  {failed} mismatched  "
       f"|  {only_sim} sim-only  |  {only_rtl} rtl-only")
+    if noop_suppressed:
+        w(f"  ({noop_suppressed} RTL no-op write-backs suppressed)")
     w("=" * 80)
 
     return failed == 0
