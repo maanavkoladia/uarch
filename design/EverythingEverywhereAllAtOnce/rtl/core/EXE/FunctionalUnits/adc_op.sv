@@ -12,7 +12,6 @@ module adc_op (
 );
 
     logic [32:0] sum;
-    logic [4:0]  msb_ptr; // Pointer to the relevant sign bit (7, 15, or 31)
 
     assign sum = srA[31:0] + srB[31:0] + {32'd0, CF_in};
     assign dr_o = {32'd0, sum[31:0]};
