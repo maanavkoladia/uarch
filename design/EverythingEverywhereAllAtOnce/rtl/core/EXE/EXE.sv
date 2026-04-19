@@ -35,6 +35,7 @@ module EXE (
     logic                       [3:0] data_size;
     logic                       [3:0] sr_data_size_vec;
     uint32_t                          flags_reg;
+    bool                              flush_mask;
 
     // --- ALU Input Buffers ---
     uint64_t                          sr_data;
@@ -375,7 +376,8 @@ module EXE (
     //==========================================================================
 
     branch_res u_br_res (
-        .valid_i             (latches_i.br_info.valid),
+        .stage_valid_i       (latches_i.valid),
+        .br_info_valid_i     (latches_i.br_info.valid),
         .br_eip_i            (latches_i.br_info.br_eip),
         .br_xcl_i            (latches_i.br_info.br_xcl),
         .br_pred_taken_i     (latches_i.br_info.br_pred_taken),
@@ -428,6 +430,13 @@ module EXE (
                 flags_reg[OF_IDX] <= of_flag_o;
             end
         end
+    end
+
+    always_ff @(posedge clk)begin
+        if(!rst) 
+            flush_mask <= 0;
+        else
+            flush_mask <= wb_outs_i.wb_stall;
     end
 
 
