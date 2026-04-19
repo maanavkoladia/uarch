@@ -384,6 +384,7 @@ module EXE (
         .relative_branch_i   (latches_i.cs.relative_branch),
         .special_br_i        (latches_i.cs.special_br),
         .is_far_i            (latches_i.cs.is_far),
+        .is_call_i           (latches_i.cs.is_call),
         .second_flag_needed_i(latches_i.cs.second_flag_needed),
         .br_source_i         (br_sel),
         .NEIP_i              (latches_i.NEIP),

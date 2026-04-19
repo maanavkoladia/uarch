@@ -18,6 +18,7 @@ module branch_res(
     input bool relative_branch_i,
     input bool special_br_i,
     input bool is_far_i,
+    input bool is_call_i,
     input bool second_flag_needed_i,
 
 //from exe stage
@@ -35,7 +36,7 @@ module branch_res(
     bool taken;
     bool clr_exp_mode;
     bool flush;
-    bool far_flush;
+
     bool miss_prediction;
 
     bool second_flag_result;
@@ -57,18 +58,18 @@ module branch_res(
     always_comb begin
         miss_prediction = (taken ^ br_pred_taken_i) |
                           (taken & br_pred_taken_i & ~target_match) |
-                           is_far_i;
+                           is_far_i | is_call_i;
 
-        flush     = miss_prediction;
-        far_flush = is_far_i;
+        flush = miss_prediction;
     end
 
     assign clr_exp_mode = special_br_i;
 
-    assign outs_o = '{
+assign outs_o = '{
         valid: valid_i,
         flush: flush,
-        farFlush: far_flush,
+        farFlush: is_far_i,
+        callFlush: is_call_i,
         miss_prediction: miss_prediction,
         br_eip: br_eip_i,
         neip: NEIP_i,
