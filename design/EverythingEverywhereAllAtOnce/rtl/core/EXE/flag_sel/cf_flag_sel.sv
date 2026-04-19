@@ -6,6 +6,7 @@ module cf_flag_sel(
 	input bool aaa_cf,
 	input bool adc_cf,
 	input bool add_cf,
+	input bool and_cf,
 	input bool cmp_cf,
 	input bool cmpxchg_cf,
 	input bool or_cf,
@@ -26,6 +27,7 @@ module cf_flag_sel(
 			AAA:      cf_flag_o = aaa_cf;
 			ADC:      cf_flag_o = adc_cf;
 			ADD:      cf_flag_o = add_cf;
+			AND:	  cf_flag_o = and_cf;
 			CMP:      cf_flag_o = cmp_cf;
 			CMPXCHG:  cf_flag_o = cmpxchg_cf;
 			OR:       cf_flag_o = or_cf;
