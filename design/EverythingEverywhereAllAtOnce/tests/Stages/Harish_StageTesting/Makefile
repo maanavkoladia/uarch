@@ -74,3 +74,5 @@ push: clean
 	git commit -m "auto make push"
 	git push
 
+pull: 
+	git pull

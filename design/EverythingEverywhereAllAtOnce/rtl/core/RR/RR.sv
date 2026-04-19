@@ -139,6 +139,7 @@ module RR (
         .sr_id         (latchesInUse.cs.sr_id),
         .flush         (exe_outs_i.br_res_out.flush),
         .farFlush      (exe_outs_i.br_res_out.farFlush),
+        .callFlush     (exe_outs_i.br_res_out.callFlush),
         .sib_base_id   (latchesInUse.sib_base_id),
         .sib_idx_id    (latchesInUse.sib_idx_id),
         .wb_dr0_id     (wb_outs_i.DR_0_id),

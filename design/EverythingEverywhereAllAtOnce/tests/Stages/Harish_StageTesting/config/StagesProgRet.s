@@ -11,7 +11,7 @@ _start:
     movl $0, %ebx
     movl $0, %ecx
     movl $0, %edx
-    movl $0x50, %esp
+    movl $0x50 %esp
 
     # =================================================
     # TEST 1: CALL rel32 (E8 cd)

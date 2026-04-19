@@ -2,19 +2,19 @@
 # Input  signal order : ['S_0', 'S_1', 'S_2', 'S_3', 'S_4', 'ld_address_change_i', 'start_store_i']
 # Output signal order : ['NS_0', 'NS_1', 'NS_2', 'NS_3', 'NS_4', 'st_addr_release_o', 'OE_o', 'WE_o', 'clear_writebufV_o', 'PreCharged_o']
 
-NS_0 = (!S_0 & S_1 & !S_4) | (!S_3 & !S_4 & start_store_i) | (!S_0 & !S_2 & !S_3) | (!S_0 & S_2 & !S_4) | (!S_3 & !S_4 & ld_address_change_i) | (!S_0 & !S_4 & ld_address_change_i) | (!S_0 & !S_4 & start_store_i)
+NS_0 = (!S_0 & !S_4 & start_store_i) | (!S_3 & !S_4 & ld_address_change_i) | (!S_0 & !S_2 & !S_3) | (!S_0 & S_2 & !S_4) | (!S_3 & !S_4 & start_store_i) | (!S_0 & S_1 & !S_4) | (!S_0 & !S_4 & ld_address_change_i)
 
-NS_1 = (S_0 & !S_1 & S_3 & !S_4) | (!S_0 & S_1 & S_3 & !S_4) | (S_0 & !S_1 & !S_2 & !S_3 & S_4) | (!S_0 & S_1 & !S_2 & !S_3 & S_4) | (!S_0 & S_1 & !S_4 & !ld_address_change_i & !start_store_i) | (S_0 & !S_1 & !S_4 & !ld_address_change_i & !start_store_i)
+NS_1 = (S_0 & !S_1 & S_3 & !S_4) | (!S_0 & S_1 & S_3 & !S_4) | (!S_0 & S_1 & !S_2 & !S_3 & S_4) | (S_0 & !S_1 & !S_2 & !S_3 & S_4) | (!S_0 & S_1 & !S_4 & !ld_address_change_i & !start_store_i) | (S_0 & !S_1 & !S_4 & !ld_address_change_i & !start_store_i)
 
-NS_2 = (!S_0 & S_2 & S_3 & !S_4) | (!S_1 & S_2 & S_3 & !S_4) | (S_0 & S_1 & !S_2 & S_3 & !S_4) | (!S_0 & !S_1 & S_2 & !S_3 & S_4) | (!S_1 & S_2 & !S_4 & !ld_address_change_i & !start_store_i) | (!S_0 & S_2 & !S_4 & !ld_address_change_i & !start_store_i) | (S_0 & S_1 & !S_2 & !S_4 & !ld_address_change_i & !start_store_i)
+NS_2 = (!S_1 & S_2 & S_3 & !S_4) | (!S_0 & S_2 & S_3 & !S_4) | (!S_0 & !S_1 & S_2 & !S_3 & S_4) | (S_0 & S_1 & !S_2 & S_3 & !S_4) | (!S_0 & S_2 & !S_4 & !ld_address_change_i & !start_store_i) | (!S_1 & S_2 & !S_4 & !ld_address_change_i & !start_store_i) | (S_0 & S_1 & !S_2 & !S_4 & !ld_address_change_i & !start_store_i)
 
-NS_3 = (!S_1 & !S_4 & start_store_i) | (!S_3 & !S_4 & start_store_i) | (!S_0 & S_1 & S_3 & !S_4) | (S_0 & !S_2 & S_3 & !S_4) | (!S_1 & S_2 & S_3 & !S_4) | (!S_1 & S_3 & !S_4 & !ld_address_change_i) | (S_0 & S_1 & S_2 & !S_3 & !S_4 & !ld_address_change_i)
+NS_3 = (!S_0 & !S_4 & start_store_i) | (!S_3 & !S_4 & start_store_i) | (S_0 & !S_2 & S_3 & !S_4) | (!S_1 & S_2 & S_3 & !S_4) | (!S_0 & S_1 & S_3 & !S_4) | (!S_0 & S_3 & !S_4 & !ld_address_change_i) | (S_0 & S_1 & S_2 & !S_3 & !S_4 & !ld_address_change_i)
 
-NS_4 = (!S_0 & !S_1 & !S_3 & S_4) | (!S_1 & !S_2 & !S_3 & S_4) | (!S_0 & !S_2 & !S_3 & S_4) | (S_0 & S_1 & S_2 & S_3 & !S_4)
+NS_4 = (!S_1 & !S_2 & !S_3 & S_4) | (!S_0 & !S_2 & !S_3 & S_4) | (!S_0 & !S_1 & !S_3 & S_4) | (S_0 & S_1 & S_2 & S_3 & !S_4)
 
-st_addr_release_o = (!S_4 & start_store_i) | (S_1 & S_3 & !S_4) | (!S_1 & !S_2 & !S_3 & S_4) | (S_2 & S_3 & !S_4) | (!S_0 & !S_2 & !S_3 & S_4) | (S_0 & S_3 & !S_4)
+st_addr_release_o = (!S_4 & start_store_i) | (S_2 & S_3 & !S_4) | (!S_0 & !S_2 & !S_3 & S_4) | (S_0 & S_3 & !S_4) | (!S_1 & !S_2 & !S_3 & S_4) | (S_1 & S_3 & !S_4)
 
-OE_o = (!S_4 & start_store_i) | (!S_2 & !S_3 & S_4) | (S_1 & S_3 & !S_4) | (S_2 & S_3 & !S_4) | (S_0 & S_3 & !S_4) | (!S_0 & !S_1 & !S_2 & !S_3)
+OE_o = (!S_4 & start_store_i) | (!S_2 & !S_3 & S_4) | (S_2 & S_3 & !S_4) | (S_0 & S_3 & !S_4) | (S_1 & S_3 & !S_4) | (!S_0 & !S_1 & !S_2 & !S_3)
 
 WE_o = (!S_3 & !S_4) | (!S_2 & !S_4) | (S_0 & S_1 & !S_2 & !S_3)
 
