@@ -32,10 +32,10 @@ module wb_stq_sb_logic(
         ld1_bank_hit = 0;
     // Check all entries in each bank's queue
         for(int i = 0; i < ST_Q_DEPTH; i++) begin
-            ld0_bank_hit |= ((stq_info.entries[ld0_bank_num*ST_Q_DEPTH + i].address == ld_paddr_0)
+            ld0_bank_hit |= ((stq_info.entries[ld0_bank_num*ST_Q_DEPTH + i].address[14:4] == ld_paddr_0[14:4])
                                         & stq_info.entries[ld0_bank_num*ST_Q_DEPTH + i].valid);
             
-            ld1_bank_hit |= ((stq_info.entries[ld1_bank_num*ST_Q_DEPTH + i].address == ld_paddr_1)
+            ld1_bank_hit |= ((stq_info.entries[ld1_bank_num*ST_Q_DEPTH + i].address[14:4] == ld_paddr_1[14:4])
                                         & stq_info.entries[ld1_bank_num*ST_Q_DEPTH + i].valid);
         end
     end
