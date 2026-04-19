@@ -167,8 +167,7 @@ T8_taken:
 
 T9_taken:
     # EXPECT: EAX = 0x99999999
-
-
+    
     # =================================================
     # FINAL STATE (easy inspection)
     # =================================================
@@ -176,5 +175,4 @@ T9_taken:
     # EBX = 0xBBBBBBBB
     # ECX = 0xCCCCCCCC
     # EDX = 0x88888888
-
     hlt
