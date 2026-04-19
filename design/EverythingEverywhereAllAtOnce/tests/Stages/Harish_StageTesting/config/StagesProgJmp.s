@@ -46,7 +46,6 @@ T2_target:
     andl $1, %ecx     # result = 1 → ZF = 0
 
     movl $0x33333333, %ecx
-    nop
 
     jne T3_taken
 

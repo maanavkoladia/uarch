@@ -105,7 +105,9 @@ package control_store_pkg;
         RET_FAR_IMM  = 28,
         XCHG         = 29,
         CLD          = 30,
-        CMOVC        = 31
+        CMOVC        = 31,
+        JMP          = 32,
+        NOP          = 33
 
     } exe_cs_operation_type_e;
 

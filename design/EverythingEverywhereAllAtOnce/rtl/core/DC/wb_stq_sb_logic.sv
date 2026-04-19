@@ -15,7 +15,7 @@ module wb_stq_sb_logic(
 
     logic [$clog2(NUM_WB_ST_QS)-1:0] ld0_bank_num;
     logic [$clog2(NUM_WB_ST_QS)-1:0] ld1_bank_num;
-    
+
     //[5:4] --> bank number of each load address 
     assign ld0_bank_num = ld_paddr_0[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];
     assign ld1_bank_num = ld_paddr_1[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];

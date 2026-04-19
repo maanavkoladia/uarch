@@ -250,7 +250,9 @@
         "RET_FAR_IMM"  : "28",
         "XCHG"         : "29",
         "CLD"          : "30",
-        "CMOVC"        : "31"
+        "CMOVC"        : "31",
+        "JMP"          : "32",
+        "NOP"          : "33"
     },
 
     "br_uncond" : "1",

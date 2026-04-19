@@ -99,11 +99,11 @@ wire NS_0_t1;
 
 `OR_2(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1)
 
-// NS_1 = (S_0 & !S_1 & !S_2) | (!S_0 & S_1 & !S_2)
+// NS_1 = (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2)
 wire NS_1_t0;
-`AND_3(NS_1_and0, 1, NS_1_t0, S_0, S_1_inv, S_2_inv)
+`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1, S_2_inv)
 wire NS_1_t1;
-`AND_3(NS_1_and1, 1, NS_1_t1, S_0_inv, S_1, S_2_inv)
+`AND_3(NS_1_and1, 1, NS_1_t1, S_0, S_1_inv, S_2_inv)
 
 `OR_2(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1)
 
@@ -115,11 +115,11 @@ wire NS_2_t1;
 
 `OR_2(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1)
 
-// busy_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
+// busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2)
 wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_1, S_2_inv)
+`AND_2(busy_o_and0, 1, busy_o_t0, S_0, S_2_inv)
 wire busy_o_t1;
-`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_2_inv)
+`AND_2(busy_o_and1, 1, busy_o_t1, S_1, S_2_inv)
 wire busy_o_t2;
 `AND_3(busy_o_and2, 1, busy_o_t2, S_0_inv, S_1_inv, S_2)
 
@@ -134,11 +134,11 @@ wire busy_o_t2;
 // set_eb_commit_o = (!S_0 & !S_1 & S_2)
 `AND_3(set_eb_commit_o_and, 1, set_eb_commit_o, S_0_inv, S_1_inv, S_2)
 
-// Drive_Addr_Bus_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
+// Drive_Addr_Bus_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_2 & req_hit_i & bank_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_t0;
-`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_0, S_2_inv)
+`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_1, S_2_inv)
 wire Drive_Addr_Bus_o_t1;
-`AND_2(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_1, S_2_inv)
+`AND_2(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_0, S_2_inv)
 wire Drive_Addr_Bus_o_t2;
 `AND_3(Drive_Addr_Bus_o_and2, 1, Drive_Addr_Bus_o_t2, S_0_inv, S_1_inv, S_2)
 wire Drive_Addr_Bus_o_t3;

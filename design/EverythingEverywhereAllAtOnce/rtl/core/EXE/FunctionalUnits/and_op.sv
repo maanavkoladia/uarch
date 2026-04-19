@@ -13,7 +13,8 @@ module and_op(
     output bool ZF,
     output bool SF,
     output bool PF,
-    output bool OF
+    output bool OF,
+    output bool CF
 );
 
     uint64_t and_result;
@@ -38,6 +39,7 @@ module and_op(
 
     always_comb begin
         OF = 0;
+        CF =0;
         PF = ~^merged_result[7:0];
         case (data_size)
             4'b0001: begin
