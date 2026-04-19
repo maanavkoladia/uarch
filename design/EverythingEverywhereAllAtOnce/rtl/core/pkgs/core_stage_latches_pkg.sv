@@ -136,6 +136,7 @@ package core_stage_latches_pkg;
         bool relative_branch; //1 indicates I add it to NEIP 0 means Its an absolute jmp
         bool special_br; //for exp and int
         bool is_far;  //need to flush
+        bool is_call;
        //I think for most branches its ZF then CF.
        //I will always assume ZF if second flag is set then ill also use CF
        //hard coded in br_res logic

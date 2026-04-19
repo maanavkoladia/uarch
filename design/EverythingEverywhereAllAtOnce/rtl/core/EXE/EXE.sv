@@ -82,7 +82,7 @@ module EXE (
     uint64_t                          bsf_res_buf_o;
 
     // CALL Outputs
-    uint64_t                          call_dr_o;
+    uint64_t                          call_sr_o;
     uint64_t                          call_res_buf;
 
     // CMPXCHG Outputs
@@ -91,7 +91,7 @@ module EXE (
     uint64_t                          cmpxchg_buf_o;
 
     // FAR_CALL Outputs
-    uint64_t                          far_call_dr_o;
+    uint64_t                          far_call_sr_o;
     uint64_t                          far_call_res_buf;
 
     // IRETD Outputs
@@ -335,9 +335,7 @@ module EXE (
         .add_dr_i        (add_dr_o),
         .and_dr_i        (and_dr_o),
         .bsf_dr_i        (bsf_dr_o),
-        .call_dr_i       (call_dr_o),
         .cmpxchg_dr_i    (cmpxchg_dr_o),
-        .far_call_dr_i   (far_call_dr_o),
         .mov_dr_i        (mov_dr_o),
         .not_dr_i        (not_dr_o),
         .or_dr_i         (or_dr_o),
@@ -366,6 +364,8 @@ module EXE (
         .ret_imm_sr_i    (ret_imm_sr_o),
         .ret_sr_i        (ret_sr_o),
         .xchg_sr_i       (xchg_sr_o),
+        .call_sr_i       (call_sr_o),
+        .far_call_sr_i   (far_call_sr_o),
         .sr_o            (sr_next)
     );
 
@@ -743,7 +743,7 @@ module EXE (
     call_op u_call_op (
         .EIP      (srA),
         .stack_ptr(srB),
-        .dr_o     (call_dr_o),
+        .sr_o     (call_sr_o),
         .res_buf  (call_res_buf)
     );
 
@@ -753,7 +753,7 @@ module EXE (
         .segment  (srA[63:32]),
         .stack_ptr(srB),
         .res_buf  (far_call_res_buf),
-        .dr_o     (far_call_dr_o)
+        .sr_o     (far_call_sr_o)
     );
 
     // --- IRETD: Interrupt Return ---

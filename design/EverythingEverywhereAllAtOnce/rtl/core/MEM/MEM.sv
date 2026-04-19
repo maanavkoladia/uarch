@@ -65,8 +65,8 @@ module MEM (
     always_comb begin
         rel_offset = 32'd0;
         case(latches_i.exe_cs.branch_target_sel)
-            ZEXT_IMM8: rel_offset = {24'd0, latches_i.imm64[7:0]};
-            ZEXT_IMM16: rel_offset = {16'd0, latches_i.imm64[15:0]};
+            ZEXT_IMM8: rel_offset = 32'(signed'(latches_i.imm64[7:0]));
+            ZEXT_IMM16: rel_offset = 32'(signed'(latches_i.imm64[15:0]));
             IMM32: rel_offset = latches_i.imm64[31:0];
             default: rel_offset = 0;
         endcase

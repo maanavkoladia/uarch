@@ -162,6 +162,7 @@ module cs_post_processor (
         relative_branch    : exe_cs_i.relative_branch,
         special_br         : exe_cs_i.special_br,
         is_far             : exe_cs_i.is_far,
+        is_call            : exe_cs_i.is_call,
         second_flag_needed : exe_cs_i.second_flag_needed
     };
 
