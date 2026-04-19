@@ -65,21 +65,21 @@ _start:
 # ============================================================
 
 # CF=0: 0x10000000 + 0x20000001 + 0 = 0x30000001
-    mov    $0x10000000, %eax
-    and    %eax, %eax           # clear CF (AND always clears CF/OF)
-    adcl   $0x20000001, %eax    # EAX = 0x30000001, CF=0
+    mov    $0x10000000, %ebx
+    and    %ebx, %ebx           # clear CF (AND always clears CF/OF)
+    adcl   $0x20000001, %ebx    # ebx = 0x30000001, CF=0
 
 # CF=1: 0x00000001 + 0x20000001 + 1 = 0x20000003
     and    %ecx, %ecx           # clear CF
     mov    $0xFFFFFFFF, %ecx
     add    $0x00000001, %ecx    # ECX = 0, CF=1
-    mov    $0x00000001, %eax
-    adcl   $0x20000001, %eax    # EAX = 0x20000003
+    mov    $0x00000001, %ebx
+    adcl   $0x20000001, %ebx    # ebx = 0x20000003
 
 # Carry-out: 0xE0000000 + 0x30000001 + 0 = 0x10000001, CF=1
-    mov    $0xE0000000, %eax
-    and    %eax, %eax           # clear CF
-    adcl   $0x30000001, %eax    # EAX = 0x10000001, CF=1
+    mov    $0xE0000000, %ebx
+    and    %ebx, %ebx           # clear CF
+    adcl   $0x30000001, %ebx    # ebx = 0x10000001, CF=1
 
 # ============================================================
 # ADC — imm8 → REG  (opcode 83 /2)
@@ -88,22 +88,22 @@ _start:
 # ============================================================
 
 # CF=0: 0x00001000 + 5 + 0 = 0x00001005
-    mov    $0x00001000, %eax
-    and    %eax, %eax           # clear CF
-    adcl   $5, %eax             # EAX = 0x1005
+    mov    $0x00001000, %ebx
+    and    %ebx, %ebx           # clear CF
+    adcl   $5, %ebx             # ebx = 0x1005
 
 # CF=1: 0x00001000 + 5 + 1 = 0x00001006
     and    %ecx, %ecx           # clear CF
     mov    $0xFFFFFFFF, %ecx
     add    $0x00000001, %ecx    # CF=1
-    mov    $0x00001000, %eax
-    adcl   $5, %eax             # EAX = 0x1006
+    mov    $0x00001000, %ebx
+    adcl   $5, %ebx             # ebx = 0x1006
 
 # Negative imm8 sign-extended ($-1 → 0xFFFFFFFF), CF=0:
 # 0x00000010 + 0xFFFFFFFF + 0 = 0x0000000F, CF=1
-    mov    $0x00000010, %eax
-    and    %eax, %eax           # clear CF
-    adcl   $-1, %eax            # EAX = 0x0000000F, CF=1
+    mov    $0x00000010, %ebx
+    and    %ebx, %ebx           # clear CF
+    adcl   $-1, %ebx            # ebx = 0x0000000F, CF=1
 
 # ============================================================
 # ADC — REG → R/M32  (opcode 11 /r)
@@ -111,22 +111,22 @@ _start:
 # ============================================================
 
 # Reg-to-reg, CF=0: EBX = 0x20 + 0x10 + 0 = 0x30
-    mov    $0x00000010, %eax
+    mov    $0x00000010, %ebx
     mov    $0x00000020, %ebx
     and    %ecx, %ecx           # clear CF
-    adcl   %eax, %ebx           # EBX = 0x30
+    adcl   %ebx, %ebx           # EBX = 0x30
 
 # Reg-to-reg, CF=1: EBX = 0x20 + 0x10 + 1 = 0x31
     and    %ecx, %ecx           # clear CF
     mov    $0xFFFFFFFF, %ecx
     add    $0x00000001, %ecx    # CF=1
-    mov    $0x00000010, %eax
+    mov    $0x00000010, %ebx
     mov    $0x00000020, %ebx
-    adcl   %eax, %ebx           # EBX = 0x31
+    adcl   %ebx, %ebx           # EBX = 0x31
 
 # Reg-to-mem, CF=0: mem[data_page] = 0x01 + 0x10 + 0 = 0x11
-    mov    $0x00000001, %eax
-    mov    %eax, (%esi)         # mem[0] = 0x01
+    mov    $0x00000001, %ebx
+    mov    %ebx, (%esi)         # mem[0] = 0x01
     mov    $0x00000010, %ebx
     and    %ecx, %ecx           # clear CF
     adcl   %ebx, (%esi)         # mem[0] = 0x11
@@ -135,8 +135,8 @@ _start:
     and    %ecx, %ecx           # clear CF
     mov    $0xFFFFFFFF, %ecx
     add    $0x00000001, %ecx    # CF=1
-    mov    $0x00000001, %eax
-    mov    %eax, (%esi)         # mem[0] = 0x01
+    mov    $0x00000001, %ebx
+    mov    %ebx, (%esi)         # mem[0] = 0x01
     mov    $0x00000010, %ebx
     adcl   %ebx, (%esi)         # mem[0] = 0x12
 
@@ -145,27 +145,27 @@ _start:
 # AT&T:  adcl r/m32, %r32  — r/m32 is source, r32 is destination
 # ============================================================
 
-# Mem-to-reg, CF=0: EAX = 0x100 + 5 + 0 = 0x105
+# Mem-to-reg, CF=0: ebx = 0x100 + 5 + 0 = 0x105
     mov    $0x00000005, %ebx
     mov    %ebx, (%esi)         # mem[0] = 5
-    mov    $0x00000100, %eax
-    and    %eax, %eax           # clear CF
-    adcl   (%esi), %eax         # EAX = 0x105
+    mov    $0x00000100, %ebx
+    and    %ebx, %ebx           # clear CF
+    adcl   (%esi), %ebx         # ebx = 0x105
 
-# Mem-to-reg, CF=1: EAX = 0x100 + 5 + 1 = 0x106
+# Mem-to-reg, CF=1: ebx = 0x100 + 5 + 1 = 0x106
     and    %ecx, %ecx           # clear CF
     mov    $0xFFFFFFFF, %ecx
     add    $0x00000001, %ecx    # CF=1
     mov    $0x00000005, %ebx
     mov    %ebx, (%esi)         # mem[0] = 5
-    mov    $0x00000100, %eax
-    adcl   (%esi), %eax         # EAX = 0x106
+    mov    $0x00000100, %ebx
+    adcl   (%esi), %ebx         # ebx = 0x106
 
-# Reg-to-reg via r/m32 encoding, CF=0: EAX = 0x100 + 0x200 + 0 = 0x300
-    mov    $0x00000100, %eax
+# Reg-to-reg via r/m32 encoding, CF=0: ebx = 0x100 + 0x200 + 0 = 0x300
+    mov    $0x00000100, %ebx
     mov    $0x00000200, %ebx
-    and    %eax, %eax           # clear CF
-    adcl   %ebx, %eax           # EAX = 0x300
+    and    %ebx, %ebx           # clear CF
+    adcl   %ebx, %ebx           # ebx = 0x300
 
 # ============================================================
 # DONE
