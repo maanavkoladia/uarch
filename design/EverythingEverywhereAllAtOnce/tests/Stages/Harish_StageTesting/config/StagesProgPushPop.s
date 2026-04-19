@@ -15,7 +15,7 @@ _start:
     movw $0x0010, %ax
     movw %ax, %ds
     movw %ax, %es
-    movw %ax, %ss
+    # movw %ax, %ss
 
     movw $0x0020, %ax
     movw %ax, %fs
@@ -47,15 +47,14 @@ _start:
 
     popl %ecx    # EXPECT: 0x0000007F
 
-    pushl $0x80
-
+    # pushl $0x80
+    .byte 0x6A, 0x80
     popl %ecx    # EXPECT: 0xFFFFFF80
 
     # ---------------------------------
     # TEST 4: PUSH imm16
     # ---------------------------------
     pushw $0xABCD
-
     popl %ecx    # EXPECT: lower 16 bits = 0xABCD
 
     # ---------------------------------

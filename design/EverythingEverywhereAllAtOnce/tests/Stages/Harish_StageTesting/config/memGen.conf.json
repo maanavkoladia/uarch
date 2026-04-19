@@ -1,10 +1,6 @@
 {
     "useProgram"              : "true",
-<<<<<<< HEAD
-    "input_Program_Path"      : "config/StagesProgWeird.s",
-=======
-    "input_Program_Path"      : "config/AAA_ADC.s",
->>>>>>> ca9e6bfb658d996b3af33f5491f194d6645328b0
+    "input_Program_Path"      : "config/StagesProgPushPop.s",
 
     "input_hex_file"          : "not_needed",
     "output_LoadableHex_Path" : "gen/memGen/hexLoad",

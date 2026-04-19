@@ -2,17 +2,17 @@
 # Input  signal order : ['S_0', 'S_1', 'S_2', 'S_3', 'ld_req_i', 'write_req_i', 'hit_i']
 # Output signal order : ['NS_0', 'NS_1', 'NS_2', 'NS_3', 'mem_ready_o', 'set_ld_tristate_o', 'start_store_o', 'ld_address_changed_o', 'set_WriteBuf_V_o', 'fill0_o', 'fill1_o', 'fill2_o', 'fill3_o']
 
-NS_0 = (!S_0 & S_1 & !S_3) | (!S_0 & S_2 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_1 & S_2 & !S_3 & !hit_i) | (!S_0 & !S_3 & ld_req_i & !hit_i) | (!S_0 & !S_3 & ld_req_i & write_req_i)
+NS_0 = (!S_0 & S_1 & !S_3) | (!S_0 & S_2 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_1 & S_2 & !S_3 & !hit_i) | (!S_0 & !S_3 & ld_req_i & write_req_i) | (!S_0 & !S_3 & ld_req_i & !hit_i)
 
 NS_1 = (!S_0 & S_1 & !S_3) | (S_0 & !S_1 & !S_2 & !S_3) | (!S_1 & !S_2 & !S_3 & !ld_req_i & write_req_i)
 
 NS_2 = (S_0 & !S_1 & S_2 & !S_3) | (!S_0 & S_1 & S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & !ld_req_i & write_req_i) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & !write_req_i)
 
-NS_3 = (S_0 & S_1 & S_2 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & write_req_i)
+NS_3 = (S_0 & !S_1 & !S_2 & S_3) | (S_0 & S_1 & S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & write_req_i)
 
 mem_ready_o = (S_0 & !S_1 & S_2 & !S_3 & hit_i) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & !write_req_i & hit_i)
 
-set_ld_tristate_o = (S_1 & !S_2 & !S_3) | (S_0 & !S_2 & !S_3) | (!S_1 & S_2 & !S_3 & hit_i) | (!S_0 & !S_1 & S_2 & !S_3) | (!S_1 & !S_3 & ld_req_i & !write_req_i & hit_i)
+set_ld_tristate_o = (S_0 & !S_2 & !S_3) | (S_1 & !S_2 & !S_3) | (!S_1 & S_2 & !S_3 & hit_i) | (!S_0 & !S_1 & S_2 & !S_3) | (!S_1 & !S_3 & ld_req_i & !write_req_i & hit_i)
 
 start_store_o = (!S_0 & !S_1 & !S_2 & S_3)
 
