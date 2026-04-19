@@ -12,142 +12,134 @@ _start:
     movl $0, %ecx
     movl $0, %edx
 
-
     # =================================================
-    # TEST 1: CALL rel32 — basic control flow
+    # TEST 1: CALL rel32 (E8 cd)
     # =================================================
     movl $0x11111111, %eax
 
     call T1_func
 
+    # If CALL works, control returns here manually
 T1_return:
-    # EXPECT:
-    # EAX = 0xAAAAAAAA
+    # EXPECT after return:
+    # EBX = return address (popped in callee)
+    # EAX = 0xAAAAAAAA (set in callee)
 
     jmp T2_start
 
 
 T1_func:
+    # ---------------------------------
+    # Inside callee
+    # ---------------------------------
+    popl %ebx
+    # EXPECT: EBX = address of T1_return
+
     movl $0xAAAAAAAA, %eax
-    jmp T1_return     # manual return
+
+    jmp %ebx     # manual "ret"
 
 
-    # =================================================
-    # TEST 2: CALL must skip fall-through
-    # =================================================
+# =================================================
+# TEST 2: CALL rel32 (fall-through must NOT execute)
+# =================================================
 T2_start:
 
-    movl $0x22222222, %ebx
+    movl $0x22222222, %ecx
 
     call T2_func
 
-    movl $0xDEADBEEF, %ebx   # SHOULD NOT EXECUTE
+    movl $0xDEADBEEF, %ecx   # SHOULD NOT EXECUTE
 
 T2_after:
     # EXPECT:
-    # EBX = 0xBBBBBBBB
+    # ECX = 0xBBBBBBBB
 
     jmp T3_start
 
 
 T2_func:
-    movl $0xBBBBBBBB, %ebx
-    jmp T2_after
+    popl %edx
+    # EXPECT: EDX = address of T2_after
+
+    movl $0xBBBBBBBB, %ecx
+
+    jmp %edx
 
 
-    # =================================================
-    # TEST 3: Back-to-back CALLs
-    # =================================================
+# =================================================
+# TEST 3: Back-to-back CALLs (stack correctness)
+# =================================================
 T3_start:
 
-    movl $0x33333333, %ecx
+    movl $0x33333333, %eax
 
     call T3_func1
 
 T3_after:
     # EXPECT:
-    # ECX = 0xCCCCCCCC
+    # EAX = 0xCCCCCCCC
 
     jmp T4_start
 
 
 T3_func1:
-    movl $0x12345678, %edx   # intermediate write
+    popl %ebx          # return addr of T3_after
 
-    call T3_func2
+    call T3_func2      # nested call
 
-    # SHOULD NOT EXECUTE if flow is correct
-    movl $0xDEADBEEF, %ecx
-    jmp T3_after
+    # SHOULD NOT REACH HERE if nested call returns correctly
+    movl $0xDEADBEEF, %eax
+    jmp %ebx
 
 
 T3_func2:
-    movl $0xCCCCCCCC, %ecx
-    jmp T3_after
+    popl %ecx          # return addr inside func1
+
+    movl $0xCCCCCCCC, %eax
+
+    jmp %ecx           # return to func1 continuation
 
 
-    # =================================================
-    # TEST 4: CALL chaining (stack stress indirectly)
-    # =================================================
+# =================================================
+# TEST 4: CALL rel16 (operand-size override)
+# =================================================
+# NOTE:
+# This depends on your assembler emitting 0x66 prefix.
+# If not, you may need to encode manually.
+
 T4_start:
 
-    movl $0x44444444, %eax
+    movl $0x44444444, %edx
 
-    call T4_func1
-
-T4_after:
-    # EXPECT:
-    # EAX = 0xDDDDDDDD
-
-    jmp T5_start
-
-
-T4_func1:
-    movl $0xAAAA0000, %eax
-
-    call T4_func2
-
-    # SHOULD NOT EXECUTE
-    movl $0xDEADBEEF, %eax
-    jmp T4_after
-
-
-T4_func2:
-    movl $0xDDDDDDDD, %eax
-    jmp T4_after
-
-
-    # =================================================
-    # TEST 5: CALL rel32 again (final sanity)
-    # =================================================
-T5_start:
-
-    movl $0x55555555, %edx
-
-    call T5_func
+    call T4_func
 
     movl $0xDEADBEEF, %edx   # SHOULD NOT EXECUTE
 
-T5_after:
+T4_after:
     # EXPECT:
-    # EDX = 0xEEEEEEEE
+    # EDX = 0xDDDDDDDD
 
     jmp done
 
 
-T5_func:
-    movl $0xEEEEEEEE, %edx
-    jmp T5_after
+T4_func:
+    popl %eax
+    # EXPECT: EAX = address of T4_after (lower 16 bits valid if rel16)
+
+    movl $0xDDDDDDDD, %edx
+
+    jmp %eax
 
 
-    # =================================================
-    # FINAL STATE
-    # =================================================
+# =================================================
+# FINAL STATE
+# =================================================
 done:
     # EXPECT FINAL:
-    # EAX = 0xDDDDDDDD
-    # EBX = 0xBBBBBBBB
-    # ECX = 0xCCCCCCCC
-    # EDX = 0xEEEEEEEE
+    # EAX = (return addr from T4)
+    # EBX = (return addr from T1)
+    # ECX = (intermediate return addr)
+    # EDX = 0xDDDDDDDD
 
     hlt

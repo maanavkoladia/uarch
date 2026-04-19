@@ -1,0 +1,27 @@
+// Sections hex  base=0x1000  top=0x107c  line_size=16 B
+// Sections: ['code@0x1000']
+
+// $line_256    addr: 0x1000  ← code starts
+  b8 00 00 00  00 bb 00 00  00 00 b9 00  00 00 00 ba
+
+// $line_257    addr: 0x1010
+  00 00 00 00  b8 11 11 11  11 e8 02 00  00 00 eb 08
+
+// $line_258    addr: 0x1020
+  5b b8 aa aa  aa aa ff e3  b9 22 22 22  22 e8 07 00
+
+// $line_259    addr: 0x1030
+  00 00 b9 ef  be ad de eb  08 5a b9 bb  bb bb bb ff
+
+// $line_260    addr: 0x1040
+  e2 b8 33 33  33 33 e8 02  00 00 00 eb  15 5b e8 07
+
+// $line_261    addr: 0x1050
+  00 00 00 b8  ef be ad de  ff e3 59 b8  cc cc cc cc
+
+// $line_262    addr: 0x1060
+  ff e1 ba 44  44 44 44 e8  07 00 00 00  ba ef be ad
+
+// $line_263    addr: 0x1070
+  de eb 08 58  ba dd dd dd  dd ff e0 f4  00 00 00 00
+
