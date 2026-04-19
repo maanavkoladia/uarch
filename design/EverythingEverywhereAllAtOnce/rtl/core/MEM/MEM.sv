@@ -124,8 +124,8 @@ module MEM (
 
     always_comb begin
         C0 = latches_i.MIO ? line_in_mio : line_in_0;
-        up_buf = latches_i.swapLines ? line_in_0_masked : line_in_1_masked;
-        low_buf = latches_i.swapLines ? line_in_1_masked : C0;
+        up_buf = line_in_1_masked;
+        low_buf = C0;
     end
 
 
