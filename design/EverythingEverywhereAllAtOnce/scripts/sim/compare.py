@@ -41,6 +41,29 @@ from collections import OrderedDict
 
 FLAG_NAMES = ["CF", "ZF", "SF", "OF", "PF", "AF"]
 
+# Instructions that leave AF architecturally undefined (x86 spec)
+_LOGIC_OPS = frozenset([
+    'and', 'andb', 'andw', 'andl',
+    'or',  'orb',  'orw',  'orl',
+    'xor', 'xorb', 'xorw', 'xorl',
+    'not', 'notb', 'notw', 'notl',
+    'test', 'testb', 'testw', 'testl',
+])
+
+# Instructions that *define* AF (clear the undefined state)
+_AF_DEFINING_OPS = frozenset([
+    'add', 'addb', 'addw', 'addl',
+    'sub', 'subb', 'subw', 'subl',
+    'adc', 'adcb', 'adcw', 'adcl',
+    'sbb', 'sbbb', 'sbbw', 'sbbl',
+    'cmp', 'cmpb', 'cmpw', 'cmpl',
+    'aaa', 'daa', 'aas', 'das',
+    'inc', 'incb', 'incw', 'incl',
+    'dec', 'decb', 'decw', 'decl',
+    'neg', 'negb', 'negw', 'negl',
+    'cmpxchg',
+])
+
 
 # ---------------------------------------------------------------------------
 # Sim trace parser
@@ -323,7 +346,15 @@ def compare(sim_records, rtl_records, out=sys.stdout):
     # Track known register state (from agreed / SIM writes) so we can detect
     # RTL no-op write-backs.  Keys are uppercase register names, values are
     # the last-known 32-bit integer value.
-    reg_state = {}
+    # Initialize with all GPRs = 0 (matching sim's startup state), so that
+    # initial `mov $0, %reg` instructions are correctly identified as no-ops.
+    reg_state = {r: 0 for r in
+                 ['EAX','EBX','ECX','EDX','ESP','EBP','ESI','EDI']}
+
+    # Track whether AF is architecturally undefined.  After AND/OR/XOR/TEST/NOT
+    # the x86 spec says AF is undefined, so we must skip AF comparison until
+    # an instruction that defines AF (ADD/SUB/ADC/SBB/CMP/etc.) executes.
+    af_undefined = False
 
     def w(line):
         out.write(line + '\n')
@@ -371,20 +402,36 @@ def compare(sim_records, rtl_records, out=sys.stdout):
                 del rtl_writes_filtered[reg]
         noop_suppressed += len(noop_regs)
 
+        # Update AF-undefined tracking based on SIM mnemonic
+        mn = sim['mnemonic'].lower()
+        if mn in _LOGIC_OPS:
+            af_undefined = True
+        elif mn in _AF_DEFINING_OPS:
+            af_undefined = False
+        # MOV/JMP/Jcc/XCHG/HLT etc. don't touch flags → preserve af_undefined
+
+        # Build set of flags to skip in comparison
+        skip_flags = set()
+        if af_undefined:
+            skip_flags.add('AF')
+
         # Compare writes (using filtered RTL writes)
         write_diffs = _diff_writes(sim['writes'], rtl_writes_filtered)
-        # Compare flags
-        flag_diffs  = _diff_flags(sim['flags'], rtl['flags'])
+        # Compare flags (skipping architecturally undefined ones)
+        flag_diffs  = _diff_flags(sim['flags'], rtl['flags'], skip_flags=skip_flags)
 
         all_ok = eip_match and not write_diffs and not flag_diffs
 
         if all_ok:
             passed += 1
-            noop_note = ""
+            notes = []
             if noop_regs:
-                noop_note = f"  (RTL no-op: {','.join(noop_regs)})"
+                notes.append(f"RTL no-op: {','.join(noop_regs)}")
+            if skip_flags:
+                notes.append(f"{','.join(sorted(skip_flags))} undefined")
+            note_str = f"  ({'; '.join(notes)})" if notes else ""
             w(f"[OK ] #{i:04d}  0x{sim['eip']:08X}  {sim['mnemonic']:<12}  "
-              f"writes={_fmt_writes(sim['writes'])}  flags={_fmt_flags(sim['flags'])}{noop_note}")
+              f"writes={_fmt_writes(sim['writes'])}  flags={_fmt_flags(sim['flags'])}{note_str}")
         else:
             failed += 1
             w(f"[ERR] #{i:04d}  0x{sim['eip']:08X}  {sim['mnemonic']:<12}{eip_warn}")
@@ -442,11 +489,14 @@ def _diff_writes(sim_w, rtl_w):
     return diffs
 
 
-def _diff_flags(sim_f, rtl_f):
+def _diff_flags(sim_f, rtl_f, skip_flags=None):
     diffs = []
     if not sim_f or not rtl_f:
         return diffs   # can't compare if one side is missing
+    skip = skip_flags or set()
     for fl in FLAG_NAMES:
+        if fl in skip:
+            continue
         sv = sim_f.get(fl)
         rv = rtl_f.get(fl)
         if sv is None or rv is None:

@@ -144,6 +144,15 @@ def _parse_operand(tok, is_branch=False):
                        disp=disp, seg_prefix=seg)
 
     # Plain hex number: branch target (imm) or direct memory address (mem)
+    # For branch targets, objdump always emits bare hex addresses (e.g. "102c")
+    # without 0x prefix — parse as hex first to avoid misinterpreting as decimal.
+    if is_branch:
+        try:
+            val = int(tok, 16)
+            return Operand('imm', imm_val=val)
+        except ValueError:
+            pass
+
     try:
         val = _parse_int(tok)
         if is_branch:
