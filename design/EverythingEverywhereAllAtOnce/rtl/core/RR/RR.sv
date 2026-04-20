@@ -93,10 +93,11 @@ module RR (
         .segment0_limit(SEGMENT_LIMITS[latchesInUse.cs.seg_0_id]),
         .seg1_data(reg_out.Segment1_data),
         .segment1_limit(SEGMENT_LIMITS[latchesInUse.cs.seg_1_id]),
-        .seg1_valid(1'b0),
+        .seg1_valid(latchesInUse.cs.seg_1_valid),
         .modrm_needed(latchesInUse.cs.MODRM_NEEDED),
         .rm_is_dr(latchesInUse.cs.RM_IS_DR),
         .st_sel(latchesInUse.cs.ST_SEL),
+        .movs_op(latchesInUse.cs.MOVS_OP),
         .regout_sr_data(reg_out.SR_data[31:0]),
         .regout_dr_data(reg_out.DR_data[31:0]),
         .ld_vaddy(ld_vaddy),
@@ -138,6 +139,7 @@ module RR (
         .sr_id         (latchesInUse.cs.sr_id),
         .flush         (exe_outs_i.br_res_out.flush),
         .farFlush      (exe_outs_i.br_res_out.farFlush),
+        .callFlush     (exe_outs_i.br_res_out.callFlush),
         .sib_base_id   (latchesInUse.sib_base_id),
         .sib_idx_id    (latchesInUse.sib_idx_id),
         .wb_dr0_id     (wb_outs_i.DR_0_id),
@@ -214,7 +216,7 @@ module RR (
         br_info                 : latchesInUse.br_info,
         NEIP                    : latchesInUse.NEIP,
         EIP                     : latchesInUse.EIP,
-        EAX                     : latchesInUse.EAX,
+        EAX                     : reg_out.EAX_data,
         imm64                   : latchesInUse.imm64,
 
         rr_gp                   : RR_GP,
@@ -242,7 +244,7 @@ module RR (
             set_ZF_sb   : latchesInUse.cs.will_mod_zf,
             codeSeg_sb  : cs_sb,
             codeSeg_data  : reg_out.CS_data,
-            codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID].limit[0],
+            codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID].limit,
             dc_stage_latch_we : dc_latches_we
         };
 

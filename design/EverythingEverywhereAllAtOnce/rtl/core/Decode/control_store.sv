@@ -44,6 +44,7 @@ module control_store (
     logic RM_IS_DR_o;
     logic REG_IS_DR_o;
     logic REG_IS_SEGMENT_o;
+    logic MODRM_BUT_NO_SR_o;
 
     logic HARD_CODED_DR_o;
     logic HARD_CODED_SR_o;
@@ -64,6 +65,7 @@ module control_store (
     logic relative_branch_o;
     logic special_br_o;
     logic is_far_o;
+    logic is_call_o;
     logic second_flag_needed_o;
 
     logic will_mod_zf_o;
@@ -84,7 +86,7 @@ module control_store (
     logic [4:0] alu_inputB_sel_o;
     logic [4:0] branch_target_sel_o;
 
-    logic [4:0] OP_TYPE_o;
+    logic [5:0] OP_TYPE_o;
 
     logic [4:0] HARDCODED_SEGMENT0_o;
     logic [4:0] HARDCODED_SEGMENT1_o;
@@ -118,6 +120,7 @@ module control_store (
         .RM_IS_DR_o(RM_IS_DR_o),
         .REG_IS_DR_o(REG_IS_DR_o),
         .REG_IS_SEGMENT_o(REG_IS_SEGMENT_o),
+        .MODRM_BUT_NO_SR_o(MODRM_BUT_NO_SR_o),
 
         .OP_IN_MODRM_o(OP_IN_MODRM_o),
 
@@ -178,6 +181,7 @@ module control_store (
         .branch_target_sel_0_o(branch_target_sel_o[0]),
 
         // OP_TYPE
+        .OP_TYPE_5_o(OP_TYPE_o[5]),
         .OP_TYPE_4_o(OP_TYPE_o[4]),
         .OP_TYPE_3_o(OP_TYPE_o[3]),
         .OP_TYPE_2_o(OP_TYPE_o[2]),
@@ -189,6 +193,7 @@ module control_store (
         .relative_branch_o(relative_branch_o),
         .special_br_o(special_br_o),
         .is_far_o(is_far_o),
+        .is_call_o(is_call_o),
         .second_flag_needed_o(second_flag_needed_o),
 
         // Misc
@@ -214,7 +219,7 @@ module control_store (
     modrm_processor mod_rm_cs_gen(
         .modrm_byte(modrm), 
         .datasize(DATA_SIZE_o), 
-        .decode_cs_inputs(decode_cs), 
+        .decode_cs_inputs(temp_decode_cs), 
         .outputs(mod_rm_cs_outs)
     );
 
@@ -227,6 +232,7 @@ module control_store (
         RM_IS_DR          : RM_IS_DR_o,
         REG_IS_DR         : REG_IS_DR_o,
         REG_IS_SEGMENT    : REG_IS_SEGMENT_o,
+        MODRM_BUT_NO_SR   : MODRM_BUT_NO_SR_o,
         HARDCODED_DR      : HARD_CODED_DR_o,
         HARDCODED_DR_ID   : HARD_CODED_DR_ID_o,
         HARDCODED_SR      : HARD_CODED_SR_o,
@@ -240,8 +246,6 @@ module control_store (
         LD_OP_CANCEL      : LD_OP_CANCEL_o,
         ST_OP_CANCEL      : ST_OP_CANCEL_o,
         OP_IN_MODRM       : OP_IN_MODRM_o,
-        dr_id             : mod_rm_cs_outs.dr_id,
-        sr_id             : mod_rm_cs_outs.sr_id,
         DATA_SIZE         : DATA_SIZE_o
     };
 
@@ -254,6 +258,7 @@ module control_store (
         RM_IS_DR         : RM_IS_DR_o,
         LD_OP            : mod_rm_cs_outs.ld_op,
         ST_OP            : mod_rm_cs_outs.st_op,
+        MOVS_OP          : MOVS_o,
         dr_id            : mod_rm_cs_outs.dr_id,
         sr_id            : mod_rm_cs_outs.sr_id,
         dr_rd            : mod_rm_cs_outs.dr_rd,
@@ -305,6 +310,7 @@ module control_store (
         relative_branch     : relative_branch_o,
         special_br          : special_br_o,
         is_far              : is_far_o,
+        is_call             : is_call_o,
         second_flag_needed  : second_flag_needed_o
     };
 
@@ -319,7 +325,6 @@ module control_store (
     cs_post_processor cs_post_prossesing_unit(
         .invalid_inst(invalid_inst),
         .modrm_byte(modrm),
-        .movs(MOVS_o),
         .xchg(XCHG_o),
         .cmpxchg(CMPXCHG_o),
         .op_in_modrm(OP_IN_MODRM_o),

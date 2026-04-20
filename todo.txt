@@ -1,19 +1,36 @@
 TODO:
 
-- IRETD for EXE
+OPCODE CHECK
+- BSF
+- CALL
+-IRETD
+- OPCODE FF
+- FAR JMP
+- PACKSSWB
+-PACKSSDW
+-PADDW
+-PADDD
+-PAVG
+-PAVGW
+- REP
+- RET
+- SAL 
+- SAR 
+- SBB  
+-MOVQ
+- MOVS
 
-- Decode to add the upper8 lower 8 for data size conversion
-- decode kogge stone with muxes rather than instruction length 
+- need to add is_call signal so that esp_sb does not get cleared on a flush
+- need to change stage latches to add is_call and ZEXT_IMM8 -> SEXT_IMM8
+- major bugs solved:
+    - not setting scoreboard on a movb or movw, can't bypass cause its a read modify write sequence
+    - needing to have is_call signal to not clear esp_sb
+    - no need for swaplines in mem, paddr0 is always low addr
+    - backwards jumps not signextending
+    - if writback is stalling, and we have a flush in execute we cant clear the execute latches, espeically for call or far call
 
-- mem bank port
-- mem controller port
-- mio cache line in dcache logic
+
 - dma testing
 - ddr5 testing
-- dcache eb testing
-- icache victim cache stress testing
-- dcache victim cache stress testing 
 - IO testing 
-- might have to updated bit vector with new datasize vector
 
-- MOD LUT/OPCODE LUT for the fucked instructions

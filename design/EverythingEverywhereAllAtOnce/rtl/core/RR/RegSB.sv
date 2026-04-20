@@ -30,6 +30,7 @@ module RegSB (
 
     input bool flush,  //clear everthing
     input bool farFlush,  //preserve CS sb, to keep fetch off
+    input bool callFlush,
     output bool dep_stall,
     output bool ecx_sb,
     output bool codeSeg_sb
@@ -63,12 +64,20 @@ module RegSB (
 
     always_ff @(posedge clk) begin
         if (!rst) SCORE_BOARD <= '{default: '0};
-        else if (flush) SCORE_BOARD <= '{default: '0};
-        else if (farFlush) begin  //realies on CS being the zero Segment ID
-            for (int i = 0; i < NUM_REGS - 1; i++) begin
-                if (!(i == CS)) SCORE_BOARD[i].counter <= 0;
+        else if (callFlush || farFlush) begin
+            if(callFlush) begin
+                for (int i = 0; i < NUM_REGS - 1; i++) begin
+                    if (!(i == ESP)) SCORE_BOARD[i].counter <= 0;
+                end
             end
-        end else begin
+            if(farFlush) begin
+                for (int i = 0; i < NUM_REGS - 1; i++) begin
+                    if (!(i == CS)) SCORE_BOARD[i].counter <= 0;
+                end
+            end
+        end
+        else if (flush) SCORE_BOARD <= '{default : '0};
+        else begin
             if(cs_wr_to_both) begin
                 if (updateSB) SCORE_BOARD[dr_id].counter++;
             end

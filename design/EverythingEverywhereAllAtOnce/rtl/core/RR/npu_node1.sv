@@ -22,6 +22,7 @@ module npu_node1 (
     input bool modrm_needed,
     input bool rm_is_dr,
     input bool st_sel,
+    input bool movs_op,
 
     output v_address_t ld_vaddy,
     output uint32_t seg0_limit_w_datasize,
@@ -112,7 +113,7 @@ module npu_node1 (
     assign #3 shifted_dr_data = regout_dr_data + shifted_seg1_data;
     
     assign actual_st_vaddy = (st_sel) ? 
-                                ((modrm_needed && rm_is_dr) ? shifted_sr_data : shifted_dr_data) :
+                                ((movs_op) ? shifted_dr_data : shifted_sr_data) :
                                 st_vaddy;
 
     //next ld VPN and vaddy

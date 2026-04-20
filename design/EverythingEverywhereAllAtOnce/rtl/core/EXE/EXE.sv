@@ -35,6 +35,7 @@ module EXE (
     logic                       [3:0] data_size;
     logic                       [3:0] sr_data_size_vec;
     uint32_t                          flags_reg;
+    bool                              flush_mask;
 
     // --- ALU Input Buffers ---
     uint64_t                          sr_data;
@@ -50,7 +51,6 @@ module EXE (
     uint16_t                          bit_vec_1_next;
     uint64_t                          dr_next;
     uint64_t                          sr_next;
-    bool                              st_op_next;
 
     // --- Branch Resolution Outputs ---
     exe_br_resolution_outputs_t       branch_resolution_o;
@@ -83,7 +83,7 @@ module EXE (
     uint64_t                          bsf_res_buf_o;
 
     // CALL Outputs
-    uint64_t                          call_dr_o;
+    uint64_t                          call_sr_o;
     uint64_t                          call_res_buf;
 
     // CMPXCHG Outputs
@@ -92,7 +92,7 @@ module EXE (
     uint64_t                          cmpxchg_buf_o;
 
     // FAR_CALL Outputs
-    uint64_t                          far_call_dr_o;
+    uint64_t                          far_call_sr_o;
     uint64_t                          far_call_res_buf;
 
     // IRETD Outputs
@@ -182,7 +182,7 @@ module EXE (
     logic add_af_o, add_cf_o, add_of_o, add_pf_o, add_sf_o, add_zf_o;
 
     // AND Flags
-    logic and_of_o, and_pf_o, and_sf_o, and_zf_o;
+    logic and_of_o, and_pf_o, and_sf_o, and_zf_o, and_cf_o;
 
     // BSF Flags
     logic bsf_zf_o;
@@ -227,14 +227,14 @@ module EXE (
     //==========================================================================
     wb_cs_t next_wb_cs;
     assign next_wb_cs = '{
-        ST_OP : st_op_next,
+        ST_OP : latches_i.wb_cs.ST_OP,
         WB_DR : latches_i.wb_cs.WB_DR,
         WB_SR : latches_i.wb_cs.WB_SR,
         WB_EAX: latches_i.wb_cs.WB_EAX
     };
 
     assign wb_latches_next_o = '{
-            valid: wb_stage_next_vaild_o,  
+            valid: wb_stage_next_vaild_o,
             cs: next_wb_cs,
             ST_XCL: latches_i.ST_XCL,
             ST_PADDR_0: latches_i.ST_PADDR_0,
@@ -336,9 +336,7 @@ module EXE (
         .add_dr_i        (add_dr_o),
         .and_dr_i        (and_dr_o),
         .bsf_dr_i        (bsf_dr_o),
-        .call_dr_i       (call_dr_o),
         .cmpxchg_dr_i    (cmpxchg_dr_o),
-        .far_call_dr_i   (far_call_dr_o),
         .mov_dr_i        (mov_dr_o),
         .not_dr_i        (not_dr_o),
         .or_dr_i         (or_dr_o),
@@ -367,6 +365,8 @@ module EXE (
         .ret_imm_sr_i    (ret_imm_sr_o),
         .ret_sr_i        (ret_sr_o),
         .xchg_sr_i       (xchg_sr_o),
+        .call_sr_i       (call_sr_o),
+        .far_call_sr_i   (far_call_sr_o),
         .sr_o            (sr_next)
     );
 
@@ -376,7 +376,9 @@ module EXE (
     //==========================================================================
 
     branch_res u_br_res (
-        .valid_i             (latches_i.br_info.valid),
+        .stage_valid_i       (latches_i.valid),
+        .br_info_valid_i     (latches_i.br_info.valid),
+        .flush_mask          (flush_mask),
         .br_eip_i            (latches_i.br_info.br_eip),
         .br_xcl_i            (latches_i.br_info.br_xcl),
         .br_pred_taken_i     (latches_i.br_info.br_pred_taken),
@@ -385,6 +387,7 @@ module EXE (
         .relative_branch_i   (latches_i.cs.relative_branch),
         .special_br_i        (latches_i.cs.special_br),
         .is_far_i            (latches_i.cs.is_far),
+        .is_call_i           (latches_i.cs.is_call),
         .second_flag_needed_i(latches_i.cs.second_flag_needed),
         .br_source_i         (br_sel),
         .NEIP_i              (latches_i.NEIP),
@@ -398,13 +401,6 @@ module EXE (
     //==========================================================================
     // CONTROL STORE CHANGE LOGIC
     //==========================================================================
-
-    cs_change_logic u_cs_change_logic (
-        .op_type     (op_type),
-        .curr_cf_flag(flags_reg[CF_IDX]),
-        .cs_st_op    (latches_i.wb_cs.ST_OP),
-        .st_op_o     (st_op_next)
-    );
 
 
     //==========================================================================
@@ -425,14 +421,23 @@ module EXE (
         if (!rst) begin
             flags_reg <= 32'h0;
         end else begin
-            flags_reg[CF_IDX] <= cf_flag_o;
-            flags_reg[PF_IDX] <= pf_flag_o;
-            flags_reg[AF_IDX] <= af_flag_o;
-            flags_reg[ZF_IDX] <= zf_flag_o;
-            flags_reg[SF_IDX] <= sf_flag_o;
-            flags_reg[DF_IDX] <= df_flag_o;
-            flags_reg[OF_IDX] <= of_flag_o;
+            if(latches_i.valid)begin
+                flags_reg[CF_IDX] <= cf_flag_o;
+                flags_reg[PF_IDX] <= pf_flag_o;
+                flags_reg[AF_IDX] <= af_flag_o;
+                flags_reg[ZF_IDX] <= zf_flag_o;
+                flags_reg[SF_IDX] <= sf_flag_o;
+                flags_reg[DF_IDX] <= df_flag_o;
+                flags_reg[OF_IDX] <= of_flag_o;
+            end
         end
+    end
+
+    always_ff @(posedge clk)begin
+        if(!rst) 
+            flush_mask <= 0;
+        else
+            flush_mask <= wb_outs_i.wb_stall;
     end
 
 
@@ -457,6 +462,7 @@ module EXE (
         .aaa_cf      (aaa_cf_o),
         .adc_cf      (adc_cf_o),
         .add_cf      (add_cf_o),
+        .and_cf      (and_cf_o),
         .cmp_cf      (cmp_cf_o),
         .cmpxchg_cf  (cmpxchg_cf_o),
         .or_cf       (or_cf_o),
@@ -600,7 +606,8 @@ module EXE (
         .ZF       (and_zf_o),
         .SF       (and_sf_o),
         .PF       (and_pf_o),
-        .OF       (and_of_o)
+        .OF       (and_of_o),
+        .CF       (and_cf_o)
     );
 
     // --- BSF: Bit Scan Forward ---
@@ -627,9 +634,9 @@ module EXE (
 
     // --- CMPXCHG: Compare and Exchange ---
     cmpxchg_op u_cmpxchg_op (
-        .EAX(srA),  //srA <- EAX
-        .rm(srB[31:0]),  //srB <- CMPXCHG
-        .r(srB[63:32]),
+        .EAX(srB[31:0]),  //srB <- CMPXCHG
+        .rm(srA),  //srA <- Buffer or DR
+        .r(srB[63:32]), //srB <- CMPXCHG
         .data_size(data_size),
         .sr_data_size_vec(sr_data_size_vec),
         .dr_o(cmpxchg_dr_o),
@@ -721,6 +728,8 @@ module EXE (
         .srA      (srA),
         .srB      (srB),
         .data_size(data_size),
+        .op_type  (op_type),
+        .curr_cf_flag(flags_reg[CF_IDX]),
         .res_buf_o(mov_res_buf_o),
         .dr_o     (mov_dr_o)
     );
@@ -743,9 +752,9 @@ module EXE (
 
     // --- CALL: Call Procedure ---
     call_op u_call_op (
-        .EIP      (srA),
+        .NEIP      (srA),
         .stack_ptr(srB),
-        .dr_o     (call_dr_o),
+        .sr_o     (call_sr_o),
         .res_buf  (call_res_buf)
     );
 
@@ -755,7 +764,7 @@ module EXE (
         .segment  (srA[63:32]),
         .stack_ptr(srB),
         .res_buf  (far_call_res_buf),
-        .dr_o     (far_call_dr_o)
+        .sr_o     (far_call_sr_o)
     );
 
     // --- IRETD: Interrupt Return ---

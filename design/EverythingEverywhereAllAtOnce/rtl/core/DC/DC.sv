@@ -59,21 +59,26 @@ module DC (
     bool exe_ST_OP;
     bool wb_ST_OP;
 
-
-
     assign dc_ST_OP = latches_i.cs.ST_OP;
     assign mem_ST_OP = mem_outs_i.ST_OP;
     assign exe_ST_OP = exe_outs_i.ST_OP;
     assign wb_ST_OP = wb_outs_i.ST_OP;
 
+
+    p_address_t next_st_addr_0;
+    p_address_t next_st_addr_1;
+    bool next_st_xcl;
+
     //in store flight and stq stall logic accounts for valid bits
     assign dep_stall = in_flight_stall | stq_stall;
 
-    bool ld_exception, st_exception;
+    bool ld_exception, st_exception, rr_exception;
+
     assign ld_exception = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP) && latches_i.cs.LD_OP;
     assign st_exception = (st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP) && latches_i.cs.ST_OP;
-    assign exp_stall = (ld_exception | st_exception) & latches_i.valid;
-                       
+    assign rr_exception = latches_i.rr_gp;
+    assign exp_stall = (ld_exception | st_exception | rr_exception) & latches_i.valid;
+
 
     assign dc_stall = dep_stall | arb_stall | exp_stall;
 
@@ -163,6 +168,7 @@ module DC (
         .ST_OP(latches_i.cs.ST_OP),
         .LD_OP(latches_i.cs.LD_OP),
         .wb_sr(latches_i.wb_cs.WB_SR),
+        .wb_eax(latches_i.wb_cs.WB_EAX),
         .shift_sr_up(shift_sr_up),
         .shift_sr_down(shift_sr_down),
         .data_size_vec_o(data_size_vec),
@@ -177,7 +183,6 @@ module DC (
         .datasize(latches_i.cs.datasize),
         .write_intent(1'b0),
         .mem_op(latches_i.cs.LD_OP),
-        .rr_gp(latches_i.rr_gp),
         .outputs(ld_neuralnet_out)
     );
 
@@ -188,8 +193,18 @@ module DC (
         .datasize(latches_i.cs.datasize),
         .write_intent(latches_i.cs.ST_OP),
         .mem_op(latches_i.cs.ST_OP),
-        .rr_gp(latches_i.rr_gp),
         .outputs(st_neuralnet_out)
+    );
+
+    push_address_gen push_addr_gen(
+        .ST_PADDR_0(st_neuralnet_out.PADDR0),
+        .ST_PADDR_1(st_neuralnet_out.PADDR1),
+        .ST_XCL(st_neuralnet_out.xcl),
+        .data_size(latches_i.cs.datasize),
+        .OP_TYPE(latches_i.exe_cs.OP_TYPE),
+        .ST_PADDR_0_o(next_st_addr_0),
+        .ST_PADDR_1_o(next_st_addr_1),
+        .ST_XCL_o(next_st_xcl)
     );
 
 
@@ -222,9 +237,9 @@ module DC (
             sr_data_size_vec: sr_data_size_vec,
             shift_sr_down: shift_sr_down,
             shift_sr_up: shift_sr_up,
-            ST_XCL: st_neuralnet_out.xcl,
-            ST_PADDR_0: st_neuralnet_out.PADDR0,
-            ST_PADDR_1: st_neuralnet_out.PADDR1,
+            ST_XCL: next_st_xcl,
+            ST_PADDR_0: next_st_addr_0,
+            ST_PADDR_1: next_st_addr_1,
             MIO: ld_neuralnet_out.mio,  //i think we decided that only need ld location MIO (i think)
             NEIP: latches_i.NEIP,
             EIP: latches_i.EIP,

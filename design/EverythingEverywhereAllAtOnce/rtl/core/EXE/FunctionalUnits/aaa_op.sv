@@ -24,6 +24,7 @@ module aaa_op(
             AH = AH + 1;
             CF = 1'b1;
             AF = 1'b1;
+            AL = AL & 8'h0F;
         end else begin
             CF = 1'b0;
             AF = 1'b0;

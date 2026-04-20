@@ -5,13 +5,6 @@ module cs_change_logic(
     output bool st_op_o
 
 );
-
-    always_comb begin
-        st_op_o = cs_st_op;
-        if(op_type == CMOVC)begin
-            st_op_o = curr_cf_flag ? 1 : 0;
-        end
-    end
-
+    //depreicated 
 
 endmodule

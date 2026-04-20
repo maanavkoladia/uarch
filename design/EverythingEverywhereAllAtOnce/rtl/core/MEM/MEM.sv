@@ -65,8 +65,8 @@ module MEM (
     always_comb begin
         rel_offset = 32'd0;
         case(latches_i.exe_cs.branch_target_sel)
-            ZEXT_IMM8: rel_offset = {24'd0, latches_i.imm64[7:0]};
-            ZEXT_IMM16: rel_offset = {16'd0, latches_i.imm64[15:0]};
+            ZEXT_IMM8: rel_offset = 32'(signed'(latches_i.imm64[7:0]));
+            ZEXT_IMM16: rel_offset = 32'(signed'(latches_i.imm64[15:0]));
             IMM32: rel_offset = latches_i.imm64[31:0];
             default: rel_offset = 0;
         endcase
@@ -85,6 +85,8 @@ module MEM (
         if(!rst)begin
             hit_buf_v <= '{default: '0};
             hit_buf_mio_v <= 0;
+            hit_buf <= '{default: '0};
+            hit_buf_mio <= '{default: '0};
         end
         else if (forward_valid) begin
             hit_buf_v <= '{default: '0};
@@ -122,8 +124,8 @@ module MEM (
 
     always_comb begin
         C0 = latches_i.MIO ? line_in_mio : line_in_0;
-        up_buf = latches_i.swapLines ? line_in_0_masked : line_in_1_masked;
-        low_buf = latches_i.swapLines ? line_in_1_masked : C0;
+        up_buf = line_in_1_masked;
+        low_buf = C0;
     end
 
 
@@ -142,18 +144,6 @@ module MEM (
             clr_dcache_mio_latch = 1;
         end
     end
-
-    push_address_gen push_addr_gen(
-        .ST_PADDR_0(latches_i.ST_PADDR_0),
-        .ST_PADDR_1(latches_i.ST_PADDR_1),
-        .ST_XCL(latches_i.ST_XCL),
-        .data_size_vec(latches_i.data_size_vec),
-        .OP_TYPE(latches_i.exe_cs.OP_TYPE),
-        .ST_PADDR_0_o(next_st_addr_0),
-        .ST_PADDR_1_o(next_st_addr_1),
-        .ST_XCL_o(next_xcl)
-    );
-
 
 
     mem_miss_stall_logic mem_stall (
@@ -199,9 +189,9 @@ module MEM (
             sr_data_size_vec : latches_i.sr_data_size_vec,
             shift_sr_up: latches_i.shift_sr_up,
             shift_sr_down: latches_i.shift_sr_down,
-            ST_XCL: next_xcl,
-            ST_PADDR_0: next_st_addr_0,
-            ST_PADDR_1: next_st_addr_1,
+            ST_XCL: latches_i.ST_XCL,
+            ST_PADDR_0: latches_i.ST_PADDR_0,
+            ST_PADDR_1: latches_i.ST_PADDR_1,
             MIO: latches_i.MIO,
             br_info: latches_i.br_info,
             br_rel_target: br_rel_target,

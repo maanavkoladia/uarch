@@ -62,6 +62,7 @@ package core_stage_latches_pkg;
         bool RM_IS_DR;
         bool REG_IS_DR;
         bool REG_IS_SEGMENT;
+        bool MODRM_BUT_NO_SR;
         bool HARDCODED_DR;
         reg_ids_e HARDCODED_DR_ID;
         bool HARDCODED_SR;
@@ -75,8 +76,6 @@ package core_stage_latches_pkg;
         bool LD_OP_CANCEL;
         bool ST_OP_CANCEL;
         bool OP_IN_MODRM;
-        reg_ids_e dr_id;
-        reg_ids_e sr_id;
         logic [1:0] DATA_SIZE;
     } decode_cs_t;
 
@@ -96,6 +95,8 @@ package core_stage_latches_pkg;
         bool dr_wr;
         bool sr_wr;
         bool eax_wr;
+
+        bool MOVS_OP; //need for store addy gen
 
         logic [1:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
 
@@ -135,6 +136,7 @@ package core_stage_latches_pkg;
         bool relative_branch; //1 indicates I add it to NEIP 0 means Its an absolute jmp
         bool special_br; //for exp and int
         bool is_far;  //need to flush
+        bool is_call;
        //I think for most branches its ZF then CF.
        //I will always assume ZF if second flag is set then ill also use CF
        //hard coded in br_res logic

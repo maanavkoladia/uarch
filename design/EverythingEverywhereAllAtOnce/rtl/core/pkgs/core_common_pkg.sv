@@ -109,6 +109,7 @@ package core_common_pkg;
         //jacob, when generating this make sure its only on valid
         //we don't want to cause unsesirde flusheds ie nuclear output signals when not valid
         bool farFlush;  //need ot generate using cs_isFar if farflush
+        bool callFlush;
         bool miss_prediction;  //was there a miss predict
         l_address_t br_eip;  //where is the br, this is for btb entries
         l_address_t neip;//for when we miss predict on a taken and we need to fall thrhough on a flush in decode(EIP) and fetch (SPC)

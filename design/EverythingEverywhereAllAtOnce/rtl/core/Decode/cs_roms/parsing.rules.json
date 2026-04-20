@@ -11,6 +11,7 @@
     "RM_IS_DR" : "1",
     "REG_IS_DR" : "1",
     "REG_IS_SEGMENT" : "1",
+    "MODRM_BUT_NO_SR" : "1",
     "HARD_CODED_DR" : "1",
 
     "HARD_CODED_DR_ID" : {
@@ -249,12 +250,15 @@
         "RET_FAR_IMM"  : "28",
         "XCHG"         : "29",
         "CLD"          : "30",
-        "CMOVC"        : "31"
+        "CMOVC"        : "31",
+        "JMP"          : "32",
+        "NOP"          : "33"
     },
 
     "br_uncond" : "1",
     "relative_branch" : "1",
     "special_br" : "1",
     "is_far" : "1",
+    "is_call" : "1",
     "second_flag_needed" : "1"
 }

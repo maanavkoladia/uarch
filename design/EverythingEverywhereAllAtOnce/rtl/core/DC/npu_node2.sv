@@ -10,7 +10,6 @@ module npu_node2 (
     input logic [1:0] datasize,
     input bool write_intent,
     input bool mem_op, //this will be 
-    input bool rr_gp,
     input v_address_t next_page_vaddy,
     output npu_node2_outputs_t outputs
 );
@@ -94,7 +93,7 @@ module npu_node2 (
                             //a cross page access will never cross past the first cache line in the page i think
 
     assign outputs.DC_PF = (tlb0_pagefault || tlb1_pagefault);
-    assign outputs.DC_GP = (tlb0_generalprotection || tlb1_generalprotection || segx_gp || rr_gp);
+    assign outputs.DC_GP = (tlb0_generalprotection || tlb1_generalprotection || segx_gp);
 
     //if both addresses are valid and we are doing a ld/st op
     assign outputs.valid_mem_op = tlb0_out.physical_addr_valid && 

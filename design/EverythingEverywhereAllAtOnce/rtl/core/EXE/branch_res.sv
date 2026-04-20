@@ -5,7 +5,9 @@ import control_store_pkg::*;
 
 module branch_res(
 //br_info
-    input bool valid_i,
+    input bool stage_valid_i,
+    input bool br_info_valid_i,
+    input bool flush_mask,
     input l_address_t br_eip_i,
     input bool br_xcl_i,
 
@@ -18,6 +20,7 @@ module branch_res(
     input bool relative_branch_i,
     input bool special_br_i,
     input bool is_far_i,
+    input bool is_call_i,
     input bool second_flag_needed_i,
 
 //from exe stage
@@ -30,22 +33,27 @@ module branch_res(
     output exe_br_resolution_outputs_t outs_o
 );
 
-
+    bool valid;
     l_address_t br_target;
     bool taken;
     bool clr_exp_mode;
     bool flush;
-    bool far_flush;
+
     bool miss_prediction;
 
     bool second_flag_result;
     bool cond_br_res;
     bool target_match;
 
+    assign valid = stage_valid_i & br_info_valid_i;
     //taken logic
     assign second_flag_result = second_flag_needed_i ? ~CF : 1'b1; //mux
     assign cond_br_res = ~ZF & second_flag_result;
-    assign taken = (br_ucond_i || cond_br_res) & valid_i;
+    assign taken = (br_ucond_i || cond_br_res) & valid;
+
+    bool farFlush, callFlush;
+    assign farFlush = is_far_i & valid;
+    assign callFlush = is_call_i & valid;
 
     //target logic
     assign br_target = relative_branch_i ? (br_rel_target) : br_source_i;
@@ -55,20 +63,21 @@ module branch_res(
 
     //misprediction logic
     always_comb begin
-        miss_prediction = (taken ^ br_pred_taken_i) |
-                          (taken & br_pred_taken_i & ~target_match) |
-                           is_far_i;
+        miss_prediction = ((taken ^ br_pred_taken_i) |
+                           (taken & br_pred_taken_i & ~target_match) |
+                           (farFlush | callFlush)
+                          ) & valid;
 
-        flush     = miss_prediction;
-        far_flush = is_far_i;
+        flush = miss_prediction;
     end
 
-    assign clr_exp_mode = special_br_i;
+    assign clr_exp_mode = special_br_i & valid;
 
-    assign outs_o = '{
-        valid: valid_i,
+assign outs_o = '{
+        valid: valid & !flush_mask,
         flush: flush,
-        farFlush: far_flush,
+        farFlush: farFlush,
+        callFlush: callFlush,
         miss_prediction: miss_prediction,
         br_eip: br_eip_i,
         neip: NEIP_i,

@@ -1,5 +1,8 @@
 .org 0x1000
-    .code
+.code
+.global _start
+
+_start:
 
     # ----------------------------------------
     # B2: MOV BL, imm8

@@ -69,7 +69,7 @@ module or_op(
         4'b0011 : SF = merged_result[15];  // 16-bit: bit 15
         4'b0111 : SF = merged_result[31];  // 32-bit: bit 31
         default: SF = 0;
-      endcase  
+      endcase
     end
-
+ 
 endmodule

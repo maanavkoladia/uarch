@@ -34,14 +34,30 @@ module in_flight_sb_logic(
     // MEM stage: Check all combinations of DC's load addresses vs MEM's store addresses
     bool mem_match_ld0_st0, mem_match_ld0_st1, mem_match_ld1_st0, mem_match_ld1_st1;
     bool mem_dep_stall;
+
+    logic [10:0] aligned_ld_paddr0, aligned_ld_paddr1;
+    assign aligned_ld_paddr0 = ld_paddr_0[14:4];
+    assign aligned_ld_paddr1 = ld_paddr_1[14:4];
+
+    logic [10:0] aligned_mem_st_paddr0, aligned_mem_st_paddr1;
+    assign aligned_mem_st_paddr0 = mem_st_paddr0[14:4];
+    assign aligned_mem_st_paddr1 = mem_st_paddr1[14:4];
+
+    logic [10:0] aligned_exe_st_paddr0, aligned_exe_st_paddr1;
+    assign aligned_exe_st_paddr0 = exe_st_paddr0[14:4];
+    assign aligned_exe_st_paddr1 = exe_st_paddr1[14:4];
+
+    logic [10:0] aligned_wb_st_paddr0, aligned_wb_st_paddr1;
+    assign aligned_wb_st_paddr0 = wb_st_paddr0[14:4];
+    assign aligned_wb_st_paddr1 = wb_st_paddr1[14:4];
     
     //compare addy 0 to addy0 
     //then compare add0 to addy1
     //then see ld1 to st0 and ld1 to st1 and ld_xcl
-    assign mem_match_ld0_st0 = (ld_paddr_0 == mem_st_paddr0);
-    assign mem_match_ld0_st1 = (ld_paddr_0 == mem_st_paddr1) & mem_ST_XCL;  // Only if MEM has XCL store
-    assign mem_match_ld1_st0 = (ld_paddr_1 == mem_st_paddr0) & LD_XCL;      // Only if DC has XCL load
-    assign mem_match_ld1_st1 = (ld_paddr_1 == mem_st_paddr1) & LD_XCL & mem_ST_XCL;
+    assign mem_match_ld0_st0 = (aligned_ld_paddr0 == aligned_mem_st_paddr0);
+    assign mem_match_ld0_st1 = (aligned_ld_paddr0 == aligned_mem_st_paddr1) & mem_ST_XCL;
+    assign mem_match_ld1_st0 = (aligned_ld_paddr1 == aligned_mem_st_paddr0) & LD_XCL;
+    assign mem_match_ld1_st1 = (aligned_ld_paddr1 == aligned_mem_st_paddr1) & LD_XCL & mem_ST_XCL;
     
     assign mem_dep_stall = mem_valid & mem_ST_OP & LD_OP & 
                            (mem_match_ld0_st0 | mem_match_ld0_st1 | mem_match_ld1_st0 | mem_match_ld1_st1);
@@ -50,10 +66,10 @@ module in_flight_sb_logic(
     bool exe_match_ld0_st0, exe_match_ld0_st1, exe_match_ld1_st0, exe_match_ld1_st1;
     bool exe_dep_stall;
     
-    assign exe_match_ld0_st0 = (ld_paddr_0 == exe_st_paddr0);
-    assign exe_match_ld0_st1 = (ld_paddr_0 == exe_st_paddr1) & exe_ST_XCL;
-    assign exe_match_ld1_st0 = (ld_paddr_1 == exe_st_paddr0) & LD_XCL;
-    assign exe_match_ld1_st1 = (ld_paddr_1 == exe_st_paddr1) & LD_XCL & exe_ST_XCL;
+    assign exe_match_ld0_st0 = (aligned_ld_paddr0 == aligned_exe_st_paddr0);
+    assign exe_match_ld0_st1 = (aligned_ld_paddr0 == aligned_exe_st_paddr1) & exe_ST_XCL;
+    assign exe_match_ld1_st0 = (aligned_ld_paddr1 == aligned_exe_st_paddr0) & LD_XCL;
+    assign exe_match_ld1_st1 = (aligned_ld_paddr1 == aligned_exe_st_paddr1) & LD_XCL & exe_ST_XCL;
     
     assign exe_dep_stall = exe_valid & exe_ST_OP & LD_OP &
                            (exe_match_ld0_st0 | exe_match_ld0_st1 | exe_match_ld1_st0 | exe_match_ld1_st1);
@@ -62,10 +78,10 @@ module in_flight_sb_logic(
     bool wb_match_ld0_st0, wb_match_ld0_st1, wb_match_ld1_st0, wb_match_ld1_st1;
     bool wb_dep_stall;
     
-    assign wb_match_ld0_st0 = (ld_paddr_0 == wb_st_paddr0);
-    assign wb_match_ld0_st1 = (ld_paddr_0 == wb_st_paddr1) & wb_ST_XCL;
-    assign wb_match_ld1_st0 = (ld_paddr_1 == wb_st_paddr0) & LD_XCL;
-    assign wb_match_ld1_st1 = (ld_paddr_1 == wb_st_paddr1) & LD_XCL & wb_ST_XCL;
+    assign wb_match_ld0_st0 = (aligned_ld_paddr0 == aligned_wb_st_paddr0);
+    assign wb_match_ld0_st1 = (aligned_ld_paddr0 == aligned_wb_st_paddr1) & wb_ST_XCL;
+    assign wb_match_ld1_st0 = (aligned_ld_paddr1 == aligned_wb_st_paddr0) & LD_XCL;
+    assign wb_match_ld1_st1 = (aligned_ld_paddr1 == aligned_wb_st_paddr1) & LD_XCL & wb_ST_XCL;
     
     assign wb_dep_stall = wb_valid & wb_ST_OP & LD_OP &
                           (wb_match_ld0_st0 | wb_match_ld0_st1 | wb_match_ld1_st0 | wb_match_ld1_st1);

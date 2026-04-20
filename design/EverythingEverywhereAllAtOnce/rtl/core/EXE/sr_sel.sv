@@ -12,7 +12,8 @@ module sr_sel (
     input uint64_t ret_imm_sr_i,
     input uint64_t ret_sr_i,
     input uint64_t xchg_sr_i,
-    
+    input uint64_t call_sr_i,
+    input uint64_t far_call_sr_i,
     // Selected output
     output uint64_t sr_o
 );
@@ -25,6 +26,8 @@ module sr_sel (
             RET_IMM:     sr_o = ret_imm_sr_i;
             RET:         sr_o = ret_sr_i;
             XCHG:        sr_o = xchg_sr_i;
+            CALL:        sr_o = call_sr_i;
+            FAR_CALL:    sr_o = far_call_sr_i;
             default:     sr_o = sr_data;
         endcase
     end

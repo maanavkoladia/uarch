@@ -15,7 +15,7 @@ module wb_stq_sb_logic(
 
     logic [$clog2(NUM_WB_ST_QS)-1:0] ld0_bank_num;
     logic [$clog2(NUM_WB_ST_QS)-1:0] ld1_bank_num;
-    
+
     //[5:4] --> bank number of each load address 
     assign ld0_bank_num = ld_paddr_0[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];
     assign ld1_bank_num = ld_paddr_1[$clog2(CACHE_LINES_SIZE_B)+$clog2(NUM_WB_ST_QS)-1 : $clog2(CACHE_LINES_SIZE_B)];
@@ -32,10 +32,10 @@ module wb_stq_sb_logic(
         ld1_bank_hit = 0;
     // Check all entries in each bank's queue
         for(int i = 0; i < ST_Q_DEPTH; i++) begin
-            ld0_bank_hit |= ((stq_info.entries[ld0_bank_num*ST_Q_DEPTH + i].address == ld_paddr_0)
+            ld0_bank_hit |= ((stq_info.entries[ld0_bank_num*ST_Q_DEPTH + i].address[14:4] == ld_paddr_0[14:4])
                                         & stq_info.entries[ld0_bank_num*ST_Q_DEPTH + i].valid);
             
-            ld1_bank_hit |= ((stq_info.entries[ld1_bank_num*ST_Q_DEPTH + i].address == ld_paddr_1)
+            ld1_bank_hit |= ((stq_info.entries[ld1_bank_num*ST_Q_DEPTH + i].address[14:4] == ld_paddr_1[14:4])
                                         & stq_info.entries[ld1_bank_num*ST_Q_DEPTH + i].valid);
         end
     end

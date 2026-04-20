@@ -182,7 +182,6 @@ module EveryThing_TOP (
         .nextLatches_i(exe_latches_next),
         .write_enable_i(mem_outputs.exe_stage_latch_we),
         .flush(exe_outputs.br_res_out.flush),
-        .farFlush(exe_outputs.br_res_out.farFlush),
         .latches_o(exe_latches)
     );
 
