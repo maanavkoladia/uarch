@@ -4,7 +4,7 @@
 
 NS_0 = (!S_1 & !S_2 & V_Hit_i) | (S_0 & !S_1 & !S_2) | (!S_0 & S_1 & !S_2 & !EB_V_i) | (!S_0 & !S_2 & DC_will_evict_i & !EB_V_i)
 
-NS_1 = (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i) | (!S_1 & !S_2 & !V_Hit_i & DC_will_evict_i & VC_needs_2_evict_i) | (!S_1 & !S_2 & !V_Hit_i & DC_will_evict_i & !EB_V_i)
+NS_1 = (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i) | (!S_1 & !S_2 & !V_Hit_i & DC_will_evict_i & !EB_V_i) | (!S_1 & !S_2 & !V_Hit_i & DC_will_evict_i & VC_needs_2_evict_i)
 
 NS_2 = (!S_0 & !S_1 & S_2) | (!S_0 & !S_1 & !V_Hit_i & DC_will_evict_i & !VC_needs_2_evict_i & EB_V_i)
 
@@ -18,7 +18,7 @@ Write_VSWAP_o = (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i)
 
 Update_LRU_o = (S_0 & S_1 & !S_2)
 
-busy_o = (S_0 & !S_2) | (S_1 & !S_2)
+busy_o = (S_1 & !S_2) | (S_0 & !S_2)
 
 blocked_o = (!S_0 & S_1 & !S_2 & EB_V_i)
 
