@@ -192,15 +192,13 @@ T6_end:
     sbbl 12(%esi), %ebx        # EBX = 0x1AF, CF=0
 
     # ============================================================
-    # VERIFY: use JBE to branch on CF=0, ZF=0 (not taken expected)
-    #   After T28: CF=0, ZF=0  →  JBE not taken  →  EAX = 0x12345678
+    # VERIFY: use JNBE to branch on CF=0, ZF=0 (taken expected)
+    #   After T28: CF=0, ZF=0  →  JNBE taken  →  EAX = 0x12345678
     # ============================================================
-    movl $0x12345678, %eax     # sentinel: only set if JBE falls through
-    jbe  T_jbe_taken           # CF=0 and ZF=0 → NOT taken
-    jmp  T_jbe_end
-T_jbe_taken:
+    movl $0x12345678, %eax     # sentinel
+    jnbe T_jnbe_end            # CF=0 and ZF=0 → TAKEN → skip deadbeef
     movl $0xDEADBEEF, %eax     # SHOULD NOT EXECUTE
-T_jbe_end:
+T_jnbe_end:
     # EXPECT: EAX = 0x12345678
 
     hlt

@@ -22,7 +22,7 @@ module sal_op(
     always_comb begin
         // Defaults
         result = value_i;
-        ZF = 0; SF = 0; PF = 0; 
+        ZF = 0; SF = 0; PF = 0;
         CF = 0; OF = 0;
 
         if (count > 0) begin

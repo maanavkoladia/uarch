@@ -140,7 +140,7 @@ module modrm_processor (
 
 
         //sr reg setting
-        if(rm_is_dr && !reg_is_segment && !modrm_but_no_sr) begin
+        if(rm_is_dr && !reg_is_segment && !modrm_but_no_sr && !decode_cs_inputs.HARDCODED_SR) begin
             case(modrm_byte[5:3])    //rm id
                 3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;

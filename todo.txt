@@ -1,7 +1,6 @@
 TODO:
 
 OPCODE CHECK
-- BSF
 - CALL
 -IRETD
 - OPCODE FF
@@ -13,10 +12,8 @@ OPCODE CHECK
 -PAVG
 -PAVGW
 - REP
-- RET
 - SAL 
-- SAR 
-- SBB  
+- SAR   
 -MOVQ
 - MOVS
 

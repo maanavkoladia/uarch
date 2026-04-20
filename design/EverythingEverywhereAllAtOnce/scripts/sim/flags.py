@@ -69,7 +69,7 @@ class Flags:
         self._set_bit(PF, (bin(low_byte).count('1') % 2) == 0)
         self._set_bit(AF, 0)
 
-    def update_sub(self, a, b, result, bits):
+    def update_sub(self, a, b, result, bits, borrow=0):
         """Update flags after a SUB/SBB operation.
         a = dst, b = src (what was subtracted), result = a - b (- borrow)."""
         mask = (1 << bits) - 1
@@ -95,8 +95,8 @@ class Flags:
         low_byte = res_masked & 0xFF
         self._set_bit(PF, (bin(low_byte).count('1') % 2) == 0)
 
-        # AF: borrow from bit 4
-        self._set_bit(AF, (a & 0xF) < (b & 0xF))
+        # AF: borrow from bit 4 (must include incoming borrow for SBB)
+        self._set_bit(AF, (a & 0xF) < (b & 0xF) + borrow)
 
     def update_sal(self, original, result, count, bits):
         """Update flags after SAL/SHL operation.

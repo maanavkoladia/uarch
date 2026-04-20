@@ -294,7 +294,7 @@ class CPU:
         borrow = self.flags.get_cf()
 
         result = dst_val - src_val - borrow
-        self.flags.update_sub(dst_val, src_val, result, bits)
+        self.flags.update_sub(dst_val, src_val, result, bits, borrow)
         self._write_operand(dst_op, result & mask, size_bytes)
 
     def exec_bsf(self, inst):
