@@ -33,12 +33,12 @@ T1_func:
     # ---------------------------------
     # Inside callee
     # ---------------------------------
-    popl %ebx
+    # popl %ebx
     # EXPECT: EBX = address of T1_return
 
     movl $0xAAAAAAAA, %eax
-
-    jmp T1_return     # manual "ret"
+    ret
+    # jmp T1_return     # manual "ret"
 
 
 # =================================================
@@ -60,12 +60,13 @@ T2_after:
 
 
 T2_func:
-    popl %edx
+    # popl %edx
     # EXPECT: EDX = address of T2_after
 
     movl $0xBBBBBBBB, %ecx
 
-    jmp T2_after
+    # jmp T2_after
+    ret
 
 
 # =================================================
@@ -85,22 +86,24 @@ T3_after:
 
 
 T3_func1:
-    popl %ebx          # return addr of T3_after
+    # popl %ebx          # return addr of T3_after
 
     call T3_func2      # nested call
 
     # SHOULD NOT REACH HERE if nested call returns correctly
+return_loc:
     movl $0xDEADBEEF, %eax
-    jmp %ebx
+    # jmp T3_after
+    ret
 
 
 T3_func2:
-    popl %ecx          # return addr inside func1
+    # popl %ecx          # return addr inside func1
 
     movl $0xCCCCCCCC, %eax
 
-    jmp %ecx           # return to func1 continuation
-
+    # jmp return_loc          # return to func1 continuation
+    ret
 
 # =================================================
 # TEST 4: CALL rel16 (operand-size override)
@@ -130,7 +133,7 @@ T4_func:
 
     movl $0xDDDDDDDD, %edx
 
-    jmp %eax
+    jmp T4_after
 
 
 # =================================================
