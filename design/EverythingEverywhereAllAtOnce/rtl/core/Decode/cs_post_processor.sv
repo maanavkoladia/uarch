@@ -35,7 +35,7 @@ module cs_post_processor (
                 else if (reg_field == 3'd7) overriden_op_type = SAR;
             end
             CTRL: begin
-                if(reg_field == 3'd2) overriden_op_type = CALL;
+                if(reg_field == 3'd4) overriden_op_type = JMP;
                 else if(reg_field == 3'd6) overriden_op_type = PUSH;
             end
             ALU: begin
