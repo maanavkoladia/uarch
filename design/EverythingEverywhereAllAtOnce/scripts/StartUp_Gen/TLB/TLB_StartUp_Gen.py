@@ -213,7 +213,7 @@ def main():
         f.write(verilog)
 
     print(f"[gen_tlb] Written → {out_path}")
-    print(verilog)
+    #print(verilog)
 
 
 if __name__ == "__main__":
