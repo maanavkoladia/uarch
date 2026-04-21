@@ -17,7 +17,7 @@ TEST_DIR  ?= $(ROOT_DIR)/tests/Stages/Harish_StageTesting/config
 
 #this needs to be changed to use genconf var
 # ── Inputs (override on command line) ──
-ASM       ?= $(TEST_DIR)/OrNot.s
+ASM       ?= $(TEST_DIR)/StagesProgMovs.s
 TLB       ?= $(TEST_DIR)/TLB.conf.json
 CORE_REGS ?= $(TEST_DIR)/CoreRegs.conf.json
 

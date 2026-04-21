@@ -146,16 +146,16 @@ def parse_rtl_log(path):
       [EXE LATCHES]     → EIP + FLAGS (flags are computed here)
       [WB NEXT LATCHES] → EIP + register writes
 
-    Both are keyed by EIP and merged.
-    Returns list of records in EIP-commit order (order of first WB commit).
+    Both are collected as ordered lists and merged positionally.
+    This correctly handles loops where the same EIP is committed multiple times.
+    Returns list of records in WB-commit order.
     """
 
-    # We track: exe_data[eip] = flags_dict
-    #           wb_data[eip]  = writes_dict  (first commit wins)
-    #           wb_order       = list of EIPs in order of first WB commit
-    exe_data = {}   # eip -> flags
-    wb_data  = {}   # eip -> writes dict
-    wb_order = []   # EIPs in WB commit order
+    # Use ordered lists so that loop iterations are all captured.
+    # exe_list[i] and wb_list[i] correspond to the same instruction instance
+    # because an in-order processor executes them in the same sequential order.
+    exe_list = []   # [{'eip': int, 'flags': dict}, ...] in EXE-encounter order
+    wb_list  = []   # [{'eip': int, 'writes': dict}, ...] in WB-commit order
 
     IN_NONE = 0
     IN_EXE  = 1
@@ -176,8 +176,7 @@ def parse_rtl_log(path):
     def _flush_exe():
         nonlocal cur_valid, cur_eip, cur_flags
         if cur_valid and cur_eip is not None and cur_flags:
-            # Keep the LAST valid entry (most recent execution, not a stale bubble)
-            exe_data[cur_eip] = dict(cur_flags)
+            exe_list.append({'eip': cur_eip, 'flags': dict(cur_flags)})
         cur_valid = False
         cur_eip   = None
         cur_flags = {}
@@ -191,9 +190,8 @@ def parse_rtl_log(path):
                 writes[cur_dr_reg.upper().strip()] = cur_dr_val
             if cur_wb_sr and cur_sr_reg and cur_sr_reg not in ('---', 'ERR', '???', 'ETR'):
                 writes[cur_sr_reg.upper().strip()] = cur_sr_val
-            if cur_eip not in wb_data:
-                wb_data[cur_eip] = writes
-                wb_order.append(cur_eip)
+            # Always append — loops produce multiple commits for the same EIP
+            wb_list.append({'eip': cur_eip, 'writes': writes})
         cur_valid  = False
         cur_eip    = None
         cur_wb_dr  = False
@@ -305,15 +303,17 @@ def parse_rtl_log(path):
     elif state == IN_WB:
         _flush_wb()
 
-    # Build final record list in WB commit order
+    # Build final record list by matching EXE flags to WB commits positionally.
+    # For an in-order processor, exe_list[i] and wb_list[i] correspond to the
+    # same instruction instance (EXE is visited a fixed number of cycles before
+    # WB; filtering bubbles keeps both lists in the same instruction order).
     records = []
-    for eip in wb_order:
-        writes = wb_data.get(eip, {})
-        flags  = exe_data.get(eip, {})
+    for i, wb in enumerate(wb_list):
+        flags = exe_list[i]['flags'] if i < len(exe_list) else {}
         records.append({
-            'eip':      eip,
+            'eip':      wb['eip'],
             'mnemonic': 'RTL',
-            'writes':   writes,
+            'writes':   wb['writes'],
             'flags':    flags,
         })
 

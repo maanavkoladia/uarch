@@ -44,7 +44,7 @@ _start:
 
     movq    (%esi),    %mm0        # load mm0 (dst): words [1, 0x7F, 0x100, 0x8000]
     movq    8(%esi),   %mm1        # load mm1 (src): words [0, 0x7E, 0x7FFF, 0x8001]
-    packsswb %mm1, %mm0            # dst bytes 0-3 from mm0 words, 4-7 from mm1 words
+    packsswb %mm1, %mm0            # dst bytes 0-3 from mm0 words, 4-7 from mm1P words
     movq    %mm0, 0x60(%esi)       # store result
 
     movl    $0x00000001, %ecx
