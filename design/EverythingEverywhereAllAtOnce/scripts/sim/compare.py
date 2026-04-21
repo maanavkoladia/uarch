@@ -27,7 +27,6 @@ How it works:
 import re
 import sys
 import argparse
-from collections import OrderedDict
 
 # ---------------------------------------------------------------------------
 # Normalized record dataclass (plain dict)
@@ -70,11 +69,10 @@ _AF_DEFINING_OPS = frozenset([
 # ---------------------------------------------------------------------------
 def parse_sim_trace(path):
     """Parse a sim_trace.log produced by sim.py --trace-file.
-    Returns OrderedDict { eip (int) -> record }.
-    If the same EIP appears twice (e.g. a loop), they are stored in order
-    under a list — but for simple linear tests EIPs are unique.
+    Returns a list of records in execution order.
+    Repeated EIPs (e.g. loop iterations) are preserved in the order they appear.
     """
-    records = OrderedDict()
+    flat = []
     with open(path) as f:
         for line in f:
             line = line.strip()
@@ -94,15 +92,7 @@ def parse_sim_trace(path):
             mnemonic = m.group(2)
             writes   = _parse_writes(m.group(3))
             flags    = _parse_flags(m.group(4))
-
-            rec = {'eip': eip, 'mnemonic': mnemonic, 'writes': writes, 'flags': flags}
-            # Use list to handle repeated EIPs (loops)
-            records.setdefault(eip, []).append(rec)
-
-    # Flatten: if each EIP appears only once, simplify to single record list
-    flat = []
-    for recs in records.values():
-        flat.extend(recs)
+            flat.append({'eip': eip, 'mnemonic': mnemonic, 'writes': writes, 'flags': flags})
     return flat
 
 

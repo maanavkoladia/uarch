@@ -3,7 +3,7 @@ import Fetch_pkg::*;
 
 module BTB (
     input  wire         clk,
-    input  wire         reset,
+    input  wire         rst,
     input  address_t    spc,
 
         //execute info
@@ -74,9 +74,9 @@ module BTB (
 
 
     always_ff @(posedge clk) begin
-        if (reset) begin
+        if (!rst) begin
             for (int i = 0; i < btb_entries; i++) begin
-                btb_entry_arr[i].valid <= 1'b0;
+                btb_entry_arr[i] <= '{default: '0};
             end
         end else if (exe_br_valid) begin
             btb_entry_arr[exe_fields.index] <= '{

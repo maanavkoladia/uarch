@@ -34,7 +34,7 @@ module branch_res(
 );
 
     bool valid;
-    l_address_t br_target;
+    l_address_t real_br_target;
     bool taken;
     bool clr_exp_mode;
     bool flush;
@@ -56,13 +56,14 @@ module branch_res(
     assign callFlush = is_call_i & valid;
 
     //target logic
-    assign br_target = relative_branch_i ? (br_rel_target) : br_source_i;
+    assign real_br_target = relative_branch_i ? (br_rel_target) : br_source_i;
 
     //target match check
-    assign target_match = speculative_target_i == br_target;
+    assign target_match = speculative_target_i == real_br_target;
 
     //misprediction logic
     always_comb begin
+
         miss_prediction = ((taken ^ br_pred_taken_i) |
                            (taken & br_pred_taken_i & ~target_match) |
                            (farFlush | callFlush)
@@ -75,13 +76,13 @@ module branch_res(
 
 assign outs_o = '{
         valid: valid & !flush_mask,
-        flush: flush,
+        flush: flush & !flush_mask & valid,
         farFlush: farFlush,
         callFlush: callFlush,
         miss_prediction: miss_prediction,
         br_eip: br_eip_i,
         neip: NEIP_i,
-        br_target: br_target,
+        br_target: taken ? real_br_target : NEIP_i,
         taken: taken,
         br_XCL: br_xcl_i,
         clr_exp_mode: clr_exp_mode,

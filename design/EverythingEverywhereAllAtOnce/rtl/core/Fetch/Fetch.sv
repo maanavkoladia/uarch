@@ -106,8 +106,8 @@ module Fetch (
                                rom_data_out :icache_info_i.instruction_line;
 
     assign br_restore_spc = exe_outs_i.br_res_out.taken
-                          ? exe_outs_i.br_res_out.br_target
-                          : exe_outs_i.br_res_out.br_eip;
+                          ? {exe_outs_i.br_res_out.br_target[31:4], 4'b0000}
+                          : {exe_outs_i.br_res_out.neip[31:4], 4'b0000};
 
     assign br_target =  spc_sel_logic_outs.br_target_sel ?
                         spc_sel_logic_outs.br_target
@@ -190,7 +190,7 @@ module Fetch (
     // This prevents exception handler branches from polluting user BTB entries
     BTB btb(
         .clk(clk),
-        .reset(!rst),
+        .rst(rst),
         .spc(SPC), //address
 
         .exe_br_valid(exe_outs_i.br_res_out.valid), //bool
