@@ -10,12 +10,14 @@
 #   make clean               # remove generated outputs
 # ─────────────────────────────────────────────
 
-SIM_DIR   := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-ROOT_DIR  := $(abspath $(SIM_DIR)/../..)
-TEST_DIR  := $(ROOT_DIR)/tests/Stages/Harish_StageTesting/config
+SIM_DIR   ?= $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+ROOT_DIR  ?= $(abspath $(SIM_DIR)/../..)
+TEST_DIR  ?= $(ROOT_DIR)/tests/Stages/Harish_StageTesting/config
 
+
+#this needs to be changed to use genconf var
 # ── Inputs (override on command line) ──
-ASM       ?= $(TEST_DIR)/SAR_SAL.s
+ASM       ?= $(TEST_DIR)/OrNot.s
 TLB       ?= $(TEST_DIR)/TLB.conf.json
 CORE_REGS ?= $(TEST_DIR)/CoreRegs.conf.json
 
@@ -28,8 +30,12 @@ TRACE_FILE  ?= sim_trace.log
 RTL_LOG     ?= $(abspath $(TEST_DIR)/../run.log)
 REPORT_FILE ?= compare_report.txt
 
+NORM_RTL_LOG ?= norm_rtl.log
+NORM_SIM_LOG ?= norm_sim.log
+
+#same here
 # ── Base command ──
-SIM_CMD = python3 $(SIM_DIR)sim.py --asm $(ASM) --tlb $(TLB) --core-regs $(CORE_REGS) --max-cycles $(MAX_CYCLES)
+SIM_CMD = $(PYTHON) $(SIM_DIR)/sim.py --asm $(ASM) --tlb $(TLB) --core-regs $(CORE_REGS) --max-cycles $(MAX_CYCLES)
 
 # ── Targets ──
 .PHONY: run quiet json dump trace compare clean help
@@ -56,21 +62,21 @@ trace:
 	$(SIM_CMD) --quiet --trace-file $(TRACE_FILE)
 	@echo "Sim trace written to $(TRACE_FILE)"
 
-compare:
+compare: run
 	$(SIM_CMD) --quiet --trace-file $(TRACE_FILE)
-	python3 $(SIM_DIR)compare.py \
+	$(PYTHON) $(SIM_DIR)/compare.py \
 		--sim $(TRACE_FILE) \
 		--rtl $(RTL_LOG) \
 		--out $(REPORT_FILE) \
-		--norm-sim norm_sim.log \
-		--norm-rtl norm_rtl.log
+		--norm-sim  $(NORM_SIM_LOG) \
+		--norm-rtl $(NORM_RTL_LOG)
 	@echo ""
 	@echo "Report:          $(REPORT_FILE)"
-	@echo "Normalized SIM:  norm_sim.log   (use: diff norm_sim.log norm_rtl.log)"
-	@echo "Normalized RTL:  norm_rtl.log"
+	@echo "Normalized SIM:  $(NORM_SIM_LOG)   (use: diff norm_sim.log norm_rtl.log)"
+	@echo "Normalized RTL:  $(NORM_RTL_LOG)"
 
-clean:
-	rm -f $(OUT_JSON) $(LOG) $(TRACE_FILE) $(REPORT_FILE) norm_sim.log norm_rtl.log
+#clean:
+#	rm -f $(OUT_JSON) $(LOG) $(TRACE_FILE) $(REPORT_FILE) norm_sim.log norm_rtl.log
 
 help:
 	@echo "Targets:"
@@ -90,3 +96,4 @@ help:
 	@echo "  CORE_REGS=<path>  Core registers config JSON"
 	@echo "  MAX_CYCLES=<n>    Max cycles before stopping"
 	@echo "  OUT_JSON=<path>   JSON output file"
+

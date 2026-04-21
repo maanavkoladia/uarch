@@ -39,7 +39,9 @@ module or_op(
     assign CF = 0;
     
     // PF always reflects parity of the lowest 8 bits, regardless of data_size
-    assign PF = ~^merged_result[7:0];
+    assign PF = ~data_size[0] ? ~^merged_result[15:8] :  ~^merged_result[7:0];
+
+
 
     bool zf_low8;
     bool zf_up8;
@@ -53,7 +55,7 @@ module or_op(
 
     always_comb begin
       case(data_size)
-        4'b0001 : ZF = zf_low8; 
+        4'b0001 : ZF = zf_low8;
         4'b0010 : ZF = zf_up8;
         4'b0011 : ZF = zf_low16;
         4'b0100 : ZF = zf_low16 & zf_up16;

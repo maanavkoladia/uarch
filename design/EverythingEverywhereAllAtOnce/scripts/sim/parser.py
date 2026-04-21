@@ -349,10 +349,21 @@ def parse_objdump(objdump_text, objdump_raw):
                 parts = [mnemonic]
 
         # Strip size suffixes that objdump sometimes adds (addl -> add, movl -> mov)
-        # But keep jmp, jne etc as-is
+        # But keep jmp, jne etc as-is, and keep MMX mnemonics whole (their
+        # trailing b/w/d is part of the name, not a size suffix).
+        _MMX_MNEMONICS = frozenset({
+            'packsswb', 'packssdw',
+            'paddw', 'paddd',
+            'pavgb', 'pavgw',
+            'movq', 'movd',
+        })
         size_suffix = None
         clean_mnemonic = mnemonic
-        if mnemonic not in ("hlt", "nop") and not mnemonic.startswith("j") and not mnemonic.startswith("call") and not mnemonic.startswith("ret"):
+        if (mnemonic not in ("hlt", "nop")
+                and mnemonic not in _MMX_MNEMONICS
+                and not mnemonic.startswith("j")
+                and not mnemonic.startswith("call")
+                and not mnemonic.startswith("ret")):
             # Strip trailing b/w/l suffix if present.
             # Exclude last-two-char combos where the 'b'/'w'/'l' is part of
             # the mnemonic itself, not a size suffix:

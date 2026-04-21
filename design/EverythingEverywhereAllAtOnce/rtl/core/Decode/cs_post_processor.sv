@@ -22,7 +22,8 @@ module cs_post_processor (
     output wb_cs_t wb_cs_o
 );
 
-    exe_cs_operation_type_e overriden_op_type, overriden_br_sel;
+    exe_cs_operation_type_e overriden_op_type;
+    source_selector_e overriden_br_sel;
     logic [2:0] reg_field;
     bool ff_jmp, ff_push;
     assign reg_field = modrm_byte[5:3];
@@ -169,15 +170,17 @@ module cs_post_processor (
                                 1'b0 :
                                 rr_cs_i.MOVS_OP ? 1'b1 : mem_cs_i.ST_OP,
         OP_TYPE            : (op_in_modrm) ? overriden_op_type : exe_cs_i.OP_TYPE,
-        alu_inputA_sel     : ff_jmp ? NO_EXE : exe_cs_i.alu_inputA_sel,
+        alu_inputA_sel     : ff_jmp ? 
+                                NO_EXE : 
+                                ff_push ? DR_REGISTER : exe_cs_i.alu_inputA_sel,    //can technically use 4-1 mux here instaed of 2 2-1
         alu_inputB_sel     : ff_jmp ? NO_EXE : exe_cs_i.alu_inputB_sel,
-        branch_target_sel  : exe_cs_i.branch_target_sel,
+        branch_target_sel  : (op_in_modrm) ? overriden_br_sel : exe_cs_i.branch_target_sel,
         shift_by_one       : exe_cs_i.shift_by_one,
-        br_ucond           : exe_cs_i.br_ucond,
+        br_ucond           : ff_push ? 1'b0 : exe_cs_i.br_ucond,
         relative_branch    : exe_cs_i.relative_branch,
         special_br         : exe_cs_i.special_br,
         is_far             : exe_cs_i.is_far,
-        is_call            : ff_jmp ? 1'b0 : exe_cs_i.is_call,
+        is_call            : ff_jmp || ff_push ? 1'b0 : exe_cs_i.is_call,
         second_flag_needed : exe_cs_i.second_flag_needed
     };
 

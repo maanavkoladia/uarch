@@ -226,7 +226,7 @@ def main():
         f.write(verilog)
 
     print(f"[gen_reg] Written → {out_path}")
-    print(verilog)
+    #print(verilog)
 
 
 if __name__ == "__main__":
