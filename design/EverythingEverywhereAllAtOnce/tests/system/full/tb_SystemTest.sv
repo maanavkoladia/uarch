@@ -9,7 +9,7 @@ import Fetch_pkg::*;
 import DCache_common_pkg::*;
 import WriteBack_pkg::*;
 
-`define CLK_PERIOD 100
+//`define CLK_PERIOD (100)
 
 
 module tb_SystemTest ();
@@ -18,6 +18,7 @@ module tb_SystemTest ();
     `include "debugUtils/tb_utils_defs.svh"
 
     `DEBUG_UTILS_INIT
+
 
     logic rst;
 
@@ -50,6 +51,9 @@ module tb_SystemTest ();
 
     initial begin
         `LOG("TB Starting");
+        $display("Clk Period: %d", `CLK_PERIOD);
+        $display("Log File: %s", `LOG_FILE_NAME);
+
         $display("%m");
         // core_2_dcache = '{default: '0};
         // for (int i = 0; i < NUM_DCACHE_PORTS; i++) core_2_dcache.stq_heads[i].empty = 1;

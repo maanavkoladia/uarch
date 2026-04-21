@@ -44,7 +44,7 @@ import tb_debug_pkg::*;
     task automatic print_cycle_header(); \
         $fdisplay(logfd, ""); \
         $fdisplay(logfd, "==================== CYCLE %0d (t=%0t) ====================", cycle_count, $time); \
-    endtask \
+    endtask 
 
 `define WAVEFORM_GEN_INIT \
     initial begin\

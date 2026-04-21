@@ -10,9 +10,9 @@
 #   make clean               # remove generated outputs
 # ─────────────────────────────────────────────
 
-#SIM_DIR   ?= $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-#ROOT_DIR  ?= $(abspath $(SIM_DIR)/../..)
-#TEST_DIR  ?= $(ROOT_DIR)/tests/Stages/Harish_StageTesting/config
+SIM_DIR   ?= $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+ROOT_DIR  ?= $(abspath $(SIM_DIR)/../..)
+TEST_DIR  ?= $(ROOT_DIR)/tests/Stages/Harish_StageTesting/config
 
 
 #this needs to be changed to use genconf var

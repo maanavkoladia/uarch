@@ -1,34 +1,35 @@
-export SIM_DIR PYTHON ASM TLB CORE_REGS LOG RTL_LOG NORM_RTL_LOG NORM_SIM_LOG 
+export SIM_DIR PYTHON ASM TLB CORE_REGS LOG RTL_LOG NORM_RTL_LOG NORM_SIM_LOG REPORT_FILE OUT_JSON
 
 TEST_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 PROJECT_ROOT := $(shell pwd | sed -E 's|(.*EverythingEverywhereAllAtOnce).*|\1|')
 
+LOG_DIR = $(TEST_DIR)/logDumps/
 
 DISTRO := $(shell . /etc/os-release && echo $$ID)
 
 TARGET = SystemTest
 
-STRUCTRURAL := true
+STRUCTRURAL := false
 
-RTL_RUN_LOG_FILE := $(TEST_DIR)/logDumps/run.log
+RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
 CLK_PERIOD := 8
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
 #sim rtl var
-ASM       = $(TEST_DIR)/config/TestProgs/StagesProgJmp.s
+ASM       = $(TEST_DIR)/config/TestProgs/MovHeavy.s
 TLB       = $(TEST_DIR)/config/TLB.conf.json
 CORE_REGS = $(TEST_DIR)/config/CoreRegs.conf.json
 
-OUT_JSON    = $(TEST_DIR)/logDumps/sim_output.json
-LOG = $(TEST_DIR)/logDumps/sim_run.log
-TRACE_FILE  = $(TEST_DIR)/logDumps/sim_trace.log
+OUT_JSON    = $(LOG_DIR)/sim_output.json
+LOG = $(LOG_DIR)/sim_run.log
+TRACE_FILE  = $(LOG_DIR)/sim_trace.log
 RTL_LOG    = $(RTL_RUN_LOG_FILE)
-REPORT_FILE = $(TEST_DIR)/logDumps/compare_report.txt
+REPORT_FILE = $(LOG_DIR)/compare_report.txt
 
-NORM_RTL_LOG = $(TEST_DIR)/logDumps/norm_rtl.log
-NORM_SIM_LOG = $(TEST_DIR)/logDumps/norm_sim.log
+NORM_RTL_LOG = $(LOG_DIR)/norm_rtl.log
+NORM_SIM_LOG = $(LOG_DIR)/norm_sim.log
 
 include $(PROJECT_ROOT)/Make.vars
 include $(PROJECT_ROOT)Make.build
@@ -36,7 +37,7 @@ include $(PROJECT_ROOT)Make.build
 
 GEN_CONF = config/startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_stages
+TOP_MODULE_NAME = tb_SystemTest
 
 STARTUP_FILES = \
 				gen/memLoader.sv \
@@ -48,7 +49,7 @@ STARTUP_FILES = \
 TB_FILES = \
 		   $(STARTUP_FILES) \
 		   debugUtils/debug_pkg.sv \
-		   tb_stages.sv
+		   tb_SystemTest.sv
 
 SRC_FILES :=
 
@@ -60,15 +61,15 @@ endif
 
 #adding define
 CC_FLAGS += \
-			$(RTL_RUN_LOG_FILE) \
-			$(CLK_PERIOD) \
+    +define+LOG_FILE_NAME=\"$(RTL_RUN_LOG_FILE)\" \
+    +define+CLK_PERIOD=$(CLK_PERIOD) \
 
 .PHONY: all run clean see gen
 
-all: $(TARGET)
+all: $(TARGET) 
 	
-$(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee compile.log
+$(TARGET):  makeLogDir $(SRC_FILES) 
+	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee $(LOG_DIR)/compile.log
 
 run: $(TARGET)
 	./$< 2>&1| tee sim.log
@@ -78,11 +79,11 @@ view: run
 	#./$(TARGET) -gui &
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
 
-sim-run:
+sim-run: makeLogDir
 	$(MAKE) -C $(SIM_DIR) run
 
-compare:
-	$(MAKE) -C $(SIM_DIR) compare
+compare: makeLogDir
+	$(MAKE) -C $(SIM_DIR) compare 2>&1 | tee $(LOG_DIR)/make_compare.log
 
 gen:
 	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
@@ -92,6 +93,9 @@ gen:
 see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'	
 	@echo -e "\n"
+
+makeLogDir:
+	@mkdir -p $(LOG_DIR)
 
 clean:
 	rm -f *.vcd
@@ -104,7 +108,6 @@ clean:
 	rm -f ucli.key
 	rm -rf gen/
 	rm -rf logDumps/
-	mkdir logDumps/
 
 push: clean
 	git add -A
@@ -113,4 +116,5 @@ push: clean
 
 pull: 
 	git pull
+
 
