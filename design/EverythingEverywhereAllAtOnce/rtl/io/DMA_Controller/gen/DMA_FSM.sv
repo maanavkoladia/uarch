@@ -103,17 +103,31 @@ wire NS_0_t2;
 
 `OR_3(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2)
 
+<<<<<<< HEAD
 // NS_1 = (S_1 & !S_2 & !ld_buf_data_V_i & writeBuf_V_i) | (S_0 & !S_1 & !S_2 & !write_Complete_i) | (!S_0 & !S_1 & !S_2 & start_write_i) | (!S_0 & S_1 & !S_2 & !ld_buf_data_V_i) | (S_0 & S_1 & !S_2 & writeBuf_V_i)
+=======
+// NS_1 = (!S_0 & !S_2 & start_write_i & !ld_buf_data_V_i) | (S_0 & !S_2 & !write_Complete_i & writeBuf_V_i) | (S_0 & S_1 & !S_2 & writeBuf_V_i) | (S_0 & !S_1 & !S_2 & !write_Complete_i) | (!S_0 & !S_1 & !S_2 & start_write_i) | (!S_0 & S_1 & !S_2 & !ld_buf_data_V_i)
+>>>>>>> e8a2845d6ef83d807a570ab4cb16b0eaaec2e863
 wire NS_1_t0;
-`AND_4(NS_1_and0, 1, NS_1_t0, S_1, S_2_inv, ld_buf_data_V_i_inv, writeBuf_V_i)
+`AND_4(NS_1_and0, 1, NS_1_t0, S_0_inv, S_2_inv, start_write_i, ld_buf_data_V_i_inv)
 wire NS_1_t1;
+<<<<<<< HEAD
 `AND_4(NS_1_and1, 1, NS_1_t1, S_0, S_1_inv, S_2_inv, write_Complete_i_inv)
+=======
+`AND_4(NS_1_and1, 1, NS_1_t1, S_0, S_2_inv, write_Complete_i_inv, writeBuf_V_i)
+>>>>>>> e8a2845d6ef83d807a570ab4cb16b0eaaec2e863
 wire NS_1_t2;
-`AND_4(NS_1_and2, 1, NS_1_t2, S_0_inv, S_1_inv, S_2_inv, start_write_i)
+`AND_4(NS_1_and2, 1, NS_1_t2, S_0, S_1, S_2_inv, writeBuf_V_i)
 wire NS_1_t3;
 `AND_4(NS_1_and3, 1, NS_1_t3, S_0_inv, S_1, S_2_inv, ld_buf_data_V_i_inv)
 wire NS_1_t4;
+<<<<<<< HEAD
 `AND_4(NS_1_and4, 1, NS_1_t4, S_0, S_1, S_2_inv, writeBuf_V_i)
+=======
+`AND_4(NS_1_and4, 1, NS_1_t4, S_0_inv, S_1_inv, S_2_inv, start_write_i)
+wire NS_1_t5;
+`AND_4(NS_1_and5, 1, NS_1_t5, S_0_inv, S_1, S_2_inv, ld_buf_data_V_i_inv)
+>>>>>>> e8a2845d6ef83d807a570ab4cb16b0eaaec2e863
 
 `OR_5(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4)
 

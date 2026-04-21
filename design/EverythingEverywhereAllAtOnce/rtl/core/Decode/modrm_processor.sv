@@ -176,27 +176,27 @@ module modrm_processor (
             ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b01100) &&
             ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b10100)) begin
             case(modrm_byte[2:0])    //reg id
-                3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
-                3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
-                3'd2: sr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
-                3'd3: sr_id = (datasize[1] && datasize[0]) ? MM3 : EBX;
+                3'd0: sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM0 : EAX;
+                3'd1: sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM1 : ECX;
+                3'd2: sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM2 : EDX;
+                3'd3: sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM3 : EBX;
                 3'd4: begin
-                    sr_id = (datasize[1] && datasize[0]) ? MM4 : 
+                    sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM4 : 
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EAX : ESP;
                     sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
                 3'd5: begin
-                    sr_id = (datasize[1] && datasize[0]) ? MM5 : 
+                    sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM5 : 
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? ECX : EBP;
                    sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
                 3'd6: begin
-                    sr_id = (datasize[1] && datasize[0]) ? MM6 : 
+                    sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM6 : 
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EDX : ESI;
                     sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
                 3'd7: begin
-                    sr_id = (datasize[1] && datasize[0]) ? MM7 :
+                    sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM7 :
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EBX : EDI;
                     sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
