@@ -1,5 +1,9 @@
-PYTHON = python3.11
-LOG_FILE = gen.log
+TOP_MAKE_PATH := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
+include $(TOP_MAKE_PATH)/Make.vars
+
+#PYTHON = python3.11
+LOG_FILE = $(TOP_MAKE_PATH)/gen.log
 
 .PHONY: clean all gen_dry gen
 

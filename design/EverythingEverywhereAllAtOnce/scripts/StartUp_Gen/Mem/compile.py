@@ -390,96 +390,55 @@ def write_readmemh_flat(image: bytearray, line_bytes: int, out_path: str):
 
 
 # ── instruction listing ───────────────────────────────────────────────────────
-
 def write_instruction_listing(elf_path: str, sections: list, out_path: str):
-    """
-    Disassemble all executable (.code) sections from the ELF using
-    ``objdump -d`` and write a structured listing to *out_path*.
-
-    Output format (one instruction per line, preceded by a section header):
-
-        ──────────────────────────────────────────
-        Section: code  base: 0x1000
-        ──────────────────────────────────────────
-        EIP       hex encoding          mnemonic + operands
-        0x001000  55                    push   %ebp
-        0x001001  89 e5                 mov    %esp,%ebp
-        0x001003  83 ec 10              sub    $0x10,%esp
-        ...
-
-    Data sections are listed as raw byte dumps (no disassembly) so the
-    file is complete even when data lives between code regions.
-
-    Parameters
-    ----------
-    elf_path : str
-        Path to the linked ELF binary.
-    sections : list[dict]
-        [{'name': 'code'|'data', 'start': int}, ...]  – from assemble_to_binary.
-    out_path : str
-        Destination file path.
-    """
-    # Run objdump -d  (disassemble only code sections, i386 syntax)
-    r = subprocess.run(
+    r_raw = subprocess.run(['objdump', '-d', elf_path], capture_output=True, text=True)
+    r_intel = subprocess.run(
         ['objdump', '-d', '-M', 'intel', '--no-show-raw-insn', elf_path],
         capture_output=True, text=True
     )
-    # We'll also get the raw-bytes version for the hex encoding column.
-    r_raw = subprocess.run(
-        ['objdump', '-d', elf_path],   # AT&T + raw bytes (default)
-        capture_output=True, text=True
-    )
-    if r.returncode != 0:
-        print(f"[compile] WARNING: objdump -d failed, skipping instruction listing.\n"
-              f"          {r.stderr.strip()}")
+    if r_raw.returncode != 0 or r_intel.returncode != 0:
+        print(f"[compile] WARNING: objdump -d failed, skipping instruction listing.")
         return
 
-    # ── parse the raw-bytes objdump to build  addr → (hex_bytes, mnemonic) ──
-    # Example raw line:
-    #   1000:       55                      push   %ebp
-    #   1001:       89 e5                   mov    %esp,%ebp
-    insn_map: dict[int, tuple[str, str]] = {}   # addr → (hex_bytes, mnemonic_at&t)
-
-    for line in r_raw.stdout.splitlines():
-        # Match:  <hex_addr>:  <hex bytes>       <mnemonic...>
-        m = re.match(
-            r'\s*([0-9a-fA-F]+):\s+'     # address
-            r'((?:[0-9a-fA-F]{2}\s)+)'   # one or more hex byte pairs
-            r'\s*(.*)',                   # mnemonic (may be empty for data)
-            line
-        )
-        if m:
-            addr     = int(m.group(1), 16)
-            hex_enc  = m.group(2).strip()
-            mnemonic = m.group(3).strip()
-            insn_map[addr] = (hex_enc, mnemonic)
-
-    # ── parse the intel-syntax objdump to get clean mnemonic lines ──────────
-    # We use the intel output for the mnemonic column (cleaner for most readers)
-    # and the AT&T raw output only for the hex encoding.
-    #
-    # Structure of objdump -d output:
-    #   <elf_name>:     file format elf32-i386
-    #
-    #   Disassembly of section .code0:
-    #
-    #   00001000 <_start>:
-    #      1000:	push   ebp
-    #      1001:	mov    ebp,esp
-    intel_insn_map: dict[int, str] = {}  # addr → intel mnemonic
-
-    for line in r.stdout.splitlines():
+    # ── Build intel mnemonic map: addr → mnemonic string ──────────────────
+    intel_insn_map: dict[int, str] = {}
+    for line in r_intel.stdout.splitlines():
         m = re.match(r'\s*([0-9a-fA-F]+):\s+(.*)', line)
         if m:
-            addr     = int(m.group(1), 16)
             mnemonic = m.group(2).strip()
             if mnemonic:
-                intel_insn_map[addr] = mnemonic
+                intel_insn_map[int(m.group(1), 16)] = mnemonic
 
-    # ── build section address ranges from objdump -h ─────────────────────────
+    # ── Build raw hex map: addr → full hex encoding (handles line wrapping) ──
+    # objdump wraps instructions >7 bytes across two lines:
+    #   1010:   c7 86 00 02 00 00 b1    mov   ...   ← first 7 bytes + mnemonic
+    #   1017:   b1 b1 b1                            ← remaining bytes, no mnemonic
+    # We accumulate bytes into the most recently seen real instruction address.
+    raw_hex_map: dict[int, str] = {}   # addr → complete hex string
+    last_real_addr: int | None = None
+
+    for line in r_raw.stdout.splitlines():
+        m = re.match(
+            r'\s*([0-9a-fA-F]+):\s+'
+            r'((?:[0-9a-fA-F]{2}\s)+)',
+            line
+        )
+        if not m:
+            continue
+        addr     = int(m.group(1), 16)
+        hex_part = m.group(2).strip()
+
+        if addr in intel_insn_map:
+            # This is the start of a real instruction
+            raw_hex_map[addr] = hex_part
+            last_real_addr = addr
+        elif last_real_addr is not None:
+            # Continuation row — append bytes to the previous real instruction
+            raw_hex_map[last_real_addr] = raw_hex_map[last_real_addr] + ' ' + hex_part
+
+    # ── Section ranges ─────────────────────────────────────────────────────
     rh = subprocess.run(['objdump', '-h', elf_path], capture_output=True, text=True)
-    sec_ranges: list[dict] = []   # [{'name', 'kind', 'vma', 'size'}, ...]
-
+    sec_ranges = []
     for line in rh.stdout.splitlines():
         m = re.match(
             r'\s*\d+\s+(\S+)\s+([0-9a-fA-F]+)\s+([0-9a-fA-F]+)'
@@ -490,71 +449,46 @@ def write_instruction_listing(elf_path: str, sections: list, out_path: str):
             vma  = int(m.group(3), 16)
             if size > 0 and re.match(r'\.(code|data)\d+', name):
                 kind = 'code' if name.startswith('.code') else 'data'
-                sec_ranges.append({'elf_name': name, 'kind': kind,
-                                   'vma': vma, 'size': size})
-
+                sec_ranges.append({'elf_name': name, 'kind': kind, 'vma': vma, 'size': size})
     sec_ranges.sort(key=lambda s: s['vma'])
 
-    # ── write the listing ────────────────────────────────────────────────────
+    # ── Write listing ──────────────────────────────────────────────────────
     DIVIDER = '─' * 72
-
     with open(out_path, 'w') as f:
         f.write("Instruction Listing\n")
         f.write("Generated by compile.py  (x86-32, Intel syntax)\n")
         f.write(f"ELF: {elf_path}\n\n")
-        f.write(f"{'EIP':<10}  {'Hex Encoding':<24}  Mnemonic\n")
+        f.write(f"{'EIP':<10}  {'Hex Encoding':<28}  Mnemonic\n")
         f.write(DIVIDER + "\n\n")
 
-        if not sec_ranges:
-            f.write("(no sections found)\n")
-        else:
-            for sec in sec_ranges:
-                vma  = sec['vma']
-                size = sec['size']
-                kind = sec['kind']
-                f.write(DIVIDER + "\n")
-                f.write(f"Section: {sec['elf_name']}  "
-                        f"kind={kind}  base=0x{vma:04x}  size={size} B\n")
-                f.write(DIVIDER + "\n")
+        for sec in sec_ranges:
+            vma, size, kind = sec['vma'], sec['size'], sec['kind']
+            f.write(DIVIDER + "\n")
+            f.write(f"Section: {sec['elf_name']}  kind={kind}  base=0x{vma:04x}  size={size} B\n")
+            f.write(DIVIDER + "\n")
 
-                if kind == 'data':
-                    # Emit raw bytes for data sections – no disassembly.
-                    f.write(f"  (data section – raw bytes)\n")
-                    for addr in range(vma, vma + size):
-                        if addr in insn_map:
-                            hex_enc, _ = insn_map[addr]
-                            f.write(f"  0x{addr:08x}  {hex_enc}\n")
-                        # Data sections may not appear in disassembly at all;
-                        # if we have no byte info just note the range.
-                    if not any(a in insn_map for a in range(vma, vma + size)):
-                        f.write(f"  0x{vma:08x} – 0x{vma+size-1:08x}  "
-                                f"({size} bytes, no disassembly available)\n")
-                    f.write("\n")
-                    continue
+            if kind == 'data':
+                f.write(f"  (data section – raw bytes)\n")
+                f.write(f"  0x{vma:08x} – 0x{vma+size-1:08x}  ({size} bytes)\n\n")
+                continue
 
-                # code section – walk every address that objdump decoded
-                addrs_in_sec = sorted(
-                    a for a in insn_map if vma <= a < vma + size
-                )
+            addrs = sorted(a for a in intel_insn_map if vma <= a < vma + size)
+            if not addrs:
+                f.write("  (no instructions decoded)\n\n")
+                continue
 
-                if not addrs_in_sec:
-                    f.write("  (no instructions decoded)\n\n")
-                    continue
-
-                for addr in addrs_in_sec:
-                    hex_enc, _        = insn_map[addr]
-                    intel_mnemonic    = intel_insn_map.get(addr, '???')
-                    f.write(f"  0x{addr:08x}  {hex_enc:<24}  {intel_mnemonic}\n")
-
-                f.write("\n")
+            for addr in addrs:
+                hex_enc      = raw_hex_map.get(addr, '?')
+                intel_mnem   = intel_insn_map[addr]
+                f.write(f"  0x{addr:08x}  {hex_enc:<28}  {intel_mnem}\n")
+            f.write("\n")
 
         f.write(DIVIDER + "\n")
         total = sum(1 for s in sec_ranges if s['kind'] == 'code'
-                    for a in insn_map if s['vma'] <= a < s['vma'] + s['size'])
+                    for a in intel_insn_map if s['vma'] <= a < s['vma'] + s['size'])
         f.write(f"Total instructions decoded: {total}\n")
 
     print(f"[compile] Wrote instruction listing → {out_path}")
-
 
 # ── main ─────────────────────────────────────────────────────────────────────
 
