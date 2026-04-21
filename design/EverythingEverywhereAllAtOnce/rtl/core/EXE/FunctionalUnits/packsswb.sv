@@ -22,37 +22,37 @@ module packsswb (
     logic [7:0] r0, r1, r2, r3, r4, r5, r6, r7;
 
     // ---- A lanes ----
-    assign r0 = (a0 > 16'sd127)  ? 8'sd127  :
-                (a0 < -16'sd128) ? -8'sd128 :
+    assign r0 = (a0 > 16'sd127)  ? 8'h7F  :
+                (a0 < -16'sd128) ? 8'h80 :
                                    a0[7:0];
 
-    assign r1 = (a1 > 16'sd127)  ? 8'sd127  :
-                (a1 < -16'sd128) ? -8'sd128 :
+    assign r1 = (a1 > 16'sd127)  ? 8'h7F  :
+                (a1 < -16'sd128) ? 8'h80 :
                                    a1[7:0];
 
-    assign r2 = (a2 > 16'sd127)  ? 8'sd127  :
-                (a2 < -16'sd128) ? -8'sd128 :
+    assign r2 = (a2 > 16'sd127)  ? 8'h7F  :
+                (a2 < -16'sd128) ? 8'h80 :
                                    a2[7:0];
 
-    assign r3 = (a3 > 16'sd127)  ? 8'sd127  :
-                (a3 < -16'sd128) ? -8'sd128 :
+    assign r3 = (a3 > 16'sd127)  ? 8'h7F  :
+                (a3 < -16'sd128) ? 8'h80 :
                                    a3[7:0];
 
     // ---- B lanes ----
-    assign r4 = (b0 > 16'sd127)  ? 8'sd127  :
-                (b0 < -16'sd128) ? -8'sd128 :
+    assign r4 = (b0 > 16'sd127)  ? 8'h7F  :
+                (b0 < -16'sd128) ? 8'h80 :
                                    b0[7:0];
 
-    assign r5 = (b1 > 16'sd127)  ? 8'sd127  :
-                (b1 < -16'sd128) ? -8'sd128 :
+    assign r5 = (b1 > 16'sd127)  ? 8'h7F  :
+                (b1 < -16'sd128) ? 8'h80 :
                                    b1[7:0];
 
-    assign r6 = (b2 > 16'sd127)  ? 8'sd127  :
-                (b2 < -16'sd128) ? -8'sd128 :
+    assign r6 = (b2 > 16'sd127)  ? 8'h7F  :
+                (b2 < -16'sd128) ? 8'h80 :
                                    b2[7:0];
 
-    assign r7 = (b3 > 16'sd127)  ? 8'sd127  :
-                (b3 < -16'sd128) ? -8'sd128 :
+    assign r7 = (b3 > 16'sd127)  ? 8'h7F  :
+                (b3 < -16'sd128) ? 8'h80 :
                                    b3[7:0];
 
     // Pack result

@@ -1,0 +1,102 @@
+================================================================================
+  SIM vs RTL COMPARISON REPORT
+================================================================================
+  Sim instructions: 91
+  RTL commits:      90
+
+[OK ] #0000  0x00001000  mov           writes=ESI=0x00002000  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0001  0x00001005  and           writes=ESI=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0002  0x0000100B  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EBX; AF undefined)
+[OK ] #0003  0x0000100E  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: ECX; AF undefined)
+[OK ] #0004  0x00001011  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EDX; AF undefined)
+[OK ] #0005  0x00001014  mov           writes=EAX=0xFFFF0000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0006  0x00001019  mov           writes=EBX=0xAAAAFFFF  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0007  0x0000101E  mov           writes=ECX=0x12340000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0008  0x00001023  mov           writes=EDX=0x0000FFFF  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0009  0x00001028  or            writes=EAX=0xFFFF0011  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0010  0x0000102A  and           writes=EAX=0xFFFF0010  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0011  0x0000102C  or            writes=EAX=0xFFFF2210  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0012  0x0000102F  and           writes=EAX=0xFFFF2010  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0013  0x00001032  or            writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (RTL no-op: EBX; AF undefined)
+[OK ] #0014  0x00001035  and           writes=EBX=0xAAAAFFEE  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0015  0x00001038  or            writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (RTL no-op: EBX; AF undefined)
+[OK ] #0016  0x0000103B  and           writes=EBX=0xAAAADDEE  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0017  0x0000103E  or            writes=EAX=0xFFFFFDFE  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0018  0x00001040  and           writes=EAX=0x12340000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0019  0x00001042  or            writes=EBX=0xAAAAFFFF  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0020  0x00001044  and           writes=EBX=0x02200000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0021  0x00001046  or            writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: ECX; AF undefined)
+[OK ] #0022  0x00001048  and           writes=ECX=0x02200000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0023  0x0000104A  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EDI; AF undefined)
+[OK ] #0024  0x0000104C  or            writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0025  0x0000104E  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0026  0x00001050  add           writes=EDI=0x00000004  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0027  0x00001053  or            writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0028  0x00001055  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0029  0x00001057  add           writes=EDI=0x00000008  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0030  0x0000105A  or            writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0031  0x0000105C  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0032  0x0000105E  mov           writes=EDI=0x00000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0033  0x00001060  add           writes=EDI=0x00000008  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0034  0x00001063  or            writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0035  0x00001066  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0036  0x00001069  mov           writes=EDI=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0037  0x0000106B  or            writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0038  0x0000106D  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0039  0x0000106F  add           writes=EDI=0x00000001  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0040  0x00001072  or            writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0041  0x00001074  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0042  0x00001076  mov           writes=EDI=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0043  0x00001078  or            writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0044  0x0000107A  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0045  0x0000107C  or            writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0046  0x0000107E  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0047  0x00001080  or            writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EBX; AF undefined)
+[OK ] #0048  0x00001082  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EBX; AF undefined)
+[OK ] #0049  0x00001084  mov           writes=EAX=0x12345678  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0050  0x00001089  or            writes=EAX=0x123456FF  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0051  0x0000108B  and           writes=EAX=0x12345600  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0052  0x00001090  mov           writes=EAX=0x12345678  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0053  0x00001095  or            writes=EAX=0x1234FF78  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0054  0x00001099  and           writes=EAX=0x12340078  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0055  0x0000109E  not           writes=EAX=0xEDCBFF87  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0056  0x000010A0  not           writes=EBX=0xFDDFFFFF  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0057  0x000010A2  not           writes=ECX=0xFDDFFFFF  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0058  0x000010A4  not           writes=EDX=0xFFFF0000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0059  0x000010A6  not           writes=EAX=0xEDCB0078  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0060  0x000010A9  not           writes=EBX=0xFDDF0000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0061  0x000010AC  not           writes=ECX=0xFDDF0000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0062  0x000010AF  not           writes=EDX=0xFFFFFFFF  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0063  0x000010B2  not           writes=EAX=0xEDCB0087  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0064  0x000010B4  not           writes=EAX=0xEDCBFF87  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0065  0x000010B6  not           writes=EBX=0xFDDF00FF  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0066  0x000010B8  not           writes=EBX=0xFDDFFFFF  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0067  0x000010BA  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EDI; AF undefined)
+[OK ] #0068  0x000010BC  notl          writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0069  0x000010BE  add           writes=EDI=0x00000004  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0070  0x000010C1  notl          writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0071  0x000010C3  add           writes=EDI=0x00000008  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0072  0x000010C6  notl          writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0073  0x000010C8  mov           writes=EDI=0x00000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0074  0x000010CA  notb          writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0075  0x000010CC  add           writes=EDI=0x00000001  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0076  0x000010CF  notb          writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0077  0x000010D1  mov           writes=EDI=0x00000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0078  0x000010D3  and           writes=EBX=0x0000000F  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0079  0x000010D6  or            writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0080  0x000010D9  and           writes=EAX=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0081  0x000010DC  and           writes=ECX=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0082  0x000010DF  or            writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0083  0x000010E2  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0084  0x000010E5  or            writes=EAX=0x000000FF  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0085  0x000010E7  and           writes=EAX=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0086  0x000010E9  not           writes=EAX=0x000000FF  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0087  0x000010EB  or            writes=EAX=0xFFFFFFFF  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0088  0x000010EE  and           writes=EAX=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0089  0x000010F1  not           writes=EAX=0xFFFFFFFF  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[ONLY_SIM] #0090  EIP=0x000010F3  hlt           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+
+================================================================================
+  SUMMARY: 90/91 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
+  (17 RTL no-op write-backs suppressed)
+================================================================================

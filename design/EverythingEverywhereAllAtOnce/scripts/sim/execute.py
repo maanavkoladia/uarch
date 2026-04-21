@@ -417,6 +417,113 @@ class CPU:
             self.regs.set(acc_name, dst_val)
 
     # ---------------------------------------------------------------
+    # MMX instruction helpers
+    # ---------------------------------------------------------------
+    @staticmethod
+    def _sat_word_to_byte(w):
+        """Saturate an unsigned 16-bit value as a signed 16-bit int into [-128, 127],
+        returning the result as an unsigned byte."""
+        s = w if w < 0x8000 else w - 0x10000
+        return max(-128, min(127, s)) & 0xFF
+
+    @staticmethod
+    def _sat_dword_to_word(d):
+        """Saturate an unsigned 32-bit value as a signed 32-bit int into [-32768, 32767],
+        returning the result as an unsigned 16-bit value."""
+        s = d if d < 0x80000000 else d - 0x100000000
+        return max(-32768, min(32767, s)) & 0xFFFF
+
+    def exec_packsswb(self, inst):
+        """PACKSSWB src, dst  (AT&T: src first, dst second)
+        Pack 4 signed words from dst and 4 signed words from src into 8 signed bytes
+        in dst using signed saturation."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        src_val = self._read_operand(src_op, 8)
+        dst_val = self._read_operand(dst_op, 8)
+        result = 0
+        for i in range(4):
+            w = (dst_val >> (i * 16)) & 0xFFFF
+            result |= self._sat_word_to_byte(w) << (i * 8)
+        for i in range(4):
+            w = (src_val >> (i * 16)) & 0xFFFF
+            result |= self._sat_word_to_byte(w) << ((i + 4) * 8)
+        self._write_operand(dst_op, result, 8)
+
+    def exec_packssdw(self, inst):
+        """PACKSSDW src, dst  (AT&T: src first, dst second)
+        Pack 2 signed dwords from dst and 2 signed dwords from src into 4 signed words
+        in dst using signed saturation."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        src_val = self._read_operand(src_op, 8)
+        dst_val = self._read_operand(dst_op, 8)
+        result = 0
+        for i in range(2):
+            d = (dst_val >> (i * 32)) & 0xFFFFFFFF
+            result |= self._sat_dword_to_word(d) << (i * 16)
+        for i in range(2):
+            d = (src_val >> (i * 32)) & 0xFFFFFFFF
+            result |= self._sat_dword_to_word(d) << ((i + 2) * 16)
+        self._write_operand(dst_op, result, 8)
+
+    def exec_paddw(self, inst):
+        """PADDW src, dst  (AT&T: src first, dst second)
+        Add 4 packed unsigned word integers (modular, no saturation)."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        src_val = self._read_operand(src_op, 8)
+        dst_val = self._read_operand(dst_op, 8)
+        result = 0
+        for i in range(4):
+            s = (src_val >> (i * 16)) & 0xFFFF
+            d = (dst_val >> (i * 16)) & 0xFFFF
+            result |= ((s + d) & 0xFFFF) << (i * 16)
+        self._write_operand(dst_op, result, 8)
+
+    def exec_paddd(self, inst):
+        """PADDD src, dst  (AT&T: src first, dst second)
+        Add 2 packed unsigned dword integers (modular, no saturation)."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        src_val = self._read_operand(src_op, 8)
+        dst_val = self._read_operand(dst_op, 8)
+        result = 0
+        for i in range(2):
+            s = (src_val >> (i * 32)) & 0xFFFFFFFF
+            d = (dst_val >> (i * 32)) & 0xFFFFFFFF
+            result |= ((s + d) & 0xFFFFFFFF) << (i * 32)
+        self._write_operand(dst_op, result, 8)
+
+    def exec_pavgb(self, inst):
+        """PAVGB src, dst  (AT&T: src first, dst second)
+        Average 8 packed unsigned byte integers with rounding: (a + b + 1) >> 1."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        src_val = self._read_operand(src_op, 8)
+        dst_val = self._read_operand(dst_op, 8)
+        result = 0
+        for i in range(8):
+            s = (src_val >> (i * 8)) & 0xFF
+            d = (dst_val >> (i * 8)) & 0xFF
+            result |= ((s + d + 1) >> 1) << (i * 8)
+        self._write_operand(dst_op, result, 8)
+
+    def exec_pavgw(self, inst):
+        """PAVGW src, dst  (AT&T: src first, dst second)
+        Average 4 packed unsigned word integers with rounding: (a + b + 1) >> 1."""
+        src_op = inst.operands[0]
+        dst_op = inst.operands[1]
+        src_val = self._read_operand(src_op, 8)
+        dst_val = self._read_operand(dst_op, 8)
+        result = 0
+        for i in range(4):
+            s = (src_val >> (i * 16)) & 0xFFFF
+            d = (dst_val >> (i * 16)) & 0xFFFF
+            result |= ((s + d + 1) >> 1) << (i * 16)
+        self._write_operand(dst_op, result, 8)
+
+    # ---------------------------------------------------------------
     # Dispatch
     # ---------------------------------------------------------------
 
@@ -452,6 +559,12 @@ class CPU:
             "xchg": self.exec_xchg,
             "cmovc": self.exec_cmovc,
             "cmpxchg": self.exec_cmpxchg,
+            "packsswb": self.exec_packsswb,
+            "packssdw": self.exec_packssdw,
+            "paddw": self.exec_paddw,
+            "paddd": self.exec_paddd,
+            "pavgb": self.exec_pavgb,
+            "pavgw": self.exec_pavgw,
         }
 
     def execute(self, inst):
