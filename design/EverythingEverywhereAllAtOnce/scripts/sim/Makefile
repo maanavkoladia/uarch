@@ -17,7 +17,7 @@
 
 #this needs to be changed to use genconf var
 # ── Inputs (override on command line) ──
-ASM       ?= $(TEST_DIR)/StagesProgJmp.s
+ASM       ?= $(TEST_DIR)/SAR_SAL.s
 TLB       ?= $(TEST_DIR)/TLB.conf.json
 CORE_REGS ?= $(TEST_DIR)/CoreRegs.conf.json
 

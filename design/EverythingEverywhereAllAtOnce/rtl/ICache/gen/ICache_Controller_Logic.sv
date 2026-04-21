@@ -120,11 +120,11 @@ wire NS_1_t2;
 
 `OR_3(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2)
 
-// NS_2 = (!S_0 & S_1 & S_2) | (!S_0 & S_2 & !mem_valid_i) | (S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i & !I_VC_Miss_i & en_i)
+// NS_2 = (!S_0 & S_2 & !mem_valid_i) | (!S_0 & S_1 & S_2) | (S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i & !I_VC_Miss_i & en_i)
 wire NS_2_t0;
-`AND_3(NS_2_and0, 1, NS_2_t0, S_0_inv, S_1, S_2)
+`AND_3(NS_2_and0, 1, NS_2_t0, S_0_inv, S_2, mem_valid_i_inv)
 wire NS_2_t1;
-`AND_3(NS_2_and1, 1, NS_2_t1, S_0_inv, S_2, mem_valid_i_inv)
+`AND_3(NS_2_and1, 1, NS_2_t1, S_0_inv, S_1, S_2)
 wire NS_2_t2;
 `AND_4(NS_2_and2, 1, NS_2_t2, S_0, S_1, S_2_inv, mem_valid_i)
 wire NS_2_t3;
@@ -138,13 +138,13 @@ wire NS_2_t3;
 // RD_I_VC_SWAP_BUF_o = (S_0 & !S_1 & S_2)
 `AND_3(RD_I_VC_SWAP_BUF_o_and, 1, RD_I_VC_SWAP_BUF_o, S_0, S_1_inv, S_2)
 
-// busy_o = (S_1 & !S_2) | (!S_1 & S_2) | (S_0 & !S_1)
+// busy_o = (S_0 & !S_2) | (!S_1 & S_2) | (S_1 & !S_2)
 wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_1, S_2_inv)
+`AND_2(busy_o_and0, 1, busy_o_t0, S_0, S_2_inv)
 wire busy_o_t1;
 `AND_2(busy_o_and1, 1, busy_o_t1, S_1_inv, S_2)
 wire busy_o_t2;
-`AND_2(busy_o_and2, 1, busy_o_t2, S_0, S_1_inv)
+`AND_2(busy_o_and2, 1, busy_o_t2, S_1, S_2_inv)
 
 `OR_3(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1, busy_o_t2)
 

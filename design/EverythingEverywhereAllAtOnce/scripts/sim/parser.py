@@ -357,7 +357,7 @@ def parse_objdump(objdump_text, objdump_raw):
             # Exclude last-two-char combos where the 'b'/'w'/'l' is part of
             # the mnemonic itself, not a size suffix:
             #   'al' → sal/sar  'bb' → sbb  'ub' → sub  'ul' → mul/imul
-            _NO_STRIP_ENDINGS = ('al', 'bb', 'ub', 'ul')
+            _NO_STRIP_ENDINGS = ('al', 'bb', 'ub', 'ul', 'hl')
             if len(mnemonic) > 2 and mnemonic[-1] in ('b', 'w', 'l') and mnemonic[-2:] not in _NO_STRIP_ENDINGS:
                 size_suffix = mnemonic[-1]
                 clean_mnemonic = mnemonic[:-1]
