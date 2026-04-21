@@ -4,7 +4,7 @@
 
 NS_0 = (S_0 & !S_2 & !write_Complete_i) | (S_1 & !S_2 & ld_buf_data_V_i) | (S_0 & S_1 & !S_2)
 
-NS_1 = (S_1 & !S_2 & !ld_buf_data_V_i & writeBuf_V_i) | (!S_0 & !S_1 & !S_2 & start_write_i) | (S_0 & !S_1 & !S_2 & !write_Complete_i) | (!S_0 & S_1 & !S_2 & !ld_buf_data_V_i) | (S_0 & S_1 & !S_2 & writeBuf_V_i)
+NS_1 = (!S_0 & !S_2 & start_write_i & !ld_buf_data_V_i) | (S_0 & S_1 & !S_2 & writeBuf_V_i) | (S_0 & !S_1 & !S_2 & !write_Complete_i) | (!S_0 & S_1 & !S_2 & !ld_buf_data_V_i) | (!S_0 & !S_1 & !S_2 & start_write_i)
 
 NS_2 = (!S_0 & !S_1 & S_2)
 

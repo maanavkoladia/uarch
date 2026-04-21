@@ -140,7 +140,7 @@ module modrm_processor (
 
 
         //sr reg setting
-        if(rm_is_dr && !reg_is_segment && !modrm_but_no_sr) begin
+        if(rm_is_dr && !reg_is_segment && !modrm_but_no_sr && !decode_cs_inputs.HARDCODED_SR) begin
             case(modrm_byte[5:3])    //rm id
                 3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
                 3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
@@ -218,7 +218,7 @@ module modrm_processor (
             sr_rd = 1'b1;
             sr_wr = 1'b0;
         end
-        else if(!decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.HARDCODED_SR) begin
+        else if(decode_cs_inputs.HARDCODED_SR) begin
             sr_id = decode_cs_inputs.HARDCODED_SR_ID;
             sr_rd = decode_cs_inputs.HARDCODED_SR_RD;
             sr_wr = decode_cs_inputs.HARDCODED_SR_WR;

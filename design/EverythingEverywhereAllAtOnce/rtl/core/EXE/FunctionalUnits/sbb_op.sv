@@ -38,13 +38,11 @@ module sbb_op (
 
     // AF: borrow out of bit 3  =  ~carry of nibble two's complement sum
     logic [4:0] nibble_sum;
-    assign nibble_sum = {1'b0, srA[3:0]} + {1'b0, ~srB[3:0]} + {4'd0, ~CF_in};
-    assign AF = ~nibble_sum[4];
 
     uint64_t result;
 
     always_comb begin
-        CF = 1'b0; OF = 1'b0; ZF = 1'b0; SF = 1'b0; PF = 1'b0;
+        CF = 1'b0; OF = 1'b0; ZF = 1'b0; SF = 1'b0; PF = 1'b0; AF = 0;
         result = srA;
 
         case (data_size)
@@ -55,6 +53,7 @@ module sbb_op (
                 SF     = al_sum[7];
                 PF     = ~^al_sum[7:0];
                 OF     = (srA[7]  ^ srB[7])  & (srA[7]  ^ al_sum[7]);
+                AF     = (srA[4] ^ srB[4] ^ al_sum[4]);
             end
             4'b0010: begin // AH (upper 8-bit)
                 result = {srA[63:16], ah_sum[7:0], srA[7:0]};
@@ -63,6 +62,7 @@ module sbb_op (
                 SF     = ah_sum[7];
                 PF     = ~^ah_sum[7:0];
                 OF     = (srA[15] ^ srB[15]) & (srA[15] ^ ah_sum[7]);
+                AF     = (srA[12] ^ srB[12] ^ ah_sum[4]);
             end
             4'b0011: begin // AX (16-bit)
                 result = {srA[63:16], ax_sum[15:0]};
@@ -71,6 +71,7 @@ module sbb_op (
                 SF     = ax_sum[15];
                 PF     = ~^ax_sum[7:0];
                 OF     = (srA[15] ^ srB[15]) & (srA[15] ^ ax_sum[15]);
+                AF     = (srA[4] ^ srB[4] ^ ax_sum[4]);
             end
             4'b0111: begin // EAX (32-bit)
                 result = {32'd0, eax_sum[31:0]};
@@ -79,6 +80,7 @@ module sbb_op (
                 SF     = eax_sum[31];
                 PF     = ~^eax_sum[7:0];
                 OF     = (srA[31] ^ srB[31]) & (srA[31] ^ eax_sum[31]);
+                AF     = (srA[4] ^ srB[4] ^ eax_sum[4]);
             end
             default: begin
                 result = srA;

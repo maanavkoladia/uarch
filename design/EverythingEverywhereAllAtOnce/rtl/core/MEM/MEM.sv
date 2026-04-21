@@ -123,7 +123,7 @@ module MEM (
     assign line_in_1_masked = (latches_i.LD_XCL) ? line_in_1 : '{default: '0};
 
     always_comb begin
-        C0 = latches_i.MIO ? line_in_mio : line_in_0;
+        C0 = latches_i.MIO ? line_in_mio : line_in_0_masked;
         up_buf = line_in_1_masked;
         low_buf = C0;
     end
