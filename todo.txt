@@ -12,8 +12,7 @@ OPCODE CHECK
 -PAVG
 -PAVGW
 - REP
-- SAL 
-- SAR   
+ 
 -MOVQ
 - MOVS
 

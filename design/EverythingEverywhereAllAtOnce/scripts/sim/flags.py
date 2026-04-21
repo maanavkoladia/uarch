@@ -122,6 +122,9 @@ class Flags:
         # OF: defined only for 1-bit shifts; MSB(result) XOR CF
         if count == 1:
             self._set_bit(OF, ((res_masked >> sign_bit) & 1) ^ self.get_cf())
+        else :
+            self._set_bit(OF, 0)
+
 
         # AF is undefined; clear it
         self._set_bit(AF, 0)
