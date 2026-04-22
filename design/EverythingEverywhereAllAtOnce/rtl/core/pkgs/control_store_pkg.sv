@@ -107,8 +107,9 @@ package control_store_pkg;
         CLD          = 30,
         CMOVC        = 31,
         JMP          = 32,
-        NOP          = 33
-
+        NOP          = 33,
+        ADD_DF       = 34,   // Special internal-only operation for ADD with Direction Flag handling
+        MOVS         = 35  
     } exe_cs_operation_type_e;
 
     typedef enum{

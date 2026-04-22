@@ -12,6 +12,7 @@ module res_buf_sel (
     input uint64_t cmpxchg_buf_i,
     input uint64_t far_call_res_buf_i,
     input uint64_t mov_res_buf_i,
+    input uint64_t mov_s_res_buf_i,
     input uint64_t not_res_buf_i,
     input uint64_t or_res_buf_i,
     input uint64_t push_res_buf_i,
@@ -32,6 +33,7 @@ module res_buf_sel (
             CMPXCHG:  res_buf_o = cmpxchg_buf_i;
             FAR_CALL: res_buf_o = far_call_res_buf_i;
             MOV:      res_buf_o = mov_res_buf_i;
+            MOVS:     res_buf_o = mov_s_res_buf_i;
             NOT:      res_buf_o = not_res_buf_i;
             OR:       res_buf_o = or_res_buf_i;
             PUSH:     res_buf_o = push_res_buf_i;

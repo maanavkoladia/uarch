@@ -1,12 +1,48 @@
+export SIM_DIR PYTHON ASM TLB CORE_REGS LOG RTL_LOG NORM_RTL_LOG NORM_SIM_LOG REPORT_FILE OUT_JSON
+
+TEST_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
+PROJECT_ROOT := $(shell pwd | sed -E 's|(.*EverythingEverywhereAllAtOnce).*|\1|')
+
+LOG_DIR = $(TEST_DIR)/logDumps/
+
+DISTRO := $(shell . /etc/os-release && echo $$ID)
+
+TARGET = system_testing
+
 STRUCTRURAL := false
 
-include ../../../Make.vars
-include ../../../Make.build
-include debugUtils/srcs.mk
+RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
+CLK_PERIOD := 8
 
-TARGET = StagesTest
+# DCache dump cycle range (default -1 = disabled).
+# Set at make time:   make DCACHE_DUMP_START=50 DCACHE_DUMP_END=100
+# Or at run time:     make run SIMFLAGS="+DCACHE_DUMP_START=50 +DCACHE_DUMP_END=100"
+DCACHE_DUMP_START ?= -1
+DCACHE_DUMP_END   ?= -1
+SIMFLAGS          ?=
 
-GEN_CONF = startUpGen.conf.json
+SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
+
+#sim rtl var
+ASM       = $(TEST_DIR)/config/TestProgs/MovHeavy.s
+TLB       = $(TEST_DIR)/config/TLB.conf.json
+CORE_REGS = $(TEST_DIR)/config/CoreRegs.conf.json
+
+OUT_JSON    = $(LOG_DIR)/sim_output.json
+LOG = $(LOG_DIR)/sim_run.log
+TRACE_FILE  = $(LOG_DIR)/sim_trace.log
+RTL_LOG    = $(RTL_RUN_LOG_FILE)
+REPORT_FILE = $(LOG_DIR)/compare_report.txt
+
+NORM_RTL_LOG = $(LOG_DIR)/norm_rtl.log
+NORM_SIM_LOG = $(LOG_DIR)/norm_sim.log
+
+include $(PROJECT_ROOT)/Make.vars
+include $(PROJECT_ROOT)Make.build
+#include debugUtils/srcs.mk
+
+GEN_CONF = config/startUpGen.conf.json
 
 TOP_MODULE_NAME = tb_stages
 
@@ -16,7 +52,6 @@ STARTUP_FILES = \
 				gen/icache_loader.sv \
 				gen/coreRegLoader.sv \
 				gen/tlb_loader.sv
-
 
 TB_FILES = \
 		   $(STARTUP_FILES) \
@@ -31,29 +66,46 @@ else
 	SRC_FILES += $(RTL_PKGS) $(RTL_SRC_FILES) $(TB_FILES)	
 endif
 
+#adding define
+CC_FLAGS += \
+    +define+LOG_FILE_NAME=\"$(RTL_RUN_LOG_FILE)\" \
+    +define+CLK_PERIOD=$(CLK_PERIOD) \
+    +define+DCACHE_LOG_FILE_NAME=\"$(LOG_DIR)/dcache_dump.log\" \
+    +define+DCACHE_DUMP_START_DEFAULT=$(DCACHE_DUMP_START) \
+    +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
 
 .PHONY: all run clean see gen
 
-all: $(TARGET)
+all: $(TARGET) 
 	
-$(TARGET): $(SRC_FILES)
-	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee compile.log
+$(TARGET):  makeLogDir $(SRC_FILES) 
+	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee $(LOG_DIR)/compile.log
 
 run: $(TARGET)
-	./$< 2>&1| tee sim.log
+	./$< $(SIMFLAGS) 2>&1| tee sim.log
+
 
 view: run
 	#./$(TARGET) -gui &
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
 
+sim-run: makeLogDir
+	$(MAKE) -C $(SIM_DIR) run
+
+compare: makeLogDir
+	$(MAKE) -C $(SIM_DIR) compare 2>&1 | tee $(LOG_DIR)/make_compare.log
+
 gen:
 	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
-	@python3.11 $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@$(PYTHON) $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
 	@rm -f cleaned_scripts.json
 
 see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'	
 	@echo -e "\n"
+
+makeLogDir:
+	@mkdir -p $(LOG_DIR)
 
 clean:
 	rm -f *.vcd
@@ -65,9 +117,7 @@ clean:
 	rm -f *.log
 	rm -f ucli.key
 	rm -rf gen/
-
-vim:
-	nvim ../../../
+	rm -rf logDumps/
 
 push: clean
 	git add -A
@@ -76,3 +126,5 @@ push: clean
 
 pull: 
 	git pull
+
+

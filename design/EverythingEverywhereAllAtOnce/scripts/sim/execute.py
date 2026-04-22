@@ -523,6 +523,111 @@ class CPU:
             result |= ((s + d + 1) >> 1) << (i * 16)
         self._write_operand(dst_op, result, 8)
 
+    def exec_push(self, inst):
+        """PUSH — decrement ESP by size, write value to SS:ESP."""
+        op = inst.operands[0]
+        suffix = getattr(inst, 'size_suffix', None)
+        size_bytes = 2 if suffix == 'w' else 4
+        val = self._read_operand(op, size_bytes)
+        esp = (self.regs.get('esp') - size_bytes) & 0xFFFFFFFF
+        self.regs.set('esp', esp)
+        ss_base = self.regs.seg_bases.get('ss', 0)
+        err = self.mem.write(esp, size_bytes, val & ((1 << (size_bytes * 8)) - 1), ss_base)
+        if err:
+            raise CPUException(f"PUSH: stack write error: {err}")
+
+    def exec_pop(self, inst):
+        """POP — read from SS:ESP, increment ESP by size, write to operand."""
+        op = inst.operands[0]
+        suffix = getattr(inst, 'size_suffix', None)
+        size_bytes = 2 if suffix == 'w' else 4
+        ss_base = self.regs.seg_bases.get('ss', 0)
+        esp = self.regs.get('esp')
+        val, err = self.mem.read(esp, size_bytes, ss_base)
+        if err:
+            raise CPUException(f"POP: stack read error: {err}")
+        self.regs.set('esp', (esp + size_bytes) & 0xFFFFFFFF)
+        self._write_operand(op, val, size_bytes)
+
+    def exec_call(self, inst):
+        """CALL — push return address (next EIP), jump to target."""
+        op = inst.operands[0]
+        # sim.py pre-increments EIP before execute(), so eip == return address
+        ret_addr = self.regs.eip
+        esp = (self.regs.get('esp') - 4) & 0xFFFFFFFF
+        self.regs.set('esp', esp)
+        ss_base = self.regs.seg_bases.get('ss', 0)
+        err = self.mem.write(esp, 4, ret_addr, ss_base)
+        if err:
+            raise CPUException(f"CALL: stack write error: {err}")
+        if op.typ == 'imm':
+            self.regs.eip = op.imm_val & 0xFFFFFFFF
+        elif op.typ == 'reg':
+            self.regs.eip = self.regs.get(op.reg_name) & 0xFFFFFFFF
+        elif op.typ == 'mem':
+            addr = self._effective_addr(op)
+            target, err = self.mem.read(addr, 4)
+            if err:
+                raise CPUException(f"CALL indirect: read error: {err}")
+            self.regs.eip = target & 0xFFFFFFFF
+        else:
+            raise CPUException(f"CALL: unsupported operand type: {op.typ}")
+        return True
+
+    def exec_lcall(self, inst):
+        """LCALL — far call: push CS then EIP, load new CS:EIP."""
+        op = inst.operands[0]
+        ret_addr = self.regs.eip
+        ss_base = self.regs.seg_bases.get('ss', 0)
+        # Push CS (zero-extended to 32 bits)
+        cs_val = self.regs.get('cs')
+        esp = (self.regs.get('esp') - 4) & 0xFFFFFFFF
+        self.regs.set('esp', esp)
+        self.mem.write(esp, 4, cs_val, ss_base)
+        # Push EIP
+        esp = (esp - 4) & 0xFFFFFFFF
+        self.regs.set('esp', esp)
+        self.mem.write(esp, 4, ret_addr, ss_base)
+        # Load new CS:EIP
+        self.regs.set('cs', op.far_seg & 0xFFFF)
+        self.regs.eip = op.far_off & 0xFFFFFFFF
+        return True
+
+    def exec_ret(self, inst):
+        """RET — pop return address from stack; optionally add imm16 to ESP."""
+        ss_base = self.regs.seg_bases.get('ss', 0)
+        esp = self.regs.get('esp')
+        ret_addr, err = self.mem.read(esp, 4, ss_base)
+        if err:
+            raise CPUException(f"RET: stack read error: {err}")
+        esp = (esp + 4) & 0xFFFFFFFF
+        if inst.operands:
+            extra = inst.operands[0].imm_val & 0xFFFF
+            esp = (esp + extra) & 0xFFFFFFFF
+        self.regs.set('esp', esp)
+        self.regs.eip = ret_addr & 0xFFFFFFFF
+        return True
+
+    def exec_lret(self, inst):
+        """LRET — far return: pop EIP then CS from stack."""
+        ss_base = self.regs.seg_bases.get('ss', 0)
+        esp = self.regs.get('esp')
+        ret_addr, err = self.mem.read(esp, 4, ss_base)
+        if err:
+            raise CPUException(f"LRET: EIP read error: {err}")
+        esp = (esp + 4) & 0xFFFFFFFF
+        cs_val, err = self.mem.read(esp, 4, ss_base)
+        if err:
+            raise CPUException(f"LRET: CS read error: {err}")
+        esp = (esp + 4) & 0xFFFFFFFF
+        if inst.operands:
+            extra = inst.operands[0].imm_val & 0xFFFF
+            esp = (esp + extra) & 0xFFFFFFFF
+        self.regs.set('esp', esp)
+        self.regs.set('cs', cs_val & 0xFFFF)
+        self.regs.eip = ret_addr & 0xFFFFFFFF
+        return True
+
     # ---------------------------------------------------------------
     # Dispatch
     # ---------------------------------------------------------------
@@ -565,6 +670,12 @@ class CPU:
             "paddd": self.exec_paddd,
             "pavgb": self.exec_pavgb,
             "pavgw": self.exec_pavgw,
+            "push":  self.exec_push,
+            "pop":   self.exec_pop,
+            "call":  self.exec_call,
+            "lcall": self.exec_lcall,
+            "ret":   self.exec_ret,
+            "lret":  self.exec_lret,
         }
 
     def execute(self, inst):

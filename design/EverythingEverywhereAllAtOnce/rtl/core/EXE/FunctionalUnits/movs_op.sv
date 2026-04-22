@@ -1,6 +1,9 @@
 module movs_op(
-    input uint64_t srA,
-    input uint64_t srB,
+    input uint64_t srA, //ESI
+    input uint64_t srB, //EDI
+    input [3:0] data_size,
+    input curr_df_flag,
+    output uint64_t res_buf_o,
     output uint64_t dr_o,
     output uint64_t sr_o
 );
@@ -14,6 +17,7 @@ module movs_op(
     assign merged_res[63:32] = data_size[3] ? srB[63:32] : srA[63:32];
 
     assign res_buf_o = merged_res;
-    assign dr_o = merged_res;
+    assign dr_o = curr_df_flag ? srA-1 : srA+1;
+    assign sr_o = curr_df_flag ? srB-1 : srB+1;
 
 endmodule
