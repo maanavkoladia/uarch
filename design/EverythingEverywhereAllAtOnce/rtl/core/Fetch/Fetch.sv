@@ -106,8 +106,8 @@ module Fetch (
                                rom_data_out :icache_info_i.instruction_line;
 
     assign br_restore_spc = exe_outs_i.br_res_out.taken
-                          ? {exe_outs_i.br_res_out.br_target[31:4], 4'b0000}
-                          : {exe_outs_i.br_res_out.neip[31:4], 4'b0000};
+                          ? exe_outs_i.br_res_out.br_target
+                          : exe_outs_i.br_res_out.neip;
 
     assign br_target =  spc_sel_logic_outs.br_target_sel ?
                         spc_sel_logic_outs.br_target
@@ -122,8 +122,8 @@ module Fetch (
         case(spc_sel_logic_outs.sel)
             Fetch_pkg::SPC: next_spc = SPC;
             Fetch_pkg::SPC_P16: next_spc = spc_16;
-            Fetch_pkg::BR_RESTORE: next_spc = br_restore_spc;
-            Fetch_pkg::BTB_TARGET: next_spc = br_target;
+            Fetch_pkg::BR_RESTORE: next_spc = {br_restore_spc[31:4], 4'b0};
+            Fetch_pkg::BTB_TARGET: next_spc = {br_target[31:4], 4'b0};
             default: next_spc = 0;
         endcase
     end
@@ -211,6 +211,7 @@ module Fetch (
     SPC_Sel_Logic spc_sel_logic(
         .clk(clk),
         .rst(!rst),
+        .spc(SPC),
         .flush(exe_outs_i.br_res_out.flush),
 
         //probably not needed

@@ -24,6 +24,7 @@ OPCODE CHECK
     - no need for swaplines in mem, paddr0 is always low addr
     - backwards jumps not signextending
     - if writback is stalling, and we have a flush in execute we cant clear the execute latches, espeically for call or far call
+    - arb latches not clearing reads when mem gets flushed. 
 
 
 - dma testing

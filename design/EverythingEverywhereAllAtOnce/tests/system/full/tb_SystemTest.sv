@@ -71,7 +71,7 @@ module tb_SystemTest ();
         @(posedge clk)
 
 
-        DelayClks(1000);
+        DelayClks(2000);
         //print_all();
         $finish;
         `LOG("TB Done");

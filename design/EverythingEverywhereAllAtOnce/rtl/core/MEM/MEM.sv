@@ -128,21 +128,25 @@ module MEM (
         low_buf = C0;
     end
 
-
+    bool flush;
+    assign flush = exe_outs_i.br_res_out.flush;
     always_comb begin
         clr_dcache_arb_latches = '{default : '0};
         clr_dcache_mio_latch = 0;
-        for(int i = 0; i < NUM_DCACHE_PORTS; i++)begin
-            if(bank_num_0 == i && latches_i.cs.LD_OP && hit[i] && ~hit_buf_v[i] && latches_i.valid)begin
-                clr_dcache_arb_latches[i] = 1;
+            for(int i = 0; i < NUM_DCACHE_PORTS; i++)begin
+                if(bank_num_0 == i && latches_i.cs.LD_OP && ((hit[i] && ~hit_buf_v[i]) || flush)
+                    && latches_i.valid)begin
+                    clr_dcache_arb_latches[i] = 1;
+                end
+                if(bank_num_1 == i && latches_i.cs.LD_OP && latches_i.LD_XCL &&((hit[i] && ~hit_buf_v[i]) || flush)
+                    && latches_i.valid)begin
+                    clr_dcache_arb_latches[i] = 1;
+                end
             end
-            if(bank_num_1 == i && latches_i.cs.LD_OP && latches_i.LD_XCL && hit[i] && ~hit_buf_v[i] && latches_i.valid)begin
-                clr_dcache_arb_latches[i] = 1;
+            if(latches_i.MIO && latches_i.cs.LD_OP && ((hit_MIO && ~hit_buf_mio_v) ||flush)
+                && latches_i.valid)begin
+                clr_dcache_mio_latch = 1;
             end
-        end
-        if(latches_i.MIO && latches_i.cs.LD_OP && hit_MIO && ~hit_buf_mio_v && latches_i.valid)begin
-            clr_dcache_mio_latch = 1;
-        end
     end
 
 

@@ -79,7 +79,7 @@ module DCache_Block (
         .outputs_o(eb_outputs)
     );
 
-    
+    bool fatal_coming;
     always_comb begin
         outputs_o.dataLineOut = '{default: '0};  // default (or leave if you prefer fail-fast X)
         case ({
@@ -93,9 +93,16 @@ module DCache_Block (
                 outputs_o.dataLineOut = vcache_outputs.lineOut;
             end
             default begin
-                if(rst_i) $fatal;
+                if(rst_i) begin
+                    fatal_coming = 1;
+                end
             end
         endcase
+    end
+    always_ff @(posedge clk_i) begin
+        if(fatal_coming) begin
+            //$fatal(1, "Invalid hit combination in DCache_Block: dcache_bank_outputs.hit = %b, vcache_outputs.hit = %b", dcache_bank_outputs.hit, vcache_outputs.hit);
+        end
     end
 
     assign outputs_o.hit_o = dcache_bank_outputs.hit || vcache_outputs.hit;

@@ -182,8 +182,6 @@ package interconnect_pkg;
         p_address_t ld_addr_0;
         bool ld_addr_1_V;
         p_address_t ld_addr_1;
-
-
         //for wb
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
 

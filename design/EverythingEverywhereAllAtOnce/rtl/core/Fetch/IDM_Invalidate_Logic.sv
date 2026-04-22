@@ -33,7 +33,8 @@ module IDM_Invalidate_Logic (
     bool slot_in_use_changed;
     
     assign will_leave_for_br =  idm_meta.idm_slots[eip_slot_num].br_valid &&
-                                (idm_meta.idm_slots[eip_slot_num].br_eip == eip);
+                                (idm_meta.idm_slots[eip_slot_num].br_eip == eip) &&
+                                !(idm_meta.idm_slots[eip_slot_num].br_btb_target[31:4] == eip[31:4]);
 
             //we have reached the eip of a branch
     always_comb begin

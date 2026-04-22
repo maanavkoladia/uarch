@@ -3,7 +3,7 @@ import common_pkg::*;
 module SPC_Sel_Logic (
     input wire clk,
     input wire rst,
-
+    input l_address_t spc,
     input bool flush,
 
     //probably not needed
@@ -22,6 +22,8 @@ module SPC_Sel_Logic (
     bool flush_reg;
 
     bool br_info_we, br_taken, push_success, btb_xcl;
+    bool target_same_line;
+    assign target_same_line = ({btb_outputs.br_target[31:4], 4'b0} == spc);
 
     assign br_taken = btb_outputs.hit && pred_out.taken;
     assign push_success = idm_ctrl_logic_out.push_success;
@@ -38,7 +40,7 @@ module SPC_Sel_Logic (
             if (push_success) begin
                 if (flush_reg) outputs.sel = SPC_P16;
                 else begin
-                    if ((br_taken && !btb_xcl) || XCL_stall) outputs.sel = BTB_TARGET;
+                    if (((br_taken && !btb_xcl) || XCL_stall) & !target_same_line) outputs.sel = BTB_TARGET;
                     else outputs.sel = SPC_P16;
                 end
             end

@@ -2,6 +2,7 @@ module req_gen_logic(
     input clk,
     input rst,
     input bool valid,
+    input bool flush,
     input bool LD_OP,
     input bool XCL,
     input bool dep_stall,
@@ -62,7 +63,7 @@ module req_gen_logic(
             is_served_mio <=0;
         end
         else begin
-            if(forward_valid)begin
+            if(forward_valid | flush)begin
                 is_served_0 <=0;
                 is_served_1 <= 0;
                 is_served_mio <=0;
@@ -82,12 +83,12 @@ module req_gen_logic(
     //load address cache aligned
 
     assign ld_addr_0 = ld_addr0 & 32'hFFFFFFF0;
-    assign ld_addr_1 = ld_addr1 & 32'hFFFFFFF0; 
+    assign ld_addr_1 = ld_addr1 & 32'hFFFFFFF0;
     assign ld_addr_mio = ld_addrMIO & 32'hFFFFFFF0;
 
-    assign ld_addr_1_V = ~dep_stall & LD_OP & XCL & valid & ~MIO & ~is_served_1;
-    assign ld_addr_0_V = ~dep_stall & LD_OP & valid & ~MIO & ~is_served_0;
-    assign ld_addr_mio_V = ~dep_stall & LD_OP & valid & MIO & ~is_served_mio;
+    assign ld_addr_1_V = ~dep_stall & LD_OP & XCL & valid & ~MIO & ~is_served_1 & ~flush;
+    assign ld_addr_0_V = ~dep_stall & LD_OP & valid & ~MIO & ~is_served_0 & ~flush;
+    assign ld_addr_mio_V = ~dep_stall & LD_OP & valid & MIO & ~is_served_mio & ~flush;
 
 
 

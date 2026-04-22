@@ -127,6 +127,7 @@ module DC (
     req_gen_logic req_gen (
         .clk(clk),
         .rst(rst),
+        .flush(exe_outs_i.br_res_out.flush),
         .valid(latches_i.valid),
         .LD_OP(latches_i.cs.LD_OP),
         .XCL(ld_neuralnet_out.xcl),

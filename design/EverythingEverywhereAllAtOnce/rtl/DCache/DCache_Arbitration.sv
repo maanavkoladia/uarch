@@ -54,7 +54,6 @@ module DCache_Arbitration (
         writeSuccess_o = '{default: '0};
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
             if (readyForNewReq[i]) begin
-
                 //store case
                 if (st_override[i] && !core_i.stq_heads[i].empty
                         || (!ldReq_2_BankPresent[i] && !core_i.stq_heads[i].empty)) begin
