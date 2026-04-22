@@ -15,6 +15,13 @@ STRUCTRURAL := false
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
 CLK_PERIOD := 8
 
+# DCache dump cycle range (default -1 = disabled).
+# Set at make time:   make DCACHE_DUMP_START=50 DCACHE_DUMP_END=100
+# Or at run time:     make run SIMFLAGS="+DCACHE_DUMP_START=50 +DCACHE_DUMP_END=100"
+DCACHE_DUMP_START ?= -1
+DCACHE_DUMP_END   ?= -1
+SIMFLAGS          ?=
+
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
 #sim rtl var
@@ -63,6 +70,9 @@ endif
 CC_FLAGS += \
     +define+LOG_FILE_NAME=\"$(RTL_RUN_LOG_FILE)\" \
     +define+CLK_PERIOD=$(CLK_PERIOD) \
+    +define+DCACHE_LOG_FILE_NAME=\"$(LOG_DIR)/dcache_dump.log\" \
+    +define+DCACHE_DUMP_START_DEFAULT=$(DCACHE_DUMP_START) \
+    +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
 
 .PHONY: all run clean see gen
 
@@ -72,7 +82,7 @@ $(TARGET):  makeLogDir $(SRC_FILES)
 	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee $(LOG_DIR)/compile.log
 
 run: $(TARGET)
-	./$< 2>&1| tee sim.log
+	./$< $(SIMFLAGS) 2>&1| tee sim.log
 
 
 view: run

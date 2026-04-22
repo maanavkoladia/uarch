@@ -150,20 +150,20 @@ ic_fill_3:
     jmp ic_fill_4
 
 ic_fill_4:
-    movl $0x19191919, 0x200(%esi)
-    addl 0x200(%esi), %ebx
-    movl $0x19191919, 0x400(%esi)
-    addl 0x400(%esi), %eax
-    andl $0x1F1F1F1F, 0x800(%esi)
+    movl $0x12121212, 0x200(%esi)
+    movl 0x200(%esi), %ebx
+    movl $0x14141414, 0x400(%esi)
+    movl 0x400(%esi), %eax
+    movl $0x18181818, 0x800(%esi)
     movl 0x800(%esi), %eax
     addl %eax, %ebx
     jmp ic_fill_5
 
 ic_fill_5:
     movl $0x1A1A1A1A, (%esi)
-    addl (%esi), %ebx
-    movl $0x1A1A1A1A, 0x600(%esi)
-    addl 0x600(%esi), %ebx
+    movl (%esi), %ebx
+    movl $0x16161616, 0x600(%esi)
+    movl 0x600(%esi), %ebx
     movl 0x200(%esi), %eax
     hlt
     andl $0xF0F0F0F0, 0x200(%esi)

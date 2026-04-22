@@ -20,7 +20,7 @@ import tb_debug_pkg::*;
 `define EXE_UNIT_PATH uut_AllAtOnce.core_unit.execute_unit
 `define WB_UNIT_PATH (temp)
 `define WB_UNIT_PATH (temp)
-`define DCACHE_UNIT_PATH (temp)
+`define DCACHE_UNIT_PATH uut_AllAtOnce.mem_sys_unit.dcache_unit
 
 
 // ===================== INIT BLOCK =====================
@@ -80,5 +80,6 @@ import tb_debug_pkg::*;
 //`include "debugUtils/debugUtils_Dcache.svh"
 //`include "debugUtils/debugUtils_WB.svh"
 //`include "debugUtils/debugUtilsWBLatches.svh"
+`include "debugUtils/debugUtils_DCache_Full.svh"
 
 `endif

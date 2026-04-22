@@ -18,7 +18,7 @@ module tb_SystemTest ();
     `include "debugUtils/tb_utils_defs.svh"
 
     `DEBUG_UTILS_INIT
-
+    `DCACHE_DUMP_INIT
 
     logic rst;
 
