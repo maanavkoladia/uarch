@@ -215,6 +215,10 @@ MEM_CONTROLLER_FSM_STATES
     //logic
     logic [$clog2(NUM_BANK_GROUPS) - 1 : 0] bankGroup;
     assign bankGroup = address_bus[MEM_BANKGROUP_BITS_UB : MEM_BANKGROUP_BITS_LD];
+
+    logic [$clog2(NUM_BANKS) - 1 : 0] bank_num_in_bank_group;
+    assign bank_num_in_bank_group = {address_bus[9:7], bankGroup};
+
     //seq logic to drive the bank table, add new entries
     //needs to be decided based on fillX signal
     always_ff @(posedge clk) begin
@@ -271,7 +275,7 @@ MEM_CONTROLLER_FSM_STATES
     always_comb begin
         for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
             for (int j = 0; j < NUM_BANKS_PER_BANK_GROUP; j++) begin
-                bank_cmds_o[(NUM_BANKS_PER_BANK_GROUP*i)+j].st_address = bankGroupTable[i].address[14:10];
+                bank_cmds_o[(NUM_BANKS_PER_BANK_GROUP * j) + i].st_address = bankGroupTable[i].address[14:0];
             end
         end
     end
@@ -289,7 +293,7 @@ MEM_CONTROLLER_FSM_STATES
         // 2. Set the selected bank
         if (fsm_outs.start_store) begin
             int idx;
-            idx = {bankGroup, address_bus[9:7]};  // make sure this is valid indexing!
+            idx = bank_num_in_bank_group;  // make sure this is valid indexing!
             bank_cmds_o[idx].start_store = 1;
         end
     end
@@ -299,7 +303,7 @@ MEM_CONTROLLER_FSM_STATES
         for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
             for (int j = 0; j < NUM_BANKS_PER_BANK_GROUP; j++) begin
                 for (int k = 0; k < CACHE_LINES_SIZE_B; k++) begin
-                    bank_cmds_o[(NUM_BANKS_PER_BANK_GROUP * i) + j].writeBuf[k] = bankGroupTable[i].writeBuf[k];
+                    bank_cmds_o[(NUM_BANKS_PER_BANK_GROUP * j) + i].writeBuf[k] = bankGroupTable[i].writeBuf[k];
                 end
             end
         end

@@ -152,7 +152,7 @@ ic_fill_3:
 ic_fill_4:
     movl $0x19191919, 0x200(%esi)
     addl 0x200(%esi), %ebx
-    movl $0x19191919, 0x400(%esi)
+    movl $0x17171717, 0x400(%esi)
     addl 0x400(%esi), %eax
     andl $0x1F1F1F1F, 0x800(%esi)
     movl 0x800(%esi), %eax
@@ -163,7 +163,7 @@ ic_fill_5:
     movl $0x1A1A1A1A, (%esi)
     addl (%esi), %ebx
     movl $0x1A1A1A1A, 0x600(%esi)
-    addl 0x600(%esi), %ebx
+    movl 0x600(%esi), %ebx
     movl 0x200(%esi), %eax
     hlt
     andl $0xF0F0F0F0, 0x200(%esi)
