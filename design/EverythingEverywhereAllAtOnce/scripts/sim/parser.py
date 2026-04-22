@@ -363,13 +363,18 @@ def parse_objdump(objdump_text, objdump_raw):
                 and mnemonic not in _MMX_MNEMONICS
                 and not mnemonic.startswith("j")
                 and not mnemonic.startswith("call")
-                and not mnemonic.startswith("ret")):
+                and not mnemonic.startswith("ret")
+                and not mnemonic.startswith("cmov")):
             # Strip trailing b/w/l suffix if present.
             # Exclude last-two-char combos where the 'b'/'w'/'l' is part of
             # the mnemonic itself, not a size suffix:
             #   'al' → sal/sar  'bb' → sbb  'ub' → sub  'ul' → mul/imul
             _NO_STRIP_ENDINGS = ('al', 'bb', 'ub', 'ul', 'hl')
-            if len(mnemonic) > 2 and mnemonic[-1] in ('b', 'w', 'l') and mnemonic[-2:] not in _NO_STRIP_ENDINGS:
+            # push/pop must be force-stripped even though they end in 'hl'
+            _FORCE_STRIP_PREFIXES = ('push', 'pop')
+            _force_strip = any(mnemonic.startswith(p) for p in _FORCE_STRIP_PREFIXES)
+            if (len(mnemonic) > 2 and mnemonic[-1] in ('b', 'w', 'l')
+                    and (mnemonic[-2:] not in _NO_STRIP_ENDINGS or _force_strip)):
                 size_suffix = mnemonic[-1]
                 clean_mnemonic = mnemonic[:-1]
 

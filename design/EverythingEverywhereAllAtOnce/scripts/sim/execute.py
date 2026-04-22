@@ -379,6 +379,14 @@ class CPU:
         self._write_operand(op1, val2, size_bytes)
         self._write_operand(op2, val1, size_bytes)
 
+    def exec_cld(self, inst):
+        """CLD - clear direction flag (DF=0)."""
+        self.flags._set_bit(10, 0)
+
+    def exec_std(self, inst):
+        """STD - set direction flag (DF=1)."""
+        self.flags._set_bit(10, 1)
+
     def exec_cmovc(self, inst):
         """CMOVC src, dst  (AT&T: src first, dst second) — move if CF=1."""
         src_op = inst.operands[0]
@@ -662,7 +670,10 @@ class CPU:
             "sbb": self.exec_sbb,
             "bsf": self.exec_bsf,
             "xchg": self.exec_xchg,
+            "cld":   self.exec_cld,
+            "std":   self.exec_std,
             "cmovc": self.exec_cmovc,
+            "cmovb": self.exec_cmovc,
             "cmpxchg": self.exec_cmpxchg,
             "packsswb": self.exec_packsswb,
             "packssdw": self.exec_packssdw,
