@@ -265,7 +265,7 @@ MEM_CONTROLLER_FSM_STATES
             for (int i = 0; i < NUM_BANKS; i++) begin
                 if (banks_i[i].clear_writebufV) begin
                     int bankGroupIdx;
-                    bankGroupTable[i / NUM_BANKS_PER_BANK_GROUP].writeBuf_Valid <= 0;
+                    bankGroupTable[i % 8].writeBuf_Valid <= 0;
                 end
             end
         end
@@ -275,7 +275,7 @@ MEM_CONTROLLER_FSM_STATES
     always_comb begin
         for (int i = 0; i < NUM_BANK_GROUPS; i++) begin
             for (int j = 0; j < NUM_BANKS_PER_BANK_GROUP; j++) begin
-                bank_cmds_o[(NUM_BANKS_PER_BANK_GROUP * j) + i].st_address = bankGroupTable[i].address[14:0];
+                bank_cmds_o[(NUM_BANKS_PER_BANK_GROUP * j) + i].st_address = bankGroupTable[i].address[14:10];
             end
         end
     end
