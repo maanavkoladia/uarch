@@ -30,16 +30,16 @@ _start:
     movl $data_page, %esi      # ESI = base of writable data page (0x2000)
     movl $data_dest, %edi
     movsb    # byte  (m8 → m8)
-    mov (%edi) %eax
+    movl (%edi), %eax
 
-    add %0x1 %edi
-    add %0x1 %esi
+    addl $0x1, %edi
+    addl $0x1, %esi
     movsw    # word  (m16 → m16)
-    mov (%edi) %ebx
-    add %0xd %edi
-    add %0xd %esi  
+    mov (%edi), %ebx
+    addl $0xd, %edi
+    addl $0xd, %esi  
     movsl    # doubleword (m32 → m32)
-    mov (%edi) %ecx
+    movl (%edi), %ecx
 
     # ============================================================
     # T1: PACKSSWB  (0F 63)
