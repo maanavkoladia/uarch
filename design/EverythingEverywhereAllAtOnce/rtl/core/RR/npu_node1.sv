@@ -9,6 +9,7 @@ module npu_node1 (
     input bool sib_needed,
     input bool disp_needed,
     input bool dispsize,
+    input bool special_modrm_bs,
     input uint32_t displacement,
 
     input logic [1:0] datasize,
@@ -57,7 +58,7 @@ module npu_node1 (
     assign #3 seg1val_plus_displacement = displacement_out + (real_seg1_data << 16);
 
     always_comb begin
-        case({sib_needed, disp_needed})
+        case({sib_needed, special_modrm_bs})
             2'b00: begin
                 sib_or_reg = register_data;
             end

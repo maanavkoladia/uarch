@@ -253,7 +253,8 @@ module modrm_processor (
         alu_inputA_override : alu_inputA_override,
         alu_inputB_override : alu_inputB_override,
         alu_inputA_override_sel : alu_inputA_override_sel,
-        alu_inputB_override_sel : alu_inputB_override_sel
+        alu_inputB_override_sel : alu_inputB_override_sel,
+        special_modrm_bs : ({modrm_byte[7:6], modrm_byte[2:0]} == 5'b00101) ? 1'b1 : 1'b0
     };
 
 

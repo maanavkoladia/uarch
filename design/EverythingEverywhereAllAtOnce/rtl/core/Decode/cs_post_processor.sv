@@ -132,7 +132,8 @@ module cs_post_processor (
         will_mod_zf     : rr_cs_i.will_mod_zf,
         seg_1_valid     : ff_jmp || ff_push ? 1'b0 : rr_cs_i.seg_1_valid,
         seg_0_id        : ff_push ? SS : rr_cs_i.seg_0_id,
-        seg_1_id        : rr_cs_i.seg_1_id
+        seg_1_id        : rr_cs_i.seg_1_id,
+        special_modrm_bs: rr_cs_i.special_modrm_bs
     };
 
     // =====================

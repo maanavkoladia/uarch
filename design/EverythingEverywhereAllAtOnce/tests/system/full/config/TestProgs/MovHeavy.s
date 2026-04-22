@@ -164,6 +164,8 @@ ic_fill_5:
     addl (%esi), %ebx
     movl $0x1A1A1A1A, 0x600(%esi)
     addl 0x600(%esi), %ebx
+    movl 0x200(%esi), %eax
+    hlt
     andl $0xF0F0F0F0, 0x200(%esi)
     movl $16, %ecx
     jmp ic_thrash_a

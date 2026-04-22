@@ -98,6 +98,7 @@ module RR (
         .rm_is_dr(latchesInUse.cs.RM_IS_DR),
         .st_sel(latchesInUse.cs.ST_SEL),
         .movs_op(latchesInUse.cs.MOVS_OP),
+        .special_modrm_bs(latchesInUse.cs.special_modrm_bs),
         .regout_sr_data(reg_out.SR_data[31:0]),
         .regout_dr_data(reg_out.DR_data[31:0]),
         .ld_vaddy(ld_vaddy),

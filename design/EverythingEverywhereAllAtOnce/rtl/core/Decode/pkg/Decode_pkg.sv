@@ -18,6 +18,7 @@ package Decode_pkg;
         bool alu_inputB_override;
         source_selector_e alu_inputA_override_sel;
         source_selector_e alu_inputB_override_sel;
+        bool special_modrm_bs;
     } modrm_processor_outs_t;
 
 endpackage

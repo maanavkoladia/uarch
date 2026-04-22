@@ -105,6 +105,7 @@ package core_stage_latches_pkg;
         bool seg_1_valid;  //need two beacuse two segs for movs etc, 
         reg_ids_e seg_0_id;
         reg_ids_e seg_1_id;
+        bool special_modrm_bs;
 
     } rr_cs_t;
 
