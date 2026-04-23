@@ -26,7 +26,7 @@ SIMFLAGS          ?=
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
 #sim rtl var
-ASM       = $(TEST_DIR)/config/TestProgs/PACK.s
+ASM       = $(TEST_DIR)/config/TestProgs/StagesProgMovs.s
 TLB       = $(TEST_DIR)/config/TLB.conf.json
 CORE_REGS = $(TEST_DIR)/config/CoreRegs.conf.json
 
