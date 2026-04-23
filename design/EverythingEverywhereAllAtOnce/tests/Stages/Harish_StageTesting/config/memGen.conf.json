@@ -1,6 +1,6 @@
 {
     "useProgram"              : "true",
-    "input_Program_Path"      : "config/TestProgs/TheBigOne.s",
+    "input_Program_Path"      : "config/TestProgs/PACK.s",
 
     "input_hex_file"          : "not_needed",
     "output_LoadableHex_Path" : "gen/memGen/hexLoad",

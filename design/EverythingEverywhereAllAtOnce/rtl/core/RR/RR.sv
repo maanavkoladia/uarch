@@ -231,9 +231,9 @@ module RR (
         next_st_vaddy           : actual_next_st_vaddy,
 
         sr_id                   : latchesInUse.cs.sr_id,
-        sr_data                 : reg_out.SR_data[31:0],
+        sr_data                 : reg_out.SR_data,
         dr_id                   : latchesInUse.cs.dr_id,
-        dr_data                 : reg_out.DR_data[31:0]
+        dr_data                 : reg_out.DR_data
     };
 
     assign outs_o = '{
