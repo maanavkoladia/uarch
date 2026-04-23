@@ -25,22 +25,29 @@ module tb_stages();
 
     logic instruction_commit;
     
-    logic needToDumpRegFile;
-    logic savedEIP;
+    logic needToDumpRegFile, needToDumpFlags;
+
+    logic exeforwards;
+    //same logic as 
+    logic savedEIP, savedFlags;
 
     always_comb begin
-        instruction_commit = !`WB_UNIT_PATH.outputs.stall && WB_UNIT_PATH.outputs.valid;
+        instruction_commit = !`WB_UNIT_PATH.outputs.stall && `WB_UNIT_PATH.outputs.valid;
+        exeforwards = `EXE_UNIT_PATH.wb_stage_we_valid_unit_o && `EXE_UNIT_PATH.wb_stage_next_vaild_o;
     end
 
     always_ff @(posedge clk) begin
         if(instruction_commit) begin
             needToDumpRegFile <= 1;
             savedEIP <= `WB_UNIT_PATH.wb_latches.EIP;
-        end
-        else needToDumpRegFile <= 0;
+        end else needToDumpRegFile <= 0;
+        if(exeforwards)  begin
+            needToDumpFlags <= 1;
+            savedEIP = `EXE_UNIT_PATH.latches_i.EIP;
+        end else needToDumpFlags <= 0;
 
-        //if(needToDumpRegFile) //do the regfile print here, and print the eip
-
+        if(needToDumpRegFile) //do the regfile print here, and print the eip
+        if(needToDumpFlags)//print the flags and eip for that set of flags
     end
 
 
