@@ -206,7 +206,8 @@ _start:
     movl    $0xFFFFFFFF, %eax
     addl    $0x00000001, %eax       # EAX=0, CF=1
     movl    $0x00000000, %eax
-    adcl    $0x00001000, %eax       # ADC EAX,imm32 → EAX=0x1001 (0+0x1000+CF=1)
+    # adcl    $0x00001000, %eax       # ADC EAX,imm32 → EAX=0x1001 (0+0x1000+CF=1)
+    adcl    $0x00001000, %ebx       # ADC EAX,imm32 → EAX=0x1001 (0+0x1000+CF=1)
     movl    $0xFFFFFFFF, %ebx
     addl    $0x00000001, %ebx       # EBX=0, CF=1
     movl    $0x00000000, %ebx
