@@ -76,9 +76,9 @@ module modrm_processor (
                             (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EBX : EDI;
                     dr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
                 end
-            endcase
+            endcase 
             dr_rd = 1'b1;
-            dr_wr = (modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
+            dr_wr = (modrm_byte[7:6] == 2'b11 && decode_cs_inputs.MODRM_NEEDED) ? 1'b1 : 1'b0;
         end
         else if(reg_is_dr && !reg_is_segment) begin
             case(modrm_byte[5:3])    //reg id

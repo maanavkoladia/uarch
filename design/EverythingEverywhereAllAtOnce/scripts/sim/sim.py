@@ -242,6 +242,39 @@ def _print_state(regs, flags, cycle):
     print()
 
 
+def _write_regdump_log(trace, out_path):
+    """Write per-instruction regfile dump matching RTL regdump.log format."""
+    with open(out_path, 'w') as f:
+        for entry in trace:
+            eip = entry["before"]["addr"]
+            s   = entry["after"]
+            f.write(f"[REGFILE DUMP] EIP=0x{eip:08X}\n")
+            f.write(f"  EAX=0x{s.get('eax',0):08X}  EBX=0x{s.get('ebx',0):08X}"
+                    f"  ECX=0x{s.get('ecx',0):08X}  EDX=0x{s.get('edx',0):08X}\n")
+            f.write(f"  ESP=0x{s.get('esp',0):08X}  EBP=0x{s.get('ebp',0):08X}"
+                    f"  ESI=0x{s.get('esi',0):08X}  EDI=0x{s.get('edi',0):08X}\n")
+            f.write(f"  CS =0x{s.get('cs',0):08X}  DS =0x{s.get('ds',0):08X}"
+                    f"  SS =0x{s.get('ss',0):08X}  ES =0x{s.get('es',0):08X}\n")
+            f.write(f"  FS =0x{s.get('fs',0):08X}  GS =0x{s.get('gs',0):08X}\n")
+            f.write(f"  MM0=0x{s.get('mm0',0):016X}  MM1=0x{s.get('mm1',0):016X}"
+                    f"  MM2=0x{s.get('mm2',0):016X}  MM3=0x{s.get('mm3',0):016X}\n")
+            f.write(f"  MM4=0x{s.get('mm4',0):016X}  MM5=0x{s.get('mm5',0):016X}"
+                    f"  MM6=0x{s.get('mm6',0):016X}  MM7=0x{s.get('mm7',0):016X}\n")
+
+
+def _write_flagdump_log(trace, out_path):
+    """Write per-instruction flag dump matching RTL flagdump.log format."""
+    with open(out_path, 'w') as f:
+        for entry in trace:
+            eip = entry["before"]["addr"]
+            fl  = entry["after"].get("flags", {})
+            df  = (fl.get("eflags", 0) >> 10) & 1
+            f.write(f"[FLAG DUMP] EIP=0x{eip:08X}\n")
+            f.write(f"  CF={fl.get('CF',0)}  PF={fl.get('PF',0)}  AF={fl.get('AF',0)}"
+                    f"  ZF={fl.get('ZF',0)}  SF={fl.get('SF',0)}  DF={df}"
+                    f"  OF={fl.get('OF',0)}\n")
+
+
 def main():
     p = argparse.ArgumentParser(description="x86-32 Functional Simulator")
     p.add_argument("--asm", required=True, help="Path to .s assembly file")
@@ -254,6 +287,10 @@ def main():
     p.add_argument("--dump-json", help="Write final state to JSON file")
     p.add_argument("--trace-file", metavar="PATH",
                    help="Write normalized per-instruction trace to PATH (for compare.py)")
+    p.add_argument("--regdump-file", metavar="PATH",
+                   help="Write per-instruction regfile dump matching RTL regdump.log format")
+    p.add_argument("--flagdump-file", metavar="PATH",
+                   help="Write per-instruction flag dump matching RTL flagdump.log format")
     args = p.parse_args()
 
     if args.config:
@@ -285,6 +322,14 @@ def main():
     if args.trace_file:
         _write_trace(trace, args.trace_file)
         print(f"\nSim trace written to {args.trace_file}")
+
+    if args.regdump_file:
+        _write_regdump_log(trace, args.regdump_file)
+        print(f"Reg dump written to {args.regdump_file}")
+
+    if args.flagdump_file:
+        _write_flagdump_log(trace, args.flagdump_file)
+        print(f"Flag dump written to {args.flagdump_file}")
 
 
 if __name__ == "__main__":

@@ -17,7 +17,6 @@ module cmpxchg_op (
 
     // Flags from CMP module
     logic cmp_ZF, cmp_SF, cmp_PF, cmp_CF, cmp_OF, cmp_AF;
-    logic [63:0] lock_res, acc_res;
 
     // Instantiate CMP for flag calculation
     cmp u_cmp (
@@ -36,7 +35,6 @@ module cmpxchg_op (
     uint32_t next_dr_o;
 
     byte_t rm_low;
-    byte_t rm_upper;
     assign rm_low = data_size[0] ? rm[7:0] : rm[15:8];
  
     //AH will only change on 16 never on 8 bit size

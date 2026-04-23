@@ -7,10 +7,10 @@ module sal_op(
     input  logic [3:0] sr_data_size_vec, // Used for count selection
     input  logic shift_by_one,
     // Previous flag states for count=0 case
-    input  logic curr_zf_flag, curr_sf_flag, curr_pf_flag, curr_of_flag, curr_cf_flag, 
+    input  logic curr_zf_flag, curr_sf_flag, curr_pf_flag, curr_of_flag, curr_cf_flag, curr_af_flag,
     output uint64_t dr_o,
     output uint64_t res_buf_o,
-    output logic ZF, SF, PF, OF, CF
+    output logic ZF, SF, PF, OF, CF, AF
 );
 
     logic [5:0] count; // 6 bits to safely handle edge cases
@@ -24,6 +24,7 @@ module sal_op(
         PF = curr_pf_flag;
         CF = curr_cf_flag;
         OF = curr_of_flag;
+        AF = curr_af_flag;
 
         // 2. Count selection logic based on your specific requirements
         if (shift_by_one) begin
@@ -37,7 +38,7 @@ module sal_op(
         if (count > 0) begin
             // Per manual: OF is undefined for count > 1. Setting to 0 for consistency.
             OF = 1'b0;
-
+            AF = 1'b0; //undefined for shift/rotate, so we clear it.
             case (data_size)
                 4'b0001: begin // AL (8-bit)
                     CF = (count <= 8) ? value_i[8 - count] : 1'b0;

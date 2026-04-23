@@ -33,6 +33,12 @@ REPORT_FILE ?= compare_report.txt
 NORM_RTL_LOG ?= norm_rtl.log
 NORM_SIM_LOG ?= norm_sim.log
 
+SIM_REGDUMP_FILE  ?= sim_regdump.log
+SIM_FLAGDUMP_FILE ?= sim_flagdump.log
+RTL_REGDUMP_FILE  ?= $(abspath $(TEST_DIR)/../regdump.log)
+RTL_FLAGDUMP_FILE ?= $(abspath $(TEST_DIR)/../flagdump.log)
+DUMP_REPORT_FILE  ?= dump_compare_report.txt
+
 #same here
 # ── Base command ──
 SIM_CMD = $(PYTHON) $(SIM_DIR)/sim.py --asm $(ASM) --tlb $(TLB) --core-regs $(CORE_REGS) --max-cycles $(MAX_CYCLES)
@@ -63,15 +69,24 @@ trace:
 	@echo "Sim trace written to $(TRACE_FILE)"
 
 compare: run
-	$(SIM_CMD) --quiet --trace-file $(TRACE_FILE)
+	$(SIM_CMD) --quiet \
+		--trace-file $(TRACE_FILE) \
+		--regdump-file $(SIM_REGDUMP_FILE) \
+		--flagdump-file $(SIM_FLAGDUMP_FILE)
 	$(PYTHON) $(SIM_DIR)/compare.py \
 		--sim $(TRACE_FILE) \
 		--rtl $(RTL_LOG) \
 		--out $(REPORT_FILE) \
 		--norm-sim  $(NORM_SIM_LOG) \
-		--norm-rtl $(NORM_RTL_LOG)
+		--norm-rtl $(NORM_RTL_LOG) \
+		--regdump-sim $(SIM_REGDUMP_FILE) \
+		--regdump-rtl $(RTL_REGDUMP_FILE) \
+		--flagdump-sim $(SIM_FLAGDUMP_FILE) \
+		--flagdump-rtl $(RTL_FLAGDUMP_FILE) \
+		--dump-report $(DUMP_REPORT_FILE)
 	@echo ""
 	@echo "Report:          $(REPORT_FILE)"
+	@echo "Dump report:     $(DUMP_REPORT_FILE)"
 	@echo "Normalized SIM:  $(NORM_SIM_LOG)   (use: diff norm_sim.log norm_rtl.log)"
 	@echo "Normalized RTL:  $(NORM_RTL_LOG)"
 

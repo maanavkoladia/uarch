@@ -1,4 +1,5 @@
-export SIM_DIR PYTHON ASM TLB CORE_REGS LOG RTL_LOG NORM_RTL_LOG NORM_SIM_LOG REPORT_FILE OUT_JSON
+export SIM_DIR PYTHON ASM TLB CORE_REGS LOG RTL_LOG NORM_RTL_LOG NORM_SIM_LOG REPORT_FILE OUT_JSON \
+       SIM_REGDUMP_FILE SIM_FLAGDUMP_FILE RTL_REGDUMP_FILE RTL_FLAGDUMP_FILE DUMP_REPORT_FILE
 
 TEST_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -25,7 +26,7 @@ SIMFLAGS          ?=
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
 #sim rtl var
-ASM       = $(TEST_DIR)/config/TestProgs/TheBigOne.s
+ASM       = $(TEST_DIR)/config/TestProgs/MovHeavy.s
 TLB       = $(TEST_DIR)/config/TLB.conf.json
 CORE_REGS = $(TEST_DIR)/config/CoreRegs.conf.json
 
@@ -37,6 +38,12 @@ REPORT_FILE = $(LOG_DIR)/compare_report.txt
 
 NORM_RTL_LOG = $(LOG_DIR)/norm_rtl.log
 NORM_SIM_LOG = $(LOG_DIR)/norm_sim.log
+
+SIM_REGDUMP_FILE  = $(LOG_DIR)/sim_regdump.log
+SIM_FLAGDUMP_FILE = $(LOG_DIR)/sim_flagdump.log
+RTL_REGDUMP_FILE  = $(TEST_DIR)regdump.log
+RTL_FLAGDUMP_FILE = $(TEST_DIR)flagdump.log
+DUMP_REPORT_FILE  = $(LOG_DIR)/dump_compare_report.txt
 
 include $(PROJECT_ROOT)/Make.vars
 include $(PROJECT_ROOT)Make.build
@@ -73,6 +80,7 @@ CC_FLAGS += \
     +define+DCACHE_LOG_FILE_NAME=\"$(LOG_DIR)/dcache_dump.log\" \
     +define+DCACHE_DUMP_START_DEFAULT=$(DCACHE_DUMP_START) \
     +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
+	
 
 .PHONY: all run clean see gen
 

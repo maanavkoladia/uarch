@@ -191,7 +191,7 @@ module EXE (
     logic add_af_o, add_cf_o, add_of_o, add_pf_o, add_sf_o, add_zf_o;
 
     // AND Flags
-    logic and_of_o, and_pf_o, and_sf_o, and_zf_o, and_cf_o;
+    logic and_of_o, and_pf_o, and_sf_o, and_zf_o, and_cf_o, and_af_o;
 
     // BSF Flags
     logic bsf_zf_o;
@@ -206,10 +206,10 @@ module EXE (
     logic or_cf_o, or_pf_o, or_zf_o, or_sf_o, or_of_o;
 
     // SAL Flags
-    logic sal_cf_o, sal_pf_o, sal_zf_o, sal_sf_o, sal_of_o;
+    logic sal_cf_o, sal_pf_o, sal_zf_o, sal_sf_o, sal_of_o, sal_af_o;
 
     // SAR Flags
-    logic sar_cf_o, sar_pf_o, sar_zf_o, sar_sf_o, sar_of_o;
+    logic sar_cf_o, sar_pf_o, sar_zf_o, sar_sf_o, sar_of_o, sar_af_o;
 
     // SBB Flags
     logic sbb_cf_o, sbb_pf_o, sbb_af_o, sbb_zf_o, sbb_sf_o, sbb_of_o;
@@ -315,6 +315,7 @@ module EXE (
         .or_res_buf_i      (or_res_buf_o),
         .push_res_buf_i    (push_res_buf),
         .sar_res_buf_i     (sar_res_buf_o),
+        .sal_res_buf_i     (sal_res_buf_o),
         .sbb_res_buf_i     (sbb_res_buf_o),
         .xchg_res_buf_i    (xchg_res_buf),
 
@@ -461,9 +462,12 @@ module EXE (
     //==========================================================================
 
     af_flag_sel u_af_flag_sel (
+        .and_af      (and_af_o),
         .aaa_af      (aaa_af_o),
         .adc_af      (adc_af_o),
         .add_op_af   (add_af_o),
+        .sal_op_af   (sal_af_o),
+        .sar_op_af   (sar_af_o),
         .cmp_af      (cmp_af_o),
         .cmpxchg_af  (cmpxchg_af_o),
         .sbb_af      (sbb_af_o),
@@ -630,7 +634,8 @@ module EXE (
         .SF       (and_sf_o),
         .PF       (and_pf_o),
         .OF       (and_of_o),
-        .CF       (and_cf_o)
+        .CF       (and_cf_o),
+        .AF       (and_af_o)
     );
 
     // --- BSF: Bit Scan Forward ---
@@ -707,12 +712,14 @@ module EXE (
         .curr_pf_flag (flags_reg[PF_IDX]),
         .curr_of_flag (flags_reg[OF_IDX]),
         .curr_cf_flag (flags_reg[CF_IDX]),
+        .curr_af_flag (flags_reg[AF_IDX]),
         .dr_o        (sal_dr_o),
         .res_buf_o   (sal_res_buf_o),
         .ZF          (sal_zf_o),
         .SF          (sal_sf_o),
         .PF          (sal_pf_o),
         .OF          (sal_of_o),
+        .AF          (sal_af_o),
         .CF          (sal_cf_o)
     );
 
@@ -728,13 +735,15 @@ module EXE (
         .curr_pf_flag (flags_reg[PF_IDX]),
         .curr_of_flag (flags_reg[OF_IDX]),
         .curr_cf_flag (flags_reg[CF_IDX]),
+        .curr_af_flag (flags_reg[AF_IDX]),
         .dr_o        (sar_dr_o),
         .res_buf_o   (sar_res_buf_o),
         .ZF          (sar_zf_o),
         .SF          (sar_sf_o),
         .PF          (sar_pf_o),
         .OF          (sar_of_o),
-        .CF          (sar_cf_o)
+        .CF          (sar_cf_o),
+        .AF          (sar_af_o)
     );
 
     // --- SBB: Subtract with Borrow ---

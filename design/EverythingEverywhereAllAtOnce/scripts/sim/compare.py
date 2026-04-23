@@ -509,6 +509,178 @@ def write_normalized(records, path):
 
 
 # ---------------------------------------------------------------------------
+# Dump file parsers  (parse the regdump.log / flagdump.log produced by both
+# the RTL testbench and sim.py --regdump-file / --flagdump-file)
+# ---------------------------------------------------------------------------
+_REGDUMP_HDR_RE  = re.compile(r'\[REGFILE DUMP\]\s+EIP=0x([0-9a-fA-F]+)')
+_FLAGDUMP_HDR_RE = re.compile(r'\[FLAG DUMP\]\s+EIP=0x([0-9a-fA-F]+)')
+_REGVAL_RE       = re.compile(r'(\w+)\s*=\s*0x([0-9a-fA-F]+)')
+_FLAGVAL_RE      = re.compile(r'(CF|PF|AF|ZF|SF|DF|OF)=(\d+)')
+
+REG_DUMP_NAMES  = ['EAX', 'EBX', 'ECX', 'EDX', 'ESP', 'EBP', 'ESI', 'EDI',
+                   'CS', 'DS', 'SS', 'ES', 'FS', 'GS',
+                   'MM0', 'MM1', 'MM2', 'MM3', 'MM4', 'MM5', 'MM6', 'MM7']
+FLAG_DUMP_NAMES = ['CF', 'PF', 'AF', 'ZF', 'SF', 'DF', 'OF']
+_MMX_REGS       = frozenset(f'MM{i}' for i in range(8))
+
+
+def parse_regdump(path):
+    """Parse a regdump.log (RTL or SIM).  Returns list of {'eip': int, 'regs': dict}."""
+    entries  = []
+    cur_eip  = None
+    cur_regs = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            m = _REGDUMP_HDR_RE.search(line)
+            if m:
+                if cur_eip is not None:
+                    entries.append({'eip': cur_eip, 'regs': dict(cur_regs)})
+                cur_eip  = int(m.group(1), 16)
+                cur_regs = {}
+                # also parse any key=val on the same header line
+                for rm in _REGVAL_RE.finditer(line):
+                    name = rm.group(1).upper().strip()
+                    if name != 'EIP':
+                        cur_regs[name] = int(rm.group(2), 16)
+                continue
+            if cur_eip is not None:
+                for rm in _REGVAL_RE.finditer(line):
+                    name = rm.group(1).upper().strip()
+                    if name != 'EIP':
+                        cur_regs[name] = int(rm.group(2), 16)
+    if cur_eip is not None:
+        entries.append({'eip': cur_eip, 'regs': dict(cur_regs)})
+    return entries
+
+
+def parse_flagdump(path):
+    """Parse a flagdump.log (RTL or SIM).  Returns list of {'eip': int, 'flags': dict}."""
+    entries   = []
+    cur_eip   = None
+    cur_flags = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            m = _FLAGDUMP_HDR_RE.search(line)
+            if m:
+                if cur_eip is not None:
+                    entries.append({'eip': cur_eip, 'flags': dict(cur_flags)})
+                cur_eip   = int(m.group(1), 16)
+                cur_flags = {}
+                continue
+            if cur_eip is not None:
+                for fm in _FLAGVAL_RE.finditer(line):
+                    cur_flags[fm.group(1)] = int(fm.group(2))
+    if cur_eip is not None:
+        entries.append({'eip': cur_eip, 'flags': dict(cur_flags)})
+    return entries
+
+
+# ---------------------------------------------------------------------------
+# Dump comparison functions
+# ---------------------------------------------------------------------------
+def compare_dumps(reg_sim_path, reg_rtl_path, flag_sim_path, flag_rtl_path,
+                  sim_records=None, out=sys.stdout):
+    """Single merged per-instruction diff of both register and flag dumps."""
+    reg_sim  = parse_regdump(reg_sim_path)
+    reg_rtl  = parse_regdump(reg_rtl_path)
+    flag_sim = parse_flagdump(flag_sim_path)
+    flag_rtl = parse_flagdump(flag_rtl_path)
+
+    n = max(len(reg_sim), len(reg_rtl), len(flag_sim), len(flag_rtl))
+    total = passed = failed = only_sim = only_rtl = 0
+
+    def w(line): out.write(line + '\n')
+    def _fmt_fl(fd):
+        return "  ".join(f"{f}={fd.get(f,'?')}" for f in FLAG_DUMP_NAMES)
+    def _inst(i):
+        if sim_records and i < len(sim_records):
+            return sim_records[i].get('mnemonic', '???')
+        return '???'
+
+    w("=" * 80)
+    w("  SIM vs RTL DUMP COMPARISON  (registers + flags per instruction)")
+    w("=" * 80)
+    w(f"  REG  — SIM: {len(reg_sim)}  RTL: {len(reg_rtl)}")
+    w(f"  FLAG — SIM: {len(flag_sim)}  RTL: {len(flag_rtl)}")
+    w("")
+
+    for i in range(n):
+        rs = reg_sim[i]   if i < len(reg_sim)  else None
+        rr = reg_rtl[i]   if i < len(reg_rtl)  else None
+        fs = flag_sim[i]  if i < len(flag_sim) else None
+        fr = flag_rtl[i]  if i < len(flag_rtl) else None
+        total += 1
+        inst = _inst(i)
+
+        # Determine EIP (prefer SIM side)
+        eip_s = (rs or fs or {}).get('eip', (rr or fr or {}).get('eip', 0))
+        eip_r = (rr or fr or {}).get('eip', eip_s)
+        eip_match = (eip_s == eip_r)
+        eip_note  = ("" if eip_match else
+                     f"  !! EIP MISMATCH SIM=0x{eip_s:08X} RTL=0x{eip_r:08X}")
+
+        if rs is None and fs is None:
+            only_rtl += 1
+            w(f"[ONLY_RTL] #{i:04d}  EIP=0x{eip_r:08X}  {inst}")
+            continue
+        if rr is None and fr is None:
+            only_sim += 1
+            w(f"[ONLY_SIM] #{i:04d}  EIP=0x{eip_s:08X}  {inst}")
+            continue
+
+        # Collect register diffs
+        reg_diffs = []
+        if rs and rr:
+            for reg in REG_DUMP_NAMES:
+                sv = rs['regs'].get(reg)
+                rv = rr['regs'].get(reg)
+                if sv is None or rv is None:
+                    continue
+                if sv != rv:
+                    fmt = "0x{:016X}" if reg in _MMX_REGS else "0x{:08X}"
+                    reg_diffs.append(f"{reg}: SIM={fmt.format(sv)}  RTL={fmt.format(rv)}")
+
+        # Collect flag diffs
+        flag_diffs = []
+        if fs and fr:
+            for fl in FLAG_DUMP_NAMES:
+                sv = fs['flags'].get(fl)
+                rv = fr['flags'].get(fl)
+                if sv is None or rv is None:
+                    continue
+                if sv != rv:
+                    flag_diffs.append(f"{fl}: SIM={sv}  RTL={rv}")
+
+        all_ok = eip_match and not reg_diffs and not flag_diffs
+        if all_ok:
+            passed += 1
+            fl_str = _fmt_fl(fs['flags']) if fs else "?"
+            w(f"[OK ] #{i:04d}  EIP=0x{eip_s:08X}  {inst:<12}  {fl_str}")
+        else:
+            failed += 1
+            fl_sim = _fmt_fl(fs['flags']) if fs else "?"
+            fl_rtl = _fmt_fl(fr['flags']) if fr else "?"
+            w(f"[ERR] #{i:04d}  EIP=0x{eip_s:08X}  {inst:<12}{eip_note}")
+            if flag_diffs:
+                w(f"       FLAGS  SIM: {fl_sim}")
+                w(f"       FLAGS  RTL: {fl_rtl}")
+                for d in flag_diffs:
+                    w(f"       *** FLAG  {d}")
+            if reg_diffs:
+                for d in reg_diffs:
+                    w(f"       *** REG   {d}")
+
+    w("")
+    w("=" * 80)
+    w(f"  SUMMARY: {passed}/{total} matched  |  {failed} mismatched  "
+      f"|  {only_sim} sim-only  |  {only_rtl} rtl-only")
+    w("=" * 80)
+    return failed == 0
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 def main():
@@ -525,6 +697,16 @@ def main():
                    help="Write normalized SIM trace (for plain diff)")
     p.add_argument("--norm-rtl", metavar="PATH",
                    help="Write normalized RTL trace (for plain diff)")
+    p.add_argument("--regdump-sim", metavar="PATH",
+                   help="SIM regdump.log for register dump comparison")
+    p.add_argument("--regdump-rtl", metavar="PATH",
+                   help="RTL regdump.log for register dump comparison")
+    p.add_argument("--flagdump-sim", metavar="PATH",
+                   help="SIM flagdump.log for flag dump comparison")
+    p.add_argument("--flagdump-rtl", metavar="PATH",
+                   help="RTL flagdump.log for flag dump comparison")
+    p.add_argument("--dump-report", metavar="PATH",
+                   help="Write dump comparison report to file (default: stdout)")
     args = p.parse_args()
 
     print(f"Parsing sim trace: {args.sim}")
@@ -548,6 +730,47 @@ def main():
         print(f"Report written to {args.out}")
     else:
         ok = compare(sim_records, rtl_records, out=sys.stdout)
+
+    # --- Dump comparisons ---
+    do_reg  = args.regdump_sim and args.regdump_rtl
+    do_flag = args.flagdump_sim and args.flagdump_rtl
+    if do_reg and do_flag:
+        dump_fd = open(args.dump_report, 'w') if args.dump_report else sys.stdout
+        try:
+            print(f"Comparing dumps: regs+flags merged")
+            ok &= compare_dumps(
+                args.regdump_sim, args.regdump_rtl,
+                args.flagdump_sim, args.flagdump_rtl,
+                sim_records=sim_records,
+                out=dump_fd)
+        finally:
+            if args.dump_report:
+                dump_fd.close()
+                print(f"Dump report written to {args.dump_report}")
+    elif do_reg or do_flag:
+        # only one side provided — fall back to individual comparisons
+        dump_fd = open(args.dump_report, 'w') if args.dump_report else sys.stdout
+        try:
+            if do_reg:
+                print(f"Comparing regdumps: {args.regdump_sim} vs {args.regdump_rtl}")
+                reg_sim  = parse_regdump(args.regdump_sim)
+                reg_rtl  = parse_regdump(args.regdump_rtl)
+                ok &= compare_dumps(
+                    args.regdump_sim, args.regdump_rtl,
+                    args.flagdump_sim or args.regdump_sim,
+                    args.flagdump_rtl or args.regdump_rtl,
+                    out=dump_fd)
+            if do_flag:
+                print(f"Comparing flagdumps: {args.flagdump_sim} vs {args.flagdump_rtl}")
+                ok &= compare_dumps(
+                    args.regdump_sim or args.flagdump_sim,
+                    args.regdump_rtl or args.flagdump_rtl,
+                    args.flagdump_sim, args.flagdump_rtl,
+                    out=dump_fd)
+        finally:
+            if args.dump_report:
+                dump_fd.close()
+                print(f"Dump report written to {args.dump_report}")
 
     sys.exit(0 if ok else 1)
 

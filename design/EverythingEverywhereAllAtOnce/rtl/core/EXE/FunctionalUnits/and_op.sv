@@ -14,7 +14,8 @@ module and_op(
     output bool SF,
     output bool PF,
     output bool OF,
-    output bool CF
+    output bool CF,
+    output bool AF
 );
 
     uint64_t and_result;
@@ -41,6 +42,7 @@ module and_op(
         OF = 0;
         CF =0;
         PF = ~^merged_result[7:0];
+        AF = 0;
         case (data_size)
             4'b0001: begin
                 ZF = (merged_result[7:0] == 8'h0);

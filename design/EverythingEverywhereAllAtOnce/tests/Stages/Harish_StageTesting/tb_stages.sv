@@ -23,6 +23,45 @@ module tb_stages();
         $vcdplusmemon;
     end
 
+    logic instruction_commit;
+    
+    logic needToDumpRegFile, needToDumpFlags;
+
+    logic exeforwards;
+    //same logic as 
+    logic [31:0] saved_reg_dump_EIP;
+    logic [31:0] saved_flag_dump_EIP;
+
+    logic [31:0] savedFlags;
+
+    always_comb begin
+        instruction_commit = !`WB_UNIT_PATH.outputs.wb_stall && `WB_UNIT_PATH.outputs.valid;
+        exeforwards = `EXE_UNIT_PATH.wb_stage_we_valid_unit_o && `EXE_UNIT_PATH.wb_stage_next_vaild_o;
+    end
+
+    always_ff @(posedge clk) begin
+        if(instruction_commit) begin
+            needToDumpRegFile <= 1;
+            saved_reg_dump_EIP <= `WB_UNIT_PATH.wb_latches.EIP;
+        end else needToDumpRegFile <= 0;
+        if(exeforwards)  begin
+            needToDumpFlags <= 1;
+            saved_flag_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
+            savedFlags[CF_IDX] <= `EXE_UNIT_PATH.cf_flag_o;
+            savedFlags[PF_IDX] <= `EXE_UNIT_PATH.pf_flag_o;
+            savedFlags[AF_IDX] <= `EXE_UNIT_PATH.af_flag_o;
+            savedFlags[ZF_IDX] <= `EXE_UNIT_PATH.zf_flag_o;
+            savedFlags[SF_IDX] <= `EXE_UNIT_PATH.sf_flag_o;
+            savedFlags[DF_IDX] <= `EXE_UNIT_PATH.df_flag_o;
+            savedFlags[OF_IDX] <= `EXE_UNIT_PATH.of_flag_o;
+        end else needToDumpFlags <= 0;
+
+    
+        if(needToDumpRegFile) dump_regs(saved_reg_dump_EIP);
+        if(needToDumpFlags)   dump_flags(saved_flag_dump_EIP, savedFlags);
+    end
+
+
     // task automatic DelayClks(input int cycles);
     //     #(Clk_PERIOD * cycles);
     // endtask
@@ -58,31 +97,21 @@ module tb_stages();
     tlb_loader tlb_loader_unit();
     coreRegLoader core_reg_loader_unit();
 
-    // ===================== DEBUG LOGGER =====================
-    int log_fd;
-    int cycle_count;
-
-    initial begin
-        log_fd = $fopen("pipeline_debug.log", "w");
-        if (log_fd == 0) begin
-            $display("ERROR: Could not open log file");
-            $finish;
-        end
-        print_info("");
-        cycle_count = 0;
-    end
-
-    final begin
-        if (log_fd != 0) $fclose(log_fd);
-    end
-
-    // Cycle counter
-    always @(posedge clk) begin
-        if (rst) cycle_count <= cycle_count + 1;
-    end
 
     always_ff @(posedge clk) begin
         print_info(" ");
+    end
+
+    // Emit [WB ACTUAL COMMIT] every cycle WB has a valid instruction, and
+    // [REGFILE DUMP] whenever a register write actually occurs.
+    // #1 advances past the NBA region so REGISTERS[] reflects this posedge.
+    always @(posedge clk) begin
+        #1;
+        if (`WB_UNIT_PATH.outputs.valid) begin
+            print_wb_actual_commit();
+            if (`WB_UNIT_PATH.outputs.DR_0_we || `WB_UNIT_PATH.outputs.DR_1_we)
+                print_regfile_dump();
+        end
     end
 
     initial begin
@@ -119,63 +148,6 @@ module tb_stages();
 
     // ===================== END DEBUG LOGGER =====================
     end
-
-
-   // ================= CORE OUTPUTS =================
-    // fetch_outputs_t fetch_outs_o;
-    // idm_outputs_t idm_info_i;
-    // decode_outputs_t decode_outs_i;
-    // rr_outputs_t rr_outs_i;
-    // dc_outputs_t dc_outs_i;
-    // exe_outputs_t exe_outs_i;
-    // mem_outputs_t mem_outs_i;
-    // wb_outputs_t wb_outs_i;
-
-    // core_2_icache_t core_2_icache;
-    // core_2_dcache_t core_2_dcache;
-
-    // // ================= ICACHE OUTPUTS =================
-    // icache_2_core_t icache_2_core;
-    // icache_2_scheduler_t icache_2_sch;
-
-    // // ================= DCACHE OUTPUTS =================
-    // dcache_2_core_t dcache_2_core;
-    // dcache_2_scheduler_t dcache_2_sch;
-
-    // // ================= MEMORY OUTPUTS =================
-    // mem_2_dte_t mem_2_dte;
-    // mem_2_scheduler_t mem_2_sch;
-
-    // // ================= DTE (BUS ARBITRATION) OUTPUTS =================
-    // dte_2_icache_t dte_2_icache;
-    // dte_2_dcache_t dte_2_dcache;
-    // dte_2_mem_t dte_2_mem;
-    // dte_2_dma_controller_t dte_2_dma;
-    // dte_2_ddr5_t dte_2_ddr5;
-
-    // // ================= DMA OUTPUTS =================
-    // //dma_controller_2_scheduler_t dma_2_sch;
-    // dma_controller_2_core_t dma_2_core;
-
-    // Everywhere_TOP uut_offcore(
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .core2icache_i(core_2_icache),
-    //     .icache2core_o(icache_2_core),
-    //     .core2dcache_i(core_2_dcache),
-    //     .dcache2core_o(dcache_2_core),
-    //     .dma2core_o(dma_2_core)
-    // );
-
-    // EveryThing_TOP uut_core(
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .ICacheIn_i(icache_2_core),
-    //     .inFromDMA_i(dma_2_core),   
-    //     .DCacheIn_i(dcache_2_core),
-    //     .out2DCache_o(core_2_dcache),
-    //     .out2ICache_o(core_2_icache)
-    // );
 
 
 endmodule
