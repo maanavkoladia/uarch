@@ -3,8 +3,10 @@
 .global _start
 
 movl    $0xa00, %edx                  // EDX = 0x00000A00
+.byte 0x66
 movw    %dx, %ds                      // DS = 0x0A00, DS_base = 0x0A000000
 addw    $0x100, %dx                   // DX = 0x0B00 CF=0, OF=0, AF=0, PF=1, ZF=0, SF=0
+.byte 0x66
 movw    %dx, %fs                      // FS = 0x0B00, FS_base = 0x0B000000
 movl    $0x08090a0b, %eax             // EAX = 0x08090A0B
 movl    $0xfd, %ebx                   // EBX = 0x000000FD
