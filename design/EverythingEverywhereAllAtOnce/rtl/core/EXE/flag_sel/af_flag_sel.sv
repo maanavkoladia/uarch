@@ -6,6 +6,8 @@ module af_flag_sel(
 	input bool aaa_af,
 	input bool adc_af,
     input bool add_op_af,
+	input bool sal_op_af,
+	input bool sar_op_af,
 
 	input bool cmp_af,
 	input bool cmpxchg_af,
@@ -24,6 +26,8 @@ module af_flag_sel(
 	//8 to 1 mux
 	always_comb begin
 		case(op_type)
+			SAL:      af_flag_o = sal_op_af;
+			SAR:      af_flag_o = sar_op_af;
 			AAA:      af_flag_o = aaa_af;
 			ADC:      af_flag_o = adc_af;
 			ADD:      af_flag_o = add_op_af;

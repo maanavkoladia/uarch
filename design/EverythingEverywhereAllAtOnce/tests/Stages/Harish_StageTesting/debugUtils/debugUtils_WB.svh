@@ -139,4 +139,57 @@ task automatic print_wb_info();
 endtask
 
 
+// --- WB ACTUAL COMMIT ---
+// Same format as [WB NEXT LATCHES] so compare.py regexes work unchanged.
+// Sources data from actual WB stage outputs (accounts for stalls).
+// Called at posedge+#1 so REGISTERS[] has already settled.
+task automatic print_wb_actual_commit();
+    $fdisplay(`LOG_FD, "[WB ACTUAL COMMIT]");
+`ifdef WB_UNIT_PATH
+    $fdisplay(`LOG_FD, "  valid=%0b  EIP=0x%08h",
+              `WB_UNIT_PATH.outputs.valid,
+              `WB_UNIT_PATH.wb_latches.EIP);
+
+    $fdisplay(`LOG_FD, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
+              tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_0_id),
+              `WB_UNIT_PATH.outputs.DR_0_data,
+              tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_1_id),
+              `WB_UNIT_PATH.outputs.DR_1_data);
+
+    $fdisplay(`LOG_FD, "  WB_CS: ST=%0b WB_DR=%0b WB_SR=%0b",
+              `WB_UNIT_PATH.outputs.ST_OP,
+              `WB_UNIT_PATH.outputs.DR_0_we,
+              `WB_UNIT_PATH.outputs.DR_1_we);
+`endif
+endtask
+
+
+// --- REGFILE DUMP ---
+// Full snapshot of GPRs and segment registers.
+// Call after posedge+#1 so flip-flop writes from that posedge are visible.
+task automatic print_regfile_dump();
+    $fdisplay(`LOG_FD, "[REGFILE DUMP]");
+`ifdef REGFILE_PATH
+    $fdisplay(`LOG_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
+              `REGFILE_PATH.REGISTERS[EAX][31:0],
+              `REGFILE_PATH.REGISTERS[EBX][31:0],
+              `REGFILE_PATH.REGISTERS[ECX][31:0],
+              `REGFILE_PATH.REGISTERS[EDX][31:0]);
+    $fdisplay(`LOG_FD, "  ESP=0x%08h  EBP=0x%08h  ESI=0x%08h  EDI=0x%08h",
+              `REGFILE_PATH.REGISTERS[ESP][31:0],
+              `REGFILE_PATH.REGISTERS[EBP][31:0],
+              `REGFILE_PATH.REGISTERS[ESI][31:0],
+              `REGFILE_PATH.REGISTERS[EDI][31:0]);
+    $fdisplay(`LOG_FD, "  CS =0x%08h  DS =0x%08h  SS =0x%08h  ES =0x%08h",
+              `REGFILE_PATH.REGISTERS[CS][31:0],
+              `REGFILE_PATH.REGISTERS[DS][31:0],
+              `REGFILE_PATH.REGISTERS[SS][31:0],
+              `REGFILE_PATH.REGISTERS[ES][31:0]);
+    $fdisplay(`LOG_FD, "  FS =0x%08h  GS =0x%08h",
+              `REGFILE_PATH.REGISTERS[FS][31:0],
+              `REGFILE_PATH.REGISTERS[GS][31:0]);
+`endif
+endtask
+
+
 `endif

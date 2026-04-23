@@ -58,31 +58,21 @@ module tb_stages();
     tlb_loader tlb_loader_unit();
     coreRegLoader core_reg_loader_unit();
 
-    // ===================== DEBUG LOGGER =====================
-    int log_fd;
-    int cycle_count;
-
-    initial begin
-        log_fd = $fopen("pipeline_debug.log", "w");
-        if (log_fd == 0) begin
-            $display("ERROR: Could not open log file");
-            $finish;
-        end
-        print_info("");
-        cycle_count = 0;
-    end
-
-    final begin
-        if (log_fd != 0) $fclose(log_fd);
-    end
-
-    // Cycle counter
-    always @(posedge clk) begin
-        if (rst) cycle_count <= cycle_count + 1;
-    end
 
     always_ff @(posedge clk) begin
         print_info(" ");
+    end
+
+    // Emit [WB ACTUAL COMMIT] every cycle WB has a valid instruction, and
+    // [REGFILE DUMP] whenever a register write actually occurs.
+    // #1 advances past the NBA region so REGISTERS[] reflects this posedge.
+    always @(posedge clk) begin
+        #1;
+        if (`WB_UNIT_PATH.outputs.valid) begin
+            print_wb_actual_commit();
+            if (`WB_UNIT_PATH.outputs.DR_0_we || `WB_UNIT_PATH.outputs.DR_1_we)
+                print_regfile_dump();
+        end
     end
 
     initial begin

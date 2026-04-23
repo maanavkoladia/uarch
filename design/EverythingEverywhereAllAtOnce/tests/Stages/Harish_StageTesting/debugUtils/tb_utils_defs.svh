@@ -14,12 +14,12 @@ import tb_debug_pkg::*;
 // ===================== DUT PATHS =====================
 `define FETCH_UNIT_PATH (temp)
 `define DECODE_UNIT_PATH (temp)
-`define RR_UNIT_PATH (temp)
+`define RR_UNIT_PATH uut_AllAtOnce.core_unit.rr_unit
 `define DC_UNIT_PATH (temp)
 `define MEM_UNIT_PATH (temp)
 `define EXE_UNIT_PATH uut_AllAtOnce.core_unit.execute_unit
-`define WB_UNIT_PATH (temp)
-`define WB_UNIT_PATH (temp)
+`define WB_UNIT_PATH uut_AllAtOnce.core_unit.write_back_unit
+`define REGFILE_PATH uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit
 `define DCACHE_UNIT_PATH (temp)
 
 
@@ -67,9 +67,9 @@ import tb_debug_pkg::*;
 //`include "debugUtils/debugUtilsRR.svh"
 //`include "debugUtils/debugUtilsDC.svh"
 //`include "debugUtils/debugUtilsMEM.svh"
+`include "debugUtils/debugUtils_WB.svh"
 `include "debugUtils/debugUtilsEXE.svh"
 //`include "debugUtils/debugUtils_Dcache.svh"
-//`include "debugUtils/debugUtils_WB.svh"
 //`include "debugUtils/debugUtilsWBLatches.svh"
 
 `endif
