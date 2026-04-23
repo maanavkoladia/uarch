@@ -44,11 +44,11 @@ _start:
     # =================================================
     movl $0x11111111, %eax
     movl $T1_target, %ebp
-    jmp  *%ebp
+    jmp  *%ebp              # ebp = 0x1039
 
     movl $0xDEADBEEF, %eax       # SHOULD NOT EXECUTE
 
-T1_target:
+T1_target:                      # 0x1039
     movl $0xAAAAAAAA, %eax
     # EXPECT: EAX = 0xAAAAAAAA
     jmp T2_start
@@ -60,11 +60,11 @@ T1_target:
     # =================================================
 T2_start:
     movl $0x22222222, %ebx
-    jmp  *T2_ptr
+    jmp  *T2_ptr                # t2_ptr = 1050
 
     movl $0xDEADBEEF, %ebx       # SHOULD NOT EXECUTE
 
-T2_target:
+T2_target:                  # 0x1050
     movl $0xBBBBBBBB, %ebx
     # EXPECT: EBX = 0xBBBBBBBB
     jmp T3_start

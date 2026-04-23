@@ -105,12 +105,11 @@ module cs_post_processor (
         RM_IS_DR        : rr_cs_i.RM_IS_DR,
 
         LD_OP           : invalid_inst ? 
-                            1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b1 : rr_cs_i.LD_OP,
+                            1'b0 : rr_cs_i.LD_OP,
 
         ST_OP           : invalid_inst ? 
-                            1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b1 : rr_cs_i.ST_OP,
+                            1'b0 : 
+                            ff_jmp ? 1'b0 : rr_cs_i.ST_OP,
         MOVS_OP         : rr_cs_i.MOVS_OP,
         dr_id           : rr_cs_i.dr_id,
         sr_id           : ff_jmp ? NO_REG : rr_cs_i.sr_id,
@@ -119,7 +118,6 @@ module cs_post_processor (
         eax_rd          : cmpxchg ? 1'b1 : 1'b0,
         dr_wr           : invalid_inst ?
                             1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b0 : 
                             (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i.dr_wr,
 
         sr_wr           : invalid_inst ? 
@@ -134,7 +132,7 @@ module cs_post_processor (
         datasize        : rr_cs_i.datasize,
         will_mod_zf     : rr_cs_i.will_mod_zf,
         seg_1_valid     : ff_jmp || ff_push ? 1'b0 : rr_cs_i.seg_1_valid,
-        seg_0_id        : ff_push ? SS : rr_cs_i.seg_0_id,
+        seg_0_id        : ff_push ? DS : rr_cs_i.seg_0_id,
         seg_1_id        : rr_cs_i.seg_1_id,
         special_modrm_bs: rr_cs_i.special_modrm_bs
     };
@@ -144,11 +142,10 @@ module cs_post_processor (
     // =====================
     assign dc_cs_o = '{
         LD_OP       : invalid_inst ? 
-                            1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b1 : dc_cs_i.LD_OP,
+                            1'b0 : dc_cs_i.LD_OP,
         ST_OP       : invalid_inst ? 
                             1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b1 : dc_cs_i.ST_OP,
+                            ff_jmp ? 1'b0 : dc_cs_i.ST_OP,
         dr_upper8   : dc_cs_i.dr_upper8,
         sr_upper8 : dc_cs_i.sr_upper8,
         datasize : dc_cs_i.datasize
@@ -159,11 +156,9 @@ module cs_post_processor (
     // =====================
     assign mem_cs_o = '{
         LD_OP   : invalid_inst ? 
-                            1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b1 : mem_cs_i.LD_OP,
+                            1'b0 : mem_cs_i.LD_OP,
         ST_OP   : invalid_inst ? 
-                            1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b1 : mem_cs_i.ST_OP
+                            1'b0 : ff_jmp ? 1'b0 : mem_cs_i.ST_OP
     };
 
     // =====================
@@ -172,11 +167,11 @@ module cs_post_processor (
     assign exe_cs_o = '{
         ST_OP              : invalid_inst ? 
                                 1'b0 :
-                                rr_cs_i.MOVS_OP ? 1'b1 : mem_cs_i.ST_OP,
+                                ff_jmp ? 1'b0 : mem_cs_i.ST_OP,
         OP_TYPE            : (op_in_modrm) ? overriden_op_type : exe_cs_i.OP_TYPE,
         alu_inputA_sel     : ff_jmp ? 
-                                NO_EXE : 
-                                ff_push ? DR_REGISTER : exe_cs_i.alu_inputA_sel,    //can technically use 4-1 mux here instaed of 2 2-1
+                                NO_EXE :
+                                    ff_call ? NEIP : exe_cs_i.alu_inputA_sel,    //can technically use 4-1 mux here instaed of 2 2-1
         alu_inputB_sel     : ff_jmp ? NO_EXE : exe_cs_i.alu_inputB_sel,
         branch_target_sel  : (op_in_modrm) ? overriden_br_sel : exe_cs_i.branch_target_sel,
         shift_by_one       : exe_cs_i.shift_by_one,
@@ -194,14 +189,14 @@ module cs_post_processor (
     assign wb_cs_o = '{
         ST_OP : invalid_inst ? 
                             1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b1 : mem_cs_i.ST_OP,
+                            ff_jmp ? 1'b0 : mem_cs_i.ST_OP,
         WB_DR : invalid_inst ? 
                             1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b0 : 
-                                (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i.dr_wr,
+                            (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i.dr_wr,
         WB_SR : invalid_inst ? 
                             1'b0 :
-                            xchg ? 1'b1 : rr_cs_i.sr_wr,
+                            xchg ? 1'b1 : 
+                            ff_jmp ? 1'b0 : rr_cs_i.sr_wr,
         WB_EAX : invalid_inst ? 
                             1'b0 :
                             cmpxchg ? 1'b1 : 1'b0
