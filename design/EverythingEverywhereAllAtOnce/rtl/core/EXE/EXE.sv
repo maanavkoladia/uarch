@@ -203,7 +203,7 @@ module EXE (
     logic cmpxchg_cf_o, cmpxchg_pf_o, cmpxchg_af_o, cmpxchg_zf_o, cmpxchg_sf_o, cmpxchg_of_o;
 
     // OR Flags
-    logic or_cf_o, or_pf_o, or_zf_o, or_sf_o, or_of_o;
+    logic or_cf_o, or_pf_o, or_zf_o, or_sf_o, or_of_o, or_af_o;
 
     // SAL Flags
     logic sal_cf_o, sal_pf_o, sal_zf_o, sal_sf_o, sal_of_o, sal_af_o;
@@ -463,6 +463,7 @@ module EXE (
 
     af_flag_sel u_af_flag_sel (
         .and_af      (and_af_o),
+        .or_af       (or_af_o),
         .aaa_af      (aaa_af_o),
         .adc_af      (adc_af_o),
         .add_op_af   (add_af_o),
@@ -697,7 +698,8 @@ module EXE (
         .SF       (or_sf_o),
         .PF       (or_pf_o),
         .OF       (or_of_o),
-        .CF       (or_cf_o)
+        .CF       (or_cf_o),
+        .AF       (or_af_o)
     );
 
     // --- SAL: Shift Arithmetic Left ---

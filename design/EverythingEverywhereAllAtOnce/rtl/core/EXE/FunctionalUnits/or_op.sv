@@ -14,7 +14,8 @@ module or_op(
     output bool SF,
     output bool PF,
     output bool OF,
-    output bool CF
+    output bool CF,
+    output bool AF
 );
 
     uint64_t or_result;
@@ -37,6 +38,7 @@ module or_op(
     // CF and OF are always cleared for OR
     assign OF = 0;
     assign CF = 0;
+    assign AF = 0;
     
     // PF always reflects parity of the lowest 8 bits, regardless of data_size
     assign PF = ~data_size[0] ? ~^merged_result[15:8] :  ~^merged_result[7:0];
