@@ -23,6 +23,34 @@ module tb_stages();
         $vcdplusmemon;
     end
 
+    logic instruction_commit;
+    
+    logic needToDumpRegFile, needToDumpFlags;
+
+    logic exeforwards;
+    //same logic as 
+    logic savedEIP, savedFlags;
+
+    always_comb begin
+        instruction_commit = !`WB_UNIT_PATH.outputs.stall && `WB_UNIT_PATH.outputs.valid;
+        exeforwards = `EXE_UNIT_PATH.wb_stage_we_valid_unit_o && `EXE_UNIT_PATH.wb_stage_next_vaild_o;
+    end
+
+    always_ff @(posedge clk) begin
+        if(instruction_commit) begin
+            needToDumpRegFile <= 1;
+            savedEIP <= `WB_UNIT_PATH.wb_latches.EIP;
+        end else needToDumpRegFile <= 0;
+        if(exeforwards)  begin
+            needToDumpFlags <= 1;
+            savedEIP = `EXE_UNIT_PATH.latches_i.EIP;
+        end else needToDumpFlags <= 0;
+
+        if(needToDumpRegFile) //do the regfile print here, and print the eip
+        if(needToDumpFlags)//print the flags and eip for that set of flags
+    end
+
+
     // task automatic DelayClks(input int cycles);
     //     #(Clk_PERIOD * cycles);
     // endtask
@@ -109,63 +137,6 @@ module tb_stages();
 
     // ===================== END DEBUG LOGGER =====================
     end
-
-
-   // ================= CORE OUTPUTS =================
-    // fetch_outputs_t fetch_outs_o;
-    // idm_outputs_t idm_info_i;
-    // decode_outputs_t decode_outs_i;
-    // rr_outputs_t rr_outs_i;
-    // dc_outputs_t dc_outs_i;
-    // exe_outputs_t exe_outs_i;
-    // mem_outputs_t mem_outs_i;
-    // wb_outputs_t wb_outs_i;
-
-    // core_2_icache_t core_2_icache;
-    // core_2_dcache_t core_2_dcache;
-
-    // // ================= ICACHE OUTPUTS =================
-    // icache_2_core_t icache_2_core;
-    // icache_2_scheduler_t icache_2_sch;
-
-    // // ================= DCACHE OUTPUTS =================
-    // dcache_2_core_t dcache_2_core;
-    // dcache_2_scheduler_t dcache_2_sch;
-
-    // // ================= MEMORY OUTPUTS =================
-    // mem_2_dte_t mem_2_dte;
-    // mem_2_scheduler_t mem_2_sch;
-
-    // // ================= DTE (BUS ARBITRATION) OUTPUTS =================
-    // dte_2_icache_t dte_2_icache;
-    // dte_2_dcache_t dte_2_dcache;
-    // dte_2_mem_t dte_2_mem;
-    // dte_2_dma_controller_t dte_2_dma;
-    // dte_2_ddr5_t dte_2_ddr5;
-
-    // // ================= DMA OUTPUTS =================
-    // //dma_controller_2_scheduler_t dma_2_sch;
-    // dma_controller_2_core_t dma_2_core;
-
-    // Everywhere_TOP uut_offcore(
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .core2icache_i(core_2_icache),
-    //     .icache2core_o(icache_2_core),
-    //     .core2dcache_i(core_2_dcache),
-    //     .dcache2core_o(dcache_2_core),
-    //     .dma2core_o(dma_2_core)
-    // );
-
-    // EveryThing_TOP uut_core(
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .ICacheIn_i(icache_2_core),
-    //     .inFromDMA_i(dma_2_core),   
-    //     .DCacheIn_i(dcache_2_core),
-    //     .out2DCache_o(core_2_dcache),
-    //     .out2ICache_o(core_2_icache)
-    // );
 
 
 endmodule

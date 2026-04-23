@@ -18,8 +18,8 @@ import tb_debug_pkg::*;
 `define DC_UNIT_PATH (temp)
 `define MEM_UNIT_PATH (temp)
 `define EXE_UNIT_PATH uut_AllAtOnce.core_unit.execute_unit
-`define WB_UNIT_PATH uut_AllAtOnce.core_unit.write_back_unit
-`define REGFILE_PATH uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit
+`define WB_UNIT_PATH uut_AllAtOnce.core_unit.wb
+`define WB_UNIT_PATH (temp)
 `define DCACHE_UNIT_PATH (temp)
 
 
