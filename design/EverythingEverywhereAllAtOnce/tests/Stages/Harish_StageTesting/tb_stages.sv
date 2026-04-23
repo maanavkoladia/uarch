@@ -29,25 +29,36 @@ module tb_stages();
 
     logic exeforwards;
     //same logic as 
-    logic savedEIP, savedFlags;
+    logic [31:0] saved_reg_dump_EIP;
+    logic [31:0] saved_flag_dump_EIP;
+
+    logic [31:0] savedFlags;
 
     always_comb begin
-        instruction_commit = !`WB_UNIT_PATH.outputs.stall && `WB_UNIT_PATH.outputs.valid;
+        instruction_commit = !`WB_UNIT_PATH.outputs.wb_stall && `WB_UNIT_PATH.outputs.valid;
         exeforwards = `EXE_UNIT_PATH.wb_stage_we_valid_unit_o && `EXE_UNIT_PATH.wb_stage_next_vaild_o;
     end
 
     always_ff @(posedge clk) begin
         if(instruction_commit) begin
             needToDumpRegFile <= 1;
-            savedEIP <= `WB_UNIT_PATH.wb_latches.EIP;
+            saved_reg_dump_EIP <= `WB_UNIT_PATH.wb_latches.EIP;
         end else needToDumpRegFile <= 0;
         if(exeforwards)  begin
             needToDumpFlags <= 1;
-            savedEIP = `EXE_UNIT_PATH.latches_i.EIP;
+            saved_flag_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
+            savedFlags[CF_IDX] <= `EXE_UNIT_PATH.cf_flag_o;
+            savedFlags[PF_IDX] <= `EXE_UNIT_PATH.pf_flag_o;
+            savedFlags[AF_IDX] <= `EXE_UNIT_PATH.af_flag_o;
+            savedFlags[ZF_IDX] <= `EXE_UNIT_PATH.zf_flag_o;
+            savedFlags[SF_IDX] <= `EXE_UNIT_PATH.sf_flag_o;
+            savedFlags[DF_IDX] <= `EXE_UNIT_PATH.df_flag_o;
+            savedFlags[OF_IDX] <= `EXE_UNIT_PATH.of_flag_o;
         end else needToDumpFlags <= 0;
 
-        if(needToDumpRegFile) //do the regfile print here, and print the eip
-        if(needToDumpFlags)//print the flags and eip for that set of flags
+    
+        if(needToDumpRegFile) dump_regs(saved_reg_dump_EIP);
+        if(needToDumpFlags)   dump_flags(saved_flag_dump_EIP, savedFlags);
     end
 
 

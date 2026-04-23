@@ -3,6 +3,7 @@ import control_store_pkg::*;
 import common_pkg::*;
 
 module af_flag_sel(
+	input bool and_af,
 	input bool aaa_af,
 	input bool adc_af,
     input bool add_op_af,
@@ -26,6 +27,7 @@ module af_flag_sel(
 	//8 to 1 mux
 	always_comb begin
 		case(op_type)
+			AND : 	  af_flag_o = and_af;
 			SAL:      af_flag_o = sal_op_af;
 			SAR:      af_flag_o = sar_op_af;
 			AAA:      af_flag_o = aaa_af;

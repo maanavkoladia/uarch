@@ -166,4 +166,19 @@ task automatic print_exe_info();
 endtask
 
 
+// --- FLAGS TO SEPARATE DUMP FILE ---
+// Pass the EIP and the saved flags_reg captured when exeforwards fired.
+task automatic dump_flags(input logic [31:0] eip, input logic [31:0] flags);
+    $fdisplay(`FLAGDUMP_FD, "[FLAG DUMP] EIP=0x%08h", eip);
+    $fdisplay(`FLAGDUMP_FD, "  CF=%0b  PF=%0b  AF=%0b  ZF=%0b  SF=%0b  DF=%0b  OF=%0b",
+              flags[CF_IDX],
+              flags[PF_IDX],
+              flags[AF_IDX],
+              flags[ZF_IDX],
+              flags[SF_IDX],
+              flags[DF_IDX],
+              flags[OF_IDX]);
+endtask
+
+
 `endif

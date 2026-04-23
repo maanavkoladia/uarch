@@ -18,9 +18,13 @@ import tb_debug_pkg::*;
 `define DC_UNIT_PATH (temp)
 `define MEM_UNIT_PATH (temp)
 `define EXE_UNIT_PATH uut_AllAtOnce.core_unit.execute_unit
-`define WB_UNIT_PATH uut_AllAtOnce.core_unit.wb
-`define WB_UNIT_PATH (temp)
+`define WB_UNIT_PATH uut_AllAtOnce.core_unit.write_back_unit
 `define DCACHE_UNIT_PATH (temp)
+`define REGFILE_PATH uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit
+
+// ===================== DUMP FILE DESCRIPTORS =====================
+`define REGDUMP_FD regdumpfd
+`define FLAGDUMP_FD flagdumpfd
 
 
 // ===================== INIT BLOCK =====================
@@ -48,6 +52,8 @@ import tb_debug_pkg::*;
 
 `define DEBUG_UTILS_INIT \
     integer `LOG_FD; \
+    integer `REGDUMP_FD; \
+    integer `FLAGDUMP_FD; \
     int cycle_count = 0; \
     `COMMON_UTILS_INIT \
     `PRINT_CYCLE_HEADER \
@@ -55,6 +61,16 @@ import tb_debug_pkg::*;
         logfd = $fopen(`LOG_FILE_NAME, "w"); \
         if (logfd == 0) begin \
             $display("ERROR: cannot open log file"); \
+            $finish; \
+        end \
+        regdumpfd = $fopen("regdump.log", "w"); \
+        if (regdumpfd == 0) begin \
+            $display("ERROR: cannot open regdump.log"); \
+            $finish; \
+        end \
+        flagdumpfd = $fopen("flagdump.log", "w"); \
+        if (flagdumpfd == 0) begin \
+            $display("ERROR: cannot open flagdump.log"); \
             $finish; \
         end \
     end \

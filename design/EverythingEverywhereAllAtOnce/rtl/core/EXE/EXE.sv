@@ -191,7 +191,7 @@ module EXE (
     logic add_af_o, add_cf_o, add_of_o, add_pf_o, add_sf_o, add_zf_o;
 
     // AND Flags
-    logic and_of_o, and_pf_o, and_sf_o, and_zf_o, and_cf_o;
+    logic and_of_o, and_pf_o, and_sf_o, and_zf_o, and_cf_o, and_af_o;
 
     // BSF Flags
     logic bsf_zf_o;
@@ -462,6 +462,7 @@ module EXE (
     //==========================================================================
 
     af_flag_sel u_af_flag_sel (
+        .and_af      (and_af_o),
         .aaa_af      (aaa_af_o),
         .adc_af      (adc_af_o),
         .add_op_af   (add_af_o),
@@ -633,7 +634,8 @@ module EXE (
         .SF       (and_sf_o),
         .PF       (and_pf_o),
         .OF       (and_of_o),
-        .CF       (and_cf_o)
+        .CF       (and_cf_o),
+        .AF       (and_af_o)
     );
 
     // --- BSF: Bit Scan Forward ---
