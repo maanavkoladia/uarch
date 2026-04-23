@@ -230,59 +230,41 @@ wire o0_0_o_and_buf_mid;
 `INV_N(o0_0_o_and_buf_i0, 1, i0_i, o0_0_o_and_buf_mid)
 `INV_N(o0_0_o_and_buf_i1, 1, o0_0_o_and_buf_mid, o0_0_o)
 
-<<<<<<< HEAD
-// o1_5_o = (i5_i & !i4_i) | (i5_i & !i1_i) | (i5_i & !i0_i) | (i5_i & !i2_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i & i2_i & i1_i & i0_i)
-=======
-// o1_5_o = (i5_i & !i4_i) | (i5_i & !i0_i) | (i5_i & !i1_i) | (i5_i & !i2_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i & i2_i & i1_i & i0_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+// o1_5_o = (i5_i & !i0_i) | (i5_i & !i4_i) | (i5_i & !i3_i) | (i5_i & !i1_i) | (i5_i & !i2_i) | (!i5_i & i4_i & i3_i & i2_i & i1_i & i0_i)
 wire o1_5_o_t0;
-`AND_2(o1_5_o_and0, 1, o1_5_o_t0, i5_i, i4_i_inv)
+`AND_2(o1_5_o_and0, 1, o1_5_o_t0, i5_i, i0_i_inv)
 wire o1_5_o_t1;
-`AND_2(o1_5_o_and1, 1, o1_5_o_t1, i5_i, i1_i_inv)
+`AND_2(o1_5_o_and1, 1, o1_5_o_t1, i5_i, i4_i_inv)
 wire o1_5_o_t2;
-<<<<<<< HEAD
-`AND_2(o1_5_o_and2, 1, o1_5_o_t2, i5_i, i0_i_inv)
-=======
-`AND_2(o1_5_o_and2, 1, o1_5_o_t2, i5_i, i1_i_inv)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+`AND_2(o1_5_o_and2, 1, o1_5_o_t2, i5_i, i3_i_inv)
 wire o1_5_o_t3;
-`AND_2(o1_5_o_and3, 1, o1_5_o_t3, i5_i, i2_i_inv)
+`AND_2(o1_5_o_and3, 1, o1_5_o_t3, i5_i, i1_i_inv)
 wire o1_5_o_t4;
-`AND_2(o1_5_o_and4, 1, o1_5_o_t4, i5_i, i3_i_inv)
+`AND_2(o1_5_o_and4, 1, o1_5_o_t4, i5_i, i2_i_inv)
 wire o1_5_o_t5;
 `AND_6(o1_5_o_and5, 1, o1_5_o_t5, i5_i_inv, i4_i, i3_i, i2_i, i1_i, i0_i)
 
 `OR_6(o1_5_o_or, 1, o1_5_o, o1_5_o_t0, o1_5_o_t1, o1_5_o_t2, o1_5_o_t3, o1_5_o_t4, o1_5_o_t5)
 
-<<<<<<< HEAD
-// o1_4_o = (i4_i & !i2_i) | (i4_i & !i3_i) | (i4_i & !i1_i) | (i4_i & !i0_i) | (!i4_i & i3_i & i2_i & i1_i & i0_i)
+// o1_4_o = (i4_i & !i0_i) | (i4_i & !i1_i) | (i4_i & !i2_i) | (i4_i & !i3_i) | (!i4_i & i3_i & i2_i & i1_i & i0_i)
 wire o1_4_o_t0;
-`AND_2(o1_4_o_and0, 1, o1_4_o_t0, i4_i, i2_i_inv)
-=======
-// o1_4_o = (i4_i & !i3_i) | (i4_i & !i2_i) | (i4_i & !i0_i) | (i4_i & !i1_i) | (!i4_i & i3_i & i2_i & i1_i & i0_i)
-wire o1_4_o_t0;
-`AND_2(o1_4_o_and0, 1, o1_4_o_t0, i4_i, i3_i_inv)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+`AND_2(o1_4_o_and0, 1, o1_4_o_t0, i4_i, i0_i_inv)
 wire o1_4_o_t1;
-`AND_2(o1_4_o_and1, 1, o1_4_o_t1, i4_i, i3_i_inv)
+`AND_2(o1_4_o_and1, 1, o1_4_o_t1, i4_i, i1_i_inv)
 wire o1_4_o_t2;
-<<<<<<< HEAD
-`AND_2(o1_4_o_and2, 1, o1_4_o_t2, i4_i, i1_i_inv)
-=======
-`AND_2(o1_4_o_and2, 1, o1_4_o_t2, i4_i, i0_i_inv)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+`AND_2(o1_4_o_and2, 1, o1_4_o_t2, i4_i, i2_i_inv)
 wire o1_4_o_t3;
-`AND_2(o1_4_o_and3, 1, o1_4_o_t3, i4_i, i0_i_inv)
+`AND_2(o1_4_o_and3, 1, o1_4_o_t3, i4_i, i3_i_inv)
 wire o1_4_o_t4;
 `AND_5(o1_4_o_and4, 1, o1_4_o_t4, i4_i_inv, i3_i, i2_i, i1_i, i0_i)
 
 `OR_5(o1_4_o_or, 1, o1_4_o, o1_4_o_t0, o1_4_o_t1, o1_4_o_t2, o1_4_o_t3, o1_4_o_t4)
 
-// o1_3_o = (i3_i & !i1_i) | (i3_i & !i2_i) | (i3_i & !i0_i) | (!i3_i & i2_i & i1_i & i0_i)
+// o1_3_o = (i3_i & !i2_i) | (i3_i & !i1_i) | (i3_i & !i0_i) | (!i3_i & i2_i & i1_i & i0_i)
 wire o1_3_o_t0;
-`AND_2(o1_3_o_and0, 1, o1_3_o_t0, i3_i, i1_i_inv)
+`AND_2(o1_3_o_and0, 1, o1_3_o_t0, i3_i, i2_i_inv)
 wire o1_3_o_t1;
-`AND_2(o1_3_o_and1, 1, o1_3_o_t1, i3_i, i2_i_inv)
+`AND_2(o1_3_o_and1, 1, o1_3_o_t1, i3_i, i1_i_inv)
 wire o1_3_o_t2;
 `AND_2(o1_3_o_and2, 1, o1_3_o_t2, i3_i, i0_i_inv)
 wire o1_3_o_t3;
@@ -300,11 +282,11 @@ wire o1_2_o_t2;
 
 `OR_3(o1_2_o_or, 1, o1_2_o, o1_2_o_t0, o1_2_o_t1, o1_2_o_t2)
 
-// o1_1_o = (!i1_i & i0_i) | (i1_i & !i0_i)
+// o1_1_o = (i1_i & !i0_i) | (!i1_i & i0_i)
 wire o1_1_o_t0;
-`AND_2(o1_1_o_and0, 1, o1_1_o_t0, i1_i_inv, i0_i)
+`AND_2(o1_1_o_and0, 1, o1_1_o_t0, i1_i, i0_i_inv)
 wire o1_1_o_t1;
-`AND_2(o1_1_o_and1, 1, o1_1_o_t1, i1_i, i0_i_inv)
+`AND_2(o1_1_o_and1, 1, o1_1_o_t1, i1_i_inv, i0_i)
 
 `OR_2(o1_1_o_or, 1, o1_1_o, o1_1_o_t0, o1_1_o_t1)
 
@@ -313,37 +295,37 @@ wire o1_0_o_and_buf_mid;
 `INV_N(o1_0_o_and_buf_i0, 1, i0_i_inv, o1_0_o_and_buf_mid)
 `INV_N(o1_0_o_and_buf_i1, 1, o1_0_o_and_buf_mid, o1_0_o)
 
-// o2_5_o = (i5_i & !i4_i) | (i5_i & !i1_i) | (i5_i & !i2_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i & i2_i & i1_i)
+// o2_5_o = (i5_i & !i4_i) | (i5_i & !i3_i) | (i5_i & !i1_i) | (i5_i & !i2_i) | (!i5_i & i4_i & i3_i & i2_i & i1_i)
 wire o2_5_o_t0;
 `AND_2(o2_5_o_and0, 1, o2_5_o_t0, i5_i, i4_i_inv)
 wire o2_5_o_t1;
-`AND_2(o2_5_o_and1, 1, o2_5_o_t1, i5_i, i1_i_inv)
+`AND_2(o2_5_o_and1, 1, o2_5_o_t1, i5_i, i3_i_inv)
 wire o2_5_o_t2;
-`AND_2(o2_5_o_and2, 1, o2_5_o_t2, i5_i, i2_i_inv)
+`AND_2(o2_5_o_and2, 1, o2_5_o_t2, i5_i, i1_i_inv)
 wire o2_5_o_t3;
-`AND_2(o2_5_o_and3, 1, o2_5_o_t3, i5_i, i3_i_inv)
+`AND_2(o2_5_o_and3, 1, o2_5_o_t3, i5_i, i2_i_inv)
 wire o2_5_o_t4;
 `AND_5(o2_5_o_and4, 1, o2_5_o_t4, i5_i_inv, i4_i, i3_i, i2_i, i1_i)
 
 `OR_5(o2_5_o_or, 1, o2_5_o, o2_5_o_t0, o2_5_o_t1, o2_5_o_t2, o2_5_o_t3, o2_5_o_t4)
 
-// o2_4_o = (i4_i & !i3_i) | (i4_i & !i2_i) | (i4_i & !i1_i) | (!i4_i & i3_i & i2_i & i1_i)
+// o2_4_o = (i4_i & !i3_i) | (i4_i & !i1_i) | (i4_i & !i2_i) | (!i4_i & i3_i & i2_i & i1_i)
 wire o2_4_o_t0;
 `AND_2(o2_4_o_and0, 1, o2_4_o_t0, i4_i, i3_i_inv)
 wire o2_4_o_t1;
-`AND_2(o2_4_o_and1, 1, o2_4_o_t1, i4_i, i2_i_inv)
+`AND_2(o2_4_o_and1, 1, o2_4_o_t1, i4_i, i1_i_inv)
 wire o2_4_o_t2;
-`AND_2(o2_4_o_and2, 1, o2_4_o_t2, i4_i, i1_i_inv)
+`AND_2(o2_4_o_and2, 1, o2_4_o_t2, i4_i, i2_i_inv)
 wire o2_4_o_t3;
 `AND_4(o2_4_o_and3, 1, o2_4_o_t3, i4_i_inv, i3_i, i2_i, i1_i)
 
 `OR_4(o2_4_o_or, 1, o2_4_o, o2_4_o_t0, o2_4_o_t1, o2_4_o_t2, o2_4_o_t3)
 
-// o2_3_o = (i3_i & !i1_i) | (i3_i & !i2_i) | (!i3_i & i2_i & i1_i)
+// o2_3_o = (i3_i & !i2_i) | (i3_i & !i1_i) | (!i3_i & i2_i & i1_i)
 wire o2_3_o_t0;
-`AND_2(o2_3_o_and0, 1, o2_3_o_t0, i3_i, i1_i_inv)
+`AND_2(o2_3_o_and0, 1, o2_3_o_t0, i3_i, i2_i_inv)
 wire o2_3_o_t1;
-`AND_2(o2_3_o_and1, 1, o2_3_o_t1, i3_i, i2_i_inv)
+`AND_2(o2_3_o_and1, 1, o2_3_o_t1, i3_i, i1_i_inv)
 wire o2_3_o_t2;
 `AND_3(o2_3_o_and2, 1, o2_3_o_t2, i3_i_inv, i2_i, i1_i)
 
@@ -367,13 +349,13 @@ wire o2_0_o_and_buf_mid;
 `INV_N(o2_0_o_and_buf_i0, 1, i0_i, o2_0_o_and_buf_mid)
 `INV_N(o2_0_o_and_buf_i1, 1, o2_0_o_and_buf_mid, o2_0_o)
 
-// o3_5_o = (i5_i & !i4_i) | (i5_i & !i2_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i & i2_i & i0_i) | (i5_i & !i1_i & !i0_i) | (!i5_i & i4_i & i3_i & i2_i & i1_i)
+// o3_5_o = (i5_i & !i4_i) | (i5_i & !i3_i) | (i5_i & !i2_i) | (!i5_i & i4_i & i3_i & i2_i & i0_i) | (i5_i & !i1_i & !i0_i) | (!i5_i & i4_i & i3_i & i2_i & i1_i)
 wire o3_5_o_t0;
 `AND_2(o3_5_o_and0, 1, o3_5_o_t0, i5_i, i4_i_inv)
 wire o3_5_o_t1;
-`AND_2(o3_5_o_and1, 1, o3_5_o_t1, i5_i, i2_i_inv)
+`AND_2(o3_5_o_and1, 1, o3_5_o_t1, i5_i, i3_i_inv)
 wire o3_5_o_t2;
-`AND_2(o3_5_o_and2, 1, o3_5_o_t2, i5_i, i3_i_inv)
+`AND_2(o3_5_o_and2, 1, o3_5_o_t2, i5_i, i2_i_inv)
 wire o3_5_o_t3;
 `AND_5(o3_5_o_and3, 1, o3_5_o_t3, i5_i_inv, i4_i, i3_i, i2_i, i0_i)
 wire o3_5_o_t4;
@@ -383,31 +365,27 @@ wire o3_5_o_t5;
 
 `OR_6(o3_5_o_or, 1, o3_5_o, o3_5_o_t0, o3_5_o_t1, o3_5_o_t2, o3_5_o_t3, o3_5_o_t4, o3_5_o_t5)
 
-<<<<<<< HEAD
-// o3_4_o = (i4_i & !i3_i) | (i4_i & !i2_i) | (!i4_i & i3_i & i2_i & i0_i) | (i4_i & !i1_i & !i0_i) | (!i4_i & i3_i & i2_i & i1_i)
-=======
-// o3_4_o = (i4_i & !i3_i) | (i4_i & !i2_i) | (!i4_i & i3_i & i2_i & i1_i) | (i4_i & !i1_i & !i0_i) | (!i4_i & i3_i & i2_i & i0_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+// o3_4_o = (i4_i & !i2_i) | (i4_i & !i3_i) | (!i4_i & i3_i & i2_i & i1_i) | (i4_i & !i1_i & !i0_i) | (!i4_i & i3_i & i2_i & i0_i)
 wire o3_4_o_t0;
-`AND_2(o3_4_o_and0, 1, o3_4_o_t0, i4_i, i3_i_inv)
+`AND_2(o3_4_o_and0, 1, o3_4_o_t0, i4_i, i2_i_inv)
 wire o3_4_o_t1;
-`AND_2(o3_4_o_and1, 1, o3_4_o_t1, i4_i, i2_i_inv)
+`AND_2(o3_4_o_and1, 1, o3_4_o_t1, i4_i, i3_i_inv)
 wire o3_4_o_t2;
-`AND_4(o3_4_o_and2, 1, o3_4_o_t2, i4_i_inv, i3_i, i2_i, i0_i)
+`AND_4(o3_4_o_and2, 1, o3_4_o_t2, i4_i_inv, i3_i, i2_i, i1_i)
 wire o3_4_o_t3;
 `AND_3(o3_4_o_and3, 1, o3_4_o_t3, i4_i, i1_i_inv, i0_i_inv)
 wire o3_4_o_t4;
-`AND_4(o3_4_o_and4, 1, o3_4_o_t4, i4_i_inv, i3_i, i2_i, i1_i)
+`AND_4(o3_4_o_and4, 1, o3_4_o_t4, i4_i_inv, i3_i, i2_i, i0_i)
 
 `OR_5(o3_4_o_or, 1, o3_4_o, o3_4_o_t0, o3_4_o_t1, o3_4_o_t2, o3_4_o_t3, o3_4_o_t4)
 
-// o3_3_o = (i3_i & !i2_i) | (!i3_i & i2_i & i0_i) | (!i3_i & i2_i & i1_i) | (i3_i & !i1_i & !i0_i)
+// o3_3_o = (i3_i & !i2_i) | (!i3_i & i2_i & i1_i) | (!i3_i & i2_i & i0_i) | (i3_i & !i1_i & !i0_i)
 wire o3_3_o_t0;
 `AND_2(o3_3_o_and0, 1, o3_3_o_t0, i3_i, i2_i_inv)
 wire o3_3_o_t1;
-`AND_3(o3_3_o_and1, 1, o3_3_o_t1, i3_i_inv, i2_i, i0_i)
+`AND_3(o3_3_o_and1, 1, o3_3_o_t1, i3_i_inv, i2_i, i1_i)
 wire o3_3_o_t2;
-`AND_3(o3_3_o_and2, 1, o3_3_o_t2, i3_i_inv, i2_i, i1_i)
+`AND_3(o3_3_o_and2, 1, o3_3_o_t2, i3_i_inv, i2_i, i0_i)
 wire o3_3_o_t3;
 `AND_3(o3_3_o_and3, 1, o3_3_o_t3, i3_i, i1_i_inv, i0_i_inv)
 
@@ -423,11 +401,11 @@ wire o3_2_o_t2;
 
 `OR_3(o3_2_o_or, 1, o3_2_o, o3_2_o_t0, o3_2_o_t1, o3_2_o_t2)
 
-// o3_1_o = (i1_i & i0_i) | (!i1_i & !i0_i)
+// o3_1_o = (!i1_i & !i0_i) | (i1_i & i0_i)
 wire o3_1_o_t0;
-`AND_2(o3_1_o_and0, 1, o3_1_o_t0, i1_i, i0_i)
+`AND_2(o3_1_o_and0, 1, o3_1_o_t0, i1_i_inv, i0_i_inv)
 wire o3_1_o_t1;
-`AND_2(o3_1_o_and1, 1, o3_1_o_t1, i1_i_inv, i0_i_inv)
+`AND_2(o3_1_o_and1, 1, o3_1_o_t1, i1_i, i0_i)
 
 `OR_2(o3_1_o_or, 1, o3_1_o, o3_1_o_t0, o3_1_o_t1)
 
@@ -436,31 +414,23 @@ wire o3_0_o_and_buf_mid;
 `INV_N(o3_0_o_and_buf_i0, 1, i0_i_inv, o3_0_o_and_buf_mid)
 `INV_N(o3_0_o_and_buf_i1, 1, o3_0_o_and_buf_mid, o3_0_o)
 
-<<<<<<< HEAD
-// o4_5_o = (i5_i & !i4_i) | (i5_i & !i3_i) | (i5_i & !i2_i) | (!i5_i & i4_i & i3_i & i2_i)
-=======
-// o4_5_o = (i5_i & !i2_i) | (i5_i & !i3_i) | (i5_i & !i4_i) | (!i5_i & i4_i & i3_i & i2_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+// o4_5_o = (i5_i & !i3_i) | (i5_i & !i4_i) | (i5_i & !i2_i) | (!i5_i & i4_i & i3_i & i2_i)
 wire o4_5_o_t0;
-`AND_2(o4_5_o_and0, 1, o4_5_o_t0, i5_i, i4_i_inv)
+`AND_2(o4_5_o_and0, 1, o4_5_o_t0, i5_i, i3_i_inv)
 wire o4_5_o_t1;
-`AND_2(o4_5_o_and1, 1, o4_5_o_t1, i5_i, i3_i_inv)
+`AND_2(o4_5_o_and1, 1, o4_5_o_t1, i5_i, i4_i_inv)
 wire o4_5_o_t2;
-<<<<<<< HEAD
 `AND_2(o4_5_o_and2, 1, o4_5_o_t2, i5_i, i2_i_inv)
-=======
-`AND_2(o4_5_o_and2, 1, o4_5_o_t2, i5_i, i4_i_inv)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
 wire o4_5_o_t3;
 `AND_4(o4_5_o_and3, 1, o4_5_o_t3, i5_i_inv, i4_i, i3_i, i2_i)
 
 `OR_4(o4_5_o_or, 1, o4_5_o, o4_5_o_t0, o4_5_o_t1, o4_5_o_t2, o4_5_o_t3)
 
-// o4_4_o = (i4_i & !i2_i) | (i4_i & !i3_i) | (!i4_i & i3_i & i2_i)
+// o4_4_o = (i4_i & !i3_i) | (i4_i & !i2_i) | (!i4_i & i3_i & i2_i)
 wire o4_4_o_t0;
-`AND_2(o4_4_o_and0, 1, o4_4_o_t0, i4_i, i2_i_inv)
+`AND_2(o4_4_o_and0, 1, o4_4_o_t0, i4_i, i3_i_inv)
 wire o4_4_o_t1;
-`AND_2(o4_4_o_and1, 1, o4_4_o_t1, i4_i, i3_i_inv)
+`AND_2(o4_4_o_and1, 1, o4_4_o_t1, i4_i, i2_i_inv)
 wire o4_4_o_t2;
 `AND_3(o4_4_o_and2, 1, o4_4_o_t2, i4_i_inv, i3_i, i2_i)
 
@@ -489,7 +459,7 @@ wire o4_0_o_and_buf_mid;
 `INV_N(o4_0_o_and_buf_i0, 1, i0_i, o4_0_o_and_buf_mid)
 `INV_N(o4_0_o_and_buf_i1, 1, o4_0_o_and_buf_mid, o4_0_o)
 
-// o5_5_o = (i5_i & !i4_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i & i2_i) | (i5_i & !i2_i & !i0_i) | (i5_i & !i2_i & !i1_i) | (!i5_i & i4_i & i3_i & i1_i & i0_i)
+// o5_5_o = (i5_i & !i4_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i & i2_i) | (i5_i & !i2_i & !i1_i) | (i5_i & !i2_i & !i0_i) | (!i5_i & i4_i & i3_i & i1_i & i0_i)
 wire o5_5_o_t0;
 `AND_2(o5_5_o_and0, 1, o5_5_o_t0, i5_i, i4_i_inv)
 wire o5_5_o_t1;
@@ -497,23 +467,23 @@ wire o5_5_o_t1;
 wire o5_5_o_t2;
 `AND_4(o5_5_o_and2, 1, o5_5_o_t2, i5_i_inv, i4_i, i3_i, i2_i)
 wire o5_5_o_t3;
-`AND_3(o5_5_o_and3, 1, o5_5_o_t3, i5_i, i2_i_inv, i0_i_inv)
+`AND_3(o5_5_o_and3, 1, o5_5_o_t3, i5_i, i2_i_inv, i1_i_inv)
 wire o5_5_o_t4;
-`AND_3(o5_5_o_and4, 1, o5_5_o_t4, i5_i, i2_i_inv, i1_i_inv)
+`AND_3(o5_5_o_and4, 1, o5_5_o_t4, i5_i, i2_i_inv, i0_i_inv)
 wire o5_5_o_t5;
 `AND_5(o5_5_o_and5, 1, o5_5_o_t5, i5_i_inv, i4_i, i3_i, i1_i, i0_i)
 
 `OR_6(o5_5_o_or, 1, o5_5_o, o5_5_o_t0, o5_5_o_t1, o5_5_o_t2, o5_5_o_t3, o5_5_o_t4, o5_5_o_t5)
 
-// o5_4_o = (i4_i & !i3_i) | (!i4_i & i3_i & i2_i) | (i4_i & !i2_i & !i0_i) | (i4_i & !i2_i & !i1_i) | (!i4_i & i3_i & i1_i & i0_i)
+// o5_4_o = (i4_i & !i3_i) | (!i4_i & i3_i & i2_i) | (i4_i & !i2_i & !i1_i) | (i4_i & !i2_i & !i0_i) | (!i4_i & i3_i & i1_i & i0_i)
 wire o5_4_o_t0;
 `AND_2(o5_4_o_and0, 1, o5_4_o_t0, i4_i, i3_i_inv)
 wire o5_4_o_t1;
 `AND_3(o5_4_o_and1, 1, o5_4_o_t1, i4_i_inv, i3_i, i2_i)
 wire o5_4_o_t2;
-`AND_3(o5_4_o_and2, 1, o5_4_o_t2, i4_i, i2_i_inv, i0_i_inv)
+`AND_3(o5_4_o_and2, 1, o5_4_o_t2, i4_i, i2_i_inv, i1_i_inv)
 wire o5_4_o_t3;
-`AND_3(o5_4_o_and3, 1, o5_4_o_t3, i4_i, i2_i_inv, i1_i_inv)
+`AND_3(o5_4_o_and3, 1, o5_4_o_t3, i4_i, i2_i_inv, i0_i_inv)
 wire o5_4_o_t4;
 `AND_4(o5_4_o_and4, 1, o5_4_o_t4, i4_i_inv, i3_i, i1_i, i0_i)
 
@@ -541,11 +511,11 @@ wire o5_2_o_t2;
 
 `OR_3(o5_2_o_or, 1, o5_2_o, o5_2_o_t0, o5_2_o_t1, o5_2_o_t2)
 
-// o5_1_o = (!i1_i & i0_i) | (i1_i & !i0_i)
+// o5_1_o = (i1_i & !i0_i) | (!i1_i & i0_i)
 wire o5_1_o_t0;
-`AND_2(o5_1_o_and0, 1, o5_1_o_t0, i1_i_inv, i0_i)
+`AND_2(o5_1_o_and0, 1, o5_1_o_t0, i1_i, i0_i_inv)
 wire o5_1_o_t1;
-`AND_2(o5_1_o_and1, 1, o5_1_o_t1, i1_i, i0_i_inv)
+`AND_2(o5_1_o_and1, 1, o5_1_o_t1, i1_i_inv, i0_i)
 
 `OR_2(o5_1_o_or, 1, o5_1_o, o5_1_o_t0, o5_1_o_t1)
 
@@ -590,11 +560,11 @@ wire o6_3_o_t2;
 
 `OR_3(o6_3_o_or, 1, o6_3_o, o6_3_o_t0, o6_3_o_t1, o6_3_o_t2)
 
-// o6_2_o = (i2_i & i1_i) | (!i2_i & !i1_i)
+// o6_2_o = (!i2_i & !i1_i) | (i2_i & i1_i)
 wire o6_2_o_t0;
-`AND_2(o6_2_o_and0, 1, o6_2_o_t0, i2_i, i1_i)
+`AND_2(o6_2_o_and0, 1, o6_2_o_t0, i2_i_inv, i1_i_inv)
 wire o6_2_o_t1;
-`AND_2(o6_2_o_and1, 1, o6_2_o_t1, i2_i_inv, i1_i_inv)
+`AND_2(o6_2_o_and1, 1, o6_2_o_t1, i2_i, i1_i)
 
 `OR_2(o6_2_o_or, 1, o6_2_o, o6_2_o_t0, o6_2_o_t1)
 
@@ -608,23 +578,15 @@ wire o6_0_o_and_buf_mid;
 `INV_N(o6_0_o_and_buf_i0, 1, i0_i, o6_0_o_and_buf_mid)
 `INV_N(o6_0_o_and_buf_i1, 1, o6_0_o_and_buf_mid, o6_0_o)
 
-<<<<<<< HEAD
-// o7_5_o = (i5_i & !i4_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i & i1_i) | (!i5_i & i4_i & i3_i & i0_i) | (!i5_i & i4_i & i3_i & i2_i) | (i5_i & !i2_i & !i1_i & !i0_i)
-=======
-// o7_5_o = (i5_i & !i4_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i & i2_i) | (!i5_i & i4_i & i3_i & i0_i) | (!i5_i & i4_i & i3_i & i1_i) | (i5_i & !i2_i & !i1_i & !i0_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+// o7_5_o = (i5_i & !i4_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i & i0_i) | (!i5_i & i4_i & i3_i & i2_i) | (!i5_i & i4_i & i3_i & i1_i) | (i5_i & !i2_i & !i1_i & !i0_i)
 wire o7_5_o_t0;
 `AND_2(o7_5_o_and0, 1, o7_5_o_t0, i5_i, i4_i_inv)
 wire o7_5_o_t1;
 `AND_2(o7_5_o_and1, 1, o7_5_o_t1, i5_i, i3_i_inv)
 wire o7_5_o_t2;
-<<<<<<< HEAD
-`AND_4(o7_5_o_and2, 1, o7_5_o_t2, i5_i_inv, i4_i, i3_i, i1_i)
-=======
-`AND_4(o7_5_o_and2, 1, o7_5_o_t2, i5_i_inv, i4_i, i3_i, i2_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+`AND_4(o7_5_o_and2, 1, o7_5_o_t2, i5_i_inv, i4_i, i3_i, i0_i)
 wire o7_5_o_t3;
-`AND_4(o7_5_o_and3, 1, o7_5_o_t3, i5_i_inv, i4_i, i3_i, i0_i)
+`AND_4(o7_5_o_and3, 1, o7_5_o_t3, i5_i_inv, i4_i, i3_i, i2_i)
 wire o7_5_o_t4;
 `AND_4(o7_5_o_and4, 1, o7_5_o_t4, i5_i_inv, i4_i, i3_i, i1_i)
 wire o7_5_o_t5;
@@ -632,33 +594,25 @@ wire o7_5_o_t5;
 
 `OR_6(o7_5_o_or, 1, o7_5_o, o7_5_o_t0, o7_5_o_t1, o7_5_o_t2, o7_5_o_t3, o7_5_o_t4, o7_5_o_t5)
 
-// o7_4_o = (i4_i & !i3_i) | (!i4_i & i3_i & i1_i) | (!i4_i & i3_i & i2_i) | (!i4_i & i3_i & i0_i) | (i4_i & !i2_i & !i1_i & !i0_i)
+// o7_4_o = (i4_i & !i3_i) | (!i4_i & i3_i & i1_i) | (!i4_i & i3_i & i0_i) | (!i4_i & i3_i & i2_i) | (i4_i & !i2_i & !i1_i & !i0_i)
 wire o7_4_o_t0;
 `AND_2(o7_4_o_and0, 1, o7_4_o_t0, i4_i, i3_i_inv)
 wire o7_4_o_t1;
 `AND_3(o7_4_o_and1, 1, o7_4_o_t1, i4_i_inv, i3_i, i1_i)
 wire o7_4_o_t2;
-`AND_3(o7_4_o_and2, 1, o7_4_o_t2, i4_i_inv, i3_i, i2_i)
+`AND_3(o7_4_o_and2, 1, o7_4_o_t2, i4_i_inv, i3_i, i0_i)
 wire o7_4_o_t3;
-`AND_3(o7_4_o_and3, 1, o7_4_o_t3, i4_i_inv, i3_i, i0_i)
+`AND_3(o7_4_o_and3, 1, o7_4_o_t3, i4_i_inv, i3_i, i2_i)
 wire o7_4_o_t4;
 `AND_4(o7_4_o_and4, 1, o7_4_o_t4, i4_i, i2_i_inv, i1_i_inv, i0_i_inv)
 
 `OR_5(o7_4_o_or, 1, o7_4_o, o7_4_o_t0, o7_4_o_t1, o7_4_o_t2, o7_4_o_t3, o7_4_o_t4)
 
-<<<<<<< HEAD
-// o7_3_o = (!i3_i & i2_i) | (!i3_i & i1_i) | (!i3_i & i0_i) | (i3_i & !i2_i & !i1_i & !i0_i)
-wire o7_3_o_t0;
-`AND_2(o7_3_o_and0, 1, o7_3_o_t0, i3_i_inv, i2_i)
-wire o7_3_o_t1;
-`AND_2(o7_3_o_and1, 1, o7_3_o_t1, i3_i_inv, i1_i)
-=======
 // o7_3_o = (!i3_i & i2_i) | (!i3_i & i0_i) | (!i3_i & i1_i) | (i3_i & !i2_i & !i1_i & !i0_i)
 wire o7_3_o_t0;
 `AND_2(o7_3_o_and0, 1, o7_3_o_t0, i3_i_inv, i2_i)
 wire o7_3_o_t1;
 `AND_2(o7_3_o_and1, 1, o7_3_o_t1, i3_i_inv, i0_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
 wire o7_3_o_t2;
 `AND_2(o7_3_o_and2, 1, o7_3_o_t2, i3_i_inv, i1_i)
 wire o7_3_o_t3;
@@ -676,11 +630,11 @@ wire o7_2_o_t2;
 
 `OR_3(o7_2_o_or, 1, o7_2_o, o7_2_o_t0, o7_2_o_t1, o7_2_o_t2)
 
-// o7_1_o = (i1_i & i0_i) | (!i1_i & !i0_i)
+// o7_1_o = (!i1_i & !i0_i) | (i1_i & i0_i)
 wire o7_1_o_t0;
-`AND_2(o7_1_o_and0, 1, o7_1_o_t0, i1_i, i0_i)
+`AND_2(o7_1_o_and0, 1, o7_1_o_t0, i1_i_inv, i0_i_inv)
 wire o7_1_o_t1;
-`AND_2(o7_1_o_and1, 1, o7_1_o_t1, i1_i_inv, i0_i_inv)
+`AND_2(o7_1_o_and1, 1, o7_1_o_t1, i1_i, i0_i)
 
 `OR_2(o7_1_o_or, 1, o7_1_o, o7_1_o_t0, o7_1_o_t1)
 
@@ -689,21 +643,21 @@ wire o7_0_o_and_buf_mid;
 `INV_N(o7_0_o_and_buf_i0, 1, i0_i_inv, o7_0_o_and_buf_mid)
 `INV_N(o7_0_o_and_buf_i1, 1, o7_0_o_and_buf_mid, o7_0_o)
 
-// o8_5_o = (i5_i & !i4_i) | (i5_i & !i3_i) | (!i5_i & i4_i & i3_i)
+// o8_5_o = (i5_i & !i3_i) | (i5_i & !i4_i) | (!i5_i & i4_i & i3_i)
 wire o8_5_o_t0;
-`AND_2(o8_5_o_and0, 1, o8_5_o_t0, i5_i, i4_i_inv)
+`AND_2(o8_5_o_and0, 1, o8_5_o_t0, i5_i, i3_i_inv)
 wire o8_5_o_t1;
-`AND_2(o8_5_o_and1, 1, o8_5_o_t1, i5_i, i3_i_inv)
+`AND_2(o8_5_o_and1, 1, o8_5_o_t1, i5_i, i4_i_inv)
 wire o8_5_o_t2;
 `AND_3(o8_5_o_and2, 1, o8_5_o_t2, i5_i_inv, i4_i, i3_i)
 
 `OR_3(o8_5_o_or, 1, o8_5_o, o8_5_o_t0, o8_5_o_t1, o8_5_o_t2)
 
-// o8_4_o = (!i4_i & i3_i) | (i4_i & !i3_i)
+// o8_4_o = (i4_i & !i3_i) | (!i4_i & i3_i)
 wire o8_4_o_t0;
-`AND_2(o8_4_o_and0, 1, o8_4_o_t0, i4_i_inv, i3_i)
+`AND_2(o8_4_o_and0, 1, o8_4_o_t0, i4_i, i3_i_inv)
 wire o8_4_o_t1;
-`AND_2(o8_4_o_and1, 1, o8_4_o_t1, i4_i, i3_i_inv)
+`AND_2(o8_4_o_and1, 1, o8_4_o_t1, i4_i_inv, i3_i)
 
 `OR_2(o8_4_o_or, 1, o8_4_o, o8_4_o_t0, o8_4_o_t1)
 
@@ -727,15 +681,15 @@ wire o8_0_o_and_buf_mid;
 `INV_N(o8_0_o_and_buf_i0, 1, i0_i, o8_0_o_and_buf_mid)
 `INV_N(o8_0_o_and_buf_i1, 1, o8_0_o_and_buf_mid, o8_0_o)
 
-// o9_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i3_i) | (i5_i & !i3_i & !i0_i) | (i5_i & !i3_i & !i2_i) | (i5_i & !i3_i & !i1_i) | (!i5_i & i4_i & i2_i & i1_i & i0_i)
+// o9_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i3_i) | (i5_i & !i3_i & !i2_i) | (i5_i & !i3_i & !i0_i) | (i5_i & !i3_i & !i1_i) | (!i5_i & i4_i & i2_i & i1_i & i0_i)
 wire o9_5_o_t0;
 `AND_2(o9_5_o_and0, 1, o9_5_o_t0, i5_i, i4_i_inv)
 wire o9_5_o_t1;
 `AND_3(o9_5_o_and1, 1, o9_5_o_t1, i5_i_inv, i4_i, i3_i)
 wire o9_5_o_t2;
-`AND_3(o9_5_o_and2, 1, o9_5_o_t2, i5_i, i3_i_inv, i0_i_inv)
+`AND_3(o9_5_o_and2, 1, o9_5_o_t2, i5_i, i3_i_inv, i2_i_inv)
 wire o9_5_o_t3;
-`AND_3(o9_5_o_and3, 1, o9_5_o_t3, i5_i, i3_i_inv, i2_i_inv)
+`AND_3(o9_5_o_and3, 1, o9_5_o_t3, i5_i, i3_i_inv, i0_i_inv)
 wire o9_5_o_t4;
 `AND_3(o9_5_o_and4, 1, o9_5_o_t4, i5_i, i3_i_inv, i1_i_inv)
 wire o9_5_o_t5;
@@ -743,39 +697,25 @@ wire o9_5_o_t5;
 
 `OR_6(o9_5_o_or, 1, o9_5_o, o9_5_o_t0, o9_5_o_t1, o9_5_o_t2, o9_5_o_t3, o9_5_o_t4, o9_5_o_t5)
 
-<<<<<<< HEAD
-// o9_4_o = (!i4_i & i3_i) | (i4_i & !i3_i & !i2_i) | (i4_i & !i3_i & !i1_i) | (i4_i & !i3_i & !i0_i) | (!i4_i & i2_i & i1_i & i0_i)
-=======
-// o9_4_o = (!i4_i & i3_i) | (i4_i & !i3_i & !i1_i) | (i4_i & !i3_i & !i2_i) | (i4_i & !i3_i & !i0_i) | (!i4_i & i2_i & i1_i & i0_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+// o9_4_o = (!i4_i & i3_i) | (i4_i & !i3_i & !i0_i) | (i4_i & !i3_i & !i2_i) | (i4_i & !i3_i & !i1_i) | (!i4_i & i2_i & i1_i & i0_i)
 wire o9_4_o_t0;
 `AND_2(o9_4_o_and0, 1, o9_4_o_t0, i4_i_inv, i3_i)
 wire o9_4_o_t1;
-`AND_3(o9_4_o_and1, 1, o9_4_o_t1, i4_i, i3_i_inv, i2_i_inv)
+`AND_3(o9_4_o_and1, 1, o9_4_o_t1, i4_i, i3_i_inv, i0_i_inv)
 wire o9_4_o_t2;
-<<<<<<< HEAD
-`AND_3(o9_4_o_and2, 1, o9_4_o_t2, i4_i, i3_i_inv, i1_i_inv)
-=======
 `AND_3(o9_4_o_and2, 1, o9_4_o_t2, i4_i, i3_i_inv, i2_i_inv)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
 wire o9_4_o_t3;
-`AND_3(o9_4_o_and3, 1, o9_4_o_t3, i4_i, i3_i_inv, i0_i_inv)
+`AND_3(o9_4_o_and3, 1, o9_4_o_t3, i4_i, i3_i_inv, i1_i_inv)
 wire o9_4_o_t4;
 `AND_4(o9_4_o_and4, 1, o9_4_o_t4, i4_i_inv, i2_i, i1_i, i0_i)
 
 `OR_5(o9_4_o_or, 1, o9_4_o, o9_4_o_t0, o9_4_o_t1, o9_4_o_t2, o9_4_o_t3, o9_4_o_t4)
 
-<<<<<<< HEAD
-// o9_3_o = (!i3_i & !i2_i) | (!i3_i & !i1_i) | (!i3_i & !i0_i) | (i3_i & i2_i & i1_i & i0_i)
+// o9_3_o = (!i3_i & !i1_i) | (!i3_i & !i2_i) | (!i3_i & !i0_i) | (i3_i & i2_i & i1_i & i0_i)
 wire o9_3_o_t0;
-`AND_2(o9_3_o_and0, 1, o9_3_o_t0, i3_i_inv, i2_i_inv)
-=======
-// o9_3_o = (!i3_i & !i0_i) | (!i3_i & !i1_i) | (!i3_i & !i2_i) | (i3_i & i2_i & i1_i & i0_i)
-wire o9_3_o_t0;
-`AND_2(o9_3_o_and0, 1, o9_3_o_t0, i3_i_inv, i0_i_inv)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+`AND_2(o9_3_o_and0, 1, o9_3_o_t0, i3_i_inv, i1_i_inv)
 wire o9_3_o_t1;
-`AND_2(o9_3_o_and1, 1, o9_3_o_t1, i3_i_inv, i1_i_inv)
+`AND_2(o9_3_o_and1, 1, o9_3_o_t1, i3_i_inv, i2_i_inv)
 wire o9_3_o_t2;
 `AND_2(o9_3_o_and2, 1, o9_3_o_t2, i3_i_inv, i0_i_inv)
 wire o9_3_o_t3;
@@ -793,11 +733,11 @@ wire o9_2_o_t2;
 
 `OR_3(o9_2_o_or, 1, o9_2_o, o9_2_o_t0, o9_2_o_t1, o9_2_o_t2)
 
-// o9_1_o = (!i1_i & i0_i) | (i1_i & !i0_i)
+// o9_1_o = (i1_i & !i0_i) | (!i1_i & i0_i)
 wire o9_1_o_t0;
-`AND_2(o9_1_o_and0, 1, o9_1_o_t0, i1_i_inv, i0_i)
+`AND_2(o9_1_o_and0, 1, o9_1_o_t0, i1_i, i0_i_inv)
 wire o9_1_o_t1;
-`AND_2(o9_1_o_and1, 1, o9_1_o_t1, i1_i, i0_i_inv)
+`AND_2(o9_1_o_and1, 1, o9_1_o_t1, i1_i_inv, i0_i)
 
 `OR_2(o9_1_o_or, 1, o9_1_o, o9_1_o_t0, o9_1_o_t1)
 
@@ -832,11 +772,11 @@ wire o10_4_o_t3;
 
 `OR_4(o10_4_o_or, 1, o10_4_o, o10_4_o_t0, o10_4_o_t1, o10_4_o_t2, o10_4_o_t3)
 
-// o10_3_o = (!i3_i & !i2_i) | (!i3_i & !i1_i) | (i3_i & i2_i & i1_i)
+// o10_3_o = (!i3_i & !i1_i) | (!i3_i & !i2_i) | (i3_i & i2_i & i1_i)
 wire o10_3_o_t0;
-`AND_2(o10_3_o_and0, 1, o10_3_o_t0, i3_i_inv, i2_i_inv)
+`AND_2(o10_3_o_and0, 1, o10_3_o_t0, i3_i_inv, i1_i_inv)
 wire o10_3_o_t1;
-`AND_2(o10_3_o_and1, 1, o10_3_o_t1, i3_i_inv, i1_i_inv)
+`AND_2(o10_3_o_and1, 1, o10_3_o_t1, i3_i_inv, i2_i_inv)
 wire o10_3_o_t2;
 `AND_3(o10_3_o_and2, 1, o10_3_o_t2, i3_i, i2_i, i1_i)
 
@@ -860,7 +800,7 @@ wire o10_0_o_and_buf_mid;
 `INV_N(o10_0_o_and_buf_i0, 1, i0_i, o10_0_o_and_buf_mid)
 `INV_N(o10_0_o_and_buf_i1, 1, o10_0_o_and_buf_mid, o10_0_o)
 
-// o11_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i3_i) | (i5_i & !i3_i & !i2_i) | (!i5_i & i4_i & i2_i & i1_i) | (!i5_i & i4_i & i2_i & i0_i) | (i5_i & !i3_i & !i1_i & !i0_i)
+// o11_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i3_i) | (i5_i & !i3_i & !i2_i) | (!i5_i & i4_i & i2_i & i0_i) | (!i5_i & i4_i & i2_i & i1_i) | (i5_i & !i3_i & !i1_i & !i0_i)
 wire o11_5_o_t0;
 `AND_2(o11_5_o_and0, 1, o11_5_o_t0, i5_i, i4_i_inv)
 wire o11_5_o_t1;
@@ -868,23 +808,23 @@ wire o11_5_o_t1;
 wire o11_5_o_t2;
 `AND_3(o11_5_o_and2, 1, o11_5_o_t2, i5_i, i3_i_inv, i2_i_inv)
 wire o11_5_o_t3;
-`AND_4(o11_5_o_and3, 1, o11_5_o_t3, i5_i_inv, i4_i, i2_i, i1_i)
+`AND_4(o11_5_o_and3, 1, o11_5_o_t3, i5_i_inv, i4_i, i2_i, i0_i)
 wire o11_5_o_t4;
-`AND_4(o11_5_o_and4, 1, o11_5_o_t4, i5_i_inv, i4_i, i2_i, i0_i)
+`AND_4(o11_5_o_and4, 1, o11_5_o_t4, i5_i_inv, i4_i, i2_i, i1_i)
 wire o11_5_o_t5;
 `AND_4(o11_5_o_and5, 1, o11_5_o_t5, i5_i, i3_i_inv, i1_i_inv, i0_i_inv)
 
 `OR_6(o11_5_o_or, 1, o11_5_o, o11_5_o_t0, o11_5_o_t1, o11_5_o_t2, o11_5_o_t3, o11_5_o_t4, o11_5_o_t5)
 
-// o11_4_o = (!i4_i & i3_i) | (i4_i & !i3_i & !i2_i) | (!i4_i & i2_i & i1_i) | (!i4_i & i2_i & i0_i) | (i4_i & !i3_i & !i1_i & !i0_i)
+// o11_4_o = (!i4_i & i3_i) | (i4_i & !i3_i & !i2_i) | (!i4_i & i2_i & i0_i) | (!i4_i & i2_i & i1_i) | (i4_i & !i3_i & !i1_i & !i0_i)
 wire o11_4_o_t0;
 `AND_2(o11_4_o_and0, 1, o11_4_o_t0, i4_i_inv, i3_i)
 wire o11_4_o_t1;
 `AND_3(o11_4_o_and1, 1, o11_4_o_t1, i4_i, i3_i_inv, i2_i_inv)
 wire o11_4_o_t2;
-`AND_3(o11_4_o_and2, 1, o11_4_o_t2, i4_i_inv, i2_i, i1_i)
+`AND_3(o11_4_o_and2, 1, o11_4_o_t2, i4_i_inv, i2_i, i0_i)
 wire o11_4_o_t3;
-`AND_3(o11_4_o_and3, 1, o11_4_o_t3, i4_i_inv, i2_i, i0_i)
+`AND_3(o11_4_o_and3, 1, o11_4_o_t3, i4_i_inv, i2_i, i1_i)
 wire o11_4_o_t4;
 `AND_4(o11_4_o_and4, 1, o11_4_o_t4, i4_i, i3_i_inv, i1_i_inv, i0_i_inv)
 
@@ -912,11 +852,11 @@ wire o11_2_o_t2;
 
 `OR_3(o11_2_o_or, 1, o11_2_o, o11_2_o_t0, o11_2_o_t1, o11_2_o_t2)
 
-// o11_1_o = (i1_i & i0_i) | (!i1_i & !i0_i)
+// o11_1_o = (!i1_i & !i0_i) | (i1_i & i0_i)
 wire o11_1_o_t0;
-`AND_2(o11_1_o_and0, 1, o11_1_o_t0, i1_i, i0_i)
+`AND_2(o11_1_o_and0, 1, o11_1_o_t0, i1_i_inv, i0_i_inv)
 wire o11_1_o_t1;
-`AND_2(o11_1_o_and1, 1, o11_1_o_t1, i1_i_inv, i0_i_inv)
+`AND_2(o11_1_o_and1, 1, o11_1_o_t1, i1_i, i0_i)
 
 `OR_2(o11_1_o_or, 1, o11_1_o, o11_1_o_t0, o11_1_o_t1)
 
@@ -925,23 +865,23 @@ wire o11_0_o_and_buf_mid;
 `INV_N(o11_0_o_and_buf_i0, 1, i0_i_inv, o11_0_o_and_buf_mid)
 `INV_N(o11_0_o_and_buf_i1, 1, o11_0_o_and_buf_mid, o11_0_o)
 
-// o12_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i3_i) | (!i5_i & i4_i & i2_i) | (i5_i & !i3_i & !i2_i)
+// o12_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i2_i) | (!i5_i & i4_i & i3_i) | (i5_i & !i3_i & !i2_i)
 wire o12_5_o_t0;
 `AND_2(o12_5_o_and0, 1, o12_5_o_t0, i5_i, i4_i_inv)
 wire o12_5_o_t1;
-`AND_3(o12_5_o_and1, 1, o12_5_o_t1, i5_i_inv, i4_i, i3_i)
+`AND_3(o12_5_o_and1, 1, o12_5_o_t1, i5_i_inv, i4_i, i2_i)
 wire o12_5_o_t2;
-`AND_3(o12_5_o_and2, 1, o12_5_o_t2, i5_i_inv, i4_i, i2_i)
+`AND_3(o12_5_o_and2, 1, o12_5_o_t2, i5_i_inv, i4_i, i3_i)
 wire o12_5_o_t3;
 `AND_3(o12_5_o_and3, 1, o12_5_o_t3, i5_i, i3_i_inv, i2_i_inv)
 
 `OR_4(o12_5_o_or, 1, o12_5_o, o12_5_o_t0, o12_5_o_t1, o12_5_o_t2, o12_5_o_t3)
 
-// o12_4_o = (!i4_i & i3_i) | (!i4_i & i2_i) | (i4_i & !i3_i & !i2_i)
+// o12_4_o = (!i4_i & i2_i) | (!i4_i & i3_i) | (i4_i & !i3_i & !i2_i)
 wire o12_4_o_t0;
-`AND_2(o12_4_o_and0, 1, o12_4_o_t0, i4_i_inv, i3_i)
+`AND_2(o12_4_o_and0, 1, o12_4_o_t0, i4_i_inv, i2_i)
 wire o12_4_o_t1;
-`AND_2(o12_4_o_and1, 1, o12_4_o_t1, i4_i_inv, i2_i)
+`AND_2(o12_4_o_and1, 1, o12_4_o_t1, i4_i_inv, i3_i)
 wire o12_4_o_t2;
 `AND_3(o12_4_o_and2, 1, o12_4_o_t2, i4_i, i3_i_inv, i2_i_inv)
 
@@ -970,11 +910,7 @@ wire o12_0_o_and_buf_mid;
 `INV_N(o12_0_o_and_buf_i0, 1, i0_i, o12_0_o_and_buf_mid)
 `INV_N(o12_0_o_and_buf_i1, 1, o12_0_o_and_buf_mid, o12_0_o)
 
-<<<<<<< HEAD
 // o13_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i2_i) | (!i5_i & i4_i & i3_i) | (i5_i & !i3_i & !i2_i & !i0_i) | (i5_i & !i3_i & !i2_i & !i1_i) | (!i5_i & i4_i & i1_i & i0_i)
-=======
-// o13_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i3_i) | (!i5_i & i4_i & i2_i) | (i5_i & !i3_i & !i2_i & !i0_i) | (i5_i & !i3_i & !i2_i & !i1_i) | (!i5_i & i4_i & i1_i & i0_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
 wire o13_5_o_t0;
 `AND_2(o13_5_o_and0, 1, o13_5_o_t0, i5_i, i4_i_inv)
 wire o13_5_o_t1;
@@ -990,15 +926,11 @@ wire o13_5_o_t5;
 
 `OR_6(o13_5_o_or, 1, o13_5_o, o13_5_o_t0, o13_5_o_t1, o13_5_o_t2, o13_5_o_t3, o13_5_o_t4, o13_5_o_t5)
 
-<<<<<<< HEAD
-// o13_4_o = (!i4_i & i2_i) | (!i4_i & i3_i) | (i4_i & !i3_i & !i2_i & !i1_i) | (!i4_i & i1_i & i0_i) | (i4_i & !i3_i & !i2_i & !i0_i)
-=======
-// o13_4_o = (!i4_i & i2_i) | (!i4_i & i3_i) | (i4_i & !i3_i & !i2_i & !i0_i) | (!i4_i & i1_i & i0_i) | (i4_i & !i3_i & !i2_i & !i1_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+// o13_4_o = (!i4_i & i3_i) | (!i4_i & i2_i) | (i4_i & !i3_i & !i2_i & !i1_i) | (!i4_i & i1_i & i0_i) | (i4_i & !i3_i & !i2_i & !i0_i)
 wire o13_4_o_t0;
-`AND_2(o13_4_o_and0, 1, o13_4_o_t0, i4_i_inv, i2_i)
+`AND_2(o13_4_o_and0, 1, o13_4_o_t0, i4_i_inv, i3_i)
 wire o13_4_o_t1;
-`AND_2(o13_4_o_and1, 1, o13_4_o_t1, i4_i_inv, i3_i)
+`AND_2(o13_4_o_and1, 1, o13_4_o_t1, i4_i_inv, i2_i)
 wire o13_4_o_t2;
 `AND_4(o13_4_o_and2, 1, o13_4_o_t2, i4_i, i3_i_inv, i2_i_inv, i1_i_inv)
 wire o13_4_o_t3;
@@ -1030,11 +962,11 @@ wire o13_2_o_t2;
 
 `OR_3(o13_2_o_or, 1, o13_2_o, o13_2_o_t0, o13_2_o_t1, o13_2_o_t2)
 
-// o13_1_o = (!i1_i & i0_i) | (i1_i & !i0_i)
+// o13_1_o = (i1_i & !i0_i) | (!i1_i & i0_i)
 wire o13_1_o_t0;
-`AND_2(o13_1_o_and0, 1, o13_1_o_t0, i1_i_inv, i0_i)
+`AND_2(o13_1_o_and0, 1, o13_1_o_t0, i1_i, i0_i_inv)
 wire o13_1_o_t1;
-`AND_2(o13_1_o_and1, 1, o13_1_o_t1, i1_i, i0_i_inv)
+`AND_2(o13_1_o_and1, 1, o13_1_o_t1, i1_i_inv, i0_i)
 
 `OR_2(o13_1_o_or, 1, o13_1_o, o13_1_o_t0, o13_1_o_t1)
 
@@ -1043,41 +975,27 @@ wire o13_0_o_and_buf_mid;
 `INV_N(o13_0_o_and_buf_i0, 1, i0_i_inv, o13_0_o_and_buf_mid)
 `INV_N(o13_0_o_and_buf_i1, 1, o13_0_o_and_buf_mid, o13_0_o)
 
-<<<<<<< HEAD
-// o14_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i2_i) | (!i5_i & i4_i & i3_i) | (!i5_i & i4_i & i1_i) | (i5_i & !i3_i & !i2_i & !i1_i)
-=======
-// o14_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i3_i) | (!i5_i & i4_i & i2_i) | (!i5_i & i4_i & i1_i) | (i5_i & !i3_i & !i2_i & !i1_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+// o14_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i1_i) | (!i5_i & i4_i & i2_i) | (!i5_i & i4_i & i3_i) | (i5_i & !i3_i & !i2_i & !i1_i)
 wire o14_5_o_t0;
 `AND_2(o14_5_o_and0, 1, o14_5_o_t0, i5_i, i4_i_inv)
 wire o14_5_o_t1;
-`AND_3(o14_5_o_and1, 1, o14_5_o_t1, i5_i_inv, i4_i, i2_i)
+`AND_3(o14_5_o_and1, 1, o14_5_o_t1, i5_i_inv, i4_i, i1_i)
 wire o14_5_o_t2;
-<<<<<<< HEAD
-`AND_3(o14_5_o_and2, 1, o14_5_o_t2, i5_i_inv, i4_i, i3_i)
-=======
 `AND_3(o14_5_o_and2, 1, o14_5_o_t2, i5_i_inv, i4_i, i2_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
 wire o14_5_o_t3;
-`AND_3(o14_5_o_and3, 1, o14_5_o_t3, i5_i_inv, i4_i, i1_i)
+`AND_3(o14_5_o_and3, 1, o14_5_o_t3, i5_i_inv, i4_i, i3_i)
 wire o14_5_o_t4;
 `AND_4(o14_5_o_and4, 1, o14_5_o_t4, i5_i, i3_i_inv, i2_i_inv, i1_i_inv)
 
 `OR_5(o14_5_o_or, 1, o14_5_o, o14_5_o_t0, o14_5_o_t1, o14_5_o_t2, o14_5_o_t3, o14_5_o_t4)
 
-<<<<<<< HEAD
-// o14_4_o = (!i4_i & i3_i) | (!i4_i & i1_i) | (!i4_i & i2_i) | (i4_i & !i3_i & !i2_i & !i1_i)
-wire o14_4_o_t0;
-`AND_2(o14_4_o_and0, 1, o14_4_o_t0, i4_i_inv, i3_i)
-=======
 // o14_4_o = (!i4_i & i1_i) | (!i4_i & i2_i) | (!i4_i & i3_i) | (i4_i & !i3_i & !i2_i & !i1_i)
 wire o14_4_o_t0;
 `AND_2(o14_4_o_and0, 1, o14_4_o_t0, i4_i_inv, i1_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
 wire o14_4_o_t1;
 `AND_2(o14_4_o_and1, 1, o14_4_o_t1, i4_i_inv, i2_i)
 wire o14_4_o_t2;
-`AND_2(o14_4_o_and2, 1, o14_4_o_t2, i4_i_inv, i2_i)
+`AND_2(o14_4_o_and2, 1, o14_4_o_t2, i4_i_inv, i3_i)
 wire o14_4_o_t3;
 `AND_4(o14_4_o_and3, 1, o14_4_o_t3, i4_i, i3_i_inv, i2_i_inv, i1_i_inv)
 
@@ -1093,11 +1011,11 @@ wire o14_3_o_t2;
 
 `OR_3(o14_3_o_or, 1, o14_3_o, o14_3_o_t0, o14_3_o_t1, o14_3_o_t2)
 
-// o14_2_o = (i2_i & i1_i) | (!i2_i & !i1_i)
+// o14_2_o = (!i2_i & !i1_i) | (i2_i & i1_i)
 wire o14_2_o_t0;
-`AND_2(o14_2_o_and0, 1, o14_2_o_t0, i2_i, i1_i)
+`AND_2(o14_2_o_and0, 1, o14_2_o_t0, i2_i_inv, i1_i_inv)
 wire o14_2_o_t1;
-`AND_2(o14_2_o_and1, 1, o14_2_o_t1, i2_i_inv, i1_i_inv)
+`AND_2(o14_2_o_and1, 1, o14_2_o_t1, i2_i, i1_i)
 
 `OR_2(o14_2_o_or, 1, o14_2_o, o14_2_o_t0, o14_2_o_t1)
 
@@ -1111,65 +1029,43 @@ wire o14_0_o_and_buf_mid;
 `INV_N(o14_0_o_and_buf_i0, 1, i0_i, o14_0_o_and_buf_mid)
 `INV_N(o14_0_o_and_buf_i1, 1, o14_0_o_and_buf_mid, o14_0_o)
 
-<<<<<<< HEAD
-// o15_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i2_i) | (!i5_i & i4_i & i0_i) | (!i5_i & i4_i & i3_i) | (!i5_i & i4_i & i1_i) | (i5_i & !i3_i & !i2_i & !i1_i & !i0_i)
+// o15_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i1_i) | (!i5_i & i4_i & i0_i) | (!i5_i & i4_i & i2_i) | (!i5_i & i4_i & i3_i) | (i5_i & !i3_i & !i2_i & !i1_i & !i0_i)
 wire o15_5_o_t0;
 `AND_2(o15_5_o_and0, 1, o15_5_o_t0, i5_i, i4_i_inv)
 wire o15_5_o_t1;
-`AND_3(o15_5_o_and1, 1, o15_5_o_t1, i5_i_inv, i4_i, i2_i)
+`AND_3(o15_5_o_and1, 1, o15_5_o_t1, i5_i_inv, i4_i, i1_i)
 wire o15_5_o_t2;
 `AND_3(o15_5_o_and2, 1, o15_5_o_t2, i5_i_inv, i4_i, i0_i)
-=======
-// o15_5_o = (i5_i & !i4_i) | (!i5_i & i4_i & i3_i) | (!i5_i & i4_i & i2_i) | (!i5_i & i4_i & i1_i) | (!i5_i & i4_i & i0_i) | (i5_i & !i3_i & !i2_i & !i1_i & !i0_i)
-wire o15_5_o_t0;
-`AND_2(o15_5_o_and0, 1, o15_5_o_t0, i5_i, i4_i_inv)
-wire o15_5_o_t1;
-`AND_3(o15_5_o_and1, 1, o15_5_o_t1, i5_i_inv, i4_i, i3_i)
-wire o15_5_o_t2;
-`AND_3(o15_5_o_and2, 1, o15_5_o_t2, i5_i_inv, i4_i, i2_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
 wire o15_5_o_t3;
-`AND_3(o15_5_o_and3, 1, o15_5_o_t3, i5_i_inv, i4_i, i3_i)
+`AND_3(o15_5_o_and3, 1, o15_5_o_t3, i5_i_inv, i4_i, i2_i)
 wire o15_5_o_t4;
-<<<<<<< HEAD
-`AND_3(o15_5_o_and4, 1, o15_5_o_t4, i5_i_inv, i4_i, i1_i)
-=======
-`AND_3(o15_5_o_and4, 1, o15_5_o_t4, i5_i_inv, i4_i, i0_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+`AND_3(o15_5_o_and4, 1, o15_5_o_t4, i5_i_inv, i4_i, i3_i)
 wire o15_5_o_t5;
 `AND_5(o15_5_o_and5, 1, o15_5_o_t5, i5_i, i3_i_inv, i2_i_inv, i1_i_inv, i0_i_inv)
 
 `OR_6(o15_5_o_or, 1, o15_5_o, o15_5_o_t0, o15_5_o_t1, o15_5_o_t2, o15_5_o_t3, o15_5_o_t4, o15_5_o_t5)
 
-<<<<<<< HEAD
-// o15_4_o = (!i4_i & i0_i) | (!i4_i & i1_i) | (!i4_i & i2_i) | (!i4_i & i3_i) | (i4_i & !i3_i & !i2_i & !i1_i & !i0_i)
-=======
-// o15_4_o = (!i4_i & i1_i) | (!i4_i & i0_i) | (!i4_i & i2_i) | (!i4_i & i3_i) | (i4_i & !i3_i & !i2_i & !i1_i & !i0_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+// o15_4_o = (!i4_i & i3_i) | (!i4_i & i2_i) | (!i4_i & i0_i) | (!i4_i & i1_i) | (i4_i & !i3_i & !i2_i & !i1_i & !i0_i)
 wire o15_4_o_t0;
-`AND_2(o15_4_o_and0, 1, o15_4_o_t0, i4_i_inv, i0_i)
+`AND_2(o15_4_o_and0, 1, o15_4_o_t0, i4_i_inv, i3_i)
 wire o15_4_o_t1;
-<<<<<<< HEAD
-`AND_2(o15_4_o_and1, 1, o15_4_o_t1, i4_i_inv, i1_i)
-=======
-`AND_2(o15_4_o_and1, 1, o15_4_o_t1, i4_i_inv, i0_i)
->>>>>>> 4383dffba64038f1eb36da43b2728440433db209
+`AND_2(o15_4_o_and1, 1, o15_4_o_t1, i4_i_inv, i2_i)
 wire o15_4_o_t2;
-`AND_2(o15_4_o_and2, 1, o15_4_o_t2, i4_i_inv, i2_i)
+`AND_2(o15_4_o_and2, 1, o15_4_o_t2, i4_i_inv, i0_i)
 wire o15_4_o_t3;
-`AND_2(o15_4_o_and3, 1, o15_4_o_t3, i4_i_inv, i3_i)
+`AND_2(o15_4_o_and3, 1, o15_4_o_t3, i4_i_inv, i1_i)
 wire o15_4_o_t4;
 `AND_5(o15_4_o_and4, 1, o15_4_o_t4, i4_i, i3_i_inv, i2_i_inv, i1_i_inv, i0_i_inv)
 
 `OR_5(o15_4_o_or, 1, o15_4_o, o15_4_o_t0, o15_4_o_t1, o15_4_o_t2, o15_4_o_t3, o15_4_o_t4)
 
-// o15_3_o = (i3_i & i0_i) | (i3_i & i1_i) | (i3_i & i2_i) | (!i3_i & !i2_i & !i1_i & !i0_i)
+// o15_3_o = (i3_i & i2_i) | (i3_i & i0_i) | (i3_i & i1_i) | (!i3_i & !i2_i & !i1_i & !i0_i)
 wire o15_3_o_t0;
-`AND_2(o15_3_o_and0, 1, o15_3_o_t0, i3_i, i0_i)
+`AND_2(o15_3_o_and0, 1, o15_3_o_t0, i3_i, i2_i)
 wire o15_3_o_t1;
-`AND_2(o15_3_o_and1, 1, o15_3_o_t1, i3_i, i1_i)
+`AND_2(o15_3_o_and1, 1, o15_3_o_t1, i3_i, i0_i)
 wire o15_3_o_t2;
-`AND_2(o15_3_o_and2, 1, o15_3_o_t2, i3_i, i2_i)
+`AND_2(o15_3_o_and2, 1, o15_3_o_t2, i3_i, i1_i)
 wire o15_3_o_t3;
 `AND_4(o15_3_o_and3, 1, o15_3_o_t3, i3_i_inv, i2_i_inv, i1_i_inv, i0_i_inv)
 
@@ -1185,11 +1081,11 @@ wire o15_2_o_t2;
 
 `OR_3(o15_2_o_or, 1, o15_2_o, o15_2_o_t0, o15_2_o_t1, o15_2_o_t2)
 
-// o15_1_o = (i1_i & i0_i) | (!i1_i & !i0_i)
+// o15_1_o = (!i1_i & !i0_i) | (i1_i & i0_i)
 wire o15_1_o_t0;
-`AND_2(o15_1_o_and0, 1, o15_1_o_t0, i1_i, i0_i)
+`AND_2(o15_1_o_and0, 1, o15_1_o_t0, i1_i_inv, i0_i_inv)
 wire o15_1_o_t1;
-`AND_2(o15_1_o_and1, 1, o15_1_o_t1, i1_i_inv, i0_i_inv)
+`AND_2(o15_1_o_and1, 1, o15_1_o_t1, i1_i, i0_i)
 
 `OR_2(o15_1_o_or, 1, o15_1_o, o15_1_o_t0, o15_1_o_t1)
 
