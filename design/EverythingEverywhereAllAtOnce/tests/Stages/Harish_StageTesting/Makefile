@@ -41,8 +41,8 @@ NORM_SIM_LOG = $(LOG_DIR)/norm_sim.log
 
 SIM_REGDUMP_FILE  = $(LOG_DIR)/sim_regdump.log
 SIM_FLAGDUMP_FILE = $(LOG_DIR)/sim_flagdump.log
-RTL_REGDUMP_FILE  = $(TEST_DIR)regdump.log
-RTL_FLAGDUMP_FILE = $(TEST_DIR)flagdump.log
+RTL_REGDUMP_FILE  = $(LOG_DIR)/regdump.log
+RTL_FLAGDUMP_FILE = $(LOG_DIR)/flagdump.log
 DUMP_REPORT_FILE  = $(LOG_DIR)/dump_compare_report.txt
 
 include $(PROJECT_ROOT)/Make.vars
