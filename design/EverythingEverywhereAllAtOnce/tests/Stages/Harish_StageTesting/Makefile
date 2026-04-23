@@ -82,7 +82,7 @@ CC_FLAGS += \
     +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
 	
 
-.PHONY: all run clean see gen
+.PHONY: all run clean see gen full
 
 all: $(TARGET) 
 	
@@ -135,4 +135,4 @@ push: clean
 pull: 
 	git pull
 
-
+full: clean gen run compare
