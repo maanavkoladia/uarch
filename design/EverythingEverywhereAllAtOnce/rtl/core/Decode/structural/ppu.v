@@ -5,17 +5,30 @@ module ppu (
     input [9:0] total_pf_vector,     //MSB --> 2e, 36, 3e, 26, 64, 65, 66, 67, 0f, f3  <-- LSB vector
     input [2:0] num_pfs_plusone,
     output [3:0] inst_length,
-    output [2:0] msd_size,
-    output [2:0] imm_size,
-    output disp_size,
-    output disp_needed,
-    output sib_size,
-    output needrm,
+    output [2:0] msd_size_o,
+    output [2:0] imm_size_o,
+    output disp_size_o,
+    output disp_needed_o,
+    output sib_size_o,
+    output needrm_o,
     output [7:0] sib_byte,
     output [3:0][7:0] disp,
     output [7:0][7:0] imm64,
     output inst_valid
 );
+    wire [2:0] msd_size;
+    wire [2:0] imm_size;
+    wire disp_size;
+    wire disp_needed;
+    wire sib_size;
+    wire needrm;
+    
+    assign msd_size_o = msd_size;
+    assign imm_size_o = imm_size;
+    assign disp_size_o = disp_size;
+    assign disp_needed_o = disp_needed;
+    assign sib_size_o = sib_size;
+    assign needrm_o = needrm;
 
     wire [2:0] imm_size_fake, msd_size_fake;
 

@@ -43,26 +43,26 @@ module predecode(
 
     ppu pfs0(.opcode_index(4'd0), .modrm_index(4'd1), .IR(IR), .IR_valid_vect(IR_valid_vect),
         .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd1),
-        .inst_length(ppu_inst_length[0]), .msd_size(ppu_msd_size[0]),
-        .imm_size(ppu_imm_size[0]), .disp_size(ppu_disp_size[0]), .disp_needed(ppu_disp_needed[0]), .sib_size(ppu_sib_size[0]), .needrm(ppu_needrm[0]), .sib_byte(ppu_sib_byte[0]), .disp(ppu_displacement[0]), .imm64(ppu_imm[0]),
+        .inst_length(ppu_inst_length[0]), .msd_size_o(ppu_msd_size[0]),
+        .imm_size_o(ppu_imm_size[0]), .disp_size_o(ppu_disp_size[0]), .disp_needed_o(ppu_disp_needed[0]), .sib_size_o(ppu_sib_size[0]), .needrm_o(ppu_needrm[0]), .sib_byte(ppu_sib_byte[0]), .disp(ppu_displacement[0]), .imm64(ppu_imm[0]),
         .inst_valid(inst_valid[0]));
 
     ppu pfs1(.opcode_index(4'd1), .modrm_index(4'd2), .IR(IR), .IR_valid_vect(IR_valid_vect),
         .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd2),
-        .inst_length(ppu_inst_length[1]), .msd_size(ppu_msd_size[1]),
-        .imm_size(ppu_imm_size[1]), .disp_size(ppu_disp_size[1]), .disp_needed(ppu_disp_needed[1]), .sib_size(ppu_sib_size[1]), .needrm(ppu_needrm[1]), .sib_byte(ppu_sib_byte[1]), .disp(ppu_displacement[1]), .imm64(ppu_imm[1]),
+        .inst_length(ppu_inst_length[1]), .msd_size_o(ppu_msd_size[1]),
+        .imm_size_o(ppu_imm_size[1]), .disp_size_o(ppu_disp_size[1]), .disp_needed_o(ppu_disp_needed[1]), .sib_size_o(ppu_sib_size[1]), .needrm_o(ppu_needrm[1]), .sib_byte(ppu_sib_byte[1]), .disp(ppu_displacement[1]), .imm64(ppu_imm[1]),
         .inst_valid(inst_valid[1]));
 
     ppu pfs2(.opcode_index(4'd2), .modrm_index(4'd3), .IR(IR), .IR_valid_vect(IR_valid_vect),
         .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd3),
-        .inst_length(ppu_inst_length[2]), .msd_size(ppu_msd_size[2]),
-        .imm_size(ppu_imm_size[2]), .disp_size(ppu_disp_size[2]), .disp_needed(ppu_disp_needed[2]), .sib_size(ppu_sib_size[2]), .needrm(ppu_needrm[2]), .sib_byte(ppu_sib_byte[2]), .disp(ppu_displacement[2]), .imm64(ppu_imm[2]),
+        .inst_length(ppu_inst_length[2]), .msd_size_o(ppu_msd_size[2]),
+        .imm_size_o(ppu_imm_size[2]), .disp_size_o(ppu_disp_size[2]), .disp_needed_o(ppu_disp_needed[2]), .sib_size_o(ppu_sib_size[2]), .needrm_o(ppu_needrm[2]), .sib_byte(ppu_sib_byte[2]), .disp(ppu_displacement[2]), .imm64(ppu_imm[2]),
         .inst_valid(inst_valid[2]));
 
     ppu pfs3(.opcode_index(4'd3), .modrm_index(4'd4), .IR(IR), .IR_valid_vect(IR_valid_vect),
         .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd4),
-        .inst_length(ppu_inst_length[3]), .msd_size(ppu_msd_size[3]),
-        .imm_size(ppu_imm_size[3]), .disp_size(ppu_disp_size[3]), .disp_needed(ppu_disp_needed[3]), .sib_size(ppu_sib_size[3]), .needrm(ppu_needrm[3]), .sib_byte(ppu_sib_byte[3]), .disp(ppu_displacement[3]), .imm64(ppu_imm[3]),
+        .inst_length(ppu_inst_length[3]), .msd_size_o(ppu_msd_size[3]),
+        .imm_size_o(ppu_imm_size[3]), .disp_size_o(ppu_disp_size[3]), .disp_needed_o(ppu_disp_needed[3]), .sib_size_o(ppu_sib_size[3]), .needrm_o(ppu_needrm[3]), .sib_byte(ppu_sib_byte[3]), .disp(ppu_displacement[3]), .imm64(ppu_imm[3]),
         .inst_valid(inst_valid[3]));
 
     // mux4_4 length_mux(.in0(ppu_inst_length[0]), .in1(ppu_inst_length[1]), .in2(ppu_inst_length[2]), .in3(ppu_inst_length[3]), 
