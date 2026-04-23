@@ -12,13 +12,13 @@ _start:
     movl $0, %ebp
 
     movsl
-    movl (%edi), %eax
+    movl -4(%edi), %eax
     movsl
-    movl (%edi), %eax
+    movl -4(%edi), %eax
     movsl
-    movl (%edi), %eax
+    movl -4(%edi), %eax
     movsl
-    movl (%edi), %eax
+    movl -4(%edi), %eax
 
     hlt
 

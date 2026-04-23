@@ -99,11 +99,11 @@ wire NS_0_t1;
 
 `OR_2(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1)
 
-// NS_1 = (S_0 & !S_1 & !S_2) | (!S_0 & S_1 & !S_2)
+// NS_1 = (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2)
 wire NS_1_t0;
-`AND_3(NS_1_and0, 1, NS_1_t0, S_0, S_1_inv, S_2_inv)
+`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1, S_2_inv)
 wire NS_1_t1;
-`AND_3(NS_1_and1, 1, NS_1_t1, S_0_inv, S_1, S_2_inv)
+`AND_3(NS_1_and1, 1, NS_1_t1, S_0, S_1_inv, S_2_inv)
 
 `OR_2(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1)
 
