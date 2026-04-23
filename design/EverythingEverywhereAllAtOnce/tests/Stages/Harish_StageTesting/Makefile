@@ -8,7 +8,7 @@ LOG_DIR = $(TEST_DIR)/logDumps/
 
 DISTRO := $(shell . /etc/os-release && echo $$ID)
 
-TARGET = tb_stages
+TARGET = tb_SystemTest
 
 STRUCTRURAL := false
 
@@ -44,7 +44,7 @@ include $(PROJECT_ROOT)Make.build
 
 GEN_CONF = config/startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_SystemTest
+TOP_MODULE_NAME = tb_stages
 
 STARTUP_FILES = \
 				gen/memLoader.sv \

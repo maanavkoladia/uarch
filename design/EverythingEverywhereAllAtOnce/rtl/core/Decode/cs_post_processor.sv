@@ -25,7 +25,7 @@ module cs_post_processor (
     exe_cs_operation_type_e overriden_op_type;
     source_selector_e overriden_br_sel;
     logic [2:0] reg_field;
-    bool ff_jmp, ff_push;
+    bool ff_jmp, ff_push, ff_call;
     assign reg_field = modrm_byte[5:3];
 
     //op_type setting
@@ -34,6 +34,7 @@ module cs_post_processor (
     overriden_br_sel = exe_cs_i.branch_target_sel;
     ff_jmp = 1'b0;
     ff_push = 1'b0;
+    ff_call = 1'b0;
         case(op_in_modrm_subset)
             SHF: begin
                 if(reg_field == 3'd4) overriden_op_type = SAL;
@@ -43,6 +44,7 @@ module cs_post_processor (
                 overriden_br_sel = rr_cs_o.LD_OP ? BUF32 : DR_REGISTER;
                 if(reg_field == 3'd2) begin
                     overriden_op_type = CALL;     //gonna default to call, overide for jmp and push
+                    ff_call = 1'b1;
                 end
                 else if(reg_field == 3'd4) begin
                     overriden_op_type = JMP;
@@ -113,11 +115,12 @@ module cs_post_processor (
         dr_id           : rr_cs_i.dr_id,
         sr_id           : ff_jmp ? NO_REG : rr_cs_i.sr_id,
         dr_rd           : rr_cs_i.dr_rd,
-        sr_rd           : rr_cs_i.sr_rd,
+        sr_rd           : (ff_jmp) ? 1'b0 : rr_cs_i.sr_rd,
         eax_rd          : cmpxchg ? 1'b1 : 1'b0,
         dr_wr           : invalid_inst ?
                             1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b0 : rr_cs_i.dr_wr,
+                            rr_cs_i.MOVS_OP ? 1'b0 : 
+                            (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i.dr_wr,
 
         sr_wr           : invalid_inst ? 
                             1'b0 :
@@ -194,7 +197,8 @@ module cs_post_processor (
                             rr_cs_i.MOVS_OP ? 1'b1 : mem_cs_i.ST_OP,
         WB_DR : invalid_inst ? 
                             1'b0 :
-                            rr_cs_i.MOVS_OP ? 1'b0 : rr_cs_i.dr_wr,
+                            rr_cs_i.MOVS_OP ? 1'b0 : 
+                                (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i.dr_wr,
         WB_SR : invalid_inst ? 
                             1'b0 :
                             xchg ? 1'b1 : rr_cs_i.sr_wr,
