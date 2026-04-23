@@ -1,25 +1,29 @@
 # Begin_DVE_Session_Save_Info
 # DVE full session
-# Saved on Wed Apr 22 01:49:51 2026
+# Saved on Thu Apr 23 04:20:29 2026
 # Designs open: 1
 #   V1: vcdplus.vpd
 # Toplevel windows open: 2
 # 	TopLevel.1
 # 	TopLevel.2
-#   Source.1: tb_stages
-#   Wave.1: 786 signals
-#   Group count = 36
+#   Source.1: tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel
+#   Wave.1: 1329 signals
+#   Group count = 87
 #   Group uut_AllAtOnce signal count = 9
 #   Group uut_AllAtOnce_1 signal count = 9
-#   Group Core signal count = 39
 #   Group Mem_System signal count = 26
+#   Group flags_reg signal count = 3
+#   Group uut_stuff signal count = 7
+#   Group Core signal count = 1
+#   Group latches signal count = 6
+#   Group stages signal count = 8
 # End_DVE_Session_Save_Info
 
 # DVE version: T-2022.06_Full64
 # DVE build date: May 31 2022 20:53:03
 
 
-#<Session mode="Full" path="/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/tests/Stages/Harish_StageTesting/session.vcdplus.vpd.tcl" type="Debug">
+#<Session mode="Full" path="/misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/tests/Stages/Harish_StageTesting/session.vcdplus.vpd.tcl" type="Debug">
 
 gui_set_loading_session_type Post
 gui_continuetime_set
@@ -71,7 +75,7 @@ if {![gui_exist_window -window TopLevel.1]} {
 } else { 
     set TopLevel.1 TopLevel.1
 }
-gui_show_window -window ${TopLevel.1} -show_state normal -rect {{253 83} {1969 986}}
+gui_show_window -window ${TopLevel.1} -show_state maximized -rect {{78 23} {1357 671}}
 
 # ToolBar settings
 gui_set_toolbar_attributes -toolbar {TimeOperations} -dock_state top
@@ -112,23 +116,28 @@ gui_hide_toolbar -toolbar {Testbench}
 # End ToolBar settings
 
 # Docked window settings
-set HSPane.1 [gui_create_window -type HSPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 437]
+set HSPane.1 [gui_create_window -type HSPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 432]
 catch { set Hier.1 [gui_share_window -id ${HSPane.1} -type Hier] }
-gui_set_window_pref_key -window ${HSPane.1} -key dock_width -value_type integer -value 437
+gui_set_window_pref_key -window ${HSPane.1} -key dock_width -value_type integer -value 432
 gui_set_window_pref_key -window ${HSPane.1} -key dock_height -value_type integer -value -1
 gui_set_window_pref_key -window ${HSPane.1} -key dock_offset -value_type integer -value 0
-gui_update_layout -id ${HSPane.1} {{left 0} {top 0} {width 436} {height 631} {dock_state left} {dock_on_new_line true} {child_hier_colhier 335} {child_hier_coltype 107} {child_hier_colpd 0} {child_hier_col1 0} {child_hier_col2 1} {child_hier_col3 -1}}
-set DLPane.1 [gui_create_window -type DLPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 502]
+gui_update_layout -id ${HSPane.1} {{left 0} {top 0} {width 431} {height 374} {dock_state left} {dock_on_new_line true} {child_hier_colhier 335} {child_hier_coltype 107} {child_hier_colpd 0} {child_hier_col1 0} {child_hier_col2 1} {child_hier_col3 -1}}
+set DLPane.1 [gui_create_window -type DLPane -parent ${TopLevel.1} -dock_state left -dock_on_new_line true -dock_extent 497]
 catch { set Data.1 [gui_share_window -id ${DLPane.1} -type Data] }
-gui_set_window_pref_key -window ${DLPane.1} -key dock_width -value_type integer -value 502
+gui_set_window_pref_key -window ${DLPane.1} -key dock_width -value_type integer -value 497
 gui_set_window_pref_key -window ${DLPane.1} -key dock_height -value_type integer -value 517
 gui_set_window_pref_key -window ${DLPane.1} -key dock_offset -value_type integer -value 0
-gui_update_layout -id ${DLPane.1} {{left 0} {top 0} {width 501} {height 631} {dock_state left} {dock_on_new_line true} {child_data_colvariable 279} {child_data_colvalue 57} {child_data_coltype 171} {child_data_col1 0} {child_data_col2 1} {child_data_col3 2}}
-set Console.1 [gui_create_window -type Console -parent ${TopLevel.1} -dock_state bottom -dock_on_new_line true -dock_extent 175]
-gui_set_window_pref_key -window ${Console.1} -key dock_width -value_type integer -value 1313
-gui_set_window_pref_key -window ${Console.1} -key dock_height -value_type integer -value 175
+gui_update_layout -id ${DLPane.1} {{left 0} {top 0} {width 496} {height 374} {dock_state left} {dock_on_new_line true} {child_data_colvariable 279} {child_data_colvalue 57} {child_data_coltype 171} {child_data_col1 0} {child_data_col2 1} {child_data_col3 2}}
+set Console.1 [gui_create_window -type Console -parent ${TopLevel.1} -dock_state bottom -dock_on_new_line true -dock_extent 176]
+gui_set_window_pref_key -window ${Console.1} -key dock_width -value_type integer -value -1
+gui_set_window_pref_key -window ${Console.1} -key dock_height -value_type integer -value 176
 gui_set_window_pref_key -window ${Console.1} -key dock_offset -value_type integer -value 0
-gui_update_layout -id ${Console.1} {{left 0} {top 0} {width 1716} {height 174} {dock_state bottom} {dock_on_new_line true}}
+gui_update_layout -id ${Console.1} {{left 0} {top 0} {width 271} {height 175} {dock_state bottom} {dock_on_new_line true}}
+set DriverLoad.1 [gui_create_window -type DriverLoad -parent ${TopLevel.1} -dock_state bottom -dock_on_new_line false -dock_extent 176]
+gui_set_window_pref_key -window ${DriverLoad.1} -key dock_width -value_type integer -value 150
+gui_set_window_pref_key -window ${DriverLoad.1} -key dock_height -value_type integer -value 176
+gui_set_window_pref_key -window ${DriverLoad.1} -key dock_offset -value_type integer -value 0
+gui_update_layout -id ${DriverLoad.1} {{left 0} {top 0} {width 1007} {height 175} {dock_state bottom} {dock_on_new_line false}}
 #### Start - Readjusting docked view's offset / size
 set dockAreaList { top left right bottom }
 foreach dockArea $dockAreaList {
@@ -165,7 +174,7 @@ if {![gui_exist_window -window TopLevel.2]} {
 } else { 
     set TopLevel.2 TopLevel.2
 }
-gui_show_window -window ${TopLevel.2} -show_state maximized -rect {{345 101} {2264 1116}}
+gui_show_window -window ${TopLevel.2} -show_state maximized -rect {{78 23} {1357 671}}
 
 # ToolBar settings
 gui_set_toolbar_attributes -toolbar {TimeOperations} -dock_state top
@@ -213,7 +222,7 @@ gui_sync_global -id ${TopLevel.2} -option true
 # MDI window settings
 set Wave.1 [gui_create_window -type {Wave}  -parent ${TopLevel.2}]
 gui_show_window -window ${Wave.1} -show_state maximized
-gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 557} {child_wave_right 1357} {child_wave_colname 361} {child_wave_colvalue 192} {child_wave_col1 0} {child_wave_col2 1}}
+gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 443} {child_wave_right 831} {child_wave_colname 201} {child_wave_colvalue 238} {child_wave_col1 0} {child_wave_col2 1}}
 
 # End MDI window settings
 
@@ -252,351 +261,837 @@ gui_set_time_units 1ns
 # Global: Signal Compare
 
 # Global: Signal Groups
-gui_load_child_values {tb_stages.uut_AllAtOnce}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.rr_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_imm}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce}
+gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_logic}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.rr_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_imm_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst}
 gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.write_back_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.fetch_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.idm_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.decode_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_far_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2}
+gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pop_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_call_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.idm_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_df_flag_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.decode_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.write_back_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_not_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res}
+gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.fetch_unit}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel}
 gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit}
 
 
-set _session_group_107 uut_AllAtOnce
-gui_sg_create "$_session_group_107"
-set uut_AllAtOnce "$_session_group_107"
+set _session_group_523 uut_AllAtOnce
+gui_sg_create "$_session_group_523"
+set uut_AllAtOnce "$_session_group_523"
 
-gui_sg_addsignal -group "$_session_group_107" { {tb_stages.uut_AllAtOnce.$unit} tb_stages.uut_AllAtOnce.clk tb_stages.uut_AllAtOnce.rst tb_stages.uut_AllAtOnce.icache2core tb_stages.uut_AllAtOnce.core2icache tb_stages.uut_AllAtOnce.stq2dcache tb_stages.uut_AllAtOnce.core2dcache tb_stages.uut_AllAtOnce.dcache2core tb_stages.uut_AllAtOnce.dma2core }
+gui_sg_addsignal -group "$_session_group_523" { {tb_stages.uut_AllAtOnce.$unit} tb_stages.uut_AllAtOnce.clk tb_stages.uut_AllAtOnce.rst tb_stages.uut_AllAtOnce.icache2core tb_stages.uut_AllAtOnce.core2icache tb_stages.uut_AllAtOnce.stq2dcache tb_stages.uut_AllAtOnce.core2dcache tb_stages.uut_AllAtOnce.dcache2core tb_stages.uut_AllAtOnce.dma2core }
 
-set _session_group_108 uut_AllAtOnce_1
-gui_sg_create "$_session_group_108"
-set uut_AllAtOnce_1 "$_session_group_108"
+set _session_group_524 uut_AllAtOnce_1
+gui_sg_create "$_session_group_524"
+set uut_AllAtOnce_1 "$_session_group_524"
 
-gui_sg_addsignal -group "$_session_group_108" { tb_stages.uut_AllAtOnce.stq2dcache tb_stages.uut_AllAtOnce.icache2core tb_stages.uut_AllAtOnce.core2dcache tb_stages.uut_AllAtOnce.clk tb_stages.uut_AllAtOnce.core2icache tb_stages.uut_AllAtOnce.dma2core tb_stages.uut_AllAtOnce.dcache2core {tb_stages.uut_AllAtOnce.$unit} tb_stages.uut_AllAtOnce.rst }
+gui_sg_addsignal -group "$_session_group_524" { tb_stages.uut_AllAtOnce.stq2dcache tb_stages.uut_AllAtOnce.icache2core tb_stages.uut_AllAtOnce.core2dcache tb_stages.uut_AllAtOnce.clk tb_stages.uut_AllAtOnce.core2icache tb_stages.uut_AllAtOnce.dma2core tb_stages.uut_AllAtOnce.dcache2core {tb_stages.uut_AllAtOnce.$unit} tb_stages.uut_AllAtOnce.rst }
 
-set _session_group_109 Core
-gui_sg_create "$_session_group_109"
-set Core "$_session_group_109"
+set _session_group_525 Mem_System
+gui_sg_create "$_session_group_525"
+set Mem_System "$_session_group_525"
 
-gui_sg_addsignal -group "$_session_group_109" { {tb_stages.uut_AllAtOnce.core_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.clk tb_stages.uut_AllAtOnce.core_unit.rst tb_stages.uut_AllAtOnce.core_unit.ICacheIn_i tb_stages.uut_AllAtOnce.core_unit.out2ICache_o tb_stages.uut_AllAtOnce.core_unit.DCacheIn_i tb_stages.uut_AllAtOnce.core_unit.out2DCache_o tb_stages.uut_AllAtOnce.core_unit.inFromDMA_i tb_stages.uut_AllAtOnce.core_unit.idm_outputs tb_stages.uut_AllAtOnce.core_unit.fetch_outputs tb_stages.uut_AllAtOnce.core_unit.decode_outputs tb_stages.uut_AllAtOnce.core_unit.rr_outputs tb_stages.uut_AllAtOnce.core_unit.dc_outputs tb_stages.uut_AllAtOnce.core_unit.mem_outputs tb_stages.uut_AllAtOnce.core_unit.exe_outputs tb_stages.uut_AllAtOnce.core_unit.wb_outputs tb_stages.uut_AllAtOnce.core_unit.rr_latches tb_stages.uut_AllAtOnce.core_unit.rr_latches_next tb_stages.uut_AllAtOnce.core_unit.dc_latches tb_stages.uut_AllAtOnce.core_unit.dc_latches_next tb_stages.uut_AllAtOnce.core_unit.mem_latches tb_stages.uut_AllAtOnce.core_unit.mem_latches_next tb_stages.uut_AllAtOnce.core_unit.exe_latches tb_stages.uut_AllAtOnce.core_unit.exe_latches_next tb_stages.uut_AllAtOnce.core_unit.wb_latches tb_stages.uut_AllAtOnce.core_unit.wb_latches_next }
+gui_sg_addsignal -group "$_session_group_525" { {tb_stages.uut_AllAtOnce.mem_sys_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.addressBus tb_stages.uut_AllAtOnce.mem_sys_unit.core2icache_i tb_stages.uut_AllAtOnce.mem_sys_unit.icache2core_o tb_stages.uut_AllAtOnce.mem_sys_unit.core2dcache_i tb_stages.uut_AllAtOnce.mem_sys_unit.dcache2core_o tb_stages.uut_AllAtOnce.mem_sys_unit.dma2core_o tb_stages.uut_AllAtOnce.mem_sys_unit.icache_2_sched tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_icache tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_2_sched tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_dcache tb_stages.uut_AllAtOnce.mem_sys_unit.mem_2_sched tb_stages.uut_AllAtOnce.mem_sys_unit.mem_2_dte tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_mem tb_stages.uut_AllAtOnce.mem_sys_unit.dma_2_sched tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_dma tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_ddr5 }
 
-set _session_group_110 $_session_group_109|
-append _session_group_110 write_back_unit
-gui_sg_create "$_session_group_110"
-set Core|write_back_unit "$_session_group_110"
+set _session_group_526 $_session_group_525|
+append _session_group_526 bus_arbitration_unit
+gui_sg_create "$_session_group_526"
+set Mem_System|bus_arbitration_unit "$_session_group_526"
 
-gui_sg_addsignal -group "$_session_group_110" { {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.write_back_unit.clk tb_stages.uut_AllAtOnce.core_unit.write_back_unit.rst tb_stages.uut_AllAtOnce.core_unit.write_back_unit.write_success tb_stages.uut_AllAtOnce.core_unit.write_back_unit.write_success_mio tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stall_flop tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stall_flop_next tb_stages.uut_AllAtOnce.core_unit.write_back_unit.mio_push_fail tb_stages.uut_AllAtOnce.core_unit.write_back_unit.wb_latches tb_stages.uut_AllAtOnce.core_unit.write_back_unit.outputs tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stq_info tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stq_outputs tb_stages.uut_AllAtOnce.core_unit.write_back_unit.mio_q_input tb_stages.uut_AllAtOnce.core_unit.write_back_unit.reg_wb_logic_outs tb_stages.uut_AllAtOnce.core_unit.write_back_unit.dc_dep tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stq_heads tb_stages.uut_AllAtOnce.core_unit.write_back_unit.mio_q_output }
+gui_sg_addsignal -group "$_session_group_526" { {tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.sch_best_pick tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.sch_best_pick_bk_id tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.iCache_2_Sch_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_out_2_icache_o tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dCache_2_Sch_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_out_2_dcache_o tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.mem_2_Sch_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.mem_2_dte_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_2_mem_o tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dma_2_sch_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_2_dma_o tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_2_ddr5_o }
 
-gui_sg_move "$_session_group_110" -after "$_session_group_109" -pos 12 
+gui_sg_move "$_session_group_526" -after "$_session_group_525" -pos 5 
 
-set _session_group_111 $_session_group_109|
-append _session_group_111 wb_latches_unit
-gui_sg_create "$_session_group_111"
-set Core|wb_latches_unit "$_session_group_111"
+set _session_group_527 $_session_group_525|
+append _session_group_527 dcache_unit
+gui_sg_create "$_session_group_527"
+set Mem_System|dcache_unit "$_session_group_527"
 
-gui_sg_addsignal -group "$_session_group_111" { {tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.rst tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.write_enable_i tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.latches }
+gui_sg_addsignal -group "$_session_group_527" { {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.address_bus tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.hitVec tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.arb_st_override_Out tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.arb_req_served_0_out tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.arb_req_served_1_out tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.inFromCore_i tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.out2Core_o tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.inFromDTE_i tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.out2Sch_o tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.blockOutputs {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.req_2_blocks[0].p_addr} tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.req_2_blocks tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.mio_block_outputs }
 
-gui_sg_move "$_session_group_111" -after "$_session_group_109" -pos 11 
+gui_sg_move "$_session_group_527" -after "$_session_group_525" -pos 4 
 
-set _session_group_112 $_session_group_109|
-append _session_group_112 execute_unit
-gui_sg_create "$_session_group_112"
-set Core|execute_unit "$_session_group_112"
+set _session_group_528 $_session_group_525|
+append _session_group_528 ddr5_unit
+gui_sg_create "$_session_group_528"
+set Mem_System|ddr5_unit "$_session_group_528"
 
-gui_sg_addsignal -group "$_session_group_112" { {tb_stages.uut_AllAtOnce.core_unit.execute_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.clk tb_stages.uut_AllAtOnce.core_unit.execute_unit.rst tb_stages.uut_AllAtOnce.core_unit.execute_unit.clr_ZF_sb tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_stage_we_valid_unit_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_stage_next_vaild_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.sr_data_size_vec tb_stages.uut_AllAtOnce.core_unit.execute_unit.flags_reg tb_stages.uut_AllAtOnce.core_unit.execute_unit.sr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.dr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.res_buf_next tb_stages.uut_AllAtOnce.core_unit.execute_unit.latches_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_latches_next_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.outs_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.branch_resolution_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.next_wb_cs }
+gui_sg_addsignal -group "$_session_group_528" { {tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.addrBus tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.tempValue tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.powerGate tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.dataBus_fake tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.inFromDTE_i }
 
-gui_sg_move "$_session_group_112" -after "$_session_group_109" -pos 10 
+gui_sg_move "$_session_group_528" -after "$_session_group_525" -pos 3 
 
-set _session_group_113 $_session_group_112|
-append _session_group_113 u_push_op
-gui_sg_create "$_session_group_113"
-set Core|execute_unit|u_push_op "$_session_group_113"
+set _session_group_529 $_session_group_525|
+append _session_group_529 dma_controller_unit
+gui_sg_create "$_session_group_529"
+set Mem_System|dma_controller_unit "$_session_group_529"
 
-gui_sg_addsignal -group "$_session_group_113" { {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.value tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.sp tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.data_size_vec tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.res_buf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.sr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.num_bytes }
+gui_sg_addsignal -group "$_session_group_529" { {tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.addrBus tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.fsmState tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.fsmState_bits tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.commiting tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.disk_ld_Buffer_V tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.disk_ld_Buffer tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.counter tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.writeBuf tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.writeBuf_addr tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.writeBuf_V tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.writeComplete tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.write2_srcAddr_req tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.write2_destAddr_req tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.write2_numBytes_req tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.write2_startWrite_req tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.addrBus_drv tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.dataBus_drv tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.driveDataBus tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.inFromDTE_i tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.out2Core_o tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.out2Sch_o tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.dma_Regs tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.fsmOuts }
 
-gui_sg_move "$_session_group_113" -after "$_session_group_112" -pos 16 
+gui_sg_move "$_session_group_529" -after "$_session_group_525" -pos 2 
 
-set _session_group_114 $_session_group_112|
-append _session_group_114 u_cmpxchg_op
-gui_sg_create "$_session_group_114"
-set Core|execute_unit|u_cmpxchg_op "$_session_group_114"
+set _session_group_530 $_session_group_525|
+append _session_group_530 icache_unit
+gui_sg_create "$_session_group_530"
+set Mem_System|icache_unit "$_session_group_530"
 
-gui_sg_addsignal -group "$_session_group_114" { {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.EAX tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.rm tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.r tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.sr_data_size_vec tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.EAX_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.res_buf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.next_dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.rm_low tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.rm_upper tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.next_EAX tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.r_low tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.r_upper }
+gui_sg_addsignal -group "$_session_group_530" { {tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.addrBus tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.controller_fsmState tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.controller_fsmState_bits tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_dataLines tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_tag tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_tag_V tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_hit tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_miss tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_hit tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_miss tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_swapBuf_V_Clr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_dataLines tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.saved_pAddr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.saved_vAddr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.curr_v_addr_to_use tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.useSaved_v_Addr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.save_v_addr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.addrBus_drv tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.inFromCore_i tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.out2Core_o tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.inFromDte_i tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.out2Sch_o tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.fsmOuts tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_swapbuf tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_swapBuf }
 
-gui_sg_move "$_session_group_114" -after "$_session_group_112" -pos 10 
+gui_sg_move "$_session_group_530" -after "$_session_group_525" -pos 1 
 
-set _session_group_115 $_session_group_112|
-append _session_group_115 u_alu_input_sel
-gui_sg_create "$_session_group_115"
-set Core|execute_unit|u_alu_input_sel "$_session_group_115"
+set _session_group_531 $_session_group_525|
+append _session_group_531 mem_unit_1
+gui_sg_create "$_session_group_531"
+set Mem_System|mem_unit_1 "$_session_group_531"
 
-gui_sg_addsignal -group "$_session_group_115" { {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.ld_addr_0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.res_buf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.imm64 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.sr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.dr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.EAX tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.NEIP tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.EIP tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.flags tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.alu_inputA_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.alu_inputB_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.shift_sr_down tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.shift_sr_up tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.br_input_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.srA_64 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.srB_64 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.br_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.res_buf_out tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.res_buf_offset }
+gui_sg_addsignal -group "$_session_group_531" { {tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.address_bus tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.data_bus tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.mem_bus tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.drive_Data_Bus tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.dataToDrive tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.inFromDte tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.out2Dte tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.out2Sch tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.controller_2_bank_Cmds tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.bank_out_2_controller }
 
-gui_sg_move "$_session_group_115" -after "$_session_group_112" -pos 9 
+set _session_group_532 flags_reg
+gui_sg_create "$_session_group_532"
+set flags_reg "$_session_group_532"
 
-set _session_group_116 $_session_group_109|
-append _session_group_116 exe_latches_unit
-gui_sg_create "$_session_group_116"
-set Core|exe_latches_unit "$_session_group_116"
+gui_sg_addsignal -group "$_session_group_532" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.flags_reg }
 
-gui_sg_addsignal -group "$_session_group_116" { {tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.rst tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.write_enable_i tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.flush tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches }
+set _session_group_533 $_session_group_532|
+append _session_group_533 RegisterFile_unit
+gui_sg_create "$_session_group_533"
+set flags_reg|RegisterFile_unit "$_session_group_533"
 
-gui_sg_move "$_session_group_116" -after "$_session_group_109" -pos 9 
+gui_sg_addsignal -group "$_session_group_533" { tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.SR_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR1_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR0_data tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.DR_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR0_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR1_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.Segment0_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.wb_wr_to_both tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.Segment1_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.SIB_BASE_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.outputs tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.SIB_IDX_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.REGISTERS tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.clk tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR1_data {tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR0_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.rst }
 
-set _session_group_117 $_session_group_109|
-append _session_group_117 mem_unit
-gui_sg_create "$_session_group_117"
-set Core|mem_unit "$_session_group_117"
+gui_sg_move "$_session_group_533" -after "$_session_group_532" -pos 2 
 
-gui_sg_addsignal -group "$_session_group_117" { {tb_stages.uut_AllAtOnce.core_unit.mem_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.mem_unit.clk tb_stages.uut_AllAtOnce.core_unit.mem_unit.rst tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit tb_stages.uut_AllAtOnce.core_unit.mem_unit.cacheline tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_MIO tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_MIO tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_buf_mio_v tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_buf_mio tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_buf_v tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_buf tb_stages.uut_AllAtOnce.core_unit.mem_unit.clr_dcache_arb_latches tb_stages.uut_AllAtOnce.core_unit.mem_unit.clr_dcache_mio_latch tb_stages.uut_AllAtOnce.core_unit.mem_unit.ld_buf tb_stages.uut_AllAtOnce.core_unit.mem_unit.C0 tb_stages.uut_AllAtOnce.core_unit.mem_unit.up_buf tb_stages.uut_AllAtOnce.core_unit.mem_unit.low_buf tb_stages.uut_AllAtOnce.core_unit.mem_unit.miss_stall tb_stages.uut_AllAtOnce.core_unit.mem_unit.exe_stage_we_valid_unit_o tb_stages.uut_AllAtOnce.core_unit.mem_unit.exe_stage_next_vaild_o tb_stages.uut_AllAtOnce.core_unit.mem_unit.forward_valid tb_stages.uut_AllAtOnce.core_unit.mem_unit.bank_num_0 tb_stages.uut_AllAtOnce.core_unit.mem_unit.bank_num_1 tb_stages.uut_AllAtOnce.core_unit.mem_unit.rel_offset tb_stages.uut_AllAtOnce.core_unit.mem_unit.br_rel_target tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_0 tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_1 tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_mio tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_0_masked tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_1_masked tb_stages.uut_AllAtOnce.core_unit.mem_unit.latches_i tb_stages.uut_AllAtOnce.core_unit.mem_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.mem_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.mem_unit.exe_latches_next_o tb_stages.uut_AllAtOnce.core_unit.mem_unit.outs_o }
+set _session_group_534 $_session_group_532|
+append _session_group_534 reg_sb_unit
+gui_sg_create "$_session_group_534"
+set flags_reg|reg_sb_unit "$_session_group_534"
 
-gui_sg_move "$_session_group_117" -after "$_session_group_109" -pos 8 
+gui_sg_addsignal -group "$_session_group_534" { tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_dr_rd tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sr_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.flush tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_dr1_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_sr_wr tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.dep_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.dr_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.ecx_sb tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_dr0_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_dr_wr tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sr_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_dr1_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.depStall_Internal tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.Segment0_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.seg0_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_wr_to_both tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.Segment1_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sib_idx_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.codeSeg_sb tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.farFlush tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_wr_to_both tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_eax_rd tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sib_base_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.updateSB tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.instructionforward tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sib_base_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sib_idx_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_eax_wr tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.eax_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.clk tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.seg1_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_sr_rd {tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.dr_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.SCORE_BOARD tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.Segment1_valid tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_dr0_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_sib_size tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.rst }
 
-set _session_group_118 $_session_group_109|
-append _session_group_118 mem_latches_unit
-gui_sg_create "$_session_group_118"
-set Core|mem_latches_unit "$_session_group_118"
+gui_sg_move "$_session_group_534" -after "$_session_group_532" -pos 1 
 
-gui_sg_addsignal -group "$_session_group_118" { {tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.rst tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.write_enable_i tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.flush tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.farFlush tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.latches }
+set _session_group_535 uut_stuff
+gui_sg_create "$_session_group_535"
+set uut_stuff "$_session_group_535"
 
-gui_sg_move "$_session_group_118" -after "$_session_group_109" -pos 7 
+gui_sg_addsignal -group "$_session_group_535" { tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches.EIP tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches.valid tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches.data_size_vec tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches.cs.OP_TYPE tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches }
 
-set _session_group_119 $_session_group_109|
-append _session_group_119 dc_unit
-gui_sg_create "$_session_group_119"
-set Core|dc_unit "$_session_group_119"
+set _session_group_536 $_session_group_535|
+append _session_group_536 u_sbb_op
+gui_sg_create "$_session_group_536"
+set uut_stuff|u_sbb_op "$_session_group_536"
 
-gui_sg_addsignal -group "$_session_group_119" { {tb_stages.uut_AllAtOnce.core_unit.dc_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_unit.clk tb_stages.uut_AllAtOnce.core_unit.dc_unit.rst tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_served_mio tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_served_0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_served_1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_stage_we_valid_unit_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_stage_next_vaild_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.in_flight_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.dep_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.arb_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.exp_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.dc_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_0_V tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_1_V tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_mio_V tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_mio tb_stages.uut_AllAtOnce.core_unit.dc_unit.shift_sr_up tb_stages.uut_AllAtOnce.core_unit.dc_unit.shift_sr_down tb_stages.uut_AllAtOnce.core_unit.dc_unit.data_size_vec tb_stages.uut_AllAtOnce.core_unit.dc_unit.sr_data_size_vec tb_stages.uut_AllAtOnce.core_unit.dc_unit.dc_ST_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_ST_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.exe_ST_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.wb_ST_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_exception tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_exception tb_stages.uut_AllAtOnce.core_unit.dc_unit.latches_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.fetch_outs_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_outs_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_latches_next_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.dc_outs_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_out tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_out }
+gui_sg_addsignal -group "$_session_group_536" { {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.CF_in tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.al_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.ah_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.ax_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.eax_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.result }
 
-gui_sg_move "$_session_group_119" -after "$_session_group_109" -pos 6 
+gui_sg_move "$_session_group_536" -after "$_session_group_535" -pos 6 
 
-set _session_group_120 $_session_group_119|
-append _session_group_120 ld_neuralnet_part2
-gui_sg_create "$_session_group_120"
-set Core|dc_unit|ld_neuralnet_part2 "$_session_group_120"
+set _session_group_537 $_session_group_535|
+append _session_group_537 u_mov_op
+gui_sg_create "$_session_group_537"
+set uut_stuff|u_mov_op "$_session_group_537"
 
-gui_sg_addsignal -group "$_session_group_120" { {tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.vaddy_start tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.seg_limit_w_datasize tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.datasize tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.write_intent tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.mem_op tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.next_page_vaddy tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.vaddy_end tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.cross_page_access tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0_pagefault tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0_generalprotection tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1_pagefault tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1_generalprotection tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.segx_gp tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.outputs tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.vaddy_start_fields tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.vaddy_end_fields tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0_in tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1_in tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0_out tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1_out }
+gui_sg_addsignal -group "$_session_group_537" { {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.curr_cf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.masked_data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.merged_res }
 
-gui_sg_move "$_session_group_120" -after "$_session_group_119" -pos 6 
+gui_sg_move "$_session_group_537" -after "$_session_group_535" -pos 5 
 
-set _session_group_121 $_session_group_119|
-append _session_group_121 st_neuralnet_part2
-gui_sg_create "$_session_group_121"
-set Core|dc_unit|st_neuralnet_part2 "$_session_group_121"
+set _session_group_538 Core
+gui_sg_create "$_session_group_538"
+set Core "$_session_group_538"
 
-gui_sg_addsignal -group "$_session_group_121" { {tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.vaddy_start tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.seg_limit_w_datasize tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.datasize tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.write_intent tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.mem_op tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.next_page_vaddy tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.vaddy_end tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.cross_page_access tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0_pagefault tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0_generalprotection tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1_pagefault tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1_generalprotection tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.segx_gp tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.outputs tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.vaddy_start_fields tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.vaddy_end_fields tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0_in tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1_in tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0_out tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1_out }
+gui_sg_addsignal -group "$_session_group_538" { }
 
-gui_sg_move "$_session_group_121" -after "$_session_group_119" -pos 5 
+set _session_group_539 $_session_group_538|
+append _session_group_539 core_unit
+gui_sg_create "$_session_group_539"
+set Core|core_unit "$_session_group_539"
 
-set _session_group_122 $_session_group_109|
-append _session_group_122 dc_latches_unit
-gui_sg_create "$_session_group_122"
-set Core|dc_latches_unit "$_session_group_122"
+gui_sg_addsignal -group "$_session_group_539" { tb_stages.uut_AllAtOnce.core_unit.mem_latches tb_stages.uut_AllAtOnce.core_unit.wb_latches_next tb_stages.uut_AllAtOnce.core_unit.DCacheIn_i tb_stages.uut_AllAtOnce.core_unit.inFromDMA_i tb_stages.uut_AllAtOnce.core_unit.dc_outputs tb_stages.uut_AllAtOnce.core_unit.mem_latches_next tb_stages.uut_AllAtOnce.core_unit.mem_outputs tb_stages.uut_AllAtOnce.core_unit.dc_latches_next tb_stages.uut_AllAtOnce.core_unit.wb_latches tb_stages.uut_AllAtOnce.core_unit.rr_latches_next tb_stages.uut_AllAtOnce.core_unit.rr_latches tb_stages.uut_AllAtOnce.core_unit.exe_latches tb_stages.uut_AllAtOnce.core_unit.idm_outputs tb_stages.uut_AllAtOnce.core_unit.fetch_outputs tb_stages.uut_AllAtOnce.core_unit.clk tb_stages.uut_AllAtOnce.core_unit.wb_outputs tb_stages.uut_AllAtOnce.core_unit.decode_outputs tb_stages.uut_AllAtOnce.core_unit.rr_outputs tb_stages.uut_AllAtOnce.core_unit.exe_latches_next tb_stages.uut_AllAtOnce.core_unit.out2DCache_o tb_stages.uut_AllAtOnce.core_unit.exe_outputs {tb_stages.uut_AllAtOnce.core_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_latches tb_stages.uut_AllAtOnce.core_unit.ICacheIn_i tb_stages.uut_AllAtOnce.core_unit.out2ICache_o tb_stages.uut_AllAtOnce.core_unit.rst }
 
-gui_sg_addsignal -group "$_session_group_122" { {tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.rst tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.write_enable_i tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.flush tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.farFlush tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.latches }
+set _session_group_540 latches
+gui_sg_create "$_session_group_540"
+set latches "$_session_group_540"
 
-gui_sg_move "$_session_group_122" -after "$_session_group_109" -pos 5 
+gui_sg_addsignal -group "$_session_group_540" { }
 
-set _session_group_123 $_session_group_109|
-append _session_group_123 rr_unit
-gui_sg_create "$_session_group_123"
-set Core|rr_unit "$_session_group_123"
+set _session_group_541 $_session_group_540|
+append _session_group_541 dc_latches_unit
+gui_sg_create "$_session_group_541"
+set latches|dc_latches_unit "$_session_group_541"
 
-gui_sg_addsignal -group "$_session_group_123" { {tb_stages.uut_AllAtOnce.core_unit.rr_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.rr_unit.clk tb_stages.uut_AllAtOnce.core_unit.rr_unit.rst tb_stages.uut_AllAtOnce.core_unit.rr_unit.ecx_sb tb_stages.uut_AllAtOnce.core_unit.rr_unit.cs_sb tb_stages.uut_AllAtOnce.core_unit.rr_unit.depstall tb_stages.uut_AllAtOnce.core_unit.rr_unit.dc_latches_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.next_dc_valid tb_stages.uut_AllAtOnce.core_unit.rr_unit.rr_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.addygen_input_addy tb_stages.uut_AllAtOnce.core_unit.rr_unit.ld_vaddy tb_stages.uut_AllAtOnce.core_unit.rr_unit.seg0_limit_w_datasize tb_stages.uut_AllAtOnce.core_unit.rr_unit.next_ld_vaddy tb_stages.uut_AllAtOnce.core_unit.rr_unit.actual_st_vaddy tb_stages.uut_AllAtOnce.core_unit.rr_unit.seg1_limit_w_datasize tb_stages.uut_AllAtOnce.core_unit.rr_unit.actual_next_st_vaddy tb_stages.uut_AllAtOnce.core_unit.rr_unit.instructionforward tb_stages.uut_AllAtOnce.core_unit.rr_unit.RR_GP tb_stages.uut_AllAtOnce.core_unit.rr_unit.latches_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.fetch_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.decode_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.dc_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.mem_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.dc_latches_next tb_stages.uut_AllAtOnce.core_unit.rr_unit.outs_o tb_stages.uut_AllAtOnce.core_unit.rr_unit.latchesInUse tb_stages.uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_out }
+gui_sg_addsignal -group "$_session_group_541" { tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.flush tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.latches tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.farFlush tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.write_enable_i {tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_latches_unit.rst }
 
-gui_sg_move "$_session_group_123" -after "$_session_group_109" -pos 4 
+gui_sg_move "$_session_group_541" -after "$_session_group_540" -pos 2 
 
-set _session_group_124 $_session_group_123|
-append _session_group_124 RegisterFile_unit
-gui_sg_create "$_session_group_124"
-set Core|rr_unit|RegisterFile_unit "$_session_group_124"
+set _session_group_542 $_session_group_540|
+append _session_group_542 rr_latches_unit
+gui_sg_create "$_session_group_542"
+set latches|rr_latches_unit "$_session_group_542"
 
-gui_sg_addsignal -group "$_session_group_124" { {tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.clk tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.rst tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.DR_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.SR_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.SIB_IDX_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.SIB_BASE_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR0_data tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR1_data tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR0_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR1_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR0_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.WB_DR1_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.Segment0_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.Segment1_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.REGISTERS tb_stages.uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit.outputs }
+gui_sg_addsignal -group "$_session_group_542" { tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.flush tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.latches tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.farFlush tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.write_enable_i {tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.rst }
 
-gui_sg_move "$_session_group_124" -after "$_session_group_123" -pos 4 
+gui_sg_move "$_session_group_542" -after "$_session_group_540" -pos 1 
 
-set _session_group_125 $_session_group_123|
-append _session_group_125 reg_sb_unit
-gui_sg_create "$_session_group_125"
-set Core|rr_unit|reg_sb_unit "$_session_group_125"
+set _session_group_543 $_session_group_540|
+append _session_group_543 exe_latches_unit
+gui_sg_create "$_session_group_543"
+set latches|exe_latches_unit "$_session_group_543"
 
-gui_sg_addsignal -group "$_session_group_125" { {tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.clk tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.rst tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.instructionforward tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.dr_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sr_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sib_base_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sib_idx_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_dr0_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_dr0_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_dr1_id tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_dr1_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_sib_size tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_dr_wr tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_sr_wr tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_dr_rd tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_sr_rd tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_eax_rd tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_eax_wr tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.Segment0_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.Segment1_ID tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.Segment1_valid tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.flush tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.farFlush tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.dep_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.ecx_sb tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.codeSeg_sb tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.depStall_Internal tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.updateSB tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.cs_wr_to_both tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.wb_wr_to_both tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.dr_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sr_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.seg0_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.seg1_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sib_base_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.sib_idx_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.eax_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_sb_unit.SCORE_BOARD }
+gui_sg_addsignal -group "$_session_group_543" { tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.flush tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.write_enable_i {tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.rst }
 
-gui_sg_move "$_session_group_125" -after "$_session_group_123" -pos 3 
+gui_sg_move "$_session_group_543" -after "$_session_group_540" -pos 4 
 
-set _session_group_126 $_session_group_109|
-append _session_group_126 rr_latches_unit
-gui_sg_create "$_session_group_126"
-set Core|rr_latches_unit "$_session_group_126"
+set _session_group_544 $_session_group_540|
+append _session_group_544 idm_unit
+gui_sg_create "$_session_group_544"
+set latches|idm_unit "$_session_group_544"
 
-gui_sg_addsignal -group "$_session_group_126" { {tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.rst tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.write_enable_i tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.flush tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.farFlush tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit.latches }
+gui_sg_addsignal -group "$_session_group_544" { tb_stages.uut_AllAtOnce.core_unit.idm_unit.fetch_outs_i tb_stages.uut_AllAtOnce.core_unit.idm_unit.idm_outs_o tb_stages.uut_AllAtOnce.core_unit.idm_unit.clk tb_stages.uut_AllAtOnce.core_unit.idm_unit.idm {tb_stages.uut_AllAtOnce.core_unit.idm_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.idm_unit.rst }
 
-gui_sg_move "$_session_group_126" -after "$_session_group_109" -pos 3 
+set _session_group_545 $_session_group_540|
+append _session_group_545 wb_latches_unit
+gui_sg_create "$_session_group_545"
+set latches|wb_latches_unit "$_session_group_545"
 
-set _session_group_127 $_session_group_109|
-append _session_group_127 decode_unit
-gui_sg_create "$_session_group_127"
-set Core|decode_unit "$_session_group_127"
+gui_sg_addsignal -group "$_session_group_545" { tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.latches tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.write_enable_i {tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.wb_latches_unit.rst }
 
-gui_sg_addsignal -group "$_session_group_127" { {tb_stages.uut_AllAtOnce.core_unit.decode_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.decode_unit.clk tb_stages.uut_AllAtOnce.core_unit.decode_unit.rst tb_stages.uut_AllAtOnce.core_unit.decode_unit.PrevEIP tb_stages.uut_AllAtOnce.core_unit.decode_unit.EIP tb_stages.uut_AllAtOnce.core_unit.decode_unit.NEIP tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_length tb_stages.uut_AllAtOnce.core_unit.decode_unit.PrevLength tb_stages.uut_AllAtOnce.core_unit.decode_unit.sib_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.sib_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.disp_needed tb_stages.uut_AllAtOnce.core_unit.decode_unit.displacement tb_stages.uut_AllAtOnce.core_unit.decode_unit.disp_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.imm64 tb_stages.uut_AllAtOnce.core_unit.decode_unit.total_pf_vector tb_stages.uut_AllAtOnce.core_unit.decode_unit.invalid_inst tb_stages.uut_AllAtOnce.core_unit.decode_unit.opcode_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.modrm_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.decode_gp tb_stages.uut_AllAtOnce.core_unit.decode_unit.flush tb_stages.uut_AllAtOnce.core_unit.decode_unit.REP_LATCH tb_stages.uut_AllAtOnce.core_unit.decode_unit.REP_CMP_LATCH tb_stages.uut_AllAtOnce.core_unit.decode_unit.REP_MOV_LATCH tb_stages.uut_AllAtOnce.core_unit.decode_unit.HALT_REG tb_stages.uut_AllAtOnce.core_unit.decode_unit.rr_latch_we_o tb_stages.uut_AllAtOnce.core_unit.decode_unit.stall tb_stages.uut_AllAtOnce.core_unit.decode_unit.queue tb_stages.uut_AllAtOnce.core_unit.decode_unit.predicted_taken tb_stages.uut_AllAtOnce.core_unit.decode_unit.predicted_target tb_stages.uut_AllAtOnce.core_unit.decode_unit.branch_present tb_stages.uut_AllAtOnce.core_unit.decode_unit.sibbase tb_stages.uut_AllAtOnce.core_unit.decode_unit.sibidx tb_stages.uut_AllAtOnce.core_unit.decode_unit.sibscale tb_stages.uut_AllAtOnce.core_unit.decode_unit.clear_rep tb_stages.uut_AllAtOnce.core_unit.decode_unit.next_rr_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.segment0 tb_stages.uut_AllAtOnce.core_unit.decode_unit.idm_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.fetch_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.rr_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.dc_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.mem_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.rr_latches_next tb_stages.uut_AllAtOnce.core_unit.decode_unit.outs_o tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_decode_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_rr_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_dc_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_mem_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_exe_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_wb_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_rr_latch tb_stages.uut_AllAtOnce.core_unit.decode_unit.br_info_for_latches tb_stages.uut_AllAtOnce.core_unit.decode_unit.rep_latch_holder }
+gui_sg_move "$_session_group_545" -after "$_session_group_540" -pos 5 
 
-gui_sg_move "$_session_group_127" -after "$_session_group_109" -pos 2 
+set _session_group_546 $_session_group_540|
+append _session_group_546 mem_latches_unit
+gui_sg_create "$_session_group_546"
+set latches|mem_latches_unit "$_session_group_546"
 
-set _session_group_128 $_session_group_127|
-append _session_group_128 inst_processing
-gui_sg_create "$_session_group_128"
-set Core|decode_unit|inst_processing "$_session_group_128"
+gui_sg_addsignal -group "$_session_group_546" { tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.flush tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.latches tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.latches_o tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.farFlush tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.nextLatches_i tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.clk tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.write_enable_i {tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.mem_latches_unit.rst }
 
-gui_sg_addsignal -group "$_session_group_128" { {tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.$unit} tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.clk tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.rst tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.queue tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.queue_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.EIP tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.NEIP tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.inst_length tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.sib_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.sib_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.opcode_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.modrm_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.disp tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.disp_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.disp_needed tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.imm64 tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.total_pf_vector tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.invalid_inst tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.IR tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.IR_valid_vect tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_inst_length tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_imm_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_msd_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_sib_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_displacement tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_imm tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_needrm tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_disp_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_disp_needed tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.ppu_sib_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.num_pfs tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pf_vector0 tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pf_vector1 tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pf_vector2 tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.sext_inst_length tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.inst_length_cout tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.inst_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.true_inst_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.adder_cout tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.possible_eips tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pf0 tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pf1 tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pf2 }
+gui_sg_move "$_session_group_546" -after "$_session_group_540" -pos 3 
 
-gui_sg_move "$_session_group_128" -after "$_session_group_127" -pos 2 
+set _session_group_547 stages
+gui_sg_create "$_session_group_547"
+set stages "$_session_group_547"
 
-set _session_group_129 $_session_group_128|
-append _session_group_129 pfs1
-gui_sg_create "$_session_group_129"
-set Core|decode_unit|inst_processing|pfs1 "$_session_group_129"
+gui_sg_addsignal -group "$_session_group_547" { }
 
-gui_sg_addsignal -group "$_session_group_129" { {tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.$unit} tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.opcode_index tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.modrm_index tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.IR tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.IR_valid_vect tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.total_pf_vector tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.num_pfs_plusone tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.inst_length tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.msd_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.imm_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.disp_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.disp_needed tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.sib_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.needrm tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.sib_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.disp tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.imm64 tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.inst_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.imm_size_fake tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.msd_size_fake tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.sib_index tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.imm_index tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.op_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.mod_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.sib_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.disp_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.disp_index tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.imm_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.imm_valid_index tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.pfs1.imm_size_override }
+set _session_group_548 $_session_group_547|
+append _session_group_548 execute_unit
+gui_sg_create "$_session_group_548"
+set stages|execute_unit "$_session_group_548"
 
-gui_sg_move "$_session_group_129" -after "$_session_group_128" -pos 2 
+gui_sg_addsignal -group "$_session_group_548" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.latches_i.EIP tb_stages.uut_AllAtOnce.core_unit.execute_unit.rst tb_stages.uut_AllAtOnce.core_unit.execute_unit.clk tb_stages.uut_AllAtOnce.core_unit.execute_unit.latches_i.valid tb_stages.uut_AllAtOnce.core_unit.execute_unit.latches_i.cs.OP_TYPE tb_stages.uut_AllAtOnce.core_unit.execute_unit.outs_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.latches_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.flags_reg tb_stages.uut_AllAtOnce.core_unit.execute_unit.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.latches_i.cs.alu_inputA_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.latches_i.cs.alu_inputB_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.dr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.sr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.eax_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.flush_mask tb_stages.uut_AllAtOnce.core_unit.execute_unit.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.sr_data_size_vec tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_latches_next_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.dr_next tb_stages.uut_AllAtOnce.core_unit.execute_unit.res_buf_next tb_stages.uut_AllAtOnce.core_unit.execute_unit.res_buf_selected tb_stages.uut_AllAtOnce.core_unit.execute_unit.next_wb_cs tb_stages.uut_AllAtOnce.core_unit.execute_unit.bit_vec_0_next tb_stages.uut_AllAtOnce.core_unit.execute_unit.bit_vec_1_next tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_stage_we_valid_unit_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.branch_resolution_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.df_flag_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.af_flag_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.pf_flag_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.cf_flag_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.sf_flag_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.of_flag_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.zf_flag_o }
 
-set _session_group_130 $_session_group_109|
-append _session_group_130 idm_unit
-gui_sg_create "$_session_group_130"
-set Core|idm_unit "$_session_group_130"
+gui_sg_move "$_session_group_548" -after "$_session_group_547" -pos 6 
 
-gui_sg_addsignal -group "$_session_group_130" { {tb_stages.uut_AllAtOnce.core_unit.idm_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.idm_unit.clk tb_stages.uut_AllAtOnce.core_unit.idm_unit.rst tb_stages.uut_AllAtOnce.core_unit.idm_unit.fetch_outs_i tb_stages.uut_AllAtOnce.core_unit.idm_unit.idm_outs_o tb_stages.uut_AllAtOnce.core_unit.idm_unit.idm }
+set _session_group_549 $_session_group_548|
+append _session_group_549 u_add_op
+gui_sg_create "$_session_group_549"
+set stages|execute_unit|u_add_op "$_session_group_549"
 
-gui_sg_move "$_session_group_130" -after "$_session_group_109" -pos 1 
+gui_sg_addsignal -group "$_session_group_549" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.al_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.ah_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.ax_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.eax_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.af_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op.merged_result }
 
-set _session_group_131 $_session_group_109|
-append _session_group_131 fetch_unit
-gui_sg_create "$_session_group_131"
-set Core|fetch_unit "$_session_group_131"
+gui_sg_move "$_session_group_549" -after "$_session_group_548" -pos 77 
 
-gui_sg_addsignal -group "$_session_group_131" { {tb_stages.uut_AllAtOnce.core_unit.fetch_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.fetch_unit.clk tb_stages.uut_AllAtOnce.core_unit.fetch_unit.rst tb_stages.uut_AllAtOnce.core_unit.fetch_unit.dma_int tb_stages.uut_AllAtOnce.core_unit.fetch_unit.exp_mode_jk tb_stages.uut_AllAtOnce.core_unit.fetch_unit.int_mode_jk tb_stages.uut_AllAtOnce.core_unit.fetch_unit.DMA_int_jk tb_stages.uut_AllAtOnce.core_unit.fetch_unit.SPC tb_stages.uut_AllAtOnce.core_unit.fetch_unit.f_exp tb_stages.uut_AllAtOnce.core_unit.fetch_unit.seg_xlation_out tb_stages.uut_AllAtOnce.core_unit.fetch_unit.rom_data_out tb_stages.uut_AllAtOnce.core_unit.fetch_unit.idm_ctrl_data_in tb_stages.uut_AllAtOnce.core_unit.fetch_unit.next_spc tb_stages.uut_AllAtOnce.core_unit.fetch_unit.spc_16 tb_stages.uut_AllAtOnce.core_unit.fetch_unit.br_restore_spc tb_stages.uut_AllAtOnce.core_unit.fetch_unit.br_target tb_stages.uut_AllAtOnce.core_unit.fetch_unit.spc_2_IDM_CTRL tb_stages.uut_AllAtOnce.core_unit.fetch_unit.en_icache tb_stages.uut_AllAtOnce.core_unit.fetch_unit.icache_info_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.idm_info_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.decode_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.rr_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.dc_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.mem_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.outs_o tb_stages.uut_AllAtOnce.core_unit.fetch_unit.predictor_inputs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.tlb_inputs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.btb_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.spc_sel_logic_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.predictor_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.idm_ctrl_logic_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.idm_invalidate_logic_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.tlb_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.exp_set_logic_outs }
+set _session_group_550 $_session_group_548|
+append _session_group_550 u_af_flag_sel
+gui_sg_create "$_session_group_550"
+set stages|execute_unit|u_af_flag_sel "$_session_group_550"
 
-set _session_group_132 Mem_System
-gui_sg_create "$_session_group_132"
-set Mem_System "$_session_group_132"
+gui_sg_addsignal -group "$_session_group_550" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.aaa_af tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.adc_af tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.add_op_af tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.cmp_af tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.cmpxchg_af tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.sbb_af tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.iretd_af tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.curr_af_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_af_flag_sel.af_flag_o }
 
-gui_sg_addsignal -group "$_session_group_132" { {tb_stages.uut_AllAtOnce.mem_sys_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.addressBus tb_stages.uut_AllAtOnce.mem_sys_unit.core2icache_i tb_stages.uut_AllAtOnce.mem_sys_unit.icache2core_o tb_stages.uut_AllAtOnce.mem_sys_unit.core2dcache_i tb_stages.uut_AllAtOnce.mem_sys_unit.dcache2core_o tb_stages.uut_AllAtOnce.mem_sys_unit.dma2core_o tb_stages.uut_AllAtOnce.mem_sys_unit.icache_2_sched tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_icache tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_2_sched tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_dcache tb_stages.uut_AllAtOnce.mem_sys_unit.mem_2_sched tb_stages.uut_AllAtOnce.mem_sys_unit.mem_2_dte tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_mem tb_stages.uut_AllAtOnce.mem_sys_unit.dma_2_sched tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_dma tb_stages.uut_AllAtOnce.mem_sys_unit.dte_2_ddr5 }
+gui_sg_move "$_session_group_550" -after "$_session_group_548" -pos 76 
 
-set _session_group_133 $_session_group_132|
-append _session_group_133 bus_arbitration_unit
-gui_sg_create "$_session_group_133"
-set Mem_System|bus_arbitration_unit "$_session_group_133"
+set _session_group_551 $_session_group_548|
+append _session_group_551 u_alu_input_sel
+gui_sg_create "$_session_group_551"
+set stages|execute_unit|u_alu_input_sel "$_session_group_551"
 
-gui_sg_addsignal -group "$_session_group_133" { {tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.sch_best_pick tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.sch_best_pick_bk_id tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.iCache_2_Sch_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_out_2_icache_o tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dCache_2_Sch_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_out_2_dcache_o tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.mem_2_Sch_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.mem_2_dte_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_2_mem_o tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dma_2_sch_i tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_2_dma_o tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit.dte_2_ddr5_o }
+gui_sg_addsignal -group "$_session_group_551" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.br_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.EIP tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.dr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.shift_sr_up tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.sr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.imm64 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.flags tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.ld_addr_0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.NEIP tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.res_buf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.alu_inputB_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.alu_inputA_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.EAX tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.br_input_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.shift_sr_down tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.res_buf_offset tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.srA_64 {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.res_buf_out tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.srB_64 }
 
-gui_sg_move "$_session_group_133" -after "$_session_group_132" -pos 5 
+gui_sg_move "$_session_group_551" -after "$_session_group_548" -pos 75 
 
-set _session_group_134 $_session_group_132|
-append _session_group_134 dcache_unit
-gui_sg_create "$_session_group_134"
-set Mem_System|dcache_unit "$_session_group_134"
+set _session_group_552 $_session_group_548|
+append _session_group_552 u_and_op
+gui_sg_create "$_session_group_552"
+set stages|execute_unit|u_and_op "$_session_group_552"
 
-gui_sg_addsignal -group "$_session_group_134" { {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.address_bus tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.hitVec tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.arb_st_override_Out tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.arb_req_served_0_out tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.arb_req_served_1_out tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.inFromCore_i tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.out2Core_o tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.inFromDTE_i tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.out2Sch_o tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.blockOutputs tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.req_2_blocks tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.mio_block_outputs }
+gui_sg_addsignal -group "$_session_group_552" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.and_result tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.merged_result tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.ld_16 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.ld_32 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_and_op.ld_8 }
 
-gui_sg_move "$_session_group_134" -after "$_session_group_132" -pos 4 
+gui_sg_move "$_session_group_552" -after "$_session_group_548" -pos 74 
 
-set _session_group_135 $_session_group_134|
-append _session_group_135 {g_dcache_block[0].block}
-gui_sg_create "$_session_group_135"
-set {Mem_System|dcache_unit|g_dcache_block[0].block} "$_session_group_135"
+set _session_group_553 $_session_group_548|
+append _session_group_553 u_bit_vec_logic
+gui_sg_create "$_session_group_553"
+set stages|execute_unit|u_bit_vec_logic "$_session_group_553"
 
-gui_sg_addsignal -group "$_session_group_135" { {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.$unit} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.clk_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.rst_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.mem_Valid_FromDte_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_clr_FromDTE_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_setCommiting_FromDTE_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.permissionToDriveDataBus_evictionBuf} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.permissionToDriveAddrBus_Ld} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.permissionToDriveAddrBus_eb} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.st_override_for_sch_req} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.dataBus} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.address_bus} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.block_busy} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.fatal_coming} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.makeBlockReq} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.eb_blockingVCache} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.eb_V} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.eb_curr_commiting} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.eb_blocking_Bank} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.address_bus_fake} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.startingOffset} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.perm2DriveDataBus_bar} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.eb_lineOut_vec} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.block_req_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.outputs_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.dcache_bank_outputs} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_outputs} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.eb_outputs} }
+gui_sg_addsignal -group "$_session_group_553" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic.st_addr_0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic.ST_XCL tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic.st_vec0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic.st_vec1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic.num_bytes tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic.start_offset tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic.offset_xcl tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bit_vec_logic.end_of_st_addr_1 }
 
-gui_sg_move "$_session_group_135" -after "$_session_group_134" -pos 4 
+gui_sg_move "$_session_group_553" -after "$_session_group_548" -pos 73 
 
-set _session_group_136 $_session_group_135|
-append _session_group_136 evictionBuf_unit
-gui_sg_create "$_session_group_136"
-set {Mem_System|dcache_unit|g_dcache_block[0].block|evictionBuf_unit} "$_session_group_136"
+set _session_group_554 $_session_group_548|
+append _session_group_554 u_br_res
+gui_sg_create "$_session_group_554"
+set stages|execute_unit|u_br_res "$_session_group_554"
 
-gui_sg_addsignal -group "$_session_group_136" { {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.$unit} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.clk_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.rst_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.eb_clr_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.set_commiting} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.validReq} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.hit} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.blockReq_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.vcache_outputs_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.outputs_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit.eb} }
+gui_sg_addsignal -group "$_session_group_554" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.stage_valid_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.br_info_valid_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.flush_mask tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.br_eip_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.br_xcl_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.br_pred_taken_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.speculative_target_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.br_ucond_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.relative_branch_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.special_br_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.is_far_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.is_call_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.second_flag_needed_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.br_source_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.NEIP_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.br_rel_target tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.valid tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.taken tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.clr_exp_mode tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.flush tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.miss_prediction tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.second_flag_result tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.cond_br_res tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.target_match tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.farFlush tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.callFlush tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_br_res.outs_o }
 
-gui_sg_move "$_session_group_136" -after "$_session_group_135" -pos 4 
+gui_sg_move "$_session_group_554" -after "$_session_group_548" -pos 72 
 
-set _session_group_137 $_session_group_135|
-append _session_group_137 vcache_unit
-gui_sg_create "$_session_group_137"
-set {Mem_System|dcache_unit|g_dcache_block[0].block|vcache_unit} "$_session_group_137"
+set _session_group_555 $_session_group_548|
+append _session_group_555 u_bsf
+gui_sg_create "$_session_group_555"
+set stages|execute_unit|u_bsf "$_session_group_555"
 
-gui_sg_addsignal -group "$_session_group_137" { {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.$unit} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.clk} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.rst} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.block_busy_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_fsm_state} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_fsm_state_bits} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.saveReq} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.useSavedReq} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.saveIDX} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.useSavedIDX} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.currTag} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.hit} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.miss} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.hitIDX} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.evictionIDX} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.savedIDX} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.V_Cache_needs_2_evict} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.V_Cache_TagStore_CurrLine_Dirty} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_dataStore_Line} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.blockReq_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.eb_outs_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.dcache_outs_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.outputs_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.fsmOuts} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.savedReq} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.reqInUse} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.block_req_p_addr_fields} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_swapBuf} }
+gui_sg_addsignal -group "$_session_group_555" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.op32 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.op16 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.index32 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.index16 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.found32 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.found16 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.result32 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.result16 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.ZF32 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf.ZF16 }
 
-gui_sg_move "$_session_group_137" -after "$_session_group_135" -pos 5 
+gui_sg_move "$_session_group_555" -after "$_session_group_548" -pos 71 
 
-set _session_group_138 $_session_group_137|
-append _session_group_138 vcache_tag_store_unit
-gui_sg_create "$_session_group_138"
-set {Mem_System|dcache_unit|g_dcache_block[0].block|vcache_unit|vcache_tag_store_unit} "$_session_group_138"
+set _session_group_556 $_session_group_548|
+append _session_group_556 u_call_op
+gui_sg_create "$_session_group_556"
+set stages|execute_unit|u_call_op "$_session_group_556"
 
-gui_sg_addsignal -group "$_session_group_138" { {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.$unit} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.clk} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.rst} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.p_addr_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.oe_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.we_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.Read_DSWAP_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.D_Cache_SwapBuf_Addr} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.D_Cache_SwapBuf_DirtyBit} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.DCache_Will_Evict_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.saveIDX} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.use_savedIDX} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.busy_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.WR_2_EB_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.Write_VSWAP_i} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.Update_LRU} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.tagOut_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.hit_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.miss_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.hitIDX_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.evictionIDX_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.savedIDX_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.currLine_Dirty_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.VC_Will_Need_ToEvict_o} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.clk_phase_45} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.doAccess} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.hit} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.miss} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.writeSuccess} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.hitIdx} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.hitIdx_onehot} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.savedIDX} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.savedIDX_oneHot} }
-gui_sg_addsignal -group "$_session_group_138" { {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.currLRU_IDX} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.DIN_2_TagStore} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.OE_2_TagStore_idx} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.DOUT_of_TagStore_Net} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.currLine_Dirty_idx} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.tag_out_write_to_vswap_idx} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.tag_out_write_to_eb_idx} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.tag_assigned} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.WR_2_TagStore_clk} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.WR_2_TagStore_actual} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.DIN_2_TagStore_net} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.OE_2_TagStore} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.DOUT_of_TagStore} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.NUM_CELLS_NEEDED} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.CELL_WIDTH_BITS} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.tagMetaStore} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.p_addr_fields} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.DCache_SwapBuf_lineAddr_fields} }
-gui_set_radix -radix {decimal} -signals {{V1:tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.NUM_CELLS_NEEDED}}
-gui_set_radix -radix {twosComplement} -signals {{V1:tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.NUM_CELLS_NEEDED}}
-gui_set_radix -radix {decimal} -signals {{V1:tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.CELL_WIDTH_BITS}}
-gui_set_radix -radix {twosComplement} -signals {{V1:tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.vcache_tag_store_unit.CELL_WIDTH_BITS}}
+gui_sg_addsignal -group "$_session_group_556" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_call_op.NEIP tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_call_op.stack_ptr tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_call_op.sr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_call_op.res_buf }
 
-gui_sg_move "$_session_group_138" -after "$_session_group_137" -pos 4 
+gui_sg_move "$_session_group_556" -after "$_session_group_548" -pos 70 
 
-set _session_group_139 $_session_group_132|
-append _session_group_139 ddr5_unit
-gui_sg_create "$_session_group_139"
-set Mem_System|ddr5_unit "$_session_group_139"
+set _session_group_557 $_session_group_548|
+append _session_group_557 u_cf_flag_sel
+gui_sg_create "$_session_group_557"
+set stages|execute_unit|u_cf_flag_sel "$_session_group_557"
 
-gui_sg_addsignal -group "$_session_group_139" { {tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.addrBus tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.tempValue tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.powerGate tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.dataBus_fake tb_stages.uut_AllAtOnce.mem_sys_unit.ddr5_unit.inFromDTE_i }
+gui_sg_addsignal -group "$_session_group_557" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.aaa_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.adc_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.add_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.and_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.cmp_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.cmpxchg_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.or_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.sal_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.sar_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.sbb_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.iretd_cf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.curr_cf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_sel.cf_flag_o }
 
-gui_sg_move "$_session_group_139" -after "$_session_group_132" -pos 3 
+gui_sg_move "$_session_group_557" -after "$_session_group_548" -pos 69 
 
-set _session_group_140 $_session_group_132|
-append _session_group_140 dma_controller_unit
-gui_sg_create "$_session_group_140"
-set Mem_System|dma_controller_unit "$_session_group_140"
+set _session_group_558 $_session_group_548|
+append _session_group_558 u_cmp
+gui_sg_create "$_session_group_558"
+set stages|execute_unit|u_cmp "$_session_group_558"
 
-gui_sg_addsignal -group "$_session_group_140" { {tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.addrBus tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.fsmState tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.fsmState_bits tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.commiting tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.disk_ld_Buffer_V tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.disk_ld_Buffer tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.counter tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.writeBuf tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.writeBuf_addr tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.writeBuf_V tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.writeComplete tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.write2_srcAddr_req tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.write2_destAddr_req tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.write2_numBytes_req tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.write2_startWrite_req tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.addrBus_drv tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.dataBus_drv tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.driveDataBus tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.inFromDTE_i tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.out2Core_o tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.out2Sch_o tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.dma_Regs tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit.fsmOuts }
+gui_sg_addsignal -group "$_session_group_558" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.low_sr_val tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.al_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.ax_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmp.eax_sum }
 
-gui_sg_move "$_session_group_140" -after "$_session_group_132" -pos 2 
+gui_sg_move "$_session_group_558" -after "$_session_group_548" -pos 68 
 
-set _session_group_141 $_session_group_132|
-append _session_group_141 icache_unit
-gui_sg_create "$_session_group_141"
-set Mem_System|icache_unit "$_session_group_141"
+set _session_group_559 $_session_group_548|
+append _session_group_559 u_cmpxchg_op
+gui_sg_create "$_session_group_559"
+set stages|execute_unit|u_cmpxchg_op "$_session_group_559"
 
-gui_sg_addsignal -group "$_session_group_141" { {tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.dataBus tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.addrBus tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.controller_fsmState tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.controller_fsmState_bits tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_dataLines tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_tag tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_tag_V tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_hit tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_miss tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_hit tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_miss tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_swapBuf_V_Clr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_dataLines tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.saved_pAddr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.saved_vAddr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.curr_v_addr_to_use tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.useSaved_v_Addr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.save_v_addr tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.addrBus_drv tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.inFromCore_i tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.out2Core_o tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.inFromDte_i tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.out2Sch_o tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.fsmOuts tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_swapbuf tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_swapBuf }
+gui_sg_addsignal -group "$_session_group_559" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.r_upper tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.rm_low tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.sr_data_size_vec tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.rm tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.r tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.EAX_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.next_dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.next_EAX tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.r_low tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.res_buf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.EAX tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.cmp_AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.SF {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cmpxchg_op.ZF }
 
-gui_sg_move "$_session_group_141" -after "$_session_group_132" -pos 1 
+gui_sg_move "$_session_group_559" -after "$_session_group_548" -pos 67 
 
-set _session_group_142 $_session_group_132|
-append _session_group_142 mem_unit_1
-gui_sg_create "$_session_group_142"
-set Mem_System|mem_unit_1 "$_session_group_142"
+set _session_group_560 $_session_group_548|
+append _session_group_560 u_df_flag_sel
+gui_sg_create "$_session_group_560"
+set stages|execute_unit|u_df_flag_sel "$_session_group_560"
 
-gui_sg_addsignal -group "$_session_group_142" { {tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.$unit} tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.clk tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.rst tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.address_bus tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.data_bus tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.mem_bus tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.drive_Data_Bus tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.dataToDrive tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.inFromDte tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.out2Dte tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.out2Sch tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.controller_2_bank_Cmds tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.bank_out_2_controller }
+gui_sg_addsignal -group "$_session_group_560" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_df_flag_sel.curr_df_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_df_flag_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_df_flag_sel.df_flag_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_df_flag_sel.next_df_flag }
+
+gui_sg_move "$_session_group_560" -after "$_session_group_548" -pos 66 
+
+set _session_group_561 $_session_group_548|
+append _session_group_561 u_dr_sel
+gui_sg_create "$_session_group_561"
+set stages|execute_unit|u_dr_sel "$_session_group_561"
+
+gui_sg_addsignal -group "$_session_group_561" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.aaa_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.adc_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.add_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.and_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.bsf_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.cmpxchg_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.mov_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.not_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.or_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.packssdw_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.packsswb_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.paddd_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.paddw_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.pavgb_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.pavgw_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.pop_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.ret_far_imm_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.sal_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.sar_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.sbb_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.xchg_dr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.dr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_dr_sel.dr_o }
+
+gui_sg_move "$_session_group_561" -after "$_session_group_548" -pos 65 
+
+set _session_group_562 $_session_group_548|
+append _session_group_562 u_far_op
+gui_sg_create "$_session_group_562"
+set stages|execute_unit|u_far_op "$_session_group_562"
+
+gui_sg_addsignal -group "$_session_group_562" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_far_op.neip tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_far_op.segment tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_far_op.stack_ptr tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_far_op.res_buf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_far_op.sr_o }
+
+gui_sg_move "$_session_group_562" -after "$_session_group_548" -pos 64 
+
+set _session_group_563 $_session_group_548|
+append _session_group_563 u_iretd_op
+gui_sg_create "$_session_group_563"
+set stages|execute_unit|u_iretd_op "$_session_group_563"
+
+gui_sg_addsignal -group "$_session_group_563" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.cs tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.flags tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.stack_ptr tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.sr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op.OF }
+
+gui_sg_move "$_session_group_563" -after "$_session_group_548" -pos 63 
+
+set _session_group_564 $_session_group_548|
+append _session_group_564 u_mov_op
+gui_sg_create "$_session_group_564"
+set stages|execute_unit|u_mov_op "$_session_group_564"
+
+gui_sg_addsignal -group "$_session_group_564" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.merged_res tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.curr_cf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.masked_data_size {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op.res_buf_o }
+
+gui_sg_move "$_session_group_564" -after "$_session_group_548" -pos 62 
+
+set _session_group_565 $_session_group_548|
+append _session_group_565 u_not_op
+gui_sg_create "$_session_group_565"
+set stages|execute_unit|u_not_op "$_session_group_565"
+
+gui_sg_addsignal -group "$_session_group_565" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_not_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_not_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_not_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_not_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_not_op.out_32 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_not_op.merged_res }
+
+gui_sg_move "$_session_group_565" -after "$_session_group_548" -pos 61 
+
+set _session_group_566 $_session_group_548|
+append _session_group_566 u_of_flag_sel
+gui_sg_create "$_session_group_566"
+set stages|execute_unit|u_of_flag_sel "$_session_group_566"
+
+gui_sg_addsignal -group "$_session_group_566" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.adc_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.add_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.and_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.cmp_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.cmpxchg_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.or_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.sal_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.sar_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.sbb_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.iretd_of tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.curr_of_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_sel.of_flag_o }
+
+gui_sg_move "$_session_group_566" -after "$_session_group_548" -pos 60 
+
+set _session_group_567 $_session_group_548|
+append _session_group_567 u_or_op
+gui_sg_create "$_session_group_567"
+set stages|execute_unit|u_or_op "$_session_group_567"
+
+gui_sg_addsignal -group "$_session_group_567" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.or_result tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.merged_result tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.zf_low8 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.zf_up8 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.zf_up16 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_or_op.zf_low16 }
+
+gui_sg_move "$_session_group_567" -after "$_session_group_548" -pos 59 
+
+set _session_group_568 $_session_group_548|
+append _session_group_568 u_packssdw
+gui_sg_create "$_session_group_568"
+set stages|execute_unit|u_packssdw "$_session_group_568"
+
+gui_sg_addsignal -group "$_session_group_568" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.a0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.a1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.b0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.b1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.r0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.r1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.r2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packssdw.r3 }
+
+gui_sg_move "$_session_group_568" -after "$_session_group_548" -pos 58 
+
+set _session_group_569 $_session_group_548|
+append _session_group_569 u_packsswb
+gui_sg_create "$_session_group_569"
+set stages|execute_unit|u_packsswb "$_session_group_569"
+
+gui_sg_addsignal -group "$_session_group_569" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.a0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.a1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.a2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.a3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.b0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.b1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.b2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.b3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.r0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.r1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.r2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.r3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.r4 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.r5 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.r6 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb.r7 }
+
+gui_sg_move "$_session_group_569" -after "$_session_group_548" -pos 57 
+
+set _session_group_570 $_session_group_548|
+append _session_group_570 u_paddd
+gui_sg_create "$_session_group_570"
+set stages|execute_unit|u_paddd "$_session_group_570"
+
+gui_sg_addsignal -group "$_session_group_570" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd.a0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd.a1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd.b0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd.b1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd.r0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddd.r1 }
+
+gui_sg_move "$_session_group_570" -after "$_session_group_548" -pos 56 
+
+set _session_group_571 $_session_group_548|
+append _session_group_571 u_paddw
+gui_sg_create "$_session_group_571"
+set stages|execute_unit|u_paddw "$_session_group_571"
+
+gui_sg_addsignal -group "$_session_group_571" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.a0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.a1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.a2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.a3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.b0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.b1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.b2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.b3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.r0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.r1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.r2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw.r3 }
+
+gui_sg_move "$_session_group_571" -after "$_session_group_548" -pos 55 
+
+set _session_group_572 $_session_group_548|
+append _session_group_572 u_pavgb
+gui_sg_create "$_session_group_572"
+set stages|execute_unit|u_pavgb "$_session_group_572"
+
+gui_sg_addsignal -group "$_session_group_572" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.a0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.a1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.a2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.a3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.a4 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.a5 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.a6 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.a7 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.b0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.b1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.b2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.b3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.b4 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.b5 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.b6 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.b7 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.s0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.s1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.s2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.s3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.s4 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.s5 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.s6 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.s7 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.r0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.r1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.r2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.r3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.r4 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.r5 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.r6 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb.r7 }
+
+gui_sg_move "$_session_group_572" -after "$_session_group_548" -pos 54 
+
+set _session_group_573 $_session_group_548|
+append _session_group_573 u_pavgw
+gui_sg_create "$_session_group_573"
+set stages|execute_unit|u_pavgw "$_session_group_573"
+
+gui_sg_addsignal -group "$_session_group_573" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.a0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.a1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.a2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.a3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.b0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.b1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.b2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.b3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.s0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.s1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.s2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.s3 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.r0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.r1 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.r2 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgw.r3 }
+
+gui_sg_move "$_session_group_573" -after "$_session_group_548" -pos 53 
+
+set _session_group_574 $_session_group_548|
+append _session_group_574 u_pf_flag_sel
+gui_sg_create "$_session_group_574"
+set stages|execute_unit|u_pf_flag_sel "$_session_group_574"
+
+gui_sg_addsignal -group "$_session_group_574" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.adc_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.add_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.and_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.cmp_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.cmpxchg_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.or_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.sal_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.sar_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.sbb_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.iretd_pf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.curr_pf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel.pf_flag_o }
+
+gui_sg_move "$_session_group_574" -after "$_session_group_548" -pos 52 
+
+set _session_group_575 $_session_group_548|
+append _session_group_575 u_pop_op
+gui_sg_create "$_session_group_575"
+set stages|execute_unit|u_pop_op "$_session_group_575"
+
+gui_sg_addsignal -group "$_session_group_575" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pop_op.value_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pop_op.sp_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pop_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pop_op.sr_o }
+
+gui_sg_move "$_session_group_575" -after "$_session_group_548" -pos 51 
+
+set _session_group_576 $_session_group_548|
+append _session_group_576 u_push_op
+gui_sg_create "$_session_group_576"
+set stages|execute_unit|u_push_op "$_session_group_576"
+
+gui_sg_addsignal -group "$_session_group_576" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.sp tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.data_size_vec tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.res_buf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.value tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.sr_o {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op.num_bytes }
+
+gui_sg_move "$_session_group_576" -after "$_session_group_548" -pos 50 
+
+set _session_group_577 $_session_group_548|
+append _session_group_577 u_res_buf_logic
+gui_sg_create "$_session_group_577"
+set stages|execute_unit|u_res_buf_logic "$_session_group_577"
+
+gui_sg_addsignal -group "$_session_group_577" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_logic.res_info_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_logic.st_addr_0 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_logic.res_buf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_logic.offset }
+
+gui_sg_move "$_session_group_577" -after "$_session_group_548" -pos 49 
+
+set _session_group_578 $_session_group_548|
+append _session_group_578 u_res_buf_sel
+gui_sg_create "$_session_group_578"
+set stages|execute_unit|u_res_buf_sel "$_session_group_578"
+
+gui_sg_addsignal -group "$_session_group_578" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.adc_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.add_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.and_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.call_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.cmpxchg_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.far_call_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.mov_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.not_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.or_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.push_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.sar_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.sbb_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.xchg_res_buf_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel.res_buf_o }
+
+gui_sg_move "$_session_group_578" -after "$_session_group_548" -pos 48 
+
+set _session_group_579 $_session_group_548|
+append _session_group_579 u_ret_far_imm
+gui_sg_create "$_session_group_579"
+set stages|execute_unit|u_ret_far_imm "$_session_group_579"
+
+gui_sg_addsignal -group "$_session_group_579" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_imm.cs tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_imm.stack_ptr tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_imm.imm64 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_imm.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_imm.sr_o }
+
+gui_sg_move "$_session_group_579" -after "$_session_group_548" -pos 47 
+
+set _session_group_580 $_session_group_548|
+append _session_group_580 u_ret_far_op
+gui_sg_create "$_session_group_580"
+set stages|execute_unit|u_ret_far_op "$_session_group_580"
+
+gui_sg_addsignal -group "$_session_group_580" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_op.cs tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_op.stack_ptr tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_op.sr_o }
+
+gui_sg_move "$_session_group_580" -after "$_session_group_548" -pos 46 
+
+set _session_group_581 $_session_group_548|
+append _session_group_581 u_ret_imm_op
+gui_sg_create "$_session_group_581"
+set stages|execute_unit|u_ret_imm_op "$_session_group_581"
+
+gui_sg_addsignal -group "$_session_group_581" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_imm_op.imm64 tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_imm_op.stack_ptr tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_imm_op.sr_o }
+
+gui_sg_move "$_session_group_581" -after "$_session_group_548" -pos 45 
+
+set _session_group_582 $_session_group_548|
+append _session_group_582 u_ret_op
+gui_sg_create "$_session_group_582"
+set stages|execute_unit|u_ret_op "$_session_group_582"
+
+gui_sg_addsignal -group "$_session_group_582" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_op.stack_ptr tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_op.sr_o }
+
+gui_sg_move "$_session_group_582" -after "$_session_group_548" -pos 44 
+
+set _session_group_583 $_session_group_548|
+append _session_group_583 u_sbb_op
+gui_sg_create "$_session_group_583"
+set stages|execute_unit|u_sbb_op "$_session_group_583"
+
+gui_sg_addsignal -group "$_session_group_583" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.result tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.CF_in tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.al_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.ax_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.ah_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.SF {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.eax_sum tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sbb_op.ZF }
+
+gui_sg_move "$_session_group_583" -after "$_session_group_548" -pos 43 
+
+set _session_group_584 $_session_group_548|
+append _session_group_584 u_sf_flag_sel
+gui_sg_create "$_session_group_584"
+set stages|execute_unit|u_sf_flag_sel "$_session_group_584"
+
+gui_sg_addsignal -group "$_session_group_584" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.add_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.adc_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.and_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.cmp_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.cmpxchg_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.or_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.sal_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.sar_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.sbb_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.iretd_sf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.curr_sf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel.sf_flag_o }
+
+gui_sg_move "$_session_group_584" -after "$_session_group_548" -pos 42 
+
+set _session_group_585 $_session_group_548|
+append _session_group_585 u_sr_sel
+gui_sg_create "$_session_group_585"
+set stages|execute_unit|u_sr_sel "$_session_group_585"
+
+gui_sg_addsignal -group "$_session_group_585" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.sr_data tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.pop_sr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.push_sr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.ret_far_imm_sr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.ret_imm_sr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.ret_sr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.xchg_sr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.call_sr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.far_call_sr_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sr_sel.sr_o }
+
+gui_sg_move "$_session_group_585" -after "$_session_group_548" -pos 41 
+
+set _session_group_586 $_session_group_548|
+append _session_group_586 u_xchg_op
+gui_sg_create "$_session_group_586"
+set stages|execute_unit|u_xchg_op "$_session_group_586"
+
+gui_sg_addsignal -group "$_session_group_586" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.sr_data_size_vec tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.res_buf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.sr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.new_rm_value tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.new_r32_val tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.new_rm_low_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.new_rm_upper_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.new_r32_low_sel tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_xchg_op.new_r32_upper_sel }
+
+gui_sg_move "$_session_group_586" -after "$_session_group_548" -pos 40 
+
+set _session_group_587 $_session_group_548|
+append _session_group_587 u_zf_flag_sel
+gui_sg_create "$_session_group_587"
+set stages|execute_unit|u_zf_flag_sel "$_session_group_587"
+
+gui_sg_addsignal -group "$_session_group_587" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.adc_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.add_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.and_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.bsf_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.cmp_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.cmpxchg_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.or_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.sal_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.sar_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.sbb_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.iretd_zf tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.curr_zf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.op_type tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.zf_flag_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_zf_flag_sel.clr_ZF_sb }
+
+gui_sg_move "$_session_group_587" -after "$_session_group_548" -pos 39 
+
+set _session_group_588 $_session_group_548|
+append _session_group_588 wb_valid_logic_unit
+gui_sg_create "$_session_group_588"
+set stages|execute_unit|wb_valid_logic_unit "$_session_group_588"
+
+gui_sg_addsignal -group "$_session_group_588" { {tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit.WB_we_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit.N_WB_V_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit.EXE_V_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit.WB_stall_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit.WB_stall_i_inv tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit.WB_we_o_and_buf_mid tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit.N_WB_V_o_and_buf_mid }
+
+gui_sg_move "$_session_group_588" -after "$_session_group_548" -pos 38 
+
+set _session_group_589 $_session_group_548|
+append _session_group_589 u_sal_op
+gui_sg_create "$_session_group_589"
+set stages|execute_unit|u_sal_op "$_session_group_589"
+
+gui_sg_addsignal -group "$_session_group_589" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.result tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.shift_by_one tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.curr_sf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.sr_data_size_vec tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.curr_of_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.curr_zf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.shift_amt_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.curr_cf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.curr_af_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.count tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.value_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.curr_pf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.SF {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op.ZF }
+
+gui_sg_move "$_session_group_589" -after "$_session_group_548" -pos 37 
+
+set _session_group_590 $_session_group_548|
+append _session_group_590 u_sar_op
+gui_sg_create "$_session_group_590"
+set stages|execute_unit|u_sar_op "$_session_group_590"
+
+gui_sg_addsignal -group "$_session_group_590" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.result tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.shift_by_one tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.shift_amt_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.count tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.value_i tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.SF {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.sr_data_size_vec tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.curr_zf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.curr_sf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.curr_pf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.curr_of_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.curr_cf_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.curr_af_flag tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op.AF }
+
+gui_sg_move "$_session_group_590" -after "$_session_group_548" -pos 36 
+
+set _session_group_591 $_session_group_548|
+append _session_group_591 u_aaa
+gui_sg_create "$_session_group_591"
+set stages|execute_unit|u_aaa "$_session_group_591"
+
+gui_sg_addsignal -group "$_session_group_591" { {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.$unit} tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.EAX_in tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.AF_flag_in tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.adjust tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.AL tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.AH tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa.AX_new }
+
+gui_sg_move "$_session_group_591" -after "$_session_group_548" -pos 79 
+
+set _session_group_592 $_session_group_548|
+append _session_group_592 u_adc_op
+gui_sg_create "$_session_group_592"
+set stages|execute_unit|u_adc_op "$_session_group_592"
+
+gui_sg_addsignal -group "$_session_group_592" { tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.srA tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.srB tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.CF_in tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.data_size tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.dr_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.res_buf_o tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.CF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.PF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.AF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.ZF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.SF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.OF tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op.sum }
+
+gui_sg_move "$_session_group_592" -after "$_session_group_548" -pos 78 
+
+set _session_group_593 $_session_group_547|
+append _session_group_593 decode_unit
+gui_sg_create "$_session_group_593"
+set stages|decode_unit "$_session_group_593"
+
+gui_sg_addsignal -group "$_session_group_593" { {tb_stages.uut_AllAtOnce.core_unit.decode_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.decode_unit.EIP tb_stages.uut_AllAtOnce.core_unit.decode_unit.clk tb_stages.uut_AllAtOnce.core_unit.decode_unit.rst tb_stages.uut_AllAtOnce.core_unit.decode_unit.PrevEIP tb_stages.uut_AllAtOnce.core_unit.decode_unit.NEIP tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_length tb_stages.uut_AllAtOnce.core_unit.decode_unit.PrevLength tb_stages.uut_AllAtOnce.core_unit.decode_unit.sib_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.sib_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.disp_needed tb_stages.uut_AllAtOnce.core_unit.decode_unit.displacement tb_stages.uut_AllAtOnce.core_unit.decode_unit.disp_size tb_stages.uut_AllAtOnce.core_unit.decode_unit.imm64 tb_stages.uut_AllAtOnce.core_unit.decode_unit.total_pf_vector tb_stages.uut_AllAtOnce.core_unit.decode_unit.invalid_inst tb_stages.uut_AllAtOnce.core_unit.decode_unit.opcode_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.modrm_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.decode_gp tb_stages.uut_AllAtOnce.core_unit.decode_unit.flush tb_stages.uut_AllAtOnce.core_unit.decode_unit.REP_LATCH tb_stages.uut_AllAtOnce.core_unit.decode_unit.REP_CMP_LATCH tb_stages.uut_AllAtOnce.core_unit.decode_unit.REP_MOV_LATCH tb_stages.uut_AllAtOnce.core_unit.decode_unit.HALT_REG tb_stages.uut_AllAtOnce.core_unit.decode_unit.rr_latch_we_o tb_stages.uut_AllAtOnce.core_unit.decode_unit.stall tb_stages.uut_AllAtOnce.core_unit.decode_unit.queue tb_stages.uut_AllAtOnce.core_unit.decode_unit.predicted_taken tb_stages.uut_AllAtOnce.core_unit.decode_unit.predicted_target tb_stages.uut_AllAtOnce.core_unit.decode_unit.branch_present tb_stages.uut_AllAtOnce.core_unit.decode_unit.sibbase tb_stages.uut_AllAtOnce.core_unit.decode_unit.sibidx tb_stages.uut_AllAtOnce.core_unit.decode_unit.sibscale tb_stages.uut_AllAtOnce.core_unit.decode_unit.clear_rep tb_stages.uut_AllAtOnce.core_unit.decode_unit.next_rr_valid tb_stages.uut_AllAtOnce.core_unit.decode_unit.segment0 tb_stages.uut_AllAtOnce.core_unit.decode_unit.idm_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.fetch_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.rr_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.dc_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.mem_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.rr_latches_next tb_stages.uut_AllAtOnce.core_unit.decode_unit.outs_o tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_decode_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_rr_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_dc_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_mem_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_exe_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_wb_cs tb_stages.uut_AllAtOnce.core_unit.decode_unit.temp_rr_latch tb_stages.uut_AllAtOnce.core_unit.decode_unit.br_info_for_latches tb_stages.uut_AllAtOnce.core_unit.decode_unit.rep_latch_holder }
+
+gui_sg_move "$_session_group_593" -after "$_session_group_547" -pos 2 
+
+set _session_group_594 $_session_group_593|
+append _session_group_594 cs_post_prossesing_unit
+gui_sg_create "$_session_group_594"
+set stages|decode_unit|cs_post_prossesing_unit "$_session_group_594"
+
+gui_sg_addsignal -group "$_session_group_594" { {tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.invalid_inst tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.xchg tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.cmpxchg tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.op_in_modrm tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.op_in_modrm_subset tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.modrm_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.overriden_op_type tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.overriden_br_sel tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.reg_field tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.ff_jmp tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.ff_push tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.ff_call tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.decode_cs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.rr_cs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.dc_cs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.mem_cs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.exe_cs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.wb_cs_i tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.decode_cs_o tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.rr_cs_o tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.dc_cs_o tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.mem_cs_o tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.exe_cs_o tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit.wb_cs_o }
+
+gui_sg_move "$_session_group_594" -after "$_session_group_593" -pos 5 
+
+set _session_group_595 $_session_group_593|
+append _session_group_595 mod_rm_cs_gen
+gui_sg_create "$_session_group_595"
+set stages|decode_unit|mod_rm_cs_gen "$_session_group_595"
+
+gui_sg_addsignal -group "$_session_group_595" { {tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.$unit} tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.modrm_byte tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.datasize tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.dr_id tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.sr_id tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.dr_rd tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.sr_rd tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.dr_wr tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.sr_wr tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.ld_op_unmasked tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.st_op_unmasked tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.ld_op tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.st_op tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.rm_is_dr tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.reg_is_dr tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.reg_is_segment tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.modrm_but_no_sr tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.alu_inputA_override tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.alu_inputB_override tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.dr_high8 tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.sr_high8 tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.alu_inputA_override_sel tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.alu_inputB_override_sel tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.decode_cs_inputs tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen.outputs }
+
+gui_sg_move "$_session_group_595" -after "$_session_group_593" -pos 4 
+
+set _session_group_596 $_session_group_547|
+append _session_group_596 idm_unit
+gui_sg_create "$_session_group_596"
+set stages|idm_unit "$_session_group_596"
+
+gui_sg_addsignal -group "$_session_group_596" { tb_stages.uut_AllAtOnce.core_unit.idm_unit.fetch_outs_i tb_stages.uut_AllAtOnce.core_unit.idm_unit.idm_outs_o tb_stages.uut_AllAtOnce.core_unit.idm_unit.clk tb_stages.uut_AllAtOnce.core_unit.idm_unit.idm {tb_stages.uut_AllAtOnce.core_unit.idm_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.idm_unit.rst }
+
+gui_sg_move "$_session_group_596" -after "$_session_group_547" -pos 1 
+
+set _session_group_597 $_session_group_547|
+append _session_group_597 dc_unit
+gui_sg_create "$_session_group_597"
+set stages|dc_unit "$_session_group_597"
+
+gui_sg_addsignal -group "$_session_group_597" { tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_out tb_stages.uut_AllAtOnce.core_unit.dc_unit.fetch_outs_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_latches_next_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_mio_V tb_stages.uut_AllAtOnce.core_unit.dc_unit.dep_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.rr_exception tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_served_0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_served_1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_ST_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_stage_we_valid_unit_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.data_size_vec tb_stages.uut_AllAtOnce.core_unit.dc_unit.exp_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_mio tb_stages.uut_AllAtOnce.core_unit.dc_unit.latches_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.sr_data_size_vec tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_0_V tb_stages.uut_AllAtOnce.core_unit.dc_unit.shift_sr_up tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_stage_next_vaild_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_exception tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_out tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_1_V tb_stages.uut_AllAtOnce.core_unit.dc_unit.dc_ST_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.in_flight_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_served_mio tb_stages.uut_AllAtOnce.core_unit.dc_unit.arb_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.clk tb_stages.uut_AllAtOnce.core_unit.dc_unit.dc_outs_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.mem_outs_i tb_stages.uut_AllAtOnce.core_unit.dc_unit.shift_sr_down tb_stages.uut_AllAtOnce.core_unit.dc_unit.dc_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.exe_ST_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_exception {tb_stages.uut_AllAtOnce.core_unit.dc_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_unit.next_st_addr_0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.next_st_xcl tb_stages.uut_AllAtOnce.core_unit.dc_unit.next_st_addr_1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.wb_ST_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.rst }
+
+gui_sg_move "$_session_group_597" -after "$_session_group_547" -pos 4 
+
+set _session_group_598 $_session_group_597|
+append _session_group_598 stq_dep_check
+gui_sg_create "$_session_group_598"
+set stages|dc_unit|stq_dep_check "$_session_group_598"
+
+gui_sg_addsignal -group "$_session_group_598" { {tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.valid tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.ld_paddr_0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.ld_paddr_1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.LD_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.LD_XCL tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.ld0_bank_num tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.ld1_bank_num tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.ld0_bank_hit tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.ld1_bank_hit tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.valid_dep0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.valid_dep1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check.stq_info }
+
+gui_sg_move "$_session_group_598" -after "$_session_group_597" -pos 7 
+
+set _session_group_599 $_session_group_597|
+append _session_group_599 req_gen_1
+gui_sg_create "$_session_group_599"
+set stages|dc_unit|req_gen_1 "$_session_group_599"
+
+gui_sg_addsignal -group "$_session_group_599" { tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.is_served_mio tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_addr_mio_V tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.dep_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.req_served_0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.req_served_1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.mem_stage_we_valid_unit_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_addr_mio tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.XCL tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.MIO tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_addr_0_V tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_0_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_addrMIO tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.forward_valid tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_addr0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_addr1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.is_served_0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_addr_1_V tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.is_served_1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_addr_0 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_addr_1 tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.req_served_mio tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.valid tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.arb_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.clk tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.mio_stall {tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.ld_1_stall tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.mem_stage_next_valid_o tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.LD_OP tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen.rst }
+
+gui_sg_move "$_session_group_599" -after "$_session_group_597" -pos 4 
+
+set _session_group_600 $_session_group_597|
+append _session_group_600 ld_neuralnet_part2
+gui_sg_create "$_session_group_600"
+set stages|dc_unit|ld_neuralnet_part2 "$_session_group_600"
+
+gui_sg_addsignal -group "$_session_group_600" { {tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.vaddy_start tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.seg_limit_w_datasize tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.datasize tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.write_intent tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.mem_op tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.next_page_vaddy tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.vaddy_end tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.cross_page_access tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0_pagefault tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0_generalprotection tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1_pagefault tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1_generalprotection tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.segx_gp tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.outputs tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.vaddy_start_fields tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.vaddy_end_fields tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0_in tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1_in tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0_out tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1_out }
+
+gui_sg_move "$_session_group_600" -after "$_session_group_597" -pos 3 
+
+set _session_group_601 $_session_group_597|
+append _session_group_601 st_neuralnet_part2
+gui_sg_create "$_session_group_601"
+set stages|dc_unit|st_neuralnet_part2 "$_session_group_601"
+
+gui_sg_addsignal -group "$_session_group_601" { {tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.$unit} tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.vaddy_start tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.seg_limit_w_datasize tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.datasize tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.write_intent tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.mem_op tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.next_page_vaddy tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.vaddy_end tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.cross_page_access tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0_pagefault tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0_generalprotection tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1_pagefault tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1_generalprotection tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.segx_gp tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.outputs tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.vaddy_start_fields tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.vaddy_end_fields tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0_in tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1_in tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0_out tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1_out }
+
+gui_sg_move "$_session_group_601" -after "$_session_group_597" -pos 2 
+
+set _session_group_602 $_session_group_547|
+append _session_group_602 write_back_unit
+gui_sg_create "$_session_group_602"
+set stages|write_back_unit "$_session_group_602"
+
+gui_sg_addsignal -group "$_session_group_602" { tb_stages.uut_AllAtOnce.core_unit.write_back_unit.write_success tb_stages.uut_AllAtOnce.core_unit.write_back_unit.reg_wb_logic_outs tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stq_info tb_stages.uut_AllAtOnce.core_unit.write_back_unit.mio_q_output tb_stages.uut_AllAtOnce.core_unit.write_back_unit.mio_push_fail tb_stages.uut_AllAtOnce.core_unit.write_back_unit.write_success_mio tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stq_heads tb_stages.uut_AllAtOnce.core_unit.write_back_unit.wb_latches tb_stages.uut_AllAtOnce.core_unit.write_back_unit.outputs tb_stages.uut_AllAtOnce.core_unit.write_back_unit.mio_q_input tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stq_outputs tb_stages.uut_AllAtOnce.core_unit.write_back_unit.dc_dep tb_stages.uut_AllAtOnce.core_unit.write_back_unit.clk tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stall_flop_next tb_stages.uut_AllAtOnce.core_unit.write_back_unit.stall_flop {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.write_back_unit.rst }
+
+gui_sg_move "$_session_group_602" -after "$_session_group_547" -pos 7 
+
+set _session_group_603 $_session_group_602|
+append _session_group_603 {gen_st_q[2].stq_inst}
+gui_sg_create "$_session_group_603"
+set {stages|write_back_unit|gen_st_q[2].stq_inst} "$_session_group_603"
+
+gui_sg_addsignal -group "$_session_group_603" { {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.q_empty} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.clk} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.rst} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.head} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.tail} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.head_ptr} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.tail_ptr} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.q_full} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.valid_push} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.valid_pop} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.wb_in} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.outputs} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.q} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst.unnamed$$_10} }
+
+gui_sg_move "$_session_group_603" -after "$_session_group_602" -pos 8 
+
+set _session_group_604 $_session_group_602|
+append _session_group_604 {gen_st_q[3].stq_inst}
+gui_sg_create "$_session_group_604"
+set {stages|write_back_unit|gen_st_q[3].stq_inst} "$_session_group_604"
+
+gui_sg_addsignal -group "$_session_group_604" { {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.$unit} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.q_empty} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.clk} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.rst} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.head} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.tail} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.head_ptr} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.tail_ptr} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.q_full} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.valid_push} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.valid_pop} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.wb_in} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.outputs} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.q} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst.unnamed$$_10} }
+
+gui_sg_move "$_session_group_604" -after "$_session_group_602" -pos 5 
+
+set _session_group_605 $_session_group_602|
+append _session_group_605 {gen_st_q[1].stq_inst}
+gui_sg_create "$_session_group_605"
+set {stages|write_back_unit|gen_st_q[1].stq_inst} "$_session_group_605"
+
+gui_sg_addsignal -group "$_session_group_605" { {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.q_empty} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.clk} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.rst} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.head} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.tail} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.head_ptr} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.tail_ptr} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.q_full} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.valid_push} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.valid_pop} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.wb_in} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.outputs} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.q} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[1].stq_inst.unnamed$$_10} }
+
+gui_sg_move "$_session_group_605" -after "$_session_group_602" -pos 2 
+
+set _session_group_606 $_session_group_602|
+append _session_group_606 {gen_st_q[0].stq_inst}
+gui_sg_create "$_session_group_606"
+set {stages|write_back_unit|gen_st_q[0].stq_inst} "$_session_group_606"
+
+gui_sg_addsignal -group "$_session_group_606" { {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.$unit} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.q_empty} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.clk} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.rst} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.head} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.tail} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.head_ptr} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.tail_ptr} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.q_full} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.valid_push} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.valid_pop} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.wb_in} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.outputs} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.q} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[0].stq_inst.unnamed$$_10} }
+
+gui_sg_move "$_session_group_606" -after "$_session_group_602" -pos 6 
+
+set _session_group_607 $_session_group_547|
+append _session_group_607 fetch_unit
+gui_sg_create "$_session_group_607"
+set stages|fetch_unit "$_session_group_607"
+
+gui_sg_addsignal -group "$_session_group_607" { {tb_stages.uut_AllAtOnce.core_unit.fetch_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.fetch_unit.SPC tb_stages.uut_AllAtOnce.core_unit.fetch_unit.clk tb_stages.uut_AllAtOnce.core_unit.fetch_unit.rst tb_stages.uut_AllAtOnce.core_unit.fetch_unit.dma_int tb_stages.uut_AllAtOnce.core_unit.fetch_unit.exp_mode_jk tb_stages.uut_AllAtOnce.core_unit.fetch_unit.int_mode_jk tb_stages.uut_AllAtOnce.core_unit.fetch_unit.DMA_int_jk tb_stages.uut_AllAtOnce.core_unit.fetch_unit.f_exp tb_stages.uut_AllAtOnce.core_unit.fetch_unit.seg_xlation_out tb_stages.uut_AllAtOnce.core_unit.fetch_unit.rom_data_out tb_stages.uut_AllAtOnce.core_unit.fetch_unit.idm_ctrl_data_in tb_stages.uut_AllAtOnce.core_unit.fetch_unit.next_spc tb_stages.uut_AllAtOnce.core_unit.fetch_unit.spc_16 tb_stages.uut_AllAtOnce.core_unit.fetch_unit.br_restore_spc tb_stages.uut_AllAtOnce.core_unit.fetch_unit.br_target tb_stages.uut_AllAtOnce.core_unit.fetch_unit.spc_2_IDM_CTRL tb_stages.uut_AllAtOnce.core_unit.fetch_unit.en_icache tb_stages.uut_AllAtOnce.core_unit.fetch_unit.icache_info_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.idm_info_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.decode_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.rr_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.dc_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.mem_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.fetch_unit.outs_o tb_stages.uut_AllAtOnce.core_unit.fetch_unit.predictor_inputs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.tlb_inputs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.btb_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.spc_sel_logic_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.predictor_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.idm_ctrl_logic_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.idm_invalidate_logic_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.tlb_outs tb_stages.uut_AllAtOnce.core_unit.fetch_unit.exp_set_logic_outs }
+
+set _session_group_608 $_session_group_547|
+append _session_group_608 mem_unit
+gui_sg_create "$_session_group_608"
+set stages|mem_unit "$_session_group_608"
+
+gui_sg_addsignal -group "$_session_group_608" { tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_buf_v tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_1_masked tb_stages.uut_AllAtOnce.core_unit.mem_unit.C0 tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_buf_mio tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_MIO tb_stages.uut_AllAtOnce.core_unit.mem_unit.low_buf tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_0 tb_stages.uut_AllAtOnce.core_unit.mem_unit.br_rel_target tb_stages.uut_AllAtOnce.core_unit.mem_unit.latches_i tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_1 tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_buf_mio_v tb_stages.uut_AllAtOnce.core_unit.mem_unit.miss_stall tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_MIO tb_stages.uut_AllAtOnce.core_unit.mem_unit.cacheline tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_0_masked tb_stages.uut_AllAtOnce.core_unit.mem_unit.clr_dcache_mio_latch tb_stages.uut_AllAtOnce.core_unit.mem_unit.exe_latches_next_o tb_stages.uut_AllAtOnce.core_unit.mem_unit.forward_valid tb_stages.uut_AllAtOnce.core_unit.mem_unit.exe_stage_next_vaild_o tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit_buf tb_stages.uut_AllAtOnce.core_unit.mem_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.mem_unit.outs_o tb_stages.uut_AllAtOnce.core_unit.mem_unit.clk tb_stages.uut_AllAtOnce.core_unit.mem_unit.line_in_mio tb_stages.uut_AllAtOnce.core_unit.mem_unit.bank_num_0 tb_stages.uut_AllAtOnce.core_unit.mem_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.mem_unit.rel_offset tb_stages.uut_AllAtOnce.core_unit.mem_unit.bank_num_1 tb_stages.uut_AllAtOnce.core_unit.mem_unit.ld_buf tb_stages.uut_AllAtOnce.core_unit.mem_unit.hit tb_stages.uut_AllAtOnce.core_unit.mem_unit.up_buf tb_stages.uut_AllAtOnce.core_unit.mem_unit.exe_stage_we_valid_unit_o {tb_stages.uut_AllAtOnce.core_unit.mem_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.mem_unit.clr_dcache_arb_latches tb_stages.uut_AllAtOnce.core_unit.mem_unit.next_st_addr_0 tb_stages.uut_AllAtOnce.core_unit.mem_unit.next_st_addr_1 tb_stages.uut_AllAtOnce.core_unit.mem_unit.rst }
+
+gui_sg_move "$_session_group_608" -after "$_session_group_547" -pos 5 
+
+set _session_group_609 $_session_group_547|
+append _session_group_609 rr_unit
+gui_sg_create "$_session_group_609"
+set stages|rr_unit "$_session_group_609"
+
+gui_sg_addsignal -group "$_session_group_609" { tb_stages.uut_AllAtOnce.core_unit.rr_unit.fetch_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.next_ld_vaddy tb_stages.uut_AllAtOnce.core_unit.rr_unit.cs_sb tb_stages.uut_AllAtOnce.core_unit.rr_unit.RR_GP tb_stages.uut_AllAtOnce.core_unit.rr_unit.addygen_input_addy tb_stages.uut_AllAtOnce.core_unit.rr_unit.ecx_sb tb_stages.uut_AllAtOnce.core_unit.rr_unit.ld_vaddy tb_stages.uut_AllAtOnce.core_unit.rr_unit.next_dc_valid tb_stages.uut_AllAtOnce.core_unit.rr_unit.latches_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.dc_latches_next tb_stages.uut_AllAtOnce.core_unit.rr_unit.seg0_limit_w_datasize tb_stages.uut_AllAtOnce.core_unit.rr_unit.seg1_limit_w_datasize tb_stages.uut_AllAtOnce.core_unit.rr_unit.latchesInUse tb_stages.uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS tb_stages.uut_AllAtOnce.core_unit.rr_unit.reg_out tb_stages.uut_AllAtOnce.core_unit.rr_unit.instructionforward tb_stages.uut_AllAtOnce.core_unit.rr_unit.rr_stall tb_stages.uut_AllAtOnce.core_unit.rr_unit.dc_latches_we tb_stages.uut_AllAtOnce.core_unit.rr_unit.dc_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.exe_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.outs_o tb_stages.uut_AllAtOnce.core_unit.rr_unit.clk tb_stages.uut_AllAtOnce.core_unit.rr_unit.wb_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.mem_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.depstall {tb_stages.uut_AllAtOnce.core_unit.rr_unit.$unit} tb_stages.uut_AllAtOnce.core_unit.rr_unit.actual_st_vaddy tb_stages.uut_AllAtOnce.core_unit.rr_unit.rst tb_stages.uut_AllAtOnce.core_unit.rr_unit.decode_outs_i tb_stages.uut_AllAtOnce.core_unit.rr_unit.actual_next_st_vaddy }
+
+gui_sg_move "$_session_group_609" -after "$_session_group_547" -pos 3 
 
 # Global: Highlighting
+gui_highlight_signals -color #00ff00 {{tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel.dr_data[63:0]}}
 
 # Global: Stack
 gui_change_stack_mode -mode list
@@ -604,7 +1099,7 @@ gui_change_stack_mode -mode list
 # Post database loading setting...
 
 # Restore C1 time
-gui_set_time -C1_only 10003.181
+gui_set_time -C1_only 751.789
 
 
 
@@ -631,27 +1126,33 @@ gui_hier_list_init -id ${Hier.1}
 gui_change_design -id ${Hier.1} -design V1
 catch {gui_list_expand -id ${Hier.1} tb_stages}
 catch {gui_list_expand -id ${Hier.1} tb_stages.uut_AllAtOnce}
-catch {gui_list_expand -id ${Hier.1} tb_stages.uut_AllAtOnce.mem_sys_unit}
-catch {gui_list_expand -id ${Hier.1} tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit}
-catch {gui_list_expand -id ${Hier.1} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block}}
-catch {gui_list_select -id ${Hier.1} {{tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit}}}
-gui_view_scroll -id ${Hier.1} -vertical -set 402
+catch {gui_list_expand -id ${Hier.1} tb_stages.uut_AllAtOnce.core_unit}
+catch {gui_list_expand -id ${Hier.1} tb_stages.uut_AllAtOnce.core_unit.decode_unit}
+catch {gui_list_expand -id ${Hier.1} tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs}
+catch {gui_list_select -id ${Hier.1} {tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen}}
+gui_view_scroll -id ${Hier.1} -vertical -set 116
 gui_view_scroll -id ${Hier.1} -horizontal -set 0
 
 # Data 'Data.1'
 gui_list_set_filter -id ${Data.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {LowPower 1} {Parameter 1} {All 1} {Aggregate 1} {LibBaseMember 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {BaseMembers 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Data.1} -text {*}
-gui_list_show_data -id ${Data.1} {tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.evictionBuf_unit}
+gui_list_show_data -id ${Data.1} {tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen}
 gui_view_scroll -id ${Data.1} -vertical -set 0
 gui_view_scroll -id ${Data.1} -horizontal -set 0
-gui_view_scroll -id ${Hier.1} -vertical -set 402
+gui_view_scroll -id ${Hier.1} -vertical -set 116
 gui_view_scroll -id ${Hier.1} -horizontal -set 0
+
+# DriverLoad 'DriverLoad.1'
+gui_get_drivers -session -id ${DriverLoad.1} -signal tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches.valid -time 476 -starttime 477.846
+gui_get_drivers -session -id ${DriverLoad.1} -signal {tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches.cs.OP_TYPE[31:0]} -time 476 -starttime 477.846
+gui_get_drivers -session -id ${DriverLoad.1} -signal tb_stages.uut_AllAtOnce.core_unit.execute_unit.next_wb_cs -time 1212 -starttime 1479.979
+gui_get_drivers -session -id ${DriverLoad.1} -signal {tb_stages.uut_AllAtOnce.core_unit.execute_unit.srA[63:0]} -time 1436 -starttime 1479.979
 
 # Source 'Source.1'
 gui_src_value_annotate -id ${Source.1} -switch false
 gui_set_env TOGGLE::VALUEANNOTATE 0
-gui_open_source -id ${Source.1}  -replace -active tb_stages tb_stages.sv
-gui_view_scroll -id ${Source.1} -vertical -set 252
+gui_open_source -id ${Source.1}  -replace -active tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel jacob_save.tcl
+gui_view_scroll -id ${Source.1} -vertical -set 255
 gui_src_set_reusable -id ${Source.1}
 
 # View 'Wave.1'
@@ -663,53 +1164,184 @@ gui_list_set_height -id Wave -height 25
 set origGroupCreationState [gui_list_create_group_when_add -wave]
 gui_list_create_group_when_add -wave -disable
 gui_marker_create -id ${Wave.1} M1 364
-gui_marker_create -id ${Wave.1} M2 9898.931
+gui_marker_create -id ${Wave.1} M2 1575.373
+gui_marker_create -id ${Wave.1} M3 5059.986
+gui_marker_create -id ${Wave.1} M4 546.77
 gui_marker_set_ref -id ${Wave.1}  C1
-gui_wv_zoom_timerange -id ${Wave.1} 9947.145 10068.965
+gui_wv_zoom_timerange -id ${Wave.1} 725.262 786.73
 gui_list_add_group -id ${Wave.1} -after {New Group} {uut_AllAtOnce_1}
-gui_list_add_group -id ${Wave.1} -after {New Group} {Core}
-gui_list_add_group -id ${Wave.1}  -after Core {Core|fetch_unit}
-gui_list_add_group -id ${Wave.1} -after Core|fetch_unit {Core|idm_unit}
-gui_list_add_group -id ${Wave.1} -after Core|idm_unit {Core|decode_unit}
-gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.decode_unit.clk {Core|decode_unit|inst_processing}
-gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.decode_unit.inst_processing.clk {Core|decode_unit|inst_processing|pfs1}
-gui_list_add_group -id ${Wave.1} -after Core|decode_unit {Core|rr_latches_unit}
-gui_list_add_group -id ${Wave.1} -after Core|rr_latches_unit {Core|rr_unit}
-gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.rr_unit.rst {Core|rr_unit|reg_sb_unit}
-gui_list_add_group -id ${Wave.1} -after Core|rr_unit|reg_sb_unit {Core|rr_unit|RegisterFile_unit}
-gui_list_add_group -id ${Wave.1} -after Core|rr_unit {Core|dc_latches_unit}
-gui_list_add_group -id ${Wave.1} -after Core|dc_latches_unit {Core|dc_unit}
-gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_served_0 {Core|dc_unit|st_neuralnet_part2}
-gui_list_add_group -id ${Wave.1} -after Core|dc_unit|st_neuralnet_part2 {Core|dc_unit|ld_neuralnet_part2}
-gui_list_add_group -id ${Wave.1} -after Core|dc_unit {Core|mem_latches_unit}
-gui_list_add_group -id ${Wave.1} -after Core|mem_latches_unit {Core|mem_unit}
-gui_list_add_group -id ${Wave.1} -after Core|mem_unit {Core|exe_latches_unit}
-gui_list_add_group -id ${Wave.1} -after Core|exe_latches_unit {Core|execute_unit}
-gui_list_add_group -id ${Wave.1} -after {{tb_stages.uut_AllAtOnce.core_unit.execute_unit.sr_data_size_vec[3:0]}} {Core|execute_unit|u_alu_input_sel}
-gui_list_add_group -id ${Wave.1} -after Core|execute_unit|u_alu_input_sel {Core|execute_unit|u_cmpxchg_op}
-gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.execute_unit.latches_i {Core|execute_unit|u_push_op}
-gui_list_add_group -id ${Wave.1} -after Core|execute_unit {Core|wb_latches_unit}
-gui_list_add_group -id ${Wave.1} -after Core|wb_latches_unit {Core|write_back_unit}
 gui_list_add_group -id ${Wave.1} -after {New Group} {Mem_System}
 gui_list_add_group -id ${Wave.1}  -after Mem_System {Mem_System|mem_unit_1}
 gui_list_add_group -id ${Wave.1} -after Mem_System|mem_unit_1 {Mem_System|icache_unit}
 gui_list_add_group -id ${Wave.1} -after Mem_System|icache_unit {Mem_System|dma_controller_unit}
 gui_list_add_group -id ${Wave.1} -after Mem_System|dma_controller_unit {Mem_System|ddr5_unit}
 gui_list_add_group -id ${Wave.1} -after Mem_System|ddr5_unit {Mem_System|dcache_unit}
-gui_list_add_group -id ${Wave.1} -after {{tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.dataBus[31:0]}} {{Mem_System|dcache_unit|g_dcache_block[0].block}}
-gui_list_add_group -id ${Wave.1} -after {{tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.mem_Valid_FromDte_i}} {{Mem_System|dcache_unit|g_dcache_block[0].block|evictionBuf_unit}}
-gui_list_add_group -id ${Wave.1} -after {{Mem_System|dcache_unit|g_dcache_block[0].block|evictionBuf_unit}} {{Mem_System|dcache_unit|g_dcache_block[0].block|vcache_unit}}
-gui_list_add_group -id ${Wave.1} -after {{tb_stages.uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_unit.block_busy_i}} {{Mem_System|dcache_unit|g_dcache_block[0].block|vcache_unit|vcache_tag_store_unit}}
 gui_list_add_group -id ${Wave.1} -after Mem_System|dcache_unit {Mem_System|bus_arbitration_unit}
+gui_list_add_group -id ${Wave.1} -after {New Group} {flags_reg}
+gui_list_add_group -id ${Wave.1} -after {{tb_stages.uut_AllAtOnce.core_unit.execute_unit.flags_reg[31:0]}} {flags_reg|reg_sb_unit}
+gui_list_add_group -id ${Wave.1} -after flags_reg|reg_sb_unit {flags_reg|RegisterFile_unit}
+gui_list_add_group -id ${Wave.1} -after {New Group} {uut_stuff}
+gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.exe_latches_unit.latches {uut_stuff|u_mov_op}
+gui_list_add_group -id ${Wave.1} -after uut_stuff|u_mov_op {uut_stuff|u_sbb_op}
+gui_list_add_group -id ${Wave.1} -after {New Group} {Core}
+gui_list_add_group -id ${Wave.1}  -after Core {Core|core_unit}
+gui_list_add_group -id ${Wave.1} -after {New Group} {latches}
+gui_list_add_group -id ${Wave.1}  -after latches {latches|idm_unit}
+gui_list_add_group -id ${Wave.1} -after latches|idm_unit {latches|rr_latches_unit}
+gui_list_add_group -id ${Wave.1} -after latches|rr_latches_unit {latches|dc_latches_unit}
+gui_list_add_group -id ${Wave.1} -after latches|dc_latches_unit {latches|mem_latches_unit}
+gui_list_add_group -id ${Wave.1} -after latches|mem_latches_unit {latches|exe_latches_unit}
+gui_list_add_group -id ${Wave.1} -after latches|exe_latches_unit {latches|wb_latches_unit}
+gui_list_add_group -id ${Wave.1} -after {New Group} {stages}
+gui_list_add_group -id ${Wave.1}  -after stages {stages|fetch_unit}
+gui_list_add_group -id ${Wave.1} -after stages|fetch_unit {stages|idm_unit}
+gui_list_add_group -id ${Wave.1} -after stages|idm_unit {stages|decode_unit}
+gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.decode_unit.rst {stages|decode_unit|mod_rm_cs_gen}
+gui_list_add_group -id ${Wave.1} -after stages|decode_unit|mod_rm_cs_gen {stages|decode_unit|cs_post_prossesing_unit}
+gui_list_add_group -id ${Wave.1} -after stages|decode_unit {stages|rr_unit}
+gui_list_add_group -id ${Wave.1} -after stages|rr_unit {stages|dc_unit}
+gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.dc_unit.fetch_outs_i {stages|dc_unit|st_neuralnet_part2}
+gui_list_add_group -id ${Wave.1} -after stages|dc_unit|st_neuralnet_part2 {stages|dc_unit|ld_neuralnet_part2}
+gui_list_add_group -id ${Wave.1} -after stages|dc_unit|ld_neuralnet_part2 {stages|dc_unit|req_gen_1}
+gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_addr_mio_V {stages|dc_unit|stq_dep_check}
+gui_list_add_group -id ${Wave.1} -after stages|dc_unit {stages|mem_unit}
+gui_list_add_group -id ${Wave.1} -after stages|mem_unit {stages|execute_unit}
+gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.execute_unit.zf_flag_o {stages|execute_unit|u_sar_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_sar_op {stages|execute_unit|u_sal_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_sal_op {stages|execute_unit|wb_valid_logic_unit}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|wb_valid_logic_unit {stages|execute_unit|u_zf_flag_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_zf_flag_sel {stages|execute_unit|u_xchg_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_xchg_op {stages|execute_unit|u_sr_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_sr_sel {stages|execute_unit|u_sf_flag_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_sf_flag_sel {stages|execute_unit|u_sbb_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_sbb_op {stages|execute_unit|u_ret_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_ret_op {stages|execute_unit|u_ret_imm_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_ret_imm_op {stages|execute_unit|u_ret_far_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_ret_far_op {stages|execute_unit|u_ret_far_imm}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_ret_far_imm {stages|execute_unit|u_res_buf_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_res_buf_sel {stages|execute_unit|u_res_buf_logic}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_res_buf_logic {stages|execute_unit|u_push_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_push_op {stages|execute_unit|u_pop_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_pop_op {stages|execute_unit|u_pf_flag_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_pf_flag_sel {stages|execute_unit|u_pavgw}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_pavgw {stages|execute_unit|u_pavgb}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_pavgb {stages|execute_unit|u_paddw}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_paddw {stages|execute_unit|u_paddd}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_paddd {stages|execute_unit|u_packsswb}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_packsswb {stages|execute_unit|u_packssdw}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_packssdw {stages|execute_unit|u_or_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_or_op {stages|execute_unit|u_of_flag_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_of_flag_sel {stages|execute_unit|u_not_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_not_op {stages|execute_unit|u_mov_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_mov_op {stages|execute_unit|u_iretd_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_iretd_op {stages|execute_unit|u_far_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_far_op {stages|execute_unit|u_dr_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_dr_sel {stages|execute_unit|u_df_flag_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_df_flag_sel {stages|execute_unit|u_cmpxchg_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_cmpxchg_op {stages|execute_unit|u_cmp}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_cmp {stages|execute_unit|u_cf_flag_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_cf_flag_sel {stages|execute_unit|u_call_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_call_op {stages|execute_unit|u_bsf}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_bsf {stages|execute_unit|u_br_res}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_br_res {stages|execute_unit|u_bit_vec_logic}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_bit_vec_logic {stages|execute_unit|u_and_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_and_op {stages|execute_unit|u_alu_input_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_alu_input_sel {stages|execute_unit|u_af_flag_sel}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_af_flag_sel {stages|execute_unit|u_add_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_add_op {stages|execute_unit|u_adc_op}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit|u_adc_op {stages|execute_unit|u_aaa}
+gui_list_add_group -id ${Wave.1} -after stages|execute_unit {stages|write_back_unit}
+gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.write_back_unit.reg_wb_logic_outs {{stages|write_back_unit|gen_st_q[1].stq_inst}}
+gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.write_back_unit.mio_q_output {{stages|write_back_unit|gen_st_q[3].stq_inst}}
+gui_list_add_group -id ${Wave.1} -after {{stages|write_back_unit|gen_st_q[3].stq_inst}} {{stages|write_back_unit|gen_st_q[0].stq_inst}}
+gui_list_add_group -id ${Wave.1} -after tb_stages.uut_AllAtOnce.core_unit.write_back_unit.mio_push_fail {{stages|write_back_unit|gen_st_q[2].stq_inst}}
 gui_list_collapse -id ${Wave.1} uut_AllAtOnce_1
-gui_list_collapse -id ${Wave.1} Core
+gui_list_collapse -id ${Wave.1} Mem_System
+gui_list_collapse -id ${Wave.1} Mem_System|mem_unit_1
 gui_list_collapse -id ${Wave.1} Mem_System|icache_unit
 gui_list_collapse -id ${Wave.1} Mem_System|dma_controller_unit
 gui_list_collapse -id ${Wave.1} Mem_System|ddr5_unit
 gui_list_collapse -id ${Wave.1} Mem_System|dcache_unit
 gui_list_collapse -id ${Wave.1} Mem_System|bus_arbitration_unit
-gui_list_expand -id ${Wave.1} tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.inFromDte
-gui_list_select -id ${Wave.1} {tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit.inFromDte.ld_req }
+gui_list_collapse -id ${Wave.1} flags_reg
+gui_list_collapse -id ${Wave.1} flags_reg|reg_sb_unit
+gui_list_collapse -id ${Wave.1} flags_reg|RegisterFile_unit
+gui_list_collapse -id ${Wave.1} uut_stuff
+gui_list_collapse -id ${Wave.1} uut_stuff|u_mov_op
+gui_list_collapse -id ${Wave.1} uut_stuff|u_sbb_op
+gui_list_collapse -id ${Wave.1} Core
+gui_list_collapse -id ${Wave.1} Core|core_unit
+gui_list_collapse -id ${Wave.1} latches
+gui_list_collapse -id ${Wave.1} latches|idm_unit
+gui_list_collapse -id ${Wave.1} latches|rr_latches_unit
+gui_list_collapse -id ${Wave.1} latches|dc_latches_unit
+gui_list_collapse -id ${Wave.1} latches|mem_latches_unit
+gui_list_collapse -id ${Wave.1} latches|exe_latches_unit
+gui_list_collapse -id ${Wave.1} latches|wb_latches_unit
+gui_list_collapse -id ${Wave.1} stages|fetch_unit
+gui_list_collapse -id ${Wave.1} stages|idm_unit
+gui_list_collapse -id ${Wave.1} stages|decode_unit
+gui_list_collapse -id ${Wave.1} stages|decode_unit|mod_rm_cs_gen
+gui_list_collapse -id ${Wave.1} stages|decode_unit|cs_post_prossesing_unit
+gui_list_collapse -id ${Wave.1} stages|rr_unit
+gui_list_collapse -id ${Wave.1} stages|dc_unit
+gui_list_collapse -id ${Wave.1} stages|dc_unit|st_neuralnet_part2
+gui_list_collapse -id ${Wave.1} stages|dc_unit|ld_neuralnet_part2
+gui_list_collapse -id ${Wave.1} stages|dc_unit|req_gen_1
+gui_list_collapse -id ${Wave.1} stages|dc_unit|stq_dep_check
+gui_list_collapse -id ${Wave.1} stages|mem_unit
+gui_list_collapse -id ${Wave.1} stages|execute_unit
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_sar_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_sal_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|wb_valid_logic_unit
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_zf_flag_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_xchg_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_sr_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_sf_flag_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_sbb_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_ret_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_ret_imm_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_ret_far_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_ret_far_imm
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_res_buf_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_res_buf_logic
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_push_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_pop_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_pf_flag_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_pavgw
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_pavgb
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_paddw
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_paddd
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_packsswb
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_packssdw
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_or_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_of_flag_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_not_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_mov_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_iretd_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_far_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_dr_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_df_flag_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_cmpxchg_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_cmp
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_cf_flag_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_call_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_bsf
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_br_res
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_bit_vec_logic
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_and_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_alu_input_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_af_flag_sel
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_add_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_adc_op
+gui_list_collapse -id ${Wave.1} stages|execute_unit|u_aaa
+gui_list_collapse -id ${Wave.1} {stages|write_back_unit|gen_st_q[1].stq_inst}
+gui_list_collapse -id ${Wave.1} {stages|write_back_unit|gen_st_q[3].stq_inst}
+gui_list_collapse -id ${Wave.1} {stages|write_back_unit|gen_st_q[0].stq_inst}
+gui_list_collapse -id ${Wave.1} {stages|write_back_unit|gen_st_q[2].stq_inst}
+gui_list_expand -id ${Wave.1} tb_stages.uut_AllAtOnce.core_unit.write_back_unit.wb_latches
+gui_list_expand -id ${Wave.1} tb_stages.uut_AllAtOnce.core_unit.write_back_unit.wb_latches.cs
+gui_list_select -id ${Wave.1} {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.wb_latches.cs.ST_OP }
 gui_seek_criteria -id ${Wave.1} {Any Edge}
 
 
@@ -725,21 +1357,21 @@ if { $groupExD } {
 }
 gui_list_set_filter -id ${Wave.1} -list { {Buffer 1} {Input 1} {Others 1} {Linkage 1} {Output 1} {Parameter 1} {All 1} {Aggregate 1} {LibBaseMember 1} {Event 1} {Assertion 1} {Constant 1} {Interface 1} {BaseMembers 1} {Signal 1} {$unit 1} {Inout 1} {Variable 1} }
 gui_list_set_filter -id ${Wave.1} -text {*}
-gui_list_set_insertion_bar  -id ${Wave.1} -group {Mem_System|dcache_unit|g_dcache_block[0].block}  -position in
+gui_list_set_insertion_bar  -id ${Wave.1} -group {stages|write_back_unit|gen_st_q[2].stq_inst}  -position below
 
-gui_marker_move -id ${Wave.1} {C1} 10003.181
-gui_view_scroll -id ${Wave.1} -vertical -set 0
+gui_marker_move -id ${Wave.1} {C1} 751.789
+gui_view_scroll -id ${Wave.1} -vertical -set 535
 gui_show_grid -id ${Wave.1} -enable false
 # Restore toplevel window zorder
 # The toplevel window could be closed if it has no view/pane
+if {[gui_exist_window -window ${TopLevel.2}]} {
+	gui_set_active_window -window ${TopLevel.2}
+	gui_set_active_window -window ${Wave.1}
+}
 if {[gui_exist_window -window ${TopLevel.1}]} {
 	gui_set_active_window -window ${TopLevel.1}
 	gui_set_active_window -window ${Source.1}
 	gui_set_active_window -window ${HSPane.1}
-}
-if {[gui_exist_window -window ${TopLevel.2}]} {
-	gui_set_active_window -window ${TopLevel.2}
-	gui_set_active_window -window ${Wave.1}
 }
 #</Session>
 

@@ -63,12 +63,12 @@ import tb_debug_pkg::*;
             $display("ERROR: cannot open log file"); \
             $finish; \
         end \
-        regdumpfd = $fopen("regdump.log", "w"); \
+        regdumpfd = $fopen("logDumps/regdump.log", "w"); \
         if (regdumpfd == 0) begin \
             $display("ERROR: cannot open regdump.log"); \
             $finish; \
         end \
-        flagdumpfd = $fopen("flagdump.log", "w"); \
+        flagdumpfd = $fopen("logDumps/flagdump.log", "w"); \
         if (flagdumpfd == 0) begin \
             $display("ERROR: cannot open flagdump.log"); \
             $finish; \
