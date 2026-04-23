@@ -2,6 +2,7 @@
 00000000
 00000000
 00000000
+<<<<<<< HEAD
 <<<<<<< HEAD:design/EverythingEverywhereAllAtOnce/tests/Stages/Harish_StageTesting/gen/memGen/hexLoad/mem_1_1.hex
 000000be
 00000000
@@ -10,12 +11,17 @@
 00000000
 00000000
 =======
+=======
+>>>>>>> 27272f64aab809ebd52b02de1d7a08aae2059875
 831f8ba5
 00000000
 00000000
 00000000
 00010000
+<<<<<<< HEAD
 >>>>>>> 27272f64aab809ebd52b02de1d7a08aae2059875:design/EverythingEverywhereAllAtOnce/tests/system/full/gen/memGen/hexLoad/mem_1_1.hex
+=======
+>>>>>>> 27272f64aab809ebd52b02de1d7a08aae2059875
 00000000
 00000000
 00000000
@@ -23,10 +29,14 @@
 00000000
 00000000
 00000000
+<<<<<<< HEAD
 <<<<<<< HEAD:design/EverythingEverywhereAllAtOnce/tests/Stages/Harish_StageTesting/gen/memGen/hexLoad/mem_1_1.hex
 =======
 ffffffff
 >>>>>>> 27272f64aab809ebd52b02de1d7a08aae2059875:design/EverythingEverywhereAllAtOnce/tests/system/full/gen/memGen/hexLoad/mem_1_1.hex
+=======
+ffffffff
+>>>>>>> 27272f64aab809ebd52b02de1d7a08aae2059875
 00000000
 00000000
 00000000
