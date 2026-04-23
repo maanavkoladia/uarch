@@ -171,7 +171,8 @@
         "FLAGS" : "15",
         "EIP" : "16",
         "CMPXCHG_SEL" : "17",
-        "IRETD_SEL" : "18"
+        "SR_DR_SEL" : "18",
+        "IRETD_SEL" : "19"
     },
 
     "alu_inputB_sel" : {
@@ -193,7 +194,8 @@
         "FLAGS" : "15",
         "EIP" : "16",
         "CMPXCHG_SEL" : "17",
-        "IRETD_SEL" : "18"
+        "SR_DR_SEL" : "18",
+        "IRETD_SEL" : "19"
     },
 
     "branch_target_sel" : {
@@ -215,7 +217,8 @@
         "FLAGS" : "15",
         "EIP" : "16",
         "CMPXCHG_SEL" : "17",
-        "IRETD_SEL" : "18"
+        "SR_DR_SEL" : "18",
+        "IRETD_SEL" : "19"
     },
 
     "OP_TYPE" : {

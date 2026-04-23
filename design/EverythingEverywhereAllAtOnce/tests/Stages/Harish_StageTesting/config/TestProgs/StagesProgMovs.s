@@ -3,62 +3,22 @@
 
     .global _start
 _start:
+    movl $0, %eax
+    movl $0, %ebx
+    movl $0, %ecx
+    movl $0, %edx
+    movl $0x5670, %esi
+    movl $0x2000, %edi
+    movl $0, %ebp
 
-    # ----------------------------------------
-    # B2: MOV BL, imm8
-    # opcode B2
-    # ----------------------------------------
-    movb $0x7F, %bl
-
-    # ----------------------------------------
-    # 89: MOV r/m32, r32
-    # EBX -> ECX
-    # opcode 89
-    # 0x1002
-    # ----------------------------------------
-    movl %ebx, %esp
-
-    # ----------------------------------------
-    # 8E: MOV Sreg, r/m16
-    # Move AX into ES
-    # opcode 8E
-    # 0x1004
-    # ----------------------------------------
-    movw %bx, %es
-
-    # ----------------------------------------
-    # 8C: MOV r/m16, Sreg
-    # Move DS into AX
-    # opcode 8C
-    # 0x1006
-    # ----------------------------------------
-    movw %es, %ax
-
-    # ----------------------------------------
-    # 89 with memory operand
-    # [EDI + EDX*2 + disp]
-    # 0x1009
-    # ----------------------------------------
-    movw %ax, 0x5678(%edi,%edx,2)
-
-
-    # 0x1011
-    movl 0x5678(%edi,%edx,2), %edx
-
-    # ----------------------------------------
-    # E9: JMP rel32
-    # Jump forward to label target
-    # ----------------------------------------
-    jmp target
-
-    # some filler instructions (won’t execute)
-    movl %eax, %edi
-    movl %ebx, %ebx
-
-target:
-    push %ebx
-    pop %esi
-    addl %esi, %eax
+    movsl
+    movl (%edi), %eax
+    movsl
+    movl (%edi), %eax
+    movsl
+    movl (%edi), %eax
+    movsl
+    movl (%edi), %eax
 
     hlt
 

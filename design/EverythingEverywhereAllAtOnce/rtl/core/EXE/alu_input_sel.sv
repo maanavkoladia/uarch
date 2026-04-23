@@ -50,7 +50,7 @@ module alu_input_sel(
             control_store_pkg::SEGMENT_NEIP:   srA_64 = {dr_data, NEIP}; 
             control_store_pkg::SEGMENT_EIP:    srA_64 = {dr_data, EIP}; //not sure when this needs to be used
             control_store_pkg::EAX_REG:        srA_64 = {32'd0, EAX}; //cmpxchg
-            control_store_pkg::CMPXCHG_SEL:    srA_64 = {sr_data, dr_data}; 
+            control_store_pkg::SR_DR_SEL:      srA_64 = {sr_data[31:0], dr_data[31:0]}; 
             control_store_pkg::IRETD_SEL:      srA_64 = res_buf_out[96:32];
             control_store_pkg::FLAGS:          srA_64 = {32'd0, flags};
             default:        srA_64 = '0;
