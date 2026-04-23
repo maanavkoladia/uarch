@@ -8,7 +8,7 @@ LOG_DIR = $(TEST_DIR)/logDumps/
 
 DISTRO := $(shell . /etc/os-release && echo $$ID)
 
-TARGET = tb_SystemTest
+TARGET = system_testing
 
 STRUCTRURAL := false
 

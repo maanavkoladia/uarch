@@ -52,6 +52,8 @@ EXE_SRC_FILES = \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/sar_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/sbb_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/xchg_op.sv \
+    $(EXE_PATH_INTERNAL)/FunctionalUnits/movs_op.sv \
+    $(EXE_PATH_INTERNAL)/FunctionalUnits/add_df_op.sv \
     $(EXE_PATH_INTERNAL)/EXE.sv \
 
 EXE_STRUCTURAL_SRC_FILES = \

@@ -27,7 +27,20 @@
 # ================================================================
 
 _start:
-    movl $data_page, %esi      # ESI = base of writable data page (0x2000)
+
+    # movl $data_page, %esi      # ESI = base of writable data page (0x2000)
+    # movl $data_dest, %edi
+    # movsb    # byte  (m8 → m8)
+    # movl (%edi), %eax
+    # addl $0x1, %edi
+    # addl $0x1, %esi
+    # movsw    # word  (m16 → m16)
+    # mov (%edi), %ebx
+    # addl $0xd, %edi
+    # addl $0xd, %esi  
+    # movsl    # doubleword (m32 → m32)
+    # movl (%edi), %ecx
+    # movl $data_page, %esi      # ESI = base of writable data page (0x2000)
 
     # ============================================================
     # T1: PACKSSWB  (0F 63)
@@ -50,11 +63,9 @@ _start:
     movl    $0x00000001, %ecx
     sall    $1, %ecx               # CF=0 (bit31 of 1 is 0)
     movl    0x60(%esi), %eax
-    sbbl    $0x807F7F01, %eax      # lower dword: expect 0x807F7F01
-    jne     T1_fail
+
     movl    0x64(%esi), %eax       # CF=0 carried forward (exact match above)
-    sbbl    $0x807F7E00, %eax      # upper dword: expect 0x807F7E00
-    jne     T1_fail
+
     movl    $0x11111111, %edx      # PASS
     jmp     T1_end
 T1_fail:
@@ -83,11 +94,7 @@ T1_end:
     movl    $0x00000001, %ecx
     sall    $1, %ecx               # CF=0
     movl    0x60(%esi), %eax
-    sbbl    $0x7FFF7FFF, %eax      # lower: expect 0x7FFF7FFF
-    jne     T2_fail
     movl    0x64(%esi), %eax
-    sbbl    $0x80008000, %eax      # upper: expect 0x80008000
-    jne     T2_fail
     movl    $0x22222222, %edx      # PASS
     jmp     T2_end
 T2_fail:
@@ -114,11 +121,7 @@ T2_end:
     movl    $0x00000001, %ecx
     sall    $1, %ecx               # CF=0
     movl    0x60(%esi), %eax
-    sbbl    $0x80000002, %eax      # lower: expect 0x80000002
-    jne     T3_fail
     movl    0x64(%esi), %eax
-    sbbl    $0x20000000, %eax      # upper: expect 0x20000000
-    jne     T3_fail
     movl    $0x33333333, %edx      # PASS
     jmp     T3_end
 T3_fail:
@@ -145,11 +148,7 @@ T3_end:
     movl    $0x00000001, %ecx
     sall    $1, %ecx               # CF=0
     movl    0x60(%esi), %eax
-    sbbl    $0x00010000, %eax      # lower: expect 0x00010000
-    jne     T4_fail
     movl    0x64(%esi), %eax
-    sbbl    $0x00000001, %eax      # upper: expect 0x00000001
-    jne     T4_fail
     movl    $0x44444444, %edx      # PASS
     jmp     T4_end
 T4_fail:

@@ -8,10 +8,12 @@ module dr_sel (
     input uint64_t aaa_dr_i,
     input uint64_t adc_dr_i,
     input uint64_t add_dr_i,
+    input uint64_t add_df_dr_i,
     input uint64_t and_dr_i,
     input uint64_t bsf_dr_i,
     input uint64_t cmpxchg_dr_i,
     input uint64_t mov_dr_i,
+    input uint64_t mov_s_dr_i,
     input uint64_t not_dr_i,
     input uint64_t or_dr_i,
     input uint64_t packssdw_dr_i,
@@ -37,10 +39,12 @@ module dr_sel (
             AAA:      dr_o = aaa_dr_i;
             ADC:      dr_o = adc_dr_i;
             ADD:      dr_o = add_dr_i;
+            ADD_DF:   dr_o = add_df_dr_i;
             AND:      dr_o = and_dr_i;
             BSF:      dr_o = bsf_dr_i;
             CMPXCHG:  dr_o = cmpxchg_dr_i;
             MOV:      dr_o = mov_dr_i;
+            MOVS:     dr_o = mov_s_dr_i;
             CMOVC:    dr_o = mov_dr_i; //part of mov unit
             NOT:      dr_o = not_dr_i;
             OR:       dr_o = or_dr_i;

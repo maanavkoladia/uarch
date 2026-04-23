@@ -74,6 +74,10 @@ module EXE (
     uint64_t                          add_dr_o;
     uint64_t                          add_res_buf_o;
 
+    //ADD_DF Outputs
+    uint64_t                          add_df_dr_o;
+    uint64_t                          add_df_sr_o;
+
     // AND Outputs
     uint64_t                          and_dr_o;
     uint64_t                          and_res_buf_o;
@@ -102,6 +106,11 @@ module EXE (
     // MOV Outputs
     uint64_t                          mov_dr_o;
     uint64_t                          mov_res_buf_o;
+
+    //MOVS Outputs
+    uint64_t                          mov_s_dr_o;
+    uint64_t                          mov_s_sr_o;
+    uint64_t                          mov_s_res_buf_o;
 
     // NOT Outputs
     uint64_t                          not_dr_o;
@@ -301,12 +310,14 @@ module EXE (
         .cmpxchg_buf_i     (cmpxchg_buf_o),
         .far_call_res_buf_i(far_call_res_buf),
         .mov_res_buf_i     (mov_res_buf_o),
+        .mov_s_res_buf_i   (mov_s_res_buf_o),
         .not_res_buf_i     (not_res_buf_o),
         .or_res_buf_i      (or_res_buf_o),
         .push_res_buf_i    (push_res_buf),
         .sar_res_buf_i     (sar_res_buf_o),
         .sbb_res_buf_i     (sbb_res_buf_o),
         .xchg_res_buf_i    (xchg_res_buf),
+
         .res_buf_o         (res_buf_selected)
     );
 
@@ -334,10 +345,12 @@ module EXE (
         .aaa_dr_i        (aaa_dr_o),
         .adc_dr_i        (adc_dr_o),
         .add_dr_i        (add_dr_o),
+        .add_df_dr_i     (add_df_dr_o),
         .and_dr_i        (and_dr_o),
         .bsf_dr_i        (bsf_dr_o),
         .cmpxchg_dr_i    (cmpxchg_dr_o),
         .mov_dr_i        (mov_dr_o),
+        .mov_s_dr_i      (mov_s_dr_o),
         .not_dr_i        (not_dr_o),
         .or_dr_i         (or_dr_o),
         .packssdw_dr_i   (packssdw_dr_o),
@@ -359,6 +372,8 @@ module EXE (
     sr_sel u_sr_sel (
         .op_type         (op_type),
         .sr_data         (sr_data),
+        .add_df_sr_i     (add_df_sr_o),
+        .mov_s_sr_i       (mov_s_sr_o),
         .pop_sr_i        (pop_sr_o),
         .push_sr_i       (push_sr_o),
         .ret_far_imm_sr_i(ret_far_imm_sr_o),
@@ -595,6 +610,14 @@ module EXE (
         .AF       (add_af_o)
     );
 
+    add_df_op u_add_df_op(
+        .srA(srA),
+        .srB(srB),
+        .curr_df_flag(flags_reg[DF_IDX]),
+        .dr_o(add_df_dr_o),
+        .sr_o(add_df_sr_o)
+    );
+
     // --- AND: Bitwise AND ---
     and_op u_and_op (
         .srA      (srA),       //DR_REG/MEM
@@ -744,6 +767,16 @@ module EXE (
         .curr_cf_flag(flags_reg[CF_IDX]),
         .res_buf_o(mov_res_buf_o),
         .dr_o     (mov_dr_o)
+    );
+
+    movs_op u_movs_op (
+        .srA      (srA),
+        .srB      (srB),
+        .data_size(data_size),
+        .curr_df_flag(flags_reg[DF_IDX]),
+        .res_buf_o(mov_s_res_buf_o),
+        .dr_o     (mov_s_dr_o),
+        .sr_o     (mov_s_sr_o)
     );
 
     // --- XCHG: Exchange ---

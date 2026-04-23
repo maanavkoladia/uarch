@@ -1,0 +1,202 @@
+# Supported Opcodes — x86-32 Functional Simulator
+
+## ARITHMETIC
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| 37           | AAA                | ASCII adjust AL after addition                   |
+| 04 ib        | ADD AL,imm8        | Add imm8 to AL                                   |
+| 05 iw        | ADD AX,imm16       | Add imm16 to AX                                  |
+| 05 id        | ADD EAX,imm32      | Add imm32 to EAX                                 |
+| 80 /0 ib     | ADD r/m8,imm8      | Add imm8 to r/m8                                 |
+| 81 /0 id     | ADD r/m32,imm32    | Add imm32 to r/m32                               |
+| 83 /0 ib     | ADD r/m32,imm8     | Add sign-extended imm8 to r/m32                  |
+| 00 /r        | ADD r/m8,r8        | Add r8 to r/m8                                   |
+| 01 /r        | ADD r/m32,r32      | Add r32 to r/m32                                 |
+| 02 /r        | ADD r8,r/m8        | Add r/m8 to r8                                   |
+| 03 /r        | ADD r32,r/m32      | Add r/m32 to r32                                 |
+| 81 /2 id     | ADC r/m32,imm32    | Add with CF imm32 to r/m32                       |
+| 83 /2 ib     | ADC r/m32,imm8     | Add with CF sign-extended imm8 into r/m32        |
+| 11 /r        | ADC r/m32,r32      | Add with CF r32 to r/m32                         |
+| 13 /r        | ADC r32,r/m32      | Add with CF r/m32 to r32                         |
+| 81 /3 id     | SBB r/m32,imm32    | Subtract with borrow imm32 from r/m32            |
+| 83 /3 ib     | SBB r/m32,imm8     | Subtract with borrow sign-extended imm8 from r/m32 |
+| 19 /r        | SBB r/m32,r32      | Subtract with borrow r32 from r/m32              |
+| 1B /r        | SBB r32,r/m32      | Subtract with borrow r/m32 from r32              |
+
+## LOGICAL
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| 20 /r        | AND r/m8,r8        | r/m8 AND r8                                      |
+| 21 /r        | AND r/m32,r32      | r/m32 AND r32                                    |
+| 22 /r        | AND r8,r/m8        | r8 AND r/m8                                      |
+| 23 /r        | AND r32,r/m32      | r32 AND r/m32                                    |
+| 24 ib        | AND AL,imm8        | AL AND imm8                                      |
+| 25 id        | AND EAX,imm32      | EAX AND imm32                                    |
+| 80 /4 ib     | AND r/m8,imm8      | r/m8 AND imm8                                    |
+| 81 /4 id     | AND r/m32,imm32    | r/m32 AND imm32                                  |
+| 83 /4 ib     | AND r/m32,imm8     | r/m32 AND sign-extended imm8                     |
+| 08 /r        | OR r/m8,r8         | r/m8 OR r8                                       |
+| 09 /r        | OR r/m32,r32       | r/m32 OR r32                                     |
+| 0A /r        | OR r8,r/m8         | r8 OR r/m8                                       |
+| 0B /r        | OR r32,r/m32       | r32 OR r/m32                                     |
+| 0C ib        | OR AL,imm8         | AL OR imm8                                       |
+| 0D id        | OR EAX,imm32       | EAX OR imm32                                     |
+| 80 /1 ib     | OR r/m8,imm8       | r/m8 OR imm8                                     |
+| 81 /1 id     | OR r/m32,imm32     | r/m32 OR imm32                                   |
+| F6 /2        | NOT r/m8           | One's complement of r/m8                         |
+| F7 /2        | NOT r/m32          | One's complement of r/m32                        |
+
+## SHIFT
+
+> Note: SHL is an alias for SAL (same opcode encoding, same behavior).
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| D0 /4        | SAL r/m8,1         | Multiply r/m8 by 2, once                         |
+| D2 /4        | SAL r/m8,CL        | Multiply r/m8 by 2, CL times                     |
+| C0 /4 ib     | SAL r/m8,imm8      | Multiply r/m8 by 2, imm8 times                   |
+| D1 /4        | SAL r/m16,1        | Multiply r/m16 by 2, once                        |
+| D3 /4        | SAL r/m16,CL       | Multiply r/m16 by 2, CL times                    |
+| C1 /4 ib     | SAL r/m16,imm8     | Multiply r/m16 by 2, imm8 times                  |
+| D1 /4        | SAL r/m32,1        | Multiply r/m32 by 2, once                        |
+| D3 /4        | SAL r/m32,CL       | Multiply r/m32 by 2, CL times                    |
+| C1 /4 ib     | SAL r/m32,imm8     | Multiply r/m32 by 2, imm8 times                  |
+| D0 /7        | SAR r/m8,1         | Signed divide r/m8 by 2, once                   |
+| D2 /7        | SAR r/m8,CL        | Signed divide r/m8 by 2, CL times               |
+| C0 /7 ib     | SAR r/m8,imm8      | Signed divide r/m8 by 2, imm8 times             |
+| D1 /7        | SAR r/m16,1        | Signed divide r/m16 by 2, once                  |
+| D3 /7        | SAR r/m16,CL       | Signed divide r/m16 by 2, CL times              |
+| C1 /7 ib     | SAR r/m16,imm8     | Signed divide r/m16 by 2, imm8 times            |
+| D1 /7        | SAR r/m32,1        | Signed divide r/m32 by 2, once                  |
+| D3 /7        | SAR r/m32,CL       | Signed divide r/m32 by 2, CL times              |
+| C1 /7 ib     | SAR r/m32,imm8     | Signed divide r/m32 by 2, imm8 times            |
+
+## BIT MANIPULATION
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| 0F BC        | BSF r16,r/m16      | Bit scan forward on r/m16                        |
+| 0F BC        | BSF r32,r/m32      | Bit scan forward on r/m32                        |
+
+## DATA MOVEMENT
+
+| Opcode       | Instruction           | Description                                                              |
+|--------------|-----------------------|--------------------------------------------------------------------------|
+| 90+rw        | XCHG AX,r16          | Exchange r16 with AX                                                     |
+| 90+rd        | XCHG EAX,r32         | Exchange r32 with EAX                                                    |
+| 86 /r        | XCHG r/m8,r8         | Exchange r8 with r/m8                                                    |
+| 87 /r        | XCHG r/m16,r16       | Exchange r16 with r/m16                                                  |
+| 87 /r        | XCHG r/m32,r32       | Exchange r32 with r/m32                                                  |
+| 0F 42 /r     | CMOVC r16,r/m16      | Move if carry (CF=1)                                                     |
+| 0F 42 /r     | CMOVC r32,r/m32      | Move if carry (CF=1)                                                     |
+| 0F B0 /r     | CMPXCHG r/m8,r8      | Compare AL with r/m8. If equal, ZF=1 and r/m8=r8. Else ZF=0, AL=r/m8   |
+| 0F B1 /r     | CMPXCHG r/m16,r16    | Compare AX with r/m16. If equal, ZF=1 and r/m16=r16. Else ZF=0, AX=r/m16 |
+| 0F B1 /r     | CMPXCHG r/m32,r32    | Compare EAX with r/m32. If equal, ZF=1 and r/m32=r32. Else ZF=0, EAX=r/m32 |
+| 88 /r        | MOV r/m8,r8          | Move r8 to r/m8                                                          |
+| 89 /r        | MOV r/m32,r32        | Move r32 to r/m32                                                        |
+| 8A /r        | MOV r8,r/m8          | Move r/m8 to r8                                                          |
+| 8B /r        | MOV r32,r/m32        | Move r/m32 to r32                                                        |
+| 8C /r        | MOV r/m16,Sreg       | Move segment register to r/m16                                           |
+| 8E /r        | MOV Sreg,r/m16       | Move r/m16 to segment register                                           |
+| B0+rb ib     | MOV r8,imm8          | Move imm8 to r8                                                          |
+| B8+rd id     | MOV r32,imm32        | Move imm32 to r32                                                        |
+| C6 /0 ib     | MOV r/m8,imm8        | Move imm8 to r/m8                                                        |
+| C7 /0 id     | MOV r/m32,imm32      | Move imm32 to r/m32                                                      |
+| 0F 6F /r     | MOVQ mm,mm/m64       | Move 64-bit from mm/m64 to mm (MMX)                                      |
+
+## STRING
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| A4           | MOVS m8,m8         | Move byte at DS:ESI to ES:EDI; update ESI/EDI    |
+| A4           | MOVSB              | Move byte DS:ESI to ES:EDI                       |
+| A5           | MOVS m16,m16       | Move word at DS:ESI to ES:EDI; update ESI/EDI    |
+| A5           | MOVSW              | Move word DS:ESI to ES:EDI                       |
+| A5           | MOVS m32,m32       | Move dword at DS:ESI to ES:EDI; update ESI/EDI   |
+| A5           | MOVSD              | Move dword DS:ESI to ES:EDI                      |
+| F3 A4        | REP MOVSB          | Repeat move byte ECX times                       |
+| F3 A5        | REP MOVSD          | Repeat move dword ECX times                      |
+
+> ESI/EDI are incremented (DF=0) or decremented (DF=1) by the element size after each move.
+
+## STACK
+
+### PUSH
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| FF /6        | PUSH r/m16         | Push r/m16                                       |
+| FF /6        | PUSH r/m32         | Push r/m32                                       |
+| 50+rw        | PUSH r16           | Push r16                                         |
+| 50+rd        | PUSH r32           | Push r32                                         |
+| 6A ib        | PUSH imm8          | Push sign-extended imm8                          |
+| 68 iw        | PUSH imm16         | Push imm16                                       |
+| 68 id        | PUSH imm32         | Push imm32                                       |
+| 0E           | PUSH CS            | Push CS                                          |
+| 16           | PUSH SS            | Push SS                                          |
+| 1E           | PUSH DS            | Push DS                                          |
+| 06           | PUSH ES            | Push ES                                          |
+| 0F A0        | PUSH FS            | Push FS                                          |
+| 0F A8        | PUSH GS            | Push GS                                          |
+
+### POP
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| 8F /0        | POP r/m16          | Pop top of stack into m16; increment stack pointer |
+| 8F /0        | POP r/m32          | Pop top of stack into m32; increment stack pointer |
+| 58+rw        | POP r16            | Pop top of stack into r16; increment stack pointer |
+| 58+rd        | POP r32            | Pop top of stack into r32; increment stack pointer |
+| 1F           | POP DS             | Pop top of stack into DS; increment stack pointer  |
+| 07           | POP ES             | Pop top of stack into ES; increment stack pointer  |
+| 17           | POP SS             | Pop top of stack into SS; increment stack pointer  |
+| 0F A1        | POP FS             | Pop top of stack into FS; increment stack pointer  |
+| 0F A9        | POP GS             | Pop top of stack into GS; increment stack pointer  |
+
+> Stack grows toward lower memory addresses. ESP points to the top element (last pushed). PUSH decrements ESP then writes; POP reads then increments ESP.
+
+## CONTROL FLOW
+
+### Unconditional Jumps
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| E9 cd        | JMP rel32          | Jump near, relative                              |
+| EB cb        | JMP rel8           | Jump near, short                                 |
+| FF /4        | JMP r/m32          | Jump near, absolute indirect                     |
+| EA cp        | JMP ptr16:32       | Jump far, absolute                               |
+
+### Conditional Jumps
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| 77 cb        | JA rel8            | Jump short if above (CF=0 and ZF=0)              |
+| 77 cb        | JNBE rel8          | Jump short if not below or equal                 |
+| 75 cb        | JNE rel8           | Jump short if not equal (ZF=0)                   |
+| 75 cb        | JNZ rel8           | Jump short if not zero                           |
+| 76 cb        | JBE rel8           | Jump short if below or equal (CF=1 or ZF=1)      |
+| 74 cb        | JE rel8            | Jump short if equal (ZF=1)                       |
+| 74 cb        | JZ rel8            | Jump short if zero                               |
+
+### Call and Return
+
+| Opcode       | Instruction        | Description                                                        |
+|--------------|--------------------|--------------------------------------------------------------------|
+| E8 cw        | CALL rel16         | Call near, relative, displacement relative to next instruction     |
+| E8 cd        | CALL rel32         | Call near, relative, displacement relative to next instruction     |
+| FF /2        | CALL r/m16         | Call near, absolute indirect, address given in r/m16               |
+| FF /2        | CALL r/m32         | Call near, absolute indirect, address given in r/m32               |
+| 9A cp        | CALL ptr16:32      | Call far, absolute, address given in operand                       |
+| C3           | RET                | Near return to calling procedure                                   |
+| CB           | RET                | Far return to calling procedure                                    |
+| C2 iw        | RET imm16          | Near return and pop imm16 bytes from stack                         |
+| CA iw        | RET imm16          | Far return and pop imm16 bytes from stack                          |
+
+## MISCELLANEOUS
+
+| Opcode       | Instruction        | Description                                      |
+|--------------|--------------------|--------------------------------------------------|
+| F4           | HLT                | Halt                                             |
+| 90           | NOP                | No operation                                     |
