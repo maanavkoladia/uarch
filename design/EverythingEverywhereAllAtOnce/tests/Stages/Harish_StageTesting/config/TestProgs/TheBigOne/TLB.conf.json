@@ -28,7 +28,7 @@
         },
 
         "1" : {
-            "valid"   : "1",
+            "valid"   : "0",
             "present" : "1",
             "r_w"     : "1",
             "MMIO"    : "0",
@@ -38,7 +38,7 @@
 
         "2" : {
             "valid"   : "1",
-            "present" : "1",
+            "present" : "0",
             "r_w"     : "0",
             "MMIO"    : "0",
             "VPN"     : "20'h01010",
@@ -47,12 +47,13 @@
 
         "3" : {
             "valid"   : "1",
-            "present" : "0",
+            "present" : "1",
             "r_w"     : "1",
             "MMIO"    : "0",
-            "VPN"     : "20'h00004",
-            "PFN"     : "3'h4"
+            "VPN"     : "20'h40002",
+            "PFN"     : "3'h7"
         },
+
         "4" : {
             "valid"   : "1",
             "present" : "1",
@@ -61,25 +62,28 @@
             "VPN"     : "20'h10014",
             "PFN"     : "3'h0"
         },
+
         "5" : {
-            "valid"   : "0",
-            "present" : "0",
+            "valid"   : "1",
+            "present" : "1",
             "r_w"     : "1",
             "MMIO"    : "0",
             "VPN"     : "20'h00006",
             "PFN"     : "3'h6"
         },
+
         "6" : {
             "valid"   : "1",
             "present" : "1",
             "r_w"     : "1",
             "MMIO"    : "0",
-            "VPN"     : "20'hF00FE",
-            "PFN"     : "3'h7"
+            "VPN"     : "20'hF0004",
+            "PFN"     : "3'h4"
         },
+
         "7" : {
             "valid"   : "0",
-            "present" : "1",
+            "present" : "0",
             "r_w"     : "0",
             "MMIO"    : "0",
             "VPN"     : "20'hFFFFF",

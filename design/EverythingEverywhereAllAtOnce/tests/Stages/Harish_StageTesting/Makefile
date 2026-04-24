@@ -25,10 +25,13 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
+TEST_CASE_PATH = $(TEST_DIR)/config/TestProgs/TheBigOne/
+
+
 #sim rtl var
-ASM       = $(TEST_DIR)/config/TestProgs/TheBigOne.s
-TLB       = $(TEST_DIR)/config/TLB.conf.json
-CORE_REGS = $(TEST_DIR)/config/CoreRegs.conf.json
+ASM       = $(TEST_CASE_PATH)/TheBigOne.s
+TLB       = $(TEST_CASE_PATH)/TLB.conf.json
+CORE_REGS = $(TEST_CASE_PATH)/CoreRegs.conf.json
 
 OUT_JSON    = $(LOG_DIR)/sim_output.json
 LOG = $(LOG_DIR)/sim_run.log
@@ -49,7 +52,7 @@ include $(PROJECT_ROOT)/Make.vars
 include $(PROJECT_ROOT)/Make.build
 #include debugUtils/srcs.mk
 
-GEN_CONF = config/startUpGen.conf.json
+GEN_CONF = config/TestProgs/TheBigOne/startUpGen.conf.json
 
 TOP_MODULE_NAME = tb_stages
 
