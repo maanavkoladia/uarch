@@ -105,10 +105,13 @@ module mem_TOP (
 
     // -----------------------------------------------------------------------
     // 64 mem_bank instances
-    // Banks 0-7   => bank group 0 => writeBuf [127:0]
-    // Banks 8-15  => bank group 1 => writeBuf [255:128]
-    // ...
-    // Banks 56-63 => bank group 7 => writeBuf [1023:896]
+    // Bank b belongs to bank-group (b % 8).
+    //   Banks 0, 8, 16, ..., 56 => bank group 0 => writeBuf [127:0]
+    //   Banks 1, 9, 17, ..., 57 => bank group 1 => writeBuf [255:128]
+    //   ...
+    //   Banks 7,15, 23, ..., 63 => bank group 7 => writeBuf [1023:896]
+    // (SV: bank_cmds_o[(NUM_BANKS_PER_BANK_GROUP*j)+i].writeBuf = bankGroupTable[i].writeBuf,
+    //  i=group, j=bank-in-group)
     // -----------------------------------------------------------------------
     genvar i_gen;
     generate
@@ -121,7 +124,7 @@ module mem_TOP (
                 .start_store_i       (bank_cmd_start_store       [i_gen]),
                 .ld_address_change_i (bank_cmd_ld_address_change [i_gen]),
                 .driveMemBus_i       (bank_cmd_driveMemBus       [i_gen]),
-                .writeBuf_i          (bank_cmd_writeBuf          [(i_gen/8)*128 +: 128]),
+                .writeBuf_i          (bank_cmd_writeBuf          [(i_gen%8)*128 +: 128]),
                 .mem_bus             (mem_bus),
                 .precharged_o        (banks_precharged           [i_gen]),
                 .clear_writebufV_o   (banks_clear_writebufV      [i_gen])

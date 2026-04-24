@@ -259,10 +259,12 @@ module mem_controller_structural (
     // ================================================================
     // OUTPUT: bank_cmd_st_address  (64 banks x 5 bits)
     // ================================================================
-    // Bank b is in bank-group b/8.  st_address = bg_row[b/8].
+    // Bank b is in bank-group b%8.  st_address = bg_row[b%8].
+    // (SV: bank_cmds_o[(NUM_BANKS_PER_BANK_GROUP*j)+i].st_address =
+    //      bankGroupTable[i].address[14:10], i=group, j=bank-in-group)
     generate
         for (bi = 0; bi < 64; bi = bi + 1) begin : g_st_addr
-            assign bank_cmd_st_address[bi*5+:5] = bg_row[bi/8];
+            assign bank_cmd_st_address[bi*5+:5] = bg_row[bi%8];
         end
     endgenerate
 
@@ -270,9 +272,10 @@ module mem_controller_structural (
     // OUTPUT: bank_cmd_start_store  (64 banks)
     // ================================================================
     // Default 0. When fsm_start_store, set for bank {addr[9:7], bankGroup}.
-    // store_bank_idx = {address_bus[9:7], address_bus[6:4]} = address_bus[9:4]
+    // SV: bank_num_in_bank_group = {address_bus[9:7], bankGroup}
+    //   = {address_bus[9:7], address_bus[6:4]} = address_bus[9:4]
     wire [5:0] store_bank_idx;
-    assign store_bank_idx = {bankGroup, address_bus[9:7]};
+    assign store_bank_idx = {address_bus[9:7], bankGroup};
 
     // ---- decoder ----
     wire [63:0] store_oh;
