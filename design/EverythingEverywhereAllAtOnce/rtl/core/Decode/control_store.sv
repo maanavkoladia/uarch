@@ -45,6 +45,7 @@ module control_store (
     logic REG_IS_DR_o;
     logic REG_IS_SEGMENT_o;
     logic MODRM_BUT_NO_SR_o;
+    logic SWITCH_LD_ADDY_o;
 
     logic HARD_CODED_DR_o;
     logic HARD_CODED_SR_o;
@@ -121,6 +122,7 @@ module control_store (
         .REG_IS_DR_o(REG_IS_DR_o),
         .REG_IS_SEGMENT_o(REG_IS_SEGMENT_o),
         .MODRM_BUT_NO_SR_o(MODRM_BUT_NO_SR_o),
+        .SWITCH_LD_ADDY_o(SWITCH_LD_ADDY_o),
 
         .OP_IN_MODRM_o(OP_IN_MODRM_o),
 
@@ -256,6 +258,7 @@ module control_store (
         ST_SEL           : ST_SEL_o,
         MODRM_NEEDED     : MODRM_NEEDED_o,
         RM_IS_DR         : RM_IS_DR_o,
+        SWITCH_LD_ADDY   : SWITCH_LD_ADDY_o,
         LD_OP            : mod_rm_cs_outs.ld_op,
         ST_OP            : mod_rm_cs_outs.st_op,
         MOVS_OP          : MOVS_o,

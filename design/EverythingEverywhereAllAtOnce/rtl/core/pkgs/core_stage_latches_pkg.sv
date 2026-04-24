@@ -85,6 +85,7 @@ package core_stage_latches_pkg;
         bool ST_SEL;
         bool MODRM_NEEDED;
         bool RM_IS_DR;
+        bool SWITCH_LD_ADDY;
         bool LD_OP;
         bool ST_OP;
         reg_ids_e dr_id;

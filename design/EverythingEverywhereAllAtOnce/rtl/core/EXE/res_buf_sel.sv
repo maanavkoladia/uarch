@@ -16,6 +16,7 @@ module res_buf_sel (
     input uint64_t not_res_buf_i,
     input uint64_t or_res_buf_i,
     input uint64_t push_res_buf_i,
+    input uint64_t pop_res_buf_i,
     input uint64_t sal_res_buf_i,
     input uint64_t sar_res_buf_i,
     input uint64_t sbb_res_buf_i,
@@ -38,6 +39,7 @@ module res_buf_sel (
             NOT:      res_buf_o = not_res_buf_i;
             OR:       res_buf_o = or_res_buf_i;
             PUSH:     res_buf_o = push_res_buf_i;
+            POP:      res_buf_o = pop_res_buf_i;
             SAR:      res_buf_o = sar_res_buf_i;
             SAL:      res_buf_o = sal_res_buf_i;
             SBB:      res_buf_o = sbb_res_buf_i;

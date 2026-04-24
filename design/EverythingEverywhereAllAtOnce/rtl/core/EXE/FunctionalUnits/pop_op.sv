@@ -8,11 +8,13 @@ module pop_op(
     input  logic [63:0] sp_i,    // value of ESP (stack pointer)
     // never writing to mem
     output logic [63:0] dr_o,  // data to restore from stack
-    output logic [63:0] sr_o     // stack pointer update
+    output logic [63:0] sr_o,     // stack pointer update
     // no flag update
+    output logic [63:0] res_buf
 );
 
     assign dr_o = {32'd0, value_i[31:0]};
     assign sr_o   = {32'd0, sp_i[31:0] + 4};
+    assign res_buf = {32'd0, value_i[31:0]};
 
 endmodule

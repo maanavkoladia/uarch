@@ -22,6 +22,12 @@ module ppu (
     wire disp_needed;
     wire sib_size;
     wire needrm;
+
+    wire sib_size_unmasked;
+    wire disp_needed_unmasked;
+
+    assign sib_size = sib_size_unmasked && needrm;
+    assign disp_needed = disp_needed_unmasked && needrm;
     
     assign msd_size_o = msd_size;
     assign imm_size_o = imm_size;
@@ -45,7 +51,7 @@ module ppu (
     op_size opcode_size(.opcode_byte(IR[opcode_index]), .zero_f_prefix(total_pf_vector[1]), .needr_m(needrm), .imm_size(imm_size_fake));
     assign op_valid = IR_valid_vect[opcode_index];
 
-    modrm_size mod_size(.mod_byte(IR[modrm_index]), .msd_size(msd_size_fake), .sib_needed(sib_size), .disp_needed(disp_needed), .disp_size(disp_size));
+    modrm_size mod_size(.mod_byte(IR[modrm_index]), .msd_size(msd_size_fake), .sib_needed(sib_size_unmasked), .disp_needed(disp_needed_unmasked), .disp_size(disp_size));
     assign mod_valid = needrm ? IR_valid_vect[modrm_index] : 1'b1;
 
     //mux2_3 immmux(.in0(imm_size_fake), .in1(3'b010), .sel(total_pf_vector[3]), .out(imm_size));

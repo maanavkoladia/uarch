@@ -26,7 +26,7 @@ SIMFLAGS          ?=
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
 #sim rtl var
-ASM       = $(TEST_DIR)/config/TestProgs/PACK.s
+ASM       = $(TEST_DIR)/config/TestProgs/TheBigOne.s
 TLB       = $(TEST_DIR)/config/TLB.conf.json
 CORE_REGS = $(TEST_DIR)/config/CoreRegs.conf.json
 
@@ -34,7 +34,7 @@ OUT_JSON    = $(LOG_DIR)/sim_output.json
 LOG = $(LOG_DIR)/sim_run.log
 TRACE_FILE  = $(LOG_DIR)/sim_trace.log
 RTL_LOG    = $(RTL_RUN_LOG_FILE)
-REPORT_FILE = $(LOG_DIR)/compare_report.txt
+REPORT_FILE = $(LOG_DIR)/dont_read_this.txt
 
 NORM_RTL_LOG = $(LOG_DIR)/norm_rtl.log
 NORM_SIM_LOG = $(LOG_DIR)/norm_sim.log
@@ -43,10 +43,10 @@ SIM_REGDUMP_FILE  = $(LOG_DIR)/sim_regdump.log
 SIM_FLAGDUMP_FILE = $(LOG_DIR)/sim_flagdump.log
 RTL_REGDUMP_FILE  = $(LOG_DIR)/regdump.log
 RTL_FLAGDUMP_FILE = $(LOG_DIR)/flagdump.log
-DUMP_REPORT_FILE  = $(LOG_DIR)/dump_compare_report.txt
+DUMP_REPORT_FILE  = $(LOG_DIR)/compare_report.txt
 
 include $(PROJECT_ROOT)/Make.vars
-include $(PROJECT_ROOT)Make.build
+include $(PROJECT_ROOT)/Make.build
 #include debugUtils/srcs.mk
 
 GEN_CONF = config/startUpGen.conf.json
