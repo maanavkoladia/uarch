@@ -644,6 +644,7 @@ after_subs:
 
     pushl $0x00000064               # arg2 = 100
     pushl $0x00000036               # arg1 = 54
+    movl $0xAABBCCDD, %ebp
     call  sub_add_args              # EAX = 54 + 100 = 154
     addl  $8,         %esp          # cdecl caller cleanup
     addl  %eax,       %ebx
@@ -664,18 +665,27 @@ after_subs:
 
 sub_add_args:
     # [ESP] = return addr, [ESP+4] = arg1, [ESP+8] = arg2
-    movl 0x4(%esp),   %eax
-    addl 0x8(%esp),   %eax
+    push %ebp
+    mov %esp, %ebp
+    movl 0x4(%ebp),   %eax
+    addl 0x8(%ebp),   %eax
+    pop %ebp
     ret
 
 sub_and_args:
-    movl 0x4(%esp),   %eax
-    andl 0x8(%esp),   %eax
+    push %ebp
+    mov %esp, %ebp
+    movl 0x4(%ebp),   %eax
+    andl 0x8(%ebp),   %eax
+    pop %ebp
     ret
 
 sub_or_args:
-    movl 0x4(%esp),   %eax
-    orl  0x8(%esp),   %eax
+    push %ebp
+    mov %esp, %ebp
+    movl 0x4(%ebp),   %eax
+    orl  0x8(%ebp),   %eax
+    pop %ebp
     ret
 
 after_arg_subs:

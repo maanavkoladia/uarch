@@ -5,17 +5,8 @@ OPCODE CHECK
 -IRETD
 - OPCODE FF
 - FAR JMP
-- PACKSSWB
--PACKSSDW
--PADDW
--PADDD
--PAVG
--PAVGW
 - REP
  
--MOVQ
-- MOVS
-
 - need to add is_call signal so that esp_sb does not get cleared on a flush
 - need to change stage latches to add is_call and ZEXT_IMM8 -> SEXT_IMM8
 - major bugs solved:
@@ -25,6 +16,8 @@ OPCODE CHECK
     - backwards jumps not signextending
     - if writback is stalling, and we have a flush in execute we cant clear the execute latches, espeically for call or far call
     - arb latches not clearing reads when mem gets flushed. 
+    - in memory we swapped the bank group location and the address bus 9:7
+    
 
 
 - dma testing

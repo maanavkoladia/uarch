@@ -103,6 +103,7 @@ module cs_post_processor (
         ST_SEL          : ff_jmp ? 1'b0 : rr_cs_i.ST_SEL,
         MODRM_NEEDED    : rr_cs_i.MODRM_NEEDED,
         RM_IS_DR        : rr_cs_i.RM_IS_DR,
+        SWITCH_LD_ADDY  : rr_cs_i.SWITCH_LD_ADDY,
 
         LD_OP           : invalid_inst ? 
                             1'b0 : rr_cs_i.LD_OP,

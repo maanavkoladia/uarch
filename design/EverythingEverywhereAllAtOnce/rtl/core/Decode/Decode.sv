@@ -179,7 +179,10 @@ module Decode (
 
             if(exe_outs_i.br_res_out.valid && flush) EIP <= exe_outs_i.br_res_out.br_target;
             else begin
-                if(idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP && idm_outs_i.idm_slots[EIP[5:4]].valid && idm_outs_i.idm_slots[EIP[5:4]].br_valid) begin
+                if((idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP) 
+                        && (idm_outs_i.idm_slots[EIP[5:4]].valid) 
+                        && (idm_outs_i.idm_slots[EIP[5:4]].br_valid)
+                        && !invalid_inst) begin
                     EIP <= idm_outs_i.idm_slots[EIP[5:4]].br_btb_target;
                 end
                 else begin
