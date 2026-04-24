@@ -141,6 +141,7 @@ module EXE (
     // POP Outputs
     uint64_t                          pop_dr_o;
     uint64_t                          pop_sr_o;
+    uint64_t                          pop_res_buf;
 
     // PUSH Outputs
     uint64_t                          push_res_buf;
@@ -314,6 +315,7 @@ module EXE (
         .not_res_buf_i     (not_res_buf_o),
         .or_res_buf_i      (or_res_buf_o),
         .push_res_buf_i    (push_res_buf),
+        .pop_res_buf_i     (pop_res_buf),
         .sar_res_buf_i     (sar_res_buf_o),
         .sal_res_buf_i     (sal_res_buf_o),
         .sbb_res_buf_i     (sbb_res_buf_o),
@@ -878,7 +880,8 @@ module EXE (
         .value_i(srA),
         .sp_i   (srB),
         .dr_o   (pop_dr_o),
-        .sr_o   (pop_sr_o)
+        .sr_o   (pop_sr_o),
+        .res_buf(pop_res_buf)
     );
 
     // --- PUSH: Push to Stack ---

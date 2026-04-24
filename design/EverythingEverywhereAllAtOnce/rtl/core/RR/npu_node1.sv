@@ -24,6 +24,7 @@ module npu_node1 (
     input bool rm_is_dr,
     input bool st_sel,
     input bool movs_op,
+    input bool switch_ld_addy,
 
     output v_address_t ld_vaddy,
     output uint32_t seg0_limit_w_datasize,
@@ -53,9 +54,12 @@ module npu_node1 (
     uint32_t real_seg1_data;
     assign real_seg1_data = (seg1_valid) ? seg1_data : seg0_data;
 
+    uint32_t masked_displacement_out;
+    assign masked_displacement_out = (switch_ld_addy) ? 32'b0 : displacement_out;
+
     uint32_t seg0val_plus_displacement, seg1val_plus_displacement;
-    assign #3 seg0val_plus_displacement = displacement_out + (seg0_data << 16);
-    assign #3 seg1val_plus_displacement = displacement_out + (real_seg1_data << 16);
+    assign #3 seg0val_plus_displacement = masked_displacement_out + (seg0_data << 16);  //for push r/m32
+    assign #3 seg1val_plus_displacement = displacement_out + (real_seg1_data << 16);    //don't think you need masked disp_out here since this si only for store address
 
     always_comb begin
         case({sib_needed, special_modrm_bs})
@@ -105,7 +109,10 @@ module npu_node1 (
     //instead of picking then translating
 
     v_address_t st_vaddy;
-    assign #3 ld_vaddy = sib_or_reg + seg0val_plus_displacement;
+    uint32_t ld_addy_reg_data;
+    assign ld_addy_reg_data = (switch_ld_addy ? regout_sr_data : sib_or_reg);
+    
+    assign #3 ld_vaddy = ld_addy_reg_data + seg0val_plus_displacement;    //need this for making ss:esp the load address for pop r/m32
     assign #3 st_vaddy = sib_or_reg + seg1val_plus_displacement;
 
     uint32_t shifted_sr_data, shifted_dr_data, shifted_seg1_data;
