@@ -81,7 +81,7 @@ module npu_node1 (
                 displacement_out = 32'b0;
             end
             2'b10: begin
-                displacement_out = {24'b0, displacement[7:0]};
+                displacement_out = {{24{displacement[7]}}, displacement[7:0]};
             end
             2'b11: begin
                 displacement_out = displacement;

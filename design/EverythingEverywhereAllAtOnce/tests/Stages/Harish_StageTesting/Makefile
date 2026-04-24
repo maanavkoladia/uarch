@@ -26,7 +26,7 @@ SIMFLAGS          ?=
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
 #sim rtl var
-ASM       = $(TEST_DIR)/config/TestProgs/StagesProgMovs.s
+ASM       = $(TEST_DIR)/config/TestProgs/PACK.s
 TLB       = $(TEST_DIR)/config/TLB.conf.json
 CORE_REGS = $(TEST_DIR)/config/CoreRegs.conf.json
 
@@ -82,7 +82,7 @@ CC_FLAGS += \
     +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
 	
 
-.PHONY: all run clean see gen
+.PHONY: all run clean see gen full
 
 all: $(TARGET) 
 	
@@ -135,4 +135,4 @@ push: clean
 pull: 
 	git pull
 
-
+full: clean gen run compare
