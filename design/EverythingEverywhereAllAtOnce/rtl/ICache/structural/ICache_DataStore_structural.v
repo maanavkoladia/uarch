@@ -37,7 +37,7 @@ module ICache_DataStore (
     // Phased clock (10 stages * 0.25 ns = 2.5 ns)
     // ------------------------------------------------------------------
     wire clk_45_phase;
-    `BUFFER_DELAY(u_phase_buf, 10, 1, clk, clk_45_phase)
+    `BUFFER_DELAY(u_phase_buf, 12, 1, clk, clk_45_phase)
 
     // ------------------------------------------------------------------
     // Quad-level write-want: wbw_Q[q] = ld_From_I_VC_Swap | fill{q}_i
