@@ -11,7 +11,7 @@
 // ============================================================================
 
 
-module mem_controller_structural (
+module mem_controller(
     input wire clk,
     input wire rst,  // active low
 

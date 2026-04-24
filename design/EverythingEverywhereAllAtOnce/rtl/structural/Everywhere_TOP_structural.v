@@ -30,27 +30,27 @@ module Everywhere_TOP (
     wire                         [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addressBus;
 
     //mem
-    mem_TOP mem_unit (
-       .clk(clk),
-       .rst(rst),
-       .address_bus(addressBus),
-       .data_bus(dataBus),
-       .inFromDte(dte2mem),
-       .out2Dte(mem2dte),
-       .out2Sch(mem2sched)
-    );
-
     // mem_TOP mem_unit (
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .address_bus(addressBus),
-    //     .data_bus(dataBus),
-    //     .inFromDte_ld_req(dte2mem.ld_req),
-    //     .inFromDte_st_req(dte2mem.st_req),
-    //     .inFromDte_permission2DriveBus(dte2mem.permission2DriveBus),
-    //     .out2Dte_mem_Ready(mem2dte.mem_Ready),
-    //     .out2Sch_writeBuf_V(mem2sched.writeBuf_V)
+    //    .clk(clk),
+    //    .rst(rst),
+    //    .address_bus(addressBus),
+    //    .data_bus(dataBus),
+    //    .inFromDte(dte2mem),
+    //    .out2Dte(mem2dte),
+    //    .out2Sch(mem2sched)
     // );
+
+    mem_TOP mem_unit (
+        .clk(clk),
+        .rst(rst),
+        .address_bus(addressBus),
+        .data_bus(dataBus),
+        .inFromDte_ld_req(dte2mem.ld_req),
+        .inFromDte_st_req(dte2mem.st_req),
+        .inFromDte_permission2DriveBus(dte2mem.permission2DriveBus),
+        .out2Dte_mem_Ready(mem2dte.mem_Ready),
+        .out2Sch_writeBuf_V(mem2sched.writeBuf_V)
+    );
 
     //dcache
     DCache_TOP dcache_unit (
