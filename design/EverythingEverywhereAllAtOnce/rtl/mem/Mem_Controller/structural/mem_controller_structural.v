@@ -138,6 +138,8 @@ module mem_controller_structural (
     // ---- writeBuf_Valid (1-bit per group) ----
     //   SET   = fsm_set_WriteBuf_V & bg_sel_oh[i]
     //   CLEAR = OR(banks_clear_writebufV for every bank in group i)
+    //   Under new mapping bank b is in group b%8, so group ci contains
+    //   banks {ci, ci+8, ci+16, ci+24, ci+32, ci+40, ci+48, ci+56}.
     //   Priority: clear overrides set (matches original SV loop ordering)
     //   D = set & ~clear,  WE = set | clear
 
@@ -150,12 +152,13 @@ module mem_controller_structural (
             // SET
             `AND_2(u_set, 1, bg_set[ci], fsm_set_WriteBuf_V, bg_sel_oh[ci])
 
-            // CLEAR: OR-reduce 8 clear_writebufV signals for banks ci*8 .. ci*8+7
-            `OR_8(u_cfn, 1, bg_clr[ci], banks_clear_writebufV[ci*8+0],
-                  banks_clear_writebufV[ci*8+1], banks_clear_writebufV[ci*8+2],
-                  banks_clear_writebufV[ci*8+3], banks_clear_writebufV[ci*8+4],
-                  banks_clear_writebufV[ci*8+5], banks_clear_writebufV[ci*8+6],
-                  banks_clear_writebufV[ci*8+7])
+            // CLEAR: OR-reduce clear_writebufV from the 8 banks in group ci
+            // (SV: bankGroupTable[i % 8].writeBuf_Valid <= 0  for bank i)
+            `OR_8(u_cfn, 1, bg_clr[ci], banks_clear_writebufV[ci+0],
+                  banks_clear_writebufV[ci+8],  banks_clear_writebufV[ci+16],
+                  banks_clear_writebufV[ci+24], banks_clear_writebufV[ci+32],
+                  banks_clear_writebufV[ci+40], banks_clear_writebufV[ci+48],
+                  banks_clear_writebufV[ci+56])
 
             // D logic
             `OR_2(u_any, 1, bg_any_chg[ci], bg_set[ci], bg_clr[ci])
