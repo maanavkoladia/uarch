@@ -4,7 +4,7 @@
 #define __DS1__ 
 #define __SP0__
 
-.org 0x00000
+.org 0x00000000
 .code
 .global _start
 _start:
