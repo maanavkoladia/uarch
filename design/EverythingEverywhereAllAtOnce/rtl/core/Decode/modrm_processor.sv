@@ -131,6 +131,7 @@ module modrm_processor (
             //actually not true for fuck ass movs case, but gonna mux outside of here cause fuck that instruction
             //actually still not true even outside of movs case, what other case? you guessed it, mov. fuck ass instruction
             dr_wr = decode_cs_inputs.HARDCODED_DR_WR;
+            dr_high8 = decode_cs_inputs.HARDCODED_DR_HIGH8;
         end
         else begin
             dr_id = NO_REG;

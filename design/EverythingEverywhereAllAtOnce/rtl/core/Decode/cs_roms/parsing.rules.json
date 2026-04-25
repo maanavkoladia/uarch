@@ -43,6 +43,7 @@
         "NO_REG" : "24"
     },
 
+    "HARDCODED_DR_HIGH8" : "1",
     "HARD_CODED_SR" : "1",
 
     "HARD_CODED_SR_ID" : {

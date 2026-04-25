@@ -8,18 +8,18 @@ module movs_op(
     output uint64_t sr_o
 );
 
-    logic [2:0] inc;
+    logic [2:0] size;
     always_comb begin
-        inc = 0;
+        size = 0;
         case(data_size)
-            4'b0010, 4'b0001: inc = 3'd1;
-            4'b0011: inc = 3'd2;
-            4'b0111: inc = 3'd4;
+            4'b0010, 4'b0001: size = 3'd1;
+            4'b0011: size = 3'd2;
+            4'b0111: size = 3'd4;
         endcase
     end
 
     assign res_buf_o = srB;
-    assign dr_o = curr_df_flag ? srA[31:0]-inc : srA[31:0]+inc;
-    assign sr_o = curr_df_flag ? srA[63:32]-inc : srA[63:32]+inc;
+    assign dr_o = curr_df_flag ? srA[31:0]-size : srA[31:0]+size;
+    assign sr_o = curr_df_flag ? srA[63:32]-size : srA[63:32]+size;
 
 endmodule

@@ -62,6 +62,7 @@ package core_stage_latches_pkg;
         bool RM_IS_DR;
         bool REG_IS_DR;
         bool REG_IS_SEGMENT;
+        bool HARDCODED_DR_HIGH8;
         bool MODRM_BUT_NO_SR;
         bool HARDCODED_DR;
         reg_ids_e HARDCODED_DR_ID;

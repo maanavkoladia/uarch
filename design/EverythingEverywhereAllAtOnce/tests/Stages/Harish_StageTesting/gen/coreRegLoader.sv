@@ -21,11 +21,11 @@ module coreRegLoader ();
         // SS
         uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[2].limit = 20'hFFFFF;
         // ES
-        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[3].limit = 20'h00000;
+        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[3].limit = 20'hFFFFF;
         // FS
-        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[4].limit = 20'h00000;
+        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[4].limit = 20'hFFFFF;
         // GS
-        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[5].limit = 20'h00000;
+        uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[5].limit = 20'hFFFFF;
 
     end  // initial
 
