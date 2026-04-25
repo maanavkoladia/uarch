@@ -26,7 +26,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH = $(TEST_DIR)/config/TestProgs/TheBigOne/
+TEST_CASE_PATH = $(TEST_DIR)/config/TestProgs/simpleFarTest/
 
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
@@ -55,7 +55,7 @@ include $(PROJECT_ROOT)/Make.vars
 include $(PROJECT_ROOT)/Make.build
 #include debugUtils/srcs.mk
 
-GEN_CONF = config/TestProgs/TheBigOne/startUpGen.conf.json
+GEN_CONF = config/TestProgs/simpleFarTest/startUpGen.conf.json
 
 TOP_MODULE_NAME = tb_stages
 
