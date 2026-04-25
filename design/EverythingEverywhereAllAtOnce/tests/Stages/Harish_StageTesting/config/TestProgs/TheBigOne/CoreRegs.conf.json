@@ -4,7 +4,7 @@
     "startUpDelay"  : "30",
 
     "EIP" : {
-        "load" : "true",
+        "load" : "false",
         "path" : "uut_AllAtOnce.core_unit.decode_unit.EIP",
         "val"  : "32'h00000000"
     },

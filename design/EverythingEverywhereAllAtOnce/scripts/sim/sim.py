@@ -1,128 +1,125 @@
 #!/usr/bin/env python3
 """
-x86-32 Functional Instruction-Level Simulator
+x86-32 Functional Instruction-Level Simulator (segmented memory model).
 
 Usage:
-    python3 sim.py --asm path/to/program.s [--tlb path/to/TLB.conf.json] [--core-regs path/to/CoreRegs.conf.json]
-    python3 sim.py --config sim_config.json
+    python3 sim.py --test-dir <dir> --bin <path/to/program.bin> [options]
 
-Assembles the .s file using GNU as/ld, disassembles with objdump to get
-real instruction addresses and sizes, then executes instruction-by-instruction.
+`<dir>` must contain:
+    TLB.conf.json
+    CoreRegs.conf.json
+    memGen.conf.json     (only used informationally for mem_size_bytes)
+
+`program.bin` is a flat 32 KiB physical image.
 """
 
 import argparse
 import json
-import sys
 import os
+import sys
 
 from registers import RegisterFile
 from flags import Flags
 from memory import Memory
-from parser import assemble_and_disassemble, parse_objdump, parse_data_from_source
+from decoder import decode_one
 from execute import CPU, CPUException, HaltException
 
 
-def load_config(config_path):
-    with open(config_path) as f:
-        return json.load(f)
+# --------------------------------------------------------------
+# Helpers
+# --------------------------------------------------------------
+def _parse_verilog_literal(s):
+    """Parse a Verilog-style literal like \"32'h0001A2B0\" or \"20'hFFFFF\"."""
+    s = s.strip()
+    if "'h" in s:
+        return int(s.split("'h", 1)[1], 16)
+    if "'d" in s:
+        return int(s.split("'d", 1)[1], 10)
+    if "'b" in s:
+        return int(s.split("'b", 1)[1], 2)
+    return int(s, 0)
 
 
-def setup_from_args(asm_path, tlb_path=None, core_regs_path=None):
-    """Set up simulator from CLI args."""
-    regs = RegisterFile()
+def _load_core_regs(regs, core_cfg_path):
+    with open(core_cfg_path) as f:
+        cfg = json.load(f)
+
+    if cfg.get("EIP", {}).get("load") == "true":
+        regs.eip = _parse_verilog_literal(cfg["EIP"]["val"]) & 0xFFFFFFFF
+
+    if cfg.get("SegLimitVals", {}).get("load") == "true":
+        sl = cfg["SegLimitVals"]
+        for seg in ["CS", "DS", "SS", "ES", "FS", "GS"]:
+            if seg in sl and isinstance(sl[seg], list) and sl[seg]:
+                regs.seg_limits[seg.lower()] = _parse_verilog_literal(sl[seg][0]) & 0xFFFFF
+
+
+# --------------------------------------------------------------
+# Main loop
+# --------------------------------------------------------------
+def run_simulation(test_dir, bin_path, verbose=True, max_cycles=100000, dump_cycle=None):
+    regs  = RegisterFile()
     flags = Flags()
-    mem = Memory()
+    mem   = Memory()
 
-    if tlb_path:
-        mem.tlb.load_from_config(tlb_path)
-
-    if core_regs_path:
-        with open(core_regs_path) as f:
-            cfg = json.load(f)
-        if "SegLimitVals" in cfg:
-            sl = cfg["SegLimitVals"]
-            for seg_name in ["CS", "DS", "SS", "ES", "FS", "GS"]:
-                if seg_name in sl:
-                    val_str = sl[seg_name][0]  # e.g. "20'hFFFFF"
-                    val = int(val_str.split("'h")[1], 16)
-                    regs.seg_limits[seg_name.lower()] = val
-
-    return regs, flags, mem
-
-
-def run_simulation(regs, flags, mem, asm_path, verbose=True, max_cycles=100000, dump_cycle=None):
-    """Run the simulation. Returns (trace, final_state)."""
-
-    # Phase 1: Assemble and disassemble
-    print("Assembling...") if verbose else None
-    objdump_text, objdump_raw, data_bytes, text_org, data_org = assemble_and_disassemble(asm_path)
-
-    # Phase 2: Parse instructions from objdump
-    instructions = parse_objdump(objdump_text, objdump_raw)
-
-    # Override text_org with actual first instruction address
-    if instructions:
-        text_org = instructions[0].addr
-
-    # Build address -> instruction index map
-    addr_to_idx = {}
-    for i, inst in enumerate(instructions):
-        addr_to_idx[inst.addr] = i
-
-    # Phase 3: Load data into memory
-    # Auto-map data pages in TLB so they're accessible
-    for vaddr, data in data_bytes.items():
-        mem.tlb.add_identity_mapping(vaddr, len(data))
-        paddr, err = mem.tlb.translate(vaddr)
-        if err:
-            print("WARNING: Could not map data at 0x{:08X}: {}".format(vaddr, err))
-            paddr = vaddr & (mem.SIZE - 1)
-        mem.load_bytes_physical(paddr, data)
-
-    # Set initial EIP
-    regs.eip = text_org
+    mem.load_from_bin(bin_path)
+    mem.load_tlb(os.path.join(test_dir, "TLB.conf.json"))
+    _load_core_regs(regs, os.path.join(test_dir, "CoreRegs.conf.json"))
 
     cpu = CPU(regs, flags, mem)
     trace = []
-    pc = 0  # instruction index
 
     if verbose:
-        print(f"=== x86-32 Functional Simulator ===")
-        print(f"Code origin: 0x{regs.eip:08X}")
-        print(f"Instructions: {len(instructions)}")
-        print(f"Data sections loaded: {len(data_bytes)}")
-        if instructions:
-            print(f"First instruction: {instructions[0]}")
-            print(f"Last instruction:  {instructions[-1]}")
+        print(f"=== x86-32 Functional Simulator (segmented) ===")
+        print(f"  test-dir : {test_dir}")
+        print(f"  bin      : {bin_path}")
+        print(f"  EIP init : 0x{regs.eip:08X}")
+        print(f"  CS init  : 0x{regs.get('cs'):04X}")
+        seg_lim_str = "  ".join(f"{s.upper()}=0x{regs.seg_limits[s]:05X}"
+                                for s in ["cs", "ds", "ss", "es", "fs", "gs"])
+        print(f"  limits   : {seg_lim_str}")
         print()
 
     while cpu.cycle < max_cycles:
-        if pc < 0 or pc >= len(instructions):
-            if verbose:
-                print(f"[cycle {cpu.cycle}] EIP 0x{regs.eip:08X} - out of instruction range, halting.")
+        eip    = regs.eip
+        cs_val = regs.get('cs')
+
+        # --- Instruction Fetch ---
+        raw_bytes, fetch_err = mem.fetch_bytes(eip, cs_val, regs.seg_limits, count=15)
+        if fetch_err and len(raw_bytes) == 0:
+            print(f"[cycle {cpu.cycle}] Fetch fault at CS:EIP={cs_val:04X}:{eip:08X}: {fetch_err}")
+            break
+        if len(raw_bytes) == 0:
+            print(f"[cycle {cpu.cycle}] No bytes fetched at CS:EIP={cs_val:04X}:{eip:08X}, halting.")
             break
 
-        inst = instructions[pc]
-        regs.eip = inst.addr
+        linear_fetch = ((cs_val << 16) + eip) & 0xFFFFFFFF
 
-        # Snapshot before execution
+        # --- Decode ---
+        inst = decode_one(raw_bytes, linear_fetch)
+        if inst is None:
+            print(f"[cycle {cpu.cycle}] Decode failed at 0x{linear_fetch:08X} "
+                  f"(bytes: {raw_bytes[:8].hex()}), halting.")
+            break
+
+        # --- Snapshot before ---
         snap_before = regs.dump()
         snap_before["flags"] = flags.dump()
         snap_before["cycle"] = cpu.cycle
         snap_before["instruction"] = str(inst)
-        snap_before["raw"] = inst.raw
-        snap_before["addr"] = inst.addr
+        snap_before["raw"]   = inst.raw
+        snap_before["addr"]  = linear_fetch
 
-        # Advance EIP past current instruction (for relative jumps)
-        next_eip = inst.addr + inst.size
-        regs.eip = next_eip
+        # --- Advance EIP past current instruction (handlers may overwrite) ---
+        regs.eip = (eip + inst.size) & 0xFFFFFFFF
 
+        # --- Execute ---
         try:
             eip_modified = cpu.execute(inst)
         except HaltException:
             if verbose:
-                print(f"[cycle {cpu.cycle:4d}] 0x{inst.addr:08X}: {inst.raw}")
-                print(f"  *** HLT - Processor halted ***")
+                print(f"[cycle {cpu.cycle:4d}] {cs_val:04X}:{eip:08X}: {inst.raw}")
+                print(f"  *** HLT — Processor halted ***")
             snap_after = regs.dump()
             snap_after["flags"] = flags.dump()
             trace.append({"before": snap_before, "after": snap_after})
@@ -130,36 +127,23 @@ def run_simulation(regs, flags, mem, asm_path, verbose=True, max_cycles=100000, 
             cpu.halted = True
             break
         except CPUException as e:
-            print(f"\n!!! EXCEPTION at cycle {cpu.cycle}, addr 0x{inst.addr:08X} !!!")
+            print(f"\n!!! EXCEPTION at cycle {cpu.cycle}, CS:EIP={cs_val:04X}:{eip:08X} !!!")
             print(f"    Instruction: {inst.raw}")
             print(f"    {e}")
             print(f"    Stopping simulation.")
             break
 
+        # --- Snapshot after ---
         snap_after = regs.dump()
         snap_after["flags"] = flags.dump()
         trace.append({"before": snap_before, "after": snap_after})
 
         if verbose:
-            print(f"[cycle {cpu.cycle:4d}] 0x{inst.addr:08X}: {inst.raw}")
+            print(f"[cycle {cpu.cycle:4d}] {cs_val:04X}:{eip:08X}: {inst.raw}")
             _print_changed(snap_before, snap_after)
 
         if dump_cycle is not None and cpu.cycle == dump_cycle:
             _print_state(regs, flags, cpu.cycle)
-
-        # Advance PC
-        if eip_modified:
-            # EIP was set by the instruction (jump)
-            target = regs.eip
-            if target in addr_to_idx:
-                pc = addr_to_idx[target]
-            else:
-                if verbose:
-                    print(f"  WARNING: Jump target 0x{target:08X} not found in instruction map")
-                break
-        else:
-            pc += 1
-            regs.eip = next_eip
 
         cpu.cycle += 1
 
@@ -171,13 +155,11 @@ def run_simulation(regs, flags, mem, asm_path, verbose=True, max_cycles=100000, 
     return trace, {"regs": regs.dump(), "flags": flags.dump(), "cycles": cpu.cycle}
 
 
+# --------------------------------------------------------------
+# Trace / dump writers (unchanged formats)
+# --------------------------------------------------------------
 def _write_trace(trace, out_path):
-    """Write a normalized per-instruction trace for use with compare.py.
-
-    Format (one line per committed instruction):
-        EIP       MNEMONIC     WRITES                  FLAGS
-        0x1000    movl         EAX=0x00001000          CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-    """
+    """Write a normalized per-instruction trace for use with compare.py."""
     GPR   = ["eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"]
     SEG   = ["cs", "ds", "ss", "es", "fs", "gs"]
     MMX   = [f"mm{i}" for i in range(8)]
@@ -194,7 +176,6 @@ def _write_trace(trace, out_path):
             raw    = before.get("raw", "")
             mnemonic = raw.split(None, 1)[0] if raw else "unk"
 
-            # Collect changed registers (normalized to uppercase, 8 hex digits for GPR/SEG)
             writes = []
             for reg in GPR:
                 bv, av = before.get(reg, 0), after.get(reg, 0)
@@ -213,7 +194,6 @@ def _write_trace(trace, out_path):
 
             af = after.get("flags", {})
             flags_str = " ".join(f"{fl}={af.get(fl, 0)}" for fl in FLAGS)
-
             f.write(f"0x{eip:08X}  {mnemonic:<12}  {writes_str:<48}  {flags_str}\n")
 
 
@@ -230,9 +210,9 @@ def _print_changed(before, after):
             print(f"    {k}: 0x{before.get(k, 0):016X} -> 0x{after.get(k, 0):016X}")
     bf = before.get("flags", {})
     af = after.get("flags", {})
-    for f in ["CF", "ZF", "SF", "OF", "PF", "AF"]:
-        if bf.get(f) != af.get(f):
-            print(f"    {f}: 0x{bf.get(f, 0):X} -> 0x{af.get(f, 0):X}")
+    for fl in ["CF", "ZF", "SF", "OF", "PF", "AF"]:
+        if bf.get(fl) != af.get(fl):
+            print(f"    {fl}: 0x{bf.get(fl, 0):X} -> 0x{af.get(fl, 0):X}")
 
 
 def _print_state(regs, flags, cycle):
@@ -243,7 +223,7 @@ def _print_state(regs, flags, cycle):
 
 
 def _write_regdump_log(trace, out_path):
-    """Write per-instruction regfile dump matching RTL regdump.log format."""
+    """Per-instruction regfile dump matching RTL regdump.log format."""
     with open(out_path, 'w') as f:
         for entry in trace:
             eip = entry["before"]["addr"]
@@ -263,7 +243,7 @@ def _write_regdump_log(trace, out_path):
 
 
 def _write_flagdump_log(trace, out_path):
-    """Write per-instruction flag dump matching RTL flagdump.log format."""
+    """Per-instruction flag dump matching RTL flagdump.log format."""
     with open(out_path, 'w') as f:
         for entry in trace:
             eip = entry["before"]["addr"]
@@ -275,12 +255,15 @@ def _write_flagdump_log(trace, out_path):
                     f"  OF={fl.get('OF',0)}\n")
 
 
+# --------------------------------------------------------------
+# CLI
+# --------------------------------------------------------------
 def main():
-    p = argparse.ArgumentParser(description="x86-32 Functional Simulator")
-    p.add_argument("--asm", required=True, help="Path to .s assembly file")
-    p.add_argument("--tlb", help="Path to TLB.conf.json")
-    p.add_argument("--core-regs", help="Path to CoreRegs.conf.json")
-    p.add_argument("--config", help="Path to sim config JSON (overrides other args)")
+    p = argparse.ArgumentParser(description="x86-32 Functional Simulator (segmented)")
+    p.add_argument("--test-dir", required=True,
+                   help="Folder containing TLB.conf.json, CoreRegs.conf.json, memGen.conf.json")
+    p.add_argument("--bin", required=True,
+                   help="Flat physical-image program.bin (32 KiB)")
     p.add_argument("--quiet", action="store_true", help="Suppress per-instruction output")
     p.add_argument("--max-cycles", type=int, default=100000)
     p.add_argument("--dump-cycle", type=int, help="Dump full state at this cycle")
@@ -293,27 +276,17 @@ def main():
                    help="Write per-instruction flag dump matching RTL flagdump.log format")
     args = p.parse_args()
 
-    if args.config:
-        cfg = load_config(args.config)
-        regs, flags, mem = setup_from_args(
-            cfg.get("asm_file", args.asm),
-            cfg.get("tlb_config", args.tlb),
-            cfg.get("core_regs_config", args.core_regs)
-        )
-        asm_path = cfg.get("asm_file", args.asm)
-    else:
-        regs, flags, mem = setup_from_args(args.asm, args.tlb, args.core_regs)
-        asm_path = args.asm
-
-    trace, final = run_simulation(regs, flags, mem, asm_path,
-                                   verbose=not args.quiet,
-                                   max_cycles=args.max_cycles,
-                                   dump_cycle=args.dump_cycle)
+    trace, final = run_simulation(
+        test_dir=args.test_dir, bin_path=args.bin,
+        verbose=not args.quiet,
+        max_cycles=args.max_cycles,
+        dump_cycle=args.dump_cycle,
+    )
 
     if args.dump_json:
         out = {"cycles": final["cycles"]}
-        out["regs"] = {k: "0x{:08X}".format(v) for k, v in final["regs"].items()}
-        out["flags"] = {k: "0x{:X}".format(v) if isinstance(v, int) else v
+        out["regs"]  = {k: f"0x{v:08X}" for k, v in final["regs"].items()}
+        out["flags"] = {k: (f"0x{v:X}" if isinstance(v, int) else v)
                         for k, v in final["flags"].items()}
         with open(args.dump_json, 'w') as f:
             json.dump(out, f, indent=2)

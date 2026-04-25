@@ -60,9 +60,9 @@ module or_op(
         4'b0001 : ZF = zf_low8;
         4'b0010 : ZF = zf_up8;
         4'b0011 : ZF = zf_low16;
-        4'b0100 : ZF = zf_low16 & zf_up16;
+        4'b0111 : ZF = zf_low16 & zf_up16;
         default: ZF = 0;
-      endcase  
+      endcase
     end
 
     // SF is the most significant bit of the result based on data size

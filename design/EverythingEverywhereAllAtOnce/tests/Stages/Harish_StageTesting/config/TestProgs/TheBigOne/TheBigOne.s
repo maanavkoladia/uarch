@@ -1,6 +1,6 @@
 #define __CS__ 0x0000
-#define __DS__ 0x0000
-#define __SS__ 0x0000
+#define __DS__ 0x4002
+#define __SS__ 0xF000
 
 
 .org 0x00000000
@@ -16,7 +16,7 @@ segment_init:
     movw    %ax, %ss
 
 main:
-    movl $0x0, %esp              # Stack grows down from 0x5000 into stack_page
+    movl $0x00FFF, %esp              # Stack grows down from 0x5000 into stack_page
     movl $0x0, %esi              # ESI = base of data page
     movl $0x00000000, %ebx          # EBX = running accumulator / checksum
 
@@ -50,6 +50,8 @@ main:
     addl %eax,         %ebx
     movl 0x300(%esi),  %eax
     addl %eax,         %ebx
+
+    
 
     # ================================================================
     # SECTION 2: TIGHT-STRIDE STORES — SAME CACHE LINE REGION
@@ -1054,8 +1056,11 @@ ic_thrash_b:
     andl $0xCCCCCCCC, 0x280(%esi)
     addl $-1,         %ecx
     jne  ic_thrash_a
-
+    
 ic_done:
+    movb $0, %ah 
+    movb %ah, %al
+    movw %ax, %ss
     hlt
 
 # ================================================================

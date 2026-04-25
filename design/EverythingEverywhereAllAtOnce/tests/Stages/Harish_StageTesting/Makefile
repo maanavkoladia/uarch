@@ -1,4 +1,5 @@
-export SIM_DIR PYTHON ASM TLB CORE_REGS LOG RTL_LOG NORM_RTL_LOG NORM_SIM_LOG REPORT_FILE OUT_JSON \
+export SIM_DIR PYTHON SIM_PYTHON TEST_CASE_DIR PROGRAM_BIN \
+       LOG RTL_LOG NORM_RTL_LOG NORM_SIM_LOG REPORT_FILE OUT_JSON TRACE_FILE \
        SIM_REGDUMP_FILE SIM_FLAGDUMP_FILE RTL_REGDUMP_FILE RTL_FLAGDUMP_FILE DUMP_REPORT_FILE
 
 TEST_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
@@ -28,10 +29,12 @@ SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 TEST_CASE_PATH = $(TEST_DIR)/config/TestProgs/TheBigOne/
 
 
-#sim rtl var
-ASM       = $(TEST_CASE_PATH)/TheBigOne.s
-TLB       = $(TEST_CASE_PATH)/TLB.conf.json
-CORE_REGS = $(TEST_CASE_PATH)/CoreRegs.conf.json
+#sim rtl vars (segmented sim consumes test-dir + program.bin)
+TEST_CASE_DIR = $(TEST_CASE_PATH)
+PROGRAM_BIN   = $(TEST_DIR)/gen/memGen/meta/program.bin
+
+# Use the venv python (it has capstone installed) if it exists.
+SIM_PYTHON = $(TEST_DIR)/venv/bin/python3
 
 OUT_JSON    = $(LOG_DIR)/sim_output.json
 LOG = $(LOG_DIR)/sim_run.log
