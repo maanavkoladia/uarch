@@ -2,24 +2,30 @@
 # x86-32 Functional Simulator  –  Makefile
 # ─────────────────────────────────────────────
 # Usage:
-#   make run                 # verbose run with default program
-#   make run ASM=path/to.s   # run a different program
+#   make run                 # verbose run with default test case
+#   make run TEST_CASE_DIR=path PROGRAM_BIN=path/to/program.bin
 #   make quiet               # final-state only
 #   make json                # export final state to JSON
 #   make dump CYCLE=50       # dump regs at cycle 50
-#   make clean               # remove generated outputs
+#   make compare             # diff sim vs RTL trace
 # ─────────────────────────────────────────────
 
 SIM_DIR   ?= $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 ROOT_DIR  ?= $(abspath $(SIM_DIR)/../..)
-TEST_DIR  ?= $(ROOT_DIR)/tests/Stages/Harish_StageTesting/config
+TEST_DIR  ?= $(ROOT_DIR)/tests/Stages/Harish_StageTesting
 
+# ── Inputs (the parent stage Makefile exports these) ──
+TEST_CASE_DIR ?= $(TEST_DIR)/config/TestProgs/TheBigOne
+PROGRAM_BIN   ?= $(TEST_DIR)/gen/memGen/meta/program.bin
 
-#this needs to be changed to use genconf var
-# ── Inputs (override on command line) ──
-ASM       ?= $(TEST_DIR)/MovHeavy.s
-TLB       ?= $(TEST_DIR)/TLB.conf.json
-CORE_REGS ?= $(TEST_DIR)/CoreRegs.conf.json
+# ── Python (capstone-aware venv) ──
+# Falls back to PYTHON if a venv python isn't available.
+VENV_PY := $(TEST_DIR)/venv/bin/python3
+ifeq ($(wildcard $(VENV_PY)),)
+SIM_PYTHON ?= $(PYTHON)
+else
+SIM_PYTHON ?= $(VENV_PY)
+endif
 
 # ── Options ──
 MAX_CYCLES  ?= 100000
@@ -27,7 +33,7 @@ CYCLE       ?=
 OUT_JSON    ?= sim_output.json
 LOG         ?= sim_run.log
 TRACE_FILE  ?= sim_trace.log
-RTL_LOG     ?= $(abspath $(TEST_DIR)/../run.log)
+RTL_LOG     ?= $(abspath $(TEST_DIR)/run.log)
 REPORT_FILE ?= compare_report.txt
 
 NORM_RTL_LOG ?= norm_rtl.log
@@ -35,13 +41,15 @@ NORM_SIM_LOG ?= norm_sim.log
 
 SIM_REGDUMP_FILE  ?= sim_regdump.log
 SIM_FLAGDUMP_FILE ?= sim_flagdump.log
-RTL_REGDUMP_FILE  ?= $(abspath $(TEST_DIR)/../regdump.log)
-RTL_FLAGDUMP_FILE ?= $(abspath $(TEST_DIR)/../flagdump.log)
+RTL_REGDUMP_FILE  ?= $(abspath $(TEST_DIR)/regdump.log)
+RTL_FLAGDUMP_FILE ?= $(abspath $(TEST_DIR)/flagdump.log)
 DUMP_REPORT_FILE  ?= dump_compare_report.txt
 
-#same here
 # ── Base command ──
-SIM_CMD = $(PYTHON) $(SIM_DIR)/sim.py --asm $(ASM) --tlb $(TLB) --core-regs $(CORE_REGS) --max-cycles $(MAX_CYCLES)
+SIM_CMD = $(SIM_PYTHON) $(SIM_DIR)/sim.py \
+          --test-dir $(TEST_CASE_DIR) \
+          --bin      $(PROGRAM_BIN) \
+          --max-cycles $(MAX_CYCLES)
 
 # ── Targets ──
 .PHONY: run quiet json dump trace compare clean help
@@ -73,7 +81,7 @@ compare: run
 		--trace-file $(TRACE_FILE) \
 		--regdump-file $(SIM_REGDUMP_FILE) \
 		--flagdump-file $(SIM_FLAGDUMP_FILE)
-	$(PYTHON) $(SIM_DIR)/compare.py \
+	$(SIM_PYTHON) $(SIM_DIR)/compare.py \
 		--sim $(TRACE_FILE) \
 		--rtl $(RTL_LOG) \
 		--out $(REPORT_FILE) \
@@ -90,9 +98,6 @@ compare: run
 	@echo "Normalized SIM:  $(NORM_SIM_LOG)   (use: diff norm_sim.log norm_rtl.log)"
 	@echo "Normalized RTL:  $(NORM_RTL_LOG)"
 
-#clean:
-#	rm -f $(OUT_JSON) $(LOG) $(TRACE_FILE) $(REPORT_FILE) norm_sim.log norm_rtl.log
-
 help:
 	@echo "Targets:"
 	@echo "  run              Verbose run (register changes per instruction)"
@@ -101,14 +106,10 @@ help:
 	@echo "  dump CYCLE=N     Dump full register state at cycle N"
 	@echo "  trace            Run sim and write normalized trace (TRACE_FILE=$(TRACE_FILE))"
 	@echo "  compare          Run sim trace + parse RTL log + diff report"
-	@echo "                   RTL_LOG defaults to $(RTL_LOG)"
-	@echo "                   Override: make compare RTL_LOG=/path/to/pipeline_debug.log"
-	@echo "  clean         Remove generated files"
 	@echo ""
 	@echo "Variables (override on command line):"
-	@echo "  ASM=<path>        Assembly source file"
-	@echo "  TLB=<path>        TLB config JSON"
-	@echo "  CORE_REGS=<path>  Core registers config JSON"
-	@echo "  MAX_CYCLES=<n>    Max cycles before stopping"
-	@echo "  OUT_JSON=<path>   JSON output file"
-
+	@echo "  TEST_CASE_DIR=<path>   Folder with TLB.conf.json, CoreRegs.conf.json"
+	@echo "  PROGRAM_BIN=<path>     Flat 32 KiB program.bin"
+	@echo "  MAX_CYCLES=<n>         Max cycles before stopping"
+	@echo "  OUT_JSON=<path>        JSON output file"
+	@echo "  SIM_PYTHON=<path>      Python interpreter to use (default: $(SIM_PYTHON))"

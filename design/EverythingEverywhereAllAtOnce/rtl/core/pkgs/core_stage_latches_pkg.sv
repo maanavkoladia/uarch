@@ -198,11 +198,15 @@ package core_stage_latches_pkg;
         //these are for limit checking for gp
         v_address_t ld_vaddy;
         uint32_t seg0_limit_w_datasize;
+        uint32_t seg0_limit_wo_datasize;
         v_address_t next_ld_vaddy;
+        uint32_t ld_laddy;
 
         v_address_t st_vaddy;
         uint32_t seg1_limit_w_datasize;
+        uint32_t seg1_limit_wo_datasize;
         v_address_t next_st_vaddy;
+        uint32_t st_laddy;
 
 
         l_address_t NEIP;

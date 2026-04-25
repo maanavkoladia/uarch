@@ -74,8 +74,10 @@ module DC (
 
     bool ld_exception, st_exception, rr_exception;
 
-    assign ld_exception = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP) && latches_i.cs.LD_OP;
-    assign st_exception = (st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP) && latches_i.cs.ST_OP;
+    bool ld_segx_gp, st_segx_gp;
+
+    assign ld_exception = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP | ld_segx_gp) && latches_i.cs.LD_OP;
+    assign st_exception = (st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP | st_segx_gp) && latches_i.cs.ST_OP;
     assign rr_exception = latches_i.rr_gp;
     assign exp_stall = (ld_exception | st_exception | rr_exception) & latches_i.valid;
 
@@ -179,7 +181,6 @@ module DC (
     npu_node2_outputs_t ld_neuralnet_out, st_neuralnet_out;
     npu_node2 ld_neuralnet_part2(
         .vaddy_start(latches_i.ld_vaddy),
-        .seg_limit_w_datasize(latches_i.seg0_limit_w_datasize),
         .next_page_vaddy(latches_i.next_ld_vaddy),
         .datasize(latches_i.cs.datasize),
         .write_intent(1'b0),
@@ -189,12 +190,25 @@ module DC (
 
     npu_node2 st_neuralnet_part2(
         .vaddy_start(latches_i.st_vaddy),
-        .seg_limit_w_datasize(latches_i.seg1_limit_w_datasize),
         .next_page_vaddy(latches_i.next_st_vaddy),
         .datasize(latches_i.cs.datasize),
         .write_intent(latches_i.cs.ST_OP),
         .mem_op(latches_i.cs.ST_OP),
         .outputs(st_neuralnet_out)
+    );
+
+    segx ld_segx(
+        .laddy(latches_i.ld_laddy),
+        .seg_limit(latches_i.seg0_limit_wo_datasize),
+        .seg_limit_w_datasize(latches_i.seg0_limit_w_datasize),
+        .segx_gp(ld_segx_gp)
+    );
+
+    segx st_segx(
+        .laddy(latches_i.st_laddy),
+        .seg_limit(latches_i.seg1_limit_wo_datasize),
+        .seg_limit_w_datasize(latches_i.seg1_limit_w_datasize),
+        .segx_gp(st_segx_gp)
     );
 
     push_address_gen push_addr_gen(

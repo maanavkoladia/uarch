@@ -4,9 +4,10 @@
 .ilb S_0 S_1 S_2 start_write_i ld_buf_data_V_i write_Complete_i writeBuf_V_i
 .ob  NS_0 NS_1 NS_2 req_ld_o ld_counter_o inc_counter_o ld_writeBuf_o clr_start_write_bit_o req_bus_o busy_o interrupt_o
 .type f
+-001-0- 01000000000
 -10---- 00000000010
+-10-0-1 01000000000
 -10-1-- 10000000000
-0-010-- 01000000000
 0001--- 01010000000
 001---- 00100000000
 010-0-- 01000000000

@@ -17,13 +17,11 @@ class RegisterFile:
     def __init__(self):
         self.gpr = [0] * 8  # 32-bit values
         self.eip = 0
-        self.sreg = [0] * 6   # 16-bit segment selectors
+        self.sreg = [0] * 6   # 16-bit segment selectors (CS, DS, SS, ES, FS, GS = 0)
         self.mmx = [0] * 8    # 64-bit MMX registers
-        # Segment base addresses (flat model, all 0)
-        self.seg_bases = {"cs": 0, "ds": 0, "ss": 0, "es": 0, "fs": 0, "gs": 0}
-        # Segment limits (20-bit granularity)
+        # Segment limits (20-bit) — loaded from CoreRegs.conf.json["SegLimitVals"]
         self.seg_limits = {"cs": 0xFFFFF, "ds": 0xFFFFF, "ss": 0xFFFFF,
-                           "es": 0x00000, "fs": 0x00000, "gs": 0x00000}
+                           "es": 0xFFFFF, "fs": 0xFFFFF, "gs": 0xFFFFF}
 
     def _mask(self, val, bits):
         return val & ((1 << bits) - 1)

@@ -53,6 +53,14 @@ class CPU:
         # Default to 32-bit for memory-only
         return 4
 
+    def _resolve_seg_name(self, op, default='ds'):
+        """Return the segment register name for a memory operand."""
+        return op.seg_prefix if op.seg_prefix else default
+
+    def _resolve_seg(self, op, default='ds'):
+        """Return the 16-bit segment register value for a memory operand."""
+        return self.regs.get(self._resolve_seg_name(op, default))
+
     def _read_operand(self, op, size_bytes):
         """Read value from an operand."""
         if op.typ == 'imm':
@@ -61,9 +69,12 @@ class CPU:
             return self.regs.get(op.reg_name)
         if op.typ == 'mem':
             if op.far_seg is not None:
-                raise CPUException(f"Cannot read from far pointer operand")
-            addr = self._effective_addr(op)
-            val, err = self.mem.read(addr, size_bytes)
+                raise CPUException("Cannot read from far pointer operand")
+            addr     = self._effective_addr(op)
+            seg_name = self._resolve_seg_name(op, default='ds')
+            seg_val  = self.regs.get(seg_name)
+            val, err = self.mem.read(addr, size_bytes, seg_val,
+                                     seg_name, self.regs.seg_limits)
             if err:
                 raise CPUException(err)
             return val
@@ -74,9 +85,12 @@ class CPU:
         if op.typ == 'reg':
             self.regs.set(op.reg_name, value)
         elif op.typ == 'mem':
-            addr = self._effective_addr(op)
+            addr     = self._effective_addr(op)
+            seg_name = self._resolve_seg_name(op, default='ds')
+            seg_val  = self.regs.get(seg_name)
             mask = (1 << (size_bytes * 8)) - 1
-            err = self.mem.write(addr, size_bytes, value & mask)
+            err = self.mem.write(addr, size_bytes, value & mask, seg_val,
+                                 seg_name, self.regs.seg_limits)
             if err:
                 raise CPUException(err)
         else:
@@ -171,14 +185,16 @@ class CPU:
         """MOVS - move byte/word/dword from DS:ESI to ES:EDI."""
         suffix_map = {'b': 1, 'w': 2, 'l': 4}
         size_bytes = suffix_map.get(getattr(inst, 'size_suffix', None), 4)
-        src_base = self.regs.seg_bases.get('ds', 0)
-        dst_base = self.regs.seg_bases.get('es', 0)
+        src_val = self.regs.get('ds')
+        dst_val = self.regs.get('es')
         src_addr = self.regs.get('esi')
         dst_addr = self.regs.get('edi')
-        val, err = self.mem.read(src_addr, size_bytes, src_base)
+        val, err = self.mem.read(src_addr, size_bytes, src_val,
+                                 'ds', self.regs.seg_limits)
         if err:
             raise CPUException(f"MOVS read DS:ESI error: {err}")
-        err = self.mem.write(dst_addr, size_bytes, val, dst_base)
+        err = self.mem.write(dst_addr, size_bytes, val, dst_val,
+                             'es', self.regs.seg_limits)
         if err:
             raise CPUException(f"MOVS write ES:EDI error: {err}")
         delta = -size_bytes if self.flags.get_df() else size_bytes
@@ -190,17 +206,19 @@ class CPU:
         suffix_map = {'b': 1, 'w': 2, 'l': 4}
         size_bytes = suffix_map.get(getattr(inst, 'size_suffix', None), 4)
         count = self.regs.get('ecx')
-        src_base = self.regs.seg_bases.get('ds', 0)
-        dst_base = self.regs.seg_bases.get('es', 0)
+        src_val = self.regs.get('ds')
+        dst_val = self.regs.get('es')
         df = self.flags.get_df()
         delta = -size_bytes if df else size_bytes
         for _ in range(count):
             src_addr = self.regs.get('esi')
             dst_addr = self.regs.get('edi')
-            val, err = self.mem.read(src_addr, size_bytes, src_base)
+            val, err = self.mem.read(src_addr, size_bytes, src_val,
+                                     'ds', self.regs.seg_limits)
             if err:
                 raise CPUException(f"REP MOVS read DS:ESI error: {err}")
-            err = self.mem.write(dst_addr, size_bytes, val, dst_base)
+            err = self.mem.write(dst_addr, size_bytes, val, dst_val,
+                                 'es', self.regs.seg_limits)
             if err:
                 raise CPUException(f"REP MOVS write ES:EDI error: {err}")
             self.regs.set('esi', (self.regs.get('esi') + delta) & 0xFFFFFFFF)
@@ -215,36 +233,44 @@ class CPU:
         """JMP - unconditional jump."""
         op = inst.operands[0]
         if op.typ == 'imm':
-            # objdump gives absolute target address for relative jumps
-            self.regs.eip = op.imm_val & 0xFFFFFFFF
+            self.regs.eip = self._linear_to_eip(op.imm_val & 0xFFFFFFFF)
             return True
         if op.typ == 'mem':
             if op.far_seg is not None:
-                # Far jump - just set EIP to offset (flat model)
+                self.regs.set('cs', op.far_seg & 0xFFFF)
                 self.regs.eip = op.far_off & 0xFFFFFFFF
                 return True
             # Near absolute indirect
             size_bytes = self._operand_size(inst.operands)
             if size_bytes == 1:
                 size_bytes = 4  # default
-            addr = self._effective_addr(op)
-            val, err = self.mem.read(addr, size_bytes)
-            if err:
-                raise CPUException(err)
+            val = self._read_operand(op, size_bytes)
             self.regs.eip = val & 0xFFFFFFFF
             return True
         if op.typ == 'reg':
             self.regs.eip = self.regs.get(op.reg_name) & 0xFFFFFFFF
             return True
-        raise CPUException(f"Invalid JMP operand")
+        raise CPUException("Invalid JMP operand")
+
+    def exec_ljmp(self, inst):
+        """LJMP — far jump: load CS:EIP from operand."""
+        op = inst.operands[0]
+        if op.far_seg is None:
+            raise CPUException("LJMP requires a far seg:off operand")
+        self.regs.set('cs', op.far_seg & 0xFFFF)
+        self.regs.eip = op.far_off & 0xFFFFFFFF
+        return True
+
+    def _linear_to_eip(self, linear):
+        """Convert an absolute linear branch target to an EIP offset within CS."""
+        cs_base = (self.regs.get('cs') & 0xFFFF) << 16
+        return (linear - cs_base) & 0xFFFFFFFF
 
     def exec_jcc(self, inst, condition_fn):
         """Conditional jump: if condition_fn() is true, jump."""
         op = inst.operands[0]
         if condition_fn():
-            # objdump gives absolute target address
-            target = op.imm_val & 0xFFFFFFFF
-            self.regs.eip = target
+            self.regs.eip = self._linear_to_eip(op.imm_val & 0xFFFFFFFF)
             return True
         return False
 
@@ -531,6 +557,18 @@ class CPU:
             result |= ((s + d + 1) >> 1) << (i * 16)
         self._write_operand(dst_op, result, 8)
 
+    def _stack_read(self, esp, size_bytes):
+        """Read `size_bytes` from SS:ESP, bypassing the SS limit check."""
+        ss_val = self.regs.get('ss')
+        return self.mem.read(esp, size_bytes, ss_val,
+                             'ss', self.regs.seg_limits, skip_limit=True)
+
+    def _stack_write(self, esp, size_bytes, value):
+        """Write `size_bytes` to SS:ESP, bypassing the SS limit check."""
+        ss_val = self.regs.get('ss')
+        return self.mem.write(esp, size_bytes, value, ss_val,
+                              'ss', self.regs.seg_limits, skip_limit=True)
+
     def exec_push(self, inst):
         """PUSH — decrement ESP by size, write value to SS:ESP."""
         op = inst.operands[0]
@@ -539,8 +577,7 @@ class CPU:
         val = self._read_operand(op, size_bytes)
         esp = (self.regs.get('esp') - size_bytes) & 0xFFFFFFFF
         self.regs.set('esp', esp)
-        ss_base = self.regs.seg_bases.get('ss', 0)
-        err = self.mem.write(esp, size_bytes, val & ((1 << (size_bytes * 8)) - 1), ss_base)
+        err = self._stack_write(esp, size_bytes, val & ((1 << (size_bytes * 8)) - 1))
         if err:
             raise CPUException(f"PUSH: stack write error: {err}")
 
@@ -549,9 +586,8 @@ class CPU:
         op = inst.operands[0]
         suffix = getattr(inst, 'size_suffix', None)
         size_bytes = 2 if suffix == 'w' else 4
-        ss_base = self.regs.seg_bases.get('ss', 0)
         esp = self.regs.get('esp')
-        val, err = self.mem.read(esp, size_bytes, ss_base)
+        val, err = self._stack_read(esp, size_bytes)
         if err:
             raise CPUException(f"POP: stack read error: {err}")
         self.regs.set('esp', (esp + size_bytes) & 0xFFFFFFFF)
@@ -564,19 +600,15 @@ class CPU:
         ret_addr = self.regs.eip
         esp = (self.regs.get('esp') - 4) & 0xFFFFFFFF
         self.regs.set('esp', esp)
-        ss_base = self.regs.seg_bases.get('ss', 0)
-        err = self.mem.write(esp, 4, ret_addr, ss_base)
+        err = self._stack_write(esp, 4, ret_addr)
         if err:
             raise CPUException(f"CALL: stack write error: {err}")
         if op.typ == 'imm':
-            self.regs.eip = op.imm_val & 0xFFFFFFFF
+            self.regs.eip = self._linear_to_eip(op.imm_val & 0xFFFFFFFF)
         elif op.typ == 'reg':
             self.regs.eip = self.regs.get(op.reg_name) & 0xFFFFFFFF
         elif op.typ == 'mem':
-            addr = self._effective_addr(op)
-            target, err = self.mem.read(addr, 4)
-            if err:
-                raise CPUException(f"CALL indirect: read error: {err}")
+            target = self._read_operand(op, 4)
             self.regs.eip = target & 0xFFFFFFFF
         else:
             raise CPUException(f"CALL: unsupported operand type: {op.typ}")
@@ -586,16 +618,19 @@ class CPU:
         """LCALL — far call: push CS then EIP, load new CS:EIP."""
         op = inst.operands[0]
         ret_addr = self.regs.eip
-        ss_base = self.regs.seg_bases.get('ss', 0)
         # Push CS (zero-extended to 32 bits)
         cs_val = self.regs.get('cs')
         esp = (self.regs.get('esp') - 4) & 0xFFFFFFFF
         self.regs.set('esp', esp)
-        self.mem.write(esp, 4, cs_val, ss_base)
+        err = self._stack_write(esp, 4, cs_val)
+        if err:
+            raise CPUException(f"LCALL: CS push error: {err}")
         # Push EIP
         esp = (esp - 4) & 0xFFFFFFFF
         self.regs.set('esp', esp)
-        self.mem.write(esp, 4, ret_addr, ss_base)
+        err = self._stack_write(esp, 4, ret_addr)
+        if err:
+            raise CPUException(f"LCALL: EIP push error: {err}")
         # Load new CS:EIP
         self.regs.set('cs', op.far_seg & 0xFFFF)
         self.regs.eip = op.far_off & 0xFFFFFFFF
@@ -603,9 +638,8 @@ class CPU:
 
     def exec_ret(self, inst):
         """RET — pop return address from stack; optionally add imm16 to ESP."""
-        ss_base = self.regs.seg_bases.get('ss', 0)
         esp = self.regs.get('esp')
-        ret_addr, err = self.mem.read(esp, 4, ss_base)
+        ret_addr, err = self._stack_read(esp, 4)
         if err:
             raise CPUException(f"RET: stack read error: {err}")
         esp = (esp + 4) & 0xFFFFFFFF
@@ -618,13 +652,12 @@ class CPU:
 
     def exec_lret(self, inst):
         """LRET — far return: pop EIP then CS from stack."""
-        ss_base = self.regs.seg_bases.get('ss', 0)
         esp = self.regs.get('esp')
-        ret_addr, err = self.mem.read(esp, 4, ss_base)
+        ret_addr, err = self._stack_read(esp, 4)
         if err:
             raise CPUException(f"LRET: EIP read error: {err}")
         esp = (esp + 4) & 0xFFFFFFFF
-        cs_val, err = self.mem.read(esp, 4, ss_base)
+        cs_val, err = self._stack_read(esp, 4)
         if err:
             raise CPUException(f"LRET: CS read error: {err}")
         esp = (esp + 4) & 0xFFFFFFFF
@@ -654,7 +687,8 @@ class CPU:
             "or": self.exec_or,
             "not": self.exec_not,
             "hlt": self.exec_hlt,
-            "jmp": self.exec_jmp,
+            "jmp":  self.exec_jmp,
+            "ljmp": self.exec_ljmp,
             "jnbe": lambda inst: self.exec_jcc(inst, lambda: self.flags.get_cf() == 0 and self.flags.get_zf() == 0),
             "ja":   lambda inst: self.exec_jcc(inst, lambda: self.flags.get_cf() == 0 and self.flags.get_zf() == 0),
             "jne": lambda inst: self.exec_jcc(inst, lambda: self.flags.get_zf() == 0),

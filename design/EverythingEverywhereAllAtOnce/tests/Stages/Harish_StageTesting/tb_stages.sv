@@ -126,8 +126,8 @@ module tb_stages();
         DelayClks(20);
         @(posedge clk)
         @(posedge clk)
-        force uut_AllAtOnce.core_unit.fetch_unit.SPC = 32'h1000;
-        force uut_AllAtOnce.core_unit.decode_unit.EIP = 32'h1000;
+        force uut_AllAtOnce.core_unit.fetch_unit.SPC = 32'h0000;
+        force uut_AllAtOnce.core_unit.decode_unit.EIP = 32'h0000;
         @(posedge clk)
         rst = 1;
         release uut_AllAtOnce.core_unit.fetch_unit.SPC;

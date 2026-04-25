@@ -75,10 +75,16 @@ module RR (
 
     v_address_t ld_vaddy;
     uint32_t seg0_limit_w_datasize;
+    uint32_t seg0_limit_wo_datasize;
     v_address_t next_ld_vaddy;
+    uint32_t ld_laddy;
+
     v_address_t actual_st_vaddy;
     uint32_t seg1_limit_w_datasize;
+    uint32_t seg1_limit_wo_datasize;
     v_address_t actual_next_st_vaddy;
+    uint32_t st_laddy;
+
     npu_node1 addygen_logic_unit (
         .register_data(addygen_input_addy),
         .SIB_IDX_data(reg_out.SIB_IDX_data),
@@ -102,12 +108,18 @@ module RR (
         .special_modrm_bs(latchesInUse.cs.special_modrm_bs),
         .regout_sr_data(reg_out.SR_data[31:0]),
         .regout_dr_data(reg_out.DR_data[31:0]),
+
         .ld_vaddy(ld_vaddy),
         .seg0_limit_w_datasize(seg0_limit_w_datasize),
+        .seg0_limit_wo_datasize(seg0_limit_wo_datasize),
         .next_ld_vaddy(next_ld_vaddy),
+        .ld_laddy(ld_laddy),
+
         .actual_st_vaddy(actual_st_vaddy),
         .seg1_limit_w_datasize(seg1_limit_w_datasize),
-        .actual_next_st_vaddy(actual_next_st_vaddy)
+        .seg1_limit_wo_datasize(seg1_limit_wo_datasize),
+        .actual_next_st_vaddy(actual_next_st_vaddy),
+        .actual_st_laddy(st_laddy)
     );
 
     // AddyX_NeuralNet ld_addyX_neuralnet_unit (
@@ -225,11 +237,15 @@ module RR (
 
         ld_vaddy                : ld_vaddy,
         seg0_limit_w_datasize   : seg0_limit_w_datasize,
+        seg0_limit_wo_datasize  : seg0_limit_wo_datasize,
         next_ld_vaddy           : next_ld_vaddy,
+        ld_laddy                : ld_laddy,
 
         st_vaddy                : actual_st_vaddy,
         seg1_limit_w_datasize   : seg1_limit_w_datasize,
+        seg1_limit_wo_datasize  : seg1_limit_wo_datasize,
         next_st_vaddy           : actual_next_st_vaddy,
+        st_laddy                : st_laddy,
 
         sr_id                   : latchesInUse.cs.sr_id,
         sr_data                 : reg_out.SR_data,

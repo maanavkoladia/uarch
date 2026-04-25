@@ -14,6 +14,7 @@ DC_SRC_FILES = \
 	$(DC_PATH_INTERNAL)/wb_stq_sb_logic.sv \
 	$(DC_PATH_INTERNAL)/req_gen_logic.sv \
 	$(DC_PATH_INTERNAL)/data_size_vec_logic.sv \
+	$(DC_PATH_INTERNAL)/segx.sv \
 	$(DC_PATH_INTERNAL)/push_address_gen.sv \
 	$(DC_PATH_INTERNAL)/DC.sv \
 

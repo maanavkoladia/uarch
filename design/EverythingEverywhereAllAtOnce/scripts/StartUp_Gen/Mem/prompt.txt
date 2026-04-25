@@ -1,0 +1,31 @@
+i need to update my mem genereation script to, currently it takes in a pseudo att 
+x86_32 asm program and compiles iti into a 32 bit binary, however, this needs to be 
+over hauled massivelybc i set all of my segment regs to 0 and maxed out the limits, 
+and i 1-1 mapped the tlb entries, effectively treating the addresses written in 
+the program as physical addresses. now i want to revamp this heavily.
+
+i need to support way more functionality
+
+lets get started with the changes
+
+first i need to support segment tranlations
+
+i have given you my current conf for the program that i gave you
+
+
+this is the new json that i want to pass in, this the segmappings array
+
+will have multiple entries, each entry consists of [<20bit logical address>, <32 bit virtual address>, <macro inide the code>],
+
+this needs to use the equation VA = logical + (segval << 16) to produce the values to populate the macros with.
+then use sed/awk to fill in the macros, only in the empty #defines at the top. then use gcc -E to preprocess and produce
+a text rplaces file. now with the 32bit address space program after doing the translations, produce the final 32kb bin using
+the vm mappings [<32bit VA>, <3 bit pagename>], there will be upto 8 entries like this, im giving oyu this to create a fake 32 bit
+address spaec program, then with each of the entries, strip out the 12 bit offset from the bottom and use the remiang page
+num to index into the program and put it into that index in the final binary. 
+
+create a diagnasti report of this process, this shoudl include the segment value that were created. and other info you think is importnat
+
+if you need other stuff in the config json, add it as necssary.
+
+the other two pyhton script i gave you are repsible for taking in the final bin, and creatign a memloader.v file

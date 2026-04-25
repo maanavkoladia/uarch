@@ -6,7 +6,6 @@ import DCache_common_pkg::*;
 //each module will need starting and ending address
 module npu_node2 (
     input v_address_t vaddy_start,
-    input uint32_t seg_limit_w_datasize,
     input logic [1:0] datasize,
     input bool write_intent,
     input bool mem_op, //this will be 
@@ -17,7 +16,7 @@ module npu_node2 (
     v_address_t vaddy_end;
 
 
-    assign #3 vaddy_end = (datasize[1]) ? 
+    assign #3 vaddy_end = (datasize[1]) ?
                             ((datasize[0]) ? (vaddy_start + 32'd7) : (vaddy_start + 32'd3)) :
                             ((datasize[0]) ? (vaddy_start + 32'd1) : (vaddy_start));
     
@@ -68,13 +67,6 @@ module npu_node2 (
     assign tlb0_generalprotection = tlb0_out.gp_exp;
     assign tlb1_generalprotection = cross_page_access ? tlb1_out.gp_exp : 1'b0;
 
-    //don't need to check both segment translations since the limit minus datasize will impose tighter restritions
-    //no need to check the case without datasize included into calculation since data size imposes tighter restirctions
-    // vaddy + datasize < limit
-    // vaddy < limit - datasize, if vaddy is good ie, vaddy < limit - datasize, then ofc vaddy < limit, QED (i think)
-    bool segx_gp;
-    assign #3 segx_gp = vaddy_start > seg_limit_w_datasize;
-
     // SegmentTranslation segx0 (.l_addr_i(addy0), .segValue(seg_data),
     //     .segLimit(seg_limit), .v_addr_o(vaddy0), .gp_fault_o(gp0_exp_temp_seg));
     // SegmentTranslation segx1 (.l_addr_i(addy1), .segValue(seg_data),
@@ -93,7 +85,7 @@ module npu_node2 (
                             //a cross page access will never cross past the first cache line in the page i think
 
     assign outputs.DC_PF = (tlb0_pagefault || tlb1_pagefault);
-    assign outputs.DC_GP = (tlb0_generalprotection || tlb1_generalprotection || segx_gp);
+    assign outputs.DC_GP = (tlb0_generalprotection || tlb1_generalprotection);
 
     //if both addresses are valid and we are doing a ld/st op
     assign outputs.valid_mem_op = tlb0_out.physical_addr_valid && 

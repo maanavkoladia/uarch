@@ -113,11 +113,11 @@ wire NS_1_t1;
 
 `OR_2(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1)
 
-// NS_2 = (S_0 & S_1 & !S_2) | (!S_0 & S_1 & S_2) | (S_0 & !S_1 & S_2 & !mem_ready_i) | (!S_0 & !S_1 & !S_2 & req_hit_i & !others_busy_i)
+// NS_2 = (!S_0 & S_1 & S_2) | (S_0 & S_1 & !S_2) | (S_0 & !S_1 & S_2 & !mem_ready_i) | (!S_0 & !S_1 & !S_2 & req_hit_i & !others_busy_i)
 wire NS_2_t0;
-`AND_3(NS_2_and0, 1, NS_2_t0, S_0, S_1, S_2_inv)
+`AND_3(NS_2_and0, 1, NS_2_t0, S_0_inv, S_1, S_2)
 wire NS_2_t1;
-`AND_3(NS_2_and1, 1, NS_2_t1, S_0_inv, S_1, S_2)
+`AND_3(NS_2_and1, 1, NS_2_t1, S_0, S_1, S_2_inv)
 wire NS_2_t2;
 `AND_4(NS_2_and2, 1, NS_2_t2, S_0, S_1_inv, S_2, mem_ready_i_inv)
 wire NS_2_t3;
@@ -125,11 +125,19 @@ wire NS_2_t3;
 
 `OR_4(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3)
 
+<<<<<<< HEAD
 // busy_o = (S_0 & !S_1) | (S_1 & !S_2) | (!S_1 & S_2)
+=======
+// busy_o = (S_1 & !S_2) | (S_0 & !S_1) | (!S_1 & S_2)
+>>>>>>> 1303c27cf9b69d35910a2f60daf43f0e9fc7163d
 wire busy_o_t0;
 `AND_2(busy_o_and0, 1, busy_o_t0, S_0, S_1_inv)
 wire busy_o_t1;
+<<<<<<< HEAD
 `AND_2(busy_o_and1, 1, busy_o_t1, S_1, S_2_inv)
+=======
+`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_1_inv)
+>>>>>>> 1303c27cf9b69d35910a2f60daf43f0e9fc7163d
 wire busy_o_t2;
 `AND_2(busy_o_and2, 1, busy_o_t2, S_1_inv, S_2)
 

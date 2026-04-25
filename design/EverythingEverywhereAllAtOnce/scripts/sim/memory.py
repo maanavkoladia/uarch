@@ -1,18 +1,52 @@
-"""32KB memory with TLB-based virtual-to-physical translation."""
+"""Segmented memory model with TLB-based linear-to-physical translation.
+
+Address translation pipeline (per OVERHAUL_SPEC.md):
+
+    effective_offset
+        |  Step 1 — Segment limit check (skipped for SS)
+        |  Step 2 — Segment translation:  linear = (seg_reg << 16) + offset
+        v
+    linear address (32-bit)
+        |  Step 3 — TLB lookup: vpn = linear >> 12, offset = linear & 0xFFF
+        |              pfn = TLB(vpn);  paddr = (pfn << 12) | offset
+        v
+    physical address (15-bit, 0x0000-0x7FFF)
+        |  Step 4 — read/write physical memory[paddr : paddr+size]
+        v
+    value
+"""
 
 import json
 
-class TLB:
-    """Simple TLB: maps 20-bit VPN -> 3-bit PFN with valid/present/rw/mmio."""
-    def __init__(self):
-        self.entries = []  # list of dicts
 
-    def load_from_config(self, config_path):
-        with open(config_path) as f:
+class Memory:
+    """32KB byte-addressable physical memory + TLB + segmented translation."""
+
+    SIZE_BYTES = 32 * 1024
+
+    def __init__(self):
+        self.data = bytearray(self.SIZE_BYTES)
+        self.entries = []  # TLB entries
+
+    # --------------------------------------------------------------
+    # Loaders
+    # --------------------------------------------------------------
+    def load_from_bin(self, path):
+        """Load a flat physical image into self.data (must be exactly 32 KiB)."""
+        with open(path, "rb") as f:
+            buf = f.read()
+        if len(buf) > self.SIZE_BYTES:
+            buf = buf[:self.SIZE_BYTES]
+        self.data = bytearray(self.SIZE_BYTES)
+        self.data[:len(buf)] = buf
+
+    def load_tlb(self, path):
+        """Parse TLB.conf.json and populate self.entries."""
+        with open(path) as f:
             cfg = json.load(f)
-        num_entries = int(cfg["num entries"])
+        n = int(cfg["num entries"])
         self.entries = []
-        for i in range(num_entries):
+        for i in range(n):
             e = cfg["entries"][str(i)]
             self.entries.append({
                 "valid":   int(e["valid"]),
@@ -23,100 +57,85 @@ class TLB:
                 "pfn":     int(e["PFN"].split("'h")[1], 16),
             })
 
-    def add_identity_mapping(self, vaddr, size):
-        """Add TLB entries to identity-map a virtual address range into physical memory.
-        Maps VPN -> PFN such that data fits within the 32KB physical space.
-        Uses the next available physical page."""
-        used_pfns = set(e["pfn"] for e in self.entries if e["valid"])
-        start_vpn = (vaddr >> 12) & 0xFFFFF
-        num_pages = ((size + 0xFFF) >> 12)
-        # Find free PFNs (within 32KB = 8 pages with 4KB pages -> PFN 0-7)
-        max_pfn = (Memory.SIZE >> 12) - 1
-        next_pfn = 0
-        for i in range(num_pages):
-            vpn = start_vpn + i
-            # Skip if already mapped
-            if any(e["vpn"] == vpn and e["valid"] for e in self.entries):
-                continue
-            while next_pfn in used_pfns and next_pfn <= max_pfn:
-                next_pfn += 1
-            if next_pfn > max_pfn:
-                break
-            self.entries.append({
-                "valid": 1, "present": 1, "r_w": 1, "mmio": 0,
-                "vpn": vpn, "pfn": next_pfn,
-            })
-            used_pfns.add(next_pfn)
-            next_pfn += 1
-
-    def translate(self, vaddr):
-        """Translate virtual address -> physical address.
-        Returns (phys_addr, error_str or None).
-        Page size = 4KB (12-bit offset)."""
-        vpn = (vaddr >> 12) & 0xFFFFF
-        offset = vaddr & 0xFFF
+    # --------------------------------------------------------------
+    # Translation
+    # --------------------------------------------------------------
+    def translate(self, linear):
+        """Linear address -> (paddr, error_str|None) via TLB lookup."""
+        vpn    = (linear >> 12) & 0xFFFFF
+        offset = linear & 0xFFF
         for e in self.entries:
-            if e["vpn"] == vpn:
-                if not e["valid"]:
-                    return None, f"Page fault: VPN 0x{vpn:05X} not valid"
+            if e["valid"] and e["vpn"] == vpn:
                 if not e["present"]:
-                    return None, f"Page fault: VPN 0x{vpn:05X} not present"
-                pfn = e["pfn"]
-                paddr = (pfn << 12) | offset
+                    return None, f"#PF: VPN 0x{vpn:05X} not present"
+                paddr = (e["pfn"] << 12) | offset
+                if paddr < 0 or paddr >= len(self.data):
+                    return None, f"#GP: paddr 0x{paddr:X} out of physical range"
+                if e["mmio"]:
+                    import sys
+                    print(f"[memory] WARN: MMIO TLB hit at VPN 0x{vpn:05X}", file=sys.stderr)
                 return paddr, None
-        return None, f"Page fault: VPN 0x{vpn:05X} not in TLB"
+        return None, f"#PF: VPN 0x{vpn:05X} not in TLB"
 
-
-class Memory:
-    """32KB byte-addressable memory (15-bit physical address space)."""
-    SIZE = 32 * 1024  # 32KB
-
-    def __init__(self):
-        self.data = bytearray(self.SIZE)
-        self.tlb = TLB()
-
-    def _check_phys(self, paddr, size):
-        if paddr < 0 or paddr + size > self.SIZE:
-            return f"GP exception: physical address 0x{paddr:04X} + {size} out of range (max 0x{self.SIZE:04X})"
-        return None
-
-    def read(self, vaddr, size, seg_base=0):
-        """Read `size` bytes from virtual address. Returns (value, error)."""
-        linear = (seg_base + vaddr) & 0xFFFFFFFF
-        paddr, err = self.tlb.translate(linear)
+    # --------------------------------------------------------------
+    # Read / write
+    # --------------------------------------------------------------
+    def read(self, effective_offset, size, seg_reg_val, seg_name, seg_limits, skip_limit=False):
+        """Read `size` bytes through the segmented + TLB pipeline.
+        Returns (value, error_str|None)."""
+        if not skip_limit:
+            limit = seg_limits.get(seg_name, 0xFFFFF)
+            if (effective_offset & 0xFFFFFFFF) > limit:
+                return None, (f"#GP: {seg_name.upper()} offset "
+                              f"0x{effective_offset:08X} exceeds limit 0x{limit:05X}")
+        linear = ((seg_reg_val & 0xFFFF) << 16) + (effective_offset & 0xFFFFFFFF)
+        linear &= 0xFFFFFFFF
+        paddr, err = self.translate(linear)
         if err:
             return None, err
-        chk = self._check_phys(paddr, size)
-        if chk:
-            return None, chk
-        val = int.from_bytes(self.data[paddr:paddr+size], 'little')
+        if paddr + size > len(self.data):
+            return None, f"#GP: paddr 0x{paddr:04X} + {size} overflows physical memory"
+        val = int.from_bytes(self.data[paddr:paddr + size], "little")
         return val, None
 
-    def write(self, vaddr, size, value, seg_base=0):
-        """Write `size` bytes to virtual address. Returns error or None."""
-        linear = (seg_base + vaddr) & 0xFFFFFFFF
-        paddr, err = self.tlb.translate(linear)
+    def write(self, effective_offset, size, value, seg_reg_val, seg_name, seg_limits, skip_limit=False):
+        """Write `size` bytes through the segmented + TLB pipeline.
+        Returns error_str|None."""
+        if not skip_limit:
+            limit = seg_limits.get(seg_name, 0xFFFFF)
+            if (effective_offset & 0xFFFFFFFF) > limit:
+                return (f"#GP: {seg_name.upper()} offset "
+                        f"0x{effective_offset:08X} exceeds limit 0x{limit:05X}")
+        linear = ((seg_reg_val & 0xFFFF) << 16) + (effective_offset & 0xFFFFFFFF)
+        linear &= 0xFFFFFFFF
+        paddr, err = self.translate(linear)
         if err:
             return err
-        chk = self._check_phys(paddr, size)
-        if chk:
-            return chk
-        self.data[paddr:paddr+size] = value.to_bytes(size, 'little')
+        if paddr + size > len(self.data):
+            return f"#GP: paddr 0x{paddr:04X} + {size} overflows physical memory"
+        mask = (1 << (size * 8)) - 1
+        self.data[paddr:paddr + size] = (value & mask).to_bytes(size, "little")
         return None
 
-    def load_data_section(self, vaddr, byte_data):
-        """Load raw bytes at a virtual address (for initialization)."""
-        paddr, err = self.tlb.translate(vaddr)
-        if err:
-            # Direct physical load fallback for init
-            paddr = vaddr & (self.SIZE - 1)
-        for i, b in enumerate(byte_data):
-            pa = paddr + i
-            if 0 <= pa < self.SIZE:
-                self.data[pa] = b
+    # --------------------------------------------------------------
+    # Instruction fetch (CS-based)
+    # --------------------------------------------------------------
+    def fetch_bytes(self, eip, cs_val, seg_limits, count=15):
+        """Fetch up to `count` raw bytes from CS:EIP through the TLB.
+        Returns (bytes_fetched, first_error|None).  CS limit checked first.
+        SS limit check is NOT involved here — this is a code fetch."""
+        cs_limit = seg_limits.get("cs", 0xFFFFF)
+        if (eip & 0xFFFFFFFF) > cs_limit:
+            return b"", f"#GP: CS EIP 0x{eip:08X} exceeds limit 0x{cs_limit:05X}"
 
-    def load_bytes_physical(self, paddr, byte_data):
-        """Load raw bytes at a physical address directly."""
-        for i, b in enumerate(byte_data):
-            if 0 <= paddr + i < self.SIZE:
-                self.data[paddr + i] = b
+        out = bytearray()
+        first_err = None
+        linear_base = ((cs_val & 0xFFFF) << 16) + (eip & 0xFFFFFFFF)
+        for i in range(count):
+            linear = (linear_base + i) & 0xFFFFFFFF
+            paddr, err = self.translate(linear)
+            if err:
+                first_err = err
+                break
+            out.append(self.data[paddr])
+        return bytes(out), first_err
