@@ -28,23 +28,32 @@ module npu_node1 (
 
     output v_address_t ld_vaddy,
     output uint32_t seg0_limit_w_datasize,
+    output uint32_t seg0_limit_wo_datasize,
     output v_address_t next_ld_vaddy, //need for finding next page for tlb
+    output uint32_t ld_laddy,
     
     output v_address_t actual_st_vaddy,
     output uint32_t seg1_limit_w_datasize,
-    output v_address_t actual_next_st_vaddy
+    output uint32_t seg1_limit_wo_datasize,
+    output v_address_t actual_next_st_vaddy,
+    output uint32_t actual_st_laddy
 );  
 
     uint32_t displacement_out;
     uint32_t sib_or_reg;
+    uint32_t seg1_limit_w_datasize_temp;
+    assign seg1_limit_w_datasize = (seg1_valid) ? seg1_limit_w_datasize_temp : seg0_limit_w_datasize;
 
     assign #3 seg0_limit_w_datasize = (datasize[1] == 1'b1) ? 
                                         (datasize[0] == 1'b1) ? segment0_limit.limit - 32'd7 : segment0_limit.limit - 32'd3 :
                                         (datasize[0] == 1'b1) ? segment0_limit.limit - 32'd1 : segment0_limit.limit;
 
-    assign #3 seg1_limit_w_datasize = (datasize[1] == 1'b1) ? 
+    assign #3 seg1_limit_w_datasize_temp = (datasize[1] == 1'b1) ? 
                                         (datasize[0] == 1'b1) ? segment1_limit.limit - 32'd7 : segment1_limit.limit - 32'd3 :
                                         (datasize[0] == 1'b1) ? segment1_limit.limit - 32'd1 : segment1_limit.limit;
+
+    assign seg0_limit_wo_datasize = segment0_limit.limit;
+    assign seg1_limit_wo_datasize = (seg1_valid) ? segment1_limit.limit : segment0_limit.limit;
 
     uint32_t sib_nonsense;
     uint32_t shift_result;
@@ -110,10 +119,15 @@ module npu_node1 (
 
     v_address_t st_vaddy;
     uint32_t ld_addy_reg_data;
+    uint32_t st_laddy;
     assign ld_addy_reg_data = (switch_ld_addy ? regout_sr_data : sib_or_reg);
     
     assign #3 ld_vaddy = ld_addy_reg_data + seg0val_plus_displacement;    //need this for making ss:esp the load address for pop r/m32
     assign #3 st_vaddy = sib_or_reg + seg1val_plus_displacement;
+
+    assign #3 ld_laddy = ld_addy_reg_data + masked_displacement_out;
+    assign #3 st_laddy = sib_or_reg + displacement_out;
+
 
     uint32_t shifted_sr_data, shifted_dr_data, shifted_seg1_data;
     assign shifted_seg1_data = (real_seg1_data << 16);
@@ -123,6 +137,10 @@ module npu_node1 (
     assign actual_st_vaddy = (st_sel) ? 
                                 ((movs_op) ? shifted_dr_data : shifted_sr_data) :
                                 st_vaddy;
+    
+    assign actual_st_laddy = (st_sel) ?
+                                ((movs_op) ? regout_dr_data : regout_sr_data) :
+                                st_laddy;
 
     //next ld VPN and vaddy
     logic [VPN_BITS - 1 : 0] next_ld_VPN;
@@ -146,7 +164,7 @@ module npu_node1 (
     assign next_shifted_dr_data = {next_shifted_dr_VPN, {NUM_OFFSET_BITS{1'b0}}};
 
     assign actual_next_st_vaddy = (st_sel) ? 
-                                ((modrm_needed && rm_is_dr) ? next_shifted_sr_data : next_shifted_dr_data) :
+                                ((movs_op) ? next_shifted_dr_data : next_shifted_sr_data) :
                                 next_st_vaddy;
 
 endmodule

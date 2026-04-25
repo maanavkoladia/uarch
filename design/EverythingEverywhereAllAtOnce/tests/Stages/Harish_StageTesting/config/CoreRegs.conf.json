@@ -6,12 +6,12 @@
     "EIP" : {
         "load" : "false",
         "path" : "uut_AllAtOnce.core_unit.decode_unit.EIP",
-        "val"  : "32'h00001000"
+        "val"  : "32'h00000000"
     },
     "SPC" : {
         "load" : "false",
         "path" : "uut_AllAtOnce.core_unit.fetch_unit.SPC",
-        "val"  : "32'h00000100"
+        "val"  : "32'h00000000"
     },
     "IDTR" : {
         "load" : "false",
