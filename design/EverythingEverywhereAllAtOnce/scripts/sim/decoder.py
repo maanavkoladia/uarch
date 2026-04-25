@@ -87,7 +87,7 @@ _FORCE_STRIP_PREFIXES = ("push", "pop")
 def _strip_size_suffix(mnemonic):
     """Return (clean_mnemonic, size_suffix_or_None) using the same rules as the
     old `parse_objdump`.  Mnemonic must already be lowercase."""
-    if (mnemonic in ("hlt", "nop")
+    if (mnemonic in ("hlt", "nop", "lcall", "ljmp", "lret", "lretf", "retf")
             or mnemonic in _MMX_MNEMONICS
             or mnemonic.startswith("j")
             or mnemonic.startswith("call")

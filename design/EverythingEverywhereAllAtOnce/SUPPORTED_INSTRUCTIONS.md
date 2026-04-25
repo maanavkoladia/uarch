@@ -135,7 +135,7 @@ Only use instructions marked ✅ (currently supported & tested). Do **not** use 
 | F3 A4 | REP MOVS m8,m8 | Move ECX bytes from DS:ESI to ES:EDI | 🔲 not yet |
 | F3 A5 | REP MOVS m16,m16 | Move ECX words from DS:ESI to ES:EDI | 🔲 not yet |
 | F3 A5 | REP MOVS m32,m32 | Move ECX dwords from DS:ESI to ES:EDI | 🔲 not yet |
-| F3 A7 | REPE CMPS m32,m32 | Find nonmatching dwords in ES:EDI and DS:ESI | 🔲 not yet |
+| F3 A7 | REPE CMPS m32,m32 | Find nonmatching dwords in ES:EDI and DS:ESI | ✅ |
 | 90+rw | XCHG AX,r16 | Exchange r16 with AX | ✅ |
 | 90+rd | XCHG EAX,r32 | Exchange r32 with EAX | ✅ |
 | 86 /r | XCHG r/m8,r8 | Exchange r8 with r/m8 | ✅ |
@@ -214,12 +214,12 @@ Only use instructions marked ✅ (currently supported & tested). Do **not** use 
 
 | Opcode | Mnemonic | Description | Status |
 |--------|----------|-------------|--------|
-| 0F 63 /r | PACKSSWB mm1,mm/m64 | Pack 4 signed words → 8 signed bytes (sat.) | 🔲 not yet |
-| 0F 6B /r | PACKSSDW mm1,mm/m64 | Pack 2 signed dwords → 4 signed words (sat.) | 🔲 not yet |
-| 0F FD /r | PADDW mm,mm/m64 | Add packed word integers | 🔲 not yet |
-| 0F FE /r | PADDD mm,mm/m64 | Add packed dword integers | 🔲 not yet |
-| 0F E0 /r | PAVGB mm1,mm2/m64 | Average packed unsigned bytes (round) | 🔲 not yet |
-| 0F E3 /r | PAVGW mm1,mm2/m64 | Average packed unsigned words (round) | 🔲 not yet |
+| 0F 63 /r | PACKSSWB mm1,mm/m64 | Pack 4 signed words → 8 signed bytes (sat.) | ✅ |
+| 0F 6B /r | PACKSSDW mm1,mm/m64 | Pack 2 signed dwords → 4 signed words (sat.) | ✅ |
+| 0F FD /r | PADDW mm,mm/m64 | Add packed word integers | ✅ |
+| 0F FE /r | PADDD mm,mm/m64 | Add packed dword integers | ✅ |
+| 0F E0 /r | PAVGB mm1,mm2/m64 | Average packed unsigned bytes (round) | ✅|
+| 0F E3 /r | PAVGW mm1,mm2/m64 | Average packed unsigned words (round) | ✅ |
 
 ---
 

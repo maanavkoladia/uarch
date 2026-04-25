@@ -721,6 +721,8 @@ class CPU:
             "lcall": self.exec_lcall,
             "ret":   self.exec_ret,
             "lret":  self.exec_lret,
+            "lretf": self.exec_lret,
+            "retf":  self.exec_lret,
         }
 
     def execute(self, inst):
