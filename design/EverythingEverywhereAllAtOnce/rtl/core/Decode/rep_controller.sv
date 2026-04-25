@@ -59,7 +59,7 @@ module rep_controller (
     always_comb begin
         case (inst_select)
             3'b000: rep_latches = idle_output;
-            3'b001: rep_latches = movs_edi_esi;
+            3'b001: rep_latches = movs_instruction;
             3'b010: rep_latches = decrement_ecx;
             3'b011: rep_latches = add_df_edi;
             3'b100: rep_latches = add_df_esi;
@@ -87,6 +87,7 @@ module rep_controller (
             RM_IS_DR       : 1'b0,
             LD_OP          : 1'b0,
             ST_OP          : 1'b0,
+            SWITCH_LD_ADDY : 1'b0,
             dr_id          : ECX,
             sr_id          : ECX,
             dr_rd          : 1'b1,
@@ -100,7 +101,8 @@ module rep_controller (
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
             seg_0_id       : NO_REG,
-            seg_1_id       : NO_REG
+            seg_1_id       : NO_REG,
+            special_modrm_bs: 1'b0
         },
         dc_cs : '{
             LD_OP     : 1'b0,
@@ -124,6 +126,7 @@ module rep_controller (
             relative_branch     : 1'b0,
             special_br          : 1'b0,
             is_far              : 1'b0,
+            is_call             : 1'b0,
             second_flag_needed  : 1'b0
         },
         wb_cs : '{
@@ -509,6 +512,7 @@ module rep_controller (
             RM_IS_DR       : 1'b0,
             LD_OP          : 1'b1,
             ST_OP          : 1'b1,
+            SWITCH_LD_ADDY : 1'b0,
             dr_id          : EDI,
             sr_id          : ESI,
             dr_rd          : 1'b1,
@@ -547,6 +551,7 @@ module rep_controller (
             relative_branch     : 1'b0,
             special_br          : 1'b0,
             is_far              : 1'b0,
+            is_call             : 1'b0,
             second_flag_needed  : 1'b0
         },
         wb_cs : '{
