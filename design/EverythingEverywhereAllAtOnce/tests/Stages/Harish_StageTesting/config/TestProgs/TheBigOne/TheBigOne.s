@@ -1,9 +1,9 @@
-#define __CS__
-#define __DS__
-#define __SS__
+#define __CS__ 0x0000
+#define __DS__ 0x0000
+#define __SS__ 0x0000
 
 
-.org 0x00000
+.org 0x00000000
 .code
 .global _start
 
@@ -16,8 +16,8 @@ segment_init:
     movw    %ax, %ss
 
 main:
-    movl $0x5000, %esp              # Stack grows down from 0x5000 into stack_page
-    movl $0x2000, %esi              # ESI = base of data page
+    movl $0x0, %esp              # Stack grows down from 0x5000 into stack_page
+    movl $0x0, %esi              # ESI = base of data page
     movl $0x00000000, %ebx          # EBX = running accumulator / checksum
 
     # ================================================================
@@ -1062,19 +1062,19 @@ ic_done:
 # DATA SECTION — mapped at 0x2000
 # ================================================================
 
-.org 0x02000
+.org 0x40020000
 .data
-
-data_page:
-    .space 0xC00
+    .long 0x11223344
+#data_page:
+#    .space 0xC00
 
 # ================================================================
 # STACK SECTION — mapped at 0x4000
 # ESP initialised to 0x5000 so the stack grows downward into this page
 # ================================================================
 
-.org 0x04000
+.org 0xF0000000
 .data
-
-stack_page:
-    .space 0x1000
+    .long 0x55667788
+#stack_page:
+#    .space 0x1000
