@@ -2,7 +2,7 @@
 # Input  signal order : ['S_0', 'S_1', 'S_2', 'V_Hit_i', 'DC_will_evict_i', 'VC_needs_2_evict_i', 'EB_V_i', 'we_i']
 # Output signal order : ['NS_0', 'NS_1', 'NS_2', 'WR_2_EB_o', 'CLR_D_SWAP_V_o', 'Read_DSWAP_o', 'Write_VSWAP_o', 'Update_LRU_o', 'busy_o', 'blocked_o']
 
-NS_0 = (!S_1 & !S_2 & V_Hit_i) | (S_0 & !S_1 & !S_2) | (!S_0 & S_1 & !S_2 & !EB_V_i) | (!S_0 & !S_2 & DC_will_evict_i & !EB_V_i)
+NS_0 = (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i) | (!S_0 & S_1 & !S_2 & !EB_V_i) | (!S_0 & !S_2 & DC_will_evict_i & !EB_V_i)
 
 NS_1 = (S_0 & !S_1 & !S_2) | (!S_0 & S_1 & !S_2) | (!S_0 & !S_2 & V_Hit_i & !we_i) | (!S_0 & !S_2 & !V_Hit_i & DC_will_evict_i & !EB_V_i) | (!S_0 & !S_2 & !V_Hit_i & DC_will_evict_i & VC_needs_2_evict_i)
 

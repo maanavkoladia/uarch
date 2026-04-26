@@ -1,0 +1,16 @@
+# Enumeration map for FSM: rep_cmp_fsm
+# 8 states -> 3 bit(s)
+# IDLE is always assigned encoding 0
+# ERROR is always assigned the highest encoding
+# ERROR was synthesised (not present in source CSV)
+#
+# state_name                      decimal  binary
+# --------------------------------------------------
+  IDLE                                  0  000  # IDLE (forced 0)
+  CMP                                   1  001
+  CMP0                                  2  010
+  CMP1                                  3  011
+  CMP2                                  4  100
+  DEC_ECX_CMP                           5  101
+  FUCK_ME                               6  110
+  ERROR                                 7  111  # ERROR (highest), synthesised

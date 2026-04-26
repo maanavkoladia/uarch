@@ -62,7 +62,7 @@ module ppu (
     //mux2_3 msdmux(.in0(3'b000), .in1(msd_size_fake), .sel(needrm), .out(msd_size));
     `MUX_2(msdmux, 3, msd_size, 3'b000, msd_size_fake, needrm)
 
-    triple_adder adder0 (.in0(num_pfs_plusone), .in1(msd_size), .in2(imm_size), .result(inst_length));
+    triple_adder adder0 (.pfs_plus_one(num_pfs_plusone), .msd_size(msd_size), .imm_size(imm_size), .result(inst_length));
 
     //8 bit output mut default to valid if not needed for easier bitwise OR
     sib_finder sibfinder0 (.modrm_index(modrm_index), .IR(IR), .sib_byte(sib_byte));

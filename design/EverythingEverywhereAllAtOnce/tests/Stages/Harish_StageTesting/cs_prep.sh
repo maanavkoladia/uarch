@@ -6,4 +6,5 @@ cd -
 cd ../../../
 make gen
 cd -
-echo "must run this in Stages dir\n"
+cat ../../../rtl/core/Decode/cs_roms/cs_parse.log
+echo "must run this in Harish_Stages dir\n"

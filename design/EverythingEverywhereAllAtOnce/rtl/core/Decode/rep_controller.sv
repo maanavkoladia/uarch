@@ -1,4 +1,6 @@
 import RegisterRead_pkg::*;
+import Decode_pkg::*;
+
 module rep_controller (
     input wire clk, rst,
     input bool rep_prefix,
@@ -14,19 +16,84 @@ module rep_controller (
     output bool clear_rep
 );
 
-    bool continue_mov, continue_cmp;
+    bool continue_mov, continue_cmp, wait_mov, wait_cmp, exit_mov, exit_cmp;
     assign continue_mov = !ecx_sb && ecx != 32'b0;
+    assign wait_mov = ecx_sb;
+    assign exit_mov = !ecx_sb && ecx == 32'b0;
+
     assign continue_cmp = continue_mov && (zf_sb.counter == 0) && !zf_flag;
+    assign wait_cmp = ecx_sb || zf_sb.counter != 0;
+    assign exit_cmp = exit_mov || ((zf_sb.counter == 0) && zf_flag);
 
     regsb_entry_t zf_sb;
 
+    rep_fsm_states_e rep_fsm_state;
+    logic [$clog2(REP_FSM_NUM_STATES) - 1 : 0] rep_fsm_state_bits;
+    assign rep_fsm_state = rep_fsm_state_bits;
+
+    rep_cmp_fsm_states_e rep_cmp_fsm_state;
+    logic [$clog2(REP_CMP_FSM_NUM_STATES) - 1 : 0] rep_cmp_fsm_state_bits;
+    assign rep_cmp_fsm_state = rep_cmp_fsm_state_bits;
+
+    rep_movs_fsm_states_e rep_movs_fsm_state;
+    logic [$clog2(REP_MOVS_FSM_NUM_STATES) - 1 : 0] rep_movs_fsm_state_bits;
+    assign rep_movs_fsm_state = rep_movs_fsm_state_bits;
+
+    bool movs_clear, cmp_clear;
+    bool movs_start, cmp_start;
+
     logic [2:0] inst_select;
-    bool s0, s1, s2, s3, set_rep;
-    rep_fsm fsm_rep(.clk(clk), .rst(rst), .cont_mov_i(continue_mov), .cont_cmp_i(continue_cmp), 
-        .rep_prefix_i(rep_prefix), .cs_mov_i(mov_inst), .cs_cmp_i(cmp_inst), .stall_i(stall),
-        .S_0(s0), .S_1(s1), .S_2(s2), .S_3(s3), .set_rep_o(set_rep),
-        .clear_rep_o(clear_rep), .select_line2_o(inst_select[2]),
-        .select_line1_o(inst_select[1]), .select_line0_o(inst_select[0])
+    logic [2:0] cmp_inst_select;
+    logic [2:0] movs_inst_select;
+    assign inst_select = (cmp_inst) ? cmp_inst_select : movs_inst_select;
+    assign clear_rep = (cmp_inst) ? cmp_clear : movs_clear;
+
+    rep_fsm fsm_rep(
+        .clk(clk),
+        .rst(rst),
+        .rep_prefix_i(rep_prefix),
+        .cs_mov_i(mov_inst),
+        .cs_cmp_i(cmp_inst),
+        .mov_clear_i(movs_clear),
+        .cmp_clear_i(cmp_clear),
+        .stall_i(stall),
+        .S_0(rep_fsm_state_bits[0]),  // current-state bit 0 (LSB)
+        .S_1(rep_fsm_state_bits[1]),  // current-state bit 1 (1)
+        .S_2(rep_fsm_state_bits[2]),  // current-state bit 2 (MSB)
+        .movs_start_o(movs_start),
+        .cmp_start_o(cmp_start)
+    );
+    rep_cmp_fsm cmp_fsm(
+        .clk(clk),
+        .rst(rst),
+        .start_i(cmp_start),
+        .cont_cmp_i(continue_cmp),
+        .wait_cmp_i(wait_cmp),
+        .exit_cmp_i(exit_cmp),
+        .stall_i(stall),
+        .S_0(rep_cmp_fsm_state_bits[0]),  // current-state bit 0 (LSB)
+        .S_1(rep_cmp_fsm_state_bits[1]),  // current-state bit 1 (1)
+        .S_2(rep_cmp_fsm_state_bits[2]),  // current-state bit 2 (MSB)
+        .clear_rep_o(cmp_clear),
+        .select_line2_o(cmp_inst_select[2]),
+        .select_line1_o(cmp_inst_select[1]),
+        .select_line0_o(cmp_inst_select[0])
+    );
+    rep_movs_fsm movs_fsm(
+        .clk(clk),
+        .rst(rst),
+        .start_i(movs_start),
+        .cont_mov_i(continue_mov),
+        .wait_mov_i(wait_mov),
+        .exit_mov_i(exit_mov),
+        .stall_i(stall),
+        .S_0(rep_movs_fsm_state_bits[0]),  // current-state bit 0 (LSB)
+        .S_1(rep_movs_fsm_state_bits[1]),  // current-state bit 1 (1)
+        .S_2(rep_movs_fsm_state_bits[2]),  // current-state bit 2 (MSB)
+        .clear_rep_o(movs_clear),
+        .select_line2_o(movs_inst_select[2]),
+        .select_line1_o(movs_inst_select[1]),
+        .select_line0_o(movs_inst_select[0])
     );
 
     always_ff @(posedge clk) begin
@@ -38,14 +105,13 @@ module rep_controller (
             else begin
                 case ({set_zf, clear_zf})
                     2'b00: zf_sb <= zf_sb;
-                    2'b01: zf_sb.counter <= (zf_sb.counter == 0) ? zf_sb.counter : zf_sb.counter - 1;
-                    2'b10: zf_sb.counter <= (zf_sb.counter == 8'hFF) ? zf_sb.counter : zf_sb.counter + 1;
+                    2'b01: zf_sb.counter <= zf_sb.counter - 1;
+                    2'b10: zf_sb.counter <= zf_sb.counter + 1;
                     2'b11: zf_sb <= zf_sb;
                 endcase
             end
         end
     end
-
 
     rr_latches_general_t idle_output;
     rr_latches_general_t movs_instruction; //mov0
@@ -431,7 +497,7 @@ module rep_controller (
             ST_OP : 1'b0,
             WB_DR : 1'b1,
             WB_SR : 1'b1,
-			WB_EAX: 1'b0
+    		WB_EAX: 1'b0
         },
         br_info      : '{default:'0},  
         NEIP         : 32'h0,

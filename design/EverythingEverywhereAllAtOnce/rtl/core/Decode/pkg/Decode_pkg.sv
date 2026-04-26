@@ -21,4 +21,38 @@ package Decode_pkg;
         bool special_modrm_bs;
     } modrm_processor_outs_t;
 
+    localparam REP_FSM_NUM_STATES = 6;
+    typedef enum [$clog2(REP_FSM_NUM_STATES) - 1 : 0] {
+        REP_IDLE                          = 0,
+        REP_CMP                           = 1,
+        REP_FUCK_ME                       = 2,
+        REP_MOVS                          = 3,
+        REP_WAIT                          = 4,
+        REP_ERROR                         = 5
+    } rep_fsm_states_e;
+
+    localparam REP_MOVS_FSM_NUM_STATES = 6;
+    typedef enum [$clog2(REP_MOVS_FSM_NUM_STATES) - 1 : 0] {
+        MOVS_IDLE                          = 0, 
+        MOVS_DEC_ECX_MOV                   = 1,
+        MOVS_FUCK_ME                       = 2,
+        MOVS_MOVS                          = 3,
+        MOVS_MOVS_OP                       = 4,
+        MOVS_ERROR                         = 5
+    } rep_movs_fsm_states_e;
+
+    localparam REP_CMP_FSM_NUM_STATES = 6;
+    typedef enum [$clog2(REP_CMP_FSM_NUM_STATES) - 1 : 0] {
+        CMP_IDLE                          = 0,
+        CMP_CMP                           = 1,
+        CMP_CMP0                          = 2,
+        CMP_CMP1                          = 3,
+        CMP_CMP2                          = 4,
+        CMP_DEC_ECX_CMP                   = 5,
+        CMP_FUCK_ME                       = 6,
+        CMP_ERROR                         = 7
+    } rep_cmp_fsm_states_e;
+
+
+
 endpackage

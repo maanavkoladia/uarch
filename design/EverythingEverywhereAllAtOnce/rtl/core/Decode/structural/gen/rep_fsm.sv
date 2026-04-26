@@ -6,82 +6,51 @@
 //       Any undefined transition lands here (all outputs = 0).
 // ======================================================================
 //
-// State Enumeration  (4 bits, 15 states)
+// State Enumeration  (3 bits, 6 states)
 // --------------------------------------------------
-//   IDLE                          0000  (decimal 0)  // IDLE (reset state)
-//   CMP                           0001  (decimal 1)
-//   CMP0                          0010  (decimal 2)
-//   CMP1                          0011  (decimal 3)
-//   CMP2                          0100  (decimal 4)
-//   CMP3                          0101  (decimal 5)
-//   CMP4                          0110  (decimal 6)
-//   FUCK_ME                       0111  (decimal 7)
-//   MOV0                          1000  (decimal 8)
-//   MOV1                          1001  (decimal 9)
-//   MOV2                          1010  (decimal 10)
-//   MOV3                          1011  (decimal 11)
-//   MOVS                          1100  (decimal 12)
-//   WAIT                          1101  (decimal 13)
-//   ERROR                         1110  (decimal 14)  // ERROR (trap state), synthesised
+//   IDLE                          000  (decimal 0)  // IDLE (reset state)
+//   CMP                           001  (decimal 1)
+//   FUCK_ME                       010  (decimal 2)
+//   MOVS                          011  (decimal 3)
+//   WAIT                          100  (decimal 4)
+//   ERROR                         101  (decimal 5)  // ERROR (trap state), synthesised
 //
 // Truth Table (pre-expansion, original CSV rows)
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//         S_0         S_1         S_2         S_3  cont_mov_i  cont_cmp_i  rep_prefix_i    cs_mov_i    cs_cmp_i     stall_i  |        NS_0        NS_1        NS_2        NS_3   set_rep_o  clear_rep_o  select_line2_o  select_line1_o  select_line0_o   transition
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//           0           0           0           0           x           x           0           x           x           0  |           0           0           0           0           0           0           0           0           0   IDLE -> IDLE
-//           0           0           0           0           x           x           1           x           x           0  |           1           0           1           1           1           0           0           0           0   IDLE -> WAIT
-//           1           0           1           1           x           x           x           0           0           0  |           1           1           1           0           0           0           0           0           0   WAIT -> FUCK_ME
-//           1           0           1           1           x           x           x           0           1           0  |           1           0           0           0           0           0           0           0           0   WAIT -> CMP
-//           1           0           1           1           x           x           x           1           0           0  |           0           0           1           1           0           0           0           0           0   WAIT -> MOVS
-//           1           0           1           1           x           x           x           1           1           0  |           1           1           1           0           0           0           0           0           0   WAIT -> FUCK_ME
-//           0           0           1           1           1           x           x           x           x           0  |           0           0           0           1           0           0           0           0           1   MOVS -> MOV0
-//           0           0           1           1           0           x           x           x           x           0  |           0           0           0           0           0           1           0           0           0   MOVS -> IDLE
-//           1           0           0           0           x           1           x           x           x           0  |           0           1           0           0           0           0           1           0           1   CMP -> CMP0
-//           1           0           0           0           x           0           x           x           x           0  |           0           0           0           0           0           1           0           0           0   CMP -> IDLE
-//           0           0           0           1           x           x           x           x           x           0  |           1           0           0           1           0           0           0           1           0   MOV0 -> MOV1
-//           1           0           0           1           x           x           x           x           x           0  |           0           1           0           1           0           0           0           1           1   MOV1 -> MOV2
-//           0           1           0           1           x           x           x           x           x           0  |           1           1           0           1           0           0           1           0           0   MOV2 -> MOV3
-//           1           1           0           1           x           x           x           x           x           0  |           0           0           1           1           0           0           0           0           0   MOV3 -> MOVS
-//           0           1           0           0           x           x           x           x           x           0  |           1           1           0           0           0           0           1           1           0   CMP0 -> CMP1
-//           1           1           0           0           x           x           x           x           x           0  |           0           0           1           0           0           0           1           1           1   CMP1 -> CMP2
-//           0           0           1           0           x           x           x           x           x           0  |           1           0           1           0           0           0           0           1           1   CMP2 -> CMP3
-//           1           0           1           0           x           x           x           x           x           0  |           0           1           1           0           0           0           1           0           0   CMP3 -> CMP4
-//           0           1           1           0           x           x           x           x           x           0  |           1           0           0           0           0           0           0           0           0   CMP4 -> CMP
-//           1           1           1           0           x           x           x           x           x           x  |           1           1           1           0           0           0           0           0           0   FUCK_ME -> FUCK_ME
-//           0           0           0           0           x           x           x           x           x           1  |           0           0           0           0           0           0           0           0           0   IDLE -> IDLE
-//           0           0           1           1           x           x           x           x           x           1  |           0           0           1           1           0           0           0           0           0   MOVS -> MOVS
-//           1           0           0           0           x           x           x           x           x           1  |           1           0           0           0           0           0           0           0           0   CMP -> CMP
-//           0           0           0           1           x           x           x           x           x           1  |           0           0           0           1           0           0           0           0           0   MOV0 -> MOV0
-//           1           0           0           1           x           x           x           x           x           1  |           1           0           0           1           0           0           0           0           0   MOV1 -> MOV1
-//           0           1           0           1           x           x           x           x           x           1  |           0           1           0           1           0           0           0           0           0   MOV2 -> MOV2
-//           1           1           0           1           x           x           x           x           x           1  |           1           1           0           1           0           0           0           0           0   MOV3 -> MOV3
-//           0           1           0           0           x           x           x           x           x           1  |           0           1           0           0           0           0           0           0           0   CMP0 -> CMP0
-//           1           1           0           0           x           x           x           x           x           1  |           1           1           0           0           0           0           0           0           0   CMP1 -> CMP1
-//           0           0           1           0           x           x           x           x           x           1  |           0           0           1           0           0           0           0           0           0   CMP2 -> CMP2
-//           1           0           1           0           x           x           x           x           x           1  |           1           0           1           0           0           0           0           0           0   CMP3 -> CMP3
-//           0           1           1           0           x           x           x           x           x           1  |           0           1           1           0           0           0           0           0           0   CMP4 -> CMP4
-//           1           0           1           1           x           x           x           x           x           1  |           1           0           1           1           0           0           0           0           0   WAIT -> WAIT
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//         S_0         S_1         S_2  rep_prefix_i    cs_mov_i    cs_cmp_i  mov_clear_i  cmp_clear_i     stall_i  |        NS_0        NS_1        NS_2  movs_start_o  cmp_start_o   transition
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//           0           0           0           0           x           x           x           x           0  |           0           0           0           0           0   IDLE -> IDLE
+//           0           0           0           1           x           x           x           x           0  |           0           0           1           0           0   IDLE -> WAIT
+//           0           0           1           x           0           0           x           x           0  |           0           1           0           0           0   WAIT -> FUCK_ME
+//           0           0           1           x           0           1           x           x           0  |           1           0           0           0           1   WAIT -> CMP
+//           0           0           1           x           1           0           x           x           0  |           1           1           0           1           0   WAIT -> MOVS
+//           0           0           1           x           1           1           x           x           0  |           0           1           0           0           0   WAIT -> FUCK_ME
+//           1           1           0           x           x           x           0           x           0  |           1           1           0           0           0   MOVS -> MOVS
+//           1           1           0           x           x           x           1           x           0  |           0           0           0           0           0   MOVS -> IDLE
+//           1           0           0           x           x           x           x           0           0  |           1           0           0           0           0   CMP -> CMP
+//           1           0           0           x           x           x           x           1           0  |           0           0           0           0           0   CMP -> IDLE
+//           0           1           0           x           x           x           x           x           x  |           0           1           0           0           0   FUCK_ME -> FUCK_ME
+//           0           0           0           x           x           x           x           x           1  |           0           0           0           0           0   IDLE -> IDLE
+//           1           1           0           x           x           x           x           x           1  |           1           1           0           0           0   MOVS -> MOVS
+//           1           0           0           x           x           x           x           x           1  |           1           0           0           0           0   CMP -> CMP
+//           0           0           1           x           x           x           x           x           1  |           0           0           1           0           0   WAIT -> WAIT
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //
 
 module rep_fsm (
     input  wire clk,
     input  wire rst,
-    input  wire cont_mov_i,
-    input  wire cont_cmp_i,
     input  wire rep_prefix_i,
     input  wire cs_mov_i,
     input  wire cs_cmp_i,
+    input  wire mov_clear_i,
+    input  wire cmp_clear_i,
     input  wire stall_i,
     output wire S_0,  // current-state bit 0 (LSB)
     output wire S_1,  // current-state bit 1 (1)
-    output wire S_2,  // current-state bit 2 (2)
-    output wire S_3,  // current-state bit 3 (MSB)
-    output wire set_rep_o,
-    output wire clear_rep_o,
-    output wire select_line2_o,
-    output wire select_line1_o,
-    output wire select_line0_o
+    output wire S_2,  // current-state bit 2 (MSB)
+    output wire movs_start_o,
+    output wire cmp_start_o
 );
 
 // ----------------------------------------------------------------
@@ -90,24 +59,14 @@ module rep_fsm (
 wire NS_0;
 wire NS_1;
 wire NS_2;
-wire NS_3;
 
 // State encoding  (IDLE = 0, ERROR = highest, guaranteed by tool)
-//   IDLE                         = 0000  (decimal 0)  // IDLE (reset state)
-//   CMP                          = 0001  (decimal 1)
-//   CMP0                         = 0010  (decimal 2)
-//   CMP1                         = 0011  (decimal 3)
-//   CMP2                         = 0100  (decimal 4)
-//   CMP3                         = 0101  (decimal 5)
-//   CMP4                         = 0110  (decimal 6)
-//   FUCK_ME                      = 0111  (decimal 7)
-//   MOV0                         = 1000  (decimal 8)
-//   MOV1                         = 1001  (decimal 9)
-//   MOV2                         = 1010  (decimal 10)
-//   MOV3                         = 1011  (decimal 11)
-//   MOVS                         = 1100  (decimal 12)
-//   WAIT                         = 1101  (decimal 13)
-//   ERROR                        = 1110  (decimal 14)  // ERROR (trap state), synthesised
+//   IDLE                         = 000  (decimal 0)  // IDLE (reset state)
+//   CMP                          = 001  (decimal 1)
+//   FUCK_ME                      = 010  (decimal 2)
+//   MOVS                         = 011  (decimal 3)
+//   WAIT                         = 100  (decimal 4)
+//   ERROR                        = 101  (decimal 5)  // ERROR (trap state), synthesised
 
 // ----------------------------------------------------------------
 // State flip-flops
@@ -117,7 +76,6 @@ wire NS_3;
 `REG_RST(ff_0, 1, clk, rst, NS_0, S_0)
 `REG_RST(ff_1, 1, clk, rst, NS_1, S_1)
 `REG_RST(ff_2, 1, clk, rst, NS_2, S_2)
-`REG_RST(ff_3, 1, clk, rst, NS_3, S_3)
 
 // ----------------------------------------------------------------
 // Inverters for negated literals
@@ -125,156 +83,69 @@ wire NS_3;
 wire S_0_inv;
 wire S_1_inv;
 wire S_2_inv;
-wire S_3_inv;
-wire cont_cmp_i_inv;
-wire cont_mov_i_inv;
+wire cmp_clear_i_inv;
 wire cs_cmp_i_inv;
 wire cs_mov_i_inv;
+wire mov_clear_i_inv;
 wire stall_i_inv;
 
 `INV_N(inv_S_0, 1, S_0, S_0_inv)
 `INV_N(inv_S_1, 1, S_1, S_1_inv)
 `INV_N(inv_S_2, 1, S_2, S_2_inv)
-`INV_N(inv_S_3, 1, S_3, S_3_inv)
-`INV_N(inv_cont_cmp_i, 1, cont_cmp_i, cont_cmp_i_inv)
-`INV_N(inv_cont_mov_i, 1, cont_mov_i, cont_mov_i_inv)
+`INV_N(inv_cmp_clear_i, 1, cmp_clear_i, cmp_clear_i_inv)
 `INV_N(inv_cs_cmp_i, 1, cs_cmp_i, cs_cmp_i_inv)
 `INV_N(inv_cs_mov_i, 1, cs_mov_i, cs_mov_i_inv)
+`INV_N(inv_mov_clear_i, 1, mov_clear_i, mov_clear_i_inv)
 `INV_N(inv_stall_i, 1, stall_i, stall_i_inv)
 
 // ----------------------------------------------------------------
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (S_0 & !S_2 & stall_i) | (S_0 & !S_3 & stall_i) | (S_1 & S_2 & !S_3 & !stall_i) | (!S_0 & !S_2 & S_3 & !stall_i) | (!S_0 & !S_3 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & stall_i) | (!S_0 & S_1 & !S_2 & !stall_i) | (!S_0 & S_2 & !S_3 & !stall_i) | (S_0 & !S_1 & S_2 & S_3 & !cs_mov_i) | (S_0 & !S_1 & S_2 & S_3 & cs_cmp_i)
+// NS_0 = (S_0 & !S_2 & stall_i) | (S_0 & !S_1 & S_2) | (S_0 & !S_1 & !cmp_clear_i) | (S_0 & S_1 & !S_2 & !mov_clear_i) | (!S_1 & S_2 & cs_mov_i & !cs_cmp_i & !stall_i) | (!S_1 & S_2 & !cs_mov_i & cs_cmp_i & !stall_i)
 wire NS_0_t0;
 `AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_2_inv, stall_i)
 wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_0, S_3_inv, stall_i)
+`AND_3(NS_0_and1, 1, NS_0_t1, S_0, S_1_inv, S_2)
 wire NS_0_t2;
-`AND_4(NS_0_and2, 1, NS_0_t2, S_1, S_2, S_3_inv, stall_i_inv)
+`AND_3(NS_0_and2, 1, NS_0_t2, S_0, S_1_inv, cmp_clear_i_inv)
 wire NS_0_t3;
-`AND_4(NS_0_and3, 1, NS_0_t3, S_0_inv, S_2_inv, S_3, stall_i_inv)
+`AND_4(NS_0_and3, 1, NS_0_t3, S_0, S_1, S_2_inv, mov_clear_i_inv)
 wire NS_0_t4;
-`AND_4(NS_0_and4, 1, NS_0_t4, S_0_inv, S_3_inv, rep_prefix_i, stall_i_inv)
+`AND_5(NS_0_and4, 1, NS_0_t4, S_1_inv, S_2, cs_mov_i, cs_cmp_i_inv, stall_i_inv)
 wire NS_0_t5;
-`AND_3(NS_0_and5, 1, NS_0_t5, S_0, S_1_inv, stall_i)
-wire NS_0_t6;
-`AND_4(NS_0_and6, 1, NS_0_t6, S_0_inv, S_1, S_2_inv, stall_i_inv)
-wire NS_0_t7;
-`AND_4(NS_0_and7, 1, NS_0_t7, S_0_inv, S_2, S_3_inv, stall_i_inv)
-wire NS_0_t8;
-`AND_5(NS_0_and8, 1, NS_0_t8, S_0, S_1_inv, S_2, S_3, cs_mov_i_inv)
-wire NS_0_t9;
-`AND_5(NS_0_and9, 1, NS_0_t9, S_0, S_1_inv, S_2, S_3, cs_cmp_i)
+`AND_5(NS_0_and5, 1, NS_0_t5, S_1_inv, S_2, cs_mov_i_inv, cs_cmp_i, stall_i_inv)
 
-`OR_10(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5, NS_0_t6, NS_0_t7, NS_0_t8, NS_0_t9)
+`OR_6(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5)
 
-// NS_1 = (!S_0 & S_1 & S_3) | (S_1 & !S_3 & stall_i) | (S_0 & S_2 & !S_3 & !stall_i) | (S_1 & !S_2 & stall_i) | (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2 & S_3 & !stall_i) | (S_0 & !S_1 & !S_2 & cont_cmp_i & !stall_i) | (S_0 & !S_1 & S_3 & cs_mov_i & cs_cmp_i & !stall_i) | (S_0 & !S_1 & S_3 & !cs_mov_i & !cs_cmp_i & !stall_i)
+// NS_1 = (!S_0 & S_1 & !S_2) | (S_1 & !S_2 & stall_i) | (S_1 & !S_2 & !mov_clear_i) | (!S_0 & !S_1 & S_2 & cs_mov_i & !stall_i) | (!S_0 & !S_1 & S_2 & !cs_cmp_i & !stall_i)
 wire NS_1_t0;
-`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1, S_3)
+`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1, S_2_inv)
 wire NS_1_t1;
-`AND_3(NS_1_and1, 1, NS_1_t1, S_1, S_3_inv, stall_i)
+`AND_3(NS_1_and1, 1, NS_1_t1, S_1, S_2_inv, stall_i)
 wire NS_1_t2;
-`AND_4(NS_1_and2, 1, NS_1_t2, S_0, S_2, S_3_inv, stall_i_inv)
+`AND_3(NS_1_and2, 1, NS_1_t2, S_1, S_2_inv, mov_clear_i_inv)
 wire NS_1_t3;
-`AND_3(NS_1_and3, 1, NS_1_t3, S_1, S_2_inv, stall_i)
+`AND_5(NS_1_and3, 1, NS_1_t3, S_0_inv, S_1_inv, S_2, cs_mov_i, stall_i_inv)
 wire NS_1_t4;
-`AND_3(NS_1_and4, 1, NS_1_t4, S_0_inv, S_1, S_2_inv)
-wire NS_1_t5;
-`AND_5(NS_1_and5, 1, NS_1_t5, S_0, S_1_inv, S_2_inv, S_3, stall_i_inv)
-wire NS_1_t6;
-`AND_5(NS_1_and6, 1, NS_1_t6, S_0, S_1_inv, S_2_inv, cont_cmp_i, stall_i_inv)
-wire NS_1_t7;
-`AND_6(NS_1_and7, 1, NS_1_t7, S_0, S_1_inv, S_3, cs_mov_i, cs_cmp_i, stall_i_inv)
-wire NS_1_t8;
-`AND_6(NS_1_and8, 1, NS_1_t8, S_0, S_1_inv, S_3, cs_mov_i_inv, cs_cmp_i_inv, stall_i_inv)
+`AND_5(NS_1_and4, 1, NS_1_t4, S_0_inv, S_1_inv, S_2, cs_cmp_i_inv, stall_i_inv)
 
-`OR_9(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4, NS_1_t5, NS_1_t6, NS_1_t7, NS_1_t8)
+`OR_5(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4)
 
-// NS_2 = (S_2 & !S_3 & stall_i) | (S_0 & S_2 & !S_3) | (!S_1 & S_2 & stall_i) | (!S_0 & S_1 & S_2 & S_3) | (S_0 & S_1 & !S_2 & !stall_i) | (!S_1 & S_2 & !S_3) | (S_0 & !S_1 & S_2 & !cs_cmp_i) | (!S_0 & !S_1 & !S_3 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & S_2 & cs_mov_i)
+// NS_2 = (S_0 & !S_1 & S_2) | (!S_1 & S_2 & stall_i) | (!S_0 & !S_1 & !S_2 & rep_prefix_i & !stall_i)
 wire NS_2_t0;
-`AND_3(NS_2_and0, 1, NS_2_t0, S_2, S_3_inv, stall_i)
+`AND_3(NS_2_and0, 1, NS_2_t0, S_0, S_1_inv, S_2)
 wire NS_2_t1;
-`AND_3(NS_2_and1, 1, NS_2_t1, S_0, S_2, S_3_inv)
+`AND_3(NS_2_and1, 1, NS_2_t1, S_1_inv, S_2, stall_i)
 wire NS_2_t2;
-`AND_3(NS_2_and2, 1, NS_2_t2, S_1_inv, S_2, stall_i)
-wire NS_2_t3;
-`AND_4(NS_2_and3, 1, NS_2_t3, S_0_inv, S_1, S_2, S_3)
-wire NS_2_t4;
-`AND_4(NS_2_and4, 1, NS_2_t4, S_0, S_1, S_2_inv, stall_i_inv)
-wire NS_2_t5;
-`AND_3(NS_2_and5, 1, NS_2_t5, S_1_inv, S_2, S_3_inv)
-wire NS_2_t6;
-`AND_4(NS_2_and6, 1, NS_2_t6, S_0, S_1_inv, S_2, cs_cmp_i_inv)
-wire NS_2_t7;
-`AND_5(NS_2_and7, 1, NS_2_t7, S_0_inv, S_1_inv, S_3_inv, rep_prefix_i, stall_i_inv)
-wire NS_2_t8;
-`AND_4(NS_2_and8, 1, NS_2_t8, S_0, S_1_inv, S_2, cs_mov_i)
+`AND_5(NS_2_and2, 1, NS_2_t2, S_0_inv, S_1_inv, S_2_inv, rep_prefix_i, stall_i_inv)
 
-`OR_9(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3, NS_2_t4, NS_2_t5, NS_2_t6, NS_2_t7, NS_2_t8)
+`OR_3(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2)
 
-// NS_3 = (!S_2 & S_3) | (!S_0 & S_1 & S_3) | (!S_1 & S_3 & stall_i) | (!S_0 & S_3 & cont_mov_i) | (!S_0 & !S_1 & !S_2 & rep_prefix_i & !stall_i) | (S_0 & !S_1 & S_3 & cs_mov_i & !cs_cmp_i)
-wire NS_3_t0;
-`AND_2(NS_3_and0, 1, NS_3_t0, S_2_inv, S_3)
-wire NS_3_t1;
-`AND_3(NS_3_and1, 1, NS_3_t1, S_0_inv, S_1, S_3)
-wire NS_3_t2;
-`AND_3(NS_3_and2, 1, NS_3_t2, S_1_inv, S_3, stall_i)
-wire NS_3_t3;
-`AND_3(NS_3_and3, 1, NS_3_t3, S_0_inv, S_3, cont_mov_i)
-wire NS_3_t4;
-`AND_5(NS_3_and4, 1, NS_3_t4, S_0_inv, S_1_inv, S_2_inv, rep_prefix_i, stall_i_inv)
-wire NS_3_t5;
-`AND_5(NS_3_and5, 1, NS_3_t5, S_0, S_1_inv, S_3, cs_mov_i, cs_cmp_i_inv)
+// movs_start_o = (!S_0 & !S_1 & S_2 & cs_mov_i & !cs_cmp_i & !stall_i)
+`AND_6(movs_start_o_and, 1, movs_start_o, S_0_inv, S_1_inv, S_2, cs_mov_i, cs_cmp_i_inv, stall_i_inv)
 
-`OR_6(NS_3_or, 1, NS_3, NS_3_t0, NS_3_t1, NS_3_t2, NS_3_t3, NS_3_t4, NS_3_t5)
-
-// set_rep_o = (!S_0 & !S_1 & !S_2 & !S_3 & rep_prefix_i & !stall_i)
-`AND_6(set_rep_o_and, 1, set_rep_o, S_0_inv, S_1_inv, S_2_inv, S_3_inv, rep_prefix_i, stall_i_inv)
-
-// clear_rep_o = (S_0 & !S_1 & !S_2 & !S_3 & !cont_cmp_i & !stall_i) | (!S_0 & !S_1 & S_2 & S_3 & !cont_mov_i & !stall_i)
-wire clear_rep_o_t0;
-`AND_6(clear_rep_o_and0, 1, clear_rep_o_t0, S_0, S_1_inv, S_2_inv, S_3_inv, cont_cmp_i_inv, stall_i_inv)
-wire clear_rep_o_t1;
-`AND_6(clear_rep_o_and1, 1, clear_rep_o_t1, S_0_inv, S_1_inv, S_2, S_3, cont_mov_i_inv, stall_i_inv)
-
-`OR_2(clear_rep_o_or, 1, clear_rep_o, clear_rep_o_t0, clear_rep_o_t1)
-
-// select_line2_o = (S_1 & !S_2 & !S_3 & !stall_i) | (!S_0 & S_1 & !S_2 & !stall_i) | (S_0 & !S_1 & !S_3 & cont_cmp_i & !stall_i) | (S_0 & !S_1 & S_2 & !S_3 & !stall_i)
-wire select_line2_o_t0;
-`AND_4(select_line2_o_and0, 1, select_line2_o_t0, S_1, S_2_inv, S_3_inv, stall_i_inv)
-wire select_line2_o_t1;
-`AND_4(select_line2_o_and1, 1, select_line2_o_t1, S_0_inv, S_1, S_2_inv, stall_i_inv)
-wire select_line2_o_t2;
-`AND_5(select_line2_o_and2, 1, select_line2_o_t2, S_0, S_1_inv, S_3_inv, cont_cmp_i, stall_i_inv)
-wire select_line2_o_t3;
-`AND_5(select_line2_o_and3, 1, select_line2_o_t3, S_0, S_1_inv, S_2, S_3_inv, stall_i_inv)
-
-`OR_4(select_line2_o_or, 1, select_line2_o, select_line2_o_t0, select_line2_o_t1, select_line2_o_t2, select_line2_o_t3)
-
-// select_line1_o = (S_1 & !S_2 & !S_3 & !stall_i) | (!S_1 & !S_2 & S_3 & !stall_i) | (!S_0 & !S_1 & S_2 & !S_3 & !stall_i)
-wire select_line1_o_t0;
-`AND_4(select_line1_o_and0, 1, select_line1_o_t0, S_1, S_2_inv, S_3_inv, stall_i_inv)
-wire select_line1_o_t1;
-`AND_4(select_line1_o_and1, 1, select_line1_o_t1, S_1_inv, S_2_inv, S_3, stall_i_inv)
-wire select_line1_o_t2;
-`AND_5(select_line1_o_and2, 1, select_line1_o_t2, S_0_inv, S_1_inv, S_2, S_3_inv, stall_i_inv)
-
-`OR_3(select_line1_o_or, 1, select_line1_o, select_line1_o_t0, select_line1_o_t1, select_line1_o_t2)
-
-// select_line0_o = (S_0 & !S_1 & !S_2 & S_3 & !stall_i) | (!S_0 & !S_1 & S_2 & cont_mov_i & !stall_i) | (S_0 & S_1 & !S_2 & !S_3 & !stall_i) | (S_0 & !S_2 & !S_3 & cont_cmp_i & !stall_i) | (!S_0 & !S_1 & S_2 & !S_3 & !stall_i)
-wire select_line0_o_t0;
-`AND_5(select_line0_o_and0, 1, select_line0_o_t0, S_0, S_1_inv, S_2_inv, S_3, stall_i_inv)
-wire select_line0_o_t1;
-`AND_5(select_line0_o_and1, 1, select_line0_o_t1, S_0_inv, S_1_inv, S_2, cont_mov_i, stall_i_inv)
-wire select_line0_o_t2;
-`AND_5(select_line0_o_and2, 1, select_line0_o_t2, S_0, S_1, S_2_inv, S_3_inv, stall_i_inv)
-wire select_line0_o_t3;
-`AND_5(select_line0_o_and3, 1, select_line0_o_t3, S_0, S_2_inv, S_3_inv, cont_cmp_i, stall_i_inv)
-wire select_line0_o_t4;
-`AND_5(select_line0_o_and4, 1, select_line0_o_t4, S_0_inv, S_1_inv, S_2, S_3_inv, stall_i_inv)
-
-`OR_5(select_line0_o_or, 1, select_line0_o, select_line0_o_t0, select_line0_o_t1, select_line0_o_t2, select_line0_o_t3, select_line0_o_t4)
+// cmp_start_o = (!S_0 & !S_1 & S_2 & !cs_mov_i & cs_cmp_i & !stall_i)
+`AND_6(cmp_start_o_and, 1, cmp_start_o, S_0_inv, S_1_inv, S_2, cs_mov_i_inv, cs_cmp_i, stall_i_inv)
 
 endmodule

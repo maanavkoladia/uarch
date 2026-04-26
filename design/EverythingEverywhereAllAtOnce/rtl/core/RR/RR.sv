@@ -257,7 +257,7 @@ module RR (
             valid   : latchesInUse.valid,
             stall   : latchesInUse.valid && depstall,
             ecx_sb  : ecx_sb,
-            ecx     : reg_out.ECX_data,
+            ecx     : reg_out.ECX_data[31:0],
             eax     : reg_out.EAX_data,
             set_ZF_sb   : latchesInUse.cs.will_mod_zf,
             codeSeg_sb  : cs_sb,

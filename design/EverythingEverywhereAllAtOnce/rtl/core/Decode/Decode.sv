@@ -121,11 +121,13 @@ module Decode (
 
     rr_latches_general_t rep_latch_holder;
     bool clear_rep;
+    bool stall_rep;
+    assign stall_rep = stall || !rr_latch_we_o;
     rep_controller piece_of_shit_rep_controller (
         .clk(clk), .rst(rst), .rep_prefix(total_pf_vector[0]),
         .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb),
         .set_zf(temp_rr_cs.will_mod_zf), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
-        .zf_flag(exe_outs_i.ZF), .stall(stall), .flush(flush),
+        .zf_flag(exe_outs_i.ZF), .stall(stall_rep), .flush(flush),
         .rep_latches(rep_latch_holder), .clear_rep(clear_rep)
     );
 
@@ -194,8 +196,18 @@ module Decode (
                 2'b10: REP_LATCH <= 1'b1;
                 2'b11: REP_LATCH <= 1'b0;
             endcase
-            REP_CMP_LATCH <= temp_decode_cs.REP_CMP;
-            REP_MOV_LATCH <= temp_decode_cs.REP && !temp_decode_cs.REP_CMP;
+            case ({temp_decode_cs.REP_CMP, clear_rep})
+                2'b00: REP_CMP_LATCH <= REP_CMP_LATCH;
+                2'b01: REP_CMP_LATCH <= 1'b0;
+                2'b10: REP_CMP_LATCH <= 1'b1;
+                2'b11: REP_CMP_LATCH <= 1'b0;
+            endcase
+            case ({(temp_decode_cs.REP && !temp_decode_cs.REP_CMP), clear_rep})
+                2'b00: REP_MOV_LATCH <= REP_MOV_LATCH;
+                2'b01: REP_MOV_LATCH <= 1'b0;
+                2'b10: REP_MOV_LATCH <= 1'b1;
+                2'b11: REP_MOV_LATCH <= 1'b0;
+            endcase
 
             if(flush) HALT_REG <= 1'b0;
             else HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
