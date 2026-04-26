@@ -1,4 +1,4 @@
-.org 0x1000
+.org 0x00000000
     .code
 
     .global _start
@@ -12,12 +12,11 @@ _start:
     movl $0, %esp
     movl $0, %ebp
     
-    addl $-1, %eax
+    xchg %edi, %esi
     
-
     hlt
 
-.org 0x5000
+.org 0x00050000
     .data
 
     # ---- byte sources (0x5000 – 0x5005) ----

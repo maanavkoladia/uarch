@@ -1,6 +1,6 @@
 {
     "useProgram"              : "true",
-    "input_Program_Path"      : "config/TestProgs/StagesProgRep.s",
+    "input_Program_Path"      : "config/TestProgs/RepTesting/RepTesting.s",
     "input_hex_file"          : "not_needed",
     "output_LoadableHex_Path" : "gen/memGen/hexLoad",
     "output_metaData_Path"    : "gen/memGen/meta/",
@@ -17,19 +17,8 @@
     "startUpDelay"            : "30",
     "gcc_extra_flags"         : [],
 
-    "SegmentMappings" : [
-        ["0x00000",    "0x00000000", "__CS0__"   ],
-        ["0x02000",    "0x40002000", "__DS0__"   ],
-        ["0x10000",    "0x01010000", "__CS1__"   ],
-        ["0x14000",    "0x10014000", "__DS1__"   ],
-        ["0xFE000",    "0xF00FE000", "__SP0__"   ]
-    ],
-
     "VM_Mappings" : [
-        ["0x00000000", 2],
-        ["0x40002000", 4],
-        ["0x01010000", 3],
-        ["0x10014000", 0],
-        ["0xF00FE000", 7]
+        ["0x00000000", 0],
+        ["0x00050000", 5]
     ]
 }

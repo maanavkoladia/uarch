@@ -59,6 +59,9 @@ module Decode (
     wire rr_latch_we_o;
     bool stall;
 
+    reg_ids_e segment0;
+    bool seg_override;
+
     assign flush = exe_outs_i.br_res_out.flush;
     assign stall = rr_outs_i.valid && rr_outs_i.stall;
 
@@ -86,7 +89,7 @@ module Decode (
 
     control_store cs(
         .invalid_inst(invalid_inst), //can aparellize this if needed
-        .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .decode_cs(temp_decode_cs),
+        .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .seg_override(seg_override), .seg0(segment0), .decode_cs(temp_decode_cs),
         .rr_cs(temp_rr_cs), .dc_cs(temp_dc_cs), .mem_cs(temp_mem_cs), .exe_cs(temp_exe_cs), .wb_cs(temp_wb_cs)
     );
 
@@ -141,15 +144,35 @@ module Decode (
         .WB_stall_i(wb_outs_i.wb_stall)
     );
 
-    reg_ids_e segment0;
     always_comb begin
-        if(total_pf_vector[9]) segment0 = CS; //2e
-        else if (total_pf_vector[8]) segment0 = SS;   //36
-        else if (total_pf_vector[7]) segment0 = DS;   //3e
-        else if (total_pf_vector[6]) segment0 = ES;   //26
-        else if (total_pf_vector[5]) segment0 = FS;   //64
-        else if (total_pf_vector[4]) segment0 = GS;   //65
-        else segment0 = DS;
+        if(total_pf_vector[9]) begin
+            segment0 = CS; //2e
+            seg_override = 1'b1;
+        end
+        else if (total_pf_vector[8]) begin
+            segment0 = SS;   //36
+            seg_override = 1'b1;
+        end
+        else if (total_pf_vector[7]) begin
+            segment0 = DS;   //3e
+            seg_override = 1'b1;
+        end
+        else if (total_pf_vector[6]) begin
+            segment0 = ES;   //26
+            seg_override = 1'b1;
+        end
+        else if (total_pf_vector[5]) begin
+            segment0 = FS;   //64
+            seg_override = 1'b1;
+        end
+        else if (total_pf_vector[4]) begin
+            segment0 = GS;   //65
+            seg_override = 1'b1;
+        end
+        else begin
+            segment0 = DS;
+            seg_override = 1'b0;
+        end
     end
 
     always_ff @(posedge clk) begin

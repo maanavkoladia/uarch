@@ -7,6 +7,8 @@ module control_store (
     input logic [9:0] total_pf_vector,
     input byte_t opcode,
     input byte_t modrm,
+    input bool seg_override,
+    input reg_ids_e seg0,
     output decode_cs_t decode_cs,
     output rr_cs_t rr_cs,
     output dc_cs_t dc_cs,
@@ -276,7 +278,7 @@ module control_store (
         datasize         : DATA_SIZE_o,
         will_mod_zf      : will_mod_zf_o,
         seg_1_valid      : HARDCODED_SEGMENT1_V_o,
-        seg_0_id         : HARDCODED_SEGMENT0_o,
+        seg_0_id         : seg_override ? seg0 : HARDCODED_SEGMENT0_o,
         seg_1_id         : HARDCODED_SEGMENT1_o,
         special_modrm_bs : mod_rm_cs_outs.special_modrm_bs
     };
