@@ -1,7 +1,7 @@
 {
-    "useProgram"              : "true",
-    "input_Program_Path"      : "config/TheBigOne/TheBigOne.s",
-    "input_hex_file"          : "not_needed",
+    "useProgram"              : "false",
+    "input_Program_Path"      : "config/exception_public/exception_public.s",
+    "input_hex_file"          : "config/exception_public/exception_public.s",
     "output_LoadableHex_Path" : "gen/memGen/hexLoad",
     "output_metaData_Path"    : "gen/memGen/meta/",
     "randomizeMem"            : "false",
