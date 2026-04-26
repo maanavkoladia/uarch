@@ -94,6 +94,7 @@ module alu_input_sel(
     //logic for BR  //relative offsets calculated in mem
     always_comb begin
         case (br_input_sel)
+            control_store_pkg::ZEXT_IMM16:    br_sel = {16'd0, imm64[15:0]};
             control_store_pkg::IMM32:         br_sel = imm64[31:0];
             control_store_pkg::SR_REGISTER:   br_sel = sr_data[31:0];
             control_store_pkg::DR_REGISTER:   br_sel = dr_data[31:0];

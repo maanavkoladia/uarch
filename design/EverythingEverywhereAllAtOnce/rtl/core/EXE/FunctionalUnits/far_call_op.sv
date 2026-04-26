@@ -9,7 +9,7 @@ module far_call_op(
 );
 
 //call pusehs two things onto the stack and then the eip is updated via branch resolution
-    assign res_buf = {16'd0, neip, segment[15:0]};
+    assign res_buf = {{16'd0, segment[15:0]}, neip};
     assign sr_o = {32'd0, stack_ptr[31:0] - 8};
     assign dr_o = {32'd0, new_cs};
 
