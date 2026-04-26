@@ -13,7 +13,7 @@ import tb_debug_pkg::*;
 
 // ===================== DUT PATHS =====================
 `define FETCH_UNIT_PATH (temp)
-`define DECODE_UNIT_PATH (temp)
+`define DECODE_UNIT_PATH uut_AllAtOnce.core_unit.decode_unit
 `define RR_UNIT_PATH uut_AllAtOnce.core_unit.rr_unit
 `define DC_UNIT_PATH (temp)
 `define MEM_UNIT_PATH (temp)

@@ -35,7 +35,7 @@ module EXE (
     logic                       [3:0] data_size;
     logic                       [3:0] sr_data_size_vec;
     uint32_t                          flags_reg;
-    bool                              flush_mask;
+    bool                              stall_flop;
 
     // --- ALU Input Buffers ---
     uint64_t                          sr_data;
@@ -218,6 +218,14 @@ module EXE (
     // IRETD Flags
     logic iretd_cf_o, iretd_pf_o, iretd_af_o, iretd_zf_o, iretd_sf_o, iretd_of_o;
 
+    //reg writeback to rr logic outputs
+    reg_ids_e dr0_id_o;
+    bool dr0_we_o;
+    uint64_t dr0_data_o;
+    reg_ids_e dr1_id_o;
+    bool dr1_we_o;
+    uint64_t dr1_data_o;
+
     //==========================================================================
     // CONTROL SIGNAL ASSIGNMENTS
     //==========================================================================
@@ -235,17 +243,10 @@ module EXE (
     //==========================================================================
     // NEXT LATCH ASSIGNMENT
     //==========================================================================
-    wb_cs_t next_wb_cs;
-    assign next_wb_cs = '{
-        ST_OP : latches_i.wb_cs.ST_OP,
-        WB_DR : latches_i.wb_cs.WB_DR,
-        WB_SR : latches_i.wb_cs.WB_SR,
-        WB_EAX: latches_i.wb_cs.WB_EAX
-    };
 
     assign wb_latches_next_o = '{
             valid: wb_stage_next_vaild_o,
-            cs: next_wb_cs,
+            cs: latches_i.wb_cs,
             ST_XCL: latches_i.ST_XCL,
             ST_PADDR_0: latches_i.ST_PADDR_0,
             ST_BIT_VEC_0: bit_vec_0_next,
@@ -264,6 +265,15 @@ module EXE (
     assign outs_o = '{
         valid: latches_i.valid,
         br_res_out: branch_resolution_o,
+
+        //new reg writeback in execute
+        DR_0_we: dr0_we_o,
+        DR_0_id: dr0_id_o,
+        DR_0_data: dr0_data_o,
+        DR_1_we: dr1_we_o,
+        DR_1_id: dr1_id_o,
+        DR_1_data: dr1_data_o,
+
         ZF: flags_reg[ZF_IDX],
         clr_ZF_sb: clr_ZF_sb,
         ST_OP: latches_i.cs.ST_OP,
@@ -388,6 +398,27 @@ module EXE (
         .sr_o            (sr_next)
     );
 
+    uint64_t next_EAX;
+    assign next_EAX =  latches_i.wb_cs.WB_EAX ? cmpxchg_EAX_o : {32'd0, latches_i.EAX};
+    reg_wb_logic reg_wb(
+         .next_dr_data(dr_next),
+         .dr_id(latches_i.dr_id),
+         .WB_DR(latches_i.wb_cs.WB_DR),
+         .next_EAX(next_EAX),
+         .next_sr_data(sr_next),
+         .sr_id(latches_i.sr_id),
+         .WB_EAX(latches_i.wb_cs.WB_EAX),
+         .WB_SR(latches_i.wb_cs.WB_SR),
+         .valid(latches_i.valid),
+         .stall_flop(stall_flop),
+         .dr0_id_o(dr0_id_o),
+         .dr0_we_o(dr0_we_o),
+         .dr0_data_o(dr0_data_o),
+         .dr1_id_o(dr1_id_o),
+         .dr1_we_o(dr1_we_o),
+         .dr1_data_o(dr1_data_o)
+    );
+
 
     //==========================================================================
     // BRANCH RESOLUTION
@@ -396,7 +427,7 @@ module EXE (
     branch_res u_br_res (
         .stage_valid_i       (latches_i.valid),
         .br_info_valid_i     (latches_i.br_info.valid),
-        .flush_mask          (flush_mask),
+        .flush_mask          (stall_flop),
         .br_eip_i            (latches_i.br_info.br_eip),
         .br_xcl_i            (latches_i.br_info.br_xcl),
         .br_pred_taken_i     (latches_i.br_info.br_pred_taken),
@@ -451,11 +482,14 @@ module EXE (
         end
     end
 
+
+    //the logic here is that if writeback is stall we dont want to spam flushes. we only want to send out flush signals once
+    //now also if wb is stalling we only want to write to the reg file once, so we need to gate the write enable with the stall signal as well.
     always_ff @(posedge clk)begin
-        if(!rst) 
-            flush_mask <= 0;
+        if(!rst)
+            stall_flop <= 0;
         else
-            flush_mask <= wb_outs_i.wb_stall;
+            stall_flop <= wb_outs_i.wb_stall;
     end
 
 

@@ -16,6 +16,7 @@ EXE_SRC_FILES = \
     $(EXE_PATH_INTERNAL)/res_buf_sel.sv \
     $(EXE_PATH_INTERNAL)/dr_sel.sv \
     $(EXE_PATH_INTERNAL)/sr_sel.sv \
+    $(EXE_PATH_INTERNAL)/reg_wb_logic.sv \
     $(EXE_PATH_INTERNAL)/flag_sel/af_flag_sel.sv \
     $(EXE_PATH_INTERNAL)/flag_sel/cf_flag_sel.sv \
     $(EXE_PATH_INTERNAL)/flag_sel/df_flag_sel.sv \

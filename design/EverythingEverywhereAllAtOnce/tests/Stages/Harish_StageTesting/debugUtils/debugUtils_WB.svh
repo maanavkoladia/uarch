@@ -50,15 +50,15 @@ task automatic print_wb_outputs();
               `WB_UNIT_PATH.outputs.valid,
               `WB_UNIT_PATH.outputs.wb_stall);
 
-    $fdisplay(`LOG_FD, "  DR0: we=%0b  id=%s  data=0x%016h",
-              `WB_UNIT_PATH.outputs.DR_0_we,
-              tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_0_id),
-              `WB_UNIT_PATH.outputs.DR_0_data);
+    // $fdisplay(`LOG_FD, "  DR0: we=%0b  id=%s  data=0x%016h",
+    //           `WB_UNIT_PATH.outputs.DR_0_we,
+    //           tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_0_id),
+    //           `WB_UNIT_PATH.outputs.DR_0_data);
 
-    $fdisplay(`LOG_FD, "  DR1: we=%0b  id=%s  data=0x%016h",
-              `WB_UNIT_PATH.outputs.DR_1_we,
-              tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_1_id),
-              `WB_UNIT_PATH.outputs.DR_1_data);
+    // $fdisplay(`LOG_FD, "  DR1: we=%0b  id=%s  data=0x%016h",
+    //           `WB_UNIT_PATH.outputs.DR_1_we,
+    //           tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_1_id),
+    //           `WB_UNIT_PATH.outputs.DR_1_data);
 `endif
 
 endtask
@@ -150,16 +150,16 @@ task automatic print_wb_actual_commit();
               `WB_UNIT_PATH.outputs.valid,
               `WB_UNIT_PATH.wb_latches.EIP);
 
-    $fdisplay(`LOG_FD, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
-              tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_0_id),
-              `WB_UNIT_PATH.outputs.DR_0_data,
-              tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_1_id),
-              `WB_UNIT_PATH.outputs.DR_1_data);
+    // $fdisplay(`LOG_FD, "  dr=%s(0x%016h)  sr=%s(0x%016h)",
+    //           tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_0_id),
+    //           `WB_UNIT_PATH.outputs.DR_0_data,
+    //           tb_debug_pkg::get_reg_name(`WB_UNIT_PATH.outputs.DR_1_id),
+    //           `WB_UNIT_PATH.outputs.DR_1_data);
 
-    $fdisplay(`LOG_FD, "  WB_CS: ST=%0b WB_DR=%0b WB_SR=%0b",
-              `WB_UNIT_PATH.outputs.ST_OP,
-              `WB_UNIT_PATH.outputs.DR_0_we,
-              `WB_UNIT_PATH.outputs.DR_1_we);
+    $fdisplay(`LOG_FD, "  WB_CS: ST=%0b",
+              `WB_UNIT_PATH.outputs.ST_OP
+              /*`WB_UNIT_PATH.outputs.DR_0_we,
+              `WB_UNIT_PATH.outputs.DR_1_we*/);
 `endif
 endtask
 
