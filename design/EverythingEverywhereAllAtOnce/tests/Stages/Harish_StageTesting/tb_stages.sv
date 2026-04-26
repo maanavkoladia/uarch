@@ -9,7 +9,7 @@ import Fetch_pkg::*;
 import DCache_common_pkg::*;
 import WriteBack_pkg::*;
 
-`define CLK_PERIOD 8
+`define CLK_PERIOD 10
 
 
 module tb_stages();
@@ -146,7 +146,7 @@ module tb_stages();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(700);
+        DelayClks(5000);
         //print_all();
         $display("cycle count: %0d", finish_time);
         $finish;
