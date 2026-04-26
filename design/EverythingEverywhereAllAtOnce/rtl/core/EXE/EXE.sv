@@ -227,6 +227,9 @@ module EXE (
     bool dr1_we_o;
     uint64_t dr1_data_o;
 
+    //jump far new cs
+    uint64_t far_jmp_dr_o;
+
     //==========================================================================
     // CONTROL SIGNAL ASSIGNMENTS
     //==========================================================================
@@ -238,7 +241,6 @@ module EXE (
     assign sr_data = latches_i.sr_data;
     assign dr_data = latches_i.dr_data;
     assign eax_data = latches_i.EAX;
-
 
 
     //==========================================================================
@@ -374,8 +376,10 @@ module EXE (
         .pavgb_dr_i      (pavgb_dr_o),
         .pavgw_dr_i      (pavgw_dr_o),
         .pop_dr_i        (pop_dr_o),
+        .ret_far_dr_i    (ret_far_cs_o),
         .ret_far_imm_dr_i(ret_far_imm_dr_o),
         .far_call_dr_i   (far_call_dr_o),
+        .far_jmp_dr_i    (far_jmp_dr_o),
         .sal_dr_i        (sal_dr_o),
         .sar_dr_i        (sar_dr_o),
         .sbb_dr_i        (sbb_dr_o),
@@ -391,6 +395,7 @@ module EXE (
         .mov_s_sr_i       (mov_s_sr_o),
         .pop_sr_i        (pop_sr_o),
         .push_sr_i       (push_sr_o),
+        .ret_far_sr_i    (ret_far_next_ptr_o),
         .ret_far_imm_sr_i(ret_far_imm_sr_o),
         .ret_imm_sr_i    (ret_imm_sr_o),
         .ret_sr_i        (ret_sr_o),
@@ -861,6 +866,12 @@ module EXE (
         .res_buf  (far_call_res_buf),
         .sr_o     (far_call_sr_o),
         .dr_o     (far_call_dr_o)
+    );
+
+    far_jmp_op u_far_jmp_op (
+        .op_type  (op_type),
+        .srA     (srA),
+        .dr_o(far_jmp_dr_o)
     );
 
     // --- IRETD: Interrupt Return ---

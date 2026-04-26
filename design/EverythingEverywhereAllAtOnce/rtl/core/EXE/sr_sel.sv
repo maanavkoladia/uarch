@@ -8,6 +8,7 @@ module sr_sel (
     input uint64_t sr_data,
     input uint64_t pop_sr_i,
     input uint64_t push_sr_i,
+    input uint64_t ret_far_sr_i,
     input uint64_t ret_far_imm_sr_i,
     input uint64_t ret_imm_sr_i,
     input uint64_t ret_sr_i,
@@ -25,6 +26,7 @@ module sr_sel (
             ADD_DF:      sr_o = add_df_sr_i;
             POP:         sr_o = pop_sr_i;
             PUSH:        sr_o = push_sr_i;
+            RET_FAR:     sr_o = ret_far_sr_i;
             RET_FAR_IMM: sr_o = ret_far_imm_sr_i;
             RET_IMM:     sr_o = ret_imm_sr_i;
             RET:         sr_o = ret_sr_i;

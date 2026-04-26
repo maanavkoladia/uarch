@@ -2,6 +2,8 @@
 #define __DS0__ 0x2004
 #define __CS1__ 0x0100
 #define __DS1__ 0x1234
+#define __CS2__ 0x5678
+#define __CS3__ 0x9890
 #define __SP0__ 0xFFFF
 
 .org 0x00000000
@@ -49,7 +51,7 @@ _start:
     popl    %ecx
     popl    %edx
     popl    %esi
-
+    ljmpw $__CS2__, $0
     hlt
 
 /* ================================================================
@@ -88,14 +90,17 @@ _second_entry:
        stack inspection - should see 0xDEADBEEF
        ------------------------------------------------ */
 
-   /* movl    (%esp), %edx */
+   /* movl    (%esp), %edx 
       movl %esp, %eax
-      movl %ss:(%eax), %edx
+      movl %ss:(%eax), %edx*/
+      popl %edx
+      pushl %edx
 
     /* ------------------------------------------------
        return to caller (restores CS0:EIP)
 
        ------------------------------------------------ */
+
     lret
 
 
@@ -105,6 +110,21 @@ data_page_2:
 
     .long 0x55667788
     .space 0xC00
+
+.org 0x56780000
+.code
+_third_entry:
+   movl $__CS2__, %eax
+    ljmp $__CS3__, $12345
+   hlt
+
+.org 0x98912345
+.code
+_fourth_entry:
+   movl $__CS1__, %eax
+   hlt
+
+
 
 /* ================================================================
    STACK SECTION
