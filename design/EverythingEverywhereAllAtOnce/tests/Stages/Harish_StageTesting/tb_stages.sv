@@ -73,6 +73,13 @@ module tb_stages();
     // wire                   [   ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
     // wire                   [     DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
 
+    uint32_t finish_time;
+    bool program_halted;
+    assign program_halted = `DECODE_UNIT_PATH.HALT_REG;
+    always_ff @(posedge clk) begin
+        if(!rst) finish_time <= 0;
+        else if(!program_halted) finish_time++;
+    end
 
  
     AllAtOnce_TOP uut_AllAtOnce(
@@ -140,8 +147,9 @@ module tb_stages();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(700);
+        DelayClks(5000);
         //print_all();
+        $display("cycle count: %0d", finish_time);
         $finish;
         `LOG("Finishing mem System TB");
 
