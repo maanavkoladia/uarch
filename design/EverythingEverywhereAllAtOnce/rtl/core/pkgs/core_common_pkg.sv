@@ -125,6 +125,14 @@ package core_common_pkg;
         //for fetch and decode
         exe_br_resolution_outputs_t br_res_out;
 
+        bool DR_0_we;
+        reg_ids_e DR_0_id;
+        uint64_t DR_0_data;
+
+        bool DR_1_we;
+        reg_ids_e DR_1_id;  //
+        uint64_t DR_1_data;  //data is supposed to be aligned
+
         //for decode for rep engine
         bool  clr_ZF_sb;
         logic ZF;
@@ -151,15 +159,6 @@ package core_common_pkg;
     typedef struct {
         bool valid;
         bool wb_stall;
-
-        //to RR
-        bool DR_0_we;
-        reg_ids_e DR_0_id;
-        uint64_t DR_0_data;
-
-        bool DR_1_we;
-        reg_ids_e DR_1_id;  //
-        uint64_t DR_1_data;  //data is supposed to be aligned
 
         //to dcache
         st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];

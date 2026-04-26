@@ -64,19 +64,19 @@ module RegSB (
 
     always_ff @(posedge clk) begin
         if (!rst) SCORE_BOARD <= '{default: '0};
-        else if (callFlush || farFlush) begin
-            if(callFlush) begin
-                for (int i = 0; i < NUM_REGS - 1; i++) begin
-                    if (!(i == ESP)) SCORE_BOARD[i].counter <= 0;
-                end
-            end
-            if(farFlush) begin
-                for (int i = 0; i < NUM_REGS - 1; i++) begin
-                    if (!(i == CS)) SCORE_BOARD[i].counter <= 0;
-                end
-            end
-        end
-        else if (flush) SCORE_BOARD <= '{default : '0};
+        // else if (callFlush || farFlush) begin
+        //     if(callFlush) begin
+        //         for (int i = 0; i < NUM_REGS - 1; i++) begin
+        //             if (!(i == ESP)) SCORE_BOARD[i].counter <= 0;
+        //         end
+        //     end
+        //     if(farFlush) begin
+        //         for (int i = 0; i < NUM_REGS - 1; i++) begin
+        //             if (!(i == CS)) SCORE_BOARD[i].counter <= 0;
+        //         end
+        //     end
+        // end
+        if (flush || callFlush || farFlush) SCORE_BOARD <= '{default : '0};
         else begin
             if(cs_wr_to_both) begin
                 if (updateSB) SCORE_BOARD[dr_id].counter++;
