@@ -1,6 +1,6 @@
 {
     "useProgram"              : "true",
-    "input_Program_Path"      : "config/TestProgs/RepTesting/RepTesting.s",
+    "input_Program_Path"      : "config/simpleFarTest/simpleFarTest.s",
     "input_hex_file"          : "not_needed",
     "output_LoadableHex_Path" : "gen/memGen/hexLoad",
     "output_metaData_Path"    : "gen/memGen/meta/",
@@ -18,7 +18,12 @@
     "gcc_extra_flags"         : [],
 
     "VM_Mappings" : [
-        ["0x00000000", 0],
-        ["0x00050000", 5]
+        ["0x00000000", 3],
+        ["0x20040000", 4],
+        ["0x01000000", 7],
+        ["0x12340000", 0],
+        ["0xFFFF0000", 5],
+        ["0x56780000", 2],
+        ["0x98912000", 6]
     ]
 }
