@@ -72,19 +72,9 @@ module WB (
         valid : wb_latches.valid,
         wb_stall : stall_flop_next,
 
-        //for Reg SB
-        DR_0_we : reg_wb_logic_outs.dr0_we,
-        DR_0_id : reg_wb_logic_outs.dr0_id,
-        DR_0_data : reg_wb_logic_outs.dr0_data,
-
-        DR_1_we : reg_wb_logic_outs.dr1_we,
-        DR_1_id : reg_wb_logic_outs.dr1_id,
-        DR_1_data : reg_wb_logic_outs.dr1_data,
-
         //to DCACHE
         stq_heads : stq_heads,
         mio_head : mio_q_output,
-        
 
         dep_check : dc_dep,
 
@@ -147,17 +137,6 @@ module WB (
         .push_fail(mio_push_fail),
         .outs(mio_q_output)
     );
-
-
-
-    reg_wb_logic reg_wb(
-        .reg_info(wb_latches),
-        .stall_flop(stall_flop),
-        .outs(reg_wb_logic_outs)
-    );
-
-
-
 
 
 endmodule

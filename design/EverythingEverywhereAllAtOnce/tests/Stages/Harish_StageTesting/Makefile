@@ -55,7 +55,11 @@ include $(PROJECT_ROOT)/Make.vars
 include $(PROJECT_ROOT)/Make.build
 #include debugUtils/srcs.mk
 
+<<<<<<< HEAD
 GEN_CONF = config/TestProgs/RepTesting/startUpGen.conf.json
+=======
+GEN_CONF = $(TEST_CASE_PATH)/startUpGen.conf.json
+>>>>>>> 2d0e446c0ce5f5bc7e2ba25c0ebd08278e03c959
 
 TOP_MODULE_NAME = tb_stages
 

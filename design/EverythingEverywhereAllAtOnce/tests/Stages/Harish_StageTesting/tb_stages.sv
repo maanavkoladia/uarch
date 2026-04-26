@@ -35,14 +35,14 @@ module tb_stages();
     logic [31:0] savedFlags;
 
     always_comb begin
-        instruction_commit = !`WB_UNIT_PATH.outputs.wb_stall && `WB_UNIT_PATH.outputs.valid;
+        instruction_commit = !`EXE_UNIT_PATH.stall_flop && `EXE_UNIT_PATH.outs_o.valid;
         exeforwards = `EXE_UNIT_PATH.wb_stage_we_valid_unit_o && `EXE_UNIT_PATH.wb_stage_next_vaild_o;
     end
 
     always_ff @(posedge clk) begin
         if(instruction_commit) begin
             needToDumpRegFile <= 1;
-            saved_reg_dump_EIP <= `WB_UNIT_PATH.wb_latches.EIP;
+            saved_reg_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
         end else needToDumpRegFile <= 0;
         if(exeforwards)  begin
             needToDumpFlags <= 1;
@@ -56,7 +56,6 @@ module tb_stages();
             savedFlags[OF_IDX] <= `EXE_UNIT_PATH.of_flag_o;
         end else needToDumpFlags <= 0;
 
-    
         if(needToDumpRegFile) dump_regs(saved_reg_dump_EIP);
         if(needToDumpFlags)   dump_flags(saved_flag_dump_EIP, savedFlags);
     end
@@ -73,13 +72,20 @@ module tb_stages();
     // wire                   [   ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
     // wire                   [     DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
 
+    uint32_t finish_time;
+    bool program_halted;
+    assign program_halted = `DECODE_UNIT_PATH.HALT_REG;
+    always_ff @(posedge clk) begin
+        if(!rst) finish_time <= 0;
+        else if(!program_halted) finish_time++;
+    end
 
  
     AllAtOnce_TOP uut_AllAtOnce(
         .clk(clk),
         .rst(rst)
     );
-   
+
     task automatic print_info(input string test_name); begin
         $fdisplay(`LOG_FD, "test name: %s", test_name);
         print_cycle_header();
@@ -102,17 +108,17 @@ module tb_stages();
         print_info(" ");
     end
 
-    // Emit [WB ACTUAL COMMIT] every cycle WB has a valid instruction, and
-    // [REGFILE DUMP] whenever a register write actually occurs.
-    // #1 advances past the NBA region so REGISTERS[] reflects this posedge.
-    always @(posedge clk) begin
-        #1;
-        if (`WB_UNIT_PATH.outputs.valid) begin
-            print_wb_actual_commit();
-            if (`WB_UNIT_PATH.outputs.DR_0_we || `WB_UNIT_PATH.outputs.DR_1_we)
-                print_regfile_dump();
-        end
-    end
+    // // Emit [WB ACTUAL COMMIT] every cycle WB has a valid instruction, and
+    // // [REGFILE DUMP] whenever a register write actually occurs.
+    // // #1 advances past the NBA region so REGISTERS[] reflects this posedge.
+    // always @(posedge clk) begin
+    //     #1;
+    //     if (`WB_UNIT_PATH.outputs.valid) begin
+    //         print_wb_actual_commit();
+    //         if (`WB_UNIT_PATH.outputs.DR_0_we || `WB_UNIT_PATH.outputs.DR_1_we)
+    //             print_regfile_dump();
+    //     end
+    // end
 
     initial begin
         `LOG("Starting mem System TB");
@@ -140,10 +146,12 @@ module tb_stages();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(5000);
+        DelayClks(700);
         //print_all();
+        $display("cycle count: %0d", finish_time);
         $finish;
         `LOG("Finishing mem System TB");
+        
 
 
     // ===================== END DEBUG LOGGER =====================

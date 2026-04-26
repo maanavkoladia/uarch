@@ -108,7 +108,7 @@ def run_simulation(test_dir, bin_path, verbose=True, max_cycles=100000, dump_cyc
         snap_before["cycle"] = cpu.cycle
         snap_before["instruction"] = str(inst)
         snap_before["raw"]   = inst.raw
-        snap_before["addr"]  = linear_fetch
+        snap_before["addr"]  = eip  # raw EIP offset within CS (pre-segment-translation)
 
         # --- Advance EIP past current instruction (handlers may overwrite) ---
         regs.eip = (eip + inst.size) & 0xFFFFFFFF

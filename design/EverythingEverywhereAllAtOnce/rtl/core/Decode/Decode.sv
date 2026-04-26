@@ -94,8 +94,8 @@ module Decode (
     );
 
     decode_gp_gen gp_gen_decode(
-        .prev_eip(PrevEIP), .prev_length(PrevLength), .segValue(rr_outs_i.codeSeg_data),
-        .seg_sb(rr_outs_i.codeSeg_sb), .segLimit(rr_outs_i.codeSeg_limit), .gp_fault_o(decode_gp)
+        .prev_eip(PrevEIP), .prev_length(PrevLength),
+        .segLimit(rr_outs_i.codeSeg_limit), .gp_fault_o(decode_gp)
     );
 
     br_info_t br_info_for_latches;

@@ -47,7 +47,7 @@ module alu_input_sel(
             control_store_pkg::EIP:            srA_64 = {32'b0, EIP};
             control_store_pkg::SEXT8:          srA_64 = {32'd0, 32'(signed'(imm64[7:0]))};
             control_store_pkg::NO_EXE:         srA_64 = 0;
-            control_store_pkg::SEGMENT_NEIP:   srA_64 = {dr_data, NEIP}; 
+            control_store_pkg::SEGMENT_NEIP:   srA_64 = {dr_data, NEIP};
             control_store_pkg::SEGMENT_EIP:    srA_64 = {dr_data, EIP}; //not sure when this needs to be used
             control_store_pkg::EAX_REG:        srA_64 = {32'd0, EAX}; //cmpxchg
             control_store_pkg::SR_DR_SEL:      srA_64 = {sr_data[31:0], dr_data[31:0]}; 
@@ -94,6 +94,7 @@ module alu_input_sel(
     //logic for BR  //relative offsets calculated in mem
     always_comb begin
         case (br_input_sel)
+            control_store_pkg::IMM32:         br_sel = imm64[31:0];
             control_store_pkg::SR_REGISTER:   br_sel = sr_data[31:0];
             control_store_pkg::DR_REGISTER:   br_sel = dr_data[31:0];
             control_store_pkg::BUF32      :   br_sel = res_buf_out[31:0];
