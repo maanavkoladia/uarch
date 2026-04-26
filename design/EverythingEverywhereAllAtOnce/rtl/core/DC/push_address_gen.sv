@@ -14,15 +14,15 @@ module push_address_gen(
     //we need to find the low address using the data size
     //then we need to see if we now crossing cache line
     //this all only necessary if we are doing a push
-    logic [2:0] num_bytes;
+    logic [3:0] num_bytes;
     p_address_t start_address;
     p_address_t end_address;
     assign end_address = ST_PADDR_0 - 1;
 
     always_comb begin
         // Map data_size to byte count
-        if(OP_TYPE == FAR_CALL) num_bytes = 3'd6;
-        else num_bytes = (data_size[1]) ? 3'd4 : 3'd2;
+        if(OP_TYPE == FAR_CALL) num_bytes = 8;
+        else num_bytes = (data_size[1]) ? 4 : 2;
     end
     assign start_address  = ST_PADDR_0 - num_bytes;
 

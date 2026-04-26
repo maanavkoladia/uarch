@@ -87,7 +87,11 @@ _second_entry:
     /* ------------------------------------------------
        stack inspection - should see 0xDEADBEEF
        ------------------------------------------------ */
-    movl    (%esp), %edx
+
+   /* movl    (%esp), %edx */
+      movl %esp, %eax
+      movl %ss:(%eax), %edx
+
     /* ------------------------------------------------
        return to caller (restores CS0:EIP)
 

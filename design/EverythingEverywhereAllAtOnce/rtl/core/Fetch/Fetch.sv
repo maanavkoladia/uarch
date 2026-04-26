@@ -151,13 +151,16 @@ module Fetch (
         if(!rst)
             exp_mode_jk <= 0;
         else begin
-            case({exp_set_logic_outs.exp_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
-                2'b00: exp_mode_jk <= exp_mode_jk;
-                2'b01: exp_mode_jk <= 0;
-                2'b10: exp_mode_jk <= 1;
-                2'b11: exp_mode_jk <= ~exp_mode_jk;
-                default: exp_mode_jk <= exp_mode_jk;
-            endcase
+            if(exe_outs_i.br_res_out.flush && exe_outs_i.br_res_out.valid) exp_mode_jk <= 0;
+            else begin
+                case({exp_set_logic_outs.exp_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
+                    2'b00: exp_mode_jk <= exp_mode_jk;
+                    2'b01: exp_mode_jk <= 0;
+                    2'b10: exp_mode_jk <= 1;
+                    2'b11: exp_mode_jk <= ~exp_mode_jk;
+                    default: exp_mode_jk <= exp_mode_jk;
+                endcase
+            end
         end
     end
 

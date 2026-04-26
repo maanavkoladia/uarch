@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
 #TEST_CASE_PATH = $(TEST_DIR)/config/TestProgs/simpleFarTest/
-TEST_CASE_PATH = $(TEST_DIR)/config/TestProgs/TheBigOne/
+TEST_CASE_PATH = $(TEST_DIR)/config/TestProgs/simpleFarTest/
 #sim rtl var
 # ASM       = $(TEST_DIR)/config/TestProgs/StagesProgFF.s
 # TLB       = $(TEST_DIR)/config/TLB.conf.json

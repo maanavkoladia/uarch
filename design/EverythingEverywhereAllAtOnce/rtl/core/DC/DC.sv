@@ -79,9 +79,7 @@ module DC (
     assign ld_exception = (ld_neuralnet_out.DC_PF | ld_neuralnet_out.DC_GP | ld_segx_gp) && latches_i.cs.LD_OP;
     assign st_exception = (st_neuralnet_out.DC_PF | st_neuralnet_out.DC_GP | st_segx_gp) && latches_i.cs.ST_OP;
     assign rr_exception = latches_i.rr_gp;
-    assign exp_stall = (ld_exception | st_exception | rr_exception) & latches_i.valid;
-
-
+    assign exp_stall = (ld_exception | st_exception | rr_exception) & latches_i.valid & ~exe_outs_i.br_res_out.flush; 
     assign dc_stall = dep_stall | arb_stall | exp_stall;
 
 

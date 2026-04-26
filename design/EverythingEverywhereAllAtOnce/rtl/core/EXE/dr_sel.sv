@@ -24,11 +24,12 @@ module dr_sel (
     input uint64_t pavgw_dr_i,
     input uint64_t pop_dr_i,
     input uint64_t ret_far_imm_dr_i,
+    input uint64_t  far_call_dr_i,
     input uint64_t sal_dr_i,
     input uint64_t sar_dr_i,
     input uint64_t sbb_dr_i,
     input uint64_t xchg_dr_i,
-    input uint64_t dr_data,
+    input uint64_t dr_data, 
     
     // Selected output
     output uint64_t dr_o
@@ -56,6 +57,7 @@ module dr_sel (
             PAVGW:    dr_o = pavgw_dr_i;
             POP:      dr_o = pop_dr_i;
             RET_FAR_IMM: dr_o = ret_far_imm_dr_i;
+            FAR_CALL: dr_o = far_call_dr_i;
             SAL:      dr_o = sal_dr_i;
             SAR:      dr_o = sar_dr_i;
             SBB:      dr_o = sbb_dr_i;

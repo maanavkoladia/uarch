@@ -98,6 +98,7 @@ module EXE (
     // FAR_CALL Outputs
     uint64_t                          far_call_sr_o;
     uint64_t                          far_call_res_buf;
+    uint64_t                          far_call_dr_o;
 
     // IRETD Outputs
     uint64_t                          iretd_cs_o;
@@ -374,6 +375,7 @@ module EXE (
         .pavgw_dr_i      (pavgw_dr_o),
         .pop_dr_i        (pop_dr_o),
         .ret_far_imm_dr_i(ret_far_imm_dr_o),
+        .far_call_dr_i   (far_call_dr_o),
         .sal_dr_i        (sal_dr_o),
         .sar_dr_i        (sar_dr_o),
         .sbb_dr_i        (sbb_dr_o),
@@ -855,8 +857,10 @@ module EXE (
         .neip     (srA[31:0]),
         .segment  (srA[63:32]),
         .stack_ptr(srB),
+        .new_cs   ({16'd0,latches_i.imm64[47:32]}),
         .res_buf  (far_call_res_buf),
-        .sr_o     (far_call_sr_o)
+        .sr_o     (far_call_sr_o),
+        .dr_o     (far_call_dr_o)
     );
 
     // --- IRETD: Interrupt Return ---
