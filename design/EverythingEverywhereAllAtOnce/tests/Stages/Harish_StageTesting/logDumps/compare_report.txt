@@ -1,8 +1,8 @@
 ================================================================================
   SIM vs RTL DUMP COMPARISON  (registers + flags per instruction)
 ================================================================================
-  REG  — SIM: 1015  RTL: 29
-  FLAG — SIM: 1015  RTL: 29
+  REG  — SIM: 1015  RTL: 524
+  FLAG — SIM: 1015  RTL: 524
 
 [OK ] #0000  EIP=0x00000000  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0001  EIP=0x00000005  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
@@ -19,597 +19,2352 @@
 [OK ] #0012  EIP=0x0000004B  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0013  EIP=0x00000055  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0014  EIP=0x0000005F  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[ERR] #0015  EIP=0x00000069  mov         
-       *** REG   EAX: SIM=0xA0A0A0A0  RTL=0x11223344
-[ERR] #0016  EIP=0x0000006B  add         
-       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  SF: SIM=1  RTL=0
-       *** REG   EAX: SIM=0xA0A0A0A0  RTL=0x11223344
-       *** REG   EBX: SIM=0xA0A0A0A0  RTL=0x11223344
+[OK ] #0015  EIP=0x00000069  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0016  EIP=0x0000006B  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
 [ERR] #0017  EIP=0x0000006D  mov         
-       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  SF: SIM=1  RTL=0
        *** REG   EAX: SIM=0xB1B1B1B1  RTL=0x00000000
-       *** REG   EBX: SIM=0xA0A0A0A0  RTL=0x11223344
 [ERR] #0018  EIP=0x00000073  add         
        FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
-       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
        *** FLAG  CF: SIM=1  RTL=0
        *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
        *** FLAG  OF: SIM=1  RTL=0
        *** REG   EAX: SIM=0xB1B1B1B1  RTL=0x00000000
-       *** REG   EBX: SIM=0x52525251  RTL=0x11223344
+       *** REG   EBX: SIM=0x52525251  RTL=0xA0A0A0A0
 [ERR] #0019  EIP=0x00000075  mov         
        FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
-       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
        *** FLAG  CF: SIM=1  RTL=0
        *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
        *** FLAG  OF: SIM=1  RTL=0
-       *** REG   EAX: SIM=0xC2C2C2C2  RTL=0x00000000
-       *** REG   EBX: SIM=0x52525251  RTL=0x11223344
+       *** REG   EBX: SIM=0x52525251  RTL=0xA0A0A0A0
 [ERR] #0020  EIP=0x0000007B  add         
        FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  CF: SIM=1  RTL=0
-       *** FLAG  PF: SIM=0  RTL=1
-       *** REG   EAX: SIM=0xC2C2C2C2  RTL=0x00000000
-       *** REG   EBX: SIM=0x15151513  RTL=0x11223344
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x15151513  RTL=0x63636362
 [ERR] #0021  EIP=0x0000007D  mov         
        FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  CF: SIM=1  RTL=0
-       *** FLAG  PF: SIM=0  RTL=1
-       *** REG   EAX: SIM=0xD3D3D3D3  RTL=0x00000000
-       *** REG   EBX: SIM=0x15151513  RTL=0x11223344
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x15151513  RTL=0x63636362
 [ERR] #0022  EIP=0x00000083  add         
        FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
        *** FLAG  PF: SIM=0  RTL=1
        *** FLAG  SF: SIM=1  RTL=0
-       *** REG   EAX: SIM=0xD3D3D3D3  RTL=0x00000000
-       *** REG   EBX: SIM=0xE8E8E8E6  RTL=0x11223344
+       *** REG   EBX: SIM=0xE8E8E8E6  RTL=0x37373735
 [ERR] #0023  EIP=0x00000085  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xE8E8E8E6  RTL=0x37373735
+[ERR] #0024  EIP=0x0000008B  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCDCDCDCA  RTL=0x1C1C1C19
+[ERR] #0025  EIP=0x0000008D  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCDCDCDCA  RTL=0x1C1C1C19
+[ERR] #0026  EIP=0x00000093  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xC3C3C3BF  RTL=0x1212120E
+[ERR] #0027  EIP=0x00000095  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xC3C3C3BF  RTL=0x1212120E
+[ERR] #0028  EIP=0x0000009B  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xD5F81A37  RTL=0x24466886
+[ERR] #0029  EIP=0x0000009D  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xD5F81A37  RTL=0x24466886
+[ERR] #0030  EIP=0x000000A3  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0031  EIP=0x000000A5  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0032  EIP=0x000000AB  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0033  EIP=0x000000B2  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0034  EIP=0x000000B9  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0035  EIP=0x000000C0  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0036  EIP=0x000000C7  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0037  EIP=0x000000CE  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0038  EIP=0x000000D5  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0039  EIP=0x000000DC  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0040  EIP=0x000000DE  add         
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0041  EIP=0x000000E1  add         
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0042  EIP=0x000000E4  add         
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0043  EIP=0x000000E7  add         
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0044  EIP=0x000000EA  add         
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0045  EIP=0x000000ED  add         
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0046  EIP=0x000000F0  add         
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0047  EIP=0x000000F3  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0048  EIP=0x000000F5  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0049  EIP=0x000000FB  and         
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0050  EIP=0x00000101  mov         
+       *** REG   EBX: SIM=0x5D5D5D58  RTL=0xABABABA7
+[ERR] #0051  EIP=0x00000103  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x6C6C6C67  RTL=0xBABABAB6
+[ERR] #0052  EIP=0x00000105  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x6C6C6C67  RTL=0xBABABAB6
+[ERR] #0053  EIP=0x0000010F  and         
+       *** REG   EBX: SIM=0x6C6C6C67  RTL=0xBABABAB6
+[ERR] #0054  EIP=0x00000119  mov         
+       *** REG   EBX: SIM=0x6C6C6C67  RTL=0xBABABAB6
+[ERR] #0055  EIP=0x0000011F  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x5D5D5D57  RTL=0xABABABA6
+[ERR] #0056  EIP=0x00000121  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x5D5D5D57  RTL=0xABABABA6
+[ERR] #0057  EIP=0x0000012B  and         
+       *** REG   EBX: SIM=0x5D5D5D57  RTL=0xABABABA6
+[ERR] #0058  EIP=0x00000135  mov         
+       *** REG   EBX: SIM=0x5D5D5D57  RTL=0xABABABA6
+[ERR] #0059  EIP=0x0000013B  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x5E5C5E56  RTL=0xACAAACA5
+[ERR] #0060  EIP=0x0000013D  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x5E5C5E56  RTL=0xACAAACA5
+[ERR] #0061  EIP=0x00000147  or          
+       *** REG   EBX: SIM=0x5E5C5E56  RTL=0xACAAACA5
+[ERR] #0062  EIP=0x00000151  mov         
+       *** REG   EBX: SIM=0x5E5C5E56  RTL=0xACAAACA5
+[ERR] #0063  EIP=0x00000157  add         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D45  RTL=0x8B586B94
+[ERR] #0064  EIP=0x00000159  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D45  RTL=0x8B586B94
+[ERR] #0065  EIP=0x00000163  or          
+       *** REG   EBX: SIM=0x3D0A1D45  RTL=0x8B586B94
+[ERR] #0066  EIP=0x0000016D  mov         
+       *** REG   EBX: SIM=0x3D0A1D45  RTL=0x8B586B94
+[ERR] #0067  EIP=0x00000173  add         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D44  RTL=0x8B586B93
+[ERR] #0068  EIP=0x00000175  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D44  RTL=0x8B586B93
+[ERR] #0069  EIP=0x0000017A  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D44  RTL=0x8B586B93
+[ERR] #0070  EIP=0x0000017F  and         
+       *** REG   EBX: SIM=0x3D0A1D44  RTL=0x8B586B93
+[ERR] #0071  EIP=0x00000181  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D44  RTL=0x8B586B93
+[ERR] #0072  EIP=0x00000183  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D44  RTL=0x8B586B93
+[ERR] #0073  EIP=0x00000188  or          
+       *** REG   EBX: SIM=0x3D0A1D44  RTL=0x8B586B93
+[ERR] #0074  EIP=0x0000018A  add         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D43  RTL=0x8B586B92
+[ERR] #0075  EIP=0x0000018C  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D43  RTL=0x8B586B92
+[ERR] #0076  EIP=0x00000191  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D43  RTL=0x8B586B92
+[ERR] #0077  EIP=0x00000196  and         
+       *** REG   EBX: SIM=0x3D0A1D43  RTL=0x8B586B92
+[ERR] #0078  EIP=0x00000198  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D43  RTL=0x8B586B92
+[ERR] #0079  EIP=0x0000019A  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D43  RTL=0x8B586B92
+[ERR] #0080  EIP=0x0000019F  or          
+       *** REG   EBX: SIM=0x3D0A1D43  RTL=0x8B586B92
+[ERR] #0081  EIP=0x000001A1  add         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D42  RTL=0x8B586B91
+[ERR] #0082  EIP=0x000001A3  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D42  RTL=0x8B586B91
+[ERR] #0083  EIP=0x000001A9  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D42  RTL=0x8B586B91
+[ERR] #0084  EIP=0x000001AE  and         
+       *** REG   EBX: SIM=0x3D0A1D42  RTL=0x8B586B91
+[ERR] #0085  EIP=0x000001B0  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D42  RTL=0x8B586B91
+[ERR] #0086  EIP=0x000001B2  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D42  RTL=0x8B586B91
+[ERR] #0087  EIP=0x000001B8  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D42  RTL=0x8B586B91
+[ERR] #0088  EIP=0x000001BD  or          
+       *** REG   EBX: SIM=0x3D0A1D42  RTL=0x8B586B91
+[ERR] #0089  EIP=0x000001BF  add         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D41  RTL=0x8B586B90
+[ERR] #0090  EIP=0x000001C1  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D41  RTL=0x8B586B90
+[ERR] #0091  EIP=0x000001CB  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x3D0A1D41  RTL=0x8B586B90
+[ERR] #0092  EIP=0x000001D0  and         
+       *** REG   EBX: SIM=0x3D0A1D41  RTL=0x8B586B90
+[ERR] #0093  EIP=0x000001D6  mov         
+       *** REG   EBX: SIM=0x3D0A1D41  RTL=0x8B586B90
+[ERR] #0094  EIP=0x000001DC  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4F3E73B9  RTL=0x9D8CC208
+[ERR] #0095  EIP=0x000001DE  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4F3E73B9  RTL=0x9D8CC208
+[ERR] #0096  EIP=0x000001E8  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4F3E73B9  RTL=0x9D8CC208
+[ERR] #0097  EIP=0x000001ED  or          
+       *** REG   EBX: SIM=0x4F3E73B9  RTL=0x9D8CC208
+[ERR] #0098  EIP=0x000001F3  mov         
+       *** REG   EBX: SIM=0x4F3E73B9  RTL=0x9D8CC208
+[ERR] #0099  EIP=0x000001F9  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xFB0C62BA  RTL=0x495AB109
+[ERR] #0100  EIP=0x000001FB  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xFB0C62BA  RTL=0x495AB109
+[ERR] #0101  EIP=0x00000200  not         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xFB0C62BA  RTL=0x495AB109
+[ERR] #0102  EIP=0x00000202  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53AA  RTL=0x3A4BA1F9
+[ERR] #0103  EIP=0x00000204  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53AA  RTL=0x3A4BA1F9
+[ERR] #0104  EIP=0x00000209  not         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53AA  RTL=0x3A4BA1F9
+[ERR] #0105  EIP=0x0000020B  add         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53A9  RTL=0x3A4BA1F8
+[ERR] #0106  EIP=0x0000020D  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53A9  RTL=0x3A4BA1F8
+[ERR] #0107  EIP=0x00000212  not         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53A9  RTL=0x3A4BA1F8
+[ERR] #0108  EIP=0x00000214  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53A9  RTL=0x3A4BA1F8
+[ERR] #0109  EIP=0x00000216  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53A9  RTL=0x3A4BA1F8
+[ERR] #0110  EIP=0x00000220  not         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53A9  RTL=0x3A4BA1F8
+[ERR] #0111  EIP=0x00000226  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xEBFD53A9  RTL=0x3A4BA1F8
+[ERR] #0112  EIP=0x0000022C  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDCEE4499  RTL=0x2B3C92E8
+[ERR] #0113  EIP=0x0000022E  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDCEE4499  RTL=0x2B3C92E8
+[ERR] #0114  EIP=0x00000238  not         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDCEE4499  RTL=0x2B3C92E8
+[ERR] #0115  EIP=0x0000023E  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDCEE4499  RTL=0x2B3C92E8
+[ERR] #0116  EIP=0x00000244  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE4085A9  RTL=0x4C8ED3F8
+[ERR] #0117  EIP=0x00000246  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE4085A9  RTL=0x4C8ED3F8
+[ERR] #0118  EIP=0x0000024B  shl         
+       *** REG   EBX: SIM=0xFE4085A9  RTL=0x4C8ED3F8
+[ERR] #0119  EIP=0x0000024D  add         
        FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
        FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
        *** FLAG  PF: SIM=0  RTL=1
        *** FLAG  SF: SIM=1  RTL=0
-       *** REG   EAX: SIM=0xE4E4E4E4  RTL=0x00000000
-       *** REG   EBX: SIM=0xE8E8E8E6  RTL=0x11223344
-[ERR] #0024  EIP=0x0000008B  add         
-       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** REG   EBX: SIM=0xFE4085AB  RTL=0x4C8ED3FA
+[ERR] #0120  EIP=0x0000024F  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
        FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  CF: SIM=1  RTL=0
-       *** FLAG  SF: SIM=1  RTL=0
-       *** REG   EAX: SIM=0xE4E4E4E4  RTL=0x00000000
-       *** REG   EBX: SIM=0xCDCDCDCA  RTL=0x11223344
-[ERR] #0025  EIP=0x0000008D  mov         
-       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  CF: SIM=1  RTL=0
-       *** FLAG  SF: SIM=1  RTL=0
-       *** REG   EAX: SIM=0xF5F5F5F5  RTL=0x00000000
-       *** REG   EBX: SIM=0xCDCDCDCA  RTL=0x11223344
-[ERR] #0026  EIP=0x00000093  add         
-       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  CF: SIM=1  RTL=0
        *** FLAG  PF: SIM=0  RTL=1
        *** FLAG  SF: SIM=1  RTL=0
-       *** REG   EAX: SIM=0xF5F5F5F5  RTL=0x00000000
-       *** REG   EBX: SIM=0xC3C3C3BF  RTL=0x11223344
-[ERR] #0027  EIP=0x00000095  mov         
-       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** REG   EBX: SIM=0xFE4085AB  RTL=0x4C8ED3FA
+[ERR] #0121  EIP=0x00000254  shl         
+       *** REG   EBX: SIM=0xFE4085AB  RTL=0x4C8ED3FA
+[ERR] #0122  EIP=0x00000257  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
        FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  CF: SIM=1  RTL=0
        *** FLAG  PF: SIM=0  RTL=1
        *** FLAG  SF: SIM=1  RTL=0
-       *** REG   EAX: SIM=0x12345678  RTL=0x00000000
-       *** REG   EBX: SIM=0xC3C3C3BF  RTL=0x11223344
-[ERR] #0028  EIP=0x0000009B  add         
+       *** REG   EBX: SIM=0xFE4086AB  RTL=0x4C8ED4FA
+[ERR] #0123  EIP=0x00000259  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE4086AB  RTL=0x4C8ED4FA
+[ERR] #0124  EIP=0x0000025E  shl         
+       *** REG   EBX: SIM=0xFE4086AB  RTL=0x4C8ED4FA
+[ERR] #0125  EIP=0x00000261  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE4186AB  RTL=0x4C8FD4FA
+[ERR] #0126  EIP=0x00000263  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE4186AB  RTL=0x4C8FD4FA
+[ERR] #0127  EIP=0x00000268  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE4186AB  RTL=0x4C8FD4FA
+[ERR] #0128  EIP=0x0000026D  shl         
+       *** REG   EBX: SIM=0xFE4186AB  RTL=0x4C8FD4FA
+[ERR] #0129  EIP=0x0000026F  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE4186BB  RTL=0x4C8FD50A
+[ERR] #0130  EIP=0x00000271  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE4186BB  RTL=0x4C8FD50A
+[ERR] #0131  EIP=0x00000276  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE4186BB  RTL=0x4C8FD50A
+[ERR] #0132  EIP=0x0000027B  shl         
+       *** REG   EBX: SIM=0xFE4186BB  RTL=0x4C8FD50A
+[ERR] #0133  EIP=0x0000027D  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE41B6BB  RTL=0x4C90050A
+[ERR] #0134  EIP=0x0000027F  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xFE41B6BB  RTL=0x4C90050A
+[ERR] #0135  EIP=0x00000284  sar         
+       *** REG   EBX: SIM=0xFE41B6BB  RTL=0x4C90050A
+[ERR] #0136  EIP=0x00000286  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xBE41B6BB  RTL=0x0C90050A
+[ERR] #0137  EIP=0x00000288  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xBE41B6BB  RTL=0x0C90050A
+[ERR] #0138  EIP=0x0000028D  sar         
+       *** REG   EBX: SIM=0xBE41B6BB  RTL=0x0C90050A
+[ERR] #0139  EIP=0x0000028F  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE41B6BB  RTL=0x2C90050A
+[ERR] #0140  EIP=0x00000291  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE41B6BB  RTL=0x2C90050A
+[ERR] #0141  EIP=0x00000296  sar         
+       *** REG   EBX: SIM=0xDE41B6BB  RTL=0x2C90050A
+[ERR] #0142  EIP=0x00000299  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xD641B6BB  RTL=0x2490050A
+[ERR] #0143  EIP=0x0000029B  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xD641B6BB  RTL=0x2490050A
+[ERR] #0144  EIP=0x000002A0  sar         
+       *** REG   EBX: SIM=0xD641B6BB  RTL=0x2490050A
+[ERR] #0145  EIP=0x000002A3  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE31B6BB  RTL=0x2C80050A
+[ERR] #0146  EIP=0x000002A5  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE31B6BB  RTL=0x2C80050A
+[ERR] #0147  EIP=0x000002AA  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE31B6BB  RTL=0x2C80050A
+[ERR] #0148  EIP=0x000002AF  sar         
+       *** REG   EBX: SIM=0xDE31B6BB  RTL=0x2C80050A
+[ERR] #0149  EIP=0x000002B1  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE30B6BB  RTL=0x2C7F050A
+[ERR] #0150  EIP=0x000002B3  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE30B6BB  RTL=0x2C7F050A
+[ERR] #0151  EIP=0x000002B8  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE30B6BB  RTL=0x2C7F050A
+[ERR] #0152  EIP=0x000002BD  sar         
+       *** REG   EBX: SIM=0xDE30B6BB  RTL=0x2C7F050A
+[ERR] #0153  EIP=0x000002BF  add         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x1E30B6BA  RTL=0x6C7F0509
+[ERR] #0154  EIP=0x000002C1  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x1E30B6BA  RTL=0x6C7F0509
+[ERR] #0155  EIP=0x000002CB  shl         
+       *** REG   EBX: SIM=0x1E30B6BA  RTL=0x6C7F0509
+[ERR] #0156  EIP=0x000002D1  mov         
+       *** REG   EBX: SIM=0x1E30B6BA  RTL=0x6C7F0509
+[ERR] #0157  EIP=0x000002D7  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x1E30B7BA  RTL=0x6C7F0609
+[ERR] #0158  EIP=0x000002D9  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x1E30B7BA  RTL=0x6C7F0609
+[ERR] #0159  EIP=0x000002E3  shl         
+       *** REG   EBX: SIM=0x1E30B7BA  RTL=0x6C7F0609
+[ERR] #0160  EIP=0x000002EA  mov         
+       *** REG   EBX: SIM=0x1E30B7BA  RTL=0x6C7F0609
+[ERR] #0161  EIP=0x000002F0  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x1E30C7BA  RTL=0x6C7F1609
+[ERR] #0162  EIP=0x000002F2  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x1E30C7BA  RTL=0x6C7F1609
+[ERR] #0163  EIP=0x000002FC  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x1E30C7BA  RTL=0x6C7F1609
+[ERR] #0164  EIP=0x00000301  shl         
+       *** REG   EBX: SIM=0x1E30C7BA  RTL=0x6C7F1609
+[ERR] #0165  EIP=0x00000307  mov         
+       *** REG   EBX: SIM=0x1E30C7BA  RTL=0x6C7F1609
+[ERR] #0166  EIP=0x0000030D  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x1E40C7BA  RTL=0x6C8F1609
+[ERR] #0167  EIP=0x0000030F  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x1E40C7BA  RTL=0x6C8F1609
+[ERR] #0168  EIP=0x00000319  sar         
+       *** REG   EBX: SIM=0x1E40C7BA  RTL=0x6C8F1609
+[ERR] #0169  EIP=0x0000031F  mov         
+       *** REG   EBX: SIM=0x1E40C7BA  RTL=0x6C8F1609
+[ERR] #0170  EIP=0x00000325  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE40C7BA  RTL=0x2C8F1609
+[ERR] #0171  EIP=0x00000327  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE40C7BA  RTL=0x2C8F1609
+[ERR] #0172  EIP=0x00000331  sar         
+       *** REG   EBX: SIM=0xDE40C7BA  RTL=0x2C8F1609
+[ERR] #0173  EIP=0x00000338  mov         
+       *** REG   EBX: SIM=0xDE40C7BA  RTL=0x2C8F1609
+[ERR] #0174  EIP=0x0000033E  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE3FC7BA  RTL=0x2C8E1609
+[ERR] #0175  EIP=0x00000340  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE3FC7BA  RTL=0x2C8E1609
+[ERR] #0176  EIP=0x0000034A  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDE3FC7BA  RTL=0x2C8E1609
+[ERR] #0177  EIP=0x0000034F  sar         
+       *** REG   EBX: SIM=0xDE3FC7BA  RTL=0x2C8E1609
+[ERR] #0178  EIP=0x00000355  mov         
+       *** REG   EBX: SIM=0xDE3FC7BA  RTL=0x2C8E1609
+[ERR] #0179  EIP=0x0000035B  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDD3FC7BA  RTL=0x2B8E1609
+[ERR] #0180  EIP=0x0000035D  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDD3FC7BA  RTL=0x2B8E1609
+[ERR] #0181  EIP=0x00000362  add         
+       *** REG   EBX: SIM=0xDD3FC7BA  RTL=0x2B8E1609
+[ERR] #0182  EIP=0x00000365  mov         
+       *** REG   EBX: SIM=0xDD3FC7BA  RTL=0x2B8E1609
+[ERR] #0183  EIP=0x0000036A  adc         
+       *** REG   EBX: SIM=0xDD3FC7BA  RTL=0x2B8E1609
+[ERR] #0184  EIP=0x0000036D  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDD3FC7BB  RTL=0x2B8E160A
+[ERR] #0185  EIP=0x0000036F  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xDD3FC7BB  RTL=0x2B8E160A
+[ERR] #0186  EIP=0x00000374  add         
+       *** REG   EBX: SIM=0xDD3FC7BB  RTL=0x2B8E160A
+[ERR] #0187  EIP=0x00000377  mov         
+       *** REG   EBX: SIM=0xDD3FC7BB  RTL=0x2B8E160A
+[ERR] #0188  EIP=0x0000037C  adc         
+       *** REG   EBX: SIM=0xDD3FC7BB  RTL=0x2B8E160A
+[ERR] #0189  EIP=0x0000037F  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FC7BC  RTL=0x3B8E160B
+[ERR] #0190  EIP=0x00000381  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FC7BC  RTL=0x3B8E160B
+[ERR] #0191  EIP=0x00000386  add         
+       *** REG   EBX: SIM=0xED3FC7BC  RTL=0x3B8E160B
+[ERR] #0192  EIP=0x00000389  mov         
+       *** REG   EBX: SIM=0xED3FC7BC  RTL=0x3B8E160B
+[ERR] #0193  EIP=0x0000038E  adc         
+       *** REG   EBX: SIM=0xED3FC7BC  RTL=0x3B8E160B
+[ERR] #0194  EIP=0x00000390  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FC7C3  RTL=0x3B8E1612
+[ERR] #0195  EIP=0x00000392  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FC7C3  RTL=0x3B8E1612
+[ERR] #0196  EIP=0x00000397  add         
+       *** REG   EBX: SIM=0xED3FC7C3  RTL=0x3B8E1612
+[ERR] #0197  EIP=0x0000039A  mov         
+       *** REG   EBX: SIM=0xED3FC7C3  RTL=0x3B8E1612
+[ERR] #0198  EIP=0x000003A4  adc         
+       *** REG   EBX: SIM=0xED3FC7C3  RTL=0x3B8E1612
+[ERR] #0199  EIP=0x000003AA  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FC7D5  RTL=0x3B8E1624
+[ERR] #0200  EIP=0x000003AC  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FC7D5  RTL=0x3B8E1624
+[ERR] #0201  EIP=0x000003B1  add         
+       *** REG   EBX: SIM=0xED3FC7D5  RTL=0x3B8E1624
+[ERR] #0202  EIP=0x000003B4  mov         
+       *** REG   EBX: SIM=0xED3FC7D5  RTL=0x3B8E1624
+[ERR] #0203  EIP=0x000003BE  adc         
+       *** REG   EBX: SIM=0xED3FC7D5  RTL=0x3B8E1624
+[ERR] #0204  EIP=0x000003C5  mov         
+       *** REG   EBX: SIM=0xED3FC7D5  RTL=0x3B8E1624
+[ERR] #0205  EIP=0x000003CB  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FD7D7  RTL=0x3B8E2626
+[ERR] #0206  EIP=0x000003CD  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FD7D7  RTL=0x3B8E2626
+[ERR] #0207  EIP=0x000003D2  add         
+       *** REG   EBX: SIM=0xED3FD7D7  RTL=0x3B8E2626
+[ERR] #0208  EIP=0x000003D5  mov         
+       *** REG   EBX: SIM=0xED3FD7D7  RTL=0x3B8E2626
+[ERR] #0209  EIP=0x000003DF  mov         
+       *** REG   EBX: SIM=0xED3FD7D7  RTL=0x3B8E2626
+[ERR] #0210  EIP=0x000003E4  adc         
+       *** REG   EBX: SIM=0xED3FD7D7  RTL=0x3B8E2626
+[ERR] #0211  EIP=0x000003EA  mov         
+       *** REG   EBX: SIM=0xED3FD7D7  RTL=0x3B8E2626
+[ERR] #0212  EIP=0x000003F0  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FF8D7  RTL=0x3B8E4726
+[ERR] #0213  EIP=0x000003F2  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FF8D7  RTL=0x3B8E4726
+[ERR] #0214  EIP=0x000003F7  add         
+       *** REG   EBX: SIM=0xED3FF8D7  RTL=0x3B8E4726
+[ERR] #0215  EIP=0x000003FA  mov         
+       *** REG   EBX: SIM=0xED3FF8D7  RTL=0x3B8E4726
+[ERR] #0216  EIP=0x000003FF  sbb         
+       *** REG   EBX: SIM=0xED3FF8D7  RTL=0x3B8E4726
+[ERR] #0217  EIP=0x00000402  add         
        FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FF8E6  RTL=0x3B8E4735
+[ERR] #0218  EIP=0x00000404  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FF8E6  RTL=0x3B8E4735
+[ERR] #0219  EIP=0x00000409  add         
+       *** REG   EBX: SIM=0xED3FF8E6  RTL=0x3B8E4735
+[ERR] #0220  EIP=0x0000040C  mov         
+       *** REG   EBX: SIM=0xED3FF8E6  RTL=0x3B8E4735
+[ERR] #0221  EIP=0x00000411  sbb         
+       *** REG   EBX: SIM=0xED3FF8E6  RTL=0x3B8E4735
+[ERR] #0222  EIP=0x00000414  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FF8F4  RTL=0x3B8E4743
+[ERR] #0223  EIP=0x00000416  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FF8F4  RTL=0x3B8E4743
+[ERR] #0224  EIP=0x0000041B  add         
+       *** REG   EBX: SIM=0xED3FF8F4  RTL=0x3B8E4743
+[ERR] #0225  EIP=0x0000041E  mov         
+       *** REG   EBX: SIM=0xED3FF8F4  RTL=0x3B8E4743
+[ERR] #0226  EIP=0x00000423  mov         
+       *** REG   EBX: SIM=0xED3FF8F4  RTL=0x3B8E4743
+[ERR] #0227  EIP=0x00000428  sbb         
+       *** REG   EBX: SIM=0xED3FF8F4  RTL=0x3B8E4743
+[ERR] #0228  EIP=0x0000042A  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FF9E3  RTL=0x3B8E4832
+[ERR] #0229  EIP=0x0000042C  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FF9E3  RTL=0x3B8E4832
+[ERR] #0230  EIP=0x00000431  add         
+       *** REG   EBX: SIM=0xED3FF9E3  RTL=0x3B8E4832
+[ERR] #0231  EIP=0x00000434  mov         
+       *** REG   EBX: SIM=0xED3FF9E3  RTL=0x3B8E4832
+[ERR] #0232  EIP=0x0000043E  mov         
+       *** REG   EBX: SIM=0xED3FF9E3  RTL=0x3B8E4832
+[ERR] #0233  EIP=0x00000443  sbb         
+       *** REG   EBX: SIM=0xED3FF9E3  RTL=0x3B8E4832
+[ERR] #0234  EIP=0x00000449  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FFB92  RTL=0x3B8E49E1
+[ERR] #0235  EIP=0x0000044B  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED3FFB92  RTL=0x3B8E49E1
+[ERR] #0236  EIP=0x00000450  add         
+       *** REG   EBX: SIM=0xED3FFB92  RTL=0x3B8E49E1
+[ERR] #0237  EIP=0x00000453  mov         
+       *** REG   EBX: SIM=0xED3FFB92  RTL=0x3B8E49E1
+[ERR] #0238  EIP=0x0000045D  sbb         
+       *** REG   EBX: SIM=0xED3FFB92  RTL=0x3B8E49E1
+[ERR] #0239  EIP=0x00000464  mov         
+       *** REG   EBX: SIM=0xED3FFB92  RTL=0x3B8E49E1
+[ERR] #0240  EIP=0x0000046A  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED400B91  RTL=0x3B8E59E0
+[ERR] #0241  EIP=0x0000046C  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED400B91  RTL=0x3B8E59E0
+[ERR] #0242  EIP=0x00000471  add         
+       *** REG   EBX: SIM=0xED400B91  RTL=0x3B8E59E0
+[ERR] #0243  EIP=0x00000474  mov         
+       *** REG   EBX: SIM=0xED400B91  RTL=0x3B8E59E0
+[ERR] #0244  EIP=0x0000047E  mov         
+       *** REG   EBX: SIM=0xED400B91  RTL=0x3B8E59E0
+[ERR] #0245  EIP=0x00000483  sbb         
+       *** REG   EBX: SIM=0xED400B91  RTL=0x3B8E59E0
+[ERR] #0246  EIP=0x00000489  mov         
+       *** REG   EBX: SIM=0xED400B91  RTL=0x3B8E59E0
+[ERR] #0247  EIP=0x0000048F  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED405A90  RTL=0x3B8EA8DF
+[ERR] #0248  EIP=0x00000491  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED405A90  RTL=0x3B8EA8DF
+[ERR] #0249  EIP=0x00000496  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED405A90  RTL=0x3B8EA8DF
+[ERR] #0250  EIP=0x0000049B  xchg        
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xED405A90  RTL=0x3B8EA8DF
+[ERR] #0251  EIP=0x0000049C  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=1
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4295AFE5  RTL=0x90E3FE34
+[ERR] #0252  EIP=0x0000049E  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xED405A8F  RTL=0x3B8EA8DE
+[ERR] #0253  EIP=0x000004A0  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xED405A8F  RTL=0x3B8EA8DE
+[ERR] #0254  EIP=0x000004A5  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xED405A8F  RTL=0x3B8EA8DE
+[ERR] #0255  EIP=0x000004AA  xchg        
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xED405A8F  RTL=0x3B8EA8DE
+[ERR] #0256  EIP=0x000004AB  add         
+       FLAGS  SIM: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x0F627CB1  RTL=0x5DB0CB00
+[ERR] #0257  EIP=0x000004AD  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
        FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x20738DC2  RTL=0x6EC1DC11
+[ERR] #0258  EIP=0x000004AF  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x20738DC2  RTL=0x6EC1DC11
+[ERR] #0259  EIP=0x000004B9  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x20738DC2  RTL=0x6EC1DC11
+[ERR] #0260  EIP=0x000004BE  xchg        
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x20738DC2  RTL=0x6EC1DC11
+[ERR] #0261  EIP=0x000004C4  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
        *** FLAG  PF: SIM=0  RTL=1
        *** FLAG  AF: SIM=1  RTL=0
        *** FLAG  SF: SIM=1  RTL=0
-       *** REG   EAX: SIM=0x12345678  RTL=0x00000000
-       *** REG   EBX: SIM=0xD5F81A37  RTL=0x11223344
-[ONLY_SIM] #0029  EIP=0x0000009D  mov
-[ONLY_SIM] #0030  EIP=0x000000A3  add
-[ONLY_SIM] #0031  EIP=0x000000A5  mov
-[ONLY_SIM] #0032  EIP=0x000000AB  mov
-[ONLY_SIM] #0033  EIP=0x000000B2  mov
-[ONLY_SIM] #0034  EIP=0x000000B9  mov
-[ONLY_SIM] #0035  EIP=0x000000C0  mov
-[ONLY_SIM] #0036  EIP=0x000000C7  mov
-[ONLY_SIM] #0037  EIP=0x000000CE  mov
-[ONLY_SIM] #0038  EIP=0x000000D5  mov
-[ONLY_SIM] #0039  EIP=0x000000DC  mov
-[ONLY_SIM] #0040  EIP=0x000000DE  add
-[ONLY_SIM] #0041  EIP=0x000000E1  add
-[ONLY_SIM] #0042  EIP=0x000000E4  add
-[ONLY_SIM] #0043  EIP=0x000000E7  add
-[ONLY_SIM] #0044  EIP=0x000000EA  add
-[ONLY_SIM] #0045  EIP=0x000000ED  add
-[ONLY_SIM] #0046  EIP=0x000000F0  add
-[ONLY_SIM] #0047  EIP=0x000000F3  add
-[ONLY_SIM] #0048  EIP=0x000000F5  mov
-[ONLY_SIM] #0049  EIP=0x000000FB  and
-[ONLY_SIM] #0050  EIP=0x00000101  mov
-[ONLY_SIM] #0051  EIP=0x00000103  add
-[ONLY_SIM] #0052  EIP=0x00000105  mov
-[ONLY_SIM] #0053  EIP=0x0000010F  and
-[ONLY_SIM] #0054  EIP=0x00000119  mov
-[ONLY_SIM] #0055  EIP=0x0000011F  add
-[ONLY_SIM] #0056  EIP=0x00000121  mov
-[ONLY_SIM] #0057  EIP=0x0000012B  and
-[ONLY_SIM] #0058  EIP=0x00000135  mov
-[ONLY_SIM] #0059  EIP=0x0000013B  add
-[ONLY_SIM] #0060  EIP=0x0000013D  mov
-[ONLY_SIM] #0061  EIP=0x00000147  or
-[ONLY_SIM] #0062  EIP=0x00000151  mov
-[ONLY_SIM] #0063  EIP=0x00000157  add
-[ONLY_SIM] #0064  EIP=0x00000159  mov
-[ONLY_SIM] #0065  EIP=0x00000163  or
-[ONLY_SIM] #0066  EIP=0x0000016D  mov
-[ONLY_SIM] #0067  EIP=0x00000173  add
-[ONLY_SIM] #0068  EIP=0x00000175  mov
-[ONLY_SIM] #0069  EIP=0x0000017A  mov
-[ONLY_SIM] #0070  EIP=0x0000017F  and
-[ONLY_SIM] #0071  EIP=0x00000181  add
-[ONLY_SIM] #0072  EIP=0x00000183  mov
-[ONLY_SIM] #0073  EIP=0x00000188  or
-[ONLY_SIM] #0074  EIP=0x0000018A  add
-[ONLY_SIM] #0075  EIP=0x0000018C  mov
-[ONLY_SIM] #0076  EIP=0x00000191  mov
-[ONLY_SIM] #0077  EIP=0x00000196  and
-[ONLY_SIM] #0078  EIP=0x00000198  add
-[ONLY_SIM] #0079  EIP=0x0000019A  mov
-[ONLY_SIM] #0080  EIP=0x0000019F  or
-[ONLY_SIM] #0081  EIP=0x000001A1  add
-[ONLY_SIM] #0082  EIP=0x000001A3  mov
-[ONLY_SIM] #0083  EIP=0x000001A9  mov
-[ONLY_SIM] #0084  EIP=0x000001AE  and
-[ONLY_SIM] #0085  EIP=0x000001B0  add
-[ONLY_SIM] #0086  EIP=0x000001B2  mov
-[ONLY_SIM] #0087  EIP=0x000001B8  mov
-[ONLY_SIM] #0088  EIP=0x000001BD  or
-[ONLY_SIM] #0089  EIP=0x000001BF  add
-[ONLY_SIM] #0090  EIP=0x000001C1  mov
-[ONLY_SIM] #0091  EIP=0x000001CB  mov
-[ONLY_SIM] #0092  EIP=0x000001D0  and
-[ONLY_SIM] #0093  EIP=0x000001D6  mov
-[ONLY_SIM] #0094  EIP=0x000001DC  add
-[ONLY_SIM] #0095  EIP=0x000001DE  mov
-[ONLY_SIM] #0096  EIP=0x000001E8  mov
-[ONLY_SIM] #0097  EIP=0x000001ED  or
-[ONLY_SIM] #0098  EIP=0x000001F3  mov
-[ONLY_SIM] #0099  EIP=0x000001F9  add
-[ONLY_SIM] #0100  EIP=0x000001FB  mov
-[ONLY_SIM] #0101  EIP=0x00000200  not
-[ONLY_SIM] #0102  EIP=0x00000202  add
-[ONLY_SIM] #0103  EIP=0x00000204  mov
-[ONLY_SIM] #0104  EIP=0x00000209  not
-[ONLY_SIM] #0105  EIP=0x0000020B  add
-[ONLY_SIM] #0106  EIP=0x0000020D  mov
-[ONLY_SIM] #0107  EIP=0x00000212  not
-[ONLY_SIM] #0108  EIP=0x00000214  add
-[ONLY_SIM] #0109  EIP=0x00000216  mov
-[ONLY_SIM] #0110  EIP=0x00000220  not
-[ONLY_SIM] #0111  EIP=0x00000226  mov
-[ONLY_SIM] #0112  EIP=0x0000022C  add
-[ONLY_SIM] #0113  EIP=0x0000022E  mov
-[ONLY_SIM] #0114  EIP=0x00000238  not
-[ONLY_SIM] #0115  EIP=0x0000023E  mov
-[ONLY_SIM] #0116  EIP=0x00000244  add
-[ONLY_SIM] #0117  EIP=0x00000246  mov
-[ONLY_SIM] #0118  EIP=0x0000024B  shl
-[ONLY_SIM] #0119  EIP=0x0000024D  add
-[ONLY_SIM] #0120  EIP=0x0000024F  mov
-[ONLY_SIM] #0121  EIP=0x00000254  shl
-[ONLY_SIM] #0122  EIP=0x00000257  add
-[ONLY_SIM] #0123  EIP=0x00000259  mov
-[ONLY_SIM] #0124  EIP=0x0000025E  shl
-[ONLY_SIM] #0125  EIP=0x00000261  add
-[ONLY_SIM] #0126  EIP=0x00000263  mov
-[ONLY_SIM] #0127  EIP=0x00000268  mov
-[ONLY_SIM] #0128  EIP=0x0000026D  shl
-[ONLY_SIM] #0129  EIP=0x0000026F  add
-[ONLY_SIM] #0130  EIP=0x00000271  mov
-[ONLY_SIM] #0131  EIP=0x00000276  mov
-[ONLY_SIM] #0132  EIP=0x0000027B  shl
-[ONLY_SIM] #0133  EIP=0x0000027D  add
-[ONLY_SIM] #0134  EIP=0x0000027F  mov
-[ONLY_SIM] #0135  EIP=0x00000284  sar
-[ONLY_SIM] #0136  EIP=0x00000286  add
-[ONLY_SIM] #0137  EIP=0x00000288  mov
-[ONLY_SIM] #0138  EIP=0x0000028D  sar
-[ONLY_SIM] #0139  EIP=0x0000028F  add
-[ONLY_SIM] #0140  EIP=0x00000291  mov
-[ONLY_SIM] #0141  EIP=0x00000296  sar
-[ONLY_SIM] #0142  EIP=0x00000299  add
-[ONLY_SIM] #0143  EIP=0x0000029B  mov
-[ONLY_SIM] #0144  EIP=0x000002A0  sar
-[ONLY_SIM] #0145  EIP=0x000002A3  add
-[ONLY_SIM] #0146  EIP=0x000002A5  mov
-[ONLY_SIM] #0147  EIP=0x000002AA  mov
-[ONLY_SIM] #0148  EIP=0x000002AF  sar
-[ONLY_SIM] #0149  EIP=0x000002B1  add
-[ONLY_SIM] #0150  EIP=0x000002B3  mov
-[ONLY_SIM] #0151  EIP=0x000002B8  mov
-[ONLY_SIM] #0152  EIP=0x000002BD  sar
-[ONLY_SIM] #0153  EIP=0x000002BF  add
-[ONLY_SIM] #0154  EIP=0x000002C1  mov
-[ONLY_SIM] #0155  EIP=0x000002CB  shl
-[ONLY_SIM] #0156  EIP=0x000002D1  mov
-[ONLY_SIM] #0157  EIP=0x000002D7  add
-[ONLY_SIM] #0158  EIP=0x000002D9  mov
-[ONLY_SIM] #0159  EIP=0x000002E3  shl
-[ONLY_SIM] #0160  EIP=0x000002EA  mov
-[ONLY_SIM] #0161  EIP=0x000002F0  add
-[ONLY_SIM] #0162  EIP=0x000002F2  mov
-[ONLY_SIM] #0163  EIP=0x000002FC  mov
-[ONLY_SIM] #0164  EIP=0x00000301  shl
-[ONLY_SIM] #0165  EIP=0x00000307  mov
-[ONLY_SIM] #0166  EIP=0x0000030D  add
-[ONLY_SIM] #0167  EIP=0x0000030F  mov
-[ONLY_SIM] #0168  EIP=0x00000319  sar
-[ONLY_SIM] #0169  EIP=0x0000031F  mov
-[ONLY_SIM] #0170  EIP=0x00000325  add
-[ONLY_SIM] #0171  EIP=0x00000327  mov
-[ONLY_SIM] #0172  EIP=0x00000331  sar
-[ONLY_SIM] #0173  EIP=0x00000338  mov
-[ONLY_SIM] #0174  EIP=0x0000033E  add
-[ONLY_SIM] #0175  EIP=0x00000340  mov
-[ONLY_SIM] #0176  EIP=0x0000034A  mov
-[ONLY_SIM] #0177  EIP=0x0000034F  sar
-[ONLY_SIM] #0178  EIP=0x00000355  mov
-[ONLY_SIM] #0179  EIP=0x0000035B  add
-[ONLY_SIM] #0180  EIP=0x0000035D  mov
-[ONLY_SIM] #0181  EIP=0x00000362  add
-[ONLY_SIM] #0182  EIP=0x00000365  mov
-[ONLY_SIM] #0183  EIP=0x0000036A  adc
-[ONLY_SIM] #0184  EIP=0x0000036D  add
-[ONLY_SIM] #0185  EIP=0x0000036F  mov
-[ONLY_SIM] #0186  EIP=0x00000374  add
-[ONLY_SIM] #0187  EIP=0x00000377  mov
-[ONLY_SIM] #0188  EIP=0x0000037C  adc
-[ONLY_SIM] #0189  EIP=0x0000037F  add
-[ONLY_SIM] #0190  EIP=0x00000381  mov
-[ONLY_SIM] #0191  EIP=0x00000386  add
-[ONLY_SIM] #0192  EIP=0x00000389  mov
-[ONLY_SIM] #0193  EIP=0x0000038E  adc
-[ONLY_SIM] #0194  EIP=0x00000390  add
-[ONLY_SIM] #0195  EIP=0x00000392  mov
-[ONLY_SIM] #0196  EIP=0x00000397  add
-[ONLY_SIM] #0197  EIP=0x0000039A  mov
-[ONLY_SIM] #0198  EIP=0x000003A4  adc
-[ONLY_SIM] #0199  EIP=0x000003AA  add
-[ONLY_SIM] #0200  EIP=0x000003AC  mov
-[ONLY_SIM] #0201  EIP=0x000003B1  add
-[ONLY_SIM] #0202  EIP=0x000003B4  mov
-[ONLY_SIM] #0203  EIP=0x000003BE  adc
-[ONLY_SIM] #0204  EIP=0x000003C5  mov
-[ONLY_SIM] #0205  EIP=0x000003CB  add
-[ONLY_SIM] #0206  EIP=0x000003CD  mov
-[ONLY_SIM] #0207  EIP=0x000003D2  add
-[ONLY_SIM] #0208  EIP=0x000003D5  mov
-[ONLY_SIM] #0209  EIP=0x000003DF  mov
-[ONLY_SIM] #0210  EIP=0x000003E4  adc
-[ONLY_SIM] #0211  EIP=0x000003EA  mov
-[ONLY_SIM] #0212  EIP=0x000003F0  add
-[ONLY_SIM] #0213  EIP=0x000003F2  mov
-[ONLY_SIM] #0214  EIP=0x000003F7  add
-[ONLY_SIM] #0215  EIP=0x000003FA  mov
-[ONLY_SIM] #0216  EIP=0x000003FF  sbb
-[ONLY_SIM] #0217  EIP=0x00000402  add
-[ONLY_SIM] #0218  EIP=0x00000404  mov
-[ONLY_SIM] #0219  EIP=0x00000409  add
-[ONLY_SIM] #0220  EIP=0x0000040C  mov
-[ONLY_SIM] #0221  EIP=0x00000411  sbb
-[ONLY_SIM] #0222  EIP=0x00000414  add
-[ONLY_SIM] #0223  EIP=0x00000416  mov
-[ONLY_SIM] #0224  EIP=0x0000041B  add
-[ONLY_SIM] #0225  EIP=0x0000041E  mov
-[ONLY_SIM] #0226  EIP=0x00000423  mov
-[ONLY_SIM] #0227  EIP=0x00000428  sbb
-[ONLY_SIM] #0228  EIP=0x0000042A  add
-[ONLY_SIM] #0229  EIP=0x0000042C  mov
-[ONLY_SIM] #0230  EIP=0x00000431  add
-[ONLY_SIM] #0231  EIP=0x00000434  mov
-[ONLY_SIM] #0232  EIP=0x0000043E  mov
-[ONLY_SIM] #0233  EIP=0x00000443  sbb
-[ONLY_SIM] #0234  EIP=0x00000449  add
-[ONLY_SIM] #0235  EIP=0x0000044B  mov
-[ONLY_SIM] #0236  EIP=0x00000450  add
-[ONLY_SIM] #0237  EIP=0x00000453  mov
-[ONLY_SIM] #0238  EIP=0x0000045D  sbb
-[ONLY_SIM] #0239  EIP=0x00000464  mov
-[ONLY_SIM] #0240  EIP=0x0000046A  add
-[ONLY_SIM] #0241  EIP=0x0000046C  mov
-[ONLY_SIM] #0242  EIP=0x00000471  add
-[ONLY_SIM] #0243  EIP=0x00000474  mov
-[ONLY_SIM] #0244  EIP=0x0000047E  mov
-[ONLY_SIM] #0245  EIP=0x00000483  sbb
-[ONLY_SIM] #0246  EIP=0x00000489  mov
-[ONLY_SIM] #0247  EIP=0x0000048F  add
-[ONLY_SIM] #0248  EIP=0x00000491  mov
-[ONLY_SIM] #0249  EIP=0x00000496  mov
-[ONLY_SIM] #0250  EIP=0x0000049B  xchg
-[ONLY_SIM] #0251  EIP=0x0000049C  add
-[ONLY_SIM] #0252  EIP=0x0000049E  add
-[ONLY_SIM] #0253  EIP=0x000004A0  mov
-[ONLY_SIM] #0254  EIP=0x000004A5  mov
-[ONLY_SIM] #0255  EIP=0x000004AA  xchg
-[ONLY_SIM] #0256  EIP=0x000004AB  add
-[ONLY_SIM] #0257  EIP=0x000004AD  add
-[ONLY_SIM] #0258  EIP=0x000004AF  mov
-[ONLY_SIM] #0259  EIP=0x000004B9  mov
-[ONLY_SIM] #0260  EIP=0x000004BE  xchg
-[ONLY_SIM] #0261  EIP=0x000004C4  add
-[ONLY_SIM] #0262  EIP=0x000004C6  add
-[ONLY_SIM] #0263  EIP=0x000004CC  mov
-[ONLY_SIM] #0264  EIP=0x000004D6  mov
-[ONLY_SIM] #0265  EIP=0x000004DB  xchg
-[ONLY_SIM] #0266  EIP=0x000004E1  add
-[ONLY_SIM] #0267  EIP=0x000004E3  add
-[ONLY_SIM] #0268  EIP=0x000004E9  mov
-[ONLY_SIM] #0269  EIP=0x000004EE  mov
-[ONLY_SIM] #0270  EIP=0x000004F3  xchg
-[ONLY_SIM] #0271  EIP=0x000004F4  add
-[ONLY_SIM] #0272  EIP=0x000004F6  add
-[ONLY_SIM] #0273  EIP=0x000004F8  mov
-[ONLY_SIM] #0274  EIP=0x000004FD  bsf
-[ONLY_SIM] #0275  EIP=0x00000500  add
-[ONLY_SIM] #0276  EIP=0x00000502  mov
-[ONLY_SIM] #0277  EIP=0x00000507  bsf
-[ONLY_SIM] #0278  EIP=0x0000050A  add
-[ONLY_SIM] #0279  EIP=0x0000050C  mov
-[ONLY_SIM] #0280  EIP=0x00000511  bsf
-[ONLY_SIM] #0281  EIP=0x00000514  add
-[ONLY_SIM] #0282  EIP=0x00000516  mov
-[ONLY_SIM] #0283  EIP=0x0000051B  bsf
-[ONLY_SIM] #0284  EIP=0x0000051E  add
-[ONLY_SIM] #0285  EIP=0x00000520  mov
-[ONLY_SIM] #0286  EIP=0x00000525  bsf
-[ONLY_SIM] #0287  EIP=0x00000528  add
-[ONLY_SIM] #0288  EIP=0x0000052A  mov
-[ONLY_SIM] #0289  EIP=0x0000052F  bsf
-[ONLY_SIM] #0290  EIP=0x00000532  add
-[ONLY_SIM] #0291  EIP=0x00000534  mov
-[ONLY_SIM] #0292  EIP=0x00000539  bsf
-[ONLY_SIM] #0293  EIP=0x0000053C  add
-[ONLY_SIM] #0294  EIP=0x0000053E  mov
-[ONLY_SIM] #0295  EIP=0x00000548  bsf
-[ONLY_SIM] #0296  EIP=0x0000054F  add
-[ONLY_SIM] #0297  EIP=0x00000551  mov
-[ONLY_SIM] #0298  EIP=0x0000055B  bsf
-[ONLY_SIM] #0299  EIP=0x00000562  add
-[ONLY_SIM] #0300  EIP=0x00000564  mov
-[ONLY_SIM] #0301  EIP=0x0000056E  bsf
-[ONLY_SIM] #0302  EIP=0x00000575  add
-[ONLY_SIM] #0303  EIP=0x00000577  mov
-[ONLY_SIM] #0304  EIP=0x0000057C  add
-[ONLY_SIM] #0305  EIP=0x0000057F  mov
-[ONLY_SIM] #0306  EIP=0x00000584  mov
-[ONLY_SIM] #0307  EIP=0x00000589  cmovb
-[ONLY_SIM] #0308  EIP=0x0000058C  add
-[ONLY_SIM] #0309  EIP=0x0000058E  mov
-[ONLY_SIM] #0310  EIP=0x00000593  add
-[ONLY_SIM] #0311  EIP=0x00000596  mov
-[ONLY_SIM] #0312  EIP=0x0000059B  mov
-[ONLY_SIM] #0313  EIP=0x000005A0  cmovb
-[ONLY_SIM] #0314  EIP=0x000005A3  add
-[ONLY_SIM] #0315  EIP=0x000005A5  mov
-[ONLY_SIM] #0316  EIP=0x000005AA  add
-[ONLY_SIM] #0317  EIP=0x000005AD  mov
-[ONLY_SIM] #0318  EIP=0x000005B7  mov
-[ONLY_SIM] #0319  EIP=0x000005BC  cmovb
-[ONLY_SIM] #0320  EIP=0x000005C3  add
-[ONLY_SIM] #0321  EIP=0x000005C5  mov
-[ONLY_SIM] #0322  EIP=0x000005CA  add
-[ONLY_SIM] #0323  EIP=0x000005CD  mov
-[ONLY_SIM] #0324  EIP=0x000005D7  mov
-[ONLY_SIM] #0325  EIP=0x000005DC  cmovb
-[ONLY_SIM] #0326  EIP=0x000005E3  add
-[ONLY_SIM] #0327  EIP=0x000005E5  mov
-[ONLY_SIM] #0328  EIP=0x000005EF  mov
-[ONLY_SIM] #0329  EIP=0x000005F4  mov
-[ONLY_SIM] #0330  EIP=0x000005F9  cmpxchg
-[ONLY_SIM] #0331  EIP=0x00000600  mov
-[ONLY_SIM] #0332  EIP=0x00000606  add
-[ONLY_SIM] #0333  EIP=0x00000608  mov
-[ONLY_SIM] #0334  EIP=0x00000612  mov
-[ONLY_SIM] #0335  EIP=0x00000617  mov
-[ONLY_SIM] #0336  EIP=0x0000061C  cmpxchg
-[ONLY_SIM] #0337  EIP=0x00000623  add
-[ONLY_SIM] #0338  EIP=0x00000625  add
-[ONLY_SIM] #0339  EIP=0x0000062B  mov
-[ONLY_SIM] #0340  EIP=0x00000630  mov
-[ONLY_SIM] #0341  EIP=0x00000635  mov
-[ONLY_SIM] #0342  EIP=0x0000063A  cmpxchg
-[ONLY_SIM] #0343  EIP=0x0000063D  add
-[ONLY_SIM] #0344  EIP=0x0000063F  mov
-[ONLY_SIM] #0345  EIP=0x00000644  mov
-[ONLY_SIM] #0346  EIP=0x00000649  mov
-[ONLY_SIM] #0347  EIP=0x0000064E  cmpxchg
-[ONLY_SIM] #0348  EIP=0x00000651  add
-[ONLY_SIM] #0349  EIP=0x00000653  add
-[ONLY_SIM] #0350  EIP=0x00000655  mov
-[ONLY_SIM] #0351  EIP=0x0000065A  mov
-[ONLY_SIM] #0352  EIP=0x0000065F  mov
-[ONLY_SIM] #0353  EIP=0x00000664  push
-[ONLY_SIM] #0354  EIP=0x00000665  push
-[ONLY_SIM] #0355  EIP=0x00000666  push
-[ONLY_SIM] #0356  EIP=0x00000667  pop
-[ONLY_SIM] #0357  EIP=0x00000668  pop
-[ONLY_SIM] #0358  EIP=0x00000669  pop
-[ONLY_SIM] #0359  EIP=0x0000066A  add
-[ONLY_SIM] #0360  EIP=0x0000066C  add
-[ONLY_SIM] #0361  EIP=0x0000066E  add
-[ONLY_SIM] #0362  EIP=0x00000670  push
-[ONLY_SIM] #0363  EIP=0x00000675  push
-[ONLY_SIM] #0364  EIP=0x0000067A  pop
-[ONLY_SIM] #0365  EIP=0x0000067B  pop
-[ONLY_SIM] #0366  EIP=0x0000067C  add
-[ONLY_SIM] #0367  EIP=0x0000067E  add
-[ONLY_SIM] #0368  EIP=0x00000680  mov
-[ONLY_SIM] #0369  EIP=0x0000068A  push
-[ONLY_SIM] #0370  EIP=0x00000690  pop
-[ONLY_SIM] #0371  EIP=0x00000696  mov
-[ONLY_SIM] #0372  EIP=0x0000069C  add
-[ONLY_SIM] #0373  EIP=0x0000069E  push
-[ONLY_SIM] #0374  EIP=0x0000069F  mov
-[ONLY_SIM] #0375  EIP=0x000006A4  pop
-[ONLY_SIM] #0376  EIP=0x000006A5  mov
-[ONLY_SIM] #0377  EIP=0x000006AF  cld
-[ONLY_SIM] #0378  EIP=0x000006B0  mov
-[ONLY_SIM] #0379  EIP=0x000006B6  add
-[ONLY_SIM] #0380  EIP=0x000006B8  std
-[ONLY_SIM] #0381  EIP=0x000006B9  mov
-[ONLY_SIM] #0382  EIP=0x000006BF  add
-[ONLY_SIM] #0383  EIP=0x000006C1  cld
-[ONLY_SIM] #0384  EIP=0x000006C2  mov
-[ONLY_SIM] #0385  EIP=0x000006CC  mov
-[ONLY_SIM] #0386  EIP=0x000006D2  add
-[ONLY_SIM] #0387  EIP=0x000006D4  call
-[ONLY_SIM] #0388  EIP=0x000006F8  mov
-[ONLY_SIM] #0389  EIP=0x000006FD  add
-[ONLY_SIM] #0390  EIP=0x00000702  ret
-[ONLY_SIM] #0391  EIP=0x000006D9  add
-[ONLY_SIM] #0392  EIP=0x000006DB  call
-[ONLY_SIM] #0393  EIP=0x00000703  mov
-[ONLY_SIM] #0394  EIP=0x00000708  sar
-[ONLY_SIM] #0395  EIP=0x0000070B  and
-[ONLY_SIM] #0396  EIP=0x00000710  not
-[ONLY_SIM] #0397  EIP=0x00000712  ret
-[ONLY_SIM] #0398  EIP=0x000006E0  add
-[ONLY_SIM] #0399  EIP=0x000006E2  call
-[ONLY_SIM] #0400  EIP=0x00000713  mov
-[ONLY_SIM] #0401  EIP=0x0000071D  or
-[ONLY_SIM] #0402  EIP=0x00000727  or
-[ONLY_SIM] #0403  EIP=0x00000731  or
-[ONLY_SIM] #0404  EIP=0x0000073B  or
-[ONLY_SIM] #0405  EIP=0x00000742  not
-[ONLY_SIM] #0406  EIP=0x00000748  and
-[ONLY_SIM] #0407  EIP=0x00000752  ret
-[ONLY_SIM] #0408  EIP=0x000006E7  mov
-[ONLY_SIM] #0409  EIP=0x000006ED  add
-[ONLY_SIM] #0410  EIP=0x000006EF  call
-[ONLY_SIM] #0411  EIP=0x00000753  mov
-[ONLY_SIM] #0412  EIP=0x00000758  mov
-[ONLY_SIM] #0413  EIP=0x0000075D  and
-[ONLY_SIM] #0414  EIP=0x0000075F  not
-[ONLY_SIM] #0415  EIP=0x00000761  mov
-[ONLY_SIM] #0416  EIP=0x00000766  and
-[ONLY_SIM] #0417  EIP=0x00000768  shl
-[ONLY_SIM] #0418  EIP=0x0000076A  or
-[ONLY_SIM] #0419  EIP=0x0000076D  ret
-[ONLY_SIM] #0420  EIP=0x000006F4  add
-[ONLY_SIM] #0421  EIP=0x000006F6  jmp
-[ONLY_SIM] #0422  EIP=0x0000076E  push
-[ONLY_SIM] #0423  EIP=0x00000770  push
-[ONLY_SIM] #0424  EIP=0x00000772  mov
-[ONLY_SIM] #0425  EIP=0x00000777  call
-[ONLY_SIM] #0426  EIP=0x000007AB  push
-[ONLY_SIM] #0427  EIP=0x000007AC  mov
-[ONLY_SIM] #0428  EIP=0x000007AE  mov
-[ONLY_SIM] #0429  EIP=0x000007B1  add
-[ONLY_SIM] #0430  EIP=0x000007B4  pop
-[ONLY_SIM] #0431  EIP=0x000007B5  ret
-[ONLY_SIM] #0432  EIP=0x0000077C  add
-[ONLY_SIM] #0433  EIP=0x0000077F  add
-[ONLY_SIM] #0434  EIP=0x00000781  push
-[ONLY_SIM] #0435  EIP=0x00000786  push
-[ONLY_SIM] #0436  EIP=0x0000078B  call
-[ONLY_SIM] #0437  EIP=0x000007B6  push
-[ONLY_SIM] #0438  EIP=0x000007B7  mov
-[ONLY_SIM] #0439  EIP=0x000007B9  mov
-[ONLY_SIM] #0440  EIP=0x000007BC  and
-[ONLY_SIM] #0441  EIP=0x000007BF  pop
-[ONLY_SIM] #0442  EIP=0x000007C0  ret
-[ONLY_SIM] #0443  EIP=0x00000790  add
-[ONLY_SIM] #0444  EIP=0x00000793  add
-[ONLY_SIM] #0445  EIP=0x00000795  push
-[ONLY_SIM] #0446  EIP=0x0000079A  push
-[ONLY_SIM] #0447  EIP=0x0000079F  call
-[ONLY_SIM] #0448  EIP=0x000007C1  push
-[ONLY_SIM] #0449  EIP=0x000007C2  mov
-[ONLY_SIM] #0450  EIP=0x000007C4  mov
-[ONLY_SIM] #0451  EIP=0x000007C7  or
-[ONLY_SIM] #0452  EIP=0x000007CA  pop
-[ONLY_SIM] #0453  EIP=0x000007CB  ret
-[ONLY_SIM] #0454  EIP=0x000007A4  add
-[ONLY_SIM] #0455  EIP=0x000007A7  add
-[ONLY_SIM] #0456  EIP=0x000007A9  jmp
-[ONLY_SIM] #0457  EIP=0x000007CC  call
-[ONLY_SIM] #0458  EIP=0x000007E3  push
-[ONLY_SIM] #0459  EIP=0x000007E4  call
-[ONLY_SIM] #0460  EIP=0x000007D5  mov
-[ONLY_SIM] #0461  EIP=0x000007DA  shl
-[ONLY_SIM] #0462  EIP=0x000007DD  and
-[ONLY_SIM] #0463  EIP=0x000007E2  ret
-[ONLY_SIM] #0464  EIP=0x000007E9  mov
-[ONLY_SIM] #0465  EIP=0x000007EB  not
-[ONLY_SIM] #0466  EIP=0x000007ED  and
-[ONLY_SIM] #0467  EIP=0x000007F3  or
-[ONLY_SIM] #0468  EIP=0x000007F5  pop
-[ONLY_SIM] #0469  EIP=0x000007F6  ret
-[ONLY_SIM] #0470  EIP=0x000007D1  add
-[ONLY_SIM] #0471  EIP=0x000007D3  jmp
-[ONLY_SIM] #0472  EIP=0x000007F7  mov
-[ONLY_SIM] #0473  EIP=0x000007FC  mov
-[ONLY_SIM] #0474  EIP=0x00000801  mov
-[ONLY_SIM] #0475  EIP=0x00000806  mov
-[ONLY_SIM] #0476  EIP=0x0000080B  push
-[ONLY_SIM] #0477  EIP=0x0000080C  push
-[ONLY_SIM] #0478  EIP=0x0000080D  push
-[ONLY_SIM] #0479  EIP=0x0000080E  push
-[ONLY_SIM] #0480  EIP=0x0000080F  mov
-[ONLY_SIM] #0481  EIP=0x00000814  mov
-[ONLY_SIM] #0482  EIP=0x00000819  mov
-[ONLY_SIM] #0483  EIP=0x0000081E  mov
-[ONLY_SIM] #0484  EIP=0x00000823  add
-[ONLY_SIM] #0485  EIP=0x00000825  add
-[ONLY_SIM] #0486  EIP=0x00000827  add
-[ONLY_SIM] #0487  EIP=0x00000829  add
-[ONLY_SIM] #0488  EIP=0x0000082B  pop
-[ONLY_SIM] #0489  EIP=0x0000082C  pop
-[ONLY_SIM] #0490  EIP=0x0000082D  pop
-[ONLY_SIM] #0491  EIP=0x0000082E  pop
-[ONLY_SIM] #0492  EIP=0x0000082F  add
-[ONLY_SIM] #0493  EIP=0x00000831  add
-[ONLY_SIM] #0494  EIP=0x00000833  add
-[ONLY_SIM] #0495  EIP=0x00000835  add
-[ONLY_SIM] #0496  EIP=0x00000837  push
-[ONLY_SIM] #0497  EIP=0x0000083C  push
-[ONLY_SIM] #0498  EIP=0x00000841  push
-[ONLY_SIM] #0499  EIP=0x00000846  push
-[ONLY_SIM] #0500  EIP=0x0000084B  push
-[ONLY_SIM] #0501  EIP=0x00000850  push
-[ONLY_SIM] #0502  EIP=0x00000855  push
-[ONLY_SIM] #0503  EIP=0x0000085A  push
-[ONLY_SIM] #0504  EIP=0x0000085F  pop
-[ONLY_SIM] #0505  EIP=0x00000860  add
-[ONLY_SIM] #0506  EIP=0x00000862  pop
-[ONLY_SIM] #0507  EIP=0x00000863  add
-[ONLY_SIM] #0508  EIP=0x00000865  pop
-[ONLY_SIM] #0509  EIP=0x00000866  add
-[ONLY_SIM] #0510  EIP=0x00000868  pop
-[ONLY_SIM] #0511  EIP=0x00000869  add
-[ONLY_SIM] #0512  EIP=0x0000086B  pop
-[ONLY_SIM] #0513  EIP=0x0000086C  add
-[ONLY_SIM] #0514  EIP=0x0000086E  pop
-[ONLY_SIM] #0515  EIP=0x0000086F  add
-[ONLY_SIM] #0516  EIP=0x00000871  pop
-[ONLY_SIM] #0517  EIP=0x00000872  add
-[ONLY_SIM] #0518  EIP=0x00000874  pop
-[ONLY_SIM] #0519  EIP=0x00000875  add
-[ONLY_SIM] #0520  EIP=0x00000877  mov
-[ONLY_SIM] #0521  EIP=0x0000087D  mov
-[ONLY_SIM] #0522  EIP=0x00000887  mov
-[ONLY_SIM] #0523  EIP=0x0000088C  mov
+       *** REG   EBX: SIM=0xEB724880  RTL=0x39C096CF
+[ERR] #0262  EIP=0x000004C6  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20095E  RTL=0x186E57AD
+[ERR] #0263  EIP=0x000004CC  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20095E  RTL=0x186E57AD
+[ERR] #0264  EIP=0x000004D6  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20095E  RTL=0x186E57AD
+[ERR] #0265  EIP=0x000004DB  xchg        
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20095E  RTL=0x186E57AD
+[ERR] #0266  EIP=0x000004E1  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20095F  RTL=0x186E57AE
+[ERR] #0267  EIP=0x000004E3  add         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20095E  RTL=0x186E57AD
+[ERR] #0268  EIP=0x000004E9  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20095E  RTL=0x186E57AD
+[ERR] #0269  EIP=0x000004EE  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20095E  RTL=0x186E57AD
+[ERR] #0270  EIP=0x000004F3  xchg        
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20095E  RTL=0x186E57AD
+[ERR] #0271  EIP=0x000004F4  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA20C84D  RTL=0x186F169C
+[ERR] #0272  EIP=0x000004F6  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A6FA  RTL=0x186FF549
+[ERR] #0273  EIP=0x000004F8  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A6FA  RTL=0x186FF549
+[ERR] #0274  EIP=0x000004FD  bsf         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A6FA  RTL=0x186FF549
+[ERR] #0275  EIP=0x00000500  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A6FA  RTL=0x186FF549
+[ERR] #0276  EIP=0x00000502  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A6FA  RTL=0x186FF549
+[ERR] #0277  EIP=0x00000507  bsf         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A6FA  RTL=0x186FF549
+[ERR] #0278  EIP=0x0000050A  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A6FB  RTL=0x186FF54A
+[ERR] #0279  EIP=0x0000050C  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A6FB  RTL=0x186FF54A
+[ERR] #0280  EIP=0x00000511  bsf         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A6FB  RTL=0x186FF54A
+[ERR] #0281  EIP=0x00000514  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A702  RTL=0x186FF551
+[ERR] #0282  EIP=0x00000516  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A702  RTL=0x186FF551
+[ERR] #0283  EIP=0x0000051B  bsf         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A702  RTL=0x186FF551
+[ERR] #0284  EIP=0x0000051E  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A711  RTL=0x186FF560
+[ERR] #0285  EIP=0x00000520  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A711  RTL=0x186FF560
+[ERR] #0286  EIP=0x00000525  bsf         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A711  RTL=0x186FF560
+[ERR] #0287  EIP=0x00000528  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A730  RTL=0x186FF57F
+[ERR] #0288  EIP=0x0000052A  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A730  RTL=0x186FF57F
+[ERR] #0289  EIP=0x0000052F  bsf         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A730  RTL=0x186FF57F
+[ERR] #0290  EIP=0x00000532  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A740  RTL=0x186FF58F
+[ERR] #0291  EIP=0x00000534  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A740  RTL=0x186FF58F
+[ERR] #0292  EIP=0x00000539  bsf         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A740  RTL=0x186FF58F
+[ERR] #0293  EIP=0x0000053C  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A754  RTL=0x186FF5A3
+[ERR] #0294  EIP=0x0000053E  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A754  RTL=0x186FF5A3
+[ERR] #0295  EIP=0x00000548  bsf         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A754  RTL=0x186FF5A3
+[ERR] #0296  EIP=0x0000054F  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A764  RTL=0x186FF5B3
+[ERR] #0297  EIP=0x00000551  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A764  RTL=0x186FF5B3
+[ERR] #0298  EIP=0x0000055B  bsf         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A764  RTL=0x186FF5B3
+[ERR] #0299  EIP=0x00000562  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A76C  RTL=0x186FF5BB
+[ERR] #0300  EIP=0x00000564  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A76C  RTL=0x186FF5BB
+[ERR] #0301  EIP=0x0000056E  bsf         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A76C  RTL=0x186FF5BB
+[ERR] #0302  EIP=0x00000575  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A781  RTL=0x186FF5D0
+[ERR] #0303  EIP=0x00000577  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCA21A781  RTL=0x186FF5D0
+[ERR] #0304  EIP=0x0000057C  add         
+       *** REG   EBX: SIM=0xCA21A781  RTL=0x186FF5D0
+[ERR] #0305  EIP=0x0000057F  mov         
+       *** REG   EBX: SIM=0xCA21A781  RTL=0x186FF5D0
+[ERR] #0306  EIP=0x00000584  mov         
+       *** REG   EBX: SIM=0xCA21A781  RTL=0x186FF5D0
+[ERR] #0307  EIP=0x00000589  cmovb       
+       *** REG   EBX: SIM=0xCA21A781  RTL=0x186FF5D0
+[ERR] #0308  EIP=0x0000058C  add         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xA8CF6670  RTL=0xF71DB4BF
+[ERR] #0309  EIP=0x0000058E  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xA8CF6670  RTL=0xF71DB4BF
+[ERR] #0310  EIP=0x00000593  add         
+       *** REG   EBX: SIM=0xA8CF6670  RTL=0xF71DB4BF
+[ERR] #0311  EIP=0x00000596  mov         
+       *** REG   EBX: SIM=0xA8CF6670  RTL=0xF71DB4BF
+[ERR] #0312  EIP=0x0000059B  mov         
+       *** REG   EBX: SIM=0xA8CF6670  RTL=0xF71DB4BF
+[ERR] #0313  EIP=0x000005A0  cmovb       
+       *** REG   EBX: SIM=0xA8CF6670  RTL=0xF71DB4BF
+[ERR] #0314  EIP=0x000005A3  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x549D123D  RTL=0xA2EB608C
+[ERR] #0315  EIP=0x000005A5  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x549D123D  RTL=0xA2EB608C
+[ERR] #0316  EIP=0x000005AA  add         
+       *** REG   EBX: SIM=0x549D123D  RTL=0xA2EB608C
+[ERR] #0317  EIP=0x000005AD  mov         
+       *** REG   EBX: SIM=0x549D123D  RTL=0xA2EB608C
+[ERR] #0318  EIP=0x000005B7  mov         
+       *** REG   EBX: SIM=0x549D123D  RTL=0xA2EB608C
+[ERR] #0319  EIP=0x000005BC  cmovb       
+       *** REG   EBX: SIM=0x549D123D  RTL=0xA2EB608C
+[ERR] #0320  EIP=0x000005C3  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x65BF4581  RTL=0xB40D93D0
+[ERR] #0321  EIP=0x000005C5  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x65BF4581  RTL=0xB40D93D0
+[ERR] #0322  EIP=0x000005CA  add         
+       *** REG   EBX: SIM=0x65BF4581  RTL=0xB40D93D0
+[ERR] #0323  EIP=0x000005CD  mov         
+       *** REG   EBX: SIM=0x65BF4581  RTL=0xB40D93D0
+[ERR] #0324  EIP=0x000005D7  mov         
+       *** REG   EBX: SIM=0x65BF4581  RTL=0xB40D93D0
+[ERR] #0325  EIP=0x000005DC  cmovb       
+       *** REG   EBX: SIM=0x65BF4581  RTL=0xB40D93D0
+[ERR] #0326  EIP=0x000005E3  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x64BE447F  RTL=0xB30C92CE
+[ERR] #0327  EIP=0x000005E5  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x64BE447F  RTL=0xB30C92CE
+[ERR] #0328  EIP=0x000005EF  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x64BE447F  RTL=0xB30C92CE
+[ERR] #0329  EIP=0x000005F4  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x64BE447F  RTL=0xB30C92CE
+[ERR] #0330  EIP=0x000005F9  cmpxchg     
+       *** REG   EBX: SIM=0x64BE447F  RTL=0xB30C92CE
+[ERR] #0331  EIP=0x00000600  mov         
+       *** REG   EBX: SIM=0x64BE447F  RTL=0xB30C92CE
+[ERR] #0332  EIP=0x00000606  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x76F29AF7  RTL=0xC540E946
+[ERR] #0333  EIP=0x00000608  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x76F29AF7  RTL=0xC540E946
+[ERR] #0334  EIP=0x00000612  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x76F29AF7  RTL=0xC540E946
+[ERR] #0335  EIP=0x00000617  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x76F29AF7  RTL=0xC540E946
+[ERR] #0336  EIP=0x0000061C  cmpxchg     
+       *** REG   EBX: SIM=0x76F29AF7  RTL=0xC540E946
+[ERR] #0337  EIP=0x00000623  add         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x55A059E6  RTL=0xA3EEA835
+[ERR] #0338  EIP=0x00000625  add         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x344E18D5  RTL=0x829C6724
+[ERR] #0339  EIP=0x0000062B  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x344E18D5  RTL=0x829C6724
+[ERR] #0340  EIP=0x00000630  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x344E18D5  RTL=0x829C6724
+[ERR] #0341  EIP=0x00000635  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x344E18D5  RTL=0x829C6724
+[ERR] #0342  EIP=0x0000063A  cmpxchg     
+       *** REG   EBX: SIM=0x344E18D5  RTL=0x829C6724
+[ERR] #0343  EIP=0x0000063D  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x435D27E4  RTL=0x91AB7633
+[ERR] #0344  EIP=0x0000063F  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x435D27E4  RTL=0x91AB7633
+[ERR] #0345  EIP=0x00000644  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x435D27E4  RTL=0x91AB7633
+[ERR] #0346  EIP=0x00000649  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x435D27E4  RTL=0x91AB7633
+[ERR] #0347  EIP=0x0000064E  cmpxchg     
+       *** REG   EBX: SIM=0x435D27E4  RTL=0x91AB7633
+[ERR] #0348  EIP=0x00000651  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x556F39F6  RTL=0xA3BD8845
+[ERR] #0349  EIP=0x00000653  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0350  EIP=0x00000655  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0351  EIP=0x0000065A  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0352  EIP=0x0000065F  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0353  EIP=0x00000664  push        
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0354  EIP=0x00000665  push        
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0355  EIP=0x00000666  push        
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0356  EIP=0x00000667  pop         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0357  EIP=0x00000668  pop         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0358  EIP=0x00000669  pop         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x67814C08  RTL=0xB5CF9A57
+[ERR] #0359  EIP=0x0000066A  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x78925D19  RTL=0xC6E0AB68
+[ERR] #0360  EIP=0x0000066C  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x9AB47F3B  RTL=0xE902CD8A
+[ERR] #0361  EIP=0x0000066E  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCDE7B26E  RTL=0x1C3600BD
+[ERR] #0362  EIP=0x00000670  push        
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCDE7B26E  RTL=0x1C3600BD
+[ERR] #0363  EIP=0x00000675  push        
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCDE7B26E  RTL=0x1C3600BD
+[ERR] #0364  EIP=0x0000067A  pop         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCDE7B26E  RTL=0x1C3600BD
+[ERR] #0365  EIP=0x0000067B  pop         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xCDE7B26E  RTL=0x1C3600BD
+[ERR] #0366  EIP=0x0000067C  add         
+       FLAGS  SIM: CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xAC94B270  RTL=0xFAE300BF
+[ERR] #0367  EIP=0x0000067E  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x8B41B271  RTL=0xD99000C0
+[ERR] #0368  EIP=0x00000680  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x8B41B271  RTL=0xD99000C0
+[ERR] #0369  EIP=0x0000068A  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x8B41B271  RTL=0xD99000C0
+[ERR] #0370  EIP=0x00000690  pop         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x8B41B271  RTL=0xD99000C0
+[ERR] #0371  EIP=0x00000696  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x8B41B271  RTL=0xD99000C0
+[ERR] #0372  EIP=0x0000069C  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x4A30C4A5  RTL=0x987F12F4
+[ERR] #0373  EIP=0x0000069E  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x4A30C4A5  RTL=0x987F12F4
+[ERR] #0374  EIP=0x0000069F  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+[ERR] #0375  EIP=0x000006A4  pop         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x4A30C4A5  RTL=0x987F12F4
+[ERR] #0376  EIP=0x000006A5  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x4A30C4A5  RTL=0x987F12F4
+[ERR] #0377  EIP=0x000006AF  cld         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x4A30C4A5  RTL=0x987F12F4
+[ERR] #0378  EIP=0x000006B0  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x4A30C4A5  RTL=0x987F12F4
+[ERR] #0379  EIP=0x000006B6  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4ADC9294  RTL=0x992AE0E3
+[ERR] #0380  EIP=0x000006B8  std         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=1  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=1  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4ADC9294  RTL=0x992AE0E3
+[ERR] #0381  EIP=0x000006B9  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=1  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=1  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4ADC9294  RTL=0x992AE0E3
+[ERR] #0382  EIP=0x000006BF  add         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=1  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=1  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4B886083  RTL=0x99D6AED2
+[ERR] #0383  EIP=0x000006C1  cld         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4B886083  RTL=0x99D6AED2
+[ERR] #0384  EIP=0x000006C2  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4B886083  RTL=0x99D6AED2
+[ERR] #0385  EIP=0x000006CC  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4B886083  RTL=0x99D6AED2
+[ERR] #0386  EIP=0x000006D2  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4A651A83  RTL=0x98B368D2
+[ERR] #0387  EIP=0x000006D4  call        
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4A651A83  RTL=0x98B368D2
+[ERR] #0388  EIP=0x000006F8  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x4A651A83  RTL=0x98B368D2
+[ERR] #0389  EIP=0x000006FD  add         
+       *** REG   EBX: SIM=0x4A651A83  RTL=0x98B368D2
+[ERR] #0390  EIP=0x00000702  ret         
+       *** REG   EBX: SIM=0x4A651A83  RTL=0x98B368D2
+[ERR] #0391  EIP=0x000006D9  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xF6321A83  RTL=0x448068D2
+[ERR] #0392  EIP=0x000006DB  call        
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xF6321A83  RTL=0x448068D2
+[ERR] #0393  EIP=0x00000703  mov         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0xF6321A83  RTL=0x448068D2
+[ERR] #0394  EIP=0x00000708  sar         
+       *** REG   EBX: SIM=0xF6321A83  RTL=0x448068D2
+[ERR] #0395  EIP=0x0000070B  and         
+       *** REG   EBX: SIM=0xF6321A83  RTL=0x448068D2
+[ERR] #0396  EIP=0x00000710  not         
+       *** REG   EBX: SIM=0xF6321A83  RTL=0x448068D2
+[ERR] #0397  EIP=0x00000712  ret         
+       *** REG   EBX: SIM=0xF6321A83  RTL=0x448068D2
+[ERR] #0398  EIP=0x000006E0  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0399  EIP=0x000006E2  call        
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0400  EIP=0x00000713  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0401  EIP=0x0000071D  or          
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0402  EIP=0x00000727  or          
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0403  EIP=0x00000731  or          
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0404  EIP=0x0000073B  or          
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0405  EIP=0x00000742  not         
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0406  EIP=0x00000748  and         
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0407  EIP=0x00000752  ret         
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0408  EIP=0x000006E7  mov         
+       *** REG   EBX: SIM=0xE7230B73  RTL=0x357159C2
+[ERR] #0409  EIP=0x000006ED  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0410  EIP=0x000006EF  call        
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0411  EIP=0x00000753  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0412  EIP=0x00000758  mov         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0413  EIP=0x0000075D  and         
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0414  EIP=0x0000075F  not         
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0415  EIP=0x00000761  mov         
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0416  EIP=0x00000766  and         
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0417  EIP=0x00000768  shl         
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0418  EIP=0x0000076A  or          
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0419  EIP=0x0000076D  ret         
+       *** REG   EBX: SIM=0xD4EE0B73  RTL=0x233C59C2
+[ERR] #0420  EIP=0x000006F4  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0421  EIP=0x000006F6  jmp         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0422  EIP=0x0000076E  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0423  EIP=0x00000770  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0424  EIP=0x00000772  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0425  EIP=0x00000777  call        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0426  EIP=0x000007AB  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0427  EIP=0x000007AC  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0428  EIP=0x000007AE  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0429  EIP=0x000007B1  add         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0430  EIP=0x000007B4  pop         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0431  EIP=0x000007B5  ret         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0432  EIP=0x0000077C  add         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0433  EIP=0x0000077F  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0434  EIP=0x00000781  push        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0435  EIP=0x00000786  push        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0436  EIP=0x0000078B  call        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0437  EIP=0x000007B6  push        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0438  EIP=0x000007B7  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0439  EIP=0x000007B9  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0440  EIP=0x000007BC  and         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0441  EIP=0x000007BF  pop         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0442  EIP=0x000007C0  ret         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0443  EIP=0x00000790  add         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0444  EIP=0x00000793  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0445  EIP=0x00000795  push        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0446  EIP=0x0000079A  push        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0447  EIP=0x0000079F  call        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0448  EIP=0x000007C1  push        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0449  EIP=0x000007C2  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0450  EIP=0x000007C4  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0451  EIP=0x000007C7  or          
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0452  EIP=0x000007CA  pop         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0453  EIP=0x000007CB  ret         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0454  EIP=0x000007A4  add         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0455  EIP=0x000007A7  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0456  EIP=0x000007A9  jmp         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0457  EIP=0x000007CC  call        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0458  EIP=0x000007E3  push        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0459  EIP=0x000007E4  call        
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0460  EIP=0x000007D5  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0461  EIP=0x000007DA  shl         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0462  EIP=0x000007DD  and         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0463  EIP=0x000007E2  ret         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0464  EIP=0x000007E9  mov         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0465  EIP=0x000007EB  not         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0466  EIP=0x000007ED  and         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0467  EIP=0x000007F3  or          
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0468  EIP=0x000007F5  pop         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0469  EIP=0x000007F6  ret         
+       *** REG   EBX: SIM=0x7F98B61E  RTL=0xCDE7046D
+[ERR] #0470  EIP=0x000007D1  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0471  EIP=0x000007D3  jmp         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0472  EIP=0x000007F7  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0473  EIP=0x000007FC  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0474  EIP=0x00000801  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0475  EIP=0x00000806  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0476  EIP=0x0000080B  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0477  EIP=0x0000080C  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0478  EIP=0x0000080D  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0479  EIP=0x0000080E  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0480  EIP=0x0000080F  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0481  EIP=0x00000814  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0482  EIP=0x00000819  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0483  EIP=0x0000081E  mov         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961E  RTL=0xCDE6E46D
+[ERR] #0484  EIP=0x00000823  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98961F  RTL=0xCDE6E46E
+[ERR] #0485  EIP=0x00000825  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F989621  RTL=0xCDE6E470
+[ERR] #0486  EIP=0x00000827  add         
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F989625  RTL=0xCDE6E474
+[ERR] #0487  EIP=0x00000829  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98962D  RTL=0xCDE6E47C
+[ERR] #0488  EIP=0x0000082B  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98962D  RTL=0xCDE6E47C
+[ERR] #0489  EIP=0x0000082C  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98962D  RTL=0xCDE6E47C
+[ERR] #0490  EIP=0x0000082D  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98962D  RTL=0xCDE6E47C
+[ERR] #0491  EIP=0x0000082E  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x7F98962D  RTL=0xCDE6E47C
+[ERR] #0492  EIP=0x0000082F  add         
+       FLAGS  SIM: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  OF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x2A42A73E  RTL=0x7890F58D
+[ERR] #0493  EIP=0x00000831  add         
+       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  AF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xE5FDC960  RTL=0x344C17AF
+[ERR] #0494  EIP=0x00000833  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB2C9FC93  RTL=0x01184AE2
+[ERR] #0495  EIP=0x00000835  add         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0496  EIP=0x00000837  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0497  EIP=0x0000083C  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0498  EIP=0x00000841  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0499  EIP=0x00000846  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0500  EIP=0x0000084B  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0501  EIP=0x00000850  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0502  EIP=0x00000855  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0503  EIP=0x0000085A  push        
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0504  EIP=0x0000085F  pop         
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  CF: SIM=1  RTL=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x90A740D7  RTL=0xDEF58F26
+[ERR] #0505  EIP=0x00000860  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x98A740D7  RTL=0xE6F58F26
+[ERR] #0506  EIP=0x00000862  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x98A740D7  RTL=0xE6F58F26
+[ERR] #0507  EIP=0x00000863  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x9FA740D7  RTL=0xEDF58F26
+[ERR] #0508  EIP=0x00000865  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x9FA740D7  RTL=0xEDF58F26
+[ERR] #0509  EIP=0x00000866  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xA5A740D7  RTL=0xF3F58F26
+[ERR] #0510  EIP=0x00000868  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xA5A740D7  RTL=0xF3F58F26
+[ERR] #0511  EIP=0x00000869  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xAAA740D7  RTL=0xF8F58F26
+[ERR] #0512  EIP=0x0000086B  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xAAA740D7  RTL=0xF8F58F26
+[ERR] #0513  EIP=0x0000086C  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xAEA740D7  RTL=0xFCF58F26
+[ERR] #0514  EIP=0x0000086E  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xAEA740D7  RTL=0xFCF58F26
+[ERR] #0515  EIP=0x0000086F  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB1A740D7  RTL=0xFFF58F26
+[ERR] #0516  EIP=0x00000871  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB1A740D7  RTL=0xFFF58F26
+[ERR] #0517  EIP=0x00000872  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB3A740D7  RTL=0x01F58F26
+[ERR] #0518  EIP=0x00000874  pop         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB3A740D7  RTL=0x01F58F26
+[ERR] #0519  EIP=0x00000875  add         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB4A740D7  RTL=0x02F58F26
+[ERR] #0520  EIP=0x00000877  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB4A740D7  RTL=0x02F58F26
+[ERR] #0521  EIP=0x0000087D  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB4A740D7  RTL=0x02F58F26
+[ERR] #0522  EIP=0x00000887  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB4A740D7  RTL=0x02F58F26
+[ERR] #0523  EIP=0x0000088C  mov         
+       FLAGS  SIM: CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  SF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0xB4A740D7  RTL=0x02F58F26
 [ONLY_SIM] #0524  EIP=0x0000088E  add
 [ONLY_SIM] #0525  EIP=0x00000894  mov
 [ONLY_SIM] #0526  EIP=0x00000896  mov
@@ -1103,5 +2858,5 @@
 [ONLY_SIM] #1014  EIP=0x00000B54  hlt
 
 ================================================================================
-  SUMMARY: 15/1015 matched  |  14 mismatched  |  986 sim-only  |  0 rtl-only
+  SUMMARY: 17/1015 matched  |  507 mismatched  |  491 sim-only  |  0 rtl-only
 ================================================================================

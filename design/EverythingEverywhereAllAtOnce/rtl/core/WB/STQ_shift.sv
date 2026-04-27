@@ -5,7 +5,7 @@ module STQ_shift(
     output st_q_outputs_t outputs
 );
 
-    st_q_entry_t q[ST_Q_DEPTH];
+    st_q_entry_t q[ST_Q_DEPTH + 1]; //extra entry should always be invalid
     logic [ST_Q_DEPTH: 0] next_push; //one hot encoding I think it will be easier for structural
 
 
@@ -28,16 +28,18 @@ module STQ_shift(
             if(valid_push)begin
                 if(valid_pop)begin
                     for(int i = 0; i < ST_Q_DEPTH; i++)begin
-                        q[i] <= next_push[i] ? wb_in.data : q[i+1];
+                        q[i] <= next_push[i+1] ? wb_in.data : q[i+1];
                     end
                 end
                 else begin
+                    next_push <= next_push <<1;
                     for(int i = 0; i < ST_Q_DEPTH; i++)begin
                         q[i] <= next_push[i] ? wb_in.data : q[i];
                     end
                 end
             end
             else if(valid_pop)begin
+                next_push <= next_push >> 1;
                 for(int i =0; i < ST_Q_DEPTH; i++)begin
                     q[i] <= q[i+1];
                 end
