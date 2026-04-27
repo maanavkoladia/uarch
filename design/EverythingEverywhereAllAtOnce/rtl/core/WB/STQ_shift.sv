@@ -51,7 +51,7 @@ module STQ_shift(
         outputs.full = full;
         outputs.empty = empty;
         outputs.head_address = q[0].address;
-        outputs.bit_vec = q[0].bit_vec;
+        outputs.bit_vec = 16'hFFFF;
         outputs.head_data = q[0].data;
         outputs.push_fail = wb_in.push & (full & ~wb_in.pop);
 

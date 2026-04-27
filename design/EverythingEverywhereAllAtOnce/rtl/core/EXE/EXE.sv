@@ -336,6 +336,9 @@ module EXE (
 
     res_buf_logic u_res_buf_logic (
         .res_info_i(res_buf_selected),
+        .ld_buf(latches_i.ld_buf),
+        .bit_vec_0(bit_vec_0_next),
+        .bit_vec_1(bit_vec_1_next),
         .st_addr_0 (latches_i.ST_PADDR_0),
         .res_buf   (res_buf_next)
     );
