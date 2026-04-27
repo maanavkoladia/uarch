@@ -18,4 +18,6 @@ ucli.key
 
 *.log
 
+.nfs*
+
 

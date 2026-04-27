@@ -13,6 +13,13 @@ Pipeline:
                into physical frame slot  (frame * page_size)
     └─[4]─ Diagnostic report
 
+  Pre-built hex (useProgram == "false"):
+    Supports annotated hex dump format:
+      0xADDR:  BB CC DD ...  // optional comment
+    Lines not matching this pattern (comments, blank lines, etc.) are ignored.
+    Bytes are written into the sparse VA image at the given address, then
+    VM_Mappings drives physical placement exactly as in the assembled path.
+
 Key design points
   • NO segment translation.  .org values are treated as 32-bit linear/VA
     addresses directly.  The user manages segment registers manually in
@@ -26,7 +33,7 @@ Key design points
 JSON config keys:
   useProgram             : "true" / "false"
   input_Program_Path     : path to .s source
-  input_hex_file         : pre-built flat hex (useProgram == "false")
+  input_hex_file         : path to annotated hex dump (useProgram == "false")
   output_metaData_Path   : directory for debug / meta outputs
   output_LoadableHex_Path: directory for per-bank hex files (genHexMem input)
   randomizeMem           : "true" / "false"  background fill for unmapped pages
@@ -86,6 +93,97 @@ def sparse_write(pages: dict, addr: int, data: bytes, page_size: int):
         pages[page_base][page_off : page_off + chunk_len] = \
             data[offset : offset + chunk_len]
         offset += chunk_len
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Annotated hex dump parser  (useProgram == "false")
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Matches lines like:
+#   0x0:    bc 00 03 00 00   // comment
+#   0x2068:  52 00 00 00     //cs=0x0 …
+#   0x43fc:  01 02 03 04
+#
+# Group 1 = address (hex), Group 2 = byte tokens (space-separated hex pairs)
+_HEX_LINE_RE = re.compile(
+    r'^\s*(0[xX][0-9a-fA-F]+)\s*:\s*((?:[0-9a-fA-F]{2}\s*)+)',
+    re.IGNORECASE
+)
+
+def load_annotated_hex(hex_path: str, page_size: int) -> tuple:
+    """
+    Parse an annotated hex dump file into a sparse VA page dict.
+
+    Accepted line format (anything after the byte tokens is treated as a comment):
+        0xADDR:   BB CC DD EE ...   // optional comment
+
+    Lines that do not start with a hex address followed by ':' are silently
+    skipped (blank lines, pure comment lines, continuation lines that only
+    have a comment, etc.).
+
+    Returns
+    -------
+    va_pages     : dict { page_base: bytearray(page_size) }
+    sections_out : list of {'name', 'elf_name', 'va', 'size'}  (one per run)
+    """
+    va_pages     = {}
+    sections_out = []
+    total_bytes  = 0
+    runs         = []   # list of (start_addr, byte_count) for the report
+
+    with open(hex_path) as fh:
+        for raw_line in fh:
+            # Strip inline comments that begin with // or #, then check the
+            # address:bytes pattern on what remains.
+            # We do NOT strip before the regex so the regex anchors correctly;
+            # the regex itself allows leading whitespace.
+            line = raw_line
+
+            m = _HEX_LINE_RE.match(line)
+            if not m:
+                continue        # blank, comment, or non-matching line
+
+            addr  = int(m.group(1), 16)
+            # collect all two-hex-digit tokens from group 2
+            byte_tokens = re.findall(r'[0-9a-fA-F]{2}', m.group(2))
+            if not byte_tokens:
+                continue
+
+            data = bytes(int(t, 16) for t in byte_tokens)
+            sparse_write(va_pages, addr, data, page_size)
+            runs.append((addr, len(data)))
+            total_bytes += len(data)
+
+    if not va_pages:
+        sys.exit(f"[compile] No valid hex data found in '{hex_path}'.")
+
+    print(f"[compile] Loaded {total_bytes} bytes from '{hex_path}' "
+          f"across {len(runs)} address run(s).")
+
+    # Build a pseudo sections_out list so the diagnostic report has content.
+    # We merge consecutive / overlapping runs into contiguous regions.
+    runs.sort()
+    merged = []
+    for start, length in runs:
+        if merged and start <= merged[-1][0] + merged[-1][1]:
+            # overlapping or adjacent – extend
+            end_new = max(merged[-1][0] + merged[-1][1], start + length)
+            merged[-1] = (merged[-1][0], end_new - merged[-1][0])
+        else:
+            merged.append([start, length])
+
+    for i, (start, length) in enumerate(merged):
+        sections_out.append({
+            'name'    : 'data',
+            'elf_name': f'.hexdata{i}',
+            'va'      : start,
+            'size'    : length,
+        })
+        print(f"[compile]   .hexdata{i:<4}  VA=0x{start:08x}  size={length} B  "
+              f"pages=[0x{start & ~(page_size-1):08x}"
+              f"..0x{(start+length-1) & ~(page_size-1):08x}]")
+
+    return va_pages, sections_out
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -595,6 +693,7 @@ def main():
     tmp_dir  = None
 
     if use_program:
+        # ── Compiled .s path ──────────────────────────────────────────────────
         src_path = cfg['input_Program_Path']
         print(f"[compile] Source: {src_path}")
 
@@ -613,29 +712,11 @@ def main():
         shutil.rmtree(pp_tmp, ignore_errors=True)
 
     else:
+        # ── Pre-built annotated hex dump path ─────────────────────────────────
         hex_path = cfg['input_hex_file']
-        print(f"[compile] Loading pre-built hex: {hex_path}")
-        va_pages     = {}
-        sections_out = []
-        cur_addr     = 0
-        buf          = bytearray()
-        with open(hex_path) as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith('//') or not line:
-                    continue
-                if line.startswith('@'):
-                    if buf:
-                        sparse_write(va_pages, cur_addr - len(buf),
-                                     bytes(buf), page_size)
-                        buf = bytearray()
-                    cur_addr = int(line[1:], 16)
-                    continue
-                b = bytes.fromhex(line)
-                buf += b
-                cur_addr += len(b)
-        if buf:
-            sparse_write(va_pages, cur_addr - len(buf), bytes(buf), page_size)
+        print(f"[compile] Loading annotated hex dump: {hex_path}")
+        va_pages, sections_out = load_annotated_hex(hex_path, page_size)
+        print(f"[compile] {len(va_pages)} sparse VA page(s) loaded from hex dump.")
 
     # ── VM mapping ────────────────────────────────────────────────────────────
     if not vm_mappings:
@@ -657,7 +738,8 @@ def main():
     write_readmemh_flat(phys_image, line_bytes,
                         os.path.join(meta_dir, 'program_readmemh.hex'))
 
-    src_label = cfg.get('input_Program_Path', cfg.get('input_hex_file', '?'))
+    src_label = cfg.get('input_Program_Path', cfg.get('input_hex_file', '?')) \
+                if use_program else cfg.get('input_hex_file', '?')
     write_diagnostic_report(
         out_path     = os.path.join(meta_dir, 'segment_vm_report.txt'),
         src_path     = src_label,
