@@ -28,7 +28,7 @@ module ddr5 (
     end
 
     always_ff @(posedge clk) begin
-        if (!rst) powerGate <= 0;
+        if (!rst) powerGate <= 1;
         else if (inFromDTE_i.newPowerGateValueFromCore)
             powerGate <= dataBus[0];  //get new value from bus
     end
