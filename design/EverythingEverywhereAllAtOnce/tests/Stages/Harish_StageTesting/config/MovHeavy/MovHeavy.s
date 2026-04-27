@@ -1,9 +1,16 @@
-.org 0x1000
+#define __CS__ 0x0000
+#define __DS__ 0x4123
+
+.org 0x00000000
 .code
 .global _start
 
 _start:
-    movl $0x2000, %esi
+
+    movl    $__DS__, %eax
+    movw    %ax, %ds
+
+    movl 0, %esi
     movl $0x00000000, %ebx
 
     # ================= DCACHE TESTS =================
@@ -188,8 +195,11 @@ ic_thrash_b:
 ic_done:
     hlt
 
-.org 0x2000
-.data
 
+
+.org 0x41230000
+.data
 data_page:
     .space 0xB00
+
+
