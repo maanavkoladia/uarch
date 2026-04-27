@@ -41,7 +41,7 @@ module WB (
                 empty   : stq_outputs[i].empty,
                 address : stq_outputs[i].head_address,
                 bit_vec : stq_outputs[i].bit_vec,
-                data    : stq_outputs[i].data
+                data    : stq_outputs[i].head_data
             };
         end
     end
@@ -52,7 +52,8 @@ module WB (
             for(int i = 0; i < ST_Q_DEPTH; i++)begin
                 dc_dep.entries[num_q*ST_Q_DEPTH + i] = '{
                     valid   : stq_outputs[num_q].valid[i],
-                    address : stq_outputs[num_q].address[i]
+                    address : stq_outputs[num_q].address[i],
+                    stq_data: stq_outputs[num_q].data[i]
                 };
             end
         end
@@ -121,7 +122,7 @@ module WB (
     //Store queue gen
     genvar i;
     for(i = 0; i < NUM_WB_ST_QS; i++)begin : gen_st_q
-        ST_Q stq_inst (
+        STQ_shift stq_inst (
             .clk(clk),
             .rst(rst),
             .wb_in(stq_info[i]),

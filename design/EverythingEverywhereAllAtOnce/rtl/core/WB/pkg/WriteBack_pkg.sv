@@ -23,8 +23,9 @@ package WriteBack_pkg;
         bool valid[ST_Q_DEPTH];
         p_address_t address[ST_Q_DEPTH];
         p_address_t head_address;
+        byte_t head_data[CACHE_LINES_SIZE_B];
         uint16_t bit_vec;
-        byte_t data[CACHE_LINES_SIZE_B];
+        byte_t data[ST_Q_DEPTH][CACHE_LINES_SIZE_B];
         bool push_fail;
     } st_q_outputs_t;
 

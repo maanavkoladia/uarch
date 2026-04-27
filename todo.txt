@@ -24,3 +24,65 @@ OPCODE CHECK
 - ddr5 testing
 - IO testing 
 
+Considerations for Wb forwaring
+- I think the most efficient way to go about this is by overwriting matching cache lines 
+  in the STQ with the new cache line. there is no need to have any ordering with the cache lines since there no overlap 
+ - the tricky part is in the mem stage. if there is a store queue hit the mem stage needs to be able to clear the dc load that was send our for its
+    - it needs to be able to ignore hits in a future stage when new data comes into the latches.
+    - it needs to be able to select between the STQ and hit signals properly
+
+- The main bugs in this situation
+- is DC aware whether an instruciton is in the store queue and can be forwarded?
+- or is the store queue forwarding strictly in mem?
+
+- case 1:
+ - DC sees that a store queue has the data mem needs. it does not make a request 
+   - mem is currently stalling. and eventaually the data leves the store queue and goes to the cache. 
+   - now dc has to make its request (now late) to the arb latches 
+
+   - what if on cycle 1, DC sees there is a STQ and on the next cycle when the instruciton moves forward it is out of the store queu and not request to the cache was made.
+   - I think its best for DC not to worry about the stq stuff
+
+I think we keep mem in control 
+"    bool doAccess;
+    assign doAccess = !block_busy_i && (reqInUse.oe || reqInUse.we);
+    //need to do hit/miss logic
+    always_comb begin
+        miss = 0;
+        hit = 0;
+        writeSuccess2TagStore = 0;
+
+        if (currTag == blockReq_p_addr_fields.tag && currLineValid && doAccess) begin
+            hit = 1;
+        end
+"
+based off this code in dcache bank we dont send out hits if there there was no request
+- so in mem if there is a store queue forward we can clear the latches so that the next instruction doesnt see an incorrect hit.
+- I think we are all good based off this 
+
+Overall structure. store queue will forwards its entries.
+mem looks for a hit
+if it gets a hit, it places it in the buffer and sets the valid or moves forward with the data into the ld_buf
+- if it gets a hit it clears the bank that corresponds to the hit. 
+- this means cache access will be cancelled
+
+- dc should be able to remove in stq dep check 
+- mem needs ot add it to check for matches
+- execute needs to writeback the entire cache line back into the resbuf correctly
+- dc always makes a request to the cache. 
+
+- now lets consider off by one cases. it is impossible for a write to be scheduled to a bank while a loda is happening in mem to that bank
+- this means during the load nothing will be getting popped off the queue 
+- lets say you get a hit in the queue I dont think there is any issues there
+
+- now lets see off by one from a stq standpoint
+- we have resbuf that needs to be written to.
+- it matches a cache line from that is also getting popped same cycle. we can overwrite it same cycle and there is no problem. the old data gets sent to the cache and the new data gets put to the top of the queue
+  having "out of order" memory commits doesnt matter since its all cache line based. 
+- so ideally in a store queue we only unique addressing so there is no need for a shift register. 
+ - this can reduce the number of writes to dcache overall AND there is no need for priority encoder in mem 
+
+ I am not sure what the tming looks like for essentually a 4 way set associative cache now instead of a regualr queue
+- generally speaking i am assuming DC will only send out a request at hte latest by 6ns which means we need to do all our store queue work before 6ns.
+
+hopefully our stall logic is not too long otherwise we might have to 

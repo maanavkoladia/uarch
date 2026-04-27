@@ -149,6 +149,7 @@ package core_common_pkg;
     typedef struct {
         bool valid;
         p_address_t address;
+        byte_t stq_data[CACHE_LINES_SIZE_B];
     } mem_dep_check_info_t;
 
     typedef struct {
