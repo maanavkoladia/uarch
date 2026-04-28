@@ -320,7 +320,9 @@ module control_store (
         special_br          : special_br_o,
         is_far              : is_far_o,
         is_call             : is_call_o,
-        second_flag_needed  : second_flag_needed_o
+        second_flag_needed  : second_flag_needed_o,
+        rep_no_zf_update    : 0
+
     };
 
     // WB

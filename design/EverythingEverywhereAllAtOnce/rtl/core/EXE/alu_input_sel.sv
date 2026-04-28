@@ -16,9 +16,9 @@ module alu_input_sel(
     input source_selector_e alu_inputB_sel,
     input bool shift_sr_down,
     input bool shift_sr_up,
-    
     input source_selector_e br_input_sel,
 
+    output uint64_t exp_ld_buf_o,
     output uint64_t srA_64,
     output uint64_t srB_64,
     output uint32_t br_sel
@@ -30,6 +30,7 @@ module alu_input_sel(
     logic[$clog2(CACHE_LINES_SIZE_B)-1: 0] res_buf_offset;
     assign res_buf_offset = ld_addr_0[$clog2(CACHE_LINES_SIZE_B)-1: 0];
 
+    assign exp_ld_buf_o = res_buf_out[63:0];
     always_comb begin
         for (int i = 0; i < 16; i++) begin  // Read 16 bytes (128 bits)
             res_buf_out[i*8 +: 8] = res_buf[res_buf_offset + i];
@@ -68,7 +69,7 @@ module alu_input_sel(
             control_store_pkg::EIP:            srB = {32'b0, EIP};
             control_store_pkg::SEXT8:          srB = {32'd0, 32'(signed'(imm64[7:0]))};
             control_store_pkg::NO_EXE:         srB = 0;
-            control_store_pkg::SEGMENT_NEIP:   srB = {NEIP, dr_data}; 
+            control_store_pkg::SEGMENT_NEIP:   srB = {NEIP, dr_data};
             control_store_pkg::SEGMENT_EIP:    srB = {EIP, dr_data}; //not sure when this needs to be used
             control_store_pkg::EAX_REG:        srB  = {32'd0, EAX}; //send forward EAX
             control_store_pkg::CMPXCHG_SEL:    srB = {sr_data, EAX}; //rm32 r32 on cmpxchg 

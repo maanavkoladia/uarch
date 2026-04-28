@@ -181,7 +181,8 @@ module cs_post_processor (
         special_br         : exe_cs_i.special_br,
         is_far             : exe_cs_i.is_far,
         is_call            : ff_jmp || ff_push ? 1'b0 : exe_cs_i.is_call,
-        second_flag_needed : exe_cs_i.second_flag_needed
+        second_flag_needed : exe_cs_i.second_flag_needed,
+        rep_no_zf_update    : 0
     };
 
     // =====================

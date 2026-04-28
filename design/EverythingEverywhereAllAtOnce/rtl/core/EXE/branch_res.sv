@@ -23,10 +23,12 @@ module branch_res(
     input bool is_call_i,
     input bool second_flag_needed_i,
 
+    
 //from exe stage
     input uint32_t br_source_i,
     input l_address_t NEIP_i,
     input l_address_t br_rel_target,
+    input l_address_t exp_target,
     input bool CF,
     input bool ZF,
 
@@ -56,7 +58,8 @@ module branch_res(
     assign callFlush = is_call_i & valid;
 
     //target logic
-    assign real_br_target = relative_branch_i ? (br_rel_target) : br_source_i;
+    assign real_br_target = relative_branch_i ? (br_rel_target) :
+                            (special_br_i ? exp_target : br_source_i);
 
     //target match check
     assign target_match = speculative_target_i == real_br_target;

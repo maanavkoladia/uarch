@@ -189,7 +189,8 @@ module rep_controller (
             special_br          : 1'b0,
             is_far              : 1'b0,
             is_call             : 1'b0,
-            second_flag_needed  : 1'b0
+            second_flag_needed  : 1'b0,
+            rep_no_zf_update    : 1
         },
         wb_cs : '{
             ST_OP : 1'b1,
@@ -259,7 +260,9 @@ module rep_controller (
             special_br          : 1'b0,
             is_far              : 1'b0,
             is_call             : 1'b0,
-            second_flag_needed  : 1'b0
+            second_flag_needed  : 1'b0,
+            rep_no_zf_update    : 1
+
         },
         wb_cs : '{
             ST_OP : 1'b0,
@@ -334,7 +337,9 @@ module rep_controller (
             special_br          : 1'b0,
             is_far              : 1'b0,
             is_call             : 1'b0,
-            second_flag_needed  : 1'b0
+            second_flag_needed  : 1'b0,
+            rep_no_zf_update    : 0
+
         },
         wb_cs : '{
             ST_OP : 1'b0,
@@ -413,7 +418,8 @@ module rep_controller (
             special_br          : 1'b0,
             is_far              : 1'b0,
             is_call             : 1'b0,
-            second_flag_needed  : 1'b0
+            second_flag_needed  : 1'b0,
+            rep_no_zf_update    : 0
         },
         wb_cs : '{
             ST_OP : 1'b0,
@@ -491,7 +497,8 @@ module rep_controller (
             special_br          : 1'b0,
             is_far              : 1'b0,
             is_call             : 1'b0,
-            second_flag_needed  : 1'b0
+            second_flag_needed  : 1'b0,
+            rep_no_zf_update    : 0
         },
         wb_cs : '{
             ST_OP : 1'b0,

@@ -144,6 +144,7 @@ package core_stage_latches_pkg;
        //I will always assume ZF if second flag is set then ill also use CF
        //hard coded in br_res logic
         bool second_flag_needed;
+        bool rep_no_zf_update;
     } exe_cs_t;
 
 

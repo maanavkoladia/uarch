@@ -21,6 +21,7 @@ module res_buf_sel (
     input uint64_t sar_res_buf_i,
     input uint64_t sbb_res_buf_i,
     input uint64_t xchg_res_buf_i,
+    input uint64_t exp_call_res_buf_i,
     
     // Selected output
     output uint64_t res_buf_o
@@ -44,6 +45,7 @@ module res_buf_sel (
             SAL:      res_buf_o = sal_res_buf_i;
             SBB:      res_buf_o = sbb_res_buf_i;
             XCHG:     res_buf_o = xchg_res_buf_i;
+            EXP_CALL: res_buf_o = exp_call_res_buf_i;
             default:  res_buf_o = 64'h0;
         endcase
     end

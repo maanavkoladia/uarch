@@ -100,6 +100,15 @@ module EXE (
     uint64_t                          far_call_res_buf;
     uint64_t                          far_call_dr_o;
 
+    //EXP_CALL Outputs
+    uint64_t                          exp_call_sr_o;
+    uint64_t                          exp_call_res_buf;
+    uint64_t                          exp_call_dr_o;
+    uint32_t                          exp_call_eip;
+    uint64_t                          exp_ld_buf_o;
+
+
+
     // IRETD Outputs
     uint64_t                          iretd_cs_o;
     uint64_t                          iretd_stack_ptr_o;
@@ -278,7 +287,7 @@ module EXE (
         DR_1_data: dr1_data_o,
 
         ZF: flags_reg[ZF_IDX],
-        clr_ZF_sb: clr_ZF_sb,
+        clr_ZF_sb: clr_ZF_sb && latches_i.valid,
         ST_OP: latches_i.cs.ST_OP,
         ST_XCL: latches_i.ST_XCL,
         ST_PADDR_0: latches_i.ST_PADDR_0,
@@ -305,6 +314,7 @@ module EXE (
         .shift_sr_up   (latches_i.shift_sr_up),
         .shift_sr_down (latches_i.shift_sr_down),
         .br_input_sel  (latches_i.cs.branch_target_sel),
+        .exp_ld_buf_o  (exp_ld_buf_o),
         .srA_64        (srA),
         .srB_64        (srB),
         .br_sel        (br_sel)
@@ -333,6 +343,7 @@ module EXE (
         .sal_res_buf_i     (sal_res_buf_o),
         .sbb_res_buf_i     (sbb_res_buf_o),
         .xchg_res_buf_i    (xchg_res_buf),
+        .exp_call_res_buf_i(exp_call_res_buf),
 
         .res_buf_o         (res_buf_selected)
     );
@@ -384,6 +395,7 @@ module EXE (
         .sar_dr_i        (sar_dr_o),
         .sbb_dr_i        (sbb_dr_o),
         .xchg_dr_i       (xchg_dr_o),
+        .exp_call_dr_i   (exp_call_dr_o),
         .dr_data         (dr_data),
         .dr_o            (dr_next)
     );
@@ -402,6 +414,7 @@ module EXE (
         .xchg_sr_i       (xchg_sr_o),
         .call_sr_i       (call_sr_o),
         .far_call_sr_i   (far_call_sr_o),
+        .exp_call_sr_i   (exp_call_sr_o),
         .sr_o            (sr_next)
     );
 
@@ -448,6 +461,7 @@ module EXE (
         .br_source_i         (br_sel),
         .NEIP_i              (latches_i.NEIP),
         .br_rel_target       (latches_i.br_rel_target),
+        .exp_target          (exp_call_eip),
         .CF                  (flags_reg[CF_IDX]),
         .ZF                  (flags_reg[ZF_IDX]),
         .outs_o              (branch_resolution_o)
@@ -593,6 +607,7 @@ module EXE (
     );
 
     zf_flag_sel u_zf_flag_sel (
+        .rep_no_zf_update(latches_i.cs.rep_no_zf_update),
         .adc_zf      (adc_zf_o),
         .add_zf      (add_zf_o),
         .and_zf      (and_zf_o),
@@ -867,6 +882,18 @@ module EXE (
         .sr_o     (far_call_sr_o),
         .dr_o     (far_call_dr_o)
     );
+
+    exp_call_op u_exp_call_op(
+        .idt(exp_ld_buf_o), //harded coded wired in
+        .eip(srA[63:32]), // SEGMENT_EIP
+        .curr_cs(srA[31:0]), // SEGMENT_EIP
+        .stack_ptr(srB),
+        .res_buf(exp_call_res_buf), //old cs and old eip
+        .dr_o(exp_call_dr_o), //new cs
+        .sr_o(exp_call_sr_o), //stack pointer updated
+        .exp_eip(exp_call_eip) //to br_res
+    );
+
 
     far_jmp_op u_far_jmp_op (
         .op_type  (op_type),

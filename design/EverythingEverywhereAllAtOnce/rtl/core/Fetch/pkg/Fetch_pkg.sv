@@ -27,6 +27,7 @@ package Fetch_pkg;
 
     typedef struct{
         bool exp_pipe_clear;
+        bool dc_exp_set;
         bool int_pipe_clear;
     }exp_set_logic_output_t;
 

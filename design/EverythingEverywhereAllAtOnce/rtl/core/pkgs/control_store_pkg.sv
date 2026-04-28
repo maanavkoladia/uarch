@@ -111,7 +111,8 @@ package control_store_pkg;
         ADD_DF       = 34,   // Special internal-only operation for ADD with Direction Flag handling
         MOVS         = 35,
         FAR_JMP32    = 36,
-        FAR_JMP16    = 37
+        FAR_JMP16    = 37,
+        EXP_CALL     = 38
     } exe_cs_operation_type_e;
 
     typedef enum{
@@ -125,7 +126,7 @@ package control_store_pkg;
         SEXT8 = 6,          //SIGN extended alu ops
         SEGMENT_NEIP =7 ,   //Far calls 
         IMM64 = 8,          //I think for regular ALU ops the operation size is always the same or sign extended
-
+        
         //BRANCHES
         IMM32 = 9,          //rel 32
         ZEXT_IMM8 = 10,     //rel8 
@@ -137,7 +138,8 @@ package control_store_pkg;
         EIP = 16,           //similar to NEIP but for EIP
         CMPXCHG_SEL = 17,       //cmpxchg operation
         SR_DR_SEL = 18,
-        IRETD_SEL = 19        //iretd operation  p
+        IRETD_SEL = 19      //iretd operation  p
+
     // How source selection works in the ALU input selector:
     //refined comment with claude so its coherent buddy
     // 1. All sources first get assigned to a 128-bit wire (srA_128/srB_128)

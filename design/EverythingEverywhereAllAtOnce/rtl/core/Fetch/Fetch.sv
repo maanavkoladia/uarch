@@ -40,7 +40,7 @@ module Fetch (
 
 
     //internal reg to Fetch
-    bool exp_mode_jk;
+    logic [1:0] exp_mode_jk;
     bool int_mode_jk;
     bool DMA_int_jk; //corresponds to unterrupt "unit" Need to figure out how to clear int bit
     l_address_t SPC;
@@ -81,6 +81,7 @@ module Fetch (
         outs_o.fetch_2_icache.num_valid_IDM_slots = idm_info_i.valid_slots;
         outs_o.exp_present = f_exp;
         outs_o.exp_pf = tlb_outs.pageFault;
+        outs_o.exp_mode_jk = exp_mode_jk;
     end
 
     assign f_exp = (tlb_outs.gp_exp | tlb_outs.pageFault) & ~exp_mode_jk;
@@ -153,13 +154,24 @@ module Fetch (
         else begin
             if(exe_outs_i.br_res_out.flush && exe_outs_i.br_res_out.valid) exp_mode_jk <= 0;
             else begin
+
+                //writing this bc its like the jk logic writen out 
                 case({exp_set_logic_outs.exp_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
-                    2'b00: exp_mode_jk <= exp_mode_jk;
-                    2'b01: exp_mode_jk <= 0;
-                    2'b10: exp_mode_jk <= 1;
-                    2'b11: exp_mode_jk <= ~exp_mode_jk;
-                    default: exp_mode_jk <= exp_mode_jk;
+                    2'b00: exp_mode_jk[0] <= exp_mode_jk[0];
+                    2'b01: exp_mode_jk[0] <= 0;
+                    2'b10: exp_mode_jk[0] <= 1;
+                    2'b11: exp_mode_jk[0] <= ~exp_mode_jk[0];
+                    default: exp_mode_jk[0] <= exp_mode_jk[0];
                 endcase
+
+                case({exp_set_logic_outs.dc_exp_set, exe_outs_i.br_res_out.clr_exp_mode})
+                    2'b00: exp_mode_jk[1] <= exp_mode_jk[1];
+                    2'b01: exp_mode_jk[1] <= 0;
+                    2'b10: exp_mode_jk[1] <= 1;
+                    2'b11: exp_mode_jk[1] <= ~exp_mode_jk[1];
+                    default: exp_mode_jk[1] <= exp_mode_jk[1];
+                endcase
+
             end
         end
     end
@@ -229,7 +241,7 @@ module Fetch (
 
 
     IDM_Ctrl_Logic idm_ctrl_logic (
-        .exp_mode(exp_mode_jk),
+        .exp_mode(exp_mode_jk[0]),
         .int_mode(int_mode_jk),
         .spc(spc_2_IDM_CTRL),
         .idm_i(idm_info_i),
@@ -267,7 +279,7 @@ module Fetch (
         .f_exp(f_exp),
         .dc_exp(dc_outs_i.exp_present),
         .int_set(DMA_int_jk),
-        .exp_mode_jk(exp_mode_jk),
+        .exp_mode_jk(exp_mode_jk[0]),
         .int_mode_jk(int_mode_jk),
         .outputs(exp_set_logic_outs)
     );
@@ -280,7 +292,7 @@ module Fetch (
         .DC_exp(dc_outs_i.exp_present),
         .Fetch_pf(tlb_outs.pageFault),
         .DMA_int(DMA_int_jk),
-        .exp_mode(exp_mode_jk),
+        .exp_mode(exp_mode_jk[0]),
         .rom_data_out(rom_data_out)
     );
 
@@ -288,7 +300,7 @@ module Fetch (
     //spc to icache path
     ICache_En_Logic icache_en_logic(
         .rst(rst),
-        .exp_mode(exp_mode_jk),
+        .exp_mode(exp_mode_jk[0]),
         .cs_sb(rr_outs_i.codeSeg_sb),
         .int_mode(int_mode_jk),
         .DMA_int(DMA_int_jk),

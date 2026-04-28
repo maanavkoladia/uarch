@@ -132,6 +132,7 @@ module DC (
         .LD_OP(latches_i.cs.LD_OP),
         .XCL(ld_neuralnet_out.xcl),
         .dep_stall(dep_stall),
+        .exp_stall(exp_stall),
         .MIO(ld_neuralnet_out.mio),
         .ld_addr0(ld_neuralnet_out.PADDR0),
         .ld_addr1(ld_neuralnet_out.PADDR1),
@@ -224,6 +225,7 @@ module DC (
 
     assign dc_outs_o = '{
             valid: latches_i.valid,
+            dc_eip: latches_i.EIP,
             stall: dc_stall,
             exp_pf: ld_neuralnet_out.DC_PF | st_neuralnet_out.DC_PF,
             exp_present: exp_stall,

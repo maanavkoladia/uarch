@@ -62,4 +62,6 @@ assign outputs.exp_pipe_clear = dc_exp ? dc_pipe_clear : f_pipe_clear;
 assign outputs.int_pipe_clear = invalid_instruction & not_rr_valid & not_dc_valid &
                                 not_mem_valid & not_exe_valid & not_wb_valid & int_set & ~int_mode_jk;
 
+assign outputs.dc_exp_set = dc_pipe_clear;
+
 endmodule

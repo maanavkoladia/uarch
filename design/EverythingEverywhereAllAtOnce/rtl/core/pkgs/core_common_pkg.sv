@@ -43,6 +43,7 @@ package core_common_pkg;
         bool exp_pipe_clear;
         bool exp_present;
         bool exp_pf;
+        logic[1:0] exp_mode_jk;
     } fetch_outputs_t;
 
     typedef struct {
@@ -75,7 +76,7 @@ package core_common_pkg;
 
     typedef struct {
         bool valid;
-
+        l_address_t dc_eip;
         bool stall;  //dep stall or req rejected
         bool exp_present;  //if present and not pf, then gp
         bool exp_pf;
