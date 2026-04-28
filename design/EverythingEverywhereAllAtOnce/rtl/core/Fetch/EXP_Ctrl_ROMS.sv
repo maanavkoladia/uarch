@@ -35,64 +35,39 @@ module EXP_Ctrl_ROMS (
     // =====================
     // Fetch exception mux
     // =====================
-    wire [2:0] fetch_exp_out;
-    `MUX_2(fetchP_pf_mux, 3,
-        fetch_exp_out,
-        GP_IDT,
-        PF_IDT,
-        Fetch_pf
-    )
+    logic [2:0] fetch_exp_out;
+    assign fetch_exp_out = Fetch_pf ? PF_IDT : GP_IDT;
 
     // =====================
     // DC exception mux
     // =====================
-    wire [2:0] DC_exp_out;
-    `MUX_2(DC_pf_mux, 3,
-        DC_exp_out,
-        GP_IDT,
-        PF_IDT,
-        DC_pf
-    )
+    logic [2:0] DC_exp_out;
+    assign DC_exp_out = DC_pf ? PF_IDT : GP_IDT;
 
     // =====================
     // Exception select mux (DC priority)
     // =====================
-    wire [2:0] exp_idx;
-    `MUX_2(exp_sel_mux, 3,
-        exp_idx,
-        fetch_exp_out,
-        DC_exp_out,
-        DC_exp
-    )
+    logic [2:0] exp_idx;
+    assign exp_idx = DC_exp ? DC_exp_out : fetch_exp_out;
 
     // =====================
     // Interrupt mux
     // =====================
-    wire [2:0] int_idx;
-    `MUX_2(dma_int_mux, 3,
-        int_idx,
-        DDR_IDT,
-        DMA_IDT,
-        DMA_int
-    )
+    logic [2:0] int_idx;
+    assign int_idx = DMA_int ? DMA_IDT : DDR_IDT;
 
     // =====================
     // Final ROM index mux
     // =====================
-    wire [2:0] rom_idx;
-    `MUX_2(exp_mode_mux, 3,
-        rom_idx,
-        int_idx,
-        exp_idx,
-        exp_pipe_clear
-    )
+    logic [2:0] rom_idx;
+    assign rom_idx = exp_pipe_clear ? exp_idx : int_idx;
   
 
 
     // Simple ROM: 32 entries, each 16 bytes
     logic [7:0] rom_mem [0:31][0:15];
     
-    wire [4:0] rom_addr;
+    logic [4:0] rom_addr;
     
     // Extend 3-bit index to 5-bit ROM address (only use first 8 entries of 32-entry ROM)
     assign rom_addr = {2'b00, rom_idx};

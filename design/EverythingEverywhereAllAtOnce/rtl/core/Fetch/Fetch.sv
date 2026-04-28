@@ -267,6 +267,8 @@ module Fetch (
         .f_exp(f_exp),
         .dc_exp(dc_outs_i.exp_present),
         .int_set(DMA_int_jk),
+        .exp_mode_jk(exp_mode_jk),
+        .int_mode_jk(int_mode_jk),
         .outputs(exp_set_logic_outs)
     );
 

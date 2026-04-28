@@ -24,9 +24,9 @@ module mem_miss_stall_logic(
         ld_miss = 0;
         xcl_miss = 0;
         for(int i = 0; i < NUM_DCACHE_PORTS; i++)begin
-            if(bank_num_0 == i && ~hits[i] && ~hit_buf_v[i] & LD_OP && ~MIO)
+            if(bank_num_0 == i && ~hits[i] && ~hit_buf_v[i] && LD_OP && ~MIO)
                 ld_miss = 1;
-            if(bank_num_1 == i && ~hits[i] && ~hit_buf_v[i] & LD_OP & LD_XCL && ~MIO)
+            if(bank_num_1 == i && ~hits[i] && ~hit_buf_v[i] && LD_OP && LD_XCL && ~MIO)
                 xcl_miss = 1;
         end
     end

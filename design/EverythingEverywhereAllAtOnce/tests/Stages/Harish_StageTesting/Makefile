@@ -26,7 +26,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH = $(TEST_DIR)/config/simpleFarTest/
+TEST_CASE_PATH = $(TEST_DIR)/config/TheBigOne/
 
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
@@ -60,6 +60,7 @@ GEN_CONF = $(TEST_CASE_PATH)/startUpGen.conf.json
 TOP_MODULE_NAME = tb_stages
 
 STARTUP_FILES = \
+				gen/diskLoader.v \
 				gen/memLoader.sv \
 				gen/dcache_loader.sv \
 				gen/icache_loader.sv \
