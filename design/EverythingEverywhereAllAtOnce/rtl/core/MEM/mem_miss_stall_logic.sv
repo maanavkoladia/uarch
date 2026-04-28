@@ -18,15 +18,15 @@ module mem_miss_stall_logic(
     bool ld_miss;
     bool mio_miss;
 
-    assign mio_miss = MIO & ~hit_MIO & ~hit_buf_mio_v;
+    assign mio_miss = MIO & ~hit_MIO & ~hit_buf_mio_v & LD_OP;
 
     always_comb begin
         ld_miss = 0;
         xcl_miss = 0;
         for(int i = 0; i < NUM_DCACHE_PORTS; i++)begin
-            if(bank_num_0 == i && ~hits[i] && ~hit_buf_v[i] & LD_OP)
+            if(bank_num_0 == i && ~hits[i] && ~hit_buf_v[i] & LD_OP && ~MIO)
                 ld_miss = 1;
-            if(bank_num_1 == i && ~hits[i] && ~hit_buf_v[i] & LD_OP & LD_XCL)
+            if(bank_num_1 == i && ~hits[i] && ~hit_buf_v[i] & LD_OP & LD_XCL && ~MIO)
                 xcl_miss = 1;
         end
     end

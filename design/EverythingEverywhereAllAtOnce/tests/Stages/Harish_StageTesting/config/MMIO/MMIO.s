@@ -32,14 +32,15 @@ _start:
     # -------------------------------
     movl    $0, %eax
     movl    $DDR5_POWER_GATING, %esi
-    # movl    %eax, %es:(%esi)
+    movl    %eax, %es:(%esi)
     
     call fakeDelay
 
     # -------------------------------
     # DDR5: read temperature
     # -------------------------------
-    # movl    %es:(DDR5_READ_TEMPERATURE), %ebx
+    movl $DDR5_READ_TEMPERATURE, %esi
+    movl    %es:(%esi), %ebx
 
     hlt
 

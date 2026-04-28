@@ -46,8 +46,8 @@ module req_gen_logic(
     bool ld_1_stall;
 
     assign mio_stall = (~req_served_mio & ~is_served_mio & MIO & LD_OP);
-    assign ld_0_stall = (~req_served_0 &  ~is_served_0 & LD_OP);
-    assign ld_1_stall = (~req_served_1 & ~is_served_1 & LD_OP & XCL);
+    assign ld_0_stall = (~req_served_0 &  ~is_served_0 & LD_OP & ~MIO);
+    assign ld_1_stall = (~req_served_1 & ~is_served_1 & LD_OP & XCL & ~MIO);
 
     assign arb_stall = (mio_stall | ld_0_stall | ld_1_stall) & valid;
 
