@@ -5,8 +5,16 @@
 
 #define MMIO_BASE              0xE0000000
 
-#define DDR5_POWER_GATING      (0x40)
-#define DDR5_READ_TEMPERATURE  (0x50)
+#define DMA_WRITE_SRC_ADDRESS (0x00)
+#define DMA_WRITE_DEST_ADDRESS (0x10)
+#define DMA_WRITE_NUM_BYTES_ADDRESS (0x20)
+#define DMA_WRITE_START_TRANSFER_ADDRESS (0x30)
+#define DDR5_POWER_GATING (0x40)
+#define DDR5_READ_TEMPERATURE (0x50)
+
+#define DMA_TRANSFER_DISK_ADDR ()
+#define DMA_TRANSFER_PMEM_TRANSFER_DISK_ADDR ()
+#define DMA_TRANSFER_NUM_BYTES ()
 
 #define NOP_DELAYS (50)
 
@@ -30,9 +38,15 @@ _start:
     # -------------------------------
     # DDR5: disable power gating (write 0)
     # -------------------------------
-    movl    $0, %eax
+    call ddr5_routine
+
+    call dma_routine
+    
+    hlt
+//ddr5 routine
+ddr5_routine:
     movl    $DDR5_POWER_GATING, %esi
-    movl    %eax, %es:(%esi)
+    movl    %0, %es:(%esi)
     
     call fakeDelay
 
@@ -40,10 +54,26 @@ _start:
     # DDR5: read temperature
     # -------------------------------
     movl $DDR5_READ_TEMPERATURE, %esi
-    movl    %es:(%esi), %ebx
+    movl %es:(%esi), %ebx
 
-    hlt
+    ret
 
+
+//DMA ROUTINE
+dma_routine:
+    movl $DMA_WRITE_SRC_ADDRESS, %esi
+    movl $DMA_TRANSFER_DISK_ADDR, es:(%esi)
+
+    movl $DMA_WRITE_DEST_ADDRESS, %esi
+    movl $DMA_TRANSFER_PMEM_TRANSFER_DISK_ADDR, es:(%esi)
+
+    movl $DMA_WRITE_NUM_BYTES_ADDRESS, %esi
+    movl $DMA_TRANSFER_NUM_BYTES, es:(%esi)
+
+    movl $DMA_WRITE_START_TRANSFER_ADDRESS, %esi
+    movl $1, es:(%esi)
+    //call fakeDelay //give time for interrupt, for showing interleaving mem ops
+    ret
 
 # ================================
 # Fake delay loop

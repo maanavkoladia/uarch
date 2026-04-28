@@ -12,11 +12,11 @@ import WriteBack_pkg::*;
 `define CLK_PERIOD 8
 
 
-module tb_stages();
+module tb_stages ();
 
     //localparam int Clk_PERIOD = 8;
     `include "debugUtils/tb_utils_defs.svh"
-   `DEBUG_UTILS_INIT
+`DEBUG_UTILS_INIT
 
     initial begin
         $vcdpluson;
@@ -24,7 +24,7 @@ module tb_stages();
     end
 
     logic instruction_commit;
-    
+
     logic needToDumpRegFile, needToDumpFlags;
 
     logic exeforwards;
@@ -40,11 +40,11 @@ module tb_stages();
     end
 
     always_ff @(posedge clk) begin
-        if(instruction_commit) begin
-            needToDumpRegFile <= 1;
+        if (instruction_commit) begin
+            needToDumpRegFile  <= 1;
             saved_reg_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
         end else needToDumpRegFile <= 0;
-        if(exeforwards)  begin
+        if (exeforwards) begin
             needToDumpFlags <= 1;
             saved_flag_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
             savedFlags[CF_IDX] <= `EXE_UNIT_PATH.cf_flag_o;
@@ -56,8 +56,8 @@ module tb_stages();
             savedFlags[OF_IDX] <= `EXE_UNIT_PATH.of_flag_o;
         end else needToDumpFlags <= 0;
 
-        if(needToDumpRegFile) dump_regs(saved_reg_dump_EIP);
-        if(needToDumpFlags)   dump_flags(saved_flag_dump_EIP, savedFlags);
+        if (needToDumpRegFile) dump_regs(saved_reg_dump_EIP);
+        if (needToDumpFlags) dump_flags(saved_flag_dump_EIP, savedFlags);
     end
 
 
@@ -68,40 +68,42 @@ module tb_stages();
 
     // // ================= CLOCK / RESET =================
     //`CLK_INIT(Clk_PERIOD);
-    logic                                                     rst;
+    logic    rst;
     // wire                   [   ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
     // wire                   [     DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
 
     uint32_t finish_time;
-    bool program_halted;
+    bool     program_halted;
     assign program_halted = `DECODE_UNIT_PATH.HALT_REG;
     always_ff @(posedge clk) begin
-        if(!rst) finish_time <= 0;
-        else if(!program_halted) finish_time++;
+        if (!rst) finish_time <= 0;
+        else if (!program_halted) finish_time++;
     end
 
- 
-    AllAtOnce_TOP uut_AllAtOnce(
+
+    AllAtOnce_TOP uut_AllAtOnce (
         .clk(clk),
         .rst(rst)
     );
 
-    task automatic print_info(input string test_name); begin
-        $fdisplay(`LOG_FD, "test name: %s", test_name);
-        print_cycle_header();
-        print_exe_info();
-        $fdisplay(`LOG_FD, "\n\n\n");
-    end
+    task automatic print_info(input string test_name);
+        begin
+            $fdisplay(`LOG_FD, "test name: %s", test_name);
+            print_cycle_header();
+            print_exe_info();
+            $fdisplay(`LOG_FD, "\n\n\n");
+        end
     endtask
 
-       
 
 
-    icache_loader icacheLoader();
-    dcache_loader dcache_loader_unit();
-    tb_memGen_InitRitual memLoader();
-    tlb_loader tlb_loader_unit();
-    coreRegLoader core_reg_loader_unit();
+
+    icache_loader icacheLoader ();
+    dcache_loader dcache_loader_unit ();
+    tb_memGen_InitRitual memLoader ();
+    tlb_loader tlb_loader_unit ();
+    coreRegLoader core_reg_loader_unit ();
+    diskLoader disk_loader_unit ();
 
 
     always_ff @(posedge clk) begin
@@ -127,15 +129,12 @@ module tb_stages();
         // for (int i = 0; i < NUM_DCACHE_PORTS; i++) core_2_dcache.stq_heads[i].empty = 1;
         // core_2_dcache.stq_info_mio.empty = 1;
         //set_limit_regs();
-        rst = 0; 
+        rst = 0;
 
         DelayClks(20);
-        @(posedge clk)
-        @(posedge clk)
-        force uut_AllAtOnce.core_unit.fetch_unit.SPC = 32'h0000;
+        @(posedge clk) @(posedge clk) force uut_AllAtOnce.core_unit.fetch_unit.SPC = 32'h0000;
         force uut_AllAtOnce.core_unit.decode_unit.EIP = 32'h0000;
-        @(posedge clk)
-        rst = 1;
+        @(posedge clk) rst = 1;
         release uut_AllAtOnce.core_unit.fetch_unit.SPC;
         release uut_AllAtOnce.core_unit.decode_unit.EIP;
         @(posedge clk)
@@ -146,15 +145,16 @@ module tb_stages();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(5000);
+        DelayClks(
+            5000);
         //print_all();
         $display("cycle count: %0d", finish_time);
         $finish;
         `LOG("Finishing mem System TB");
-        
 
 
-    // ===================== END DEBUG LOGGER =====================
+
+        // ===================== END DEBUG LOGGER =====================
     end
 
 
