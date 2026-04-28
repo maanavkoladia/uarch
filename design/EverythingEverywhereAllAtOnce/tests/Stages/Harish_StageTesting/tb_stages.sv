@@ -16,7 +16,7 @@ module tb_stages ();
 
     //localparam int Clk_PERIOD = 8;
     `include "debugUtils/tb_utils_defs.svh"
-`DEBUG_UTILS_INIT
+    `DEBUG_UTILS_INIT
 
     initial begin
         $vcdpluson;
@@ -24,27 +24,36 @@ module tb_stages ();
     end
 
     logic instruction_commit;
+    logic exeforwards;
+    logic program_halted;
 
     logic needToDumpRegFile, needToDumpFlags;
 
-    logic exeforwards;
-    //same logic as 
+    //same logic as
     logic [31:0] saved_reg_dump_EIP;
     logic [31:0] saved_flag_dump_EIP;
-
+    logic haltcommited;
     logic [31:0] savedFlags;
 
     always_comb begin
         instruction_commit = !`EXE_UNIT_PATH.stall_flop && `EXE_UNIT_PATH.outs_o.valid;
         exeforwards = `EXE_UNIT_PATH.wb_stage_we_valid_unit_o && `EXE_UNIT_PATH.wb_stage_next_vaild_o;
+        if(`DECODE_UNIT_PATH.HALT_REG) begin
+            DelayClks(100);
+            program_halted = 1;
+        end
     end
 
     always_ff @(posedge clk) begin
+        if(!rst) begin
+            haltcommited <= 0;
+        end
+
         if (instruction_commit) begin
             needToDumpRegFile  <= 1;
             saved_reg_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
         end else needToDumpRegFile <= 0;
-        if (exeforwards) begin
+        if (exeforwards || program_halted) begin
             needToDumpFlags <= 1;
             saved_flag_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
             savedFlags[CF_IDX] <= `EXE_UNIT_PATH.cf_flag_o;
@@ -58,6 +67,11 @@ module tb_stages ();
 
         if (needToDumpRegFile) dump_regs(saved_reg_dump_EIP);
         if (needToDumpFlags) dump_flags(saved_flag_dump_EIP, savedFlags);
+        if(program_halted && !haltcommited) begin
+            dump_regs(`DECODE_UNIT_PATH.EIP);
+            dump_flags(`DECODE_UNIT_PATH.EIP, savedFlags);
+            haltcommited <= 1
+        end
     end
 
 
@@ -74,7 +88,6 @@ module tb_stages ();
 
     uint32_t finish_time;
     bool     program_halted;
-    assign program_halted = `DECODE_UNIT_PATH.HALT_REG;
     always_ff @(posedge clk) begin
         if (!rst) finish_time <= 0;
         else if (!program_halted) finish_time++;
@@ -94,9 +107,6 @@ module tb_stages ();
             $fdisplay(`LOG_FD, "\n\n\n");
         end
     endtask
-
-
-
 
     icache_loader icacheLoader ();
     dcache_loader dcache_loader_unit ();
