@@ -17,6 +17,7 @@ module tb_stages ();
     //localparam int Clk_PERIOD = 8;
     `include "debugUtils/tb_utils_defs.svh"
     `DEBUG_UTILS_INIT
+    logic    rst;
 
     initial begin
         $vcdpluson;
@@ -35,13 +36,11 @@ module tb_stages ();
     logic haltcommited;
     logic [31:0] savedFlags;
 
+    assign program_halted = `DECODE_UNIT_PATH.HALT_REG;
+
     always_comb begin
         instruction_commit = !`EXE_UNIT_PATH.stall_flop && `EXE_UNIT_PATH.outs_o.valid;
         exeforwards = `EXE_UNIT_PATH.wb_stage_we_valid_unit_o && `EXE_UNIT_PATH.wb_stage_next_vaild_o;
-        if(`DECODE_UNIT_PATH.HALT_REG) begin
-            DelayClks(100);
-            program_halted = 1;
-        end
     end
 
     always_ff @(posedge clk) begin
@@ -53,7 +52,7 @@ module tb_stages ();
             needToDumpRegFile  <= 1;
             saved_reg_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
         end else needToDumpRegFile <= 0;
-        if (exeforwards || program_halted) begin
+        if (exeforwards) begin
             needToDumpFlags <= 1;
             saved_flag_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
             savedFlags[CF_IDX] <= `EXE_UNIT_PATH.cf_flag_o;
@@ -67,11 +66,11 @@ module tb_stages ();
 
         if (needToDumpRegFile) dump_regs(saved_reg_dump_EIP);
         if (needToDumpFlags) dump_flags(saved_flag_dump_EIP, savedFlags);
-        if(program_halted && !haltcommited) begin
-            dump_regs(`DECODE_UNIT_PATH.EIP);
-            dump_flags(`DECODE_UNIT_PATH.EIP, savedFlags);
-            haltcommited <= 1
-        end
+        // if(program_halted && !haltcommited) begin
+        //     dump_regs(`DECODE_UNIT_PATH.EIP);
+        //     dump_flags(`DECODE_UNIT_PATH.EIP, savedFlags);
+        //     haltcommited <= 1;
+        // end
     end
 
 
@@ -82,12 +81,10 @@ module tb_stages ();
 
     // // ================= CLOCK / RESET =================
     //`CLK_INIT(Clk_PERIOD);
-    logic    rst;
     // wire                   [   ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
     // wire                   [     DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
 
     uint32_t finish_time;
-    bool     program_halted;
     always_ff @(posedge clk) begin
         if (!rst) finish_time <= 0;
         else if (!program_halted) finish_time++;
@@ -113,7 +110,7 @@ module tb_stages ();
     tb_memGen_InitRitual memLoader ();
     tlb_loader tlb_loader_unit ();
     coreRegLoader core_reg_loader_unit ();
-    //diskLoader disk_loader_unit ();
+    diskLoader disk_loader_unit ();
 
 
     always_ff @(posedge clk) begin

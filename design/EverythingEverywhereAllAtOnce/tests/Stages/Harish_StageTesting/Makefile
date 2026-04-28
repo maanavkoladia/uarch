@@ -26,7 +26,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH = $(TEST_DIR)/config/TheBigOne/
+TEST_CASE_PATH = $(TEST_DIR)/config/simpleFarTest/
 
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
@@ -96,8 +96,8 @@ all: $(TARGET)
 $(TARGET):  makeLogDir $(SRC_FILES) 
 	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee $(LOG_DIR)/compile.log
 
-run: $(TARGET)
-	./$< $(SIMFLAGS) 2>&1| tee sim.log
+run:
+	./$(TARGET) $(SIMFLAGS) 2>&1| tee sim.log
 
 
 view: run
@@ -142,4 +142,4 @@ push: clean
 pull: 
 	git pull
 
-full: clean gen run compare
+full: clean gen all run compare
