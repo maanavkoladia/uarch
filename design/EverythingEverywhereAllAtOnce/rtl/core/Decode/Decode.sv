@@ -178,7 +178,7 @@ module Decode (
     end
 
     always_ff @(posedge clk) begin
-        if(!rst) begin
+        if(!rst || flush || fetch_outs_i.exp_pipe_clear) begin
             EIP <= 32'b0;
             PrevEIP <= 32'b0;
             PrevLength <= 32'b0;
@@ -188,8 +188,6 @@ module Decode (
             HALT_REG <= 1'b0;
         end
         else begin
-            PrevEIP <= EIP;
-            PrevLength <= inst_length;
             case ({temp_decode_cs.REP, clear_rep})
                 2'b00: REP_LATCH <= REP_LATCH;
                 2'b01: REP_LATCH <= 1'b0;
@@ -209,22 +207,35 @@ module Decode (
                 2'b11: REP_MOV_LATCH <= 1'b0;
             endcase
 
-            if(flush) HALT_REG <= 1'b0;
-            else HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
+            HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
 
-            if(exe_outs_i.br_res_out.valid && flush) EIP <= exe_outs_i.br_res_out.br_target;
+            if(exe_outs_i.br_res_out.valid && flush) begin
+                EIP <= exe_outs_i.br_res_out.br_target;
+                PrevEIP <= EIP;
+                PrevLength <= inst_length;
+            end
             else begin
                 if((idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP) 
                         && (idm_outs_i.idm_slots[EIP[5:4]].valid) 
                         && (idm_outs_i.idm_slots[EIP[5:4]].br_valid)
                         && !invalid_inst) begin
                     EIP <= idm_outs_i.idm_slots[EIP[5:4]].br_btb_target;
+                    PrevEIP <= EIP;
+                    PrevLength <= inst_length;
                 end
                 else begin
                     //if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
-                    if(!invalid_inst && !stall && !HALT_REG && rr_latch_we_o && !REP_LATCH) EIP <= NEIP;    //need to integrate rep
+                    if(!invalid_inst && !stall && !HALT_REG && rr_latch_we_o && !REP_LATCH) begin
+                        EIP <= NEIP;    //need to integrate rep
+                        PrevEIP <= EIP;
+                        PrevLength <= inst_length;
+                    end
                     //if(!invalid_inst && !HALT_REG) EIP <= NEIP;
-                    else EIP <= EIP;
+                    else begin
+                        EIP <= EIP;
+                        PrevEIP <= EIP;
+                        PrevLength <= inst_length;
+                    end
                 end
             end
         end
