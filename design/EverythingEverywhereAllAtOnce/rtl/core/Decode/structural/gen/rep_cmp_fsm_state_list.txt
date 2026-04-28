@@ -10,7 +10,7 @@
      1  001  CMP0
      2  010  CMP1
      3  011  CMP2
-     4  100  DEC_ECX_CMP
-     5  101  ERROR  # synthesised
-     6  110  FUCK_ME
+     4  100  CMP3
+     5  101  DEC_ECX_CMP
+     6  110  ERROR  # synthesised
      7  111  IDLE

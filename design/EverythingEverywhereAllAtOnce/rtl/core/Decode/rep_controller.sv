@@ -6,12 +6,13 @@ module rep_controller (
     input bool rep_prefix,
     input bool mov_inst,
     input bool cmp_inst,
-    input bool clear_zf, set_zf,
+    input bool clear_zf, external_set_zf,
     input uint32_t ecx,
     input bool ecx_sb,
     input bool zf_flag,
     input bool stall,
     input bool flush,
+    input bool exp_pipe_clear,
     output rr_latches_general_t rep_latches,
     output bool clear_rep
 );
@@ -48,9 +49,12 @@ module rep_controller (
     assign inst_select = (cmp_inst) ? cmp_inst_select : movs_inst_select;
     assign clear_rep = (cmp_inst) ? cmp_clear : movs_clear;
 
+    bool fsm_reset;
+    assign fsm_reset = rst || !exp_pipe_clear || !flush;
+
     rep_fsm fsm_rep(
         .clk(clk),
-        .rst(rst),
+        .rst(fsm_reset),
         .rep_prefix_i(rep_prefix),
         .cs_mov_i(mov_inst),
         .cs_cmp_i(cmp_inst),
@@ -65,12 +69,13 @@ module rep_controller (
     );
     rep_cmp_fsm cmp_fsm(
         .clk(clk),
-        .rst(rst),
+        .rst(fsm_reset),
         .start_i(cmp_start),
+        .start_mov_i(continue_mov),
+        .exit_mov_i(exit_mov),
         .cont_cmp_i(continue_cmp),
-        .wait_cmp_i(wait_cmp),
         .exit_cmp_i(exit_cmp),
-        .stall_i(stall),
+        .wait_i(stall || wait_cmp),
         .S_0(rep_cmp_fsm_state_bits[0]),  // current-state bit 0 (LSB)
         .S_1(rep_cmp_fsm_state_bits[1]),  // current-state bit 1 (1)
         .S_2(rep_cmp_fsm_state_bits[2]),  // current-state bit 2 (MSB)
@@ -81,7 +86,7 @@ module rep_controller (
     );
     rep_movs_fsm movs_fsm(
         .clk(clk),
-        .rst(rst),
+        .rst(fsm_reset),
         .start_i(movs_start),
         .cont_mov_i(continue_mov),
         .wait_mov_i(wait_mov),
@@ -96,6 +101,15 @@ module rep_controller (
         .select_line0_o(movs_inst_select[0])
     );
 
+    bool updateSB;
+    assign updateSB = !stall;
+
+    bool internal_set_zf;
+    assign internal_set_zf = rep_latches.cs.will_mod_zf && updateSB;
+
+    bool set_zf;
+    assign set_zf = (external_set_zf || internal_set_zf);
+
     always_ff @(posedge clk) begin
         if(!rst) begin
             zf_sb.counter <= 8'b0;
@@ -103,11 +117,21 @@ module rep_controller (
         else begin
             if(flush) zf_sb.counter <= 8'b0;
             else begin
-                case ({set_zf, clear_zf})
-                    2'b00: zf_sb <= zf_sb;
-                    2'b01: zf_sb.counter <= zf_sb.counter - 1;
-                    2'b10: zf_sb.counter <= zf_sb.counter + 1;
-                    2'b11: zf_sb <= zf_sb;
+                // if(set_zf && updateSB) zf_sb.counter++;
+                // if(clear_zf) zf_sb.counter--;
+                case({set_zf, clear_zf})
+                    2'b00: begin
+                        zf_sb.counter <= zf_sb.counter;
+                    end
+                    2'b01: begin
+                        zf_sb.counter--;
+                    end
+                    2'b10: begin
+                        if(updateSB) zf_sb.counter++;
+                    end
+                    2'b11: begin
+                        if(!updateSB) zf_sb.counter--;
+                    end
                 endcase
             end
         end
@@ -135,6 +159,10 @@ module rep_controller (
 
     assign idle_output = '{
         valid : 1'b1,
+        exe_cs : '{
+            OP_TYPE : control_store_pkg::NOP,
+            default : '0
+        },
         default : '0
     };
 
@@ -230,7 +258,7 @@ module rep_controller (
 			eax_rd			: 1'b0,
 			MOVS_OP			: 1'b0,
             datasize       : 2'b10,
-            will_mod_zf    : 1'b0,
+            will_mod_zf    : 1'b1,
             seg_1_valid    : 1'b0,
             seg_0_id       : DS,
             seg_1_id       : DS,

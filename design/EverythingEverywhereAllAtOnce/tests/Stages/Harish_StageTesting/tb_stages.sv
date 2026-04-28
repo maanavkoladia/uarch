@@ -103,7 +103,7 @@ module tb_stages ();
     tb_memGen_InitRitual memLoader ();
     tlb_loader tlb_loader_unit ();
     coreRegLoader core_reg_loader_unit ();
-    diskLoader disk_loader_unit ();
+    //diskLoader disk_loader_unit ();
 
 
     always_ff @(posedge clk) begin
@@ -145,8 +145,7 @@ module tb_stages ();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(
-            5000);
+        DelayClks(10000);
         //print_all();
         $display("cycle count: %0d", finish_time);
         $finish;

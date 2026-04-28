@@ -278,7 +278,7 @@ module EXE (
         DR_1_data: dr1_data_o,
 
         ZF: flags_reg[ZF_IDX],
-        clr_ZF_sb: clr_ZF_sb,
+        clr_ZF_sb: clr_ZF_sb && latches_i.valid,
         ST_OP: latches_i.cs.ST_OP,
         ST_XCL: latches_i.ST_XCL,
         ST_PADDR_0: latches_i.ST_PADDR_0,
