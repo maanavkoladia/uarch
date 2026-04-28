@@ -107,17 +107,17 @@ wire wait_cmp_i_inv;
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (S_0 & stall_i) | (S_0 & S_1 & S_2) | (!S_0 & !S_1 & start_i & !stall_i) | (!S_0 & S_1 & !S_2 & !stall_i) | (!S_0 & !S_1 & S_2 & !stall_i) | (S_0 & !S_1 & !S_2 & wait_cmp_i) | (S_0 & !S_1 & !S_2 & cont_cmp_i)
+// NS_0 = (S_0 & stall_i) | (S_0 & S_1 & S_2) | (!S_0 & !S_1 & S_2 & !stall_i) | (!S_0 & S_1 & !S_2 & !stall_i) | (!S_0 & !S_2 & start_i & !stall_i) | (S_0 & !S_1 & !S_2 & wait_cmp_i) | (S_0 & !S_1 & !S_2 & cont_cmp_i)
 wire NS_0_t0;
 `AND_2(NS_0_and0, 1, NS_0_t0, S_0, stall_i)
 wire NS_0_t1;
 `AND_3(NS_0_and1, 1, NS_0_t1, S_0, S_1, S_2)
 wire NS_0_t2;
-`AND_4(NS_0_and2, 1, NS_0_t2, S_0_inv, S_1_inv, start_i, stall_i_inv)
+`AND_4(NS_0_and2, 1, NS_0_t2, S_0_inv, S_1_inv, S_2, stall_i_inv)
 wire NS_0_t3;
 `AND_4(NS_0_and3, 1, NS_0_t3, S_0_inv, S_1, S_2_inv, stall_i_inv)
 wire NS_0_t4;
-`AND_4(NS_0_and4, 1, NS_0_t4, S_0_inv, S_1_inv, S_2, stall_i_inv)
+`AND_4(NS_0_and4, 1, NS_0_t4, S_0_inv, S_2_inv, start_i, stall_i_inv)
 wire NS_0_t5;
 `AND_4(NS_0_and5, 1, NS_0_t5, S_0, S_1_inv, S_2_inv, wait_cmp_i)
 wire NS_0_t6;
@@ -156,11 +156,11 @@ wire NS_2_t4;
 // clear_rep_o = (S_0 & !S_1 & !S_2 & !cont_cmp_i & !wait_cmp_i & exit_cmp_i & !stall_i)
 `AND_7(clear_rep_o_and, 1, clear_rep_o, S_0, S_1_inv, S_2_inv, cont_cmp_i_inv, wait_cmp_i_inv, exit_cmp_i, stall_i_inv)
 
-// select_line2_o = (!S_0 & !S_1 & S_2 & !stall_i) | (S_0 & S_1 & !S_2 & !stall_i)
+// select_line2_o = (S_0 & S_1 & !S_2 & !stall_i) | (!S_0 & !S_1 & S_2 & !stall_i)
 wire select_line2_o_t0;
-`AND_4(select_line2_o_and0, 1, select_line2_o_t0, S_0_inv, S_1_inv, S_2, stall_i_inv)
+`AND_4(select_line2_o_and0, 1, select_line2_o_t0, S_0, S_1, S_2_inv, stall_i_inv)
 wire select_line2_o_t1;
-`AND_4(select_line2_o_and1, 1, select_line2_o_t1, S_0, S_1, S_2_inv, stall_i_inv)
+`AND_4(select_line2_o_and1, 1, select_line2_o_t1, S_0_inv, S_1_inv, S_2, stall_i_inv)
 
 `OR_2(select_line2_o_or, 1, select_line2_o, select_line2_o_t0, select_line2_o_t1)
 

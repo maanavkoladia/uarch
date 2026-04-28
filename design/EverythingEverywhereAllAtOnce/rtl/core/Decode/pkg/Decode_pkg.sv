@@ -22,7 +22,7 @@ package Decode_pkg;
     } modrm_processor_outs_t;
 
     localparam REP_FSM_NUM_STATES = 6;
-    typedef enum [$clog2(REP_FSM_NUM_STATES) - 1 : 0] {
+    typedef enum logic [$clog2(REP_FSM_NUM_STATES) - 1 : 0] {
         REP_IDLE                          = 0,
         REP_CMP                           = 1,
         REP_FUCK_ME                       = 2,
@@ -32,7 +32,7 @@ package Decode_pkg;
     } rep_fsm_states_e;
 
     localparam REP_MOVS_FSM_NUM_STATES = 6;
-    typedef enum [$clog2(REP_MOVS_FSM_NUM_STATES) - 1 : 0] {
+    typedef enum logic [$clog2(REP_MOVS_FSM_NUM_STATES) - 1 : 0] {
         MOVS_IDLE                          = 0, 
         MOVS_DEC_ECX_MOV                   = 1,
         MOVS_FUCK_ME                       = 2,
@@ -42,7 +42,7 @@ package Decode_pkg;
     } rep_movs_fsm_states_e;
 
     localparam REP_CMP_FSM_NUM_STATES = 6;
-    typedef enum [$clog2(REP_CMP_FSM_NUM_STATES) - 1 : 0] {
+    typedef enum logic [$clog2(REP_CMP_FSM_NUM_STATES) - 1 : 0] {
         CMP_IDLE                          = 0,
         CMP_CMP                           = 1,
         CMP_CMP0                          = 2,
