@@ -11,6 +11,6 @@
   CMP0                                  2  010
   CMP1                                  3  011
   CMP2                                  4  100
-  DEC_ECX_CMP                           5  101
-  FUCK_ME                               6  110
+  CMP3                                  5  101
+  DEC_ECX_CMP                           6  110
   ERROR                                 7  111  # ERROR (highest), synthesised

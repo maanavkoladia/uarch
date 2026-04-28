@@ -127,11 +127,15 @@ module Decode (
     rr_latches_general_t rep_latch_holder;
     bool clear_rep;
 
+    bool external_set_zf;
+    assign external_set_zf = temp_rr_cs.will_mod_zf && decode_forward;
+
+
     rep_controller piece_of_shit_rep_controller (
         .clk(clk), .rst(rst), .rep_prefix(total_pf_vector[0]),
         .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb),
-        .set_zf(temp_rr_cs.will_mod_zf), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
-        .zf_flag(exe_outs_i.ZF), .stall(!decode_forward), .flush(flush),
+        .external_set_zf(external_set_zf), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
+        .zf_flag(exe_outs_i.ZF), .stall(!decode_forward), .flush(flush), .exp_pipe_clear(fetch_outs_i.exp_pipe_clear),
         .rep_latches(rep_latch_holder), .clear_rep(clear_rep)
     );
 
@@ -183,7 +187,7 @@ module Decode (
     end
 
     always_ff @(posedge clk) begin
-        if(!rst) begin
+        if(!rst || fetch_outs_i.exp_pipe_clear) begin
             EIP <= 32'b0;
             PrevEIP <= 32'b0;
             PrevLength <= 32'b0;
@@ -193,51 +197,75 @@ module Decode (
             HALT_REG <= 1'b0;
         end
         else begin
-            PrevEIP <= EIP;
-            PrevLength <= inst_length;
-            case ({temp_decode_cs.REP, clear_rep})
-                2'b00: REP_LATCH <= REP_LATCH;
-                2'b01: REP_LATCH <= 1'b0;
-                2'b10: REP_LATCH <= 1'b1;
-                2'b11: REP_LATCH <= 1'b0;
-            endcase
-            case ({temp_decode_cs.REP_CMP, clear_rep})
-                2'b00: REP_CMP_LATCH <= REP_CMP_LATCH;
-                2'b01: REP_CMP_LATCH <= 1'b0;
-                2'b10: REP_CMP_LATCH <= 1'b1;
-                2'b11: REP_CMP_LATCH <= 1'b0;
-            endcase
-            case ({(temp_decode_cs.REP && !temp_decode_cs.REP_CMP), clear_rep})
-                2'b00: REP_MOV_LATCH <= REP_MOV_LATCH;
-                2'b01: REP_MOV_LATCH <= 1'b0;
-                2'b10: REP_MOV_LATCH <= 1'b1;
-                2'b11: REP_MOV_LATCH <= 1'b0;
-            endcase
+            if(flush) begin
+                HALT_REG <= 1'b0;
+                REP_LATCH <= 1'b0;
+                REP_CMP_LATCH <= 1'b0;
+                REP_MOV_LATCH <= 1'b0;
+            end
+            else begin
+                HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
+                case ({temp_decode_cs.REP, clear_rep})
+                    2'b00: REP_LATCH <= REP_LATCH;
+                    2'b01: REP_LATCH <= 1'b0;
+                    2'b10: REP_LATCH <= 1'b1;
+                    2'b11: REP_LATCH <= 1'b0;
+                endcase
+                case ({temp_decode_cs.REP_CMP, clear_rep})
+                    2'b00: REP_CMP_LATCH <= REP_CMP_LATCH;
+                    2'b01: REP_CMP_LATCH <= 1'b0;
+                    2'b10: REP_CMP_LATCH <= 1'b1;
+                    2'b11: REP_CMP_LATCH <= 1'b0;
+                endcase
+                case ({(temp_decode_cs.REP && !temp_decode_cs.REP_CMP), clear_rep})
+                    2'b00: REP_MOV_LATCH <= REP_MOV_LATCH;
+                    2'b01: REP_MOV_LATCH <= 1'b0;
+                    2'b10: REP_MOV_LATCH <= 1'b1;
+                    2'b11: REP_MOV_LATCH <= 1'b0;
+                endcase
+            end
 
-            if(flush) HALT_REG <= 1'b0;
-            else HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
-
-            if(exe_outs_i.br_res_out.valid && flush) EIP <= exe_outs_i.br_res_out.br_target;
+            if(exe_outs_i.br_res_out.valid && flush) begin
+                EIP <= exe_outs_i.br_res_out.br_target;
+                PrevEIP <= EIP;
+                PrevLength <= inst_length;
+            end
             else begin
                 if((idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP)
                         && (idm_outs_i.idm_slots[EIP[5:4]].valid)
                         && (idm_outs_i.idm_slots[EIP[5:4]].br_valid)
                         && decode_forward) begin
                     EIP <= idm_outs_i.idm_slots[EIP[5:4]].br_btb_target;
+                    PrevEIP <= EIP;
+                    PrevLength <= inst_length;
                 end
                 else begin
                     //if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
-                    if(decode_forward && !HALT_REG && rr_latch_we_o && !REP_LATCH) EIP <= NEIP;    //need to integrate rep
+                    if(decode_forward && !HALT_REG && !REP_LATCH) begin
+                        EIP <= NEIP;    //need to integrate rep
+                        PrevEIP <= EIP;
+                        PrevLength <= inst_length;
+                    end
                     //if(!invalid_inst && !HALT_REG) EIP <= NEIP;
-                    else EIP <= EIP;
+                    else begin
+                        EIP <= EIP;
+                        PrevEIP <= EIP;
+                        PrevLength <= inst_length;
+                    end
                 end
             end
         end
     end
 
+    bool going_to_halt;
+    assign going_to_halt = (HALT_REG || temp_decode_cs.HALT);
+
+    bool going_to_rep;
+    assign going_to_rep = (REP_LATCH || temp_decode_cs.REP);
+
 
     assign temp_rr_latch = '{
-        valid           : !invalid_inst && !HALT_REG && ~fetch_outs_i.exp_pipe_clear && !(REP_LATCH || temp_decode_cs.REP) & !temp_decode_cs.HALT,
+        valid           : next_rr_valid && !going_to_halt && !going_to_rep && !fetch_outs_i.exp_pipe_clear,
         cs              : temp_rr_cs,
 
         dc_cs           : temp_dc_cs,
@@ -266,7 +294,7 @@ module Decode (
     };
 
     assign outs_o = '{
-        valid : next_rr_valid,
+        valid : !invalid_inst,
         stall : invalid_inst,
         eip : EIP,
         invalid_instruction : invalid_inst,
