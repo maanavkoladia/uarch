@@ -405,6 +405,10 @@ class CPU:
         self._write_operand(op1, val2, size_bytes)
         self._write_operand(op2, val1, size_bytes)
 
+    def exec_nop(self, inst):
+        """NOP - no operation."""
+        pass
+
     def exec_cld(self, inst):
         """CLD - clear direction flag (DF=0)."""
         self.flags._set_bit(10, 0)
@@ -723,6 +727,7 @@ class CPU:
             "lret":  self.exec_lret,
             "lretf": self.exec_lret,
             "retf":  self.exec_lret,
+            "nop":   self.exec_nop,
         }
 
     def execute(self, inst):

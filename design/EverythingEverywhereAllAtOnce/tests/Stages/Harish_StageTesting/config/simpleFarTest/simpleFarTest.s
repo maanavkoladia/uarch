@@ -114,14 +114,15 @@ data_page_2:
 .org 0x56780000
 .code
 _third_entry:
-   movl $__CS2__, %eax
-    ljmp $__CS3__, $12345
+   movl $0x11223344, %ecx
+   ljmp $__CS3__, $0x12345
    hlt
 
 .org 0x98912345
 .code
 _fourth_entry:
    movl $__CS1__, %eax
+   movl $0x55667788, %ebx
    hlt
 
 

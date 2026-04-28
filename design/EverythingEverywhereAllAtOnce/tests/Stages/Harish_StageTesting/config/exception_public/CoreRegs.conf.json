@@ -23,7 +23,7 @@
         "CS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[0].limit"],
         "DS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[1].limit"],
         "SS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[2].limit"],
-        "ES"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[3].limit"],
+        "ES"   : ["20'h00400", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[3].limit"],
         "FS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[4].limit"],
         "GS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[5].limit"]
     }

@@ -57,7 +57,7 @@ module MIO_Block (
                     p_addr: ld_addr_MIO,
                     st_q_data: '{default: '0}
                 };
-                outputs_o.reqServed = 0;
+                outputs_o.reqServed = 1;
             end
             else if (!stq_info_mio.empty) begin
                 next_block_req = '{

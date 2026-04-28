@@ -16,71 +16,50 @@ module EXP_Set_logic(
     input dc_exp,
     input int_set,
 
+    input exp_mode_jk,
+    input int_mode_jk,
+
     output exp_set_logic_output_t outputs
 );
 
 // =====================
-// Internal wires
+// Internal signals
 // =====================
-wire f_pipe_clear;
-wire dc_pipe_clear;
+logic f_pipe_clear;
+logic dc_pipe_clear;
 
-wire not_rr_valid;
-wire not_dc_valid;
-wire not_mem_valid;
-wire not_exe_valid;
-wire not_wb_valid;
+logic not_rr_valid;
+logic not_dc_valid;
+logic not_mem_valid;
+logic not_exe_valid;
+logic not_wb_valid;
 
 // =====================
 // Inverters
 // =====================
-`INV_N(inv0, 1, rr_valid,  not_rr_valid)
-`INV_N(inv1, 1, dc_valid,  not_dc_valid)
-`INV_N(inv2, 1, mem_valid, not_mem_valid)
-`INV_N(inv3, 1, exe_valid, not_exe_valid)
-`INV_N(inv4, 1, wb_valid,  not_wb_valid)
+assign not_rr_valid  = ~rr_valid;
+assign not_dc_valid  = ~dc_valid;
+assign not_mem_valid = ~mem_valid;
+assign not_exe_valid = ~exe_valid;
+assign not_wb_valid  = ~wb_valid;
 
 // =====================
 // AND trees
 // =====================
-`AND_7(and_exp, 1, f_pipe_clear,
-    invalid_instruction,
-    not_rr_valid,
-    not_dc_valid,
-    not_mem_valid,
-    not_exe_valid,
-    not_wb_valid,
-    f_exp
-)
+assign f_pipe_clear = invalid_instruction & not_rr_valid & not_dc_valid &
+                      not_mem_valid & not_exe_valid & not_wb_valid & f_exp & ~exp_mode_jk;
 
-`AND_4(and_dc, 1, dc_pipe_clear,
-    not_mem_valid,
-    not_exe_valid,
-    not_wb_valid,
-    dc_exp
-)
+assign dc_pipe_clear = not_mem_valid & not_exe_valid & not_wb_valid & dc_exp & ~exp_mode_jk;
 
 // =====================
 // MUX (dc_exp priority)
 // =====================
-`MUX_2(mux_exp_sel, 1,
-    outputs.exp_pipe_clear,
-    f_pipe_clear,
-    dc_pipe_clear,
-    dc_exp
-)
+assign outputs.exp_pipe_clear = dc_exp ? dc_pipe_clear : f_pipe_clear;
 
 // =====================
 // Interrupt logic
 // =====================
-`AND_7(and_int, 1, outputs.int_pipe_clear,
-    invalid_instruction,
-    not_rr_valid,
-    not_dc_valid,
-    not_mem_valid,
-    not_exe_valid,
-    not_wb_valid,
-    int_set
-)
+assign outputs.int_pipe_clear = invalid_instruction & not_rr_valid & not_dc_valid &
+                                not_mem_valid & not_exe_valid & not_wb_valid & int_set & ~int_mode_jk;
 
 endmodule

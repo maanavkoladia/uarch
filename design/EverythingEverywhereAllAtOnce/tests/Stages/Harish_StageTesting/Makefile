@@ -60,6 +60,7 @@ GEN_CONF = $(TEST_CASE_PATH)/startUpGen.conf.json
 TOP_MODULE_NAME = tb_stages
 
 STARTUP_FILES = \
+				gen/diskLoader.v \
 				gen/memLoader.sv \
 				gen/dcache_loader.sv \
 				gen/icache_loader.sv \

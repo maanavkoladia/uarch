@@ -57,13 +57,18 @@ module Decode (
     bool flush; //cpaddyx , i did not put ts here, whats this for
     logic REP_LATCH, REP_CMP_LATCH, REP_MOV_LATCH, HALT_REG;
     wire rr_latch_we_o;
-    bool stall;
 
     reg_ids_e segment0;
     bool seg_override;
 
+    bool next_rr_valid;
+
     assign flush = exe_outs_i.br_res_out.flush;
-    assign stall = rr_outs_i.valid && rr_outs_i.stall;
+
+
+    bool decode_forward;
+    assign decode_forward = rr_latch_we_o && next_rr_valid;
+
 
     logic [63:0][7:0] queue;
     genvar i;
@@ -121,17 +126,16 @@ module Decode (
 
     rr_latches_general_t rep_latch_holder;
     bool clear_rep;
-    bool stall_rep;
-    assign stall_rep = stall || !rr_latch_we_o;
+
     rep_controller piece_of_shit_rep_controller (
         .clk(clk), .rst(rst), .rep_prefix(total_pf_vector[0]),
         .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb),
         .set_zf(temp_rr_cs.will_mod_zf), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
-        .zf_flag(exe_outs_i.ZF), .stall(stall_rep), .flush(flush),
+        .zf_flag(exe_outs_i.ZF), .stall(!decode_forward), .flush(flush),
         .rep_latches(rep_latch_holder), .clear_rep(clear_rep)
     );
 
-    bool next_rr_valid;
+  
     rr_valid_logic decode_2_RR_valid_logic(
         .RR_we_o(rr_latch_we_o),
         .N_RR_V_o(next_rr_valid),
@@ -145,6 +149,7 @@ module Decode (
         .EXE_V_i(exe_outs_i.valid),
         .WB_stall_i(wb_outs_i.wb_stall)
     );
+
 
     always_comb begin
         if(total_pf_vector[9]) begin
@@ -215,17 +220,17 @@ module Decode (
                 PrevLength <= inst_length;
             end
             else begin
-                if((idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP) 
-                        && (idm_outs_i.idm_slots[EIP[5:4]].valid) 
+                if((idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP)
+                        && (idm_outs_i.idm_slots[EIP[5:4]].valid)
                         && (idm_outs_i.idm_slots[EIP[5:4]].br_valid)
-                        && !invalid_inst) begin
+                        && decode_forward) begin
                     EIP <= idm_outs_i.idm_slots[EIP[5:4]].br_btb_target;
                     PrevEIP <= EIP;
                     PrevLength <= inst_length;
                 end
                 else begin
                     //if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
-                    if(!invalid_inst && !stall && !HALT_REG && rr_latch_we_o && !REP_LATCH) begin
+                    if(decode_forward && !HALT_REG && !REP_LATCH) EIP <= NEIP; begin
                         EIP <= NEIP;    //need to integrate rep
                         PrevEIP <= EIP;
                         PrevLength <= inst_length;
@@ -273,7 +278,7 @@ module Decode (
 
     assign outs_o = '{
         valid : next_rr_valid,
-        stall : invalid_inst || rr_outs_i.stall,
+        stall : invalid_inst,
         eip : EIP,
         invalid_instruction : invalid_inst,
         decode_gp : decode_gp && rr_outs_i.valid,
