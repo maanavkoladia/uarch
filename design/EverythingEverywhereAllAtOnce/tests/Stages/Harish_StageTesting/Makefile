@@ -87,6 +87,8 @@ CC_FLAGS += \
     +define+DCACHE_LOG_FILE_NAME=\"$(LOG_DIR)/dcache_dump.log\" \
     +define+DCACHE_DUMP_START_DEFAULT=$(DCACHE_DUMP_START) \
     +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
+	+define+RTL_REGDUMP_FILE=\"$(RTL_REGDUMP_FILE)" \
+	+define+RTL_FLAGDUMP_FILE=\"$(RTL_FLAGDUMP_FILE)" \
 	
 
 .PHONY: all run clean see gen full
