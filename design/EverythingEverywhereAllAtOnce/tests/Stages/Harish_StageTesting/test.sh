@@ -5,12 +5,11 @@ mioTestPath="config/MMIO/"
 scriptDir=$(pwd);
 
 allTestCasePaths=(
-    "config/TheBigOne/")
-#    "config/dcache_public/"
-#    "config/MovHeavy/"
-#    "config/simpleFarTest/"
-#    "config/exception_public"
-#)
+    "config/TheBigOne/"
+    "config/dcache_public/"
+    "config/MovHeavy/"
+    "config/simpleFarTest/"
+    "config/exception_public/")
 
 outDir="Test_Results/"
 
