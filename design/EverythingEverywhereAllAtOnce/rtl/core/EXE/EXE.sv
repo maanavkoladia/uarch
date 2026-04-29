@@ -229,6 +229,9 @@ module EXE (
     // IRETD Flags
     logic iretd_cf_o, iretd_pf_o, iretd_af_o, iretd_zf_o, iretd_sf_o, iretd_of_o;
 
+    // REP_CMP
+    logic rep_cmp_zf_o;
+
     //reg writeback to rr logic outputs
     reg_ids_e dr0_id_o;
     bool dr0_we_o;
@@ -622,6 +625,7 @@ module EXE (
         .sal_zf      (sal_zf_o),
         .sar_zf      (sar_zf_o),
         .sbb_zf      (sbb_zf_o),
+        .rep_cmp_zf  (rep_cmp_zf_o),
         .curr_zf_flag(flags_reg[ZF_IDX]),
         .op_type     (op_type),
         .zf_flag_o   (zf_flag_o),
@@ -676,10 +680,17 @@ module EXE (
         .AF       (add_af_o)
     );
 
+    rep_cmp u_rep_cmp_op (
+        .srA      (srA),       //DR_REG/MEM
+        .srB      (srB),       //SR_REG/MEM/IMM
+        .ZF       (rep_cmp_zf_o)
+    );
+
     add_df_op u_add_df_op(
         .srA(srA),
         .srB(srB),
         .curr_df_flag(flags_reg[DF_IDX]),
+        .data_size(data_size),
         .dr_o(add_df_dr_o),
         .sr_o(add_df_sr_o)
     );

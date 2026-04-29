@@ -15,6 +15,7 @@ module zf_flag_sel(
     input bool sar_zf,
     input bool sbb_zf,
     input bool iretd_zf,
+	input bool rep_cmp_zf,
 
     input bool curr_zf_flag,
 	input exe_cs_operation_type_e op_type,
@@ -41,6 +42,7 @@ module zf_flag_sel(
 				SAR:      zf_flag_o = sar_zf;
 				SBB:      zf_flag_o = sbb_zf;
 				IRETD:	  zf_flag_o = iretd_zf;
+				control_store_pkg::REP_CMP:  zf_flag_o = rep_cmp_zf;
 				default: begin
 						zf_flag_o = curr_zf_flag;
 						clr_ZF_sb = 0;

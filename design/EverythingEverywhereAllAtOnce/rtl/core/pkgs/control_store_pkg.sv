@@ -112,7 +112,8 @@ package control_store_pkg;
         MOVS         = 35,
         FAR_JMP32    = 36,
         FAR_JMP16    = 37,
-        EXP_CALL     = 38
+        EXP_CALL     = 38,
+        REP_CMP      = 39
     } exe_cs_operation_type_e;
 
     typedef enum{

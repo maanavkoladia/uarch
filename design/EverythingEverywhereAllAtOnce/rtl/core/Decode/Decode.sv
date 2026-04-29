@@ -136,7 +136,7 @@ module Decode (
 
 
     rep_controller piece_of_shit_rep_controller (
-        .clk(clk), .rst(rst), .rep_prefix(total_pf_vector[0]),
+        .clk(clk), .rst(rst), .rep_latch(REP_LATCH),
         .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb),
         .external_set_zf(external_set_zf), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
         .zf_flag(exe_outs_i.ZF), .stall(!decode_forward), .flush(flush), .exp_pipe_clear(fetch_outs_i.exp_pipe_clear),

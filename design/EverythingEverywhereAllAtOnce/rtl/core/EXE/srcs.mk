@@ -57,6 +57,7 @@ EXE_SRC_FILES = \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/add_df_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/far_jmp.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/exp_call.sv \
+    $(EXE_PATH_INTERNAL)/FunctionalUnits/rep_cmp.sv \
     $(EXE_PATH_INTERNAL)/EXE.sv \
 
 EXE_STRUCTURAL_SRC_FILES = \

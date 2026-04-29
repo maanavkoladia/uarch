@@ -3,7 +3,7 @@ import Decode_pkg::*;
 
 module rep_controller (
     input wire clk, rst,
-    input bool rep_prefix,
+    input bool rep_latch,
     input bool mov_inst,
     input bool cmp_inst,
     input bool clear_zf, external_set_zf,
@@ -22,9 +22,9 @@ module rep_controller (
     assign wait_mov = ecx_sb;
     assign exit_mov = !ecx_sb && ecx == 32'b0;
 
-    assign continue_cmp = continue_mov && (zf_sb.counter == 0) && !zf_flag;
+    assign continue_cmp = (!ecx_sb && ecx != 32'b0) && (zf_sb.counter == 0 && zf_flag);
     assign wait_cmp = ecx_sb || zf_sb.counter != 0;
-    assign exit_cmp = exit_mov || ((zf_sb.counter == 0) && zf_flag);
+    assign exit_cmp = (!ecx_sb && ecx == 32'b0) || ((zf_sb.counter == 0) && !zf_flag);
 
     regsb_entry_t zf_sb;
 
@@ -55,12 +55,12 @@ module rep_controller (
     rep_fsm fsm_rep(
         .clk(clk),
         .rst(fsm_reset),
-        .rep_prefix_i(rep_prefix),
+        .rep_prefix_i(rep_latch),
         .cs_mov_i(mov_inst),
         .cs_cmp_i(cmp_inst),
         .mov_clear_i(movs_clear),
         .cmp_clear_i(cmp_clear),
-        .stall_i(stall),
+        .stall_i(stall || wait_mov || wait_cmp),
         .S_0(rep_fsm_state_bits[0]),  // current-state bit 0 (LSB)
         .S_1(rep_fsm_state_bits[1]),  // current-state bit 1 (1)
         .S_2(rep_fsm_state_bits[2]),  // current-state bit 2 (MSB)
@@ -71,7 +71,6 @@ module rep_controller (
         .clk(clk),
         .rst(fsm_reset),
         .start_i(cmp_start),
-        .start_mov_i(continue_mov),
         .exit_mov_i(exit_mov),
         .cont_cmp_i(continue_cmp),
         .exit_cmp_i(exit_cmp),
@@ -209,7 +208,7 @@ module rep_controller (
         },
         exe_cs : '{
             ST_OP               : 1'b1,
-            OP_TYPE             : MOVS,
+            OP_TYPE             : control_store_pkg::MOVS,
             alu_inputA_sel      : SR_DR_SEL,
             alu_inputB_sel      : BUFFER,
             branch_target_sel   : NO_EXE,
@@ -441,7 +440,7 @@ module rep_controller (
         },
         exe_cs : '{
             ST_OP               : 1'b0,
-            OP_TYPE             : ADD,
+            OP_TYPE             : control_store_pkg::REP_CMP,
             alu_inputA_sel      : DR_REGISTER,
             alu_inputB_sel      : BUFFER,
             branch_target_sel   : NO_EXE,
@@ -452,7 +451,7 @@ module rep_controller (
             is_far              : 1'b0,
             is_call             : 1'b0,
             second_flag_needed  : 1'b0,
-            rep_no_zf_update    : 0
+            rep_no_zf_update    : 1'b0
         },
         wb_cs : '{
             ST_OP : 1'b0,

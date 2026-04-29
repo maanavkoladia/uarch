@@ -93,29 +93,31 @@ wire write_Complete_i_inv;
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (S_0 & S_1 & !S_2) | (S_1 & !S_2 & ld_buf_data_V_i) | (S_0 & !S_2 & !write_Complete_i)
+// NS_0 = (S_0 & !S_2 & !write_Complete_i) | (S_1 & !S_2 & ld_buf_data_V_i) | (S_0 & S_1 & !S_2)
 wire NS_0_t0;
-`AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_1, S_2_inv)
+`AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_2_inv, write_Complete_i_inv)
 wire NS_0_t1;
 `AND_3(NS_0_and1, 1, NS_0_t1, S_1, S_2_inv, ld_buf_data_V_i)
 wire NS_0_t2;
-`AND_3(NS_0_and2, 1, NS_0_t2, S_0, S_2_inv, write_Complete_i_inv)
+`AND_3(NS_0_and2, 1, NS_0_t2, S_0, S_1, S_2_inv)
 
 `OR_3(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2)
 
-// NS_1 = (!S_1 & !S_2 & start_write_i & !write_Complete_i) | (S_0 & S_1 & !S_2 & writeBuf_V_i) | (!S_0 & S_1 & !S_2 & !ld_buf_data_V_i) | (!S_0 & !S_1 & !S_2 & start_write_i) | (S_0 & !S_1 & !S_2 & !write_Complete_i)
+// NS_1 = (!S_1 & !S_2 & start_write_i & !write_Complete_i) | (S_1 & !S_2 & !ld_buf_data_V_i & writeBuf_V_i) | (!S_0 & S_1 & !S_2 & !ld_buf_data_V_i) | (S_0 & S_1 & !S_2 & writeBuf_V_i) | (!S_0 & !S_1 & !S_2 & start_write_i) | (S_0 & !S_1 & !S_2 & !write_Complete_i)
 wire NS_1_t0;
 `AND_4(NS_1_and0, 1, NS_1_t0, S_1_inv, S_2_inv, start_write_i, write_Complete_i_inv)
 wire NS_1_t1;
-`AND_4(NS_1_and1, 1, NS_1_t1, S_0, S_1, S_2_inv, writeBuf_V_i)
+`AND_4(NS_1_and1, 1, NS_1_t1, S_1, S_2_inv, ld_buf_data_V_i_inv, writeBuf_V_i)
 wire NS_1_t2;
 `AND_4(NS_1_and2, 1, NS_1_t2, S_0_inv, S_1, S_2_inv, ld_buf_data_V_i_inv)
 wire NS_1_t3;
-`AND_4(NS_1_and3, 1, NS_1_t3, S_0_inv, S_1_inv, S_2_inv, start_write_i)
+`AND_4(NS_1_and3, 1, NS_1_t3, S_0, S_1, S_2_inv, writeBuf_V_i)
 wire NS_1_t4;
-`AND_4(NS_1_and4, 1, NS_1_t4, S_0, S_1_inv, S_2_inv, write_Complete_i_inv)
+`AND_4(NS_1_and4, 1, NS_1_t4, S_0_inv, S_1_inv, S_2_inv, start_write_i)
+wire NS_1_t5;
+`AND_4(NS_1_and5, 1, NS_1_t5, S_0, S_1_inv, S_2_inv, write_Complete_i_inv)
 
-`OR_5(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4)
+`OR_6(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4, NS_1_t5)
 
 // NS_2 = (!S_0 & !S_1 & S_2)
 `AND_3(NS_2_and, 1, NS_2, S_0_inv, S_1_inv, S_2)
@@ -138,11 +140,11 @@ wire NS_1_t4;
 // req_bus_o = (S_0 & S_1 & !S_2 & writeBuf_V_i)
 `AND_4(req_bus_o_and, 1, req_bus_o, S_0, S_1, S_2_inv, writeBuf_V_i)
 
-// busy_o = (S_1 & !S_2) | (S_0 & !S_2)
+// busy_o = (S_0 & !S_2) | (S_1 & !S_2)
 wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_1, S_2_inv)
+`AND_2(busy_o_and0, 1, busy_o_t0, S_0, S_2_inv)
 wire busy_o_t1;
-`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_2_inv)
+`AND_2(busy_o_and1, 1, busy_o_t1, S_1, S_2_inv)
 
 `OR_2(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1)
 

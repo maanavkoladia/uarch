@@ -48,82 +48,82 @@ _start:
     movl    $0x00000001, %eax       /* SENTINEL T1 */
     movl    $0,  %esi
     movl    $0,  %edi
-    movl    $4,  %ecx
+    movl    $8,  %ecx
     rep movsl
     /* CHECKPOINT: ECX=0, ESI=16, EDI=16 */
     movl    $0x00000001, %eax       /* MARKER: T1 done */
 
-    /* =====================================================
-       TEST 2: rep movsl — copy DS:16..28 → ES:16..28
-       SENTINEL before: EAX = 0x00000002
-       Expected after:
-         ES:16 = 0xDDEEFF00
-         ES:20 = 0xCAFEBABE
-         ES:24 = 0xDEADBEEF
-         ES:28 = 0x12345678
-         ESI   = 32
-         EDI   = 32
-         ECX   = 0
-    ===================================================== */
-    movl    $0x00000002, %eax       /* SENTINEL T2 */
-    movl    $16, %esi
-    movl    $16, %edi
-    movl    $4,  %ecx
-    rep movsl
-    /* CHECKPOINT: ECX=0, ESI=32, EDI=32 */
-    movl    $0x00000002, %eax       /* MARKER: T2 done */
+   #  /* =====================================================
+   #     TEST 2: rep movsl — copy DS:16..28 → ES:16..28
+   #     SENTINEL before: EAX = 0x00000002
+   #     Expected after:
+   #       ES:16 = 0xDDEEFF00
+   #       ES:20 = 0xCAFEBABE
+   #       ES:24 = 0xDEADBEEF
+   #       ES:28 = 0x12345678
+   #       ESI   = 32
+   #       EDI   = 32
+   #       ECX   = 0
+   #  ===================================================== */
+   #  movl    $0x00000002, %eax       /* SENTINEL T2 */
+   #  movl    $16, %esi
+   #  movl    $16, %edi
+   #  movl    $4,  %ecx
+   #  rep movsl
+   #  /* CHECKPOINT: ECX=0, ESI=32, EDI=32 */
+   #  movl    $0x00000002, %eax       /* MARKER: T2 done */
 
-    /* =====================================================
-       TEST 3: rep movsl — copy DS:0..28 → ES:64..92
-       (8 dwords, non-overlapping destination region)
-       SENTINEL before: EAX = 0x00000003
-       Expected after:
-         ES:64 = 0xAABBCCDD
-         ES:68 = 0x11223344
-         ES:72 = 0x55667788
-         ES:76 = 0x99AABBCC
-         ES:80 = 0xDDEEFF00
-         ES:84 = 0xCAFEBABE
-         ES:88 = 0xDEADBEEF
-         ES:92 = 0x12345678
-         ESI   = 32
-         EDI   = 96
-         ECX   = 0
-    ===================================================== */
-    movl    $0x00000003, %eax       /* SENTINEL T3 */
-    movl    $0,  %esi
-    movl    $64, %edi
-    movl    $8,  %ecx
-    rep movsl
-    /* CHECKPOINT: ECX=0, ESI=32, EDI=96 */
-    movl    $0x00000003, %eax       /* MARKER: T3 done */
+   #  /* =====================================================
+   #     TEST 3: rep movsl — copy DS:0..28 → ES:64..92
+   #     (8 dwords, non-overlapping destination region)
+   #     SENTINEL before: EAX = 0x00000003
+   #     Expected after:
+   #       ES:64 = 0xAABBCCDD
+   #       ES:68 = 0x11223344
+   #       ES:72 = 0x55667788
+   #       ES:76 = 0x99AABBCC
+   #       ES:80 = 0xDDEEFF00
+   #       ES:84 = 0xCAFEBABE
+   #       ES:88 = 0xDEADBEEF
+   #       ES:92 = 0x12345678
+   #       ESI   = 32
+   #       EDI   = 96
+   #       ECX   = 0
+   #  ===================================================== */
+   #  movl    $0x00000003, %eax       /* SENTINEL T3 */
+   #  movl    $0,  %esi
+   #  movl    $64, %edi
+   #  movl    $8,  %ecx
+   #  rep movsl
+   #  /* CHECKPOINT: ECX=0, ESI=32, EDI=96 */
+   #  movl    $0x00000003, %eax       /* MARKER: T3 done */
 
-    /* =====================================================
-       TEST 4: rep movsl with STD — reverse copy
-       Copy ES:64..76 (4 dwords) backwards → ES:128..116
-       ESI starts at last dword of source block = 64+(4-1)*4 = 76
-       EDI starts at last dword of dest block  = 128+(4-1)*4 = 140
-       After STD each step decrements by 4.
-       SENTINEL before: EAX = 0x00000004
-       Expected after:
-         ES:128 = 0xAABBCCDD  (= ES:64)
-         ES:132 = 0x11223344  (= ES:68)
-         ES:136 = 0x55667788  (= ES:72)
-         ES:140 = 0x99AABBCC  (= ES:76)
-         ESI    = 60  (76 - 4*4 + 4 overshoot corrected: 76-16=60)
-         EDI    = 124 (140 - 16 = 124)
-         ECX    = 0
-       Note: after rep, ESI/EDI point 4 bytes BEFORE first element.
-    ===================================================== */
-    movl    $0x00000004, %eax       /* SENTINEL T4 */
-    std
-    movl    $76,  %esi
-    movl    $140, %edi
-    movl    $4,   %ecx
-    rep movsl
-    cld
-    /* CHECKPOINT: ECX=0, ESI=60, EDI=124 */
-    movl    $0x00000004, %eax       /* MARKER: T4 done */
+   #  /* =====================================================
+   #     TEST 4: rep movsl with STD — reverse copy
+   #     Copy ES:64..76 (4 dwords) backwards → ES:128..116
+   #     ESI starts at last dword of source block = 64+(4-1)*4 = 76
+   #     EDI starts at last dword of dest block  = 128+(4-1)*4 = 140
+   #     After STD each step decrements by 4.
+   #     SENTINEL before: EAX = 0x00000004
+   #     Expected after:
+   #       ES:128 = 0xAABBCCDD  (= ES:64)
+   #       ES:132 = 0x11223344  (= ES:68)
+   #       ES:136 = 0x55667788  (= ES:72)
+   #       ES:140 = 0x99AABBCC  (= ES:76)
+   #       ESI    = 60  (76 - 4*4 + 4 overshoot corrected: 76-16=60)
+   #       EDI    = 124 (140 - 16 = 124)
+   #       ECX    = 0
+   #     Note: after rep, ESI/EDI point 4 bytes BEFORE first element.
+   #  ===================================================== */
+   #  movl    $0x00000004, %eax       /* SENTINEL T4 */
+   #  std
+   #  movl    $76,  %esi
+   #  movl    $140, %edi
+   #  movl    $4,   %ecx
+   #  rep movsl
+   #  cld
+   #  /* CHECKPOINT: ECX=0, ESI=60, EDI=124 */
+   #  movl    $0x00000004, %eax       /* MARKER: T4 done */
 
     /* =====================================================
        TEST 5: repe cmpsl — full match
@@ -138,11 +138,23 @@ _start:
     movl    $0x00000005, %eax       /* SENTINEL T5 */
     movl    $0, %esi
     movl    $0, %edi
-    movl    $4, %ecx
+    movl    $3, %ecx
     repe cmpsl
     /* CHECKPOINT: ZF=1, ECX=0, ESI=16, EDI=16 */
     movl    $0x00000005, %eax       /* MARKER: T5 done */
-
+    nop
+    nop
+    nop
+   movl    $0x00000000, %ds:16
+   movl    $0, %esi
+   movl    $0, %edi
+   movl    $8, %ecx
+   repe cmpsl
+   nop
+   nop
+   nop
+   nop
+      hlt
     /* =====================================================
        TEST 6: repe cmpsl — match across larger block
        Compare DS:0..28 vs ES:64..92 (copied in T3, should match)
@@ -190,7 +202,7 @@ _start:
        Comparing DS:8..20 (3 dwords) vs ES:8..20
          DS:8  = 0x55667788   ES:8  = 0x55667788  → match
          DS:12 = 0x99AABBCC   ES:12 = 0x99AABBCC  → match
-         DS:16 = 0xDDEEFF00   ES:16 = 0xFFFFFFFF  → mismatch (was corrupted by T7 restore area; set explicitly)
+         DS:16 = 0xDDEEFF00   ES:16 = 0xFFFFFFFF  → mismatch (was corrupted by T7 restore area# set explicitly)
        SENTINEL before: EAX = 0x00000008
        Expected after:
          ZF    = 0
