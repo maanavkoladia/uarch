@@ -58,6 +58,10 @@ module Decode (
     logic REP_LATCH, REP_CMP_LATCH, REP_MOV_LATCH, HALT_REG;
     wire rr_latch_we_o;
 
+    uint32_t DC_SAVED_EIP;
+    uint32_t DECODE_SAVED_EIP;
+
+
     reg_ids_e segment0;
     bool seg_override;
 
@@ -257,6 +261,23 @@ module Decode (
         end
     end
 
+    always_ff @(posedge clk) begin
+        if(!rst) begin
+            DC_SAVED_EIP <= 0;
+            DECODE_SAVED_EIP <= 0;
+        end
+        else begin
+            if(fetch_outs_i.exp_pipe_clear) begin
+                DC_SAVED_EIP <= dc_outs_i.dc_eip;
+                DECODE_SAVED_EIP <= EIP;
+            end
+        end
+    end
+
+    uint32_t EXCEPTION_EIP;
+    assign EXCEPTION_EIP = (fetch_outs_i.exp_mode_jk[1]) ? DC_SAVED_EIP : DECODE_SAVED_EIP;
+
+
     bool going_to_halt;
     assign going_to_halt = (HALT_REG || temp_decode_cs.HALT);
 
@@ -275,7 +296,7 @@ module Decode (
 
         br_info         : br_info_for_latches,
         NEIP            : NEIP,
-        EIP             : EIP,
+        EIP             : (fetch_outs_i.exp_mode_jk[0]) ? EXCEPTION_EIP : EIP,
         EAX             : rr_outs_i.eax,
 
         imm64           : imm64,

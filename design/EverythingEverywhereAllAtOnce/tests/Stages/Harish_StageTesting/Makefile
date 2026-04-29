@@ -96,7 +96,7 @@ all: $(TARGET)
 $(TARGET):  makeLogDir $(SRC_FILES) 
 	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee $(LOG_DIR)/compile.log
 
-run:
+run: all
 	./$(TARGET) $(SIMFLAGS) 2>&1| tee sim.log
 
 

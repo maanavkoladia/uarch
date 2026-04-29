@@ -9,6 +9,7 @@ module EXE (
 
     input exe_latches_t latches_i,
     input wb_outputs_t  wb_outs_i,
+    input rr_outputs_t rr_outs_i,
 
     output wb_latches_t  wb_latches_next_o,
     output exe_outputs_t outs_o
@@ -415,6 +416,7 @@ module EXE (
         .call_sr_i       (call_sr_o),
         .far_call_sr_i   (far_call_sr_o),
         .exp_call_sr_i   (exp_call_sr_o),
+        .iretd_sr_i      (iretd_stack_ptr_o),
         .sr_o            (sr_next)
     );
 
@@ -887,7 +889,7 @@ module EXE (
     exp_call_op u_exp_call_op(
         .idt(exp_ld_buf_o), //harded coded wired in
         .eip(srA[63:32]), // SEGMENT_EIP
-        .curr_cs(srA[31:0]), // SEGMENT_EIP
+        .curr_cs(rr_outs_i.codeSeg_data), // SEGMENT
         .stack_ptr(srB),
         .res_buf(exp_call_res_buf), //old cs and old eip
         .dr_o(exp_call_dr_o), //new cs

@@ -109,6 +109,8 @@ package core_stage_latches_pkg;
         reg_ids_e seg_1_id;
         bool special_modrm_bs;
 
+        bool special_br;
+
     } rr_cs_t;
 
     typedef struct {

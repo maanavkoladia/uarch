@@ -280,7 +280,8 @@ module control_store (
         seg_1_valid      : HARDCODED_SEGMENT1_V_o,
         seg_0_id         : seg_override ? seg0 : HARDCODED_SEGMENT0_o,
         seg_1_id         : HARDCODED_SEGMENT1_o,
-        special_modrm_bs : mod_rm_cs_outs.special_modrm_bs
+        special_modrm_bs : mod_rm_cs_outs.special_modrm_bs,
+        special_br       : special_br_o
     };
 
     // DC

@@ -192,7 +192,8 @@ module rep_controller (
             seg_1_valid    : 1'b1,
             seg_0_id       : DS,
             seg_1_id       : ES,
-            special_modrm_bs: 1'b0
+            special_modrm_bs: 1'b0,
+            special_br      : 1'b0
         },
         dc_cs : '{
             LD_OP     : 1'b1,
@@ -263,7 +264,8 @@ module rep_controller (
             seg_1_valid    : 1'b0,
             seg_0_id       : DS,
             seg_1_id       : DS,
-            special_modrm_bs: 1'b0
+            special_modrm_bs: 1'b0,
+            special_br      : 1'b0
         },
         dc_cs : '{
             LD_OP     : 1'b0,
@@ -340,7 +342,8 @@ module rep_controller (
             seg_1_valid    : 1'b0,
             seg_0_id       : DS,
             seg_1_id       : DS,
-            special_modrm_bs: 1'b0
+            special_modrm_bs: 1'b0,
+            special_br      : 1'b0
         },
         dc_cs : '{
             LD_OP     : 1'b1,
@@ -421,7 +424,8 @@ module rep_controller (
             seg_1_valid    : 1'b0,
             seg_0_id       : ES,
             seg_1_id       : DS,
-            special_modrm_bs: 1'b0
+            special_modrm_bs: 1'b0,
+            special_br      : 1'b0
         },
         dc_cs : '{
             LD_OP     : 1'b1,
@@ -500,7 +504,8 @@ module rep_controller (
             seg_1_valid    : 1'b0,
             seg_0_id       : DS,
             seg_1_id       : DS,
-            special_modrm_bs: 1'b0
+            special_modrm_bs: 1'b0,
+            special_br      : 1'b0
         },
         dc_cs : '{
             LD_OP     : 1'b1,

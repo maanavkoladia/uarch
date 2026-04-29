@@ -5,6 +5,8 @@ module sib_processor (
     output reg_ids_e sib_base_id,
     output uint8_t sib_scale
 );
+
+    //assign sib_scale = sib_byte[]
     always_comb begin
         case (sib_byte[2:0])
             3'b000: sib_base_id = EAX;
@@ -29,10 +31,10 @@ module sib_processor (
         endcase
 
         case (sib_byte[7:6])
-            2'b00: sib_scale = 8'd1;
-            2'b01: sib_scale = 8'd2;
-            2'b10: sib_scale = 8'd4;
-            2'b11: sib_scale = 8'd8;
+            2'b00: sib_scale = 8'd0;
+            2'b01: sib_scale = 8'd1;
+            2'b10: sib_scale = 8'd2;
+            2'b11: sib_scale = 8'd3;
         endcase
     end
 endmodule

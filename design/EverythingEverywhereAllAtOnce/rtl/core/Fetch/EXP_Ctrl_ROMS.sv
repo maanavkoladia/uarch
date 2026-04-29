@@ -94,12 +94,12 @@ initial begin
         rom_mem[i][2] = 8'h68;
         rom_mem[i][3] = 8'h00;
         rom_mem[i][4] = 8'h00;
-        rom_mem[i][5] = 8'h20;
+        rom_mem[i][5] = 8'h02;
 
-        rom_mem[i][6] = 8'h33;
+        rom_mem[i][6] = 8'h30;
 
         for (int j = 7; j < 16; j++) begin
-            rom_mem[i][j] = 8'h00;
+            rom_mem[i][j] = 8'h90;
         end
     end
 end

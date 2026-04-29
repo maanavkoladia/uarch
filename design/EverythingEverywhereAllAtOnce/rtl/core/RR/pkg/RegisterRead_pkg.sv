@@ -2,7 +2,7 @@ package RegisterRead_pkg;
     import common_pkg::*;
     import reg_ids_pkg::*;
 
-    localparam NUM_SEG_REGS = 6;
+    localparam NUM_SEG_REGS = 7;
 
     localparam int VPN_UB = 31;
     localparam int VPN_LB = 12;
@@ -33,7 +33,8 @@ package RegisterRead_pkg;
         SS_LIMIT_ID = 2,
         ES_LIMIT_ID = 3,
         FS_LIMIT_ID = 4,
-        GS_LIMIT_ID = 5
+        GS_LIMIT_ID = 5,
+        EXPS_LIMIT_ID = 6
     } seg_limit_reg_ids_e;
 
     typedef struct {

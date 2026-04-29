@@ -135,7 +135,8 @@ module cs_post_processor (
         seg_1_valid     : ff_jmp ? 1'b0 : rr_cs_i.seg_1_valid,
         seg_0_id        : ff_push ? DS : rr_cs_i.seg_0_id,
         seg_1_id        : rr_cs_i.seg_1_id,
-        special_modrm_bs: rr_cs_i.special_modrm_bs
+        special_modrm_bs: rr_cs_i.special_modrm_bs,
+        special_br      : rr_cs_i.special_br
     };
 
     // =====================

@@ -17,8 +17,9 @@ Pipeline:
     Supports annotated hex dump format:
       0xADDR:  BB CC DD ...  // optional comment
     Lines not matching this pattern (comments, blank lines, etc.) are ignored.
-    Bytes are written into the sparse VA image at the given address, then
-    VM_Mappings drives physical placement exactly as in the assembled path.
+    Bytes are written DIRECTLY into the flat physical image at the given
+    address — no VA translation, no VM_Mappings.  The address in each hex
+    line is treated as a physical byte offset into the output binary.
 
 Key design points
   • NO segment translation.  .org values are treated as 32-bit linear/VA
@@ -26,9 +27,12 @@ Key design points
     source; macros are preprocessed as-is.
   • VA image is a sparse dict {page_base: bytearray(page_size)} so sections
     can live anywhere in the 32-bit address space without allocating 4 GB.
-  • VM_Mappings drives what ends up in the 32 KB physical image.  Any VA
-    page not listed is simply not present in physical memory.  Any listed
-    VA page that has no assembled content gets background fill (zero/random).
+  • VM_Mappings drives what ends up in the 32 KB physical image (compiled
+    path only).  Any VA page not listed is simply not present in physical
+    memory.  Any listed VA page that has no assembled content gets background
+    fill (zero/random).
+  • For the pre-built hex path VM_Mappings is ignored entirely — addresses
+    are physical offsets written straight into the output binary.
 
 JSON config keys:
   useProgram             : "true" / "false"
@@ -43,6 +47,7 @@ JSON config keys:
   gcc_extra_flags        : (optional) list of extra flags for gcc -E
 
   VM_Mappings : list of [va_page_or_any_addr_in_page, frame_index]
+                (compiled path only – ignored when useProgram == "false")
                 va address is masked to page boundary automatically.
                 frame_index selects the physical 4 KB slot in the 32 KB image.
                 Up to mem_size/page_size entries (e.g. 8 for default config).
@@ -78,7 +83,7 @@ def parse_int(v) -> int:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  Sparse VA page dict
+#  Sparse VA page dict  (compiled path)
 # ══════════════════════════════════════════════════════════════════════════════
 
 def sparse_write(pages: dict, addr: int, data: bytes, page_size: int):
@@ -96,7 +101,7 @@ def sparse_write(pages: dict, addr: int, data: bytes, page_size: int):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  Annotated hex dump parser  (useProgram == "false")
+#  Annotated hex dump → flat physical image  (useProgram == "false")
 # ══════════════════════════════════════════════════════════════════════════════
 
 # Matches lines like:
@@ -110,68 +115,76 @@ _HEX_LINE_RE = re.compile(
     re.IGNORECASE
 )
 
-def load_annotated_hex(hex_path: str, page_size: int) -> tuple:
+def load_hex_to_physical(hex_path: str,
+                          mem_size: int,
+                          randomize: bool) -> tuple:
     """
-    Parse an annotated hex dump file into a sparse VA page dict.
+    Parse an annotated hex dump and write bytes DIRECTLY into a flat physical
+    image.  The address on each line is treated as a physical byte offset —
+    no page table, no VM_Mappings.
 
-    Accepted line format (anything after the byte tokens is treated as a comment):
+    Accepted line format (anything after the byte tokens is a comment):
         0xADDR:   BB CC DD EE ...   // optional comment
 
-    Lines that do not start with a hex address followed by ':' are silently
-    skipped (blank lines, pure comment lines, continuation lines that only
-    have a comment, etc.).
+    Lines that do not match are silently skipped.
 
     Returns
     -------
-    va_pages     : dict { page_base: bytearray(page_size) }
+    phys_image   : bytearray(mem_size)
     sections_out : list of {'name', 'elf_name', 'va', 'size'}  (one per run)
+    warnings     : list of warning strings
     """
-    va_pages     = {}
-    sections_out = []
+    phys_image   = random_fill(mem_size) if randomize else zero_fill(mem_size)
     total_bytes  = 0
     runs         = []   # list of (start_addr, byte_count) for the report
+    warnings     = []
 
     with open(hex_path) as fh:
         for raw_line in fh:
-            # Strip inline comments that begin with // or #, then check the
-            # address:bytes pattern on what remains.
-            # We do NOT strip before the regex so the regex anchors correctly;
-            # the regex itself allows leading whitespace.
-            line = raw_line
-
-            m = _HEX_LINE_RE.match(line)
+            m = _HEX_LINE_RE.match(raw_line)
             if not m:
                 continue        # blank, comment, or non-matching line
 
-            addr  = int(m.group(1), 16)
-            # collect all two-hex-digit tokens from group 2
+            addr        = int(m.group(1), 16)
             byte_tokens = re.findall(r'[0-9a-fA-F]{2}', m.group(2))
             if not byte_tokens:
                 continue
 
             data = bytes(int(t, 16) for t in byte_tokens)
-            sparse_write(va_pages, addr, data, page_size)
+
+            # bounds check
+            end = addr + len(data)
+            if end > mem_size:
+                w = (f"WARNING: hex line at 0x{addr:08x} extends to "
+                     f"0x{end:08x}, beyond mem_size=0x{mem_size:x}. "
+                     f"Truncating.")
+                print(f"[compile] {w}")
+                warnings.append(w)
+                data = data[:mem_size - addr]
+                if not data:
+                    continue
+
+            phys_image[addr : addr + len(data)] = data
             runs.append((addr, len(data)))
             total_bytes += len(data)
 
-    if not va_pages:
+    if not runs:
         sys.exit(f"[compile] No valid hex data found in '{hex_path}'.")
 
     print(f"[compile] Loaded {total_bytes} bytes from '{hex_path}' "
-          f"across {len(runs)} address run(s).")
+          f"across {len(runs)} address run(s) (direct physical write).")
 
-    # Build a pseudo sections_out list so the diagnostic report has content.
-    # We merge consecutive / overlapping runs into contiguous regions.
+    # Merge consecutive runs into contiguous regions for the report.
     runs.sort()
     merged = []
     for start, length in runs:
         if merged and start <= merged[-1][0] + merged[-1][1]:
-            # overlapping or adjacent – extend
             end_new = max(merged[-1][0] + merged[-1][1], start + length)
             merged[-1] = (merged[-1][0], end_new - merged[-1][0])
         else:
             merged.append([start, length])
 
+    sections_out = []
     for i, (start, length) in enumerate(merged):
         sections_out.append({
             'name'    : 'data',
@@ -179,11 +192,67 @@ def load_annotated_hex(hex_path: str, page_size: int) -> tuple:
             'va'      : start,
             'size'    : length,
         })
-        print(f"[compile]   .hexdata{i:<4}  VA=0x{start:08x}  size={length} B  "
-              f"pages=[0x{start & ~(page_size-1):08x}"
-              f"..0x{(start+length-1) & ~(page_size-1):08x}]")
+        print(f"[compile]   .hexdata{i:<4}  phys=0x{start:08x}  size={length} B  "
+              f"end=0x{start+length:08x}")
 
-    return va_pages, sections_out
+    return phys_image, sections_out, warnings
+
+
+def write_hex_diagnostic_report(out_path, hex_path,
+                                 sections_out, warnings,
+                                 mem_size, phys_image):
+    """Simplified diagnostic report for the direct-physical hex path."""
+    DIV  = '═' * 78
+    div2 = '─' * 78
+
+    with open(out_path, 'w') as f:
+        def w(s=''):
+            f.write(s + '\n')
+
+        w(DIV)
+        w('  memGen v5  –  Physical Hex Load Diagnostic Report')
+        w(DIV)
+        w()
+        w(f'  Source file  : {hex_path}')
+        w(f'  Phys mem     : {mem_size} B  (0x{mem_size:x})')
+        w(f'  Mode         : direct physical write (no VM translation)')
+        w()
+
+        if warnings:
+            w(DIV)
+            w('  WARNINGS')
+            w(DIV)
+            w()
+            for wn in warnings:
+                w(f'  ⚠  {wn}')
+            w()
+
+        w(DIV)
+        w('  SECTION 1 – Loaded Regions  (addresses = physical offsets)')
+        w(DIV)
+        w()
+        w(f"  {'Region':<12}  {'phys start':>12}  {'size':>8}  {'phys end':>12}")
+        w(div2)
+        for s in sections_out:
+            w(f"  {s['elf_name']:<12}  "
+              f"0x{s['va']:08x}    "
+              f"{s['size']:>8} B  "
+              f"0x{s['va']+s['size']:08x}")
+        w()
+
+        # non-zero byte summary of the full image
+        w(DIV)
+        w('  SECTION 2 – Physical Image Non-Zero Summary')
+        w(DIV)
+        w()
+        nz_total = sum(1 for b in phys_image if b != 0)
+        w(f'  Total non-zero bytes in physical image: {nz_total} / {mem_size}')
+        w()
+        w(DIV)
+        w('  End of report')
+        w(DIV)
+
+    print(f"[compile] Wrote diagnostic report → {out_path}")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -386,6 +455,7 @@ def assemble_to_sparse(src_path: str, page_size: int) -> tuple:
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  STAGE 3 – VM mapping  (sparse VA dict → flat 32 KB physical image)
+#  Compiled path only.
 # ══════════════════════════════════════════════════════════════════════════════
 
 def apply_vm_mappings(va_pages: dict,
@@ -450,7 +520,7 @@ def apply_vm_mappings(va_pages: dict,
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  STAGE 4 – Diagnostic report
+#  STAGE 4 – Diagnostic report  (compiled path)
 # ══════════════════════════════════════════════════════════════════════════════
 
 def write_diagnostic_report(out_path, src_path,
@@ -685,15 +755,16 @@ def main():
     page_size   = int(cfg.get('page_size_bytes',  DEFAULT_PAGE_SIZE))
     meta_dir    = cfg['output_metaData_Path']
     extra_flags = cfg.get('gcc_extra_flags', [])
-    vm_mappings = cfg.get('VM_Mappings', [])
+    meta_dir    = cfg['output_metaData_Path']
 
     make_dir(meta_dir)
 
-    elf_path = None
-    tmp_dir  = None
-
     if use_program:
         # ── Compiled .s path ──────────────────────────────────────────────────
+        vm_mappings = cfg.get('VM_Mappings', [])
+        if not vm_mappings:
+            sys.exit("[compile] VM_Mappings is empty – nothing to put in physical image.")
+
         src_path = cfg['input_Program_Path']
         print(f"[compile] Source: {src_path}")
 
@@ -711,54 +782,69 @@ def main():
 
         shutil.rmtree(pp_tmp, ignore_errors=True)
 
-    else:
-        # ── Pre-built annotated hex dump path ─────────────────────────────────
-        hex_path = cfg['input_hex_file']
-        print(f"[compile] Loading annotated hex dump: {hex_path}")
-        va_pages, sections_out = load_annotated_hex(hex_path, page_size)
-        print(f"[compile] {len(va_pages)} sparse VA page(s) loaded from hex dump.")
+        print(f"[compile] Applying {len(vm_mappings)} VM mapping(s) ...")
+        phys_image, vm_records, warnings = apply_vm_mappings(
+            va_pages, vm_mappings, page_size, mem_size, randomize)
+        print(f"[compile] Physical image: {mem_size} B")
 
-    # ── VM mapping ────────────────────────────────────────────────────────────
-    if not vm_mappings:
-        sys.exit("[compile] VM_Mappings is empty – nothing to put in physical image.")
+        bin_out = os.path.join(meta_dir, 'program.bin')
+        with open(bin_out, 'wb') as f:
+            f.write(phys_image)
+        print(f"[compile] Saved binary         → {bin_out}")
 
-    print(f"[compile] Applying {len(vm_mappings)} VM mapping(s) ...")
-    phys_image, vm_records, warnings = apply_vm_mappings(
-        va_pages, vm_mappings, page_size, mem_size, randomize)
-    print(f"[compile] Physical image: {mem_size} B")
+        write_flat_hex(phys_image, line_bytes,
+                       os.path.join(meta_dir, 'program_flat.hex'))
+        write_readmemh_flat(phys_image, line_bytes,
+                            os.path.join(meta_dir, 'program_readmemh.hex'))
 
-    # ── Write outputs ─────────────────────────────────────────────────────────
-    bin_out = os.path.join(meta_dir, 'program.bin')
-    with open(bin_out, 'wb') as f:
-        f.write(phys_image)
-    print(f"[compile] Saved binary         → {bin_out}")
-
-    write_flat_hex(phys_image, line_bytes,
-                   os.path.join(meta_dir, 'program_flat.hex'))
-    write_readmemh_flat(phys_image, line_bytes,
-                        os.path.join(meta_dir, 'program_readmemh.hex'))
-
-    src_label = cfg.get('input_Program_Path', cfg.get('input_hex_file', '?')) \
-                if use_program else cfg.get('input_hex_file', '?')
-    write_diagnostic_report(
-        out_path     = os.path.join(meta_dir, 'segment_vm_report.txt'),
-        src_path     = src_label,
-        vm_records   = vm_records,
-        warnings     = warnings,
-        sections_out = sections_out,
-        page_size    = page_size,
-        mem_size     = mem_size,
-        va_pages     = va_pages,
-    )
-
-    if elf_path and os.path.isfile(elf_path):
-        write_instruction_listing(
-            elf_path,
-            os.path.join(meta_dir, 'program_instructions.txt')
+        write_diagnostic_report(
+            out_path     = os.path.join(meta_dir, 'segment_vm_report.txt'),
+            src_path     = src_path,
+            vm_records   = vm_records,
+            warnings     = warnings,
+            sections_out = sections_out,
+            page_size    = page_size,
+            mem_size     = mem_size,
+            va_pages     = va_pages,
         )
 
-    if tmp_dir:
+        if elf_path and os.path.isfile(elf_path):
+            write_instruction_listing(
+                elf_path,
+                os.path.join(meta_dir, 'program_instructions.txt')
+            )
+
         shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    else:
+        # ── Pre-built annotated hex dump path ─────────────────────────────────
+        # Addresses in the hex dump are treated as physical byte offsets.
+        # VM_Mappings is intentionally ignored for this path.
+        hex_path = cfg['input_hex_file']
+        print(f"[compile] Loading annotated hex dump (direct physical write): {hex_path}")
+
+        phys_image, sections_out, warnings = load_hex_to_physical(
+            hex_path, mem_size, randomize)
+        print(f"[compile] Physical image: {mem_size} B  (no VM translation)")
+
+        bin_out = os.path.join(meta_dir, 'program.bin')
+        with open(bin_out, 'wb') as f:
+            f.write(phys_image)
+        print(f"[compile] Saved binary         → {bin_out}")
+
+        write_flat_hex(phys_image, line_bytes,
+                       os.path.join(meta_dir, 'program_flat.hex'))
+        write_readmemh_flat(phys_image, line_bytes,
+                            os.path.join(meta_dir, 'program_readmemh.hex'))
+
+        write_hex_diagnostic_report(
+            out_path     = os.path.join(meta_dir, 'segment_vm_report.txt'),
+            hex_path     = hex_path,
+            sections_out = sections_out,
+            warnings     = warnings,
+            mem_size     = mem_size,
+            phys_image   = phys_image,
+        )
 
     print("[compile] Done.")
 

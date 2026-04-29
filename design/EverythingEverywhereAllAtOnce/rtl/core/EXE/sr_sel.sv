@@ -18,6 +18,7 @@ module sr_sel (
     input uint64_t mov_s_sr_i,
     input uint64_t add_df_sr_i,
     input uint64_t exp_call_sr_i,
+    input uint64_t iretd_sr_i,
     // Selected output
     output uint64_t sr_o
 );
@@ -36,6 +37,7 @@ module sr_sel (
             FAR_CALL:    sr_o = far_call_sr_i;
             MOVS:        sr_o = mov_s_sr_i;
             EXP_CALL:    sr_o = exp_call_sr_i;
+            IRETD:       sr_o = iretd_sr_i;
             default:     sr_o = sr_data;
         endcase
     end

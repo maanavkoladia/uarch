@@ -25,6 +25,7 @@ module npu_node1 (
     input bool st_sel,
     input bool movs_op,
     input bool switch_ld_addy,
+    input bool special_br,
 
     output v_address_t ld_vaddy,
     output uint32_t seg0_limit_w_datasize,
@@ -121,8 +122,11 @@ module npu_node1 (
     uint32_t ld_addy_reg_data;
     uint32_t st_laddy;
     assign ld_addy_reg_data = (switch_ld_addy ? regout_sr_data : sib_or_reg);
+
+    uint32_t ld_addy_reg_data_plus_displacement;
+    assign ld_addy_reg_data_plus_displacement = (ld_addy_reg_data + seg0val_plus_displacement);
     
-    assign #3 ld_vaddy = ld_addy_reg_data + seg0val_plus_displacement;    //need this for making ss:esp the load address for pop r/m32
+    assign #3 ld_vaddy = (special_br) ? regout_dr_data : ld_addy_reg_data_plus_displacement;    //need this for making ss:esp the load address for pop r/m32
     assign #3 st_vaddy = sib_or_reg + seg1val_plus_displacement;
 
     assign #3 ld_laddy = ld_addy_reg_data + masked_displacement_out;

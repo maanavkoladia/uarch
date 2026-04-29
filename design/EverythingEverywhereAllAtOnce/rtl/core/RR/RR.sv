@@ -30,7 +30,7 @@ module RR (
     assign latchesInUse = decode_outs_i.rep_latch ? latches_i.rep_latches : latches_i.normal_latches;
 
     //6 bc 6 seg regs and their respctive limits
-    segment_limit_reg_entry_t SEGMENT_LIMITS[NUM_SEG_REGS];  //CS, DS, ES, FS, GS, SS
+    segment_limit_reg_entry_t SEGMENT_LIMITS[NUM_SEG_REGS];  //CS, DS, ES, FS, GS, SS, EXPS
 
 
     //SB Oouts
@@ -105,6 +105,7 @@ module RR (
         .st_sel(latchesInUse.cs.ST_SEL),
         .movs_op(latchesInUse.cs.MOVS_OP),
         .switch_ld_addy(latchesInUse.cs.SWITCH_LD_ADDY),
+        .special_br(latchesInUse.cs.special_br),
         .special_modrm_bs(latchesInUse.cs.special_modrm_bs),
         .regout_sr_data(reg_out.SR_data[31:0]),
         .regout_dr_data(reg_out.DR_data[31:0]),

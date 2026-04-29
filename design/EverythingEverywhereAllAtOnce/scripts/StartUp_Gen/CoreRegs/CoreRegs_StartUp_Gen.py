@@ -116,7 +116,7 @@ def should_load(block: dict) -> bool:
 I  = "        "   # 8-space indent (inside initial begin)
 I2 = "    "       # 4-space indent (module body)
 
-SEG_REGS = ("CS", "DS", "SS", "ES", "FS", "GS")
+SEG_REGS = ("CS", "DS", "SS", "ES", "FS", "GS", "EXPS")
 
 
 def scalar_assignment(path: str, val_str: str) -> str:

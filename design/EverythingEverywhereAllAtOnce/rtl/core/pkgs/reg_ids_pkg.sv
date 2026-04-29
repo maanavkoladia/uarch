@@ -61,40 +61,38 @@ package reg_ids_pkg;
     //    } reg_ids_e;
 
 
-    localparam int NUM_REGS = 22 + 1 + 1 + 1;  //bc etr and error reg
-    typedef enum logic [$clog2(
-NUM_REGS
-) - 1:0] {
-
+    localparam int NUM_REGS = 23 + 1 + 1 + 1;  //bc etr and error reg
+    typedef enum logic [$clog2(NUM_REGS) - 1:0] {
         CS = 0,
         DS = 1,
         SS = 2,
         ES = 3,
         FS = 4,
         GS = 5,
+        EXPS = 6,
 
-        EAX = 6,
-        EBX = 7,
-        ECX = 8,
-        EDX = 9,
-        ESI = 10,
-        EDI = 11,
-        ESP = 12,
-        EBP = 13,
+        EAX = 7,
+        EBX = 8,
+        ECX = 9,
+        EDX = 10,
+        ESI = 11,
+        EDI = 12,
+        ESP = 13,
+        EBP = 14,
 
-        MM0 = 14,
-        MM1 = 15,
-        MM2 = 16,
-        MM3 = 17,
-        MM4 = 18,
-        MM5 = 19,
-        MM6 = 20,
-        MM7 = 21,
+        MM0 = 15,
+        MM1 = 16,
+        MM2 = 17,
+        MM3 = 18,
+        MM4 = 19,
+        MM5 = 20,
+        MM6 = 21,
+        MM7 = 22,
 
-        ETR = 22,
-        ERROR_REG = 23,
-        NO_REG = 24,
-        EXPS = 25
+        ETR = 23,
+        ERROR_REG = 24,
+        NO_REG = 25
+
     } reg_ids_e;
 
 

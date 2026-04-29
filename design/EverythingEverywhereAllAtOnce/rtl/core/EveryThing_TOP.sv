@@ -104,7 +104,8 @@ module EveryThing_TOP (
         .latches_o(rr_latches),
         .write_enable_i(decode_outputs.rr_stage_latch_we),
         .flush(exe_outputs.br_res_out.flush),
-        .farFlush(exe_outputs.br_res_out.farFlush)
+        .farFlush(exe_outputs.br_res_out.farFlush),
+        .exp_pipe_clear(fetch_outputs.exp_pipe_clear)
     );
 
     RR rr_unit (
@@ -128,7 +129,8 @@ module EveryThing_TOP (
         .latches_o(dc_latches),
         .write_enable_i(rr_outputs.dc_stage_latch_we),
         .flush(exe_outputs.br_res_out.flush),
-        .farFlush(exe_outputs.br_res_out.farFlush)
+        .farFlush(exe_outputs.br_res_out.farFlush),
+        .exp_pipe_clear(fetch_outputs.exp_pipe_clear)
     );
 
     DC dc_unit (
@@ -191,6 +193,7 @@ module EveryThing_TOP (
         .rst(rst),
         .latches_i(exe_latches),
         .wb_outs_i(wb_outputs),
+        .rr_outs_i(rr_outputs),
         .wb_latches_next_o(wb_latches_next),
         .outs_o(exe_outputs)
     );
