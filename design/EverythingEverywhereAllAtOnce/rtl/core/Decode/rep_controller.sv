@@ -50,7 +50,7 @@ module rep_controller (
     assign clear_rep = (cmp_inst) ? cmp_clear : movs_clear;
 
     bool fsm_reset;
-    assign fsm_reset = rst || !exp_pipe_clear || !flush;
+    assign fsm_reset = rst && !exp_pipe_clear && !flush;
 
     rep_fsm fsm_rep(
         .clk(clk),
@@ -161,6 +161,7 @@ module rep_controller (
         valid : 1'b1,
         exe_cs : '{
             OP_TYPE : control_store_pkg::NOP,
+            rep_no_zf_update : 1'b1,
             default : '0
         },
         default : '0
@@ -260,7 +261,7 @@ module rep_controller (
 			eax_rd			: 1'b0,
 			MOVS_OP			: 1'b0,
             datasize       : 2'b10,
-            will_mod_zf    : 1'b1,
+            will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
             seg_0_id       : DS,
             seg_1_id       : DS,
