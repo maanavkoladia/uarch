@@ -5,6 +5,7 @@ import WriteBack_pkg::*;
 import reg_ids_pkg::*;
 
 module reg_wb_logic(
+    input exe_cs_operation_type_e op_type,
     input uint64_t next_dr_data,
     input reg_ids_e dr_id,
     input bool WB_DR,
@@ -26,7 +27,7 @@ module reg_wb_logic(
 
 
     assign dr0_data_o = next_dr_data;
-    assign dr0_id_o = dr_id;
+    assign dr0_id_o = (op_type == EXP_CALL) ? CS : dr_id;
     assign dr0_we_o = WB_DR & ~stall_flop & valid;
     assign dr1_data_o = WB_EAX ? next_EAX : next_sr_data;
     assign dr1_id_o = WB_EAX ? EAX : sr_id;

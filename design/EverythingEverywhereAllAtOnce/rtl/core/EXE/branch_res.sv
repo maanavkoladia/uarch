@@ -69,7 +69,7 @@ module branch_res(
 
         miss_prediction = ((taken ^ br_pred_taken_i) |
                            (taken & br_pred_taken_i & ~target_match) |
-                           (farFlush | callFlush)
+                           (farFlush | callFlush | special_br_i)
                           ) & valid;
 
         flush = miss_prediction;

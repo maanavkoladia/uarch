@@ -26,10 +26,10 @@ module EXP_Ctrl_ROMS (
     logic [4:0] rom_sel;
 
     // IDT (Interrupt Descriptor Table) entry indices
-    localparam logic [2:0] GP_IDT = 3'b001;  // General Protection Fault
-    localparam logic [2:0] PF_IDT = 3'b010;  // Page Fault
-    localparam logic [2:0] DMA_IDT = 3'b011; // DMA Interrupt
-    localparam logic [2:0] DDR_IDT = 3'b100; // DDR (placeholder)
+    localparam logic [4:0] GP_IDT = 5'd13;  // General Protection Fault
+    localparam logic [4:0] PF_IDT = 5'b010;  // Page Fault
+    localparam logic [4:0] DMA_IDT = 5'b011; // DMA Interrupt
+    localparam logic [4:0] DDR_IDT = 5'b100; // DDR (placeholder)
 
     // Exception/interrupt selection logic
     // =====================
@@ -81,25 +81,28 @@ module EXP_Ctrl_ROMS (
 
     // Initialize ROM contents with test patterns
     // Each entry filled with its entry number repeated 16 times
-    initial begin
-        for (int i = 0; i < 32; i++) begin
-            for (int j = 0; j < 16; j++) begin
-                rom_mem[i][j] = i[7:0];  // Entry 0=0x00, Entry 1=0x01, etc.
-            end
+// Initialize ROM contents with structured test pattern
+logic [31:0] imm;
+
+initial begin
+    for (int i = 0; i < 32; i++) begin
+        imm = i << 3;
+
+        rom_mem[i][0] = 8'h31;
+        rom_mem[i][1] = 8'h32;
+
+        rom_mem[i][2] = 8'h68;
+        rom_mem[i][3] = 8'h00;
+        rom_mem[i][4] = 8'h00;
+        rom_mem[i][5] = 8'h20;
+
+        rom_mem[i][6] = 8'h33;
+
+        for (int j = 7; j < 16; j++) begin
+            rom_mem[i][j] = 8'h00;
         end
-        
-        // Result: Full cache line for each entry is filled with entry number
-        // Entry 0x00: 0x00000000000000000000000000000000 (16 bytes of 0x00)
-        // Entry 0x01: 0x01010101010101010101010101010101 (16 bytes of 0x01)
-        // Entry 0x02: 0x02020202020202020202020202020202 (16 bytes of 0x02)
-        // ...
-        // Entry 0x0F: 0x0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F0F (16 bytes of 0x0F)
-        // Entry 0x10: 0x10101010101010101010101010101010 (16 bytes of 0x10)
-        // Entry 0x11: 0x11111111111111111111111111111111 (16 bytes of 0x11)
-        // Entry 0x12: 0x12121212121212121212121212121212 (16 bytes of 0x12)
-        // Entry 0x13: 0x13131313131313131313131313131313 (16 bytes of 0x13)
-        // ... etc up to 0x1F
     end
+end
 
     // Output the selected ROM entry
     always_comb begin

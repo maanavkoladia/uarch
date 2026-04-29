@@ -421,6 +421,7 @@ module EXE (
     uint64_t next_EAX;
     assign next_EAX =  latches_i.wb_cs.WB_EAX ? cmpxchg_EAX_o : {32'd0, latches_i.EAX};
     reg_wb_logic reg_wb(
+         .op_type(op_type),
          .next_dr_data(dr_next),
          .dr_id(latches_i.dr_id),
          .WB_DR(latches_i.wb_cs.WB_DR),

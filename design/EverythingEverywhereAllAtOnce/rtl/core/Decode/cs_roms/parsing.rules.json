@@ -40,7 +40,8 @@
         "MM7" : "21",
         "ETR" : "22",
         "ERROR_REG" : "23",
-        "NO_REG" : "24"
+        "NO_REG" : "24",
+        "EXPS" : "25"
     },
 
     "HARDCODED_DR_HIGH8" : "1",
@@ -71,7 +72,8 @@
         "MM7" : "21",
         "ETR" : "22",
         "ERROR_REG" : "23",
-        "NO_REG" : "24"
+        "NO_REG" : "24",
+        "EXPS" : "25"
     },
 
     "OP_IN_MODRM" : "1",
@@ -111,7 +113,8 @@
         "MM7" : "21",
         "ETR" : "22",
         "ERROR_REG" : "23",
-        "NO_REG" : "24"
+        "NO_REG" : "24",
+        "EXPS" : "25"
     },
 
     "HARDCODED_SEGMENT1_V" : "1",
@@ -141,7 +144,8 @@
         "MM7" : "21",
         "ETR" : "22",
         "ERROR_REG" : "23",
-        "NO_REG" : "24"
+        "NO_REG" : "24",
+        "EXPS" : "25"
     },
 
     "HARDCODED_LD_OP" : "1",

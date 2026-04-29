@@ -93,7 +93,8 @@ NUM_REGS
 
         ETR = 22,
         ERROR_REG = 23,
-        NO_REG = 24
+        NO_REG = 24,
+        EXPS = 25
     } reg_ids_e;
 
 
