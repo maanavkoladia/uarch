@@ -26,7 +26,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH = $(TEST_DIR)/config/RepTesting/
+TEST_CASE_PATH = $(TEST_DIR)/config/exception_public/
 
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
@@ -87,6 +87,8 @@ CC_FLAGS += \
     +define+DCACHE_LOG_FILE_NAME=\"$(LOG_DIR)/dcache_dump.log\" \
     +define+DCACHE_DUMP_START_DEFAULT=$(DCACHE_DUMP_START) \
     +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
+	+define+RTL_REGDUMP_FILE_NAME=\"$(RTL_REGDUMP_FILE)\" \
+	+define+RTL_FLAGDUMP_FILE_NAME=\"$(RTL_FLAGDUMP_FILE)\" \
 	
 
 .PHONY: all run clean see gen full
@@ -118,6 +120,8 @@ gen:
 see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'	
 	@echo -e "\n"
+
+	@echo  $(CC_FLAGS)
 
 makeLogDir:
 	@mkdir -p $(LOG_DIR)

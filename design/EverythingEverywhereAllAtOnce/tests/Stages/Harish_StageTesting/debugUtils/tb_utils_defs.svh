@@ -6,9 +6,18 @@ import tb_debug_pkg::*;
 // ===================== LOG FILE =====================
 
 // file name (string constant)
-`define LOG_FILE_NAME "run.log"
+`ifndef LOG_FILE_NAME 
+    `define LOG_FILE_NAME "run_default.log"
+`endif
 
-// file descriptor macro (IMPORTANT FIX)
+`ifndef RTL_REGDUMP_FILE_NAME 
+    `define RTL_REGDUMP_FILE_NAME "rtl_regdump_default.log"
+`endif
+
+`ifndef RTL_FLAGDUMP_FILE_NAME 
+    `define RTL_FLAGDUMP_FILE_NAME "rtl_flagdump_default.log"
+`endif
+
 `define LOG_FD logfd
 
 // ===================== DUT PATHS =====================
@@ -63,12 +72,12 @@ import tb_debug_pkg::*;
             $display("ERROR: cannot open log file"); \
             $finish; \
         end \
-        regdumpfd = $fopen("logDumps/regdump.log", "w"); \
+        regdumpfd = $fopen(`RTL_REGDUMP_FILE_NAME , "w"); \
         if (regdumpfd == 0) begin \
             $display("ERROR: cannot open regdump.log"); \
             $finish; \
         end \
-        flagdumpfd = $fopen("logDumps/flagdump.log", "w"); \
+        flagdumpfd = $fopen(`RTL_FLAGDUMP_FILE_NAME, "w"); \
         if (flagdumpfd == 0) begin \
             $display("ERROR: cannot open flagdump.log"); \
             $finish; \

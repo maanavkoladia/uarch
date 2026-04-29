@@ -36,6 +36,8 @@ _start:
     pushl   $0x33333333
     /* optional marker */
     pushl   $0xDEADBEEF
+    popl %edx
+    pushl %edx
     /* ------------------------------------------------
 
        far call into CS1:0x10000
@@ -75,6 +77,13 @@ _second_entry:
 
        switch data segment
        ------------------------------------------------ */
+   popl %eax
+   popl %ebx
+   popl %ecx
+   pushl %ecx
+   pushl %ebx
+   pushl %eax
+   
     movl    $__DS1__, %eax
     movw    %ax, %ds
     /* ------------------------------------------------

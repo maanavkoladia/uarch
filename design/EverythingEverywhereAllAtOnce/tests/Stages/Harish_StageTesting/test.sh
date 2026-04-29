@@ -2,10 +2,28 @@
 
 mioTestPath="config/MMIO/"
 
+scriptDir=$(pwd);
+
+allTestCasePaths=(
+    "config/TheBigOne/"
+    "config/dcache_public/"
+    "config/MovHeavy/"
+    "config/simpleFarTest/"
+    "config/exception_public/")
+
+outDir="Test_Results/"
+
 SingleTest() {
-    casePath="$1"
-    echo "Running the $casePath test case"
-    make see 
+    casePath="${scriptDir}/$1"
+    base=$(basename "$casePath") 
+    testCaseOutDir="$scriptDir/$outDir/$base/"
+
+    echo "Running the $casePath test case, results are in $testCaseOutDir"
+    #make clean
+    #make gen TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    #make sim-run TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    make full TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+
     #-DTEST_CASE_PATH="$casePath"
 }
 
@@ -15,7 +33,11 @@ MioTest() {
 }
 
 AllTests() {
-    echo "All called, will run multiple singles"
+    echo "Running All"
+
+    for caseDir in "${allTestCasePaths[@]}"; do
+        SingleTest "$caseDir"
+    done
 }
 
 if (( $# < 1 )); then
@@ -23,7 +45,11 @@ if (( $# < 1 )); then
     exit 1
 fi
 
-while getopts "s:ma" opt; do
+mkdir -p ${outDir}/
+
+source venv/bin/activate
+
+while getopts "s:mac" opt; do
     case $opt in
         s)
             SingleTest "$OPTARG"
@@ -34,9 +60,15 @@ while getopts "s:ma" opt; do
         a)
             AllTests
             ;;
+        c)
+            rm -rf $outDir
+            ;;
+
         *)
             echo "Invalid option"
             exit 1
             ;;
     esac
 done
+
+
