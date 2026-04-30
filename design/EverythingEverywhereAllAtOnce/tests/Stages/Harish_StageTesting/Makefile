@@ -26,7 +26,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH = $(TEST_DIR)/config/EdgeCase/
+TEST_CASE_PATH = $(TEST_DIR)/config/BranchHeavy/
 
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)

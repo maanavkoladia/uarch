@@ -225,8 +225,43 @@ nested_done:
     jmp     section_13
 
 add_two_args:
-    movl    4(%esp), %eax
-    addl    8(%esp), %eax               # 0x14 + 0x0A = 0x1E
+
+    pushl %esi
+    pushl %edi
+
+    # save FS
+    movw %fs, %ax
+    pushl %eax
+
+    # switch FS = SS
+    movw %ss, %ax
+    movw %ax, %fs
+
+    # base pointer to stack frame
+    movl %esp, %esi
+
+    # -----------------------------------------
+    # load arg1 (ESP + 8)
+    # -----------------------------------------
+    movl %esi, %edi
+    addl $8, %edi
+    movl %fs:(%edi), %eax
+
+    # -----------------------------------------
+    # load arg2 (ESP + 12)
+    # -----------------------------------------
+    movl %esi, %edi
+    addl $12, %edi
+    add %fs:(%edi), %eax
+
+
+    # restore FS
+    popl %ebx
+    movw %bx, %fs
+
+    popl %edi
+    popl %esi
+
     ret
 
 section_13:
@@ -242,9 +277,19 @@ section_13:
     jmp     section_14
 
 add_ret_clean:
-    movl    4(%esp), %eax
-    addl    8(%esp), %eax               # 0x07 + 0x03 = 0x0A
-    ret     $8
+
+    movw %fs, %ax
+    pushl %eax
+
+    movl %esp, %esi
+
+    movl 8(%esi), %eax
+    addl 12(%esi), %eax
+
+    popl %eax
+    movw %ax, %fs
+
+    ret $8
 
 section_14:
 
