@@ -1,0 +1,30 @@
+@lib/STDCells/STDCell_Macros.vh    
+@rtl/pkgs/interconnect_pkg.sv   
+@rtl/defines/common_define.vh   
+@rtl/pkgs/common_pkg.sv
+@rtl/core/pkgs/core_stage_latches_pkg.sv
+@rtl/core/pkgs/core_common_pkg.sv
+@rtl/core/pkgs/reg_ids_pkg.sv
+@rtl/core/WB/pkg/WriteBack_pkg.sv
+@rtl/core/WB
+
+look at the .sv files in the WB folder. I need these sv files ported to structural 2005-verilog using the macros defined in the STDCell_Macros.vh.
+
+Put all structural implementations of each module into the structural folder in the WB directory.
+
+Let me know which macros need to be implement if you need any beyond the std macro lib. Do not implement them yourself I will implement them for you. 
+
+Take extra time to fully understand how the WB functions and interacts with the rest of the system.
+
+When porting to structural make sure you dont use any always block just assigns. no ternarys or logical and bitwise operators. it has to be fully gate implentations. you can only use assigns just for wires. 
+
+Also make sure to understand the WB package and the other linked packages.
+
+General guidance on the WB structure:
+There is 4 store queues with logic blocks assiciatied for each and 1 MIO queue with its own MIO logic block.
+
+Plan a way to port WB and make sure you understand how to unpack structs and properly implent the WB logic. 
+
+Let me know if you have any questions, dont make assumptions and take time to understand how WB works.
+
+Let me know if there are any other files you need access to or if you see something out of context.
