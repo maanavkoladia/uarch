@@ -168,7 +168,7 @@ data_page:
 .data
 .space 7*8   // skip 56 bytes
 // entry 7
-.word 0x009f //offset_low, pc of the interruptRoutine
+.word interruptRoutine //offset_low, pc of the interruptRoutine
 .word 0x0000 //selector
 .byte 0x0
 .byte 0x0 //type_attr

@@ -44,6 +44,7 @@ package core_common_pkg;
         bool exp_present;
         bool exp_pf;
         logic[1:0] exp_mode_jk;
+        bool int_mode_jk;
     } fetch_outputs_t;
 
     typedef struct {

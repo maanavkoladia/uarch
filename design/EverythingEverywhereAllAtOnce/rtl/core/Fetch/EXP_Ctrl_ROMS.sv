@@ -80,7 +80,7 @@ module EXP_Ctrl_ROMS (
 
     // Initialize ROM from genned ROM
     uint32_t idtEntryAddy;
-    assign idtEntryAddy = IDTR + rom_sel;//now this needs to go into bytes 5,4,3,2 of rom_data_out, eveything else should be 
+    assign idtEntryAddy = IDTR + (rom_sel<<3);//now this needs to go into bytes 5,4,3,2 of rom_data_out, eveything else should be 
 
     always_comb begin
         rom_data_out = '{default: '0};

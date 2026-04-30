@@ -315,7 +315,7 @@ module Decode (
     end
 
     uint32_t EXCEPTION_EIP;
-    assign EXCEPTION_EIP = (fetch_outs_i.exp_mode_jk[1]) ? DC_SAVED_EIP : DECODE_SAVED_EIP;
+    assign EXCEPTION_EIP = (!fetch_outs_i.exp_mode_jk[1] || fetch_outs_i.int_mode_jk) ? DECODE_SAVED_EIP : DC_SAVED_EIP;
 
 
     bool going_to_halt;
@@ -336,7 +336,7 @@ module Decode (
 
         br_info         : br_info_for_latches,
         NEIP            : NEIP,
-        EIP             : (fetch_outs_i.exp_mode_jk[0]) ? EXCEPTION_EIP : EIP,
+        EIP             : (fetch_outs_i.exp_mode_jk[0] || fetch_outs_i.int_mode_jk) ? EXCEPTION_EIP : EIP,
         EAX             : rr_outs_i.eax,
 
         imm64           : imm64,

@@ -21,7 +21,7 @@ import tb_debug_pkg::*;
 `define LOG_FD logfd
 
 // ===================== DUT PATHS =====================
-`define FETCH_UNIT_PATH (temp)
+`define FETCH_UNIT_PATH uut_AllAtOnce.core_unit.fetch_unit
 `define DECODE_UNIT_PATH uut_AllAtOnce.core_unit.decode_unit
 `define RR_UNIT_PATH uut_AllAtOnce.core_unit.rr_unit
 `define DC_UNIT_PATH (temp)

@@ -14,9 +14,9 @@
         "val"  : "32'h00000000"
     },
     "IDTR" : {
-        "load" : "false",
-        "path" : "dut.u_core.idtr_reg",
-        "val"  : "32'h20000000"
+        "load" : "true",
+        "path" : "uut_AllAtOnce.core_unit.fetch_unit.exp_ctrl_roms.IDTR",
+        "val"  : "32'h04000000"
     },
     "SegLimitVals" : {
         "load" : "true",
@@ -25,6 +25,7 @@
         "SS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[2].limit"],
         "ES"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[3].limit"],
         "FS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[4].limit"],
-        "GS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[5].limit"]
+        "GS"   : ["20'hFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[5].limit"],
+        "EXPS" : ["32'hFFFFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[6].limit"]
     }
 }

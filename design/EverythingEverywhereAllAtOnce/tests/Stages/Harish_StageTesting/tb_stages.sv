@@ -19,6 +19,25 @@ module tb_stages ();
     `DEBUG_UTILS_INIT
     logic    rst;
 
+    uint32_t idm_empty_cycle_counts;
+    uint32_t flush_count;
+    uint32_t vcache_hits;
+    uint32_t icache_hits;
+    always_ff @(posedge clk) begin
+        if(!rst) begin
+            idm_empty_cycle_counts <= 0;
+            flush_count <= 0;
+            vcache_hits <= 0;
+            icache_hits <= 0;
+        end
+        else begin
+            if (`FETCH_UNIT_PATH.outs_o.fetch_2_icache.num_valid_IDM_slots == 0) idm_empty_cycle_counts++;
+            if (`EXE_UNIT_PATH.branch_resolution_o.flush == 1) flush_count++;
+            if (uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_hit == 1) vcache_hits++;
+            if (uut_AllAtOnce.mem_sys_unit.icache_unit.icache_hit == 1) icache_hits++;
+        end
+    end
+
     initial begin
         $vcdpluson;
         $vcdplusmemon;
@@ -152,11 +171,16 @@ module tb_stages ();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(5000);
+        DelayClks(50000);
         //print_all();
-        $display("cycle count: %0d", finish_time);
+        $display("program completion cycle count: %0d", finish_time);
+        $display("flush count: %0d", flush_count);
+        $display("idm empty count: %0d", idm_empty_cycle_counts);
+        $display("num vcache hits: %0d", vcache_hits);
+        $display("num icache hits: %0d", icache_hits);
         $finish;
         `LOG("Finishing mem System TB");
+
 
 
 

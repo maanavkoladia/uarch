@@ -82,6 +82,7 @@ module Fetch (
         outs_o.exp_present = f_exp;
         outs_o.exp_pf = tlb_outs.pageFault;
         outs_o.exp_mode_jk = exp_mode_jk;
+        outs_o.int_mode_jk = int_mode_jk;
     end
 
     assign f_exp = (tlb_outs.gp_exp | tlb_outs.pageFault) & ~exp_mode_jk;

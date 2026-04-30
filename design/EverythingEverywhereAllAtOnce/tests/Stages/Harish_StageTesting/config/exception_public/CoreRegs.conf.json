@@ -14,9 +14,9 @@
         "val"  : "32'h00000000"
     },
     "IDTR" : {
-        "load" : "false",
-        "path" : "dut.u_core.idtr_reg",
-        "val"  : "32'h00000000"
+        "load" : "true",
+        "path" : "uut_AllAtOnce.core_unit.fetch_unit.exp_ctrl_roms.IDTR",
+        "val"  : "32'h02000000"
     },
     "SegLimitVals" : {
         "load" : "true",
