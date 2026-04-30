@@ -1,10 +1,11 @@
-#define __CS__ 0x0000
-#define __DS__ 0x2000
-#define __ES__ 0xE000
-#define __SS__ 0xF000
-#define __GS__ 0x8000
+#define __CS__ (0x0000)
+#define __DS__ (0x0200)
+#define __SS__ (0xF000) 
+#define __ES__ (0xE000)
+#define __FS__ (0x0600)
 
-#define MMIO_BASE              0xE0000000
+#define IDTR (0x04000000)
+#define MMIO_BASE (0xE0000000)
 
 #define DMA_WRITE_SRC_ADDRESS (0x00)
 #define DMA_WRITE_DEST_ADDRESS (0x10)
@@ -15,11 +16,13 @@
 
 #define DMA_TRANSFER_DISK_ADDR (0x00)
 #define DMA_TRANSFER_PMEM_TRANSFER_DISK_ADDR (0x7000)
-#define DMA_TRANSFER_NUM_BYTES (64)
+#define DMA_TRANSFER_NUM_BYTES (256)
 
-#define NOP_DELAYS (200)
+#define NOP_DELAYS (50)
 
-.org 0x00000000
+#define NUM_NONSENSE_RWS (1000)
+
+.org 0x00000000 //mapped
 .code
 .global _start
 
@@ -34,20 +37,30 @@ _start:
     movw    %ax, %es
     movl    $__SS__, %eax
     movw    %ax, %ss
-    movl    $__GS__, %eax
-    movw    %ax, %gs
+    movl    $__FS__, %eax
+    movw    %ax, %fs
     movl $0x00FE0, %esp 
     
     # -------------------------------
     # DDR5: disable power gating (write 0)
     # -------------------------------
     call ddr5_routine
-
-    call dma_routine
     
+    //ebx should have a 0xbb8 and ecx have a 0
+    call dma_routine
+
+    //interrupt will come in in a bit, 
+    //do i bunch of nonsense mem loads from data page using sib, interrupt shoudl come in between
+    //write this 
+    call nonsense_mem_ops
+
+    mov $0xa0a0a0a0, %eax
+
     hlt
 //ddr5 routine
 ddr5_routine:
+    
+    //turn off the default high pwoer gate
     movl    $DDR5_POWER_GATING, %esi
     movl    $0, %es:(%esi)
     
@@ -58,9 +71,18 @@ ddr5_routine:
     # -------------------------------
     movl $DDR5_READ_TEMPERATURE, %esi
     movl %es:(%esi), %ebx
+    
+    //pweor gate the ddr5 again
+    movl    $DDR5_POWER_GATING, %esi
+    movl    $1, %es:(%esi)
+
+    call fakeDelay
+    
+    movl $0x11111111, %ecx
+    movl $DDR5_READ_TEMPERATURE, %esi
+    movl %es:(%esi), %ecx
 
     ret
-
 
 //DMA ROUTINE
 dma_routine:
@@ -77,6 +99,52 @@ dma_routine:
     movl $1, %es:(%esi)
     call fakeDelay //give time for interrupt, for showing interleaving mem ops
     movl $0x11223344, %ecx
+    ret 
+
+interruptRoutine:
+    //mov something from the frame the data was written to edx
+    mov $0x10, %eax
+    mov %fs:(%eax), %edx
+    iret
+    hlt
+
+
+nonsense_mem_ops:
+    # ---------------------------------------
+    # Cacheline stress test (byte accesses)
+    # 32 cachelines, 16B stride
+    # repeated NUM_NONSENSE_RWS times
+    # ---------------------------------------
+    push %ebx
+    movl $data_page, %esi
+    movl $data_page + 0x800, %edi   # separate region
+
+    movl $NUM_NONSENSE_RWS, %ebx    # outer loop counter
+
+outer_loop:
+
+    movl $32, %ecx                  # 32 cachelines
+
+inner_loop:
+
+    # --- 1-byte load/store ---
+    movb (%esi), %al
+    movb %al, (%edi)
+
+    # stride = 16 bytes
+    addl $16, %esi
+    addl $16, %edi
+
+    addl $-1, %ecx
+    jne inner_loop
+
+    # reset pointers back by 32*16 = 512 bytes
+    addl $-(32*16), %esi
+    addl $-(32*16), %edi
+
+    addl $-1, %ebx
+    jne outer_loop
+    pop %ebx
     ret
 
 # ================================
@@ -91,17 +159,34 @@ delay_loop:
     jne     delay_loop
 
     ret
-    
 
-.org 0x20000000
+//data segement
+.org 0x02000000 //mapped
 .data
 data_page:
     .space 0xB00
 
-
-.org 0xF0000000
+//stack segment
+.org 0xF0000000 //mapped
 .data
-stack_page:
-    .long 0x55667788
 
-#    .space 0x1000
+//ES, this is the mmio segment
+.org 0xE0000000
+.data
+
+//FS
+.org 0x06000000 //mapped, dma will write here
+.data
+
+.org 0x04000000
+.data
+.space 7*8   // skip 56 bytes
+// entry 7
+.word 0x0000 //offset_low, pc of the interruptRoutine
+.word 0x0000 //selector
+.byte 0x0
+.byte 0x0 //type_attr
+.word 0x0000 //offset_high
+//8 entry bytes
+
+
