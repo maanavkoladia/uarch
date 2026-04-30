@@ -24,91 +24,74 @@ module EXP_Ctrl_ROMS (
 );
 
     logic [4:0] rom_sel;
+    uint32_t IDTR;
 
     // IDT (Interrupt Descriptor Table) entry indices
     localparam logic [4:0] GP_IDT = 5'd13;  // General Protection Fault
-    localparam logic [4:0] PF_IDT = 5'b010;  // Page Fault
-    localparam logic [4:0] DMA_IDT = 5'b011; // DMA Interrupt
-    localparam logic [4:0] DDR_IDT = 5'b100; // DDR (placeholder)
+    localparam logic [4:0] PF_IDT = 5'd14;  // Page Fault
+    localparam logic [4:0] DMA_IDT = 5'd7;  // DMA Interrupt
+    localparam logic [4:0] DDR_IDT = 5'b100;  // DDR (placeholder)
 
     // Exception/interrupt selection logic
     // =====================
     // Fetch exception mux
     // =====================
-    logic [2:0] fetch_exp_out;
+    logic [4:0] fetch_exp_out;
     assign fetch_exp_out = Fetch_pf ? PF_IDT : GP_IDT;
 
     // =====================
     // DC exception mux
     // =====================
-    logic [2:0] DC_exp_out;
+    logic [4:0] DC_exp_out;
     assign DC_exp_out = DC_pf ? PF_IDT : GP_IDT;
 
     // =====================
     // Exception select mux (DC priority)
     // =====================
-    logic [2:0] exp_idx;
+    logic [4:0] exp_idx;
     assign exp_idx = DC_exp ? DC_exp_out : fetch_exp_out;
 
     // =====================
     // Interrupt mux
     // =====================
-    logic [2:0] int_idx;
+    logic [4:0] int_idx;
     assign int_idx = DMA_int ? DMA_IDT : DDR_IDT;
 
     // =====================
     // Final ROM index mux
     // =====================
-    logic [2:0] rom_idx;
+    logic [4:0] rom_idx;
     assign rom_idx = exp_pipe_clear ? exp_idx : int_idx;
-  
-
 
     // Simple ROM: 32 entries, each 16 bytes
-    logic [7:0] rom_mem [0:31][0:15];
-    
+    //logic [7:0] rom_mem  [0:31][0:15];
+
     logic [4:0] rom_addr;
-    
+
     // Extend 3-bit index to 5-bit ROM address (only use first 8 entries of 32-entry ROM)
     assign rom_addr = {2'b00, rom_idx};
-    
+
     //this is by me. On pipeclear we need to clear all the stages. RR exceptions would disapear so we need some way to latch the ROM address we want to use
-    always_ff@(posedge clk)begin
-            if(exp_pipe_clear | int_pipe_clear)begin
-                rom_sel <= rom_addr;
-            end
-    end
-
-    // Initialize ROM contents with test patterns
-    // Each entry filled with its entry number repeated 16 times
-// Initialize ROM contents with structured test pattern
-logic [31:0] imm;
-
-initial begin
-    for (int i = 0; i < 32; i++) begin
-        imm = i << 3;
-
-        rom_mem[i][0] = 8'h31;
-        rom_mem[i][1] = 8'h32;
-
-        rom_mem[i][2] = 8'h68;
-        rom_mem[i][3] = 8'h00;
-        rom_mem[i][4] = 8'h00;
-        rom_mem[i][5] = 8'h02;
-
-        rom_mem[i][6] = 8'h30;
-
-        for (int j = 7; j < 16; j++) begin
-            rom_mem[i][j] = 8'h90;
+    always_ff @(posedge clk) begin
+        if (exp_pipe_clear | int_pipe_clear) begin
+            rom_sel <= rom_addr;
         end
     end
-end
 
-    // Output the selected ROM entry
+    // Initialize ROM from genned ROM
+    uint32_t idtEntryAddy;
+    assign idtEntryAddy = IDTR + rom_sel;//now this needs to go into bytes 5,4,3,2 of rom_data_out, eveything else should be 
+
     always_comb begin
-        for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
-            rom_data_out[i] = rom_mem[rom_sel][i];
-        end
+        rom_data_out = '0;
+        rom_data_out[0] = 8'h31;
+        rom_data_out[1] = 8'h32;
+        rom_data_out[2] = idtEntryAddy[7:0];
+        rom_data_out[3] = idtEntryAddy[15:8];
+        rom_data_out[4] = idtEntryAddy[23:16];
+        rom_data_out[5] = idtEntryAddy[31:24];
+        rom_data_out[6] = 8'h30;
+        for(int i = 7; i < 16; i++) rom_data_out[i] = 0;
     end
 
 endmodule
