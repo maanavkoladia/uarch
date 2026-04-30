@@ -13,6 +13,10 @@ module rep_controller (
     input bool stall,
     input bool flush,
     input bool exp_pipe_clear,
+    input reg_ids_e saved_segment0,
+    input bool saved_segment_override,
+    input uint32_t saved_rep_eip,
+    input logic[1:0] saved_datasize,
     output rr_latches_general_t rep_latches,
     output bool clear_rep
 );
@@ -166,8 +170,6 @@ module rep_controller (
         default : '0
     };
 
-    //will need to override datasize for these?
-
     //////////////////////////////// MOVS ///////////////////////////////
     assign movs_instruction = '{
         valid : 1'b1,
@@ -187,10 +189,10 @@ module rep_controller (
 			eax_wr			: 1'b0,
 			eax_rd			: 1'b0,
 			MOVS_OP			: 1'b1,
-            datasize       : 2'b10,
+            datasize       : saved_datasize,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b1,
-            seg_0_id       : DS,
+            seg_0_id       : saved_segment_override ? saved_segment0 : DS,
             seg_1_id       : ES,
             special_modrm_bs: 1'b0,
             special_br      : 1'b0
@@ -200,7 +202,7 @@ module rep_controller (
             ST_OP     : 1'b1,
             dr_upper8 	 : 1'b0,
 			sr_upper8 	 : 1'b0,
-            datasize  : 2'b10
+            datasize  : saved_datasize
         },
         mem_cs : '{
             ST_OP : 1'b1,
@@ -229,7 +231,7 @@ module rep_controller (
         },
         br_info      : '{default:'0},  // no branch so zero?
         NEIP         : 32'h0,
-        EIP          : 32'h0,
+        EIP          : saved_rep_eip,
         EAX          : 32'h0,
         imm64        : 64'h0,
         sib_idx_id   : NO_REG,
@@ -259,7 +261,7 @@ module rep_controller (
 			eax_wr			: 1'b0,
 			eax_rd			: 1'b0,
 			MOVS_OP			: 1'b0,
-            datasize       : 2'b10,
+            datasize       : saved_datasize,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
             seg_0_id       : DS,
@@ -272,7 +274,7 @@ module rep_controller (
             ST_OP     : 1'b0,
             dr_upper8    : 1'b0,
             sr_upper8   : 1'b0,
-            datasize  : 2'b10
+            datasize  : saved_datasize
         },
         mem_cs : '{
             ST_OP : 1'b0,
@@ -291,8 +293,7 @@ module rep_controller (
             is_far              : 1'b0,
             is_call             : 1'b0,
             second_flag_needed  : 1'b0,
-            rep_no_zf_update    : 1
-
+            rep_no_zf_update    : 1'b1
         },
         wb_cs : '{
             ST_OP : 1'b0,
@@ -302,7 +303,7 @@ module rep_controller (
         },
         br_info      : '{default:'0},  
         NEIP         : 32'h0,
-        EIP          : 32'h0,
+        EIP          : saved_rep_eip,
         EAX          : 32'h0,
         imm64        : 64'hff,
         sib_idx_id   : NO_REG,
@@ -337,10 +338,10 @@ module rep_controller (
 			eax_wr			: 1'b0,
 			eax_rd			: 1'b0,
 			MOVS_OP			: 1'b0,
-            datasize       : 2'b10,
+            datasize       : saved_datasize,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
-            seg_0_id       : DS,
+            seg_0_id       : saved_segment_override ? saved_segment0 : DS,
             seg_1_id       : DS,
             special_modrm_bs: 1'b0,
             special_br      : 1'b0
@@ -350,7 +351,7 @@ module rep_controller (
             ST_OP     : 1'b0,
             dr_upper8    : 1'b0,
             sr_upper8   : 1'b0,
-            datasize  : 2'b10
+            datasize  : saved_datasize
         },
         mem_cs : '{
             ST_OP : 1'b0,
@@ -369,8 +370,7 @@ module rep_controller (
             is_far              : 1'b0,
             is_call             : 1'b0,
             second_flag_needed  : 1'b0,
-            rep_no_zf_update    : 0
-
+            rep_no_zf_update    : 1'b0
         },
         wb_cs : '{
             ST_OP : 1'b0,
@@ -380,7 +380,7 @@ module rep_controller (
         },
         br_info      : '{default:'0},  
         NEIP         : 32'h0,
-        EIP          : 32'h0,
+        EIP          : saved_rep_eip,
         EAX          : 32'h0,
         imm64        : 64'h00,
         sib_idx_id   : NO_REG,
@@ -419,10 +419,10 @@ module rep_controller (
 			eax_wr			: 1'b0,
 			eax_rd			: 1'b0,
 			MOVS_OP			: 1'b0,
-            datasize       : 2'b10,
+            datasize       : saved_datasize,
             will_mod_zf    : 1'b1,
             seg_1_valid    : 1'b0,
-            seg_0_id       : ES,
+            seg_0_id       : saved_segment_override ? saved_segment0 : ES,
             seg_1_id       : DS,
             special_modrm_bs: 1'b0,
             special_br      : 1'b0
@@ -432,7 +432,7 @@ module rep_controller (
             ST_OP     : 1'b0,
             dr_upper8    : 1'b0,
             sr_upper8   : 1'b0,
-            datasize  : 2'b10
+            datasize  : saved_datasize
         },
         mem_cs : '{
             ST_OP : 1'b0,
@@ -461,7 +461,7 @@ module rep_controller (
         },
         br_info      : '{default:'0},  
         NEIP         : 32'h0,
-        EIP          : 32'h0,
+        EIP          : saved_rep_eip,
         EAX          : 32'h0,
         imm64        : 64'h00,
         sib_idx_id   : NO_REG,
@@ -499,7 +499,7 @@ module rep_controller (
 			eax_wr			: 1'b0,
 			eax_rd			: 1'b0,
 			MOVS_OP			: 1'b0,
-            datasize       : 2'b10,
+            datasize       : saved_datasize,
             will_mod_zf    : 1'b0,
             seg_1_valid    : 1'b0,
             seg_0_id       : DS,
@@ -512,7 +512,7 @@ module rep_controller (
             ST_OP     : 1'b0,
             dr_upper8    : 1'b0,
             sr_upper8   : 1'b0,
-            datasize  : 2'b10
+            datasize  : saved_datasize
         },
         mem_cs : '{
             ST_OP : 1'b0,
@@ -531,7 +531,7 @@ module rep_controller (
             is_far              : 1'b0,
             is_call             : 1'b0,
             second_flag_needed  : 1'b0,
-            rep_no_zf_update    : 0
+            rep_no_zf_update    : 1'b0
         },
         wb_cs : '{
             ST_OP : 1'b0,
@@ -541,7 +541,7 @@ module rep_controller (
         },
         br_info      : '{default:'0},  
         NEIP         : 32'h0,
-        EIP          : 32'h0,
+        EIP          : saved_rep_eip,
         EAX          : 32'h0,
         imm64        : 64'h00,
         sib_idx_id   : NO_REG,

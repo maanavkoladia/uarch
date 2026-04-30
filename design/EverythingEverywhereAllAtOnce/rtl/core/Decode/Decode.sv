@@ -61,6 +61,11 @@ module Decode (
     uint32_t DC_SAVED_EIP;
     uint32_t DECODE_SAVED_EIP;
 
+    reg_ids_e SAVED_SEGMENT0;
+    bool SAVED_SEGMENT_OVERRIDE;
+    uint32_t SAVED_REP_EIP;
+    logic [1:0] SAVED_DATASIZE;
+
 
     reg_ids_e segment0;
     bool seg_override;
@@ -140,7 +145,9 @@ module Decode (
         .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb),
         .external_set_zf(external_set_zf), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
         .zf_flag(exe_outs_i.ZF), .stall(!decode_forward), .flush(flush), .exp_pipe_clear(fetch_outs_i.exp_pipe_clear),
-        .rep_latches(rep_latch_holder), .clear_rep(clear_rep)
+        .rep_latches(rep_latch_holder), .clear_rep(clear_rep), .saved_segment0(SAVED_SEGMENT0), 
+        .saved_segment_override(SAVED_SEGMENT_OVERRIDE), .saved_rep_eip(SAVED_REP_EIP),
+        .saved_datasize(SAVED_DATASIZE)
     );
 
   
@@ -199,6 +206,10 @@ module Decode (
             REP_CMP_LATCH <= 1'b0;
             REP_MOV_LATCH <= 1'b0;
             HALT_REG <= 1'b0;
+            SAVED_SEGMENT0 <= 1'b0;
+            SAVED_SEGMENT_OVERRIDE <= 1'b0;
+            SAVED_REP_EIP <= 1'b0;
+            SAVED_DATASIZE <= 1'b0;
         end
         else begin
             if(flush) begin
@@ -206,14 +217,42 @@ module Decode (
                 REP_LATCH <= 1'b0;
                 REP_CMP_LATCH <= 1'b0;
                 REP_MOV_LATCH <= 1'b0;
+                SAVED_SEGMENT0 <= 1'b0;
+                SAVED_SEGMENT_OVERRIDE <= 1'b0;
+                SAVED_REP_EIP <= 1'b0;
+                SAVED_DATASIZE <= 1'b0;
             end
             else begin
                 HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
                 case ({temp_decode_cs.REP, clear_rep})
-                    2'b00: REP_LATCH <= REP_LATCH;
-                    2'b01: REP_LATCH <= 1'b0;
-                    2'b10: REP_LATCH <= 1'b1;
-                    2'b11: REP_LATCH <= 1'b0;
+                    2'b00: begin
+                        REP_LATCH <= REP_LATCH;
+                        SAVED_SEGMENT0 <= SAVED_SEGMENT0;
+                        SAVED_SEGMENT_OVERRIDE <= SAVED_SEGMENT_OVERRIDE;
+                        SAVED_REP_EIP <= SAVED_REP_EIP;
+                        SAVED_DATASIZE <= SAVED_DATASIZE;
+                    end
+                    2'b01: begin
+                        REP_LATCH <= 1'b0;
+                        SAVED_SEGMENT0 <= 1'b0;
+                        SAVED_SEGMENT_OVERRIDE <= 1'b0;
+                        SAVED_REP_EIP <= 1'b0;
+                        SAVED_DATASIZE <= 1'b0;
+                    end
+                    2'b10: begin
+                        REP_LATCH <= 1'b1;
+                        SAVED_SEGMENT0 <= segment0;
+                        SAVED_SEGMENT_OVERRIDE <= seg_override;
+                        SAVED_REP_EIP <= EIP;
+                        SAVED_DATASIZE <= temp_decode_cs.DATA_SIZE;
+                    end
+                    2'b11: begin
+                        REP_LATCH <= 1'b0;
+                        SAVED_SEGMENT0 <= 1'b0;
+                        SAVED_SEGMENT_OVERRIDE <= 1'b0;
+                        SAVED_REP_EIP <= 1'b0;
+                        SAVED_DATASIZE <= 1'b0;
+                    end
                 endcase
                 case ({temp_decode_cs.REP_CMP, clear_rep})
                     2'b00: REP_CMP_LATCH <= REP_CMP_LATCH;
@@ -244,13 +283,11 @@ module Decode (
                     PrevLength <= inst_length;
                 end
                 else begin
-                    //if(!invalid_inst && !stall && !rep_reg_value) EIP <= NEIP;
                     if(decode_forward && !HALT_REG && !REP_LATCH) begin
-                        EIP <= NEIP;    //need to integrate rep
+                        EIP <= NEIP;
                         PrevEIP <= EIP;
                         PrevLength <= inst_length;
                     end
-                    //if(!invalid_inst && !HALT_REG) EIP <= NEIP;
                     else begin
                         EIP <= EIP;
                         PrevEIP <= EIP;
@@ -260,6 +297,9 @@ module Decode (
             end
         end
     end
+
+
+
 
     always_ff @(posedge clk) begin
         if(!rst) begin

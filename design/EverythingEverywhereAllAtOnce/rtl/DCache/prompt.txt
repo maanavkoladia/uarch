@@ -1,0 +1,37 @@
+@lib/STDCells/STDCell_Macros.vh  
+@rtl/defines/interconnect_define.vh  
+@rtl/pkgs/interconnect_pkg.sv  
+@rtl/defines/common_define.vh  
+@rtl/pkgs/common_pkg.sv
+@rtl/DCache/
+
+look at the .sv files in the dcache folder. I need these sv files ported to structural 2005-verilog using the macros defined in the STDCell_Macros.vh.
+
+Put all structural implementations of each module into the structural folder in the dcache directory.
+
+Let me know which macros need to be implement if you need any beyond the std macro lib. Do not implement them yourself I will implement them for you. 
+
+Take extra time to fully understand how the dcache functions and interacts with the rest of the system. 
+
+Within the dcache folder is a gen file that contains the fsm that runs the dcache (dcache bank controller and vcache bank controller).
+
+When porting to structural make sure you dont use any always block just assigns. no ternarys or logical and bitwise operators. it has to be fully gate implentations. you can only use assigns just for wires. 
+
+Also make sure to understand the dcache common package.
+
+General guidance on the dcache structure:
+There is 1 dcache top that instantiates 4 dcache blocks and 1 MIO block.
+The MIO block itself has no further hierarchy, there is jsut one file.
+The Dcache block each intantiate a dcache bank, vcache, and an eviction buffers.
+The Dcache banks have 8 direct mapped cache lines, the vcache has 4 fully associative cache lines.
+
+to get data from the victim to the dcache and vice versa ther are swap buffers.
+
+The vcache uses eviction buffers for evicting data to main mem if the line is dirty.
+
+the dcache and vcache both uses ram cells and the eviction buffers are just registers.
+the dcache and vcache both use a phased clock to write into the ram cells from memory.
+
+Plan a way to port dcache and make sure you understand how to unpack structs and properly implent the dcache logic. 
+
+Let me know if you have any questions, dont make assumptions and take time to understand how dcache works.
