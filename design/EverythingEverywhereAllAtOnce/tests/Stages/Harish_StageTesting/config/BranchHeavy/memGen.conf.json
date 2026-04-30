@@ -1,6 +1,6 @@
 {
     "useProgram"              : "true",
-    "input_Program_Path"      : "config/MMIO/MMIO.s",
+    "input_Program_Path"      : "config/BranchHeavy/BranchHeavy.s",
     "input_hex_file"          : "not_needed",
     "output_LoadableHex_Path" : "gen/memGen/hexLoad",
     "output_metaData_Path"    : "gen/memGen/meta/",
@@ -18,8 +18,11 @@
     "gcc_extra_flags"         : [],
 
     "VM_Mappings" : [
-        ["0x00000000", 5],
-        ["0x02000000", 3],
-        ["0x04000000", 6]
+        ["0x00000000", 0],
+        ["0x02000000", 1],
+        ["0x03000000", 2],
+        ["0x04000000", 3],
+        ["0x05000000", 4],
+        ["0x06000000", 5]
     ]
 }
