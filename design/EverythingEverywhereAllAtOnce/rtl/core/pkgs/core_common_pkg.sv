@@ -54,6 +54,7 @@ package core_common_pkg;
         bool decode_gp;  //instruciton crossing segment line
         bool rr_stage_latch_we;
         bool rep_latch;
+        bool decode_forward;
     } decode_outputs_t;
 
     typedef struct {

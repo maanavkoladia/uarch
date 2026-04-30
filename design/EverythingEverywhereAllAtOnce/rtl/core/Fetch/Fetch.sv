@@ -264,6 +264,7 @@ module Fetch (
         .int_pipe_clear(exp_set_logic_outs.int_pipe_clear),
         .decode_stall(decode_outs_i.stall),
         .idm_meta(idm_info_i),
+        .decode_forward(decode_outs_i.decode_forward),
 
         .out_invalidates(idm_invalidate_logic_outs)
     );

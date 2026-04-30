@@ -223,7 +223,7 @@ module Decode (
                 SAVED_DATASIZE <= 1'b0;
             end
             else begin
-                HALT_REG <= (!HALT_REG) ? temp_decode_cs.HALT : HALT_REG;
+                HALT_REG <= (!HALT_REG && !invalid_inst) ? temp_decode_cs.HALT : HALT_REG;
                 case ({temp_decode_cs.REP, clear_rep})
                     2'b00: begin
                         REP_LATCH <= REP_LATCH;
@@ -361,7 +361,8 @@ module Decode (
         invalid_instruction : invalid_inst,
         decode_gp : decode_gp && rr_outs_i.valid,
         rr_stage_latch_we : rr_latch_we_o,
-        rep_latch : REP_LATCH
+        rep_latch : REP_LATCH,
+        decode_forward : decode_forward
     };
 
 

@@ -9,7 +9,11 @@ allTestCasePaths=(
     "config/dcache_public/"
     "config/MovHeavy/"
     "config/simpleFarTest/"
-    "config/exception_public/")
+    "config/exception_public/"
+    "config/BranchHeavy/"
+    "config/EdgeCase/"
+    "config/DecodeStress/"
+    "config/MemHeavy/")
 
 outDir="Test_Results/"
 

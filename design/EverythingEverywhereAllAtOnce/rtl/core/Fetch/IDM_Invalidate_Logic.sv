@@ -9,6 +9,7 @@ module IDM_Invalidate_Logic (
     input bool int_pipe_clear,
     input bool decode_stall,
     input idm_outputs_t idm_meta,
+    input bool decode_forward,
 
     output idm_invalidate_logic_output_t out_invalidates
 );
@@ -34,7 +35,8 @@ module IDM_Invalidate_Logic (
     
     assign will_leave_for_br =  idm_meta.idm_slots[eip_slot_num].br_valid &&
                                 (idm_meta.idm_slots[eip_slot_num].br_eip == eip) &&
-                                !(idm_meta.idm_slots[eip_slot_num].br_btb_target[31:4] == eip[31:4]);
+                                !(idm_meta.idm_slots[eip_slot_num].br_btb_target[31:4] == eip[31:4]) &&
+                                decode_forward;
 
             //we have reached the eip of a branch
     always_comb begin

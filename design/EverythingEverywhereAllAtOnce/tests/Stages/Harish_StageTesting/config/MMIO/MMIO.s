@@ -20,14 +20,14 @@
 
 #define NOP_DELAYS (50)
 
-#define NUM_NONSENSE_RWS (1000)
+#define NUM_NONSENSE_RWS (50)
 
 .org 0x00000000 //mapped
 .code
 .global _start
 
 _start:
-
+seg_init:
     # सेट DS
     movl    $__DS__, %eax
     movw    %ax, %ds
@@ -39,8 +39,9 @@ _start:
     movw    %ax, %ss
     movl    $__FS__, %eax
     movw    %ax, %fs
-    movl $0x00FE0, %esp 
-    
+    movl $0x00FFF, %esp 
+
+ main:   
     # -------------------------------
     # DDR5: disable power gating (write 0)
     # -------------------------------
@@ -66,13 +67,14 @@ ddr5_routine:
     
     call fakeDelay
 
-    # -------------------------------
-    # DDR5: read temperature
-    # -------------------------------
+    # # -------------------------------
+    # # DDR5: read temperature
+    # # -------------------------------
     movl $DDR5_READ_TEMPERATURE, %esi
     movl %es:(%esi), %ebx
+    movl $0xA0A0A0A0, %ebx
     
-    //pweor gate the ddr5 again
+    # //pweor gate the ddr5 again
     movl    $DDR5_POWER_GATING, %esi
     movl    $1, %es:(%esi)
 
@@ -97,14 +99,14 @@ dma_routine:
 
     movl $DMA_WRITE_START_TRANSFER_ADDRESS, %esi
     movl $1, %es:(%esi)
-    call fakeDelay //give time for interrupt, for showing interleaving mem ops
+
     movl $0x11223344, %ecx
     ret 
 
 interruptRoutine:
     //mov something from the frame the data was written to edx
-    mov $0x10, %eax
-    mov %fs:(%eax), %edx
+    movl $0x10, %eax
+    movl %fs:(%eax), %edx
     iret
     hlt
 
@@ -115,36 +117,20 @@ nonsense_mem_ops:
     # 32 cachelines, 16B stride
     # repeated NUM_NONSENSE_RWS times
     # ---------------------------------------
-    push %ebx
-    movl $data_page, %esi
-    movl $data_page + 0x800, %edi   # separate region
 
-    movl $NUM_NONSENSE_RWS, %ebx    # outer loop counter
-
-outer_loop:
-
-    movl $32, %ecx                  # 32 cachelines
-
-inner_loop:
-
-    # --- 1-byte load/store ---
-    movb (%esi), %al
-    movb %al, (%edi)
-
-    # stride = 16 bytes
-    addl $16, %esi
-    addl $16, %edi
+    movl $NUM_NONSENSE_RWS, %ecx
+    movl $0, %esi
+nonsense_loop:
+    add $1, (%esi)
+    add $2, 0x200(%esi)
+    add $2, 0x400(%esi)
+    add $2, 0x600(%esi)
+    add $2, 0x800(%esi)
+    add $2, 0xA00(%esi)
+    add $2, 0xC00(%esi)
 
     addl $-1, %ecx
-    jne inner_loop
-
-    # reset pointers back by 32*16 = 512 bytes
-    addl $-(32*16), %esi
-    addl $-(32*16), %edi
-
-    addl $-1, %ebx
-    jne outer_loop
-    pop %ebx
+    jne nonsense_loop
     ret
 
 # ================================
@@ -182,7 +168,7 @@ data_page:
 .data
 .space 7*8   // skip 56 bytes
 // entry 7
-.word 0x0000 //offset_low, pc of the interruptRoutine
+.word 0x009f //offset_low, pc of the interruptRoutine
 .word 0x0000 //selector
 .byte 0x0
 .byte 0x0 //type_attr
