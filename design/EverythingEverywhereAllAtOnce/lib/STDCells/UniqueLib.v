@@ -164,9 +164,9 @@ module MPS_COMP_EQ #(
             // Level 2           : and2$(l0, l1)              → 0.35 ns
             // Critical path: 0.25 + 0.35 + 0.35 = 0.95 ns
             wire l0, l1;
-            and3$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]));
-            and2$ u1 (.out(l1), .in0(b[3]), .in1(b[4]));
-            and2$ u2 (.out(eq), .in0(l0),   .in1(l1));
+            nand3$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]));
+            nand2$ u1 (.out(l1), .in0(b[3]), .in1(b[4]));
+            nor2$ u2 (.out(eq), .in0(l0),   .in1(l1));
 
         end else if (WIDTH == 6) begin : EQ_6
             // Level 1 (parallel): and3$[0:2] || and3$[3:5]  → 0.35 ns
@@ -196,9 +196,69 @@ module MPS_COMP_EQ #(
             and3$ u2 (.out(l2), .in0(b[6]), .in1(b[7]), .in2(b[8]));
             and3$ u3 (.out(eq), .in0(l0),   .in1(l1),   .in2(l2));
 
+        end else if (WIDTH == 24) begin : EQ_24
+            // Level 1 (parallel): 8× nand3$, one per triple of b[0:23]     → 0.35 ns
+            //   n[i] = 0  iff  all three bits in the group match
+            // Level 2 (parallel): 2× nor3$ + 1× nor2$                       → 0.35 ns
+            //   m[0] = nor3$(n[0:2]) = 1 iff bits  0-8  all match
+            //   m[1] = nor3$(n[3:5]) = 1 iff bits  9-17 all match
+            //   m[2] = nor2$(n[6:7]) = 1 iff bits 18-23 all match
+            // Level 3           : and3$(m[0], m[1], m[2])                   → 0.35 ns
+            // Critical path: 0.25 + 0.35 + 0.35 + 0.35 = 1.30 ns
+            wire [7:0] n;  // nand3$ layer
+            wire [2:0] m;  // nor layer
+
+            // ---- Level 1: nand3$ ----
+            nand3$ u_n0 (.out(n[0]), .in0(b[ 0]), .in1(b[ 1]), .in2(b[ 2]));
+            nand3$ u_n1 (.out(n[1]), .in0(b[ 3]), .in1(b[ 4]), .in2(b[ 5]));
+            nand3$ u_n2 (.out(n[2]), .in0(b[ 6]), .in1(b[ 7]), .in2(b[ 8]));
+            nand3$ u_n3 (.out(n[3]), .in0(b[ 9]), .in1(b[10]), .in2(b[11]));
+            nand3$ u_n4 (.out(n[4]), .in0(b[12]), .in1(b[13]), .in2(b[14]));
+            nand3$ u_n5 (.out(n[5]), .in0(b[15]), .in1(b[16]), .in2(b[17]));
+            nand3$ u_n6 (.out(n[6]), .in0(b[18]), .in1(b[19]), .in2(b[20]));
+            nand3$ u_n7 (.out(n[7]), .in0(b[21]), .in1(b[22]), .in2(b[23]));
+
+            // ---- Level 2: nor3$ / nor2$ ----
+            nor3$ u_m0 (.out(m[0]), .in0(n[0]), .in1(n[1]), .in2(n[2]));  // bits  0-8
+            nor3$ u_m1 (.out(m[1]), .in0(n[3]), .in1(n[4]), .in2(n[5]));  // bits  9-17
+            nor2$ u_m2 (.out(m[2]), .in0(n[6]), .in1(n[7]));              // bits 18-23
+
+            // ---- Level 3: and3$ ----
+            and3$ u_eq (.out(eq), .in0(m[0]), .in1(m[1]), .in2(m[2]));
+
+        end else if (WIDTH == 28) begin : EQ_28
+            // Level 1 (parallel): 9× nand3$, one per triple of b[0:26]     → 0.35 ns
+            //   n[i] = 0  iff  all three bits in the group match
+            // Level 2 (parallel): 3× nor3$, each folding 3 nand3$ outputs  → 0.35 ns
+            //   m[k] = 1  iff  all 9 bits in the group match
+            //   NOR(NAND,NAND,NAND) = ~(~a|~b|~c) = a&b&c  (De Morgan)
+            // Level 3           : and4$(m[0], m[1], m[2], b[27])            → 0.40 ns
+            // Critical path: 0.25 + 0.35 + 0.35 + 0.40 = 1.35 ns
+            wire [8:0] n;  // nand3$ layer — covers b[0:26]
+            wire [2:0] m;  // nor3$  layer
+
+            // ---- Level 1: nand3$ ----
+            nand3$ u_n0 (.out(n[0]), .in0(b[ 0]), .in1(b[ 1]), .in2(b[ 2]));
+            nand3$ u_n1 (.out(n[1]), .in0(b[ 3]), .in1(b[ 4]), .in2(b[ 5]));
+            nand3$ u_n2 (.out(n[2]), .in0(b[ 6]), .in1(b[ 7]), .in2(b[ 8]));
+            nand3$ u_n3 (.out(n[3]), .in0(b[ 9]), .in1(b[10]), .in2(b[11]));
+            nand3$ u_n4 (.out(n[4]), .in0(b[12]), .in1(b[13]), .in2(b[14]));
+            nand3$ u_n5 (.out(n[5]), .in0(b[15]), .in1(b[16]), .in2(b[17]));
+            nand3$ u_n6 (.out(n[6]), .in0(b[18]), .in1(b[19]), .in2(b[20]));
+            nand3$ u_n7 (.out(n[7]), .in0(b[21]), .in1(b[22]), .in2(b[23]));
+            nand3$ u_n8 (.out(n[8]), .in0(b[24]), .in1(b[25]), .in2(b[26]));
+
+            // ---- Level 2: nor3$ (NAND→NOR = AND semantics) ----
+            nor3$ u_m0 (.out(m[0]), .in0(n[0]), .in1(n[1]), .in2(n[2]));  // bits  0-8
+            nor3$ u_m1 (.out(m[1]), .in0(n[3]), .in1(n[4]), .in2(n[5]));  // bits  9-17
+            nor3$ u_m2 (.out(m[2]), .in0(n[6]), .in1(n[7]), .in2(n[8]));  // bits 18-26
+
+            // ---- Level 3: and4$ to fold in bit 27 ----
+            and4$ u_eq (.out(eq), .in0(m[0]), .in1(m[1]), .in2(m[2]), .in3(b[27]));
+
         end else begin : EQ_UNSUPPORTED
             initial begin
-                $fatal(1, "MPS_COMP_EQ: WIDTH=%0d not supported. Allowed: 2,3,4,5,6,8,9.", WIDTH);
+                $fatal(1, "MPS_COMP_EQ: WIDTH=%0d not supported. Aldulowed: 2,3,4,5,6,8,9,24,28.", WIDTH);
             end
         end
 

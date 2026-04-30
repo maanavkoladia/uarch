@@ -83,7 +83,7 @@ module mem_TOP (
     // -----------------------------------------------------------------------
     // mem_controller_structural
     // -----------------------------------------------------------------------
-    mem_controller u_controller (
+    mem_controller_structural u_controller (
         .clk                        (clk),
         .rst                        (rst),
         .address_bus                (address_bus[14:0]),

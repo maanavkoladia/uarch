@@ -11,7 +11,7 @@
 #   Group count = 88
 #   Group uut_AllAtOnce signal count = 9
 #   Group uut_AllAtOnce_1 signal count = 9
-#   Group Mem_System signal count = 26
+#   Group Mem_System signal count = 18
 #   Group flags_reg signal count = 3
 #   Group uut_stuff signal count = 7
 #   Group Core signal count = 1
@@ -222,7 +222,7 @@ gui_sync_global -id ${TopLevel.2} -option true
 # MDI window settings
 set Wave.1 [gui_create_window -type {Wave}  -parent ${TopLevel.2}]
 gui_show_window -window ${Wave.1} -show_state maximized
-gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 443} {child_wave_right 831} {child_wave_colname 409} {child_wave_colvalue 30} {child_wave_col1 0} {child_wave_col2 1}}
+gui_update_layout -id ${Wave.1} {{show_state maximized} {dock_state undocked} {dock_on_new_line false} {child_wave_left 443} {child_wave_right 831} {child_wave_colname 366} {child_wave_colvalue 73} {child_wave_col1 0} {child_wave_col2 1}}
 
 # End MDI window settings
 
@@ -261,6 +261,7 @@ gui_set_time_units 1ns
 # Global: Signal Compare
 
 # Global: Signal Groups
+gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_dataStore_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.rr_latches_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.wb_valid_logic_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_mov_op}
@@ -269,12 +270,12 @@ gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_cf_flag_
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[2].stq_inst}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_sel}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pf_flag_sel}
+gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.icache_unit.icache_TagStore_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sf_flag_sel}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_imm}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.stq_dep_check}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_iretd_op}
 gui_load_child_values {tb_stages.uut_AllAtOnce}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.mem_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_res_buf_logic}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_op}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_bsf}
@@ -288,8 +289,8 @@ gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_of_flag_
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_aaa}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_far_op}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_ret_far_op}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_adc_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.mod_rm_cs_gen}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2}
 gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.bus_arbitration_unit}
@@ -309,7 +310,6 @@ gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sal_op}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.idm_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit.dma_controller_unit}
-gui_load_child_values {tb_stages.uut_AllAtOnce.mem_sys_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_df_flag_sel}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.write_back_unit.gen_st_q[3].stq_inst}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_alu_input_sel}
@@ -317,8 +317,8 @@ gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_paddw}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_pavgb}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.dc_unit.req_gen}
-gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_push_op}
+gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.decode_unit.cs.cs_post_prossesing_unit}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_add_op}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_sar_op}
 gui_load_child_values {tb_stages.uut_AllAtOnce.core_unit.execute_unit.u_packsswb}
@@ -1165,9 +1165,11 @@ gui_marker_set_ref -id ${Wave.1}  C1
 gui_wv_zoom_timerange -id ${Wave.1} 406.792 757.385
 gui_list_add_group -id ${Wave.1} -after {New Group} {uut_AllAtOnce_1}
 gui_list_add_group -id ${Wave.1} -after {New Group} {Mem_System}
-gui_list_add_group -id ${Wave.1}  -after Mem_System {Mem_System|mem_unit_1}
-gui_list_add_group -id ${Wave.1} -after Mem_System|mem_unit_1 {Mem_System|icache_unit}
-gui_list_add_group -id ${Wave.1} -after Mem_System|icache_unit {Mem_System|dma_controller_unit}
+gui_list_add_group -id ${Wave.1}  -after Mem_System {Mem_System|icache_dataStore_unit}
+gui_list_add_group -id ${Wave.1} -after Mem_System|icache_dataStore_unit {Mem_System|icache_TagStore_unit}
+gui_list_add_group -id ${Wave.1} -after Mem_System|icache_TagStore_unit {Mem_System|icache_unit}
+gui_list_add_group -id ${Wave.1} -after Mem_System|icache_unit {Mem_System|mem_unit_1}
+gui_list_add_group -id ${Wave.1} -after Mem_System|mem_unit_1 {Mem_System|dma_controller_unit}
 gui_list_add_group -id ${Wave.1} -after Mem_System|dma_controller_unit {Mem_System|ddr5_unit}
 gui_list_add_group -id ${Wave.1} -after Mem_System|ddr5_unit {Mem_System|dcache_unit}
 gui_list_add_group -id ${Wave.1} -after Mem_System|dcache_unit {Mem_System|bus_arbitration_unit}
