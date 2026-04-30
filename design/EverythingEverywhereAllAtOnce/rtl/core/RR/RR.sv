@@ -241,12 +241,15 @@ module RR (
         seg0_limit_wo_datasize  : seg0_limit_wo_datasize,
         next_ld_vaddy           : next_ld_vaddy,
         ld_laddy                : ld_laddy,
+        ld_stack_access         : (latchesInUse.cs.seg_0_id == SS),
 
         st_vaddy                : actual_st_vaddy,
         seg1_limit_w_datasize   : seg1_limit_w_datasize,
         seg1_limit_wo_datasize  : seg1_limit_wo_datasize,
         next_st_vaddy           : actual_next_st_vaddy,
         st_laddy                : st_laddy,
+        st_stack_access         : (latchesInUse.cs.seg_1_valid ? (latchesInUse.cs.seg_1_id == SS) :
+                                                            (latchesInUse.cs.seg_0_id == SS)),
 
         sr_id                   : latchesInUse.cs.sr_id,
         sr_data                 : reg_out.SR_data,

@@ -10,6 +10,7 @@ module npu_node2 (
     input bool write_intent,
     input bool mem_op, //this will be 
     input v_address_t next_page_vaddy,
+    input bool stack_access,
     output npu_node2_outputs_t outputs
 );
 
@@ -62,10 +63,10 @@ module npu_node2 (
     bool tlb0_pagefault, tlb0_generalprotection;
     bool tlb1_pagefault, tlb1_generalprotection;
 
-    assign tlb0_pagefault = tlb0_out.pageFault;
-    assign tlb1_pagefault = cross_page_access ? tlb1_out.pageFault : 1'b0;
-    assign tlb0_generalprotection = tlb0_out.gp_exp;
-    assign tlb1_generalprotection = cross_page_access ? tlb1_out.gp_exp : 1'b0;
+    assign tlb0_pagefault = tlb0_out.pageFault && !stack_access;
+    assign tlb1_pagefault = (cross_page_access ? tlb1_out.pageFault : 1'b0) && !stack_access;
+    assign tlb0_generalprotection = tlb0_out.gp_exp && !stack_access;
+    assign tlb1_generalprotection = (cross_page_access ? tlb1_out.gp_exp : 1'b0) && !stack_access;
 
     // SegmentTranslation segx0 (.l_addr_i(addy0), .segValue(seg_data),
     //     .segLimit(seg_limit), .v_addr_o(vaddy0), .gp_fault_o(gp0_exp_temp_seg));

@@ -184,6 +184,7 @@ module DC (
         .datasize(latches_i.cs.datasize),
         .write_intent(1'b0),
         .mem_op(latches_i.cs.LD_OP),
+        .stack_access(latches_i.ld_stack_access),
         .outputs(ld_neuralnet_out)
     );
 
@@ -193,6 +194,7 @@ module DC (
         .datasize(latches_i.cs.datasize),
         .write_intent(latches_i.cs.ST_OP),
         .mem_op(latches_i.cs.ST_OP),
+        .stack_access(latches_i.st_stack_access),
         .outputs(st_neuralnet_out)
     );
 

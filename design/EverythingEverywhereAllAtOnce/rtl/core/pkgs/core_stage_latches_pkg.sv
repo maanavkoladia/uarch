@@ -204,12 +204,14 @@ package core_stage_latches_pkg;
         uint32_t seg0_limit_wo_datasize;
         v_address_t next_ld_vaddy;
         uint32_t ld_laddy;
+        bool ld_stack_access;
 
         v_address_t st_vaddy;
         uint32_t seg1_limit_w_datasize;
         uint32_t seg1_limit_wo_datasize;
         v_address_t next_st_vaddy;
         uint32_t st_laddy;
+        bool st_stack_access;
 
 
         l_address_t NEIP;
