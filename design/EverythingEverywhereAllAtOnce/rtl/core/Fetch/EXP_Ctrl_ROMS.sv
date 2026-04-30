@@ -83,7 +83,7 @@ module EXP_Ctrl_ROMS (
     assign idtEntryAddy = IDTR + rom_sel;//now this needs to go into bytes 5,4,3,2 of rom_data_out, eveything else should be 
 
     always_comb begin
-        rom_data_out = '0;
+        rom_data_out = '{default: '0};
         rom_data_out[0] = 8'h31;
         rom_data_out[1] = 8'h32;
         rom_data_out[2] = idtEntryAddy[7:0];
