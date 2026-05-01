@@ -143,7 +143,7 @@ module Everywhere_TOP (
         .newPowerGateValueFromCore_i(dte2ddr5.newPowerGateValueFromCore),
         .driveDataBus_i(dte2ddr5.driveDataBus),
         .dataBus(dataBus),
-        .addrBus(addrBus)
+        .addrBus(addressBus)
     );
 
 endmodule
