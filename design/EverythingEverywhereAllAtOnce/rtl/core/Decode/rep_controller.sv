@@ -56,6 +56,9 @@ module rep_controller (
     bool fsm_reset;
     assign fsm_reset = rst && !exp_pipe_clear && !flush;
 
+    bool fsm_stall;
+    assign fsm_stall = stall || wait_cmp || wait_mov;
+
     rep_fsm fsm_rep(
         .clk(clk),
         .rst(fsm_reset),
@@ -64,7 +67,7 @@ module rep_controller (
         .cs_cmp_i(cmp_inst),
         .mov_clear_i(movs_clear),
         .cmp_clear_i(cmp_clear),
-        .stall_i(stall || wait_mov || wait_cmp),
+        .stall_i(fsm_stall),
         .S_0(rep_fsm_state_bits[0]),  // current-state bit 0 (LSB)
         .S_1(rep_fsm_state_bits[1]),  // current-state bit 1 (1)
         .S_2(rep_fsm_state_bits[2]),  // current-state bit 2 (MSB)
@@ -78,7 +81,7 @@ module rep_controller (
         .exit_mov_i(exit_mov),
         .cont_cmp_i(continue_cmp),
         .exit_cmp_i(exit_cmp),
-        .wait_i(stall || wait_cmp),
+        .wait_i(fsm_stall),
         .S_0(rep_cmp_fsm_state_bits[0]),  // current-state bit 0 (LSB)
         .S_1(rep_cmp_fsm_state_bits[1]),  // current-state bit 1 (1)
         .S_2(rep_cmp_fsm_state_bits[2]),  // current-state bit 2 (MSB)
@@ -94,7 +97,7 @@ module rep_controller (
         .cont_mov_i(continue_mov),
         .wait_mov_i(wait_mov),
         .exit_mov_i(exit_mov),
-        .stall_i(stall),
+        .stall_i(fsm_stall),
         .S_0(rep_movs_fsm_state_bits[0]),  // current-state bit 0 (LSB)
         .S_1(rep_movs_fsm_state_bits[1]),  // current-state bit 1 (1)
         .S_2(rep_movs_fsm_state_bits[2]),  // current-state bit 2 (MSB)
@@ -422,7 +425,7 @@ module rep_controller (
             datasize       : saved_datasize,
             will_mod_zf    : 1'b1,
             seg_1_valid    : 1'b0,
-            seg_0_id       : saved_segment_override ? saved_segment0 : ES,
+            seg_0_id       : ES,
             seg_1_id       : DS,
             special_modrm_bs: 1'b0,
             special_br      : 1'b0

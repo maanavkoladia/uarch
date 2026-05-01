@@ -1,5 +1,5 @@
 # Enumeration map for FSM: rep_movs_fsm
-# 6 states -> 3 bit(s)
+# 7 states -> 3 bit(s)
 # IDLE is always assigned encoding 0
 # ERROR is always assigned the highest encoding
 # ERROR was synthesised (not present in source CSV)
@@ -8,7 +8,8 @@
 # --------------------------------------------------
   IDLE                                  0  000  # IDLE (forced 0)
   DEC_ECX_MOV                           1  001
-  FUCK_ME                               2  010
-  MOVS                                  3  011
-  MOVS_OP                               4  100
-  ERROR                                 5  101  # ERROR (highest), synthesised
+  FILLER                                2  010
+  FUCK_ME                               3  011
+  MOVS                                  4  100
+  MOVS_OP                               5  101
+  ERROR                                 6  110  # ERROR (highest), synthesised
