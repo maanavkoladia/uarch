@@ -12,7 +12,7 @@ DISTRO := $(shell . /etc/os-release && echo $$ID)
 
 TARGET = system_testing
 
-STRUCTRURAL := true
+STRUCTRURAL := false
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
 CLK_PERIOD := 8
@@ -90,7 +90,7 @@ CC_FLAGS += \
 	+define+RTL_FLAGDUMP_FILE_NAME=\"$(RTL_FLAGDUMP_FILE)\" \
 	
 
-.PHONY: all run clean see gen full
+.PHONY: all run clean see gen full genSoft runSoft
 
 all: $(TARGET) 
 	
@@ -114,6 +114,15 @@ compare: makeLogDir
 gen:
 	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
 	@$(PYTHON) $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
+	@rm -f cleaned_scripts.json
+
+runSoft:
+	./$(TARGET) $(SIMFLAGS) 2>&1| tee sim.log
+	
+
+genSoft:
+	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
+	@$(PYTHON) $(MASTER_STARTUP_SCRIPT) -s cleaned_scripts.json $(GEN_CONF)
 	@rm -f cleaned_scripts.json
 
 see:

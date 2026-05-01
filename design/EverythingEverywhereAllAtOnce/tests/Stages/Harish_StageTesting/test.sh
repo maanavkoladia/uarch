@@ -17,7 +17,7 @@ allTestCasePaths=(
 
 outDir="Test_Results/"
 
-SingleTest() {
+SingleTestFull() {
     casePath="${scriptDir}/$1"
     base=$(basename "$casePath") 
     testCaseOutDir="$scriptDir/$outDir/$base/"
@@ -27,6 +27,7 @@ SingleTest() {
     #make gen TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
     #make sim-run TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
     make full TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    tail ${testCaseOutDir}/compare_report.txt
 
     #-DTEST_CASE_PATH="$casePath"
 }
@@ -36,11 +37,24 @@ MioTest() {
     SingleTest "$mioTestPath"
 }
 
+SingleTestReg(){
+    casePath="${scriptDir}/$1"
+    base=$(basename "$casePath") 
+    testCaseOutDir="$scriptDir/$outDir/$base/"
+
+    echo "Running the $casePath test case, results are in $testCaseOutDir"
+
+    make genSoft runSoft compare TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+
+    tail ${testCaseOutDir}/compare_report.txt
+
+}
+
 AllTests() {
     echo "Running All"
-
+    make clean
     for caseDir in "${allTestCasePaths[@]}"; do
-        SingleTest "$caseDir"
+        SingleTestReg "$caseDir"
     done
 }
 
@@ -56,7 +70,7 @@ source venv/bin/activate
 while getopts "s:mac" opt; do
     case $opt in
         s)
-            SingleTest "$OPTARG"
+            SingleTestFull "$OPTARG"
             ;;
         m)
             MioTest
