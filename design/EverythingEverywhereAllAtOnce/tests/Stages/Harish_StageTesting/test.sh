@@ -6,17 +6,17 @@ regTestLog="regTest.log"
 
 scriptDir=$(pwd);
 
-
 allTestCasePaths=(
-    "config/TheBigOne/"
-    "config/dcache_public/"
-    "config/MovHeavy/"
-    "config/simpleFarTest/"
-    "config/exception_public/"
-    "config/BranchHeavy/"
-    "config/EdgeCase/"
-    "config/DecodeStress/"
-    "config/MemHeavy/")
+    "BranchHeavy"
+    "dcache_public"
+    "DecodeStress"
+    "EdgeCase"
+    "exception_public"
+    "MemHeavy"
+    "MovHeavy"
+    "simpleFarTest"
+    "TheBigOne"
+)
 
 
 outDir="Test_Results/"
@@ -46,21 +46,19 @@ SingleTestReg(){
     testCaseOutDir="$scriptDir/$outDir/$base/"
 
     echo -e "\n\n\nRunning the $casePath test case, results are in $testCaseOutDir" >> $regTestLog
-
-    make genSoft TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
-    make runSoft TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
-    make compare TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
-    #make see TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    #echo -e "\n\n\nRunning the $casePath test case, results are in $testCaseOutDir" 
+    mkdir -p $testCaseOutDir
+    make full TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
     
-    #tail ${testCaseOutDir}/compare_report.txt >> $regTestLog 
+    tail ${testCaseOutDir}/compare_report.txt >> $regTestLog 
 
 }
 
 AllTests() {
     echo "Starting Reg Testing"
     rm -rf $outDir
+    rm $regTestLog
 
-    #rm $regTestLog
     for caseDir in "${allTestCasePaths[@]}"; do
         SingleTestReg "$caseDir"
     done

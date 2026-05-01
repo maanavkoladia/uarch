@@ -145,7 +145,7 @@ def orchestrate(paths, master_conf, work_dir, short_mode):
 
         # Short mode override (ONLY affects Memory)
         if short_mode and label == "Memory Init":
-            script_keys = ["Mem_Compile_Path"]
+            script_keys = ["Mem_Compile_Path", "Mem_Gen_Hex_Path",]
 
         # SKIP
         sub_conf_rel = master_conf.get(conf_key)

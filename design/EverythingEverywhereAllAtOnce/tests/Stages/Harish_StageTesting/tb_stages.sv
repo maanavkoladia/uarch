@@ -178,6 +178,8 @@ module tb_stages ();
         $display("idm empty count: %0d", idm_empty_cycle_counts);
         $display("num vcache hits: %0d", vcache_hits);
         $display("num icache hits: %0d", icache_hits);
+        $display("Reg Dump File Path: %s", `RTL_REGDUMP_FILE_NAME);
+        $display("Flag Dump File Path: %s", `RTL_FLAGDUMP_FILE_NAME);
         $finish;
         `LOG("Finishing mem System TB");
 
