@@ -11,3 +11,13 @@ module disp_finder (
     assign disp_index3 = sib_index + sib_size + 4'd3;
     assign disp = {IR[disp_index3], IR[disp_index2], IR[disp_index1], IR[disp_index0]};
 endmodule
+
+/*
+    wire [3:0] disp_index;  //byte index
+    wire adder_cout;
+    `ADD_N(disp_index_adder, 4, disp_index, adder_cout, sib_index, {3'b0, sib_size}, 1'b0)
+
+    
+    assign disp = IR[{disp_index, 3'd0} +: 32];
+
+    */

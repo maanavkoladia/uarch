@@ -16,3 +16,5 @@ assign imm64 = {IR[idx7], IR[idx6], IR[idx5], IR[idx4],
                 IR[idx3], IR[idx2], IR[idx1], IR[imm_index]};
 
 endmodule
+
+    //assign imm64 = IR[imm_index +: 64];

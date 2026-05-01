@@ -21,20 +21,73 @@ module tb_stages ();
 
     uint32_t idm_empty_cycle_counts;
     uint32_t flush_count;
-    uint32_t vcache_hits;
+    uint32_t i_vcache_hits;
     uint32_t icache_hits;
+    uint32_t dep_stall_count;
+    uint32_t rr_stall_count;
+    uint32_t decode_invalid_count;
+    uint32_t branch_counts;
+    uint32_t d_vcache0_hits;
+    uint32_t d_vcache1_hits;
+    uint32_t d_vcache2_hits;
+    uint32_t d_vcache3_hits;
+    uint32_t dcache0_hits;
+    uint32_t dcache1_hits;
+    uint32_t dcache2_hits;
+    uint32_t dcache3_hits;
+    uint32_t btb_hits;
+
     always_ff @(posedge clk) begin
         if(!rst) begin
             idm_empty_cycle_counts <= 0;
             flush_count <= 0;
-            vcache_hits <= 0;
+            i_vcache_hits <= 0;
             icache_hits <= 0;
+            dep_stall_count <= 0;
+            rr_stall_count <= 0;
+            decode_invalid_count <= 0;
+            branch_counts <= 0;
+
+            d_vcache0_hits <= 0;
+            d_vcache1_hits <= 0;
+            d_vcache2_hits <= 0;
+            d_vcache3_hits <= 0;
+            dcache0_hits <= 0;
+            dcache1_hits <= 0;
+            dcache2_hits <= 0;
+            dcache3_hits <= 0;
+
+            btb_hits <= 0;
         end
         else begin
             if (`FETCH_UNIT_PATH.outs_o.fetch_2_icache.num_valid_IDM_slots == 0) idm_empty_cycle_counts++;
             if (`EXE_UNIT_PATH.branch_resolution_o.flush == 1) flush_count++;
-            if (uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_hit == 1) vcache_hits++;
+            if (uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_hit == 1) i_vcache_hits++;
             if (uut_AllAtOnce.mem_sys_unit.icache_unit.icache_hit == 1) icache_hits++;
+            if (`DC_UNIT_PATH.dep_stall) dep_stall_count++;
+            if (`RR_UNIT_PATH.outs_o.stall) rr_stall_count++;
+            if (`DECODE_UNIT_PATH.invalid_inst) decode_invalid_count++;
+            if (`EXE_UNIT_PATH.latches_i.valid && 
+                    (`EXE_UNIT_PATH.latches_i.cs.OP_TYPE == JMP || 
+                    `EXE_UNIT_PATH.latches_i.cs.OP_TYPE == CALL ||
+                    `EXE_UNIT_PATH.latches_i.cs.OP_TYPE == RET ||
+                    `EXE_UNIT_PATH.latches_i.cs.OP_TYPE == RET_IMM)) branch_counts++;
+            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_outputs.hit) d_vcache0_hits++;
+            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.dcache_bank_outputs.hit) dcache0_hits++;
+
+            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[1].block.vcache_outputs.hit) d_vcache1_hits++;
+            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[1].block.dcache_bank_outputs.hit) dcache1_hits++;
+
+            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[2].block.vcache_outputs.hit) d_vcache2_hits++;
+            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[2].block.dcache_bank_outputs.hit) dcache2_hits++;
+
+            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[3].block.vcache_outputs.hit) d_vcache3_hits++;
+            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[3].block.dcache_bank_outputs.hit) dcache3_hits++;
+
+            if ((`DECODE_UNIT_PATH.idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP)
+                        && (`DECODE_UNIT_PATH.idm_outs_i.idm_slots[EIP[5:4]].valid)
+                        && (`DECODE_UNIT_PATH.idm_outs_i.idm_slots[EIP[5:4]].br_valid)
+                        && `DECODE_UNIT_PATH.decode_forward) btb_hits++;
         end
     end
 
@@ -173,11 +226,31 @@ module tb_stages ();
         /////////////////////////////////////////////////////////////////////////////////////
         DelayClks(5000);
         //print_all();
-        $display("program completion cycle count: %0d", finish_time);
+        $display("\n\n\nprogram completion cycle count: %0d", finish_time);
         $display("flush count: %0d", flush_count);
         $display("idm empty count: %0d", idm_empty_cycle_counts);
-        $display("num vcache hits: %0d", vcache_hits);
-        $display("num icache hits: %0d", icache_hits);
+        $display("num i_vcache hits: %0d", i_vcache_hits);
+        $display("num icache hits: %0d\n", icache_hits);
+        $display("dep stall count: %0d", dep_stall_count);
+        $display("rr stall count: %0d", rr_stall_count);
+        $display("invalid inst decode count: %0d", decode_invalid_count);
+        $display("num branch count: %0d\n", branch_counts);
+
+        $display("d_vcache0 hit count: %0d", d_vcache0_hits);
+        $display("dcache0 hit count: %0d", dcache0_hits);
+
+        $display("d_vcache1 hit count: %0d", d_vcache1_hits);
+        $display("dcache1 hit count: %0d", dcache1_hits);
+
+        $display("d_vcache2 hit count: %0d", d_vcache2_hits);
+        $display("dcache2 hit count: %0d", dcache2_hits);
+
+        $display("d_vcache3 hit count: %0d", d_vcache3_hits);
+        $display("dcache3 hit count: %0d\n", dcache3_hits);
+
+        $display("btb hit count: %0d\n\n", btb_hits);
+
+
         $display("Reg Dump File Path: %s", `RTL_REGDUMP_FILE_NAME);
         $display("Flag Dump File Path: %s", `RTL_FLAGDUMP_FILE_NAME);
         $finish;

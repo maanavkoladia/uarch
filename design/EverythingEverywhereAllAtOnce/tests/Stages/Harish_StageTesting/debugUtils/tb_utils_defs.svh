@@ -26,7 +26,7 @@ import tb_debug_pkg::*;
 `define FETCH_UNIT_PATH uut_AllAtOnce.core_unit.fetch_unit
 `define DECODE_UNIT_PATH uut_AllAtOnce.core_unit.decode_unit
 `define RR_UNIT_PATH uut_AllAtOnce.core_unit.rr_unit
-`define DC_UNIT_PATH (temp)
+`define DC_UNIT_PATH uut_AllAtOnce.core_unit.dc_unit
 `define MEM_UNIT_PATH (temp)
 `define EXE_UNIT_PATH uut_AllAtOnce.core_unit.execute_unit
 `define WB_UNIT_PATH uut_AllAtOnce.core_unit.write_back_unit

@@ -8,7 +8,7 @@ module Predictor (
     output predictor_output_t outputs
 );
 
-    // Instantiate BTFN predictor
+    //Instantiate BTFN predictor
     // BTFN btfn_inst (
     //     .inputs(inputs),
     //     .outputs(outputs)

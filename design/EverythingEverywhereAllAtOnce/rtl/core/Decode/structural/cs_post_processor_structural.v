@@ -1,0 +1,208 @@
+import control_store_pkg::*;
+
+module cs_post_processor (
+    input bool invalid_inst,
+    input bool xchg,
+    input bool cmpxchg,
+    input bool op_in_modrm,
+    input op_in_modrm_subset_t op_in_modrm_subset,
+    input byte modrm_byte,
+    input decode_cs_t decode_cs_i,
+    input rr_cs_t rr_cs_i,
+    input dc_cs_t dc_cs_i,
+    input mem_cs_t mem_cs_i,
+    input exe_cs_t exe_cs_i,
+    input wb_cs_t wb_cs_i,
+
+    output decode_cs_t decode_cs_o,
+    output rr_cs_t rr_cs_o,
+    output dc_cs_t dc_cs_o,
+    output mem_cs_t mem_cs_o,
+    output exe_cs_t exe_cs_o,
+    output wb_cs_t wb_cs_o
+);
+
+    exe_cs_operation_type_e overriden_op_type;
+    source_selector_e overriden_br_sel;
+    logic [2:0] reg_field;
+    bool ff_jmp, ff_push, ff_call;
+    assign reg_field = modrm_byte[5:3];
+
+    //op_type setting
+    always_comb begin
+    overriden_op_type = exe_cs_i.OP_TYPE;
+    overriden_br_sel = exe_cs_i.branch_target_sel;
+    ff_jmp = 1'b0;
+    ff_push = 1'b0;
+    ff_call = 1'b0;
+        case(op_in_modrm_subset)
+            SHF: begin
+                if(reg_field == 3'd4) overriden_op_type = SAL;
+                else if (reg_field == 3'd7) overriden_op_type = SAR;
+            end
+            CTRL: begin
+                overriden_br_sel = rr_cs_o.LD_OP ? BUF32 : DR_REGISTER;
+                if(reg_field == 3'd2) begin
+                    overriden_op_type = CALL;     //gonna default to call, overide for jmp and push
+                    ff_call = 1'b1;
+                end
+                else if(reg_field == 3'd4) begin
+                    overriden_op_type = JMP;
+                    ff_jmp = 1'b1;
+                end
+                else if(reg_field == 3'd6) begin
+                    overriden_op_type = PUSH;
+                    ff_push = 1'b1;
+                end
+            end
+            ALU: begin
+                if(reg_field == 3'd0) overriden_op_type = ADD;
+                else if(reg_field == 3'd1) overriden_op_type = OR;
+                else if(reg_field == 3'd2) overriden_op_type = ADC;
+                else if(reg_field == 3'd3) overriden_op_type = SBB;
+                else if(reg_field == 3'd4) overriden_op_type = AND;
+            end
+        endcase
+    end
+
+    // =====================
+    // DECODE
+    // =====================
+    assign decode_cs_o = decode_cs_i;
+    // assign decode_cs_o = '{
+    //     REP                     : decode_cs_i.REP,
+    //     REP_CMP                 : decode_cs_i.REP_CMP,
+    //     HALT                    : decode_cs_i.HALT,
+    //     MODRM_NEEDED            : decode_cs_i.MODRM_NEEDED,
+    //     RM_IS_DR                : decode_cs_i.RM_IS_DR,
+    //     REG_IS_DR               : decode_cs_i.REG_IS_DR,
+    //     REG_IS_SEGMENT          : decode_cs_i.REG_IS_SEGMENT,
+    //     HARDCODED_DR            : decode_cs_i.HARDCODED_DR,
+    //     HARDCODED_DR_ID         : decode_cs_i.HARDCODED_DR_ID,
+    //     HARDCODED_SR            : decode_cs_i.HARDCODED_SR,
+    //     HARDCODED_SR_ID         : decode_cs_i.HARDCODED_SR_ID,
+    //     HARDCODED_DR_RD         : decode_cs_i.HARDCODED_DR_RD,
+    //     HARDCODED_SR_RD         : decode_cs_i.HARDCODED_SR_RD,
+    //     HARDCODED_DR_WR         : decode_cs_i.HARDCODED_DR_WR,
+    //     HARDCODED_SR_WR         : decode_cs_i.HARDCODED_SR_WR,
+    //     HARDCODED_LD_OP         : decode_cs_i.HARDCODED_LD_OP,
+    //     HARDCODED_ST_OP         : decode_cs_i.HARDCODED_ST_OP,
+    //     LD_OP_CANCEL            : decode_cs_i.
+    //     OP_IN_MODRM             : decode_cs_i.OP_IN_MODRM,
+    //     dr_id                   : decode_cs_i.dr_id,
+    //     sr_id                   : decode_cs_i.sr_id,
+    //     DATA_SIZE               : decode_cs_i.DATA_SIZE
+    // };
+
+    // =====================
+    // RR
+    // =====================
+    assign rr_cs_o = '{
+        //HARDCODED_DR_RD : rr_cs_i.HARDCODED_DR_RD,
+        //HARDCODED_SR_RD : rr_cs_i.HARDCODED_SR_RD,
+        ST_SEL          : ff_jmp ? 1'b0 : rr_cs_i.ST_SEL,
+        MODRM_NEEDED    : rr_cs_i.MODRM_NEEDED,
+        RM_IS_DR        : rr_cs_i.RM_IS_DR,
+        SWITCH_LD_ADDY  : rr_cs_i.SWITCH_LD_ADDY,
+
+        LD_OP           : invalid_inst ? 
+                            1'b0 : rr_cs_i.LD_OP,
+
+        ST_OP           : invalid_inst ? 
+                            1'b0 : 
+                            ff_jmp ? 1'b0 : rr_cs_i.ST_OP,
+        MOVS_OP         : rr_cs_i.MOVS_OP,
+        dr_id           : rr_cs_i.dr_id,
+        sr_id           : ff_jmp ? NO_REG : rr_cs_i.sr_id,
+        dr_rd           : rr_cs_i.dr_rd,
+        sr_rd           : (ff_jmp) ? 1'b0 : rr_cs_i.sr_rd,
+        eax_rd          : cmpxchg ? 1'b1 : 1'b0,
+        dr_wr           : invalid_inst ?
+                            1'b0 :
+                            (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i.dr_wr,
+
+        sr_wr           : invalid_inst ? 
+                            1'b0 :
+                            xchg ? 1'b1 : 
+                                ff_jmp ? 1'b0 : rr_cs_i.sr_wr,
+
+        eax_wr          : invalid_inst ? 
+                            1'b0 :
+                            cmpxchg ? 1'b1 : 1'b0,
+
+        datasize        : rr_cs_i.datasize,
+        will_mod_zf     : rr_cs_i.will_mod_zf,
+        seg_1_valid     : ff_jmp ? 1'b0 : rr_cs_i.seg_1_valid,
+        seg_0_id        : ff_push ? DS : rr_cs_i.seg_0_id,
+        seg_1_id        : rr_cs_i.seg_1_id,
+        special_modrm_bs: rr_cs_i.special_modrm_bs,
+        special_br      : rr_cs_i.special_br
+    };
+
+    // =====================
+    // DC
+    // =====================
+    assign dc_cs_o = '{
+        LD_OP       : invalid_inst ? 
+                            1'b0 : dc_cs_i.LD_OP,
+        ST_OP       : invalid_inst ? 
+                            1'b0 :
+                            ff_jmp ? 1'b0 : dc_cs_i.ST_OP,
+        dr_upper8   : dc_cs_i.dr_upper8,
+        sr_upper8 : dc_cs_i.sr_upper8,
+        datasize : dc_cs_i.datasize
+    };
+
+    // =====================
+    // MEM
+    // =====================
+    assign mem_cs_o = '{
+        LD_OP   : invalid_inst ? 
+                            1'b0 : mem_cs_i.LD_OP,
+        ST_OP   : invalid_inst ? 
+                            1'b0 : ff_jmp ? 1'b0 : mem_cs_i.ST_OP
+    };
+
+    // =====================
+    // EXE
+    // =====================
+    assign exe_cs_o = '{
+        ST_OP              : invalid_inst ? 
+                                1'b0 :
+                                ff_jmp ? 1'b0 : mem_cs_i.ST_OP,
+        OP_TYPE            : (op_in_modrm) ? overriden_op_type : exe_cs_i.OP_TYPE,
+        alu_inputA_sel     : ff_jmp ? 
+                                NO_EXE :
+                                    ff_call ? NEIP : exe_cs_i.alu_inputA_sel,    //can technically use 4-1 mux here instaed of 2 2-1
+        alu_inputB_sel     : ff_jmp ? NO_EXE : exe_cs_i.alu_inputB_sel,
+        branch_target_sel  : (op_in_modrm) ? overriden_br_sel : exe_cs_i.branch_target_sel,
+        shift_by_one       : exe_cs_i.shift_by_one,
+        br_ucond           : ff_push ? 1'b0 : exe_cs_i.br_ucond,
+        relative_branch    : exe_cs_i.relative_branch,
+        special_br         : exe_cs_i.special_br,
+        is_far             : exe_cs_i.is_far,
+        is_call            : ff_jmp || ff_push ? 1'b0 : exe_cs_i.is_call,
+        second_flag_needed : exe_cs_i.second_flag_needed,
+        rep_no_zf_update    : 0
+    };
+
+    // =====================
+    // WB
+    // =====================
+    assign wb_cs_o = '{
+        ST_OP : invalid_inst ? 
+                            1'b0 :
+                            ff_jmp ? 1'b0 : mem_cs_i.ST_OP,
+        WB_DR : invalid_inst ? 
+                            1'b0 :
+                            (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i.dr_wr,
+        WB_SR : invalid_inst ? 
+                            1'b0 :
+                            xchg ? 1'b1 : 
+                            ff_jmp ? 1'b0 : rr_cs_i.sr_wr,
+        WB_EAX : invalid_inst ? 
+                            1'b0 :
+                            cmpxchg ? 1'b1 : 1'b0
+    };
+    
+endmodule

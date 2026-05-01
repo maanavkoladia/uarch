@@ -65,27 +65,6 @@ module predecode(
         .imm_size_o(ppu_imm_size[3]), .disp_size_o(ppu_disp_size[3]), .disp_needed_o(ppu_disp_needed[3]), .sib_size_o(ppu_sib_size[3]), .needrm_o(ppu_needrm[3]), .sib_byte(ppu_sib_byte[3]), .disp(ppu_displacement[3]), .imm64(ppu_imm[3]),
         .inst_valid(inst_valid[3]));
 
-    // mux4_4 length_mux(.in0(ppu_inst_length[0]), .in1(ppu_inst_length[1]), .in2(ppu_inst_length[2]), .in3(ppu_inst_length[3]), 
-    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(inst_length));
-    // mux4_8$ sib_mux(.IN0(ppu_sib_byte[0]), .IN1(ppu_sib_byte[1]), .IN2(ppu_sib_byte[2]), .IN3(ppu_sib_byte[3]), 
-    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(sib_byte));
-    // mux4_8$ opcode_mux(.IN0(IR[0]), .IN1(IR[1]), .IN2(IR[2]), .IN3(IR[3]), 
-    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(opcode_byte));
-    // mux4_8$ modrm_mux(.IN0(IR[1]), .IN1(IR[2]), .IN2(IR[3]), .IN3(IR[4]), 
-    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(modrm_byte));
-    // mux4_32 disp_mux(.in0(ppu_displacement[0]), .in1(ppu_displacement[1]), .in2(ppu_displacement[2]), .in3(ppu_displacement[3]), 
-    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(disp));
-    // mux4$ disp_size_mux(.in0(ppu_disp_size[0]), .in1(ppu_disp_size[1]), .in2(ppu_disp_size[2]), .in3(ppu_disp_size[3]), 
-    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_size));
-    // mux4$ disp_needed_mux(.in0(ppu_disp_needed[0]), .in1(ppu_disp_needed[1]), .in2(ppu_disp_needed[2]), .in3(ppu_disp_needed[3]), 
-    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_needed));
-    // mux4_64 imm_mux(.in0(ppu_imm[0]), .in1(ppu_imm[1]), .in2(ppu_imm[2]), .in3(ppu_imm[3]),
-    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(imm64));
-    // mux4$ valid_inst_mux(.in0(inst_valid[0]), .in1(inst_valid[1]), .in2(inst_valid[2]),
-    //     .in3(inst_valid[3]), .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(true_inst_valid));
-    // mux4$ sib_size_mux(.in0(ppu_sib_size[0]), .in1(ppu_sib_size[1]), .in2(ppu_sib_size[2]), .in3(ppu_sib_size[3]), 
-    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(sib_size));
-
     // =====================
     // Instruction length (4-bit)
     // =====================
@@ -183,3 +162,24 @@ module predecode(
         {inst_length[3], inst_length[2], inst_length[1], inst_length[0]})
 
 endmodule
+
+    // mux4_4 length_mux(.in0(ppu_inst_length[0]), .in1(ppu_inst_length[1]), .in2(ppu_inst_length[2]), .in3(ppu_inst_length[3]), 
+    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(inst_length));
+    // mux4_8$ sib_mux(.IN0(ppu_sib_byte[0]), .IN1(ppu_sib_byte[1]), .IN2(ppu_sib_byte[2]), .IN3(ppu_sib_byte[3]), 
+    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(sib_byte));
+    // mux4_8$ opcode_mux(.IN0(IR[0]), .IN1(IR[1]), .IN2(IR[2]), .IN3(IR[3]), 
+    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(opcode_byte));
+    // mux4_8$ modrm_mux(.IN0(IR[1]), .IN1(IR[2]), .IN2(IR[3]), .IN3(IR[4]), 
+    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(modrm_byte));
+    // mux4_32 disp_mux(.in0(ppu_displacement[0]), .in1(ppu_displacement[1]), .in2(ppu_displacement[2]), .in3(ppu_displacement[3]), 
+    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(disp));
+    // mux4$ disp_size_mux(.in0(ppu_disp_size[0]), .in1(ppu_disp_size[1]), .in2(ppu_disp_size[2]), .in3(ppu_disp_size[3]), 
+    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_size));
+    // mux4$ disp_needed_mux(.in0(ppu_disp_needed[0]), .in1(ppu_disp_needed[1]), .in2(ppu_disp_needed[2]), .in3(ppu_disp_needed[3]), 
+    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_needed));
+    // mux4_64 imm_mux(.in0(ppu_imm[0]), .in1(ppu_imm[1]), .in2(ppu_imm[2]), .in3(ppu_imm[3]),
+    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(imm64));
+    // mux4$ valid_inst_mux(.in0(inst_valid[0]), .in1(inst_valid[1]), .in2(inst_valid[2]),
+    //     .in3(inst_valid[3]), .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(true_inst_valid));
+    // mux4$ sib_size_mux(.in0(ppu_sib_size[0]), .in1(ppu_sib_size[1]), .in2(ppu_sib_size[2]), .in3(ppu_sib_size[3]), 
+    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(sib_size));
