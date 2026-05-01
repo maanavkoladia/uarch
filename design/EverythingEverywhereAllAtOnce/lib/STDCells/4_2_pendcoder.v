@@ -46,14 +46,14 @@ wire in2_i_inv;
 // SOP logic (Quine-McCluskey minimised)
 // ----------------------------------------------------------------
 
-// out1_o = in2_i |  in3_i
+// out1_o =  in3_i | in2_i
 wire out1_o_t0;
 wire out1_o_and0_buf_mid;
-`INV_N(out1_o_and0_buf_i0, 1, in2_i, out1_o_and0_buf_mid)
+`INV_N(out1_o_and0_buf_i0, 1,  in3_i, out1_o_and0_buf_mid)
 `INV_N(out1_o_and0_buf_i1, 1, out1_o_and0_buf_mid, out1_o_t0)
 wire out1_o_t1;
 wire out1_o_and1_buf_mid;
-`INV_N(out1_o_and1_buf_i0, 1,  in3_i, out1_o_and1_buf_mid)
+`INV_N(out1_o_and1_buf_i0, 1, in2_i, out1_o_and1_buf_mid)
 `INV_N(out1_o_and1_buf_i1, 1, out1_o_and1_buf_mid, out1_o_t1)
 
 `OR_2(out1_o_or, 1, out1_o, out1_o_t0, out1_o_t1)

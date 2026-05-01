@@ -173,7 +173,10 @@ module RR (
         .Segment1_valid(latchesInUse.cs.seg_1_valid),
         .dep_stall     (depstall),
         .ecx_sb        (ecx_sb),
-        .codeSeg_sb    (cs_sb)
+        .codeSeg_sb    (cs_sb),
+        .LD_OP(latchesInUse.cs.LD_OP),
+        .ST_OP(latchesInUse.cs.ST_OP),
+        .REP_OP(decode_outs_i.rep_latch)
     );
 
     
@@ -267,7 +270,8 @@ module RR (
             codeSeg_sb  : cs_sb,
             codeSeg_data  : reg_out.CS_data,
             codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID].limit,
-            dc_stage_latch_we : dc_latches_we
+            dc_stage_latch_we : dc_latches_we,
+            regFileValues : reg_out.regFileValues_o
         };
 
 endmodule

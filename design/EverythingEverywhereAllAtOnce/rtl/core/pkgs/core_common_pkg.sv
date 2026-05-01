@@ -74,6 +74,8 @@ package core_common_pkg;
         uint32_t codeSeg_limit;
 
         bool dc_stage_latch_we;
+
+        uint64_t regFileValues[NUM_REGS];
     } rr_outputs_t;
 
     typedef struct {

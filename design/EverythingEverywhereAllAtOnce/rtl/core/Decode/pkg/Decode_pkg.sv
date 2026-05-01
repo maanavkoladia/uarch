@@ -33,12 +33,13 @@ package Decode_pkg;
 
     localparam REP_MOVS_FSM_NUM_STATES = 6;
     typedef enum logic [$clog2(REP_MOVS_FSM_NUM_STATES) - 1 : 0] {
-        MOVS_IDLE                           = 0,  // IDLE (reset state)
-        MOVS_DEC_ECX_MOV                    = 1,
-        MOVS_FUCK_ME                        = 2,
-        MOVS_MOVS                           = 3,
-        MOVS_MOVS_OP                        = 4,
-        MOVS_ERROR                          = 5  // ERROR (trap state), synthesised
+        MOVS_IDLE                          = 0,  // IDLE (reset state)
+        MOVS_DEC_ECX_MOV                   = 1,
+        MOVS_FILLER                        = 2,
+        MOVS_FUCK_ME                       = 3,
+        MOVS_MOVS                          = 4,
+        MOVS_MOVS_OP                       = 5,
+        MOVS_ERROR                         = 6  // ERROR (trap state), synthesised
     } rep_movs_fsm_states_e;
 
     localparam REP_CMP_FSM_NUM_STATES = 6;
