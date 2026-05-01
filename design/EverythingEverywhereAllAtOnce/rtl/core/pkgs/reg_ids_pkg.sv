@@ -79,7 +79,6 @@ package reg_ids_pkg;
         EDI = 12,
         ESP = 13,
         EBP = 14,
-
         MM0 = 15,
         MM1 = 16,
         MM2 = 17,

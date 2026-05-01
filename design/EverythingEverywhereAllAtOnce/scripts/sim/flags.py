@@ -151,7 +151,7 @@ class Flags:
         self._set_bit(PF, (bin(low_byte).count('1') % 2) == 0)
 
         # OF: defined only for 1-bit shifts; SAR always clears OF
-        if count == 1:
+        if count != 0:
             self._set_bit(OF, 0)
 
         # AF is undefined; clear it

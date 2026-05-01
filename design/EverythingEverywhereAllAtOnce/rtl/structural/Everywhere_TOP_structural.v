@@ -30,7 +30,7 @@ module Everywhere_TOP (
     wire                         [ADDRESS_BUS_WIDTH_BITS - 1 : 0] addressBus;
 
     //mem
-    //mem_TOP mem_unit (
+    // mem_TOP mem_unit (
     //    .clk(clk),
     //    .rst(rst),
     //    .address_bus(addressBus),
@@ -38,7 +38,7 @@ module Everywhere_TOP (
     //    .inFromDte(dte2mem),
     //    .out2Dte(mem2dte),
     //    .out2Sch(mem2sched)
-    //);
+    // );
 
     mem_TOP mem_unit (
         .clk(clk),
@@ -65,15 +65,39 @@ module Everywhere_TOP (
     );
 
     //icache
+    // ICache icache_unit (
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .inFromCore_i(core2icache_i),
+    //     .out2Core_o(icache2core_o),
+    //     .inFromDte_i(dte2icache),
+    //     .out2Sch_o(icache2sched),
+    //     .addrBus(addressBus),
+    //     .dataBus(dataBus)
+    // );
+
+    uintCL_t icache_instruction_line_flat;
+
+    always_comb begin
+        for(int i = 0; i < CACHE_LINES_SIZE_B; i++)begin
+            icache2core_o.instruction_line[i] = icache_instruction_line_flat[i*8 +: 8];
+        end
+    end
+
     ICache icache_unit (
         .clk(clk),
         .rst(rst),
-        .inFromCore_i(core2icache_i),
-        .out2Core_o(icache2core_o),
-        .inFromDte_i(dte2icache),
-        .out2Sch_o(icache2sched),
-        .addrBus(addressBus),
-        .dataBus(dataBus)
+        .icache_en(core2icache_i.icache_en),
+        .p_addr(core2icache_i.p_addr),
+        .v_addr_i(core2icache_i.v_addr_i),
+        .num_valid_IDM_slots(core2icache_i.num_valid_IDM_slots),
+        .out_hit(icache2core_o.hit),
+        .out_instruction_line(icache_instruction_line_flat),
+        .Mem_Valid(dte2icache.Mem_Valid),
+        .driveAddrBus(dte2icache.driveAddrBus),
+        .out_req(icache2sched.req),
+        .dataBus(dataBus),
+        .addrBus(addressBus)
     );
 
     //busarb
