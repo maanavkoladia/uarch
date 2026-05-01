@@ -1,0 +1,48 @@
+```
+@rtl/io/DMA_Controller 
+@lib/STDCells/STDCell_Macros.vh  
+@rtl/defines/interconnect_define.vh  
+@rtl/pkgs/interconnect_pkg.sv  
+@rtl/defines/common_define.vh  
+@rtl/pkgs/common_pkg.sv
+@rtl/io/pkg
+
+look at the .sv files in the dma_controller folder. I need these sv files ported to structural 2005-verilog using the macros defined in the STDCell_Macros.vh.
+
+Put all structural implementations of each module into the structural folder in the dma_controller directory.
+
+Let me know which macros need to be implement if you need any beyond the std macro lib. Do not implement them yourself I will implement them for you. 
+
+Take extra time to fully understand how the dma_controller functions and interacts with the rest of the system. 
+
+Within the dma_controller folder is a gen file that contains the fsm that runs the dma_controller, this one does not need to be changed.
+
+When porting to structural make sure you dont use any always block just assigns. no ternarys or logical and bitwise operators. it has to be fully gate implentations. you can only use assigns just for wires. 
+
+Also make sure to understand the io common package.
+
+Plan a way to port dma_controller and make sure you understand how to unpack structs and properly implent the dma_controller logic. 
+
+Let me know if you have any questions, dont make assumptions and take time to understand how dma_controller works.
+
+Plan a way to port dcache and make sure you understand how to unpack structs and properly implent the dcache logic. 
+
+Let me know if you have any questions, dont make assumptions and take time to understand how dcache works.
+
+
+Create as many ports as you. do not just create large wires for a struct.
+However, a cache line can be one wire but an entre structure should not just be an entire wire. 
+It should be readable. 
+
+The goal here is to slowly integrate each module structurally so it is important that everytime we add a structural module we dont remove the old structs that the sv verion was using
+
+
+
+
+
+
+
+
+
+
+```
