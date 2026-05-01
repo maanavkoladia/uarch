@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/EdgeCase/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/TheBigOne/
 #TEST_CASE_PATH =
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
@@ -159,8 +159,6 @@ pull:
 	git pull
 
 full: clean gen all run compare
-
-
 
 test: clean gen all
 	./test.sh -a 

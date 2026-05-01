@@ -122,12 +122,14 @@ module RegSB (
     always_comb begin
         // Stall logic (ALL using match-aware rule)
         dr_stall = cs_dr_rd && (LD_OP || ST_OP || REP_OP) && (SCORE_BOARD[dr_id].counter != 0);
-
         sr_stall = cs_sr_rd && (LD_OP || ST_OP || REP_OP) && (SCORE_BOARD[sr_id].counter != 0);
-
         eax_stall = 0;
         //            cs_eax_rd && (LD_OP || ST_OP || REP_OP) &&
         //        (SCORE_BOARD[EAX].counter != 0);
+        //
+        //dr_stall = cs_dr_rd && (SCORE_BOARD[dr_id].counter != 0);
+        //sr_stall = cs_sr_rd && (SCORE_BOARD[sr_id].counter != 0);
+        //eax_stall =  cs_eax_rd && (SCORE_BOARD[EAX].counter != 0);
 
         seg0_stall = (SCORE_BOARD[Segment0_ID].counter != 0);
 

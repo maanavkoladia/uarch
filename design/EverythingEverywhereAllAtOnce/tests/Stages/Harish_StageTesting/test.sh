@@ -7,15 +7,15 @@ regTestLog="regTest.log"
 scriptDir=$(pwd);
 
 allTestCasePaths=(
-    "BranchHeavy"
-    "dcache_public"
-    "DecodeStress"
-    "EdgeCase"
-    "exception_public"
-    "MemHeavy"
-    "MovHeavy"
-    "simpleFarTest"
-    "TheBigOne"
+    "config/BranchHeavy"
+    "config/dcache_public"
+    "config/DecodeStress"
+    "config/EdgeCase"
+    "config/exception_public"
+    "config/MemHeavy"
+    "config/MovHeavy"
+    "config/simpleFarTest"
+    "config/TheBigOne"
 )
 
 

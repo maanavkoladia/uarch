@@ -254,7 +254,9 @@ module EXE (
     assign dr_data = rr_outs_i.regFileValues[latches_i.dr_id];
     assign sr_data = rr_outs_i.regFileValues[latches_i.sr_id];
     assign eax_data = rr_outs_i.regFileValues[EAX];
-
+    //assign dr_data = latches_i.dr_data;
+    //assign sr_data = latches_i.sr_data;
+    //assign eax_data = latches_i.EAX;
 
     //==========================================================================
     // NEXT LATCH ASSIGNMENT

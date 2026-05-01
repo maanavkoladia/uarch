@@ -24,7 +24,6 @@ module RegFile (
     bool wb_wr_to_both;
     assign wb_wr_to_both = WB_DR0_we && WB_DR1_we && (WB_DR0_ID == WB_DR1_ID);
 
-    assign regFileValues_o = REGISTERS;
 
     always_ff @(posedge clk) begin
         if (!rst) REGISTERS <= '{default: '0};

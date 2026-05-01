@@ -173,7 +173,10 @@ module RR (
         .Segment1_valid(latchesInUse.cs.seg_1_valid),
         .dep_stall     (depstall),
         .ecx_sb        (ecx_sb),
-        .codeSeg_sb    (cs_sb)
+        .codeSeg_sb    (cs_sb),
+        .LD_OP(latchesInUse.cs.LD_OP),
+        .ST_OP(latchesInUse.cs.ST_OP),
+        .REP_OP(decode_outs_i.rep_latch)
     );
 
     
