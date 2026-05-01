@@ -173,18 +173,18 @@ module MPS_COMP_EQ #(
             // Level 2           : and2$(l0, l1)              → 0.35 ns
             // Critical path: 0.25 + 0.35 + 0.35 = 0.95 ns
             wire l0, l1;
-            and3$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]));
-            and3$ u1 (.out(l1), .in0(b[3]), .in1(b[4]), .in2(b[5]));
-            and2$ u2 (.out(eq), .in0(l0),   .in1(l1));
+            nand3$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]));
+            nand3$ u1 (.out(l1), .in0(b[3]), .in1(b[4]), .in2(b[5]));
+            nor2$ u2 (.out(eq), .in0(l0),   .in1(l1));
 
         end else if (WIDTH == 8) begin : EQ_8
             // Level 1 (parallel): and4$[0:3] || and4$[4:7]  → 0.40 ns
             // Level 2           : and2$(l0, l1)              → 0.35 ns
             // Critical path: 0.25 + 0.40 + 0.35 = 1.00 ns
             wire l0, l1;
-            and4$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]), .in3(b[3]));
-            and4$ u1 (.out(l1), .in0(b[4]), .in1(b[5]), .in2(b[6]), .in3(b[7]));
-            and2$ u2 (.out(eq), .in0(l0),   .in1(l1));
+            nand4$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]), .in3(b[3]));
+            nand4$ u1 (.out(l1), .in0(b[4]), .in1(b[5]), .in2(b[6]), .in3(b[7]));
+            nor2$ u2 (.out(eq), .in0(l0),   .in1(l1));
 
         end else if (WIDTH == 9) begin : EQ_9
             // Level 1 (parallel): and3$[0:2] || and3$[3:5] || and3$[6:8]  → 0.35 ns
@@ -195,6 +195,14 @@ module MPS_COMP_EQ #(
             and3$ u1 (.out(l1), .in0(b[3]), .in1(b[4]), .in2(b[5]));
             and3$ u2 (.out(l2), .in0(b[6]), .in1(b[7]), .in2(b[8]));
             and3$ u3 (.out(eq), .in0(l0),   .in1(l1),   .in2(l2));
+
+        end else if(WIDTH == 11) begin: EQ_11
+            wire l0, l1, l2;
+            nand4$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]), .in3(b[3]));
+            nand4$ u1 (.out(l1), .in0(b[4]), .in1(b[5]), .in2(b[6]), .in3(b[7]));
+            nand3$ u2 (.out(l2), .in0(b[8]), .in1(b[9]), .in2(b[10]));
+            nor3$ u3 (.out(eq), .in0(l0),   .in1(l1),   .in2(l2));
+
 
         end else if (WIDTH == 24) begin : EQ_24
             // Level 1 (parallel): 8× nand3$, one per triple of b[0:23]     → 0.35 ns

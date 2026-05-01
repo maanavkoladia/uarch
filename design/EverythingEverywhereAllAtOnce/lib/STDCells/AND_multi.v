@@ -136,20 +136,20 @@ module MPS_AND_IN5$ (
 
     wire t0, t1;
 
-    MPS_AND_IN3 g0 (
+    nand3$ g0 (
         t0,
         in0,
         in1,
         in2
     );
 
-    MPS_AND_IN2 g1 (
+    nand2$ g1 (
         t1,
         in3,
         in4
     );
 
-    MPS_AND_IN2 g2 (
+    nor2$ g2 (
         out,
         t0,
         t1

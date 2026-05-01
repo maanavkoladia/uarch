@@ -13,7 +13,7 @@ DISTRO := $(shell . /etc/os-release && echo $$ID)
 
 TARGET = system_testing
 
-STRUCTRURAL := false
+STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
 CLK_PERIOD := 8
@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/EdgeCase/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/TheBigOne/
 #TEST_CASE_PATH =
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
@@ -132,8 +132,9 @@ genSoft:
 	@rm -f cleaned_scripts.json
 
 see:
-	@echo $(LOG_DIR)
-	@echo $(TEST_CASE_PATH)
+	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'
+	@echo -e "\n"
+	
 
 makeLogDir:
 	@mkdir -p $(LOG_DIR)

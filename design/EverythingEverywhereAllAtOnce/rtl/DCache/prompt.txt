@@ -35,3 +35,36 @@ the dcache and vcache both use a phased clock to write into the ram cells from m
 Plan a way to port dcache and make sure you understand how to unpack structs and properly implent the dcache logic. 
 
 Let me know if you have any questions, dont make assumptions and take time to understand how dcache works.
+
+
+I need the eviction buffer to be ported to structural verilog 2005.
+I need to update the instantiation in the dcache block module. 
+
+Create as many ports as you. do not just create large wires for a struct.
+However, a cache line can be one wire but an entre structure should not just be an entire wire. 
+It should be readable. 
+
+The goal here is to slowly integrate each module structurally so it is important that everytime we add a structural module we dont remove the old structs that the sv verion was using
+instead I want to make sure it is easy to switch back and forth between structuarl and syste versions.
+this means in dcache top I to have the structs wired in and instaniated as needed as well as accesse to just the wires so I can easily swap in and out modules
+
+Take time to understand dcache. Becareful of logical loops that will happen due to switching from 0 time delay system to structural.
+
+remember all I need is an updated dcacheTOP.sv that is WITHIN the structuarl folder only touch files or bring in files in the structural folder. do not alter other parts of the dcache.
+
+
+This time you will be porting the vcache. Understand how the vcache.
+
+DO NOT MESS WITH THE GEOMETRY OF THE TAG STORE.
+
+keep all block names and gen vars i.e g_* should be kept the same in the structural models. also keep the module name the same DONOT put an _struct.
+
+Last time a bug that You made was a simple variable name swap. always double check that the code exactly matches the system verilog reference.
+
+
+
+
+
+
+
+
