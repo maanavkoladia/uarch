@@ -28,6 +28,10 @@ module RegSB (
     input reg_ids_e Segment1_ID,  //readregfile
     input bool Segment1_valid,  //inidcated wether or not we need to read the regfile for the scond Segment1_ID
 
+    input bool LD_OP,
+    input bool ST_OP,
+    input bool REP_OP,
+
     input bool flush,  //clear everthing
     input bool farFlush,  //preserve CS sb, to keep fetch off
     input bool callFlush,
@@ -63,7 +67,7 @@ module RegSB (
     bool wb0_dr_same_id, wb0_sr_same_id, wb1_dr_same_id, wb1_sr_same_id;
     bool wb0_eax_same_id, wb1_eax_same_id;
 
-    assign wb0_dr_same_id = (dr_id == wb_dr0_id) && (cs_dr_wr && wb_dr0_we); 
+    assign wb0_dr_same_id = (dr_id == wb_dr0_id) && (cs_dr_wr && wb_dr0_we);
     assign wb0_sr_same_id = (sr_id == wb_dr0_id) && (cs_sr_wr && wb_dr0_we);
     assign wb0_eax_same_id = (EAX == wb_dr0_id) && (cs_eax_wr && wb_dr0_we);
     assign wb1_dr_same_id = (dr_id == wb_dr1_id) && (cs_dr_wr && wb_dr1_we);
@@ -77,19 +81,17 @@ module RegSB (
 
     always_comb begin
         next_SCORE_BOARD = SCORE_BOARD;
-        if(cs_wr_to_both) begin
+        if (cs_wr_to_both) begin
             if (updateSB) next_SCORE_BOARD[dr_id].counter++;
-        end
-        else begin
+        end else begin
             if (cs_dr_wr && updateSB) next_SCORE_BOARD[dr_id].counter++;
             if (cs_sr_wr && updateSB) next_SCORE_BOARD[sr_id].counter++;
             if (cs_eax_wr && updateSB) next_SCORE_BOARD[EAX].counter++;
         end
 
-        if(wb_wr_to_both) begin
+        if (wb_wr_to_both) begin
             next_SCORE_BOARD[wb_dr0_id].counter--;
-        end
-        else begin
+        end else begin
             //dec logic
             if (wb_dr0_we) next_SCORE_BOARD[wb_dr0_id].counter--;
             if (wb_dr1_we) next_SCORE_BOARD[wb_dr1_id].counter--;
@@ -97,7 +99,7 @@ module RegSB (
     end
 
     always_ff @(posedge clk) begin
-        if(!rst || flush || callFlush || farFlush) SCORE_BOARD <= '{default: '0};
+        if (!rst || flush || callFlush || farFlush) SCORE_BOARD <= '{default: '0};
         else SCORE_BOARD <= next_SCORE_BOARD;
     end
 
@@ -119,26 +121,21 @@ module RegSB (
     logic dr_stall, sr_stall, seg0_stall, seg1_stall, sib_base_stall, sib_idx_stall, eax_stall;
     always_comb begin
         // Stall logic (ALL using match-aware rule)
-        dr_stall = cs_dr_rd &&
-        (SCORE_BOARD[dr_id].counter != 0);
+        dr_stall = cs_dr_rd && (LD_OP || ST_OP || REP_OP) && (SCORE_BOARD[dr_id].counter != 0);
 
-        sr_stall = cs_sr_rd &&
-        (SCORE_BOARD[sr_id].counter != 0);
+        sr_stall = cs_sr_rd && (LD_OP || ST_OP || REP_OP) && (SCORE_BOARD[sr_id].counter != 0);
 
-        eax_stall = cs_eax_rd &&
-        (SCORE_BOARD[EAX].counter != 0);
+        eax_stall = 0;
+        //            cs_eax_rd && (LD_OP || ST_OP || REP_OP) &&
+        //        (SCORE_BOARD[EAX].counter != 0);
 
-        seg0_stall =
-        (SCORE_BOARD[Segment0_ID].counter != 0);
+        seg0_stall = (SCORE_BOARD[Segment0_ID].counter != 0);
 
-        seg1_stall = Segment1_valid &&
-        (SCORE_BOARD[Segment1_ID].counter != 0);
+        seg1_stall = Segment1_valid && (SCORE_BOARD[Segment1_ID].counter != 0);
 
-        sib_base_stall = (cs_sib_size != 0) &&
-        (SCORE_BOARD[sib_base_id].counter != 0);
+        sib_base_stall = (cs_sib_size != 0) && (SCORE_BOARD[sib_base_id].counter != 0);
 
-        sib_idx_stall = (cs_sib_size != 0) &&
-        (SCORE_BOARD[sib_idx_id].counter != 0);
+        sib_idx_stall = (cs_sib_size != 0) && (SCORE_BOARD[sib_idx_id].counter != 0);
 
         // Final OR
         depStall_Internal = dr_stall || sr_stall || seg0_stall || seg1_stall || sib_base_stall || sib_idx_stall || eax_stall;

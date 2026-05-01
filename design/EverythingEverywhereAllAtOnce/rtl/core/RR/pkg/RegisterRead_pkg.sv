@@ -20,6 +20,7 @@ package RegisterRead_pkg;
         uint32_t CS_data;
         uint32_t Segment0_data;
         uint32_t Segment1_data;
+        uint64_t regFileValues_o[NUM_REGS];
     } regfile_output_t;
 
     typedef struct {
