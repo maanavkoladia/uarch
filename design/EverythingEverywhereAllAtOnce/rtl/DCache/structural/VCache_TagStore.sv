@@ -225,12 +225,12 @@ module VCache_TagStore (
     `CMP_N(u_tag_eq_2, 9, tag_eq[2], DOUT_of_TagStore_2, p_addr_fields_tag)
     `CMP_N(u_tag_eq_3, 9, tag_eq[3], DOUT_of_TagStore_3, p_addr_fields_tag)
 
-    `AND_3(u_way_hit_0, 1, way_hit[0], doAccess, tagMetaStore_valid_q[0], tag_eq[0])
-    `AND_3(u_way_hit_1, 1, way_hit[1], doAccess, tagMetaStore_valid_q[1], tag_eq[1])
-    `AND_3(u_way_hit_2, 1, way_hit[2], doAccess, tagMetaStore_valid_q[2], tag_eq[2])
-    `AND_3(u_way_hit_3, 1, way_hit[3], doAccess, tagMetaStore_valid_q[3], tag_eq[3])
+    `NAND_3(u_way_hit_0, 1, way_hit[0], doAccess, tagMetaStore_valid_q[0], tag_eq[0])
+    `NAND_3(u_way_hit_1, 1, way_hit[1], doAccess, tagMetaStore_valid_q[1], tag_eq[1])
+    `NAND_3(u_way_hit_2, 1, way_hit[2], doAccess, tagMetaStore_valid_q[2], tag_eq[2])
+    `NAND_3(u_way_hit_3, 1, way_hit[3], doAccess, tagMetaStore_valid_q[3], tag_eq[3])
 
-    `OR_4 (u_hit,          1, hit, way_hit[0], way_hit[1], way_hit[2], way_hit[3])
+    `NAND_4 (u_hit,          1, hit, way_hit[0], way_hit[1], way_hit[2], way_hit[3])
     // `INV_N(u_not_hit,      1, hit, not_hit)
     nor4$ u_not_hit(.out(not_hit), .in0(way_hit[0]), .in1(way_hit[1]), .in2(way_hit[2]), .in3(way_hit[3]));
 
