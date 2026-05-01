@@ -128,13 +128,22 @@ module Everywhere_TOP (
     );
 
     //ddr5
+    //ddr5 ddr5_unit (
+    //    .clk(clk),
+    //    .rst(rst),
+    //    .inFromDTE_i(dte2ddr5),
+    //    .dataBus(dataBus),
+    //    .addrBus(addressBus)
+
+    //);
+
     ddr5 ddr5_unit (
         .clk(clk),
         .rst(rst),
-        .inFromDTE_i(dte2ddr5),
+        .newPowerGateValueFromCore_i(dte2ddr5.newPowerGateValueFromCore),
+        .driveDataBus_i(dte2ddr5.driveDataBus),
         .dataBus(dataBus),
-        .addrBus(addressBus)
-
+        .addrBus(addrBus)
     );
 
 endmodule

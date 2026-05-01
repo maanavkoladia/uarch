@@ -1,0 +1,25 @@
+@rtl/io/ddr5/ 
+@lib/STDCells/STDCell_Macros.vh  
+@rtl/defines/interconnect_define.vh  
+@rtl/pkgs/interconnect_pkg.sv  
+@rtl/defines/common_define.vh  
+@rtl/pkgs/common_pkg.sv
+@rtl/io/pkg
+
+look at the .sv files in the ddr5 folder. I need these sv files ported to structural 2005-verilog using the macros defined in the STDCell_Macros.vh.
+
+Put all structural implementations of each module into the structural folder in the ddr5 directory.
+
+Let me know which macros need to be implement if you need any beyond the std macro lib. Do not implement them yourself I will implement them for you. 
+
+Take extra time to fully understand how the ddr5 functions and interacts with the rest of the system. 
+
+Within the ddr5 folder is a gen file that contains the fsm that runs the ddr5 (ddr5 bank controller and vcache bank controller).
+
+When porting to structural make sure you dont use any always block just assigns. no ternarys or logical and bitwise operators. it has to be fully gate implentations. you can only use assigns just for wires. 
+
+Also make sure to understand the io common package.
+
+Plan a way to port ddr5 and make sure you understand how to unpack structs and properly implent the ddr5 logic. 
+
+Let me know if you have any questions, dont make assumptions and take time to understand how ddr5 works.
