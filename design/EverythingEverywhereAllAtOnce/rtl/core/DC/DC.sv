@@ -202,6 +202,7 @@ module DC (
         .laddy(latches_i.ld_laddy),
         .seg_limit(latches_i.seg0_limit_wo_datasize),
         .seg_limit_w_datasize(latches_i.seg0_limit_w_datasize),
+        .stack_access(latches_i.ld_stack_access),
         .segx_gp(ld_segx_gp)
     );
 
@@ -209,6 +210,7 @@ module DC (
         .laddy(latches_i.st_laddy),
         .seg_limit(latches_i.seg1_limit_wo_datasize),
         .seg_limit_w_datasize(latches_i.seg1_limit_w_datasize),
+        .stack_access(latches_i.st_stack_access),
         .segx_gp(st_segx_gp)
     );
 
