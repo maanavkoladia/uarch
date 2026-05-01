@@ -251,9 +251,9 @@ module EXE (
     assign data_size = latches_i.data_size_vec;
     assign sr_data_size_vec = latches_i.sr_data_size_vec;
 
-    assign sr_data = latches_i.sr_data;
-    assign dr_data = latches_i.dr_data;
-    assign eax_data = latches_i.EAX;
+    assign dr_data = rr_outs_i.regFileValues[latches_i.dr_id];
+    assign sr_data = rr_outs_i.regFileValues[latches_i.sr_id];
+    assign eax_data = rr_outs_i.regFileValues[EAX];
 
 
     //==========================================================================
@@ -275,7 +275,7 @@ module EXE (
             sr_data: sr_next,
             dr_id: latches_i.dr_id,
             dr_data: dr_next,
-            EAX: latches_i.wb_cs.WB_EAX ? cmpxchg_EAX_o : latches_i.EAX
+            EAX: latches_i.wb_cs.WB_EAX ? cmpxchg_EAX_o : eax_data
     };
 
     assign outs_o = '{
@@ -307,9 +307,9 @@ module EXE (
         .ld_addr_0     (latches_i.ld_addy),
         .res_buf       (latches_i.ld_buf),
         .imm64         (latches_i.imm64),
-        .sr_data       (latches_i.sr_data),
-        .dr_data       (latches_i.dr_data),
-        .EAX           (latches_i.EAX),
+        .sr_data       (sr_data),
+        .dr_data       (dr_data),
+        .EAX           (eax_data),
         .EIP           (latches_i.EIP),
         .NEIP          (latches_i.NEIP),
         .flags         (flags_reg),
@@ -424,7 +424,7 @@ module EXE (
     );
 
     uint64_t next_EAX;
-    assign next_EAX =  latches_i.wb_cs.WB_EAX ? cmpxchg_EAX_o : {32'd0, latches_i.EAX};
+    assign next_EAX =  latches_i.wb_cs.WB_EAX ? cmpxchg_EAX_o : {32'd0, eax_data};
     reg_wb_logic reg_wb(
          .op_type(op_type),
          .next_dr_data(dr_next),

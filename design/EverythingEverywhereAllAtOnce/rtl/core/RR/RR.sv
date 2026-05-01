@@ -267,7 +267,8 @@ module RR (
             codeSeg_sb  : cs_sb,
             codeSeg_data  : reg_out.CS_data,
             codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID].limit,
-            dc_stage_latch_we : dc_latches_we
+            dc_stage_latch_we : dc_latches_we,
+            regFileValues : reg_out.regFileValues_o
         };
 
 endmodule

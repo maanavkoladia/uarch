@@ -1,46 +1,66 @@
 #!/bin/bash
 
 mioTestPath="config/MMIO/"
+regTestLog="regTest.log"
+
 
 scriptDir=$(pwd);
 
 allTestCasePaths=(
-    "config/TheBigOne/"
-    "config/dcache_public/"
-    "config/MovHeavy/"
-    "config/simpleFarTest/"
-    "config/exception_public/"
-    "config/BranchHeavy/"
-    "config/EdgeCase/"
-    "config/DecodeStress/"
-    "config/MemHeavy/")
+    "BranchHeavy"
+    "dcache_public"
+    "DecodeStress"
+    "EdgeCase"
+    "exception_public"
+    "MemHeavy"
+    "MovHeavy"
+    "simpleFarTest"
+    "TheBigOne"
+)
+
 
 outDir="Test_Results/"
 
-SingleTest() {
+SingleTestFull() {
     casePath="${scriptDir}/$1"
     base=$(basename "$casePath") 
     testCaseOutDir="$scriptDir/$outDir/$base/"
 
-    echo "Running the $casePath test case, results are in $testCaseOutDir"
-    #make clean
-    #make gen TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
-    #make sim-run TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    echo -e "\n\n\nRunning the $casePath test case, results are in $testCaseOutDir"
+
     make full TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+
+    tail ${testCaseOutDir}/compare_report.txt
 
     #-DTEST_CASE_PATH="$casePath"
 }
 
 MioTest() {
     echo "Mio Test Case called"
-    SingleTest "$mioTestPath"
+    SingleTestFull "$mioTestPath"
+}
+
+SingleTestReg(){
+    casePath="${scriptDir}/$1"
+    base=$(basename "$casePath") 
+    testCaseOutDir="$scriptDir/$outDir/$base/"
+
+    echo -e "\n\n\nRunning the $casePath test case, results are in $testCaseOutDir" >> $regTestLog
+    #echo -e "\n\n\nRunning the $casePath test case, results are in $testCaseOutDir" 
+    mkdir -p $testCaseOutDir
+    make full TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    
+    tail ${testCaseOutDir}/compare_report.txt >> $regTestLog 
+
 }
 
 AllTests() {
-    echo "Running All"
+    echo "Starting Reg Testing"
+    rm -rf $outDir
+    rm $regTestLog
 
     for caseDir in "${allTestCasePaths[@]}"; do
-        SingleTest "$caseDir"
+        SingleTestReg "$caseDir"
     done
 }
 
@@ -56,7 +76,7 @@ source venv/bin/activate
 while getopts "s:mac" opt; do
     case $opt in
         s)
-            SingleTest "$OPTARG"
+            SingleTestFull "$OPTARG"
             ;;
         m)
             MioTest

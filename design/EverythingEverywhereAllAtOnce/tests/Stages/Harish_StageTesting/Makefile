@@ -6,7 +6,8 @@ TEST_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 PROJECT_ROOT := $(shell pwd | sed -E 's|(.*EverythingEverywhereAllAtOnce).*|\1|')
 
-LOG_DIR = $(TEST_DIR)/logDumps/
+LOG_DIR ?= $(TEST_DIR)/logDumps/
+#LOG_DIR = 
 
 DISTRO := $(shell . /etc/os-release && echo $$ID)
 
@@ -81,16 +82,13 @@ endif
 
 #adding define
 CC_FLAGS += \
-    +define+LOG_FILE_NAME=\"$(RTL_RUN_LOG_FILE)\" \
     +define+CLK_PERIOD=$(CLK_PERIOD) \
     +define+DCACHE_LOG_FILE_NAME=\"$(LOG_DIR)/dcache_dump.log\" \
     +define+DCACHE_DUMP_START_DEFAULT=$(DCACHE_DUMP_START) \
     +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
-	+define+RTL_REGDUMP_FILE_NAME=\"$(RTL_REGDUMP_FILE)\" \
-	+define+RTL_FLAGDUMP_FILE_NAME=\"$(RTL_FLAGDUMP_FILE)\" \
 	
 
-.PHONY: all run clean see gen full
+.PHONY: all run clean see gen full genSoft runSoft
 
 all: $(TARGET) 
 	
@@ -98,8 +96,11 @@ $(TARGET):  makeLogDir $(SRC_FILES)
 	$(CC) $(CC_FLAGS) -top $(TOP_MODULE_NAME)  -o $@ $(SRC_FILES) 2>&1 | tee $(LOG_DIR)/compile.log
 
 run: all
-	./$(TARGET) $(SIMFLAGS) 2>&1| tee sim.log
-
+	./$(TARGET) $(SIMFLAGS) \
+	    +LOG_FILE_NAME=$(RTL_RUN_LOG_FILE) \
+	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
+	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
+	    2>&1 | tee sim.log
 
 view: run
 	#./$(TARGET) -gui &
@@ -116,11 +117,22 @@ gen:
 	@$(PYTHON) $(MASTER_STARTUP_SCRIPT) cleaned_scripts.json $(GEN_CONF)
 	@rm -f cleaned_scripts.json
 
-see:
-	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'	
-	@echo -e "\n"
+runSoft:
+	./$(TARGET) $(SIMFLAGS) \
+	    +LOG_FILE_NAME=$(RTL_RUN_LOG_FILE) \
+	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
+	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
+	    2>&1 | tee sim.log
+	
 
-	@echo  $(CC_FLAGS)
+genSoft:
+	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
+	@$(PYTHON) $(MASTER_STARTUP_SCRIPT) -s cleaned_scripts.json $(GEN_CONF)
+	@rm -f cleaned_scripts.json
+
+see:
+	@echo $(LOG_DIR)
+	@echo $(TEST_CASE_PATH)
 
 makeLogDir:
 	@mkdir -p $(LOG_DIR)
@@ -146,3 +158,8 @@ pull:
 	git pull
 
 full: clean gen all run compare
+
+
+
+test: clean gen all
+	./test.sh -a 
