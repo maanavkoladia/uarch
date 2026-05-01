@@ -4,6 +4,7 @@ import DCache_common_pkg::*;
 
 `define USE_STRUCTURAL_EB
 `define USE_STRUCTURAL_BANK
+`define USE_STRUCTURAL_VCACHE
 module DCache_Block (
     input wire clk_i,
     input wire rst_i,  //active low
@@ -161,15 +162,124 @@ module DCache_Block (
         );
 `endif
 
-    VCache vcache_unit (
-        .clk(clk_i),
-        .rst(rst_i),  //active low
-        .blockReq_i(block_req_i),
-        .block_busy_i(block_busy),
-        .eb_outs_i(eb_outputs),
-        .dcache_outs_i(dcache_bank_outputs),
-        .outputs_o(vcache_outputs)
-    );
+    // ---------------------------------------------------------------
+    // VCache instance — swappable between SV reference and structural
+    // Verilog 2005 port via `ifdef USE_STRUCTURAL_VCACHE.
+    // Default (flag undefined) preserves SV behavior.
+    // ---------------------------------------------------------------
+`ifdef USE_STRUCTURAL_VCACHE
+        // ---- struct -> flat: pack byte arrays into 128-bit buses ----
+        wire [127:0] vcache_blockReq_stq_data_flat;
+        wire [127:0] vcache_dcache_swapBuf_line_flat;
+        assign vcache_blockReq_stq_data_flat = {
+            block_req_i.st_q_data[15], block_req_i.st_q_data[14],
+            block_req_i.st_q_data[13], block_req_i.st_q_data[12],
+            block_req_i.st_q_data[11], block_req_i.st_q_data[10],
+            block_req_i.st_q_data[9],  block_req_i.st_q_data[8],
+            block_req_i.st_q_data[7],  block_req_i.st_q_data[6],
+            block_req_i.st_q_data[5],  block_req_i.st_q_data[4],
+            block_req_i.st_q_data[3],  block_req_i.st_q_data[2],
+            block_req_i.st_q_data[1],  block_req_i.st_q_data[0]
+        };
+        assign vcache_dcache_swapBuf_line_flat = {
+            dcache_bank_outputs.dcache_swapBuf.line[15],
+            dcache_bank_outputs.dcache_swapBuf.line[14],
+            dcache_bank_outputs.dcache_swapBuf.line[13],
+            dcache_bank_outputs.dcache_swapBuf.line[12],
+            dcache_bank_outputs.dcache_swapBuf.line[11],
+            dcache_bank_outputs.dcache_swapBuf.line[10],
+            dcache_bank_outputs.dcache_swapBuf.line[9],
+            dcache_bank_outputs.dcache_swapBuf.line[8],
+            dcache_bank_outputs.dcache_swapBuf.line[7],
+            dcache_bank_outputs.dcache_swapBuf.line[6],
+            dcache_bank_outputs.dcache_swapBuf.line[5],
+            dcache_bank_outputs.dcache_swapBuf.line[4],
+            dcache_bank_outputs.dcache_swapBuf.line[3],
+            dcache_bank_outputs.dcache_swapBuf.line[2],
+            dcache_bank_outputs.dcache_swapBuf.line[1],
+            dcache_bank_outputs.dcache_swapBuf.line[0]
+        };
+
+        // ---- flat output nets from the structural VCache ----
+        wire        vcache_hit_flat;
+        wire        vcache_miss_flat;
+        wire        vcache_swapBuf_valid_flat;
+        wire        vcache_swapBuf_dirty_flat;
+        wire [14:0] vcache_swapBuf_lineAddr_flat;
+        wire [127:0] vcache_swapBuf_line_flat;
+        wire        vcache_D_Cache_swapBuf_valid_clr_flat;
+        wire        vcache_LD_EB_flat;
+        wire        vcache_busy_flat;
+        wire        vcache_beingBlocked_flat;
+        wire [127:0] vcache_lineOut_flat;
+        wire [14:0] vcache_addrOut_flat;
+
+        VCache vcache_unit (
+            .clk(clk_i),
+            .rst(rst_i),                                              // active-low
+
+            .blockReq_oe_i      (block_req_i.oe),
+            .blockReq_we_i      (block_req_i.we),
+            .blockReq_paddr_i   (block_req_i.p_addr),
+            .blockReq_stq_data_i(vcache_blockReq_stq_data_flat),
+            .blockReq_vec_i     (block_req_i.vec),
+
+            .eb_valid_i         (eb_outputs.valid),
+            .eb_reqHit_i        (eb_outputs.reqHit),
+
+            .dcache_D_will_evict_i             (dcache_bank_outputs.D_will_evict),
+            .dcache_V_Cache_swapBuf_valid_clr_i(dcache_bank_outputs.V_Cache_swapBuf_valid_clr),
+            .dcache_swapBuf_dirty_i            (dcache_bank_outputs.dcache_swapBuf.dirty),
+            .dcache_swapBuf_lineAddr_i         (dcache_bank_outputs.dcache_swapBuf.lineAddr),
+            .dcache_swapBuf_line_i             (vcache_dcache_swapBuf_line_flat),
+
+            .block_busy_i       (block_busy),
+
+            .outputs_hit_o                      (vcache_hit_flat),
+            .outputs_miss_o                     (vcache_miss_flat),
+            .outputs_swapBuf_valid_o            (vcache_swapBuf_valid_flat),
+            .outputs_swapBuf_dirty_o            (vcache_swapBuf_dirty_flat),
+            .outputs_swapBuf_lineAddr_o         (vcache_swapBuf_lineAddr_flat),
+            .outputs_swapBuf_line_o             (vcache_swapBuf_line_flat),
+            .outputs_D_Cache_swapBuf_valid_clr_o(vcache_D_Cache_swapBuf_valid_clr_flat),
+            .outputs_LD_EB_o                    (vcache_LD_EB_flat),
+            .outputs_busy_o                     (vcache_busy_flat),
+            .outputs_beingBlocked_o             (vcache_beingBlocked_flat),
+            .outputs_lineOut_o                  (vcache_lineOut_flat),
+            .outputs_addrOut_o                  (vcache_addrOut_flat)
+        );
+
+        // ---- flat -> struct: repack into vcache_outputs ----
+        assign vcache_outputs.hit                       = vcache_hit_flat;
+        assign vcache_outputs.miss                      = vcache_miss_flat;
+        assign vcache_outputs.vcache_swapBuf.valid      = vcache_swapBuf_valid_flat;
+        assign vcache_outputs.vcache_swapBuf.dirty      = vcache_swapBuf_dirty_flat;
+        assign vcache_outputs.vcache_swapBuf.lineAddr   = vcache_swapBuf_lineAddr_flat;
+        assign vcache_outputs.D_Cache_swapBuf_valid_clr = vcache_D_Cache_swapBuf_valid_clr_flat;
+        assign vcache_outputs.LD_EB                     = vcache_LD_EB_flat;
+        assign vcache_outputs.busy                      = vcache_busy_flat;
+        assign vcache_outputs.beingBlocked              = vcache_beingBlocked_flat;
+        assign vcache_outputs.addrOut                   = vcache_addrOut_flat;
+        genvar gi_vc;
+        generate
+            for (gi_vc = 0; gi_vc < CACHE_LINES_SIZE_B; gi_vc++) begin : g_vcache_line_unpack
+                assign vcache_outputs.lineOut[gi_vc] =
+                    vcache_lineOut_flat[8*gi_vc +: 8];
+                assign vcache_outputs.vcache_swapBuf.line[gi_vc] =
+                    vcache_swapBuf_line_flat[8*gi_vc +: 8];
+            end
+        endgenerate
+`else
+        VCache vcache_unit (
+            .clk(clk_i),
+            .rst(rst_i),  //active low
+            .blockReq_i(block_req_i),
+            .block_busy_i(block_busy),
+            .eb_outs_i(eb_outputs),
+            .dcache_outs_i(dcache_bank_outputs),
+            .outputs_o(vcache_outputs)
+        );
+`endif
 
     // ---------------------------------------------------------------
     // EvictionBuf instance — swappable between SV reference and structural

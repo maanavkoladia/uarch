@@ -191,10 +191,10 @@ module MPS_COMP_EQ #(
             // Level 2           : and3$(l0, l1, l2)                         → 0.35 ns
             // Critical path: 0.25 + 0.35 + 0.35 = 0.95 ns
             wire l0, l1, l2;
-            and3$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]));
-            and3$ u1 (.out(l1), .in0(b[3]), .in1(b[4]), .in2(b[5]));
-            and3$ u2 (.out(l2), .in0(b[6]), .in1(b[7]), .in2(b[8]));
-            and3$ u3 (.out(eq), .in0(l0),   .in1(l1),   .in2(l2));
+            nand3$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]));
+            nand3$ u1 (.out(l1), .in0(b[3]), .in1(b[4]), .in2(b[5]));
+            nand3$ u2 (.out(l2), .in0(b[6]), .in1(b[7]), .in2(b[8]));
+            nor3$ u3 (.out(eq), .in0(l0),   .in1(l1),   .in2(l2));
 
         end else if(WIDTH == 11) begin: EQ_11
             wire l0, l1, l2;

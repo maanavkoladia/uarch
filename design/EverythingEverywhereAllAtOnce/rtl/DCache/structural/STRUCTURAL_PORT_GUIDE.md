@@ -167,10 +167,11 @@ parent-side adapter pattern.
 
 ## What's been ported so far
 
-| Module     | File                                     | `` `ifdef `` flag        | Parent                 |
-|------------|------------------------------------------|--------------------------|------------------------|
-| EvictionBuf| `structural/EvictionBuf.v`               | `USE_STRUCTURAL_EB`      | `DCache_Block.sv`      |
-| Bank trio  | `structural/DCache_Bank.v`, `_TagStore.v`, `_DataStore.v` | `USE_STRUCTURAL_BANK` | `DCache_Block.sv` |
+| Module       | File                                     | `` `ifdef `` flag        | Parent                 |
+|--------------|------------------------------------------|--------------------------|------------------------|
+| EvictionBuf  | `structural/EvictionBuf.v`               | `USE_STRUCTURAL_EB`      | `DCache_Block.sv`      |
+| Bank trio    | `structural/DCache_Bank.v`, `_TagStore.v`, `_DataStore.v` | `USE_STRUCTURAL_BANK`   | `DCache_Block.sv` |
+| VCache quartet | `structural/VCache.v`, `_TagStore.v`, `_DataStore.v`, `LRU.v` | `USE_STRUCTURAL_VCACHE` | `DCache_Block.sv` |
 
 The Bank trio shares one flag because the structural Bank instantiates
 the structural TagStore + DataStore directly. The FSM

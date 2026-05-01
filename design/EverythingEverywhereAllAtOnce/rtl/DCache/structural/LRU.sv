@@ -1,73 +1,68 @@
-import common_pkg::*;
-import DCache_common_pkg::*;
+// Structural Verilog 2005 port of LRU.
+// Reference SV: rtl/DCache/DCache_Block/VCache/LRU.sv
+// 3 1-bit flops in a binary tree for 4-way pseudo-LRU. Bits point toward MRU;
+// inverse gives LRU way. Reset clears all to 0. updateLRU latches the
+// computed newLRU on the rising edge.
 
 module LRU (
-    input wire clk,
-    input wire rst,
+    input  wire       clk,
+    input  wire       rst,                 // active-low
 
-    input logic updateLRU,
+    input  wire       updateLRU,
+    input  wire [1:0] savedIDX,            // $clog2(VCACHE_NUM_LINES) = 2
 
-    input logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] savedIDX,
-
-    output logic [$clog2(VCACHE_NUM_LINES) - 1 : 0] currLRU_IDX
-
+    output wire [1:0] currLRU_IDX
 );
-    localparam int NUM_LRU_BITS = 3;
-    localparam int LRU_ROOT = 0;
-    localparam int LRU_LEFT_LEAF = 1;
-    localparam int LRU_RIGHT_LEAF = 2;
 
-    logic LRU[NUM_LRU_BITS];
+    // ---------------------------------------------------------------
+    // Storage: 3 1-bit flops (matches SV `logic LRU[3]`)
+    //   LRU[0] = LRU_ROOT
+    //   LRU[1] = LRU_LEFT_LEAF
+    //   LRU[2] = LRU_RIGHT_LEAF
+    // ---------------------------------------------------------------
+    wire LRU_ROOT_q;
+    wire LRU_LEFT_LEAF_q;
+    wire LRU_RIGHT_LEAF_q;
 
-    //LRU logic, this is handled by the fsm, the idea is that when we write
-    //into the the vcache, ie Read_DSWAP_i is high, we update the lru, if we
-    //get a hit, the LRU bits need to be update, somethign interesting that
-    //happens here is that if we get a hit here, we will go through a swap
-    //mechanism, so im aussuming that the incoming line, which will be put
-    //where
-    //we got the hit, this line is no longer the lru, this shoudl become the
-    //mru
+    // ---------------------------------------------------------------
+    // Per-flop write-enable derivation (mirrors SV case at lines 33-62)
+    //   ROOT       always written when updateLRU (d = savedIDX[1])
+    //   LEFT_LEAF  written when updateLRU & ~savedIDX[1] (cases 00/01)
+    //   RIGHT_LEAF written when updateLRU &  savedIDX[1] (cases 10/11)
+    // When the gate condition is false the write is suppressed (we=0),
+    // matching the SV `default: hold` for the unused leaf.
+    // ---------------------------------------------------------------
+    wire saved_hi_bar;
+    wire we_LEFT;
+    wire we_RIGHT;
+    `INV_N(u_saved_hi_bar, 1, savedIDX[1], saved_hi_bar)
+    `AND_2(u_we_LEFT,      1, we_LEFT,  updateLRU, saved_hi_bar)
+    `AND_2(u_we_RIGHT,     1, we_RIGHT, updateLRU, savedIDX[1])
 
-    logic newLRU[NUM_LRU_BITS];
+    // ---------------------------------------------------------------
+    // Flops
+    // ---------------------------------------------------------------
+    `REG_RST_WE(u_LRU_ROOT,       1, clk, rst, updateLRU, savedIDX[1], LRU_ROOT_q)
+    `REG_RST_WE(u_LRU_LEFT_LEAF,  1, clk, rst, we_LEFT,   savedIDX[0], LRU_LEFT_LEAF_q)
+    `REG_RST_WE(u_LRU_RIGHT_LEAF, 1, clk, rst, we_RIGHT,  savedIDX[0], LRU_RIGHT_LEAF_q)
 
-    always_comb begin
-        //no latches, update on hit, not on swap bc redudant with hit, this
-        //comes from hit idx
-        //update if loading eb, means that a new lines is goig to be written
-        //to the LRU, so LRU  is new MRU
-        //cant rely on LD_EB_i signal because dont always needs to evict
-        newLRU = LRU;  //the meta store stores the MRU which is used to find LRU
-        // update_idx = DCache_Will_Evict_i ? currLRU_IDX : hitIdx;
-        // Update LRU tree to mark accessed way as MRU (bits point toward MRU)
-        case (savedIDX)
-            2'b00: begin  // Way 0 accessed - point to left/left
-                newLRU[LRU_ROOT]      = 1'b0;  // Point to left subtree
-                newLRU[LRU_LEFT_LEAF] = 1'b0;  // Point to way 0
-            end
-            2'b01: begin  // Way 1 accessed - point to left/right
-                newLRU[LRU_ROOT]      = 1'b0;  // Point to left subtree
-                newLRU[LRU_LEFT_LEAF] = 1'b1;  // Point to way 1
-            end
-            2'b10: begin  // Way 2 accessed - point to right/left
-                newLRU[LRU_ROOT]       = 1'b1;  // Point to right subtree
-                newLRU[LRU_RIGHT_LEAF] = 1'b0;  // Point to way 2
-            end
-            2'b11: begin  // Way 3 accessed - point to right/right
-                newLRU[LRU_ROOT]       = 1'b1;  // Point to right subtree
-                newLRU[LRU_RIGHT_LEAF] = 1'b1;  // Point to way 3
-            end
-            default: if (rst) $fatal;
-        endcase
+    // ---------------------------------------------------------------
+    // Output: pseudo-LRU way index (mirrors SV lines 70-71)
+    //   currLRU_IDX[1] = ~LRU_ROOT
+    //   currLRU_IDX[0] = (~LRU_ROOT) ? ~LRU_RIGHT_LEAF : ~LRU_LEFT_LEAF
+    //                  = MUX_2(sel=LRU_ROOT, in0=~LRU_RIGHT_LEAF, in1=~LRU_LEFT_LEAF)
+    // ---------------------------------------------------------------
+    wire LRU_ROOT_bar;
+    wire LRU_LEFT_LEAF_bar;
+    wire LRU_RIGHT_LEAF_bar;
+    `INV_N(u_root_bar,  1, LRU_ROOT_q,       LRU_ROOT_bar)
+    `INV_N(u_left_bar,  1, LRU_LEFT_LEAF_q,  LRU_LEFT_LEAF_bar)
+    `INV_N(u_right_bar, 1, LRU_RIGHT_LEAF_q, LRU_RIGHT_LEAF_bar)
 
-    end
-
-    always_ff @(posedge clk) begin
-        if (!rst) LRU <= '{default: '0};
-        else if (updateLRU) LRU <= newLRU;
-    end
-
-    ////////MODULE OUTPUTS///////////////////
-    assign currLRU_IDX[1] = !LRU[LRU_ROOT];
-    assign currLRU_IDX[0] = !LRU[LRU_ROOT] ? !LRU[LRU_RIGHT_LEAF] : !LRU[LRU_LEFT_LEAF];
+    assign currLRU_IDX[1] = LRU_ROOT_bar;
+    `MUX_2(u_currLRU_lo, 1, currLRU_IDX[0],
+           LRU_RIGHT_LEAF_bar,   // in0: when LRU_ROOT_q == 0
+           LRU_LEFT_LEAF_bar,    // in1: when LRU_ROOT_q == 1
+           LRU_ROOT_q)
 
 endmodule

@@ -5,6 +5,7 @@
 @rtl/pkgs/common_pkg.sv
 @rtl/DCache/
 
+
 look at the .sv files in the dcache folder. I need these sv files ported to structural 2005-verilog using the macros defined in the STDCell_Macros.vh.
 
 Put all structural implementations of each module into the structural folder in the dcache directory.
@@ -53,13 +54,16 @@ Take time to understand dcache. Becareful of logical loops that will happen due 
 remember all I need is an updated dcacheTOP.sv that is WITHIN the structuarl folder only touch files or bring in files in the structural folder. do not alter other parts of the dcache.
 
 
-This time you will be porting the vcache. Understand how the vcache.
+This time you will be porting the vcache. Understand how the vcache work. it is fully set assocative. There is some weird stuff with the cell geometry for the tag store because of the sizing of the modules. 
 
 DO NOT MESS WITH THE GEOMETRY OF THE TAG STORE.
 
 keep all block names and gen vars i.e g_* should be kept the same in the structural models. also keep the module name the same DONOT put an _struct.
 
-Last time a bug that You made was a simple variable name swap. always double check that the code exactly matches the system verilog reference.
+Last time a bug that You made was a simple variable name swap. always double check that the code exactly matches the system verilog reference has for the module. 
+
+Plan carefuly a way to port the vcache unit to structural verilog 2005
+
 
 
 

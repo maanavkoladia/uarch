@@ -11,12 +11,15 @@ import DCache_common_pkg::*;
 // file directly). The SV reference remains compiled in the otherwise
 // path so we can A/B test by toggling the flag.
 //
-// USE_STRUCTURAL_EB    -> structural/EvictionBuf.v             (parent: DCache_Block.sv)
-// USE_STRUCTURAL_BANK  -> structural/DCache_Bank.v + _TagStore.v + _DataStore.v
+// USE_STRUCTURAL_EB     -> structural/EvictionBuf.v            (parent: DCache_Block.sv)
+// USE_STRUCTURAL_BANK   -> structural/DCache_Bank.v + _TagStore.v + _DataStore.v
+//                                                              (parent: DCache_Block.sv)
+// USE_STRUCTURAL_VCACHE -> structural/VCache.v + _TagStore.v + _DataStore.v + LRU.v
 //                                                              (parent: DCache_Block.sv)
 // =====================================================================
 //`define USE_STRUCTURAL_EB
 //`define USE_STRUCTURAL_BANK
+//`define USE_STRUCTURAL_VCACHE
 
 module DCache_TOP (
     input wire clk,
