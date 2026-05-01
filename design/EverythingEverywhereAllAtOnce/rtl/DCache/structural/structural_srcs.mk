@@ -1,18 +1,21 @@
-DCACHE_STRUCT_PATH = $(ROOT)/rtl/DCache/structural/
+DCACHE_STRUCT_PATH_INTERNAL__ = $(ROOT)/rtl/DCache/structural/
+
+DCACHE_STRUCTURAL_SRC_FILES_HEADERS = $(DCACHE_STRUCT_PATH_INTERNAL__)/DCache_common_define.vh
 
 # Compile order: leaf modules first, then composites.
 DCACHE_STRUCTURAL_SRC_FILES = \
+    $(DCACHE_STRUCTURAL_SRC_FILES_HEADERS) \
     $(DCACHE_PATH_INTERNAL)/gen/DCache_Bank_FSM.sv \
     $(DCACHE_PATH_INTERNAL)/gen/VCache_FSM.sv \
-    $(DCACHE_STRUCT_PATH)LRU.v \
-    $(DCACHE_STRUCT_PATH)EvictionBuf.v \
-    $(DCACHE_STRUCT_PATH)DCache_Bank_TagStore.v \
-    $(DCACHE_STRUCT_PATH)DCache_Bank_DataStore.v \
-    $(DCACHE_STRUCT_PATH)DCache_Bank.v \
-    $(DCACHE_STRUCT_PATH)VCache_TagStore.v \
-    $(DCACHE_STRUCT_PATH)VCache_DataStore.v \
-    $(DCACHE_STRUCT_PATH)VCache.v \
-    $(DCACHE_STRUCT_PATH)DCache_Block.v \
-    $(DCACHE_STRUCT_PATH)DCache_Arbitration.v \
-    $(DCACHE_STRUCT_PATH)MIO_Block.v \
-    $(DCACHE_STRUCT_PATH)DCache_TOP.v
+    $(DCACHE_STRUCT_PATH_INTERNAL__)LRU.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)EvictionBuf.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)DCache_Bank_TagStore.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)DCache_Bank_DataStore.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)DCache_Bank.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)VCache_TagStore.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)VCache_DataStore.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)VCache.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)DCache_Block.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)DCache_Arbitration.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)MIO_Block.v \
+    $(DCACHE_STRUCT_PATH_INTERNAL__)DCache_TOP.v

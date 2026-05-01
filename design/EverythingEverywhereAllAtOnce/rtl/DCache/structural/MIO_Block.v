@@ -4,9 +4,6 @@
 // st when both ready. req_2_sch is a 4-way mux on (we, oe). The
 // "WE_ADDR_MASK = 15'h0040" check reduces to a single-bit test of p_addr[6].
 
-`include "STDCell_Macros.vh"
-`include "DCache_common_define.vh"
-
 module MIO_Block (
     input  wire                                       clk,
     input  wire                                       rst,                 // active-low

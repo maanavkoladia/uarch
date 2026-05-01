@@ -4,8 +4,6 @@
 //   LRU_q[0]=ROOT, LRU_q[1]=LEFT_LEAF, LRU_q[2]=RIGHT_LEAF
 // Each tree-bit points TOWARD the MRU subtree.
 
-`include "STDCell_Macros.vh"
-`include "DCache_common_define.vh"
 
 module LRU (
     input  wire                                clk,

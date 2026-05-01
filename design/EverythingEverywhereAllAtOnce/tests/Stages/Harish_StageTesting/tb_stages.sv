@@ -9,7 +9,9 @@ import Fetch_pkg::*;
 import DCache_common_pkg::*;
 import WriteBack_pkg::*;
 
-`define CLK_PERIOD 8
+`ifndef CLK_PERIOD
+`define CLK_PERIOD 16
+`endif
 
 
 module tb_stages ();

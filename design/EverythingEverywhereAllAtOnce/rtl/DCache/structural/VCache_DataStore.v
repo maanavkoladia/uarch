@@ -10,9 +10,6 @@
 // driven by st_data_vec & we & ~busy & hit. Phased active-low WR.
 // OE has an extra delayed-confirmation (#2ns) gate.
 
-`include "STDCell_Macros.vh"
-`include "DCache_common_define.vh"
-
 module VCache_DataStore (
     input  wire                                       clk_i,
     input  wire                                       rst_i,                // active-low
@@ -135,7 +132,7 @@ module VCache_DataStore (
     wire [`CL_W - 1 : 0] DOUT_DataStore_vec;
     genvar gi;
     generate
-        for (gi = 0; gi < 16; gi = gi + 1) begin : g_vds_cells
+        for (gi = 0; gi < 16; gi = gi + 1) begin : g_vcache_data_store_ram_cells
             ram8b4w$ v_cache_data_store_ramCell (
                 .A   (addr_2_ds),
                 .DIN (DIN_2_DataStore_vec[gi*8 +: 8]),

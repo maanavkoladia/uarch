@@ -1,9 +1,6 @@
 // Structural Verilog-2005 port of
 //   rtl/DCache/DCache_Block/DCache_Bank/DCache_Bank_DataStore.sv
 
-`include "STDCell_Macros.vh"
-`include "DCache_common_define.vh"
-
 module DCache_Bank_DataStore (
     input  wire                                       clk,
     input  wire                                       rst,                  // active-low
@@ -103,7 +100,7 @@ module DCache_Bank_DataStore (
 
     genvar gi;
     generate
-        for (gi = 0; gi < 16; gi = gi + 1) begin : g_data_cells
+        for (gi = 0; gi < 16; gi = gi + 1) begin : g_dcache_bank_data_store_ram_cells
             ram8b8w$ dcache_bank_data_store_ramCell (
                 .A   (paddr_idx),
                 .DIN (DIN_2_DataStore_vec[gi*8 +: 8]),

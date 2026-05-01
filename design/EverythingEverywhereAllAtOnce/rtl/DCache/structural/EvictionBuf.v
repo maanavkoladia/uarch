@@ -1,8 +1,5 @@
 // Structural Verilog-2005 port of rtl/DCache/DCache_Block/EvictionBuf/EvictionBuf.sv
 
-`include "STDCell_Macros.vh"
-`include "DCache_common_define.vh"
-
 module EvictionBuf (
     input  wire                       clk_i,
     input  wire                       rst_i,            // active-low

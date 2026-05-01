@@ -10,8 +10,6 @@
 //         VC_Will_Need_ToEvict, tagOut.
 // Embeds the LRU module.
 
-`include "STDCell_Macros.vh"
-`include "DCache_common_define.vh"
 
 module VCache_TagStore (
     input  wire                                       clk,
@@ -140,23 +138,44 @@ module VCache_TagStore (
     wire [7:0] cell_dout_lo[0:3];
     wire [7:0] cell_dout_hi[0:3];
 
-    genvar gi;
+    // genvar gi;
+    // generate
+    //     for (gi = 0; gi < 4; gi = gi + 1) begin : g_tag_lines
+    //         ram8b4w$ tagStoreCell_lo (
+    //             .A   (2'b00),
+    //             .DIN (DIN_low),
+    //             .OE  (OE_per_line[gi]),
+    //             .WR  (WR_actual[gi]),
+    //             .DOUT(cell_dout_lo[gi])
+    //         );
+    //         ram8b4w$ tagStoreCell_hi (
+    //             .A   (2'b00),
+    //             .DIN (DIN_high),
+    //             .OE  (OE_per_line[gi]),
+    //             .WR  (WR_actual[gi]),
+    //             .DOUT(cell_dout_hi[gi])
+    //         );
+    //     end
+    // endgenerate
+
     generate
-        for (gi = 0; gi < 4; gi = gi + 1) begin : g_tag_lines
-            ram8b4w$ tagStoreCell_lo (
-                .A   (2'b00),
-                .DIN (DIN_low),
-                .OE  (OE_per_line[gi]),
-                .WR  (WR_actual[gi]),
-                .DOUT(cell_dout_lo[gi])
-            );
-            ram8b4w$ tagStoreCell_hi (
-                .A   (2'b00),
-                .DIN (DIN_high),
-                .OE  (OE_per_line[gi]),
-                .WR  (WR_actual[gi]),
-                .DOUT(cell_dout_hi[gi])
-            );
+        for (genvar i = 0; i < 4; i++) begin : g_tagStore_Entry
+            for (genvar j = 0; j < 2; j++) begin : g_tagStoreCell
+                wire [7:0] DIN_to_Cell;
+                wire [7:0] DOUT_to_Cell;
+                assign DIN_to_Cell = (j == 0) ? DIN_low : DIN_high;
+                assign DOUT_to_Cell = (j == 0) ? cell_dout_lo[i] : cell_dout_hi[i];
+                ram8b4w$ tagStoreCell (
+                    .A   (2'b00),
+
+                    .DIN (DIN_to_Cell),
+
+                    .OE  (OE_per_line[i]),
+                    .WR  (WR_actual[i]),
+
+                    .DOUT(DOUT_to_Cell)
+                );
+            end
         end
     endgenerate
 

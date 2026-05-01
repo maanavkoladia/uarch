@@ -1,8 +1,5 @@
 // Structural Verilog-2005 port of rtl/DCache/DCache_Arbitration.sv
 
-`include "STDCell_Macros.vh"
-`include "DCache_common_define.vh"
-
 module DCache_Arbitration (
     input  wire                                         clk_i,
     input  wire                                         rst,                  // active-low

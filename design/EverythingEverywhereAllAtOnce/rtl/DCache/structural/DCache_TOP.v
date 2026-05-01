@@ -3,9 +3,6 @@
 // Pure wiring: 4x DCache_Block, 1x DCache_Arbitration, 1x MIO_Block. Slices
 // flat-bus inputs out by field offsets defined in DCache_common_define.vh.
 
-`include "STDCell_Macros.vh"
-`include "DCache_common_define.vh"
-
 module DCache_TOP (
     input  wire                                       clk,
     input  wire                                       rst,
@@ -34,6 +31,28 @@ module DCache_TOP (
     wire       dte_reqServed_mio;
     wire       dte_perm_addr_mio;
     wire       dte_perm_data_mio;
+
+    wire [3:0] dte_perm_data_block [0:3];
+
+    assign dte_perm_data_block[0] = dte_perm_data_block0;
+    assign dte_perm_data_block[1] = dte_perm_data_block1;
+    assign dte_perm_data_block[2] = dte_perm_data_block2;
+    assign dte_perm_data_block[3] = dte_perm_data_block3;
+
+    //==================================================================
+    // 4x DCache_Block
+    //==================================================================
+    wire [`DCBLK_OUT_W - 1 : 0] block_outs_0;
+    wire [`DCBLK_OUT_W - 1 : 0] block_outs_1;
+    wire [`DCBLK_OUT_W - 1 : 0] block_outs_2;
+    wire [`DCBLK_OUT_W - 1 : 0] block_outs_3;
+
+    wire [`DCBLK_OUT_W - 1 : 0] block_outs [0:3];
+
+    assign block_outs_0 = block_outs[0];
+    assign block_outs_1 = block_outs[1];
+    assign block_outs_2 = block_outs[2];
+    assign block_outs_3 = block_outs[3];
 
     assign dte_mem_valid[0]      = inFromDTE_i[`DTE_PB_LB(0) + `DTE_PB_MEM_VALID];
     assign dte_mem_valid[1]      = inFromDTE_i[`DTE_PB_LB(1) + `DTE_PB_MEM_VALID];
@@ -107,74 +126,54 @@ module DCache_TOP (
         .writeSuccess_o(arb_writeSuccess)
     );
 
-    //==================================================================
-    // 4x DCache_Block
-    //==================================================================
-    wire [`DCBLK_OUT_W - 1 : 0] block_outs_0;
-    wire [`DCBLK_OUT_W - 1 : 0] block_outs_1;
-    wire [`DCBLK_OUT_W - 1 : 0] block_outs_2;
-    wire [`DCBLK_OUT_W - 1 : 0] block_outs_3;
+    genvar i;
+    generate
+        for (i = 0; i < `NUM_DCACHE_PORTS; i++) begin : g_dcache_block
+            DCache_Block block (
+                .clk_i(clk),
+                .rst_i(rst),
 
-    DCache_Block block_0 (
-        .clk_i(clk),
-        .rst_i(rst),
-        .block_req_i(req_2_blocks[`BREQ_W*1-1:`BREQ_W*0]),
-        .mem_Valid_FromDte_i(dte_mem_valid[0]),
-        .evictionBuf_clr_FromDTE_i(dte_eb_clr[0]),
-        .evictionBuf_setCommiting_FromDTE_i(dte_eb_setCommiting[0]),
-        .permissionToDriveDataBus_evictionBuf(dte_perm_data_block0),
-        .permissionToDriveAddrBus_Ld(dte_perm_addr_Ld[0]),
-        .permissionToDriveAddrBus_eb(dte_perm_addr_eb[0]),
-        .st_override_for_sch_req(arb_st_override[0]),
-        .dataBus(dataBus),
-        .address_bus(address_bus),
-        .outputs_o(block_outs_0)
-    );
-    DCache_Block block_1 (
-        .clk_i(clk),
-        .rst_i(rst),
-        .block_req_i(req_2_blocks[`BREQ_W*2-1:`BREQ_W*1]),
-        .mem_Valid_FromDte_i(dte_mem_valid[1]),
-        .evictionBuf_clr_FromDTE_i(dte_eb_clr[1]),
-        .evictionBuf_setCommiting_FromDTE_i(dte_eb_setCommiting[1]),
-        .permissionToDriveDataBus_evictionBuf(dte_perm_data_block1),
-        .permissionToDriveAddrBus_Ld(dte_perm_addr_Ld[1]),
-        .permissionToDriveAddrBus_eb(dte_perm_addr_eb[1]),
-        .st_override_for_sch_req(arb_st_override[1]),
-        .dataBus(dataBus),
-        .address_bus(address_bus),
-        .outputs_o(block_outs_1)
-    );
-    DCache_Block block_2 (
-        .clk_i(clk),
-        .rst_i(rst),
-        .block_req_i(req_2_blocks[`BREQ_W*3-1:`BREQ_W*2]),
-        .mem_Valid_FromDte_i(dte_mem_valid[2]),
-        .evictionBuf_clr_FromDTE_i(dte_eb_clr[2]),
-        .evictionBuf_setCommiting_FromDTE_i(dte_eb_setCommiting[2]),
-        .permissionToDriveDataBus_evictionBuf(dte_perm_data_block2),
-        .permissionToDriveAddrBus_Ld(dte_perm_addr_Ld[2]),
-        .permissionToDriveAddrBus_eb(dte_perm_addr_eb[2]),
-        .st_override_for_sch_req(arb_st_override[2]),
-        .dataBus(dataBus),
-        .address_bus(address_bus),
-        .outputs_o(block_outs_2)
-    );
-    DCache_Block block_3 (
-        .clk_i(clk),
-        .rst_i(rst),
-        .block_req_i(req_2_blocks[`BREQ_W*4-1:`BREQ_W*3]),
-        .mem_Valid_FromDte_i(dte_mem_valid[3]),
-        .evictionBuf_clr_FromDTE_i(dte_eb_clr[3]),
-        .evictionBuf_setCommiting_FromDTE_i(dte_eb_setCommiting[3]),
-        .permissionToDriveDataBus_evictionBuf(dte_perm_data_block3),
-        .permissionToDriveAddrBus_Ld(dte_perm_addr_Ld[3]),
-        .permissionToDriveAddrBus_eb(dte_perm_addr_eb[3]),
-        .st_override_for_sch_req(arb_st_override[3]),
-        .dataBus(dataBus),
-        .address_bus(address_bus),
-        .outputs_o(block_outs_3)
-    );
+                .block_req_i(
+                    req_2_blocks[`BREQ_W*(i+1)-1 : `BREQ_W*i]
+                ),
+
+                .mem_Valid_FromDte_i(
+                    dte_mem_valid[i]
+                ),
+
+                .evictionBuf_clr_FromDTE_i(
+                    dte_eb_clr[i]
+                ),
+
+                .evictionBuf_setCommiting_FromDTE_i(
+                    dte_eb_setCommiting[i]
+                ),
+
+                .permissionToDriveDataBus_evictionBuf(
+                    dte_perm_data_block[i]
+                ),
+
+                .permissionToDriveAddrBus_Ld(
+                    dte_perm_addr_Ld[i]
+                ),
+
+                .permissionToDriveAddrBus_eb(
+                    dte_perm_addr_eb[i]
+                ),
+
+                .st_override_for_sch_req(
+                    arb_st_override[i]
+                ),
+
+                .dataBus(dataBus),
+                .address_bus(address_bus),
+
+                .outputs_o(
+                    block_outs[i]
+                )
+            );
+        end
+    endgenerate
 
     //==================================================================
     // MIO Block

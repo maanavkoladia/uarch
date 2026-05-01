@@ -3,9 +3,6 @@
 
 // Mirrors rtl/DCache/pkg/DCache_common_pkg.sv for Verilog-2005 structural use.
 
-`include "common_define.vh"
-`include "interconnect_define.vh"
-
 //////////////////////////////////////////////////////////////////////
 // DCache geometry
 //////////////////////////////////////////////////////////////////////
@@ -47,7 +44,7 @@
 `define VCACHE_LINE_IDX_W                   (2)
 
 // BUFFER_DELAY uses 0.25 ns/stage. CLK_PHASE_DELAY=2.5ns -> 10 stages. OE delay #2 -> 8.
-`define CLK_PHASE_BUFFER_STAGES             (10)
+`define CLK_PHASE_BUFFER_STAGES             (14)
 `define OE_DELAY_BUFFER_STAGES              (8)
 
 //////////////////////////////////////////////////////////////////////
@@ -220,12 +217,12 @@
 `define DTE_PB_EB_CLR                7
 `define DTE_PB_EB_SETCOMMITING       8
 
-`define DTE_W                        39
 `define DTE_PB_LB(I)                 ((I)*9)
 `define DTE_PB_UB(I)                 ((I)*9+8)
 `define DTE_REQSERVED_MIO            36
 `define DTE_PERM_ADDR_MIO            37
 `define DTE_PERM_DATA_MIO            38
+`define DTE_W                        39
 
 //////////////////////////////////////////////////////////////////////
 // dcache_2_scheduler_t flat layout:

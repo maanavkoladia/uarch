@@ -1,8 +1,6 @@
 // Structural Verilog-2005 port of
 //   rtl/DCache/DCache_Block/DCache_Bank/DCache_Bank.sv
 
-`include "STDCell_Macros.vh"
-`include "DCache_common_define.vh"
 
 module DCache_Bank (
     input  wire                                       clk,
