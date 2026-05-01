@@ -155,3 +155,9 @@ pull:
 	git pull
 
 full: clean gen all run compare
+
+test: 
+	./test.sh -a 
+
+#test: clean gen all
+#	./test.sh -a 

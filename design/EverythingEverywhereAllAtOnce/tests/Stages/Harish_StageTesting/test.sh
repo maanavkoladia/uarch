@@ -1,19 +1,23 @@
 #!/bin/bash
 
 mioTestPath="config/MMIO/"
+regTestLog="regTest.log"
+
 
 scriptDir=$(pwd);
 
+
+    #"config/dcache_public/"
+    #"config/MovHeavy/"
+    #"config/simpleFarTest/"
+    #"config/exception_public/"
+    #"config/BranchHeavy/"
+    #"config/EdgeCase/"
+    #"config/DecodeStress/"
+    #"config/MemHeavy/")
+
 allTestCasePaths=(
-    "config/TheBigOne/"
-    "config/dcache_public/"
-    "config/MovHeavy/"
-    "config/simpleFarTest/"
-    "config/exception_public/"
-    "config/BranchHeavy/"
-    "config/EdgeCase/"
-    "config/DecodeStress/"
-    "config/MemHeavy/")
+    "config/TheBigOne/")
 
 outDir="Test_Results/"
 
@@ -22,11 +26,10 @@ SingleTestFull() {
     base=$(basename "$casePath") 
     testCaseOutDir="$scriptDir/$outDir/$base/"
 
-    echo "Running the $casePath test case, results are in $testCaseOutDir"
-    #make clean
-    #make gen TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
-    #make sim-run TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    echo -e "\n\n\nRunning the $casePath test case, results are in $testCaseOutDir"
+
     make full TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+
     tail ${testCaseOutDir}/compare_report.txt
 
     #-DTEST_CASE_PATH="$casePath"
@@ -34,7 +37,7 @@ SingleTestFull() {
 
 MioTest() {
     echo "Mio Test Case called"
-    SingleTest "$mioTestPath"
+    SingleTestFull "$mioTestPath"
 }
 
 SingleTestReg(){
@@ -42,17 +45,21 @@ SingleTestReg(){
     base=$(basename "$casePath") 
     testCaseOutDir="$scriptDir/$outDir/$base/"
 
-    echo "Running the $casePath test case, results are in $testCaseOutDir"
+    echo -e "\n\n\nRunning the $casePath test case, results are in $testCaseOutDir" >> $regTestLog
 
-    make genSoft runSoft compare TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    make genSoft TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    make runSoft TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    make compare TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
 
-    tail ${testCaseOutDir}/compare_report.txt
+    tail ${testCaseOutDir}/compare_report.txt >> $regTestLog 
 
 }
 
 AllTests() {
-    echo "Running All"
-    make clean
+    echo "Starting Reg Testing"
+    rm -rf $outDir
+
+    #rm $regTestLog
     for caseDir in "${allTestCasePaths[@]}"; do
         SingleTestReg "$caseDir"
     done
