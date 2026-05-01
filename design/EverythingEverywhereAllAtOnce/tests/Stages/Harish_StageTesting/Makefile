@@ -6,7 +6,7 @@ TEST_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 PROJECT_ROOT := $(shell pwd | sed -E 's|(.*EverythingEverywhereAllAtOnce).*|\1|')
 
-LOG_DIR = $(TEST_DIR)/logDumps/
+LOG_DIR ?= $(TEST_DIR)/logDumps/
 
 DISTRO := $(shell . /etc/os-release && echo $$ID)
 
@@ -26,7 +26,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH = $(TEST_DIR)/config/TheBigOne/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/EdgeCase/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -128,7 +128,6 @@ genSoft:
 see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'	
 	@echo -e "\n"
-
 	@echo  $(CC_FLAGS)
 
 makeLogDir:
@@ -156,8 +155,6 @@ pull:
 
 full: clean gen all run compare
 
-test: 
-	./test.sh -a 
 
-#test: clean gen all
-#	./test.sh -a 
+test: clean gen all
+	./test.sh -a 

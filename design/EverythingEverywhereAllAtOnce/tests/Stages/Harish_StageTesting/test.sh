@@ -7,17 +7,17 @@ regTestLog="regTest.log"
 scriptDir=$(pwd);
 
 
-    #"config/dcache_public/"
-    #"config/MovHeavy/"
-    #"config/simpleFarTest/"
-    #"config/exception_public/"
-    #"config/BranchHeavy/"
-    #"config/EdgeCase/"
-    #"config/DecodeStress/"
-    #"config/MemHeavy/")
-
 allTestCasePaths=(
-    "config/TheBigOne/")
+    "config/TheBigOne/"
+    "config/dcache_public/"
+    "config/MovHeavy/"
+    "config/simpleFarTest/"
+    "config/exception_public/"
+    "config/BranchHeavy/"
+    "config/EdgeCase/"
+    "config/DecodeStress/"
+    "config/MemHeavy/")
+
 
 outDir="Test_Results/"
 
@@ -50,8 +50,9 @@ SingleTestReg(){
     make genSoft TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
     make runSoft TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
     make compare TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
-
-    tail ${testCaseOutDir}/compare_report.txt >> $regTestLog 
+    #make see TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
+    
+    #tail ${testCaseOutDir}/compare_report.txt >> $regTestLog 
 
 }
 
