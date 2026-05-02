@@ -62,6 +62,7 @@ module ST_Q_logic(
                 bit_vec: bit_vect_1,
                 data: st_data_high_bank,
                 non_forwarding : non_forwarding
+
             };
 
     always_comb begin
