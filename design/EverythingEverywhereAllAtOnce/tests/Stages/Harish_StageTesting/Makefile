@@ -7,7 +7,7 @@ TEST_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 PROJECT_ROOT := $(shell pwd | sed -E 's|(.*EverythingEverywhereAllAtOnce).*|\1|')
 
 LOG_DIR ?= $(TEST_DIR)/logDumps/
-#LOG_DIR = 
+
 
 DISTRO := $(shell . /etc/os-release && echo $$ID)
 
@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/MMIO/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/TheBigOne/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)

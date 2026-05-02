@@ -191,7 +191,7 @@ module DCache_TOP (
     wire        s_mio_hit;
     wire        s_mio_reqServed;
     wire [127:0] s_mio_dataLineOut;
-    wire [13:0]  s_mio_req_2_sch;
+    wire [3:0]   s_mio_req_2_sch;   // req_2_sch_t is now 4-bit
 
     // struct → flat taps (always present — inert when USE_STRUCTURAL_MIO is off)
     assign s_mio_stq_empty = inFromCore_i.stq_info_mio.empty;
@@ -317,7 +317,7 @@ module DCache_TOP (
     // ================================================================
     wire [14:0]         tap_eb_addr      [DCACHE_NUM_BLOCKS];
     wire                tap_block_hit    [DCACHE_NUM_BLOCKS];
-    wire [NUM_REQS-1:0] tap_block_req2sch[DCACHE_NUM_BLOCKS];
+    wire [3:0]          tap_block_req2sch[DCACHE_NUM_BLOCKS];  // req_2_sch_t is now 4-bit
 
     generate
         for (genvar gt = 0; gt < DCACHE_NUM_BLOCKS; gt = gt + 1) begin : g_dcache_top_taps

@@ -29,7 +29,8 @@ module DMA_Controller (
     output wire                                              core_intOut,
 
     // ---- out2Sch_o (dma_controller_2_scheduler_t) flattened ----
-    output wire [`NUM_REQS - 1 : 0]                          sch_dma_req,
+    // req_2_sch_t enum is now 4-bit (was 14): only the low nibble is meaningful.
+    output wire [3:0]                                        sch_dma_req,
     output wire [14:0]                                       sch_writeBuf_Address,  // p_address_t = $clog2(PHY_MEM_SIZE) = 15 bits
 
     inout       [`DATA_BUS_WIDTH_BITS    - 1 : 0]            dataBus,
@@ -521,18 +522,18 @@ module DMA_Controller (
     // ============================================================
     // Output assignments
     //
-    //   sch_dma_req encodes req_2_sch_t as a binary value (NUM_REQS bits wide):
-    //     NO_REQ        = 0
-    //     DMA_WRITE_REQ = 1
-    //   so dma_req[0] = req_bus & ~commiting, upper bits = 0.
+    //   sch_dma_req encodes req_2_sch_t as a 4-bit binary value:
+    //     NO_REQ        = 0  = 4'b0000
+    //     DMA_WRITE_REQ = 1  = 4'b0001
+    //   so dma_req[0] = req_bus & ~commiting, dma_req[3:1] = 0.
     // ============================================================
     wire commiting_inv;
     `INV_N(u_inv_cm, 1, commiting, commiting_inv)
     wire dma_req_active;
     `AND_2(u_and_dr, 1, dma_req_active, req_bus, commiting_inv)
 
-    assign sch_dma_req[0]                   = dma_req_active;
-    assign sch_dma_req[`NUM_REQS - 1 : 1]   = {(`NUM_REQS - 1){1'b0}};
+    assign sch_dma_req[0]   = dma_req_active;
+    assign sch_dma_req[3:1] = 3'b000;
     assign sch_writeBuf_Address             = writeBuf_addr;
     assign core_intOut                      = interrupt;
 

@@ -436,37 +436,37 @@ module DCache_Block (
     `AND_2(u_cond_eb_wr,        1, cond_eb_wr,           eb_V,               not_committing);
 
     // Inner-A — vcache-blocking subreq (SV lines 434-437).
-    // Priority: st_override > oe > we > NO_REQ.
-    wire [13:0] innerA_we_or_zero;
-    wire [13:0] innerA_oe_we_zero;
-    wire [13:0] innerA_full;
-    `MUX_2(u_innerA_a, 14, innerA_we_or_zero,
+    // Priority: st_override > oe > we > NO_REQ.   (req_2_sch_t is now 4-bit)
+    wire [3:0] innerA_we_or_zero;
+    wire [3:0] innerA_oe_we_zero;
+    wire [3:0] innerA_full;
+    `MUX_2(u_innerA_a, 4, innerA_we_or_zero,
         NO_REQ, DCACHE_EB_BLOCK_ST, block_req_i.we);
-    `MUX_2(u_innerA_b, 14, innerA_oe_we_zero,
+    `MUX_2(u_innerA_b, 4, innerA_oe_we_zero,
         innerA_we_or_zero, DCACHE_EB_BLOCKING_LD, block_req_i.oe);
-    `MUX_2(u_innerA_c, 14, innerA_full,
+    `MUX_2(u_innerA_c, 4, innerA_full,
         innerA_oe_we_zero, DCACHE_EB_BLOCKING_ST_OVERRIDE, st_override_for_sch_req);
 
     // Inner-B — fill subreq (SV lines 438-441).
-    wire [13:0] innerB_we_or_zero;
-    wire [13:0] innerB_oe_we_zero;
-    wire [13:0] innerB_full;
-    `MUX_2(u_innerB_a, 14, innerB_we_or_zero,
+    wire [3:0] innerB_we_or_zero;
+    wire [3:0] innerB_oe_we_zero;
+    wire [3:0] innerB_full;
+    `MUX_2(u_innerB_a, 4, innerB_we_or_zero,
         NO_REQ, DCACHE_FILL_ST, block_req_i.we);
-    `MUX_2(u_innerB_b, 14, innerB_oe_we_zero,
+    `MUX_2(u_innerB_b, 4, innerB_oe_we_zero,
         innerB_we_or_zero, DCACHE_FILL_LD, block_req_i.oe);
-    `MUX_2(u_innerB_c, 14, innerB_full,
+    `MUX_2(u_innerB_c, 4, innerB_full,
         innerB_oe_we_zero, DCACHE_FILL_ST_OVERRIDE, st_override_for_sch_req);
 
     // Top-level priority chain — lowest priority bound on the right.
-    wire [13:0] req_step1;
-    wire [13:0] req_step2;
-    wire [13:0] req_step3;
-    wire [13:0] req_2_sch_w;
-    `MUX_2(u_top_step1, 14, req_step1,    NO_REQ,    DCACHE_EB_WR,            cond_eb_wr);
-    `MUX_2(u_top_step2, 14, req_step2,    req_step1, innerB_full,             makeBlockReq);
-    `MUX_2(u_top_step3, 14, req_step3,    req_step2, innerA_full,             cond_blocking_vcache);
-    `MUX_2(u_top_step4, 14, req_2_sch_w,  req_step3, DCACHE_EB_BLOCKING_BANK, cond_blocking_bank);
+    wire [3:0] req_step1;
+    wire [3:0] req_step2;
+    wire [3:0] req_step3;
+    wire [3:0] req_2_sch_w;
+    `MUX_2(u_top_step1, 4, req_step1,    NO_REQ,    DCACHE_EB_WR,            cond_eb_wr);
+    `MUX_2(u_top_step2, 4, req_step2,    req_step1, innerB_full,             makeBlockReq);
+    `MUX_2(u_top_step3, 4, req_step3,    req_step2, innerA_full,             cond_blocking_vcache);
+    `MUX_2(u_top_step4, 4, req_2_sch_w,  req_step3, DCACHE_EB_BLOCKING_BANK, cond_blocking_bank);
 
     assign outputs_o.req_2_sch = req_2_sch_w;
 

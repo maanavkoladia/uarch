@@ -59,7 +59,7 @@ endmodule
 module mux3_N #(parameter WIDTH = 1)(
     output wire [WIDTH-1:0] out,
     input  wire [WIDTH-1:0] in0, in1, in2,
-    input  wire             sel
+    input  wire [1:0]       sel
 );
     genvar i;
     generate

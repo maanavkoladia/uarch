@@ -36,7 +36,7 @@ module MIO_Block (
     output wire        writeSuccess_o,
     output wire        hit_o,
     output wire [127:0] dataLineOut_o,  // LSB-first: [7:0]=byte[0], [127:120]=byte[15]
-    output wire [13:0]  req_2_sch_o,
+    output wire [3:0]   req_2_sch_o,    // req_2_sch_t is now 4-bit
     output wire        reqServed_o
 );
 
@@ -165,13 +165,13 @@ module MIO_Block (
     assign dataLineOut_o = {96'b0, dataBus[31:0]};
 
     // ---------------------------------------------------------------
-    // req_2_sch_o (14-bit encoded, read from registered state only)
+    // req_2_sch_o (4-bit encoded, read from registered state only)
     // SV case({block_req.we, block_req.oe}):
-    //   2'b00 -> NO_REQ              = 0  = 14'b00000000000000
-    //   2'b01 -> LD_FROM_SIMPLE      = 5  = 14'b00000000000101
-    //   2'b10 -> WR_SIMPLE (bit6=1)  = 3  = 14'b00000000000011
-    //   2'b10 -> WR_COMPLEX (bit6=0) = 4  = 14'b00000000000100
-    // Per-bit: bit0=ld|wr_simple, bit1=wr_simple, bit2=ld|wr_complex, bits13:3=0
+    //   2'b00 -> NO_REQ              = 0  = 4'b0000
+    //   2'b01 -> LD_FROM_SIMPLE      = 5  = 4'b0101
+    //   2'b10 -> WR_SIMPLE (bit6=1)  = 3  = 4'b0011
+    //   2'b10 -> WR_COMPLEX (bit6=0) = 4  = 4'b0100
+    // Per-bit: bit0=ld|wr_simple, bit1=wr_simple, bit2=ld|wr_complex, bit3=0
     // ---------------------------------------------------------------
 
     // ld_req_sel: case 2'b01 (oe=1, we=0) — reads registered state, no loop
@@ -192,8 +192,8 @@ module MIO_Block (
     wire req_sch_bit0, req_sch_bit2;
     `OR_2(u_bit0, 1, req_sch_bit0, ld_req_sel, wr_simple_sel)
     `OR_2(u_bit2, 1, req_sch_bit2, ld_req_sel, wr_complex_sel)
-    // {13'b0, bit2, bit1=wr_simple_sel, bit0}
-    assign req_2_sch_o = {11'b0, req_sch_bit2, wr_simple_sel, req_sch_bit0};
+    // {bit3=0, bit2, bit1=wr_simple_sel, bit0}
+    assign req_2_sch_o = {1'b0, req_sch_bit2, wr_simple_sel, req_sch_bit0};
 
     // ---------------------------------------------------------------
     // Tri-state buses

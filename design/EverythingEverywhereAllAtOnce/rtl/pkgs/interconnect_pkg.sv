@@ -10,7 +10,7 @@ package interconnect_pkg;
     localparam int NUM_REQS = 14;
 
     //we can abuse the bit mapping to do fasters cmps
-    typedef enum logic [NUM_REQS - 1 : 0] {
+    typedef enum logic [3 : 0] {
 
         // ===== ICACHE (highest) =====
         ICACHE_HIGH_PRI = 14,

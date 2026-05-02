@@ -1,0 +1,91 @@
+@lib/STDCells/STDCell_Macros.vh  
+@rtl/defines/interconnect_define.vh  
+@rtl/pkgs/interconnect_pkg.sv  
+@rtl/defines/common_define.vh  
+@rtl/pkgs/common_pkg.sv
+
+
+The overal goal is to eventually fully port my memory system to structural verilog.
+We are going start with bus arbitration.
+Bus arbitration contains two files one called DTE and one called scheduler.
+Bus arbitration itself is instaniated in Everywhere_TOP_structural and everythingTop.sv 
+
+what we care about is to create a new Bus_arbitration.v that is purely structural meaning the inputs
+and outputs are purely structural. 
+We will then reconstruct the structs in Everywhere_TOP_structural as needed.
+Now I also need to port my DTE and Schduler (and schduler_dcache_picking) into structural verilog.
+these must also be fully structural with no structs
+So the goal is to first port the schduler dcache picking and scheduler module and dte into a structural version.
+DO NOT just overwrite the exising sv file. create a new .v file with the same module name and file name but keep the files in their respective folders next to the .sv files
+
+Ensure this goal is clear.
+
+
+Here are some rules and guidlines for porting to structural verilog 2005
+DCache Structural Port — Per-Module Recipe & Reprompt Template
+This file documents the conventions for porting DCache modules from SystemVerilog to structural Verilog 2005, and provides a reusable prompt to drive each module's port. Every iteration ports one module while leaving the SV reference intact behind a `ifdef swap.
+
+The first port (EvictionBuf) follows every rule below — use it as the worked example when porting the next module.
+
+Hard rules for the structural .v file
+Verilog 2005 only. No always_ff, always_comb, logic, struct, typedef, enum, package import, int, for/while outside generate.
+No behavioral logic. No ?: ternary. No &&/|| logical ops. No &/|/^/~ bitwise ops. No ==/!= comparators in expressions. Arithmetic operators are also forbidden (use ADD_N if needed).
+assign is for wire aliasing only. Allowed: assign x = y;, assign x = struct.field;, assign x = bus[hi:lo];, assign x = {...}; (concatenation for repacking byte arrays). Forbidden: assign x = a & b;, assign x = a ? b : c;, etc.
+All logic comes from STDCell macros. The macros are defined in lib/STDCells/STDCell_Macros.vh and are available globally to the structural sources via the build's include path.
+Storage uses REG_RST_WE. Async active-low reset clears q to 0. To hold a value, drive we = 0. To overwrite conditionally, build the we and d muxes from gate macros.
+Each register has exactly one (we, d) pair. If multiple update conditions write the same register, OR the conditions into a single we, and MUX the data into a single d (with MUX_2/MUX_4/etc). When write conditions are mutually exclusive, the d mux often collapses to a direct wire (no MUX needed) — see EvictionBuf.
+STDCell macro cheatsheet (what's available — no new macros needed)
+Source: lib/STDCells/STDCell_Macros.vh. Arguments are positional.
+
+Macro	Signature	Notes
+INV_N	(name, width, in, out)	Vector inverter
+AND_2..AND_12	(name, width, out, in0, in1, ...)	N-input AND
+OR_2..OR_12	(name, width, out, in0, in1, ...)	N-input OR
+MUX_2	(name, width, out, in0, in1, sel)	sel is 1-bit
+MUX_3	(name, width, out, in0, in1, in2, sel)	sel is 2-bit
+MUX_4	(name, width, out, in0..in3, sel)	sel is 2-bit
+MUX_8	(name, width, out, in0..in7, sel)	sel is 3-bit
+MUX_16/32/64	(name, width, out, in0..inN, sel)	sel is log2(N) bit
+CMP_N	(name, width, out, in0, in1)	Equality only
+ADD_N	(name, width, sum, cout, in0, in1, cin)	Kogge-Stone
+BUFFER_DELAY	(name, stages, width, in, out)	0.25 ns / stage
+TRISTATE_L	(name, width, enbar, in, out)	Active-low en
+BUS_TRISTATE	(name, width, enbar, in, out)	Bus-grade
+DECODER_N	(name, inputs, in, out)	INPUTS=N → 2^N out
+REG_RST_WE	(name, width, clk, rst, we, din, dout)	Async low rst
+REG_RST	(name, width, clk, rst, din, dout)	Always-write
+ROM_32W_64b	(name, addr, oe, dout)	32×64 ROM
+
+There also now NANDS and NORS (at certain sizes)
+Keep in mind nand and nors are always faster than ands and ors
+
+
+Port-shape rules
+No struct ports. Each struct field becomes its own input wire / output wire. Use suffixes:
+..._i for inputs, ..._o for outputs.
+When a port unpacks an SV struct, prefix with the struct name: blockReq_oe_i, vcache_LD_EB_i, ebOut_addr_o.
+
+Make sure when creating module instantions unrolling the struct is not just like creating one big wire.
+make sire to create multiple wires that represent different parts of the struct as needed.
+
+The overall heirarchy - undersatnding this will be important for understanding how to unroll structs.
+Riht now we have
+All At Once
+  -- Everywhere top
+     --bus arbitration
+
+bus arbitration will be fully structural and we will resolve structs for other modules within everywhere top.
+
+As we port more we will make more ports of everywhere top structual and evntually module declariton itself.
+
+Plan a way to port Bus Arbitration correctly to structural verilog.
+
+Be very careful as to ensure tou are matching the system verilog versions of the respective files
+If there are delays in the system verilog do not put them into the structural implemetnation as they are meant to simulate delay the strucutral will actually have naturally.
+Make sure all module names are the same including in genvar loops etc.
+
+Understand how the bus arbitation fits within the memory system and understand how to unroll the structs.
+
+
+
+
