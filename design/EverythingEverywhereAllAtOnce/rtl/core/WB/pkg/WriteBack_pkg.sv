@@ -9,6 +9,7 @@ package WriteBack_pkg;
         p_address_t address;
         uint16_t bit_vec;
         byte_t data[CACHE_LINES_SIZE_B];
+        bool non_forwarding;
     } st_q_entry_t;
 
     typedef struct {
@@ -23,9 +24,11 @@ package WriteBack_pkg;
         bool valid[ST_Q_DEPTH];
         p_address_t address[ST_Q_DEPTH];
         p_address_t head_address;
+        byte_t head_data[CACHE_LINES_SIZE_B];
         uint16_t bit_vec;
-        byte_t data[CACHE_LINES_SIZE_B];
+        byte_t data[ST_Q_DEPTH][CACHE_LINES_SIZE_B];
         bool push_fail;
+        bool non_forwarding[ST_Q_DEPTH];
     } st_q_outputs_t;
 
 

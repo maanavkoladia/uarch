@@ -150,7 +150,8 @@ module cs_post_processor (
                             ff_jmp ? 1'b0 : dc_cs_i.ST_OP,
         dr_upper8   : dc_cs_i.dr_upper8,
         sr_upper8 : dc_cs_i.sr_upper8,
-        datasize : dc_cs_i.datasize
+        datasize : dc_cs_i.datasize,
+        st_optimization_disable : dc_cs_i.st_optimization_disable
     };
 
     // =====================
@@ -160,7 +161,9 @@ module cs_post_processor (
         LD_OP   : invalid_inst ? 
                             1'b0 : mem_cs_i.LD_OP,
         ST_OP   : invalid_inst ? 
-                            1'b0 : ff_jmp ? 1'b0 : mem_cs_i.ST_OP
+                            1'b0 : ff_jmp ? 1'b0 : mem_cs_i.ST_OP,
+
+        st_optimization_disable : mem_cs_i.st_optimization_disable
     };
 
     // =====================
@@ -183,7 +186,8 @@ module cs_post_processor (
         is_far             : exe_cs_i.is_far,
         is_call            : ff_jmp || ff_push ? 1'b0 : exe_cs_i.is_call,
         second_flag_needed : exe_cs_i.second_flag_needed,
-        rep_no_zf_update    : 0
+        rep_no_zf_update    : 1'b0,
+        st_optimization_disable : exe_cs_i.st_optimization_disable
     };
 
     // =====================
@@ -202,7 +206,9 @@ module cs_post_processor (
                             ff_jmp ? 1'b0 : rr_cs_i.sr_wr,
         WB_EAX : invalid_inst ? 
                             1'b0 :
-                            cmpxchg ? 1'b1 : 1'b0
+                            cmpxchg ? 1'b1 : 1'b0,
+
+        st_optimization_disable : wb_cs_i.st_optimization_disable
     };
     
 endmodule

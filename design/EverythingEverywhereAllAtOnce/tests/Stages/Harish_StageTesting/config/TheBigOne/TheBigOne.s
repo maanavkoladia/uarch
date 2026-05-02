@@ -36,9 +36,9 @@ main:
 
     movl (%esi),       %eax
     addl %eax,         %ebx
-    movl 0x200(%esi),  %eax
-    addl %eax,         %ebx
     movl 0x400(%esi),  %eax
+    addl %eax,         %ebx
+    movl 0x200(%esi),  %eax
     addl %eax,         %ebx
     movl 0x600(%esi),  %eax
     addl %eax,         %ebx
@@ -538,6 +538,12 @@ main:
     pushl %edx                       # push 0x33333333
 
     popl  %edx                       # EDX = 0x33333333
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
     popl  %ecx                       # ECX = 0x22222222
     popl  %eax                       # EAX = 0x11111111
 
@@ -1070,6 +1076,9 @@ ic_done:
 .org 0x40020000
 .data
     .long 0x11223344
+    .long 0x55667788
+    .long 0x99AABBCC
+    .long 0xDDEEFF00
 #data_page:
 #    .space 0xC00
 

@@ -15,6 +15,7 @@ module ST_Q_logic(
     input bool ST_XCL,
     input bool MIO, 
     input bool write_success[NUM_WB_ST_QS],
+    input bool non_forwarding,
 
     output st_q_inputs_t stq_info[NUM_WB_ST_QS]
 );
@@ -51,14 +52,16 @@ module ST_Q_logic(
                 valid : (ST_OP & ~MIO & wb_valid),
                 address : st_paddr_0,
                 bit_vec: bit_vect_0,
-                data : st_data_low_bank
+                data : st_data_low_bank,
+                non_forwarding : non_forwarding
             };
 
     assign  entry1 = '{
                 valid: (ST_OP & ST_XCL & ~MIO & wb_valid),
                 address: st_paddr_1,
                 bit_vec: bit_vect_1,
-                data: st_data_high_bank
+                data: st_data_high_bank,
+                non_forwarding : non_forwarding
             };
 
     always_comb begin

@@ -41,7 +41,7 @@ module WB (
                 empty   : stq_outputs[i].empty,
                 address : stq_outputs[i].head_address,
                 bit_vec : stq_outputs[i].bit_vec,
-                data    : stq_outputs[i].data
+                data    : stq_outputs[i].head_data
             };
         end
     end
@@ -102,6 +102,7 @@ module WB (
         .ST_XCL(wb_latches.ST_XCL),
         .MIO(wb_latches.MIO),
         .write_success(write_success),
+        .non_forwarding(1'b0),
 
         .stq_info(stq_info)
     );
@@ -121,7 +122,7 @@ module WB (
     //Store queue gen
     genvar i;
     for(i = 0; i < NUM_WB_ST_QS; i++)begin : gen_st_q
-        ST_Q stq_inst (
+        STQ_shift stq_inst (
             .clk(clk),
             .rst(rst),
             .wb_in(stq_info[i]),

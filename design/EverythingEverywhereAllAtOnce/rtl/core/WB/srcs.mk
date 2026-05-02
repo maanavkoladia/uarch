@@ -6,7 +6,7 @@ WB_PKGS = \
 
 # WB source files
 WB_SRC_FILES = \
-	$(WB_PATH_INTERNAL)/ST_Q.sv \
+	$(WB_PATH_INTERNAL)/STQ_shift.sv \
 	$(WB_PATH_INTERNAL)/ST_Q_logic.sv \
 	$(WB_PATH_INTERNAL)/ST_Q_MIO_logic.sv \
     $(WB_PATH_INTERNAL)/MIO_Q.sv \

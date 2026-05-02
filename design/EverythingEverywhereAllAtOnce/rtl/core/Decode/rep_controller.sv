@@ -205,11 +205,13 @@ module rep_controller (
             ST_OP     : 1'b1,
             dr_upper8 	 : 1'b0,
 			sr_upper8 	 : 1'b0,
-            datasize  : saved_datasize
+            datasize  : saved_datasize,
+            st_optimization_disable : 1'b1
         },
         mem_cs : '{
             ST_OP : 1'b1,
-            LD_OP : 1'b1
+            LD_OP : 1'b1,
+            st_optimization_disable : 1'b1
         },
         exe_cs : '{
             ST_OP               : 1'b1,
@@ -224,13 +226,15 @@ module rep_controller (
             is_far              : 1'b0,
             is_call             : 1'b0,
             second_flag_needed  : 1'b0,
-            rep_no_zf_update    : 1
+            rep_no_zf_update    : 1'b1,
+            st_optimization_disable : 1'b1
         },
         wb_cs : '{
             ST_OP : 1'b1,
             WB_DR : 1'b1,
             WB_SR : 1'b1,
-			WB_EAX: 1'b0
+			WB_EAX: 1'b0,
+            st_optimization_disable : 1'b1
         },
         br_info      : '{default:'0},  // no branch so zero?
         NEIP         : 32'h0,
@@ -277,11 +281,13 @@ module rep_controller (
             ST_OP     : 1'b0,
             dr_upper8    : 1'b0,
             sr_upper8   : 1'b0,
-            datasize  : saved_datasize
+            datasize  : saved_datasize,
+            st_optimization_disable : 1'b1
         },
         mem_cs : '{
             ST_OP : 1'b0,
-            LD_OP : 1'b0
+            LD_OP : 1'b0,
+            st_optimization_disable : 1'b1
         },
         exe_cs : '{
             ST_OP               : 1'b0,
@@ -296,13 +302,15 @@ module rep_controller (
             is_far              : 1'b0,
             is_call             : 1'b0,
             second_flag_needed  : 1'b0,
-            rep_no_zf_update    : 1'b1
+            rep_no_zf_update    : 1'b1,
+            st_optimization_disable : 1'b1
         },
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b1,
             WB_SR : 1'b0,
-			WB_EAX: 1'b0
+			WB_EAX: 1'b0,
+            st_optimization_disable : 1'b1
         },
         br_info      : '{default:'0},  
         NEIP         : 32'h0,
@@ -354,11 +362,13 @@ module rep_controller (
             ST_OP     : 1'b0,
             dr_upper8    : 1'b0,
             sr_upper8   : 1'b0,
-            datasize  : saved_datasize
+            datasize  : saved_datasize,
+            st_optimization_disable : 1'b1
         },
         mem_cs : '{
             ST_OP : 1'b0,
-            LD_OP : 1'b1
+            LD_OP : 1'b1,
+            st_optimization_disable : 1'b1
         },
         exe_cs : '{
             ST_OP               : 1'b0,
@@ -373,13 +383,15 @@ module rep_controller (
             is_far              : 1'b0,
             is_call             : 1'b0,
             second_flag_needed  : 1'b0,
-            rep_no_zf_update    : 1'b0
+            rep_no_zf_update    : 1'b0,
+            st_optimization_disable : 1'b1
         },
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b1,
             WB_SR : 1'b0,
-			WB_EAX: 1'b0
+			WB_EAX: 1'b0,
+            st_optimization_disable : 1'b1
         },
         br_info      : '{default:'0},  
         NEIP         : 32'h0,
@@ -435,11 +447,13 @@ module rep_controller (
             ST_OP     : 1'b0,
             dr_upper8    : 1'b0,
             sr_upper8   : 1'b0,
-            datasize  : saved_datasize
+            datasize  : saved_datasize,
+            st_optimization_disable : 1'b1
         },
         mem_cs : '{
             ST_OP : 1'b0,
-            LD_OP : 1'b1
+            LD_OP : 1'b1,
+            st_optimization_disable : 1'b1
         },
         exe_cs : '{
             ST_OP               : 1'b0,
@@ -454,13 +468,15 @@ module rep_controller (
             is_far              : 1'b0,
             is_call             : 1'b0,
             second_flag_needed  : 1'b0,
-            rep_no_zf_update    : 1'b0
+            rep_no_zf_update    : 1'b0,
+            st_optimization_disable : 1'b1
         },
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b1,
             WB_SR : 1'b0,
-			WB_EAX: 1'b0
+			WB_EAX: 1'b0,
+            st_optimization_disable : 1'b1
         },
         br_info      : '{default:'0},  
         NEIP         : 32'h0,
@@ -515,11 +531,13 @@ module rep_controller (
             ST_OP     : 1'b0,
             dr_upper8    : 1'b0,
             sr_upper8   : 1'b0,
-            datasize  : saved_datasize
+            datasize  : saved_datasize,
+            st_optimization_disable : 1'b1
         },
         mem_cs : '{
             ST_OP : 1'b0,
-            LD_OP : 1'b1
+            LD_OP : 1'b1,
+            st_optimization_disable : 1'b1
         },
         exe_cs : '{
             ST_OP               : 1'b0,
@@ -534,13 +552,15 @@ module rep_controller (
             is_far              : 1'b0,
             is_call             : 1'b0,
             second_flag_needed  : 1'b0,
-            rep_no_zf_update    : 1'b0
+            rep_no_zf_update    : 1'b0,
+            st_optimization_disable : 1'b1
         },
         wb_cs : '{
             ST_OP : 1'b0,
             WB_DR : 1'b1,
             WB_SR : 1'b1,
-    		WB_EAX: 1'b0
+    		WB_EAX: 1'b0,
+            st_optimization_disable : 1'b1
         },
         br_info      : '{default:'0},  
         NEIP         : 32'h0,

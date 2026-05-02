@@ -94,6 +94,8 @@ module control_store (
 
     logic [4:0] HARDCODED_SEGMENT0_o;
     logic [4:0] HARDCODED_SEGMENT1_o;
+
+    logic st_optimization_disable_o;
     // =====================
     // Module instantiation
     // =====================
@@ -201,6 +203,7 @@ module control_store (
         .is_far_o(is_far_o),
         .is_call_o(is_call_o),
         .second_flag_needed_o(second_flag_needed_o),
+        .st_optimization_disable_o(st_optimization_disable_o),
 
         // Misc
         .will_mod_zf_o(will_mod_zf_o),
@@ -290,13 +293,16 @@ module control_store (
         ST_OP : mod_rm_cs_outs.st_op,
         dr_upper8: mod_rm_cs_outs.dr_high8,
         sr_upper8: mod_rm_cs_outs.sr_high8,
-        datasize: DATA_SIZE_o
+        datasize: DATA_SIZE_o,
+        st_optimization_disable : st_optimization_disable_o
     };
 
     // MEM
     assign temp_mem_cs = '{
         ST_OP  : mod_rm_cs_outs.st_op,
-        LD_OP  : mod_rm_cs_outs.ld_op
+        LD_OP  : mod_rm_cs_outs.ld_op,
+        st_optimization_disable : st_optimization_disable_o
+
     };
 
     // EXE
@@ -322,7 +328,8 @@ module control_store (
         is_far              : is_far_o,
         is_call             : is_call_o,
         second_flag_needed  : second_flag_needed_o,
-        rep_no_zf_update    : 0
+        rep_no_zf_update    : 0,
+        st_optimization_disable : st_optimization_disable_o
 
     };
 
@@ -331,7 +338,8 @@ module control_store (
         ST_OP : mod_rm_cs_outs.st_op,
         WB_DR : mod_rm_cs_outs.dr_wr,
         WB_SR : mod_rm_cs_outs.sr_wr,
-        WB_EAX : 1'b0               //will be overriden in cs_post_processor
+        WB_EAX : 1'b0,               //will be overriden in cs_post_processor
+        st_optimization_disable : st_optimization_disable_o
     };
 
     cs_post_processor cs_post_prossesing_unit(

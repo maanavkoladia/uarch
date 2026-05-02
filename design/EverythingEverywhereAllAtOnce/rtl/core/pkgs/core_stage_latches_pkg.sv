@@ -119,11 +119,13 @@ package core_stage_latches_pkg;
         bool dr_upper8;
         bool sr_upper8;
         logic [1:0] datasize;
+        bool st_optimization_disable;
     } dc_cs_t;
 
     typedef struct {
         bool ST_OP;
         bool LD_OP;
+        bool st_optimization_disable;
     } mem_cs_t;
 
     typedef struct {
@@ -147,6 +149,7 @@ package core_stage_latches_pkg;
        //hard coded in br_res logic
         bool second_flag_needed;
         bool rep_no_zf_update;
+        bool st_optimization_disable;
     } exe_cs_t;
 
 
@@ -155,6 +158,7 @@ package core_stage_latches_pkg;
         bool WB_DR;
         bool WB_SR;
         bool WB_EAX;
+        bool st_optimization_disable;
     } wb_cs_t;
 
     typedef struct {
