@@ -164,7 +164,8 @@ NUM_VCACHE_STATES
         VCACHE_LD_VC_SWAP = 3'd1,  // 001
         VCACHE_WAITEVICT  = 3'd2,  // 010
         WRITE_2_VCACHE    = 3'd3,  // 011
-        VCACHE_ERROR      = 3'd4   // 101
+        WRITE_EB          = 3'd4,  // 100
+        VCACHE_ERROR      = 3'd5   // 101
     } vcache_fsm_states_e;
 
 endpackage

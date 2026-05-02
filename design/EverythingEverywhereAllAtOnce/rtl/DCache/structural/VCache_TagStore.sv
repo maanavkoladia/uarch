@@ -157,7 +157,7 @@ module VCache_TagStore (
             `AND_2(u_cond_select, 1, cond_select, wr2eb_or_vswap, oe_idx_decoded[goe])
             // `OR_2 (u_enable_oe,   1, enable_oe,   doAccess, cond_select)
             // `INV_N(u_oe_actual,   1, enable_oe,   OE_2_TagStore[goe])
-            nor2$ u_oe_actual (.out(OE_2_TagStore[goe]), .in1(doAccess), .in1(cond_select));
+            nor2$ u_oe_actual (.out(OE_2_TagStore[goe]), .in0(doAccess), .in1(cond_select));
         end
     endgenerate
 
@@ -231,8 +231,8 @@ module VCache_TagStore (
     `NAND_3(u_way_hit_3, 1, way_hit[3], doAccess, tagMetaStore_valid_q[3], tag_eq[3])
 
     `NAND_4 (u_hit,          1, hit, way_hit[0], way_hit[1], way_hit[2], way_hit[3])
-    // `INV_N(u_not_hit,      1, hit, not_hit)
-    nor4$ u_not_hit(.out(not_hit), .in0(way_hit[0]), .in1(way_hit[1]), .in2(way_hit[2]), .in3(way_hit[3]));
+    `INV_N(u_not_hit,      1, hit, not_hit)
+    //nor4$ u_not_hit(.out(not_hit), .in0(way_hit[0]), .in1(way_hit[1]), .in2(way_hit[2]), .in3(way_hit[3]));
 
     `AND_2(u_miss,         1, miss, doAccess, not_hit)
     `AND_2(u_writeSuccess, 1, writeSuccess, hit, we_i)
@@ -241,8 +241,8 @@ module VCache_TagStore (
     //   hitIdx[1] = way_hit[2] | way_hit[3]
     //   hitIdx[0] = way_hit[1] | way_hit[3]
     wire [1:0] hitIdx;
-    `OR_2(u_hitIdx_1, 1, hitIdx[1], way_hit[2], way_hit[3])
-    `OR_2(u_hitIdx_0, 1, hitIdx[0], way_hit[1], way_hit[3])
+    `NAND_2(u_hitIdx_1, 1, hitIdx[1], way_hit[2], way_hit[3])
+    `NAND_2(u_hitIdx_0, 1, hitIdx[0], way_hit[1], way_hit[3])
 
     // hitIdx one-hot for writeSuccess writes
     wire [3:0] hitIdx_decoded;
