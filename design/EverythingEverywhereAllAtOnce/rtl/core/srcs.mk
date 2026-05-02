@@ -9,17 +9,10 @@ include $(CORE_PATH_INTERNAL)/MEM/srcs.mk
 include $(CORE_PATH_INTERNAL)/WB/srcs.mk
 
 
-CORE_GEN_SRC_FILES = \
-					 $(GEN_DECODE_SRC_FILES)	\
-					 $(RR_GEN_SRC_FILES)	\
-					 $(GEN_DC_SRC_FILES)	\
-					 $(GEN_MEM_SRC_FILES)	\
-					 $(GEN_EXE_SRC_FILES)	\
 
 
 
 CORE_SRC_FILES = \
-				 $(CORE_GEN_SRC_FILES)	\
 				 $(DECODE_SRC_FILES_STRUCTURAL)	\
 				 $(CORE_PATH_INTERNAL)/IDM/IDM.sv	\
 				 $(CORE_PATH_INTERNAL)/TLB/TLB.sv \

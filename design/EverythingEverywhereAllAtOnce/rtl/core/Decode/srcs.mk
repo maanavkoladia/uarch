@@ -3,7 +3,7 @@ DECODE_PATH_INTERNAL = $(CORE_PATH_INTERNAL)/Decode/
 DECODE_PKGS = \
 						$(DECODE_PATH_INTERNAL)/pkg/Decode_pkg.sv \
 
-GEN_DECODE_SRC_FILES = \
+DECODE_GEN_SRC_FILES = \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/MOD_LUT.v \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/OP_LUT.v	\
 						  $(DECODE_PATH_INTERNAL)/structural/gen/PF_LUT.v \
@@ -14,6 +14,7 @@ GEN_DECODE_SRC_FILES = \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/rr_valid_logic.v \
 
 DECODE_SRC_FILES_STRUCTURAL = \
+								$(DECODE_GEN_SRC_FILES ) \
 								$(DECODE_PATH_INTERNAL)/structural/disp_finder.v \
 								$(DECODE_PATH_INTERNAL)/structural/imm_finder.v \
 								$(DECODE_PATH_INTERNAL)/structural/modrm_size.v \
@@ -27,6 +28,7 @@ DECODE_SRC_FILES_STRUCTURAL = \
 								$(DECODE_PATH_INTERNAL)/structural/predecode.v \
 
 DECODE_SRC_FILES = \
+					    $(DECODE_GEN_SRC_FILES ) \
 						$(DECODE_PATH_INTERNAL)/br_info_processing.sv \
 						$(DECODE_PATH_INTERNAL)/control_store_genned.sv \
 						$(DECODE_PATH_INTERNAL)/control_store.sv \
@@ -37,5 +39,3 @@ DECODE_SRC_FILES = \
 						$(DECODE_PATH_INTERNAL)/rep_controller.sv \
 						$(DECODE_PATH_INTERNAL)/Decode.sv \
 
-#dont add gen files here are they are includede in the core srcs.mk file
-DECODE_STRUCTURAL_SRC_FILES = \

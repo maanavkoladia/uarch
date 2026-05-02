@@ -278,20 +278,25 @@ endmodule
 
 //-----------------------------------------------------------
 `celldefine
-module xor2$ (
-    out,
-    in0,
-    in1
+module MPS_XOR_IN2 #(
+    parameter WIDTH = 1
+)(
+    output [WIDTH-1:0] out,
+    input  [WIDTH-1:0] in0,
+    input  [WIDTH-1:0] in1
 );
-    input in0, in1;
-    output out;
 
-    xor (out, in0, in1);
+    genvar i;
+    generate
+        for (i = 0; i < WIDTH; i = i + 1) begin : GEN_XOR
+            xor2$ u_xor (
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i])
+            );
+        end
+    endgenerate
 
-    specify
-        (in0 *> out) = (0.27: 0.30: 0.33, 0.27: 0.30: 0.33);
-        (in1 *> out) = (0.27: 0.30: 0.33, 0.27: 0.30: 0.33);
-    endspecify
 endmodule
 `endcelldefine
 
