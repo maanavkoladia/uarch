@@ -1,0 +1,11 @@
+
+
+the goal is to port my fetch module in my system verilog project into pure 2005 structural verilog.
+
+we will be doing this one module at a time
+
+I will give you an stdcell lib of macros that you will use to port to structural
+
+DO NOT create your own cells, if you are missing some i will implement/provide for you
+
+i will start with the predictor and btb module in the fetch.sv module
