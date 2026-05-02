@@ -51,6 +51,9 @@ module DMA_Controller (
     logic commiting;
     logic disk_ld_Buffer_V;
     byte_t disk_ld_Buffer[PAGE_SIZE];
+    wire [8*PAGE_SIZE-1:0] disk_ld_Buffer_flat;
+
+    assign disk_ld_Buffer_flat = {<<8{disk_ld_Buffer}};
 
     uint32_t counter;
 
@@ -68,8 +71,9 @@ module DMA_Controller (
     logic write2_numBytes_req;
     logic write2_startWrite_req;
 
-    assign write2_srcAddr_req    = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_SRC_ADDRESS);;
-    assign write2_destAddr_req   = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_DEST_ADDRESS);
+    assign write2_srcAddr_req = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_SRC_ADDRESS);
+    ;
+    assign write2_destAddr_req = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_DEST_ADDRESS);
     assign write2_numBytes_req   = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_NUM_BYTES_ADDRESS);
     assign write2_startWrite_req = inFromDTE_i.coreValOnBus && (addrBus == DMA_WRITE_START_TRANSFER_ADDRESS);
 
@@ -111,7 +115,7 @@ module DMA_Controller (
         .ld_diskAddr(dma_Regs.srcAddr),  // ✅ FIXED
         .ld_num_bytes(dma_Regs.numBytes),
         .disk_ld_Buffer_V(disk_ld_Buffer_V),
-        .disk_ld_Buffer_o(disk_ld_Buffer)
+        .disk_ld_Buffer_o(disk_ld_Buffer_flat)
     );
 
     // =============================
@@ -148,7 +152,7 @@ module DMA_Controller (
     always_ff @(posedge clk) begin
         if (!rst) begin
             writeBuf_V <= 0;
-            writeBuf_addr  <= 0;
+            writeBuf_addr <= 0;
             writeBuf <= '{default: '0};
         end else if (fsmOuts.ld_writeBuf) begin
             for (int i = 0; i < CACHE_LINES_SIZE_B; i++) begin
@@ -163,9 +167,9 @@ module DMA_Controller (
     end
 
     always_ff @(posedge clk) begin
-        if(!rst) commiting <= 0;
-        else if(inFromDTE_i.commiting) commiting <= 1;
-        else if(inFromDTE_i.writeComplete) commiting <= 0;
+        if (!rst) commiting <= 0;
+        else if (inFromDTE_i.commiting) commiting <= 1;
+        else if (inFromDTE_i.writeComplete) commiting <= 0;
     end
 
     // =============================
