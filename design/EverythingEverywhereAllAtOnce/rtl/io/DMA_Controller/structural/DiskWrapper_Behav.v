@@ -7,14 +7,14 @@ module DiskWrapper (
     input wire [31:0] ld_num_bytes,
 
     output reg disk_ld_Buffer_V,
-    output wire [8*PAGE_SIZE-1:0] disk_ld_Buffer_o
+    output wire [8*`PAGE_SIZE-1:0] disk_ld_Buffer_o
 );
 
     // -------------------------
     // Internal storage
     // -------------------------
-    reg [7:0] disk[0:DISK_SIZE-1];
-    reg [7:0] disk_ld_Buffer[0:PAGE_SIZE-1];
+    reg [7:0] disk[0:`DISK_SIZE-1];
+    reg [7:0] disk_ld_Buffer[0:`PAGE_SIZE-1];
 
     reg [31:0] delayCycles_Counter;
     reg loading;
@@ -27,7 +27,7 @@ module DiskWrapper (
     // -------------------------
     genvar gi;
     generate
-        for (gi = 0; gi < PAGE_SIZE; gi = gi + 1) begin : FLATTEN
+        for (gi = 0; gi < `PAGE_SIZE; gi = gi + 1) begin : FLATTEN
             assign disk_ld_Buffer_o[gi*8+:8] = disk_ld_Buffer[gi];
         end
     endgenerate
@@ -42,14 +42,14 @@ module DiskWrapper (
             loading <= 0;
 
             // manual array reset
-            for (i = 0; i < PAGE_SIZE; i = i + 1) begin
+            for (i = 0; i < `PAGE_SIZE; i = i + 1) begin
                 disk_ld_Buffer[i] <= 8'd0;
             end
 
         end else begin
             if (ld_write_buf_req) begin
                 loading <= 1;
-                delayCycles_Counter <= DISK_LOAD_DELAY;
+                delayCycles_Counter <= `DISK_LOAD_DELAY;
                 disk_ld_Buffer_V <= 0;
 
             end else if (loading) begin
@@ -58,12 +58,12 @@ module DiskWrapper (
                     disk_ld_Buffer_V <= 1;
 
                     // compute copy length
-                    if (ld_num_bytes % PAGE_SIZE == 0) copy_len = PAGE_SIZE;
-                    else copy_len = ld_num_bytes % PAGE_SIZE;
+                    if (ld_num_bytes % `PAGE_SIZE == 0) copy_len = `PAGE_SIZE;
+                    else copy_len = ld_num_bytes % `PAGE_SIZE;
 
                     // copy disk → buffer
                     for (i = 0; i < copy_len; i = i + 1) begin
-                        disk_ld_Buffer[i] <= disk[(ld_diskAddr+i)%DISK_SIZE];
+                        disk_ld_Buffer[i] <= disk[(ld_diskAddr+i)%`DISK_SIZE];
                     end
 
                 end else begin
