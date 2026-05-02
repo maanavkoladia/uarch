@@ -225,7 +225,7 @@
     );
 
 //////////////////// REG WITH WE ////////////////////
-
+//active low rst
 `define REG_RST_WE(__unitName__, __width__, __clk__, __rst__, __we__, __din__, __dout__) \
     MPS_reg_rst_we$ #(.WIDTH(__width__)) __unitName__ ( \
         .clk(__clk__), \
@@ -237,6 +237,7 @@
 
 //////////////////// REG ALWAYS ENABLED ////////////////////
 
+//active low rst
 `define REG_RST(__unitName__, __width__, __clk__, __rst__, __din__, __dout__) \
     MPS_reg_rst_we$ #(.WIDTH(__width__)) __unitName__ ( \
         .clk(__clk__), \

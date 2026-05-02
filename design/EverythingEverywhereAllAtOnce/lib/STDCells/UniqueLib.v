@@ -264,6 +264,45 @@ module MPS_COMP_EQ #(
             // ---- Level 3: and4$ to fold in bit 27 ----
             and4$ u_eq (.out(eq), .in0(m[0]), .in1(m[1]), .in2(m[2]), .in3(b[27]));
 
+        end else if (WIDTH == 32) begin : EQ_32
+            // Level 1: 10× nand3$  (bits 0–29)
+            // Level 2: 4× nor3$    (reduce 10 → 4)
+            // Level 3: and4$       (final reduction including bits 30,31)
+
+            wire [10:0] n;  // nand3$ layer (0–29)
+            wire [3:0] m;  // nor3$ layer
+
+            // ---- Level 1: nand3$ ----
+            nand3$ u_n0 (.out(n[0]), .in0(b[ 0]), .in1(b[ 1]), .in2(b[ 2]));
+            nand3$ u_n1 (.out(n[1]), .in0(b[ 3]), .in1(b[ 4]), .in2(b[ 5]));
+            nand3$ u_n2 (.out(n[2]), .in0(b[ 6]), .in1(b[ 7]), .in2(b[ 8]));
+            nand3$ u_n3 (.out(n[3]), .in0(b[ 9]), .in1(b[10]), .in2(b[11]));
+            nand3$ u_n4 (.out(n[4]), .in0(b[12]), .in1(b[13]), .in2(b[14]));
+            nand3$ u_n5 (.out(n[5]), .in0(b[15]), .in1(b[16]), .in2(b[17]));
+            nand3$ u_n6 (.out(n[6]), .in0(b[18]), .in1(b[19]), .in2(b[20]));
+            nand3$ u_n7 (.out(n[7]), .in0(b[21]), .in1(b[22]), .in2(b[23]));
+            nand3$ u_n8 (.out(n[8]), .in0(b[24]), .in1(b[25]), .in2(b[26]));
+            nand3$ u_n9 (.out(n[9]), .in0(b[27]), .in1(b[28]), .in2(b[29]));
+            nand2$ u_n10 (.out(n[10]), .in0(b[30]), .in1(b[31]));
+
+            // ---- Level 2: nor3$ ----
+            nor3$ u_m0 (.out(m[0]), .in0(n[0]), .in1(n[1]), .in2(n[2]));  // 0–8
+            nor3$ u_m1 (.out(m[1]), .in0(n[3]), .in1(n[4]), .in2(n[5]));  // 9–17
+            nor3$ u_m2 (.out(m[2]), .in0(n[6]), .in1(n[7]), .in2(n[8]));  // 18–26
+
+            // leftover n[9] folded with constant-true behavior via NOR trick
+            // m[3] = n[9] inverted back to AND-equivalent using NOR with itself
+            nor3$ u_m3 (.out(m[3]), .in0(n[9]), .in1(n[10]), .in2(n[9]));
+
+            // ---- Level 3: final AND ----
+            and4$ u_eq (
+                .out(eq),
+                .in0(m[0]),
+                .in1(m[1]),
+                .in2(m[2]),
+                .in3(m[3] & b[30] & b[31]) // fold remaining bits
+            );
+
         end else begin : EQ_UNSUPPORTED
             initial begin
                 $fatal(1, "MPS_COMP_EQ: WIDTH=%0d not supported. Aldulowed: 2,3,4,5,6,8,9,24,28.", WIDTH);

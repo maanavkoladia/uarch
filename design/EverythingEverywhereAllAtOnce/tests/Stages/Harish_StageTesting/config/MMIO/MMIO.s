@@ -105,6 +105,7 @@ interruptRoutine:
     //mov something from the frame the data was written to edx
     movl $0x10, %eax
     movl %fs:(%eax), %edx
+    movl $0x12345678, %ebp
     iret
     hlt
 
