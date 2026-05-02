@@ -120,11 +120,22 @@ module Everywhere_TOP (
     DMA_Controller dma_controller_unit (
         .clk(clk),
         .rst(rst),
-        .inFromDTE_i(dte2dma),
-        .out2Core_o(dma2core_o),
-        .out2Sch_o(dma2sched),
-        .dataBus(dataBus),
-        .addrBus(addressBus)
+        // dte_2_dma_controller_t flattened
+        .dte_permission2DriveDataBus({dte2dma.permission2DriveDataBus[3],
+                                      dte2dma.permission2DriveDataBus[2],
+                                      dte2dma.permission2DriveDataBus[1],
+                                      dte2dma.permission2DriveDataBus[0]}),
+        .dte_permission2DriveADDRBus(dte2dma.permission2DriveADDRBus),
+        .dte_commiting              (dte2dma.commiting),
+        .dte_writeComplete          (dte2dma.writeComplete),
+        .dte_coreValOnBus           (dte2dma.coreValOnBus),
+        // dma_controller_2_core_t flattened
+        .core_intOut                (dma2core_o.intOut),
+        // dma_controller_2_scheduler_t flattened
+        .sch_dma_req                (dma2sched.dma_req),
+        .sch_writeBuf_Address       (dma2sched.writeBuf_Address),
+        .dataBus                    (dataBus),
+        .addrBus                    (addressBus)
     );
 
     //ddr5
