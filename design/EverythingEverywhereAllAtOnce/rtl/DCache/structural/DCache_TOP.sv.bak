@@ -16,8 +16,8 @@ import DCache_common_pkg::*;
 //                                                              (parent: DCache_Block.sv)
 // USE_STRUCTURAL_VCACHE -> structural/VCache.v + _TagStore.v + _DataStore.v + LRU.v
 //                                                              (parent: DCache_Block.sv)
-// USE_STRUCTURAL_ARB    -> structural/DCache_Arbitration.sv   (parent: DCache_TOP.v)
-// USE_STRUCTURAL_MIO    -> structural/MIO_Block.sv            (parent: DCache_TOP.v)
+// USE_STRUCTURAL_ARB    -> structural/DCache_Arbitration.sv   (parent: DCache_TOP.sv)
+// USE_STRUCTURAL_MIO    -> structural/MIO_Block.v             (parent: DCache_TOP.sv)
 // =====================================================================
 //`define USE_STRUCTURAL_EB
 //`define USE_STRUCTURAL_BANK
@@ -47,13 +47,13 @@ module DCache_TOP (
 
 );
 
-    dcache_block_outputs_t blockOutputs [DCACHE_NUM_BLOCKS];
-    wire                   hitVec       [DCACHE_NUM_BLOCKS];
-    block_req_t            req_2_blocks [DCACHE_NUM_BLOCKS];
-    mio_block_outputs_t    mio_block_outputs;
-    wire                   arb_st_override_Out [NUM_WB_ST_QS];
-    wire                   arb_req_served_0_out;
-    wire                   arb_req_served_1_out;
+    dcache_block_outputs_t blockOutputs[DCACHE_NUM_BLOCKS];
+    bool hitVec[DCACHE_NUM_BLOCKS];
+    block_req_t req_2_blocks[DCACHE_NUM_BLOCKS];
+    mio_block_outputs_t mio_block_outputs;
+    bool arb_st_override_Out[NUM_WB_ST_QS];
+    bool arb_req_served_0_out;
+    bool arb_req_served_1_out;
 
     // ── Flat wires for structural DCache_Arbitration ─────────────────────────
     // Always present — functionally inert when USE_STRUCTURAL_ARB is not defined.
@@ -107,7 +107,7 @@ module DCache_TOP (
     endgenerate
 
 `ifdef USE_STRUCTURAL_ARB
-    initial $display("using STRUCTURAL arb");
+        initial $display("using STRUCTURAL arb");
 
     // flat → struct repacking: connect s_arb_reqs_* back into req_2_blocks
     generate
@@ -163,7 +163,7 @@ module DCache_TOP (
 `endif
 
     generate
-        for (genvar i = 0; i < DCACHE_NUM_BLOCKS; i = i + 1) begin : g_dcache_block
+        for (genvar i = 0; i < DCACHE_NUM_BLOCKS; i++) begin : g_dcache_block
             DCache_Block block (
                 .clk_i(clk),
                 .rst_i(rst),  //active low
@@ -251,80 +251,68 @@ module DCache_TOP (
     );
 `else
     initial $display("using SYSTEM MIO");
-
-    // flat → struct repacking for non-structural path
-    assign mio_block_outputs.writeSuccess = s_mio_writeSuccess;
-    assign mio_block_outputs.hit_o        = s_mio_hit;
-    assign mio_block_outputs.reqServed    = s_mio_reqServed;
-    assign mio_block_outputs.req_2_sch    = s_mio_req_2_sch;
-    generate
-        for (genvar gm2 = 0; gm2 < CACHE_LINES_SIZE_B; gm2 = gm2 + 1) begin : g_mio_line_unpack2
-            assign mio_block_outputs.dataLineOut[gm2] = s_mio_dataLineOut[gm2*8 +: 8];
-        end
-    endgenerate
-
     MIO_Block mio_block_unit (
-        .clk                      (clk),
-        .rst                      (rst),
-        .reqServed_FromDTE_i      (inFromDTE_i.reqServed_mio),
-        .PermissionToDriveAddrBus (inFromDTE_i.permissionToDriveAddrBus_mio),
-        .permission2DriveDataBus  (inFromDTE_i.permission2DriveDataBus_mio),
-        .ld_addr_MIO_V            (inFromCore_i.ld_addr_MIO_V),
-        .ld_addr_MIO              (inFromCore_i.ld_addr_MIO),
-        .memStage_CLR_REQ_MIO     (inFromCore_i.memStage_CLR_REQ_MIO),
-        .stq_info_mio_empty_i     (s_mio_stq_empty),
-        .stq_info_mio_addr_i      (s_mio_stq_addr),
-        .stq_info_mio_data_i      (s_mio_stq_data),
-        .address_bus              (address_bus),
-        .dataBus                  (dataBus),
-        .writeSuccess_o           (s_mio_writeSuccess),
-        .hit_o                    (s_mio_hit),
-        .dataLineOut_o            (s_mio_dataLineOut),
-        .req_2_sch_o              (s_mio_req_2_sch),
-        .reqServed_o              (s_mio_reqServed)
+        .clk(clk),
+        .rst(rst),  //active low
+        .reqServed_FromDTE_i(inFromDTE_i.reqServed_mio),
+        .PermissionToDriveAddrBus(inFromDTE_i.permissionToDriveAddrBus_mio),
+        .permission2DriveDataBus(inFromDTE_i.permission2DriveDataBus_mio),
+        .ld_addr_MIO_V(inFromCore_i.ld_addr_MIO_V),
+        .ld_addr_MIO(inFromCore_i.ld_addr_MIO),
+        .stq_info_mio(inFromCore_i.stq_info_mio),
+        .memStage_CLR_REQ_MIO(inFromCore_i.memStage_CLR_REQ_MIO),
+        .address_bus(address_bus),
+        .dataBus(dataBus),
+        .outputs_o(mio_block_outputs)
     );
 `endif
 
-    // hitVec wiring + out2Core cacheline/hit outputs
-    generate
-        for (genvar gi0 = 0; gi0 < DCACHE_NUM_BLOCKS; gi0 = gi0 + 1) begin : g_hitvec
-            assign hitVec[gi0]                = blockOutputs[gi0].hit_o;
-            assign out2Core_o.hit[gi0]        = blockOutputs[gi0].hit_o;
-            assign out2Core_o.cacheline[gi0]  = blockOutputs[gi0].dataLineOut;
-        end
-    endgenerate
+    //D$ arb hit signals for req clearing business from the blocks hit signals
+    //second for loop is jsut wiring hit signals out to memStage
+    always_comb begin
+        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) hitVec[i] = blockOutputs[i].hit_o;
+        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) out2Core_o.hit[i] = blockOutputs[i].hit_o;
+        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) out2Core_o.cacheline[i] = blockOutputs[i].dataLineOut;
+    end
 
     assign out2Core_o.reqServed_0 = arb_req_served_0_out;
-    assign out2Core_o.reqServed_1 = arb_req_served_1_out;
+    assign out2Core_o.reqServed_1  = arb_req_served_1_out;
 
-    // out2Sch wiring
-    generate
-        for (genvar gi1 = 0; gi1 < DCACHE_NUM_BLOCKS; gi1 = gi1 + 1) begin : g_sch_out
-            assign out2Sch_o.req[gi1]             = blockOutputs[gi1].req_2_sch;
-            assign out2Sch_o.evictionBufAddr[gi1] = blockOutputs[gi1].eb_addr;
+    //out 2 sch stuff
+    always_comb begin
+        for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
+            out2Sch_o.req[i] = blockOutputs[i].req_2_sch;
+            out2Sch_o.evictionBufAddr[i] = blockOutputs[i].eb_addr;
         end
-    endgenerate
+    end
 
-    // mio block output wiring
+    //mio block out wiring
     assign out2Core_o.writeSuccess_MIO = mio_block_outputs.writeSuccess;
-    assign out2Core_o.hit_MIO          = mio_block_outputs.hit_o;
-    assign out2Core_o.line_MIO         = mio_block_outputs.dataLineOut;
-    assign out2Core_o.reqServed_MIO    = mio_block_outputs.reqServed;
-    assign out2Sch_o.req_mio           = mio_block_outputs.req_2_sch;
+    assign out2Core_o.hit_MIO = mio_block_outputs.hit_o;
+    assign out2Core_o.line_MIO = mio_block_outputs.dataLineOut;
+    assign out2Core_o.reqServed_MIO = mio_block_outputs.reqServed;
+    assign out2Sch_o.req_mio = mio_block_outputs.req_2_sch;
 
     // ================================================================
     // Observer flat-wire taps (purely informational)
+    //
+    // These wires are driven by `assign` from existing struct fields and
+    // are consumed by NO logic in this module. They exist as a stable
+    // flat-wire surface for incremental structural ports of upcoming
+    // modules (DCache_Block, DCache_Bank, VCache, MIO_Block, ...). Adding
+    // / removing taps here is functionally inert.
     // ================================================================
-    wire [14:0]         tap_eb_addr      [DCACHE_NUM_BLOCKS];
-    wire                tap_block_hit    [DCACHE_NUM_BLOCKS];
-    wire [NUM_REQS-1:0] tap_block_req2sch[DCACHE_NUM_BLOCKS];
+    wire [14:0]            tap_eb_addr      [DCACHE_NUM_BLOCKS];
+    wire                   tap_block_hit    [DCACHE_NUM_BLOCKS];
+    wire [NUM_REQS-1:0]    tap_block_req2sch[DCACHE_NUM_BLOCKS];
 
     generate
-        for (genvar gt = 0; gt < DCACHE_NUM_BLOCKS; gt = gt + 1) begin : g_dcache_top_taps
-            assign tap_eb_addr[gt]       = blockOutputs[gt].eb_addr;
-            assign tap_block_hit[gt]     = blockOutputs[gt].hit_o;
+        for (genvar gt = 0; gt < DCACHE_NUM_BLOCKS; gt++) begin : g_dcache_top_taps
+            assign tap_eb_addr[gt]      = blockOutputs[gt].eb_addr;
+            assign tap_block_hit[gt]    = blockOutputs[gt].hit_o;
             assign tap_block_req2sch[gt] = blockOutputs[gt].req_2_sch;
         end
     endgenerate
 
 endmodule
+

@@ -13,12 +13,12 @@ module DCache_Block (
     input block_req_t block_req_i,
 
     //DTE input
-    input bool mem_Valid_FromDte_i,
-    input bool evictionBuf_clr_FromDTE_i,
-    input bool evictionBuf_setCommiting_FromDTE_i,
-    input bool permissionToDriveDataBus_evictionBuf[CACHE_LINES_SIZE_BITS/DATA_BUS_WIDTH_BITS],
-    input bool permissionToDriveAddrBus_Ld,
-    input bool permissionToDriveAddrBus_eb,
+    input wire mem_Valid_FromDte_i,
+    input wire evictionBuf_clr_FromDTE_i,
+    input wire evictionBuf_setCommiting_FromDTE_i,
+    input wire permissionToDriveDataBus_evictionBuf[CACHE_LINES_SIZE_BITS/DATA_BUS_WIDTH_BITS],
+    input wire permissionToDriveAddrBus_Ld,
+    input wire permissionToDriveAddrBus_eb,
 
     //for sceduling
     input wire st_override_for_sch_req,
@@ -47,7 +47,7 @@ module DCache_Block (
     v_cache_outputs_t vcache_outputs;
     eb_outputs_t eb_outputs;
 
-    bool block_busy;
+    wire block_busy;
     // SV line 51: block_busy = bank.busy || vcache.busy
     `OR_2(u_block_busy, 1, block_busy, dcache_bank_outputs.busy, vcache_outputs.busy);
 
@@ -414,7 +414,7 @@ module DCache_Block (
     //assign outputs_o.eb_V_o = eb_outputs.valid;
     //assign outputs_o.eb_line_O = eb_outputs.lineOut;
 
-    bool makeBlockReq, eb_blockingVCache, eb_V, eb_curr_commiting,eb_blocking_Bank;
+    wire makeBlockReq, eb_blockingVCache, eb_V, eb_curr_commiting,eb_blocking_Bank;
     assign makeBlockReq = dcache_bank_outputs.MakeReq;
     assign eb_blockingVCache = vcache_outputs.beingBlocked;
     assign eb_V = eb_outputs.valid;
