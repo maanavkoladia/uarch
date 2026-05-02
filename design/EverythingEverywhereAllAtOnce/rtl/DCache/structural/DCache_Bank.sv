@@ -79,11 +79,20 @@ module DCache_Bank(
     // saveReq derives from fsm_busy
     `INV_N(u_saveReq, 1, fsm_busy, saveReq)
 
-    // wire         blockReq_oe_i,
-    // wire         blockReq_we_i,
-    // wire [14:0]  blockReq_paddr_i,
-    // wire [127:0] blockReq_stq_data_i,                   // cache line
-    // wire [15:0]  blockReq_vec_i,
+    // wire         blockReq_oe_i_delay;
+    // wire         blockReq_we_i_delay;
+    // wire [14:0]  blockReq_paddr_i_delay;
+    // wire [127:0] blockReq_stq_data_i_delay;                   // cache line
+    // wire [15:0]  blockReq_vec_i_delay;
+
+    // assign #2 blockReq_oe_i_delay = blockReq_oe_i;
+    // assign #2 blockReq_we_i_delay = blockReq_we_i;
+    // assign #2 blockReq_paddr_i_delay = blockReq_paddr_i;
+    // assign #2 blockReq_stq_data_i_delay = blockReq_stq_data_i;
+    // assign #2 blockReq_vec_i_delay = blockReq_vec_i;
+
+
+
 
 
     `REG_RST_WE(u_savedReq_oe,    1,   clk, rst, saveReq, blockReq_oe_i,       savedReq_oe_q)

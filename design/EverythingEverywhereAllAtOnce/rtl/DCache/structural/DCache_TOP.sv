@@ -107,6 +107,8 @@ module DCache_TOP (
     endgenerate
 
 `ifdef USE_STRUCTURAL_ARB
+        initial $display("using STRUCTURAL arb");
+
     // flat → struct repacking: connect s_arb_reqs_* back into req_2_blocks
     generate
         for (genvar gp = 0; gp < DCACHE_NUM_BLOCKS; gp = gp + 1) begin : g_arb_pack_out
@@ -145,6 +147,8 @@ module DCache_TOP (
         .writeSuccess_o     (out2Core_o.writeSuccess)
     );
 `else
+    initial $display("using SYSTEM arb");
+
     DCache_Arbitration dcache_arbitration (
         .clk_i           (clk),
         .rst             (rst),  // active low
@@ -212,6 +216,8 @@ module DCache_TOP (
     };
 
 `ifdef USE_STRUCTURAL_MIO
+    initial $display("using STRUCTURAL MIO");
+
     // flat → struct repacking: drive mio_block_outputs from s_mio_* wires
     assign mio_block_outputs.writeSuccess = s_mio_writeSuccess;
     assign mio_block_outputs.hit_o        = s_mio_hit;
@@ -244,6 +250,7 @@ module DCache_TOP (
         .reqServed_o              (s_mio_reqServed)
     );
 `else
+    initial $display("using SYSTEM MIO");
     MIO_Block mio_block_unit (
         .clk(clk),
         .rst(rst),  //active low

@@ -58,6 +58,7 @@ module DCache_Block (
     // structural path. Default (flag undefined) preserves SV behavior.
     // ---------------------------------------------------------------
 `ifdef USE_STRUCTURAL_BANK
+        initial $display("using STRUCTURAL bank");
         // ---- struct -> flat: pack byte arrays into 128-bit buses ----
         wire [127:0] bank_blockReq_stq_data_flat;
         wire [127:0] bank_vcache_swapBuf_line_flat;
@@ -150,6 +151,8 @@ module DCache_Block (
             end
         endgenerate
 `else
+        initial $display("using SYSTEM bank");
+
         DCache_Bank dcache_bank_unit (
             .clk(clk_i),
             .rst(rst_i),
@@ -169,6 +172,8 @@ module DCache_Block (
     // Default (flag undefined) preserves SV behavior.
     // ---------------------------------------------------------------
 `ifdef USE_STRUCTURAL_VCACHE
+        initial $display("using STRUCTURAL VCACHE");
+
         // ---- struct -> flat: pack byte arrays into 128-bit buses ----
         wire [127:0] vcache_blockReq_stq_data_flat;
         wire [127:0] vcache_dcache_swapBuf_line_flat;
@@ -271,6 +276,8 @@ module DCache_Block (
             end
         endgenerate
 `else
+        initial $display("using SYSTEM vcache");
+
         VCache vcache_unit (
             .clk(clk_i),
             .rst(rst_i),  //active low
@@ -289,6 +296,8 @@ module DCache_Block (
     // path. Default (flag undefined) preserves the original SV behavior.
     // ---------------------------------------------------------------
 `ifdef USE_STRUCTURAL_EB
+        initial $display("using STRUCTURAL EB");
+
         // Pack vcache_outputs.lineOut[16] (byte_t array, LSB-first) into a flat 128-bit bus.
         wire [127:0] eb_vc_line_flat;
         assign eb_vc_line_flat = {
@@ -349,6 +358,8 @@ module DCache_Block (
             end
         endgenerate
 `else
+        initial $display("using SYSTEM EB");
+
         EvictionBuf evictionBuf_unit (
             .clk_i(clk_i),
             .rst_i(rst_i),  //active low

@@ -24,8 +24,8 @@
 //           0           0           0           1           x           x           x           1  |           1           0           0           0           0           0           0           0           0           0   IDLE -> LD_VC_SWAP
 //           0           0           0           0           1           0           0           x  |           1           1           0           0           0           0           0           0           0           0   IDLE -> WRITE_2_VCACHE
 //           0           0           0           0           1           0           1           x  |           1           1           0           0           0           0           0           0           0           0   IDLE -> WRITE_2_VCACHE
-//           0           0           0           0           1           1           0           x  |           0           0           1           1           0           0           0           0           0           0   IDLE -> WRITE_EB
-//           0           0           0           0           1           1           1           x  |           0           1           0           1           0           0           0           0           0           0   IDLE -> WAITEVICT
+//           0           0           0           0           1           1           0           x  |           0           0           1           0           0           0           0           0           0           0   IDLE -> WRITE_EB
+//           0           0           0           0           1           1           1           x  |           0           1           0           0           0           0           0           0           0           0   IDLE -> WAITEVICT
 //           1           0           0           x           x           x           x           x  |           1           1           0           0           0           0           1           0           1           0   LD_VC_SWAP -> WRITE_2_VCACHE
 //           1           1           0           x           x           x           x           x  |           0           0           0           0           1           1           0           1           1           0   WRITE_2_VCACHE -> IDLE
 //           0           0           1           x           x           x           x           x  |           1           1           0           1           0           0           0           0           1           0   WRITE_EB -> WRITE_2_VCACHE
@@ -101,13 +101,13 @@ wire we_i_inv;
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (!S_1 & V_Hit_i) | (S_0 & !S_1) | (!S_1 & S_2) | (!S_0 & S_1 & !S_2 & !EB_V_i) | (!S_1 & DC_will_evict_i & !VC_needs_2_evict_i)
+// NS_0 = (!S_1 & S_2) | (S_0 & !S_1) | (!S_1 & V_Hit_i) | (!S_0 & S_1 & !S_2 & !EB_V_i) | (!S_1 & DC_will_evict_i & !VC_needs_2_evict_i)
 wire NS_0_t0;
-`AND_2(NS_0_and0, 1, NS_0_t0, S_1_inv, V_Hit_i)
+`AND_2(NS_0_and0, 1, NS_0_t0, S_1_inv, S_2)
 wire NS_0_t1;
 `AND_2(NS_0_and1, 1, NS_0_t1, S_0, S_1_inv)
 wire NS_0_t2;
-`AND_2(NS_0_and2, 1, NS_0_t2, S_1_inv, S_2)
+`AND_2(NS_0_and2, 1, NS_0_t2, S_1_inv, V_Hit_i)
 wire NS_0_t3;
 `AND_4(NS_0_and3, 1, NS_0_t3, S_0_inv, S_1, S_2_inv, EB_V_i_inv)
 wire NS_0_t4;
@@ -115,19 +115,19 @@ wire NS_0_t4;
 
 `OR_5(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4)
 
-// NS_1 = (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_0 & !S_1 & V_Hit_i & !we_i) | (!S_0 & !S_1 & !V_Hit_i & DC_will_evict_i & !VC_needs_2_evict_i) | (!S_0 & !S_1 & !V_Hit_i & DC_will_evict_i & EB_V_i)
+// NS_1 = (!S_0 & !S_1 & S_2) | (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i) | (!S_1 & !S_2 & !V_Hit_i & DC_will_evict_i & !VC_needs_2_evict_i) | (!S_1 & !S_2 & !V_Hit_i & DC_will_evict_i & EB_V_i)
 wire NS_1_t0;
-`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1, S_2_inv)
+`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1_inv, S_2)
 wire NS_1_t1;
-`AND_3(NS_1_and1, 1, NS_1_t1, S_0, S_1_inv, S_2_inv)
+`AND_3(NS_1_and1, 1, NS_1_t1, S_0_inv, S_1, S_2_inv)
 wire NS_1_t2;
-`AND_3(NS_1_and2, 1, NS_1_t2, S_0_inv, S_1_inv, S_2)
+`AND_3(NS_1_and2, 1, NS_1_t2, S_0, S_1_inv, S_2_inv)
 wire NS_1_t3;
-`AND_4(NS_1_and3, 1, NS_1_t3, S_0_inv, S_1_inv, V_Hit_i, we_i_inv)
+`AND_4(NS_1_and3, 1, NS_1_t3, S_1_inv, S_2_inv, V_Hit_i, we_i_inv)
 wire NS_1_t4;
-`AND_5(NS_1_and4, 1, NS_1_t4, S_0_inv, S_1_inv, V_Hit_i_inv, DC_will_evict_i, VC_needs_2_evict_i_inv)
+`AND_5(NS_1_and4, 1, NS_1_t4, S_1_inv, S_2_inv, V_Hit_i_inv, DC_will_evict_i, VC_needs_2_evict_i_inv)
 wire NS_1_t5;
-`AND_5(NS_1_and5, 1, NS_1_t5, S_0_inv, S_1_inv, V_Hit_i_inv, DC_will_evict_i, EB_V_i)
+`AND_5(NS_1_and5, 1, NS_1_t5, S_1_inv, S_2_inv, V_Hit_i_inv, DC_will_evict_i, EB_V_i)
 
 `OR_6(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4, NS_1_t5)
 
@@ -139,15 +139,13 @@ wire NS_2_t1;
 
 `OR_2(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1)
 
-// WR_2_EB_o = (!S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_0 & !S_1 & !V_Hit_i & DC_will_evict_i & VC_needs_2_evict_i)
+// WR_2_EB_o = (!S_0 & !S_1 & S_2) | (!S_0 & S_1 & !S_2)
 wire WR_2_EB_o_t0;
-`AND_3(WR_2_EB_o_and0, 1, WR_2_EB_o_t0, S_0_inv, S_1, S_2_inv)
+`AND_3(WR_2_EB_o_and0, 1, WR_2_EB_o_t0, S_0_inv, S_1_inv, S_2)
 wire WR_2_EB_o_t1;
-`AND_3(WR_2_EB_o_and1, 1, WR_2_EB_o_t1, S_0_inv, S_1_inv, S_2)
-wire WR_2_EB_o_t2;
-`AND_5(WR_2_EB_o_and2, 1, WR_2_EB_o_t2, S_0_inv, S_1_inv, V_Hit_i_inv, DC_will_evict_i, VC_needs_2_evict_i)
+`AND_3(WR_2_EB_o_and1, 1, WR_2_EB_o_t1, S_0_inv, S_1, S_2_inv)
 
-`OR_3(WR_2_EB_o_or, 1, WR_2_EB_o, WR_2_EB_o_t0, WR_2_EB_o_t1, WR_2_EB_o_t2)
+`OR_2(WR_2_EB_o_or, 1, WR_2_EB_o, WR_2_EB_o_t0, WR_2_EB_o_t1)
 
 // CLR_D_SWAP_V_o = (S_0 & S_1 & !S_2)
 `AND_3(CLR_D_SWAP_V_o_and, 1, CLR_D_SWAP_V_o, S_0, S_1, S_2_inv)
