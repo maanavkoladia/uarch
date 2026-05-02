@@ -51,7 +51,7 @@ module ST_Q_logic(
     assign entry0 = '{
                 valid : (ST_OP & ~MIO & wb_valid),
                 address : st_paddr_0,
-                bit_vec: bit_vect_0,
+                bit_vec: non_forwarding ? bit_vect_0 : 16'hFFFF,
                 data : st_data_low_bank,
                 non_forwarding : non_forwarding
             };
@@ -59,7 +59,7 @@ module ST_Q_logic(
     assign  entry1 = '{
                 valid: (ST_OP & ST_XCL & ~MIO & wb_valid),
                 address: st_paddr_1,
-                bit_vec: bit_vect_1,
+                bit_vec: non_forwarding ? bit_vect_1 : 16'hFFFF,
                 data: st_data_high_bank,
                 non_forwarding : non_forwarding
             };
