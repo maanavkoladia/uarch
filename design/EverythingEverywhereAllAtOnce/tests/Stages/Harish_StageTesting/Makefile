@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/TheBigOne/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/VerySimpleTest/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -131,8 +131,9 @@ genSoft:
 	@rm -f cleaned_scripts.json
 
 see:
-	@echo $(LOG_DIR)
-	@echo $(TEST_CASE_PATH)
+	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'
+	@echo -e "\n"
+	@echo  $(CC_FLAGS)
 
 makeLogDir:
 	@mkdir -p $(LOG_DIR)

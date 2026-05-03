@@ -27,11 +27,11 @@ module op_size (
     );
 
 
-    assign imm_size = (zero_f_prefix) ? other_imm_size : imm_size_regular;
-    assign needr_m = (zero_f_prefix) ? needrm_other : needrm_regular;
+    //assign imm_size = (zero_f_prefix) ? other_imm_size : imm_size_regular;
+    //assign needr_m = (zero_f_prefix) ? needrm_other : needrm_regular;
 
-endmodule
-/*
     `MUX_2(op_size_imm_size_mux, 3, imm_size, imm_size_regular, other_imm_size, zero_f_prefix)
     `MUX_2(op_size_needrm_mux, 1, needr_m, needrm_regular, needrm_other, zero_f_prefix)
-    */
+
+
+endmodule

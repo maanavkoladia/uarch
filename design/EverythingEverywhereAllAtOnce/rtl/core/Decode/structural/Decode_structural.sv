@@ -79,7 +79,7 @@ module Decode (
     assign decode_forward = rr_latch_we_o && next_rr_valid;
 
 
-    logic [63:0][7:0] queue;
+    wire [63:0][7:0] queue;
     genvar i;
     generate
         for (i = 0; i < 4; i++) begin   : idm_to_queue_nonsense
@@ -92,8 +92,16 @@ module Decode (
         end
     endgenerate
 
+    wire [511:0] flattened_queue;
+
+    generate
+        for (i = 0; i < 64; i++) begin : queue_flattening
+            assign flattened_queue[i*8 +: 8] = queue[i];
+        end
+    endgenerate
+
     predecode inst_processing(
-        .clk(clk), .rst(rst), .queue(queue),
+        .clk(clk), .rst(rst), .queue(flattened_queue),
         .queue_valid({idm_outs_i.idm_slots[3].valid, idm_outs_i.idm_slots[2].valid,
                     idm_outs_i.idm_slots[1].valid, idm_outs_i.idm_slots[0].valid}),
         .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_byte(sib_byte), .sib_size(sib_size),
@@ -101,10 +109,92 @@ module Decode (
         .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector(total_pf_vector), .invalid_inst(invalid_inst)
     );
 
-    control_store cs(
-        .invalid_inst(invalid_inst), //can aparellize this if needed
-        .opcode(opcode_byte), .total_pf_vector(total_pf_vector), .modrm(modrm_byte), .seg_override(seg_override), .seg0(segment0), .decode_cs(temp_decode_cs),
-        .rr_cs(temp_rr_cs), .dc_cs(temp_dc_cs), .mem_cs(temp_mem_cs), .exe_cs(temp_exe_cs), .wb_cs(temp_wb_cs)
+    control_store cs (
+        .invalid_inst(invalid_inst),
+        .total_pf_vector(total_pf_vector),
+        .opcode(opcode_byte),
+        .modrm(modrm_byte),
+        .seg_override(seg_override),
+        .seg0(segment0),
+
+        .decode_cs_REP(temp_decode_cs.REP),
+        .decode_cs_REP_CMP(temp_decode_cs.REP_CMP),
+        .decode_cs_HALT(temp_decode_cs.HALT),
+        .decode_cs_MODRM_NEEDED(temp_decode_cs.MODRM_NEEDED),
+        .decode_cs_RM_IS_DR(temp_decode_cs.RM_IS_DR),
+        .decode_cs_REG_IS_DR(temp_decode_cs.REG_IS_DR),
+        .decode_cs_REG_IS_SEGMENT(temp_decode_cs.REG_IS_SEGMENT),
+        .decode_cs_HARDCODED_DR_HIGH8(temp_decode_cs.HARDCODED_DR_HIGH8),
+        .decode_cs_MODRM_BUT_NO_SR(temp_decode_cs.MODRM_BUT_NO_SR),
+        .decode_cs_HARDCODED_DR(temp_decode_cs.HARDCODED_DR),
+        .decode_cs_HARDCODED_DR_ID(temp_decode_cs.HARDCODED_DR_ID),
+        .decode_cs_HARDCODED_SR(temp_decode_cs.HARDCODED_SR),
+        .decode_cs_HARDCODED_SR_ID(temp_decode_cs.HARDCODED_SR_ID),
+        .decode_cs_HARDCODED_DR_RD(temp_decode_cs.HARDCODED_DR_RD),
+        .decode_cs_HARDCODED_DR_WR(temp_decode_cs.HARDCODED_DR_WR),
+        .decode_cs_HARDCODED_SR_RD(temp_decode_cs.HARDCODED_SR_RD),
+        .decode_cs_HARDCODED_SR_WR(temp_decode_cs.HARDCODED_SR_WR),
+        .decode_cs_HARDCODED_LD_OP(temp_decode_cs.HARDCODED_LD_OP),
+        .decode_cs_HARDCODED_ST_OP(temp_decode_cs.HARDCODED_ST_OP),
+        .decode_cs_LD_OP_CANCEL(temp_decode_cs.LD_OP_CANCEL),
+        .decode_cs_ST_OP_CANCEL(temp_decode_cs.ST_OP_CANCEL),
+        .decode_cs_OP_IN_MODRM(temp_decode_cs.OP_IN_MODRM),
+        .decode_cs_DATA_SIZE(temp_decode_cs.DATA_SIZE),
+
+        .rr_cs_ST_SEL(temp_rr_cs.ST_SEL),
+        .rr_cs_MODRM_NEEDED(temp_rr_cs.MODRM_NEEDED),
+        .rr_cs_RM_IS_DR(temp_rr_cs.RM_IS_DR),
+        .rr_cs_SWITCH_LD_ADDY(temp_rr_cs.SWITCH_LD_ADDY),
+        .rr_cs_LD_OP(temp_rr_cs.LD_OP),
+        .rr_cs_ST_OP(temp_rr_cs.ST_OP),
+        .rr_cs_dr_id(temp_rr_cs.dr_id),
+        .rr_cs_sr_id(temp_rr_cs.sr_id),
+        .rr_cs_dr_rd(temp_rr_cs.dr_rd),
+        .rr_cs_sr_rd(temp_rr_cs.sr_rd),
+        .rr_cs_eax_rd(temp_rr_cs.eax_rd),
+        .rr_cs_dr_wr(temp_rr_cs.dr_wr),
+        .rr_cs_sr_wr(temp_rr_cs.sr_wr),
+        .rr_cs_eax_wr(temp_rr_cs.eax_wr),
+        .rr_cs_MOVS_OP(temp_rr_cs.MOVS_OP),
+        .rr_cs_datasize(temp_rr_cs.datasize),
+        .rr_cs_will_mod_zf(temp_rr_cs.will_mod_zf),
+        .rr_cs_seg_1_valid(temp_rr_cs.seg_1_valid),
+        .rr_cs_seg_0_id(temp_rr_cs.seg_0_id),
+        .rr_cs_seg_1_id(temp_rr_cs.seg_1_id),
+        .rr_cs_special_modrm_bs(temp_rr_cs.special_modrm_bs),
+        .rr_cs_special_br(temp_rr_cs.special_br),
+
+        .dc_cs_LD_OP(temp_dc_cs.LD_OP),
+        .dc_cs_ST_OP(temp_dc_cs.ST_OP),
+        .dc_cs_dr_upper8(temp_dc_cs.dr_upper8),
+        .dc_cs_sr_upper8(temp_dc_cs.sr_upper8),
+        .dc_cs_datasize(temp_dc_cs.datasize),
+        .dc_cs_st_optimization_disable(temp_dc_cs.st_optimization_disable),
+
+        .mem_cs_ST_OP(temp_mem_cs.ST_OP),
+        .mem_cs_LD_OP(temp_mem_cs.LD_OP),
+        .mem_cs_st_optimization_disable(temp_mem_cs.st_optimization_disable),
+
+        .exe_cs_ST_OP(temp_exe_cs.ST_OP),
+        .exe_cs_OP_TYPE(temp_exe_cs.OP_TYPE[`EXE_OP_W-1:0]),
+        .exe_cs_alu_inputA_sel(temp_exe_cs.alu_inputA_sel[`SRC_SEL_W-1:0]),
+        .exe_cs_alu_inputB_sel(temp_exe_cs.alu_inputB_sel[`SRC_SEL_W-1:0]),
+        .exe_cs_branch_target_sel(temp_exe_cs.branch_target_sel[`SRC_SEL_W-1:0]),
+        .exe_cs_shift_by_one(temp_exe_cs.shift_by_one),
+        .exe_cs_br_ucond(temp_exe_cs.br_ucond),
+        .exe_cs_relative_branch(temp_exe_cs.relative_branch),
+        .exe_cs_special_br(temp_exe_cs.special_br),
+        .exe_cs_is_far(temp_exe_cs.is_far),
+        .exe_cs_is_call(temp_exe_cs.is_call),
+        .exe_cs_second_flag_needed(temp_exe_cs.second_flag_needed),
+        .exe_cs_rep_no_zf_update(temp_exe_cs.rep_no_zf_update),
+        .exe_cs_st_optimization_disable(temp_exe_cs.st_optimization_disable),
+
+        .wb_cs_ST_OP(temp_wb_cs.ST_OP),
+        .wb_cs_WB_DR(temp_wb_cs.WB_DR),
+        .wb_cs_WB_SR(temp_wb_cs.WB_SR),
+        .wb_cs_WB_EAX(temp_wb_cs.WB_EAX),
+        .wb_cs_st_optimization_disable(temp_wb_cs.st_optimization_disable)
     );
 
     decode_gp_gen gp_gen_decode(
@@ -112,8 +202,23 @@ module Decode (
         .segLimit(rr_outs_i.codeSeg_limit), .gp_fault_o(decode_gp)
     );
 
+    wire predicted_taken;
+    wire [31:0] pred_target;
+    wire branch_info_valid;
+    wire [31:0] branch_info_br_eip;
+    wire branch_info_br_xcl;
+    wire branch_info_br_pred_taken;
+    wire branch_info_speculative_target;
+
     br_info_t br_info_for_latches;
-    bool predicted_taken;
+    assign br_info_for_latches = '{
+        valid : branch_info_valid,
+        br_eip : branch_info_br_eip,
+        br_xcl : branch_info_br_xcl,
+        br_pred_taken : branch_info_br_pred_taken,
+        speculative_target : branch_info_speculative_target
+    };
+
     assign predicted_taken = (idm_outs_i.idm_slots[EIP[5:4]].valid &&
                             idm_outs_i.idm_slots[EIP[5:4]].br_valid &&
                             idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP);
@@ -123,7 +228,12 @@ module Decode (
     assign branch_present = temp_exe_cs.br_ucond || temp_exe_cs.relative_branch || temp_exe_cs.special_br;
     br_info_processing br_info_gen(
         .cs_branch(branch_present), .eip(EIP), .br_length(inst_length),
-        .pred_taken(predicted_taken), .pred_target(predicted_target), .branch_output(br_info_for_latches)
+        .pred_taken(predicted_taken), .pred_target(predicted_target), 
+        .branch_info_valid(branch_info_valid),
+        .branch_info_br_eip(branch_info_br_eip),
+        .branch_info_br_xcl(branch_info_br_xcl),
+        .branch_info_br_pred_taken(branch_info_br_pred_taken),
+        .branch_info_speculative_target(branch_info_speculative_target)
     );
     //need to add if branch or not to cs excel sheet
 
@@ -196,6 +306,93 @@ module Decode (
             seg_override = 1'b0;
         end
     end
+
+    // // -----------------------------------------------------------------
+    // // Structural register block (replaces the two always_ff blocks).
+    // // MPS_reg_rst_we$ is treated as an active-high synchronous-reset
+    // // register: if rst==1 -> q<=0; else if we==1 -> q<=d.
+    // // Top-level `rst` is active-low, so we invert it locally.
+    // // -----------------------------------------------------------------
+    // wire rst_high           = !rst;
+    // wire eff_rst_full       = rst_high || fetch_outs_i.exp_pipe_clear;
+    // wire eff_rst_with_flush = eff_rst_full || flush;
+
+    // // ---- HALT_REG ----
+    // //   write iff (!HALT_REG && !invalid_inst); din = HALT
+    // //   reset on rst | exp_pipe_clear | flush
+    // wire halt_we  = (!HALT_REG) && (!invalid_inst);
+    // wire halt_din = temp_decode_cs.HALT;
+    // `REG_RST_WE(u_halt_reg, 1, clk, eff_rst_with_flush, halt_we, halt_din, HALT_REG)
+
+    // // ---- REP_LATCH and SAVED_* (gated by {REP, clear_rep}) ----
+    // //   00: hold; 01: 0; 10: capture; 11: 0
+    // //   => we = REP | clear_rep, set = REP & !clear_rep
+    // wire rep_set_or_clr = temp_decode_cs.REP || clear_rep;
+    // wire rep_capture    = temp_decode_cs.REP && !clear_rep;
+
+    // `REG_RST_WE(u_rep_latch, 1, clk, eff_rst_with_flush,
+    //             rep_set_or_clr, rep_capture, REP_LATCH)
+
+    // wire [$bits(reg_ids_e)-1:0] saved_seg0_din = rep_capture ? segment0 : '0;
+    // `REG_RST_WE(u_saved_seg0, $bits(reg_ids_e), clk, eff_rst_with_flush,
+    //             rep_set_or_clr, saved_seg0_din, SAVED_SEGMENT0)
+
+    // wire saved_segov_din = rep_capture ? seg_override : 1'b0;
+    // `REG_RST_WE(u_saved_segov, 1, clk, eff_rst_with_flush,
+    //             rep_set_or_clr, saved_segov_din, SAVED_SEGMENT_OVERRIDE)
+
+    // wire [31:0] saved_rep_eip_din = rep_capture ? EIP : 32'b0;
+    // `REG_RST_WE(u_saved_rep_eip, 32, clk, eff_rst_with_flush,
+    //             rep_set_or_clr, saved_rep_eip_din, SAVED_REP_EIP)
+
+    // wire [1:0] saved_ds_din = rep_capture ? temp_decode_cs.DATA_SIZE : 2'b0;
+    // `REG_RST_WE(u_saved_ds, 2, clk, eff_rst_with_flush,
+    //             rep_set_or_clr, saved_ds_din, SAVED_DATASIZE)
+
+    // // ---- REP_CMP_LATCH ({REP_CMP, clear_rep}) ----
+    // wire repcmp_we  = temp_decode_cs.REP_CMP || clear_rep;
+    // wire repcmp_din = temp_decode_cs.REP_CMP && !clear_rep;
+    // `REG_RST_WE(u_rep_cmp, 1, clk, eff_rst_with_flush,
+    //             repcmp_we, repcmp_din, REP_CMP_LATCH)
+
+    // // ---- REP_MOV_LATCH ({REP & !REP_CMP, clear_rep}) ----
+    // wire mov_cond   = temp_decode_cs.REP && !temp_decode_cs.REP_CMP;
+    // wire repmov_we  = mov_cond || clear_rep;
+    // wire repmov_din = mov_cond && !clear_rep;
+    // `REG_RST_WE(u_rep_mov, 1, clk, eff_rst_with_flush,
+    //             repmov_we, repmov_din, REP_MOV_LATCH)
+
+    // // ---- EIP / PrevEIP / PrevLength ----
+    // //   reset on rst | exp_pipe_clear (NOT flush -- flush feeds br_target).
+    // //   PrevEIP and PrevLength always update each cycle (we=1).
+    // //   EIP next-state priority:
+    // //     br_res.valid & flush  -> br_target
+    // //     idm-slot match & fwd  -> btb_target
+    // //     fwd & !HALT & !REP    -> NEIP
+    // //     else                  -> hold (self)
+    // wire idm_br_match = (idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP)
+    //                  && (idm_outs_i.idm_slots[EIP[5:4]].valid)
+    //                  && (idm_outs_i.idm_slots[EIP[5:4]].br_valid)
+    //                  && decode_forward;
+    // wire brres_take   = exe_outs_i.br_res_out.valid && flush;
+    // wire fwd_advance  = decode_forward && !HALT_REG && !REP_LATCH;
+
+    // wire [31:0] eip_next;
+    // assign eip_next = brres_take   ? exe_outs_i.br_res_out.br_target              :
+    //                   idm_br_match ? idm_outs_i.idm_slots[EIP[5:4]].br_btb_target :
+    //                   fwd_advance  ? NEIP                                         :
+    //                                  EIP;
+
+    // `REG_RST_WE(u_eip,        32, clk, eff_rst_full, 1'b1, eip_next,    EIP)
+    // `REG_RST_WE(u_prev_eip,   32, clk, eff_rst_full, 1'b1, EIP,         PrevEIP)
+    // `REG_RST_WE(u_prev_len,    4, clk, eff_rst_full, 1'b1, inst_length, PrevLength)
+
+    // // ---- DC_SAVED_EIP / DECODE_SAVED_EIP ----
+    // //   reset on rst only; write only on exp_pipe_clear.
+    // `REG_RST_WE(u_dc_saved_eip,     32, clk, rst_high,
+    //             fetch_outs_i.exp_pipe_clear, dc_outs_i.dc_eip, DC_SAVED_EIP)
+    // `REG_RST_WE(u_decode_saved_eip, 32, clk, rst_high,
+    //             fetch_outs_i.exp_pipe_clear, EIP,              DECODE_SAVED_EIP)
 
     always_ff @(posedge clk) begin
         if(!rst || fetch_outs_i.exp_pipe_clear) begin
@@ -297,9 +494,6 @@ module Decode (
             end
         end
     end
-
-
-
 
     always_ff @(posedge clk) begin
         if(!rst) begin

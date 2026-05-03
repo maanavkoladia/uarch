@@ -38,7 +38,7 @@ module cs_post_processor (
         case(op_in_modrm_subset)
             SHF: begin
                 if(reg_field == 3'd4) overriden_op_type = SAL;
-                else if (reg_field == 3'd7) overriden_op_type = SAR;
+                else overriden_op_type = SAR;
             end
             CTRL: begin
                 overriden_br_sel = rr_cs_o.LD_OP ? BUF32 : DR_REGISTER;
@@ -50,7 +50,7 @@ module cs_post_processor (
                     overriden_op_type = JMP;
                     ff_jmp = 1'b1;
                 end
-                else if(reg_field == 3'd6) begin
+                else begin
                     overriden_op_type = PUSH;
                     ff_push = 1'b1;
                 end
@@ -60,7 +60,7 @@ module cs_post_processor (
                 else if(reg_field == 3'd1) overriden_op_type = OR;
                 else if(reg_field == 3'd2) overriden_op_type = ADC;
                 else if(reg_field == 3'd3) overriden_op_type = SBB;
-                else if(reg_field == 3'd4) overriden_op_type = AND;
+                else overriden_op_type = AND;
             end
         endcase
     end

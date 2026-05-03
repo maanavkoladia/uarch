@@ -1,4 +1,6 @@
 import RegisterRead_pkg::*;
+import reg_ids_pkg::*;
+import control_store_pkg::*;
 import Decode_pkg::*;
 
 module rep_controller (

@@ -81,8 +81,6 @@ package core_stage_latches_pkg;
     } decode_cs_t;
 
     typedef struct {
-        //bool HARDCODED_DR_RD;
-        //bool HARDCODED_SR_RD;
         bool ST_SEL;
         bool MODRM_NEEDED;
         bool RM_IS_DR;
@@ -97,20 +95,14 @@ package core_stage_latches_pkg;
         bool dr_wr;
         bool sr_wr;
         bool eax_wr;
-
         bool MOVS_OP; //need for store addy gen
-
         logic [1:0] datasize; //0=8b, 1=16b, 2=32b, 3=64b
-
         bool will_mod_zf;       //need this for zf scoreboard to check during rep instructions
-
         bool seg_1_valid;  //need two beacuse two segs for movs etc, 
         reg_ids_e seg_0_id;
         reg_ids_e seg_1_id;
         bool special_modrm_bs;
-
         bool special_br;
-
     } rr_cs_t;
 
     typedef struct {
@@ -131,22 +123,15 @@ package core_stage_latches_pkg;
     typedef struct {
         bool ST_OP;
         exe_cs_operation_type_e OP_TYPE;
-
         source_selector_e alu_inputA_sel;
         source_selector_e alu_inputB_sel;
         source_selector_e branch_target_sel;
-
         bool shift_by_one;
-
-        //branch cs
         bool br_ucond;
         bool relative_branch; //1 indicates I add it to NEIP 0 means Its an absolute jmp
         bool special_br; //for exp and int
         bool is_far;  //need to flush
         bool is_call;
-       //I think for most branches its ZF then CF.
-       //I will always assume ZF if second flag is set then ill also use CF
-       //hard coded in br_res logic
         bool second_flag_needed;
         bool rep_no_zf_update;
         bool st_optimization_disable;

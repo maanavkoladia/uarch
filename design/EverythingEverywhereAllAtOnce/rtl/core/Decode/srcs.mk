@@ -4,6 +4,8 @@ DECODE_PKGS = \
 						$(DECODE_PATH_INTERNAL)/pkg/Decode_pkg.sv \
 
 GEN_DECODE_SRC_FILES = \
+						  $(DECODE_PATH_INTERNAL)/../../defines/reg_ids_define.vh \
+						  $(DECODE_PATH_INTERNAL)/../../defines/control_store_define.vh \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/MOD_LUT.v \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/OP_LUT.v	\
 						  $(DECODE_PATH_INTERNAL)/structural/gen/PF_LUT.v \
@@ -14,28 +16,53 @@ GEN_DECODE_SRC_FILES = \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/rr_valid_logic.v \
 
 DECODE_SRC_FILES_STRUCTURAL = \
-								$(DECODE_PATH_INTERNAL)/structural/disp_finder.v \
-								$(DECODE_PATH_INTERNAL)/structural/imm_finder.v \
+								$(DECODE_PATH_INTERNAL)/structural/disp_finder_structural.v \
+								$(DECODE_PATH_INTERNAL)/structural/imm_finder_structural.v \
 								$(DECODE_PATH_INTERNAL)/structural/modrm_size.v \
 								$(DECODE_PATH_INTERNAL)/structural/num_pf_gen.v \
 								$(DECODE_PATH_INTERNAL)/structural/op_size.v \
 								$(DECODE_PATH_INTERNAL)/structural/pf_checker.v \
 								$(DECODE_PATH_INTERNAL)/structural/pf_vector_gen.v \
-								$(DECODE_PATH_INTERNAL)/structural/ppu.v \
-								$(DECODE_PATH_INTERNAL)/structural/selection_logic.v \
-								$(DECODE_PATH_INTERNAL)/structural/sib_finder.v \
-								$(DECODE_PATH_INTERNAL)/structural/predecode.v \
+								$(DECODE_PATH_INTERNAL)/structural/ppu_structural.v \
+								$(DECODE_PATH_INTERNAL)/structural/selection_logic_structural.v \
+								$(DECODE_PATH_INTERNAL)/structural/sib_finder_structural.v \
+								$(DECODE_PATH_INTERNAL)/structural/predecode_structural.v \
 
 DECODE_SRC_FILES = \
-						$(DECODE_PATH_INTERNAL)/br_info_processing.sv \
+						$(DECODE_PATH_INTERNAL)/structural/br_info_processing_structural.v \
 						$(DECODE_PATH_INTERNAL)/control_store_genned.sv \
-						$(DECODE_PATH_INTERNAL)/control_store.sv \
-						$(DECODE_PATH_INTERNAL)/cs_post_processor.sv \
-						$(DECODE_PATH_INTERNAL)/decode_gp_gen.sv \
-						$(DECODE_PATH_INTERNAL)/modrm_processor.sv \
-						$(DECODE_PATH_INTERNAL)/sib_processor.sv \
+						$(DECODE_PATH_INTERNAL)/structural/control_store_structural.v \
+						$(DECODE_PATH_INTERNAL)/structural/cs_post_processor_structural.v \
+						$(DECODE_PATH_INTERNAL)/structural/decode_gp_gen_structural.v \
+						$(DECODE_PATH_INTERNAL)/structural/modrm_processor_structural.v \
+						$(DECODE_PATH_INTERNAL)/structural/sib_processor_structural.v \
 						$(DECODE_PATH_INTERNAL)/rep_controller.sv \
-						$(DECODE_PATH_INTERNAL)/Decode.sv \
+						$(DECODE_PATH_INTERNAL)/structural/Decode_structural.sv \
 
 #dont add gen files here are they are includede in the core srcs.mk file
 DECODE_STRUCTURAL_SRC_FILES = \
+
+
+# DECODE_SRC_FILES_STRUCTURAL = \
+# 								$(DECODE_PATH_INTERNAL)/structural/disp_finder.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/imm_finder.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/modrm_size.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/num_pf_gen.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/op_size.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/pf_checker.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/pf_vector_gen.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/ppu.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/selection_logic.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/sib_finder.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/predecode.v \
+
+# DECODE_SRC_FILES = \
+# 						$(DECODE_PATH_INTERNAL)/br_info_processing.sv \
+# 						$(DECODE_PATH_INTERNAL)/control_store_genned.sv \
+# 						$(DECODE_PATH_INTERNAL)/control_store.sv \
+# 						$(DECODE_PATH_INTERNAL)/cs_post_processor.sv \
+# 						$(DECODE_PATH_INTERNAL)/decode_gp_gen.sv \
+# 						$(DECODE_PATH_INTERNAL)/modrm_processor.sv \
+# 						$(DECODE_PATH_INTERNAL)/sib_processor.sv \
+# 						$(DECODE_PATH_INTERNAL)/rep_controller.sv \
+# 						$(DECODE_PATH_INTERNAL)/Decode.sv \

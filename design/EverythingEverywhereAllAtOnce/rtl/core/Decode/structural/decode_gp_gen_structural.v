@@ -5,7 +5,7 @@ module decode_gp_gen (
 
     output wire gp_fault_o
 );
-    wire [31:0] l_addr_o
+    wire [31:0] l_addr_o;
     wire [3:0] decremented_length;
     wire adder_cout, adder_cout1, adder_cout2;
     
