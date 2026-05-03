@@ -1,4 +1,5 @@
 BUS_ARB_PATH_INTERNAL = $(ROOT)/rtl/BusArbitration/
+DEFINE_PATH_INTERNAL = $(ROOT)/rtl/defines/
 
 BUS_ARB_GEN_SRC_FILES = \
 	$(BUS_ARB_PATH_INTERNAL)/gen/DTE_Core_2_DDR5_FSM.sv \
@@ -22,10 +23,7 @@ BUS_ARB_PKGS = \
 
 BUS_ARB_STRUCTURAL_SRC_FILES = \
 					$(BUS_ARB_GEN_SRC_FILES)	\
-					$(BUS_ARB_PATH_INTERNAL)/structural/BusArbitration.v \
-					$(BUS_ARB_PATH_INTERNAL)/structural/DTE.v \
-					$(BUS_ARB_PATH_INTERNAL)/structural/Scheduler.v \
-					$(BUS_ARB_PATH_INTERNAL)/structural/Scheduler_DCachePicking.v \
+					$(BUS_ARB_PATH_INTERNAL)/structural/*.v \
 
 
 # 					$(BUS_ARB_PATH_INTERNAL)/structural/BusArbitration.v \

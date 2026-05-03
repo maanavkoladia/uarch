@@ -40,7 +40,7 @@ RTL_DESIGN_STRUCTURAL_SRC_FILES = \
 					   $(IO_STRUCTURAL_SRC_FILES)	\
 					   $(CORE_STRUCTURAL_SRC_FILES) \
 					   $(RTL_ROOT_PATH_INTERNAL)/structural/Everywhere_TOP_structural.v \
-					   $(RTL_ROOT_PATH_INTERNAL)/AllAtOnce_TOP.sv \
+					   $(RTL_ROOT_PATH_INTERNAL)/structural/AllAtOnce_TOP_structural.v \
 
 RTL_DESIGN_STRUCTURAL_HEADERS = \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/common_define.vh \
@@ -48,6 +48,7 @@ RTL_DESIGN_STRUCTURAL_HEADERS = \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/BusArbitration_common_define.vh \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/core_stage_latches_define.vh \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/DCache_common_define.vh \
+								$(RTL_ROOT_PATH_INTERNAL)/defines/DCache_req_2_sch_define.vh \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/DTE_FSM_gen_define.vh \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/ICache_common_define.vh \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/io_common_define.vh \
