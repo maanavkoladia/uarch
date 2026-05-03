@@ -122,17 +122,18 @@ module VCache_DataStore (
 
     wire rst_inv;
     wire pre_delay;
-    wire OE_2_DataStore_delay;
+    //wire OE_2_DataStore_delay;
+    wire OE_2_DataStore;
     `INV_N(u_rst_inv,    1, rst_i, rst_inv)
-    `OR_2 (u_pre_delay,  1, pre_delay, rst_inv, OE_2_DataStore_clk)
-    `BUFFER_DELAY(u_oe_delay, 8, 1, pre_delay, OE_2_DataStore_delay)
+    `OR_2 (u_pre_delay,  1, OE_2_DataStore, rst_inv, OE_2_DataStore_clk)
+    // `BUFFER_DELAY(u_oe_delay, 8, 1, pre_delay, OE_2_DataStore_delay)
 
     wire OE_clk_bar;
     wire OE_delay_bar;
     wire oe_active;
     wire OE_2_DataStore_actual;
     `INV_N(u_oe_clk_bar,   1, OE_2_DataStore_clk,   OE_clk_bar)
-    `INV_N(u_oe_delay_bar, 1, OE_2_DataStore_delay, OE_delay_bar)
+    `INV_N(u_oe_delay_bar, 1, OE_2_DataStore, OE_delay_bar)
     `AND_2(u_oe_active,    1, oe_active, OE_clk_bar, OE_delay_bar)
     `INV_N(u_oe_actual,    1, oe_active, OE_2_DataStore_actual)
 

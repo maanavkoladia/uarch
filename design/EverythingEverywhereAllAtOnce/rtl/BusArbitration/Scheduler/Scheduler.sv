@@ -23,7 +23,7 @@ module Scheduler (
 
     //make the dcache scheduler
     req_2_sch_t dcache_Best_Pick;
-    logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] dcache_Best_Pick_BK_ID;
+    logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] dcache_Best_Pick_BK_ID, dcache_Best_Pick_BK_ID_ff;
 
 
     Scheduler_DCachePicking dcache_picking_unit (
@@ -90,10 +90,16 @@ module Scheduler (
     req_2_sch_t IC_MIO_DMA_PICK;
     assign IC_MIO_DMA_PICK = IC_MIO_Pick >= dma_req ? IC_MIO_Pick : dma_req;
 
-    req_2_sch_t bestPick;
+    req_2_sch_t bestPick, bestPick_ff;
     assign bestPick = dcache_Best_Pick >= IC_MIO_DMA_PICK ? dcache_Best_Pick : IC_MIO_DMA_PICK;
 
-    assign bestPick_o = bestPick;
-    assign bestPick_bk_id_o = dcache_Best_Pick_BK_ID;
+    assign bestPick_o = bestPick_ff;
+    assign bestPick_bk_id_o = dcache_Best_Pick_BK_ID_ff;
+
+
+    always_ff @(posedge clk)begin
+        dcache_Best_Pick_BK_ID_ff <= dcache_Best_Pick_BK_ID;
+        bestPick_ff <= bestPick;
+    end
 
 endmodule

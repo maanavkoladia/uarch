@@ -4,11 +4,7 @@
   None -- all ON-set minterms covered  OK
 
 ## Undefined transitions (auto-routed to ERROR state)
-  NOTE: ERROR state was not present in the source CSV and was synthesised automatically.
-  2 transition(s) had no definition and were routed to ERROR with all outputs = 0:
-
-  State 'IDLE' + {'V_Hit_i': '0', 'DC_will_evict_i': '1', 'VC_needs_2_evict_i': '0', 'EB_V_i': '1', 'we_i': '0'}  ->  ERROR  (outputs all 0)
-  State 'IDLE' + {'V_Hit_i': '0', 'DC_will_evict_i': '1', 'VC_needs_2_evict_i': '0', 'EB_V_i': '1', 'we_i': '1'}  ->  ERROR  (outputs all 0)
+  None -- all state/input combinations were explicitly defined  OK
 
 ## Sink states (states never targeted as next-state, excluding synthesised ERROR)
   None

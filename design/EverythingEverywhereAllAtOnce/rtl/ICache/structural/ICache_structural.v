@@ -16,8 +16,8 @@ module ICache (
     input  wire         Mem_Valid,
     input  wire         driveAddrBus,
 
-    // icache_2_scheduler_t (decomposed)
-    output wire [13:0]  out_req,
+    // icache_2_scheduler_t (decomposed) — req_2_sch_t is now 4-bit
+    output wire [3:0]   out_req,
 
     // Shared buses
     inout  wire [31:0]  dataBus,
@@ -181,13 +181,13 @@ module ICache (
     //   out_req = MakeReq ? (num_lt_2 ? ICACHE_HIGH_PRI : ICACHE_LOW_PRI_REQ)
     //                     : NO_REQ
     // ------------------------------------------------------------------
-    wire [13:0] NO_REQ_VAL;
-    wire [13:0] LOW_PRI_VAL;
-    wire [13:0] HIGH_PRI_VAL;
+    wire [3:0] NO_REQ_VAL;
+    wire [3:0] LOW_PRI_VAL;
+    wire [3:0] HIGH_PRI_VAL;
 
-    assign NO_REQ_VAL   = 14'b00000000000000;
-    assign LOW_PRI_VAL  = 14'b00000000000010;
-    assign HIGH_PRI_VAL = 14'b00000000001110;
+    assign NO_REQ_VAL   = 4'b0000;  // NO_REQ              = 0
+    assign LOW_PRI_VAL  = 4'b0010;  // ICACHE_LOW_PRI_REQ  = 2
+    assign HIGH_PRI_VAL = 4'b1110;  // ICACHE_HIGH_PRI     = 14
 
     // num_valid_IDM_slots < 2  <=>  bit[2] = 0 AND bit[1] = 0
     wire num2_bar, num1_bar, num_lt_2;
@@ -195,9 +195,9 @@ module ICache (
     `INV_N(u_n1_bar, 1, num_valid_IDM_slots[1], num1_bar)
     `AND_2(u_num_lt_2, 1, num_lt_2, num2_bar, num1_bar)
 
-    wire [13:0] pri_val;
-    `MUX_2(u_pri, 14, pri_val, LOW_PRI_VAL, HIGH_PRI_VAL, num_lt_2)
-    `MUX_2(u_req, 14, out_req, NO_REQ_VAL, pri_val, MakeReq)
+    wire [3:0] pri_val;
+    `MUX_2(u_pri, 4, pri_val, LOW_PRI_VAL, HIGH_PRI_VAL, num_lt_2)
+    `MUX_2(u_req, 4, out_req, NO_REQ_VAL, pri_val, MakeReq)
 
     // ------------------------------------------------------------------
     // Address bus tristate

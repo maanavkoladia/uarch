@@ -69,13 +69,16 @@ module DCache_Bank_DataStore (
     wire clk_latch_inv;
     wire inv_clk;
     wire clk_duty_latch_out;
+    wire clk_duty_pre_buf;
 
     `INV_N(u_clk_latch_inv, 1, clk_duty_latch_out, clk_latch_inv);
     `REG_RST(u_clk_duty_latch, 1, fast_clk, rst, clk_latch_inv, clk_duty_latch_out);
 
-    `AND_3(u_clk_duty_mask, 1, clk_duty_mask, fast_clk, clk_duty_latch_out, inv_clk);
+    `AND_3(u_clk_duty_mask, 1, clk_duty_pre_buf, fast_clk, clk_duty_latch_out, inv_clk);
 
     `INV_N(u_inv_clk, 1, clk, inv_clk);
+    `BUFFER_DELAY(u_phase, 6, 1, clk_duty_pre_buf, clk_duty_mask);
+
 
     // ---------------------------------------------------------------
     // OE (active-low)

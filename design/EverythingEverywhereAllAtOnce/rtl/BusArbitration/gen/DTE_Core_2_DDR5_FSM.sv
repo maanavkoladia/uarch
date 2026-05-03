@@ -80,31 +80,31 @@ wire NS_0_and_buf_mid;
 `INV_N(NS_0_and_buf_i1, 1, NS_0_and_buf_mid, NS_0)
 
 // NS_1 = (S_0 & S_1) | (!S_0 & !S_1 & req_hit_i & !others_busy_i)
-wire NS_1_t0;
-`AND_2(NS_1_and0, 1, NS_1_t0, S_0, S_1)
-wire NS_1_t1;
-`AND_4(NS_1_and1, 1, NS_1_t1, S_0_inv, S_1_inv, req_hit_i, others_busy_i_inv)
+wire NS_1_n0;
+`NAND_2(NS_1_nand0, 1, NS_1_n0, S_0, S_1)
+wire NS_1_n1;
+`NAND_4(NS_1_nand1, 1, NS_1_n1, S_0_inv, S_1_inv, req_hit_i, others_busy_i_inv)
 
-`OR_2(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1)
+`NAND_2(NS_1_nand, 1, NS_1, NS_1_n0, NS_1_n1)
 
 // busy_o = (!S_0 & S_1) | (S_0 & !S_1)
-wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_0_inv, S_1)
-wire busy_o_t1;
-`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_1_inv)
+wire busy_o_n0;
+`NAND_2(busy_o_nand0, 1, busy_o_n0, S_0_inv, S_1)
+wire busy_o_n1;
+`NAND_2(busy_o_nand1, 1, busy_o_n1, S_0, S_1_inv)
 
-`OR_2(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1)
+`NAND_2(busy_o_nand, 1, busy_o, busy_o_n0, busy_o_n1)
 
 // reqServed_o = (!S_0 & S_1)
 `AND_2(reqServed_o_and, 1, reqServed_o, S_0_inv, S_1)
 
 // Drive_Addr_Bus_o = (!S_0 & S_1) | (!S_0 & req_hit_i & !others_busy_i)
-wire Drive_Addr_Bus_o_t0;
-`AND_2(Drive_Addr_Bus_o_and0, 1, Drive_Addr_Bus_o_t0, S_0_inv, S_1)
-wire Drive_Addr_Bus_o_t1;
-`AND_3(Drive_Addr_Bus_o_and1, 1, Drive_Addr_Bus_o_t1, S_0_inv, req_hit_i, others_busy_i_inv)
+wire Drive_Addr_Bus_o_n0;
+`NAND_2(Drive_Addr_Bus_o_nand0, 1, Drive_Addr_Bus_o_n0, S_0_inv, S_1)
+wire Drive_Addr_Bus_o_n1;
+`NAND_3(Drive_Addr_Bus_o_nand1, 1, Drive_Addr_Bus_o_n1, S_0_inv, req_hit_i, others_busy_i_inv)
 
-`OR_2(Drive_Addr_Bus_o_or, 1, Drive_Addr_Bus_o, Drive_Addr_Bus_o_t0, Drive_Addr_Bus_o_t1)
+`NAND_2(Drive_Addr_Bus_o_nand, 1, Drive_Addr_Bus_o, Drive_Addr_Bus_o_n0, Drive_Addr_Bus_o_n1)
 
 // Drv_DB_o = (!S_0 & S_1)
 `AND_2(Drv_DB_o_and, 1, Drv_DB_o, S_0_inv, S_1)

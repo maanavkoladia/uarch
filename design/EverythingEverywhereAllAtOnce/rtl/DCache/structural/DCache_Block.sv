@@ -13,12 +13,12 @@ module DCache_Block (
     input block_req_t block_req_i,
 
     //DTE input
-    input bool mem_Valid_FromDte_i,
-    input bool evictionBuf_clr_FromDTE_i,
-    input bool evictionBuf_setCommiting_FromDTE_i,
-    input bool permissionToDriveDataBus_evictionBuf[CACHE_LINES_SIZE_BITS/DATA_BUS_WIDTH_BITS],
-    input bool permissionToDriveAddrBus_Ld,
-    input bool permissionToDriveAddrBus_eb,
+    input wire mem_Valid_FromDte_i,
+    input wire evictionBuf_clr_FromDTE_i,
+    input wire evictionBuf_setCommiting_FromDTE_i,
+    input wire permissionToDriveDataBus_evictionBuf[CACHE_LINES_SIZE_BITS/DATA_BUS_WIDTH_BITS],
+    input wire permissionToDriveAddrBus_Ld,
+    input wire permissionToDriveAddrBus_eb,
 
     //for sceduling
     input wire st_override_for_sch_req,
@@ -47,8 +47,9 @@ module DCache_Block (
     v_cache_outputs_t vcache_outputs;
     eb_outputs_t eb_outputs;
 
-    bool block_busy;
-    assign block_busy = dcache_bank_outputs.busy || vcache_outputs.busy;
+    wire block_busy;
+    // SV line 51: block_busy = bank.busy || vcache.busy
+    `OR_2(u_block_busy, 1, block_busy, dcache_bank_outputs.busy, vcache_outputs.busy);
 
     // ---------------------------------------------------------------
     // DCache_Bank instance — swappable between SV reference and
@@ -57,6 +58,7 @@ module DCache_Block (
     // structural path. Default (flag undefined) preserves SV behavior.
     // ---------------------------------------------------------------
 `ifdef USE_STRUCTURAL_BANK
+        initial $display("using STRUCTURAL bank");
         // ---- struct -> flat: pack byte arrays into 128-bit buses ----
         wire [127:0] bank_blockReq_stq_data_flat;
         wire [127:0] bank_vcache_swapBuf_line_flat;
@@ -149,6 +151,8 @@ module DCache_Block (
             end
         endgenerate
 `else
+        initial $display("using SYSTEM bank");
+
         DCache_Bank dcache_bank_unit (
             .clk(clk_i),
             .rst(rst_i),
@@ -168,6 +172,8 @@ module DCache_Block (
     // Default (flag undefined) preserves SV behavior.
     // ---------------------------------------------------------------
 `ifdef USE_STRUCTURAL_VCACHE
+        initial $display("using STRUCTURAL VCACHE");
+
         // ---- struct -> flat: pack byte arrays into 128-bit buses ----
         wire [127:0] vcache_blockReq_stq_data_flat;
         wire [127:0] vcache_dcache_swapBuf_line_flat;
@@ -270,6 +276,8 @@ module DCache_Block (
             end
         endgenerate
 `else
+        initial $display("using SYSTEM vcache");
+
         VCache vcache_unit (
             .clk(clk_i),
             .rst(rst_i),  //active low
@@ -288,6 +296,8 @@ module DCache_Block (
     // path. Default (flag undefined) preserves the original SV behavior.
     // ---------------------------------------------------------------
 `ifdef USE_STRUCTURAL_EB
+        initial $display("using STRUCTURAL EB");
+
         // Pack vcache_outputs.lineOut[16] (byte_t array, LSB-first) into a flat 128-bit bus.
         wire [127:0] eb_vc_line_flat;
         assign eb_vc_line_flat = {
@@ -348,6 +358,8 @@ module DCache_Block (
             end
         endgenerate
 `else
+        initial $display("using SYSTEM EB");
+
         EvictionBuf evictionBuf_unit (
             .clk_i(clk_i),
             .rst_i(rst_i),  //active low
@@ -359,98 +371,130 @@ module DCache_Block (
         );
 `endif
 
-    bool fatal_coming;
-    always_comb begin
-        outputs_o.dataLineOut = '{default: '0};  // default (or leave if you prefer fail-fast X)
-        case ({
-            dcache_bank_outputs.hit, vcache_outputs.hit
-        })
-            2'b00, 2'b10: begin
-                outputs_o.dataLineOut = dcache_bank_outputs.data_lineOut;
-            end
-
-            2'b01: begin
-                outputs_o.dataLineOut = vcache_outputs.lineOut;
-            end
-            default begin
-                if(rst_i) begin
-                    fatal_coming = 1;
-                end
-            end
-        endcase
-    end
-    always_ff @(posedge clk_i) begin
-        if(fatal_coming) begin
-            //$fatal(1, "Invalid hit combination in DCache_Block: dcache_bank_outputs.hit = %b, vcache_outputs.hit = %b", dcache_bank_outputs.hit, vcache_outputs.hit);
+    // SV lines 362-386: 4:1 mux on {bank_hit, vcache_hit}. The SV body
+    // initializes dataLineOut to 0 then case-overrides for 00/01/10;
+    // case 11 falls into default (only sets `fatal_coming`, dataLineOut
+    // stays 0). The `fatal_coming` flop is dropped because the always_ff
+    // body is fully commented out (no observable effect).
+    wire [127:0] bank_lineOut_packed;
+    wire [127:0] vcache_lineOut_packed;
+    genvar gi_dl;
+    generate
+        for (gi_dl = 0; gi_dl < CACHE_LINES_SIZE_B; gi_dl++) begin : g_dataLineOut_pack
+            assign bank_lineOut_packed[8*gi_dl +: 8]   = dcache_bank_outputs.data_lineOut[gi_dl];
+            assign vcache_lineOut_packed[8*gi_dl +: 8] = vcache_outputs.lineOut[gi_dl];
         end
-    end
+    endgenerate
 
-    assign outputs_o.hit_o = dcache_bank_outputs.hit || vcache_outputs.hit;
+    wire [1:0]   datasel;
+    assign datasel = {dcache_bank_outputs.hit, vcache_outputs.hit};
+    wire [127:0] dataLineOut_flat;
+
+    // in0 (sel=00) = bank, in1 (sel=01) = vcache, in2 (sel=10) = bank,
+    // in3 (sel=11) = 0 (matches SV init value when default branch hits).
+    `MUX_4(u_dataLineOut_mux, 128, dataLineOut_flat,
+        bank_lineOut_packed,
+        vcache_lineOut_packed,
+        bank_lineOut_packed,
+        128'b0,
+        datasel);
+
+    generate
+        for (gi_dl = 0; gi_dl < CACHE_LINES_SIZE_B; gi_dl++) begin : g_dataLineOut_unpack
+            assign outputs_o.dataLineOut[gi_dl] = dataLineOut_flat[8*gi_dl +: 8];
+        end
+    endgenerate
+
+    // SV line 388: hit_o = bank.hit || vcache.hit
+    wire hit_o_w;
+    `OR_2(u_hit_o, 1, hit_o_w, dcache_bank_outputs.hit, vcache_outputs.hit);
+    assign outputs_o.hit_o = hit_o_w;
 
     assign outputs_o.eb_addr = eb_outputs.addr;
     //assign outputs_o.eb_V_o = eb_outputs.valid;
     //assign outputs_o.eb_line_O = eb_outputs.lineOut;
 
-    bool makeBlockReq, eb_blockingVCache, eb_V, eb_curr_commiting,eb_blocking_Bank;
+    wire makeBlockReq, eb_blockingVCache, eb_V, eb_curr_commiting,eb_blocking_Bank;
     assign makeBlockReq = dcache_bank_outputs.MakeReq;
     assign eb_blockingVCache = vcache_outputs.beingBlocked;
     assign eb_V = eb_outputs.valid;
     assign eb_curr_commiting = eb_outputs.commiting;
     assign eb_blocking_Bank = dcache_bank_outputs.eb_stalling;
 
-    //purely fo testing
-    //note to future people reading this, to test eb hit, bc it so fucking
-    //hard to sim, i mask out second eb writes to force the eb hit case
-    //
-    //bool madeEBWriteReq;
-    //always @(posedge clk_i) begin
-    //    if(!rst_i) madeEBWriteReq <= 0;
-    //    if(eb_curr_commiting) madeEBWriteReq <=1;
-    //end
-    always_comb begin
-        //outputs_o.req_2_sch = NO_REQ;
-        //if (eb_V) begin
-        //    if (eb_blocking_Bank && !eb_curr_commiting) begin
-        //        //outputs_o.req_2_sch = DCACHE_EB_BLOCKING_BANK;
-        //        outputs_o.req_2_sch = NO_REQ;
-        //    end else if (eb_blockingVCache && !eb_curr_commiting) begin  //blocking
-        //        if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_ST_OVERRIDE;
-        //        else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_LD;
-        //        else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_EB_BLOCK_ST;
-        //    end else if (eb_blockingVCache && eb_curr_commiting) begin
-        //        outputs_o.req_2_sch = NO_REQ;
-        //    end else if (!eb_curr_commiting) begin
-        //        outputs_o.req_2_sch = DCACHE_EB_WR;
-        //    end
-        //end else if (makeBlockReq) begin
-        //    if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_FILL_ST_OVERRIDE;
-        //    else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_FILL_LD;
-        //    else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_FILL_ST;
-        //end
-        //highest pri
-        outputs_o.req_2_sch = NO_REQ;
-        if (eb_blocking_Bank && !eb_curr_commiting) begin
-            outputs_o.req_2_sch = DCACHE_EB_BLOCKING_BANK;
-        end else if(eb_blockingVCache && !eb_curr_commiting) begin
-            if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_ST_OVERRIDE;
-            else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_EB_BLOCKING_LD;
-            else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_EB_BLOCK_ST;
-        end else if(makeBlockReq) begin
-            if (st_override_for_sch_req) outputs_o.req_2_sch = DCACHE_FILL_ST_OVERRIDE;
-            else if (block_req_i.oe) outputs_o.req_2_sch = DCACHE_FILL_LD;
-            else if (block_req_i.we) outputs_o.req_2_sch = DCACHE_FILL_ST;
-        //end else if(eb_V && !eb_curr_commiting && !madeEBWriteReq) begin
-        end else if(eb_V && !eb_curr_commiting) begin
-            outputs_o.req_2_sch = DCACHE_EB_WR;
-        end
-    end
+    // SV lines 410-446: req_2_sch priority encoder.
+    // Top priority: EB_BLOCKING_BANK > vcache-blocking subreq > fill subreq > EB_WR.
+    // Each "and !eb_curr_commiting" clause folds into a precomputed condition wire.
+
+    wire not_committing;
+    `INV_N(u_not_committing, 1, eb_curr_commiting, not_committing);
+
+    wire cond_blocking_bank;
+    wire cond_blocking_vcache;
+    wire cond_eb_wr;
+    `AND_2(u_cond_block_bank,   1, cond_blocking_bank,   eb_blocking_Bank,   not_committing);
+    `AND_2(u_cond_block_vcache, 1, cond_blocking_vcache, eb_blockingVCache,  not_committing);
+    `AND_2(u_cond_eb_wr,        1, cond_eb_wr,           eb_V,               not_committing);
+
+    // Inner-A — vcache-blocking subreq (SV lines 434-437).
+    // Priority: st_override > oe > we > NO_REQ.   (req_2_sch_t is now 4-bit)
+    wire [3:0] innerA_we_or_zero;
+    wire [3:0] innerA_oe_we_zero;
+    wire [3:0] innerA_full;
+    `MUX_2(u_innerA_a, 4, innerA_we_or_zero,
+        NO_REQ, DCACHE_EB_BLOCK_ST, block_req_i.we);
+    `MUX_2(u_innerA_b, 4, innerA_oe_we_zero,
+        innerA_we_or_zero, DCACHE_EB_BLOCKING_LD, block_req_i.oe);
+    `MUX_2(u_innerA_c, 4, innerA_full,
+        innerA_oe_we_zero, DCACHE_EB_BLOCKING_ST_OVERRIDE, st_override_for_sch_req);
+
+    // Inner-B — fill subreq (SV lines 438-441).
+    wire [3:0] innerB_we_or_zero;
+    wire [3:0] innerB_oe_we_zero;
+    wire [3:0] innerB_full;
+    `MUX_2(u_innerB_a, 4, innerB_we_or_zero,
+        NO_REQ, DCACHE_FILL_ST, block_req_i.we);
+    `MUX_2(u_innerB_b, 4, innerB_oe_we_zero,
+        innerB_we_or_zero, DCACHE_FILL_LD, block_req_i.oe);
+    `MUX_2(u_innerB_c, 4, innerB_full,
+        innerB_oe_we_zero, DCACHE_FILL_ST_OVERRIDE, st_override_for_sch_req);
+
+    // Top-level priority chain — lowest priority bound on the right.
+    wire [3:0] req_step1;
+    wire [3:0] req_step2;
+    wire [3:0] req_step3;
+    wire [3:0] req_2_sch_w;
+    `MUX_2(u_top_step1, 4, req_step1,    NO_REQ,    DCACHE_EB_WR,            cond_eb_wr);
+    `MUX_2(u_top_step2, 4, req_step2,    req_step1, innerB_full,             makeBlockReq);
+    `MUX_2(u_top_step3, 4, req_step3,    req_step2, innerA_full,             cond_blocking_vcache);
+    `MUX_2(u_top_step4, 4, req_2_sch_w,  req_step3, DCACHE_EB_BLOCKING_BANK, cond_blocking_bank);
+
+    assign outputs_o.req_2_sch = req_2_sch_w;
 
     //bus logic
-    //addr bus
+    //addr bus — SV lines 450-452 ("#5 assign" with ternary).
+    // 15-bit address mux: Ld=1 -> block_req.p_addr, else -> eb_outputs.addr.
+    wire [14:0] addr_bus_fake15;
+    `MUX_2(u_addr_bus_mux, 15, addr_bus_fake15,
+        eb_outputs.addr,
+        block_req_i.p_addr,
+        permissionToDriveAddrBus_Ld);
+
+    // Zero-extend the 15-bit address to the 32-bit bus width (matches SV implicit cast).
     wire [ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
-    assign address_bus_fake = permissionToDriveAddrBus_Ld ? block_req_i.p_addr : eb_outputs.addr;
-    assign #5 address_bus = permissionToDriveAddrBus_Ld || permissionToDriveAddrBus_eb ? address_bus_fake : 'z;
-    int startingOffset;
+    assign address_bus_fake = {17'b0, addr_bus_fake15};
+
+    // Drive enable: permissionToDriveAddrBus_Ld | permissionToDriveAddrBus_eb.
+    wire addr_drive_en;
+    wire addr_drive_enbar;
+    `NOR_2(u_addr_drive_en, 1, addr_drive_enbar,
+        permissionToDriveAddrBus_Ld, permissionToDriveAddrBus_eb);
+   // `INV_N(u_addr_drive_enbar, 1, addr_drive_en, addr_drive_enbar);
+
+    // SV `assign #5` was only modeling the bus driver's intrinsic delay;
+    // BUS_TRISTATE already provides that physically. No buffer chain needed.
+    `BUS_TRISTATE(u_addr_bus_tri, ADDRESS_BUS_WIDTH_BITS,
+        addr_drive_enbar, address_bus_fake, address_bus);
+    //int startingOffset;
     //logic [DATA_BUS_WIDTH_BITS - 1 : 0] dataBus_fake;
 
     // assign dataBus =
@@ -475,14 +519,16 @@ module DCache_Block (
     //     end
     // end
 
-    wire [3:0] perm2DriveDataBus_bar;
-
-    assign perm2DriveDataBus_bar = {
-        ~permissionToDriveDataBus_evictionBuf[3],
-        ~permissionToDriveDataBus_evictionBuf[2],
-        ~permissionToDriveDataBus_evictionBuf[1],
-        ~permissionToDriveDataBus_evictionBuf[0]
+    // SV lines 480-485: per-bit `~` over the 4-element permission array.
+    wire [3:0] perm_packed;
+    assign perm_packed = {
+        permissionToDriveDataBus_evictionBuf[3],
+        permissionToDriveDataBus_evictionBuf[2],
+        permissionToDriveDataBus_evictionBuf[1],
+        permissionToDriveDataBus_evictionBuf[0]
     };
+    wire [3:0] perm2DriveDataBus_bar;
+    `INV_N(u_perm_inv, 4, perm_packed, perm2DriveDataBus_bar);
 
     logic [127:0] eb_lineOut_vec;
     assign eb_lineOut_vec = {

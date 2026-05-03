@@ -7,7 +7,7 @@ TEST_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 PROJECT_ROOT := $(shell pwd | sed -E 's|(.*EverythingEverywhereAllAtOnce).*|\1|')
 
 LOG_DIR ?= $(TEST_DIR)/logDumps/
-#LOG_DIR = 
+
 
 DISTRO := $(shell . /etc/os-release && echo $$ID)
 
@@ -149,6 +149,7 @@ clean:
 	rm -f ucli.key
 	rm -rf gen/
 	rm -rf logDumps/
+	rm -rf TestResults/
 
 push: clean
 	git add -A

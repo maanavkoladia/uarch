@@ -38,9 +38,6 @@ Plan a way to port dcache and make sure you understand how to unpack structs and
 Let me know if you have any questions, dont make assumptions and take time to understand how dcache works.
 
 
-I need the eviction buffer to be ported to structural verilog 2005.
-I need to update the instantiation in the dcache block module. 
-
 Create as many ports as you. do not just create large wires for a struct.
 However, a cache line can be one wire but an entre structure should not just be an entire wire. 
 It should be readable. 
@@ -54,15 +51,17 @@ Take time to understand dcache. Becareful of logical loops that will happen due 
 remember all I need is an updated dcacheTOP.sv that is WITHIN the structuarl folder only touch files or bring in files in the structural folder. do not alter other parts of the dcache.
 
 
-This time you will be porting the vcache. Understand how the vcache work. it is fully set assocative. There is some weird stuff with the cell geometry for the tag store because of the sizing of the modules. 
-
-DO NOT MESS WITH THE GEOMETRY OF THE TAG STORE.
+This time you will be porting the MIO Block. Understand how the MIO block works. When making changes to the Dcache top make sure to keep the ifndef and add the structural mio logic without removing the sv version in a similar way to how arbitration is set up. 
+DO NOT MESS WITH THE GEOMETRY or naming of any genvars or module names. 
 
 keep all block names and gen vars i.e g_* should be kept the same in the structural models. also keep the module name the same DONOT put an _struct.
 
 Last time a bug that You made was a simple variable name swap. always double check that the code exactly matches the system verilog reference has for the module. 
 
-Plan carefuly a way to port the vcache unit to structural verilog 2005
+Plan carefuly a way to port the MIO Block unit to structural verilog 2005
+Create a new .v file for the mio block do not overwrite the existing mio block file 
+only change file in the dcache/structural folder
+
 
 
 

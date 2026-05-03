@@ -74,13 +74,11 @@ ddr5_routine:
     movl %es:(%esi), %ebx
     movl $0xA0A0A0A0, %ebx
     
-    # //pweor gate the ddr5 again
+    //pweor gate the ddr5 again
     movl    $DDR5_POWER_GATING, %esi
     movl    $1, %es:(%esi)
-
     call fakeDelay
-    
-    movl $0x11111111, %ecx
+    movl $0x11111111, %edx
     movl $DDR5_READ_TEMPERATURE, %esi
     movl %es:(%esi), %ecx
 
@@ -101,12 +99,13 @@ dma_routine:
     movl $1, %es:(%esi)
 
     movl $0x11223344, %ecx
-    ret 
+    ret
 
 interruptRoutine:
     //mov something from the frame the data was written to edx
     movl $0x10, %eax
     movl %fs:(%eax), %edx
+    movl $0x12345678, %ebp
     iret
     hlt
 
@@ -121,7 +120,10 @@ nonsense_mem_ops:
     movl $NUM_NONSENSE_RWS, %ecx
     movl $0, %esi
 nonsense_loop:
+    mov (%esi), %ebx
     add $1, (%esi)
+    //mov (%esi), %ebx
+    mov 0x200(%esi), %ebx
     add $2, 0x200(%esi)
     add $2, 0x400(%esi)
     add $2, 0x600(%esi)
@@ -145,6 +147,8 @@ delay_loop:
     jne     delay_loop
 
     ret
+
+
 
 //data segement
 .org 0x02000000 //mapped

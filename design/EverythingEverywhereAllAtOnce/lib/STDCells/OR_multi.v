@@ -120,17 +120,22 @@ module MPS_OR_IN4$ (
 
 endmodule
 
+
 /* ---------------- or5$ ---------------- */
 module MPS_OR_IN5$ (out, in0,in1,in2,in3,in4);
 
 output out;
 input in0,in1,in2,in3,in4;
 
-wire t0, t1;
+wire t0, t1, t2;
+nor2_N$ g0 (t0, in0, in1);
+nor2_N$ g1 (t1, in2, in3);
+nor2_N$ g2 (t2, in4, in4);
+nand3_N$ g3 (out, t0, t1, t2);
 
-MPS_OR_IN2$ g0 (t0, in0, in1);
-MPS_OR_IN2$ g1 (t1, in2, in3);
-MPS_OR_IN3$ g2 (out, t0, t1, in4);
+// MPS_OR_IN2$ g0 (t0, in0, in1);
+// MPS_OR_IN2$ g1 (t1, in2, in3);
+// MPS_OR_IN3$ g2 (out, t0, t1, in4);
 
 endmodule
 
