@@ -26,7 +26,7 @@ module WB (
     st_q_inputs_t stq_info[NUM_WB_ST_QS];
     st_q_outputs_t stq_outputs[NUM_WB_ST_QS];
     mio_inputs_t mio_q_input;
-    reg_wb_logic_outputs_t reg_wb_logic_outs;
+    //reg_wb_logic_outputs_t reg_wb_logic_outs;
 
     st_q_2_dep_check_outputs_t dc_dep;
     st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
