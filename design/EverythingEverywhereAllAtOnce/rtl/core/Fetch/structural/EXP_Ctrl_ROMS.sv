@@ -87,15 +87,15 @@ module EXP_Ctrl_ROMS (
     //   IDTR tied to 0 (settled design decision).
     //   rom_sel << 3 done as a constant-shift wire concat (no gates).
     // ----------------------------------------------------------------
-    wire [31:0] idtr;
+    reg [31:0] IDTR;
     wire [31:0] shifted_rom_sel;
     wire [31:0] idtEntryAddy;
     wire        idt_cout_unused;
 
-    assign idtr            = 32'h0;
+    //assign idtr            = 32'h0;
     assign shifted_rom_sel = {24'h0, rom_sel, 3'b0};
 
-    `ADD_N(u_idt_add, 32, idtEntryAddy, idt_cout_unused, idtr, shifted_rom_sel, 1'b0)
+    `ADD_N(u_idt_add, 32, idtEntryAddy, idt_cout_unused, IDTR, shifted_rom_sel, 1'b0)
 
     // ----------------------------------------------------------------
     // 16-byte cache line fan-out (pure assigns)
