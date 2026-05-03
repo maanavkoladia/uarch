@@ -13,7 +13,6 @@ EXE_SRC_FILES = \
     $(EXE_PATH_INTERNAL)/alu_input_sel.sv \
     $(EXE_PATH_INTERNAL)/bit_vec_logic.sv \
     $(EXE_PATH_INTERNAL)/branch_res.sv \
-    $(EXE_PATH_INTERNAL)/cs_change_logic.sv \
     $(EXE_PATH_INTERNAL)/res_buf_logic.sv \
     $(EXE_PATH_INTERNAL)/res_buf_sel.sv \
     $(EXE_PATH_INTERNAL)/dr_sel.sv \
@@ -62,23 +61,24 @@ EXE_SRC_FILES = \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/rep_cmp.sv \
     $(EXE_PATH_INTERNAL)/EXE.sv \
 
+
 EXE_STRUCTURAL_SRC_FILES = \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/alu_input_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/bit_vec_logic.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/branch_res.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/cs_change_logic.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/res_buf_logic.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/res_buf_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/dr_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/sr_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/reg_wb_logic.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/af_flag_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/cf_flag_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/df_flag_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/of_flag_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/pf_flag_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/sf_flag_sel.sv \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/zf_flag_sel.sv \
+	$(GEN_EXE_SRC_FILES) \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/alu_input_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/bit_vec_logic_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/branch_res_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/res_buf_logic_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/res_buf_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/dr_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/sr_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/reg_wb_logic_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/af_flag_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/cf_flag_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/df_flag_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/of_flag_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/pf_flag_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/sf_flag_sel_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/zf_flag_sel_structural.v \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/aaa_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/adc_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/add_op.sv \

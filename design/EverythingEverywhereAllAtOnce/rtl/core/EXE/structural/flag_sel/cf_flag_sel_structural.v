@@ -2,9 +2,6 @@
 // 11-source op_type-driven CF flag selector.
 // Tristate-mux of matched ops + 2:1 MUX with NAND-NOR match_any.
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module cf_flag_sel (
     input  wire aaa_cf,
     input  wire adc_cf,

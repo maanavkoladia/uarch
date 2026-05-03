@@ -1,9 +1,6 @@
 // Structural Verilog 2005 port of EXE/reg_wb_logic.sv
 // Drives the two register-file write ports out of EXE.
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module reg_wb_logic (
     input  wire [`EXE_STRUCT_OP_W-1:0]      op_type,
     input  wire [63:0]                       next_dr_data,

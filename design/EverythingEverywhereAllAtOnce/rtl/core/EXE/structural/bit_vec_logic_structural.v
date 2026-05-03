@@ -7,9 +7,6 @@
 //   4'b0001 = AL  → 1 byte    4'b0010 = AH  → 1 byte
 //   4'b0011 = AX  → 2 bytes   4'b0111 = EAX → 4 bytes   4'b1111 = RAX → 8 bytes
 
-`include "STDCell_Macros.vh"
-`include "common_define.vh"
-
 module bit_vec_logic (
     input  wire [`ADDRESS_BITS-1:0] st_addr_0,
     input  wire                     ST_XCL,

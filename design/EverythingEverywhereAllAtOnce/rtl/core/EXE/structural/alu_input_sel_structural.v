@@ -6,9 +6,6 @@
 // res_buf_in is a packed 256-bit wire (32 bytes, byte i in bits [8i+7:8i]).
 // EXE.sv is responsible for flattening latches_i.ld_buf into this format.
 
-`include "STDCell_Macros.vh"
-`include "common_define.vh"
-`include "exe_structural_defines.vh"
 
 module alu_input_sel (
     input  wire [`ADDRESS_BITS-1:0]    ld_addr_0,

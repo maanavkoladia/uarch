@@ -9,9 +9,6 @@ include $(CORE_PATH_INTERNAL)/MEM/srcs.mk
 include $(CORE_PATH_INTERNAL)/WB/srcs.mk
 
 
-
-
-
 CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/IDM/IDM.sv	\
 				 $(CORE_PATH_INTERNAL)/TLB/TLB.sv \
@@ -53,7 +50,7 @@ CORE_STRUCTURAL_SRC_FILES = \
 					 $(RR_SRC_FILES) \
 					 $(DC_SRC_FILES) \
 					 $(MEM_STAGE_SRC_FILES) \
-					 $(EXE_SRC_FILES)\
+					 $(EXE_STRUCTURAL_SRC_FILES)\
 					 $(WB_SRC_FILES) \
 					 $(CORE_PATH_INTERNAL)/StageLatches/DC_Latches.sv \
 					 $(CORE_PATH_INTERNAL)/StageLatches/EXE_Latches.sv \

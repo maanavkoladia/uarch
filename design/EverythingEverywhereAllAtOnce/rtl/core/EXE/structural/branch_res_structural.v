@@ -3,9 +3,6 @@
 // flat fields of exe_br_resolution_outputs_t. The wrapping EXE.sv is
 // responsible for re-assembling the SV struct from these outputs.
 
-`include "STDCell_Macros.vh"
-`include "common_define.vh"
-
 module branch_res (
     // ---- br_info ----
     input  wire        stage_valid_i,

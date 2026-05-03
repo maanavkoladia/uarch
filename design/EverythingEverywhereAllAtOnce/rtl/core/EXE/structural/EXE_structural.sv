@@ -24,6 +24,7 @@ module EXE (
     output exe_outputs_t outs_o
 );
 
+    uint32_t flags_reg;
 
     //==========================================================================
     // VALID-LOGIC + STALL FLOP
@@ -400,7 +401,6 @@ module EXE (
     //==========================================================================
     // FLAGS REGISTER  (structural REG_RST_WE 32-bit, gated by latches_i.valid)
     //==========================================================================
-    uint32_t flags_reg;
 
     logic af_flag_o;
     logic cf_flag_o;
@@ -619,7 +619,7 @@ module EXE (
     );
 
     rep_cmp u_rep_cmp_op (
-        .srA(srA), .srB(srB), .data_size(data_size_w),
+        .srA(srA), .srB(srB),
         .ZF(rep_cmp_zf_o)
     );
 

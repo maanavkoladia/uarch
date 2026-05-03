@@ -6,9 +6,6 @@
 //   clr_ZF_sb       = effective_match
 //   zf_flag_o       = effective_match ? tristated_bus : curr_zf_flag
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module zf_flag_sel (
     input  wire rep_no_zf_update,
     input  wire adc_zf,

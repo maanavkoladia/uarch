@@ -2,9 +2,6 @@
 // DF flag is set by STD (→1), cleared by CLD (→0), else holds curr_df_flag.
 // Tristate-mux of 2 ops + 2:1 MUX with match_any select.
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module df_flag_sel (
     input  wire                          curr_df_flag,
     input  wire [`EXE_STRUCT_OP_W-1:0]   op_type,

@@ -48,7 +48,7 @@ module tb_stages ();
         end
         else begin
             if (`FETCH_UNIT_PATH.outs_o.fetch_2_icache.num_valid_IDM_slots == 0) idm_empty_cycle_counts++;
-            if (`EXE_UNIT_PATH.branch_resolution_o.flush == 1) flush_count++;
+            //if (`EXE_UNIT_PATH.branch_resolution_o.flush == 1) flush_count++;
             if (uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_hit == 1) vcache_hits++;
             if (uut_AllAtOnce.mem_sys_unit.icache_unit.icache_hit == 1) icache_hits++;
         end

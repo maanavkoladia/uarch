@@ -3,9 +3,6 @@
 // Other 24 bytes are 0. Implementation: 16 pre-shifted 256-bit candidates +
 // one MUX_16 selected by offset. Critical path: ~2 gate delays through mux16.
 
-`include "STDCell_Macros.vh"
-`include "common_define.vh"
-
 module res_buf_logic (
     input  wire [63:0]                 res_info_i,
     input  wire [`ADDRESS_BITS-1:0]    st_addr_0,

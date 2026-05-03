@@ -3,9 +3,6 @@
 // Tristate-mux of matched ops + 2:1 MUX with match_any (NAND-NOR tree) selecting
 // between curr_af_flag (passthrough) and the tristated bus.
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module af_flag_sel (
     input  wire and_af,
     input  wire or_af,

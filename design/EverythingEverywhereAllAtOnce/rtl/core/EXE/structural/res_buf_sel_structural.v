@@ -3,9 +3,6 @@
 // Tristate-mux of matched ops + 2:1 MUX with NAND-NOR match_any select.
 // On no match res_buf_o = 64'h0 (matches the default in the SV reference).
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module res_buf_sel (
     input  wire [`EXE_STRUCT_OP_W-1:0] op_type,
 

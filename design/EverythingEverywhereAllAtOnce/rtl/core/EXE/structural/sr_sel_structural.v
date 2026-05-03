@@ -3,9 +3,6 @@
 // tristated bus and sr_data based on WB_SR. When WB_SR=0, sr_data passes
 // through (no need to compute match_any from a wide OR tree).
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module sr_sel (
     input  wire [`EXE_STRUCT_OP_W-1:0] op_type,
     input  wire                        WB_SR,    // mux select for final stage

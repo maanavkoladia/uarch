@@ -2,9 +2,6 @@
 // 10-source op_type-driven OF flag selector.
 // Tristate-mux of matched ops + 2:1 MUX with NAND-NOR match_any.
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module of_flag_sel (
     input  wire adc_of,
     input  wire add_of,

@@ -2,9 +2,6 @@
 // 10-source op_type-driven SF flag selector.
 // Tristate-mux of matched ops + 2:1 MUX with NAND-NOR match_any.
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module sf_flag_sel (
     input  wire add_sf,
     input  wire adc_sf,

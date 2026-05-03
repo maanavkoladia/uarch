@@ -6,9 +6,6 @@
 // 28 op_type cases drive 26 unique data sources:
 //   MOV and CMOVC share mov_dr_i;  FAR_JMP32 and FAR_JMP16 share far_jmp_dr_i.
 
-`include "STDCell_Macros.vh"
-`include "exe_structural_defines.vh"
-
 module dr_sel (
     input  wire [`EXE_STRUCT_OP_W-1:0] op_type,
     input  wire                        WB_DR,    // mux select for final stage
