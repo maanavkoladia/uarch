@@ -6,8 +6,9 @@ import interconnect_pkg::*;
 
 // WB.sv (structural-folder copy)
 //
-// Currently ST_Q_logic and ST_Q_MIO_logic are structural ports. ST_Q and
-// MIO_Q are the legacy SystemVerilog implementations.
+// Currently ST_Q_logic, ST_Q_MIO_logic, and MIO_Q are structural ports.
+// Only ST_Q (the 4-deep store-queue FIFO) is still the legacy SystemVerilog
+// implementation.
 //
 // To enable the next structural port: uncomment that submodule's structural
 // block in its .sv file and switch its instantiation here back to flat ports.
@@ -15,11 +16,13 @@ import interconnect_pkg::*;
 // Conversion overhead this file carries:
 //   1. Flatten wb_latches.res_buf (byte_t[32]) into a 256-bit wire bus,
 //      shared by ST_Q_logic and ST_Q_MIO_logic.
-//   2. Per-bank flat output wires for stq_info_<i>_* (ST_Q_logic) and a
-//      flat wire bundle for mio_q_input_o_* (ST_Q_MIO_logic).
-//   3. Pack those flat wires back into the stq_info[i] struct array and the
-//      mio_q_input struct so the legacy ST_Q / MIO_Q instances (which take
-//      st_q_inputs_t / mio_inputs_t) are unchanged.
+//   2. Per-bank flat output wires for stq_info_<i>_* (ST_Q_logic) and flat
+//      wires for the ST_Q_MIO_logic -> MIO_Q link.
+//   3. Pack ST_Q_logic flat outputs into the stq_info[i] struct array so the
+//      legacy ST_Q[i] generate loop (which takes st_q_inputs_t) is unchanged.
+//   4. Pack MIO_Q flat outputs into mio_q_output (st_q_2_dcache_t) so the
+//      wb_outputs assembly (which sets `mio_head : mio_q_output`) is
+//      unchanged.
 
 module WB (
     input wire clk,
@@ -42,7 +45,6 @@ module WB (
 
     st_q_inputs_t stq_info[NUM_WB_ST_QS];
     st_q_outputs_t stq_outputs[NUM_WB_ST_QS];
-    mio_inputs_t mio_q_input;
     reg_wb_logic_outputs_t reg_wb_logic_outs;
 
     st_q_2_dep_check_outputs_t dc_dep;
@@ -234,10 +236,13 @@ module WB (
 
 
     // ===================================================================
-    // STRUCTURAL ST_Q_MIO_logic
-    //   - Reuses res_buf_flat from above
-    //   - Pack flat outputs back into mio_q_input struct so legacy MIO_Q
-    //     (which takes mio_inputs_t) is unchanged
+    // STRUCTURAL ST_Q_MIO_logic + MIO_Q
+    //   - ST_Q_MIO_logic reuses res_buf_flat from above
+    //   - Its flat outputs feed MIO_Q's flat inputs DIRECTLY (no struct
+    //     intermediate -- mio_q_input was a legacy-MIO_Q artifact and is
+    //     no longer needed now that both endpoints are structural).
+    //   - MIO_Q's flat outputs are packed back into mio_q_output
+    //     (st_q_2_dcache_t) so the wb_outputs assembly stays unchanged.
     // ===================================================================
 
     wire         mio_q_input_o_data_valid;
@@ -261,20 +266,44 @@ module WB (
         .mio_q_input_o_pop          ( mio_q_input_o_pop          )
     );
 
-    // -------- Pack flat ST_Q_MIO_logic outputs into mio_q_input struct --------
+    // MIO_Q flat output wires
+    wire         mio_q_full_w;
+    wire         mio_q_empty_w;
+    wire [14:0]  mio_q_address_w;
+    wire [15:0]  mio_q_bit_vec_w;
+    wire [127:0] mio_q_data_w;
+
+    MIO_Q mio_q_inst (
+        .clk                    ( clk                        ),
+        .rst                    ( rst                        ),
+        // direct flat-to-flat connection from ST_Q_MIO_logic outputs
+        .mio_input_data_valid   ( mio_q_input_o_data_valid   ),
+        .mio_input_data_address ( mio_q_input_o_data_address ),
+        .mio_input_data_data    ( mio_q_input_o_data_data    ),
+        .mio_input_push         ( mio_q_input_o_push         ),
+        .mio_input_pop          ( mio_q_input_o_pop          ),
+        .push_fail              ( mio_push_fail              ),
+        .outs_full              ( mio_q_full_w               ),
+        .outs_empty             ( mio_q_empty_w              ),
+        .outs_address           ( mio_q_address_w            ),
+        .outs_bit_vec           ( mio_q_bit_vec_w            ),
+        .outs_data              ( mio_q_data_w               )
+    );
+
+    // -------- Pack flat MIO_Q outputs into mio_q_output struct --------
     always_comb begin
-        mio_q_input.push         = mio_q_input_o_push;
-        mio_q_input.pop          = mio_q_input_o_pop;
-        mio_q_input.data.valid   = mio_q_input_o_data_valid;
-        mio_q_input.data.address = mio_q_input_o_data_address;
+        mio_q_output.full    = mio_q_full_w;
+        mio_q_output.empty   = mio_q_empty_w;
+        mio_q_output.address = mio_q_address_w;
+        mio_q_output.bit_vec = mio_q_bit_vec_w;
         for (int b = 0; b < CACHE_LINES_SIZE_B; b++) begin
-            mio_q_input.data.data[b] = mio_q_input_o_data_data[b*8 +: 8];
+            mio_q_output.data[b] = mio_q_data_w[b*8 +: 8];
         end
     end
 
 
     // ===================================================================
-    // LEGACY (SV-struct) submodule instantiations -- 2 of 4
+    // LEGACY (SV-struct) submodule instantiations -- 1 of 4
     // ===================================================================
 
     //Store queue gen
@@ -287,15 +316,6 @@ module WB (
             .outputs(stq_outputs[i])
         );
     end
-
-    //MIO Queue instantiation
-    MIO_Q mio_q_inst (
-        .clk(clk),
-        .rst(rst),
-        .mio_input(mio_q_input),
-        .push_fail(mio_push_fail),
-        .outs(mio_q_output)
-    );
 
 
 endmodule
