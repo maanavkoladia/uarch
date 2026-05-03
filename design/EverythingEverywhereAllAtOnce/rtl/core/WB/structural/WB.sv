@@ -6,23 +6,22 @@ import interconnect_pkg::*;
 
 // WB.sv (structural-folder copy)
 //
-// Currently ST_Q_logic, ST_Q_MIO_logic, and MIO_Q are structural ports.
-// Only ST_Q (the 4-deep store-queue FIFO) is still the legacy SystemVerilog
-// implementation.
-//
-// To enable the next structural port: uncomment that submodule's structural
-// block in its .sv file and switch its instantiation here back to flat ports.
+// All four submodules (ST_Q_logic, ST_Q_MIO_logic, ST_Q, MIO_Q) are now
+// pure structural. WB.sv itself is still SV-style internally (it builds
+// the wb_outputs_t struct, runs the stall_flop register, etc.) but every
+// submodule is wired through unrolled flat ports.
 //
 // Conversion overhead this file carries:
 //   1. Flatten wb_latches.res_buf (byte_t[32]) into a 256-bit wire bus,
 //      shared by ST_Q_logic and ST_Q_MIO_logic.
-//   2. Per-bank flat output wires for stq_info_<i>_* (ST_Q_logic) and flat
-//      wires for the ST_Q_MIO_logic -> MIO_Q link.
-//   3. Pack ST_Q_logic flat outputs into the stq_info[i] struct array so the
-//      legacy ST_Q[i] generate loop (which takes st_q_inputs_t) is unchanged.
-//   4. Pack MIO_Q flat outputs into mio_q_output (st_q_2_dcache_t) so the
-//      wb_outputs assembly (which sets `mio_head : mio_q_output`) is
-//      unchanged.
+//   2. Per-bank flat wires for the ST_Q_logic -> ST_Q[i] link (no struct
+//      intermediate -- both endpoints are structural).
+//   3. Per-bank flat output wires for ST_Q[i]; pack into stq_outputs[i]
+//      struct so the existing stq_heads / dc_dep / stall_flop_next
+//      always_combs are unchanged.
+//   4. Direct flat-to-flat connection for ST_Q_MIO_logic -> MIO_Q.
+//   5. Pack MIO_Q flat outputs into mio_q_output (st_q_2_dcache_t) so the
+//      wb_outputs assembly stays unchanged.
 
 module WB (
     input wire clk,
@@ -43,7 +42,7 @@ module WB (
     bool stall_flop_next;
     bool mio_push_fail;
 
-    st_q_inputs_t stq_info[NUM_WB_ST_QS];
+    // Kept structs (consumed by the always_comb / output-pack code below).
     st_q_outputs_t stq_outputs[NUM_WB_ST_QS];
     reg_wb_logic_outputs_t reg_wb_logic_outs;
 
@@ -111,10 +110,10 @@ module WB (
 
 
     // ===================================================================
-    // STRUCTURAL ST_Q_logic (the only ported submodule for now)
+    // STRUCTURAL ST_Q_logic
     //   - Flatten wb_latches.res_buf byte array -> 256-bit bus
-    //   - Instantiate with flat ports
-    //   - Pack flat per-bank output wires back into stq_info[i] struct
+    //   - Per-bank flat output wires feed ST_Q[i] flat inputs DIRECTLY
+    //     (no struct intermediate -- stq_info struct was a legacy artifact)
     // ===================================================================
 
     // -------- Flatten res_buf byte array --------
@@ -126,7 +125,7 @@ module WB (
         end
     endgenerate
 
-    // -------- Per-bank flat output wires from ST_Q_logic --------
+    // -------- Per-bank flat wires (ST_Q_logic -> ST_Q[i]) --------
     wire         stq_info_0_push, stq_info_0_pop, stq_info_0_data_valid;
     wire [14:0]  stq_info_0_data_address;
     wire [15:0]  stq_info_0_data_bit_vec;
@@ -147,7 +146,6 @@ module WB (
     wire [15:0]  stq_info_3_data_bit_vec;
     wire [127:0] stq_info_3_data_data;
 
-    // -------- ST_Q_logic instantiation (flat ports) --------
     ST_Q_logic st_q_logic (
         .wb_valid                ( wb_latches.valid        ),
         .st_paddr_0              ( wb_latches.ST_PADDR_0   ),
@@ -192,45 +190,218 @@ module WB (
         .stq_info_3_data_data    ( stq_info_3_data_data    )
     );
 
-    // -------- Pack flat ST_Q_logic outputs into stq_info[i] structs --------
-    // The 128-bit data bus is unpacked back into a byte array so legacy ST_Q
-    // (which takes st_q_inputs_t) is unchanged.
+
+    // ===================================================================
+    // STRUCTURAL ST_Q x4
+    //   - Inputs come direct from ST_Q_logic flat outputs (above)
+    //   - Outputs are per-bank flat wires; packed into stq_outputs[i]
+    //     struct (below) so stq_heads / dc_dep / stall logic stay unchanged
+    // ===================================================================
+
+    // Per-bank ST_Q[i] flat output wires
+    wire         stq_out_0_full, stq_out_0_empty, stq_out_0_push_fail;
+    wire         stq_out_0_valid_0, stq_out_0_valid_1, stq_out_0_valid_2, stq_out_0_valid_3;
+    wire [14:0]  stq_out_0_address_0, stq_out_0_address_1, stq_out_0_address_2, stq_out_0_address_3;
+    wire [14:0]  stq_out_0_head_address;
+    wire [15:0]  stq_out_0_bit_vec;
+    wire [127:0] stq_out_0_data;
+
+    wire         stq_out_1_full, stq_out_1_empty, stq_out_1_push_fail;
+    wire         stq_out_1_valid_0, stq_out_1_valid_1, stq_out_1_valid_2, stq_out_1_valid_3;
+    wire [14:0]  stq_out_1_address_0, stq_out_1_address_1, stq_out_1_address_2, stq_out_1_address_3;
+    wire [14:0]  stq_out_1_head_address;
+    wire [15:0]  stq_out_1_bit_vec;
+    wire [127:0] stq_out_1_data;
+
+    wire         stq_out_2_full, stq_out_2_empty, stq_out_2_push_fail;
+    wire         stq_out_2_valid_0, stq_out_2_valid_1, stq_out_2_valid_2, stq_out_2_valid_3;
+    wire [14:0]  stq_out_2_address_0, stq_out_2_address_1, stq_out_2_address_2, stq_out_2_address_3;
+    wire [14:0]  stq_out_2_head_address;
+    wire [15:0]  stq_out_2_bit_vec;
+    wire [127:0] stq_out_2_data;
+
+    wire         stq_out_3_full, stq_out_3_empty, stq_out_3_push_fail;
+    wire         stq_out_3_valid_0, stq_out_3_valid_1, stq_out_3_valid_2, stq_out_3_valid_3;
+    wire [14:0]  stq_out_3_address_0, stq_out_3_address_1, stq_out_3_address_2, stq_out_3_address_3;
+    wire [14:0]  stq_out_3_head_address;
+    wire [15:0]  stq_out_3_bit_vec;
+    wire [127:0] stq_out_3_data;
+
+    // -------- Bank 0 --------
+    ST_Q stq_inst_0 (
+        .clk                  ( clk                     ),
+        .rst                  ( rst                     ),
+        .wb_in_data_valid     ( stq_info_0_data_valid   ),
+        .wb_in_data_address   ( stq_info_0_data_address ),
+        .wb_in_data_bit_vec   ( stq_info_0_data_bit_vec ),
+        .wb_in_data_data      ( stq_info_0_data_data    ),
+        .wb_in_push           ( stq_info_0_push         ),
+        .wb_in_pop            ( stq_info_0_pop          ),
+        .outputs_full         ( stq_out_0_full          ),
+        .outputs_empty        ( stq_out_0_empty         ),
+        .outputs_valid_0      ( stq_out_0_valid_0       ),
+        .outputs_valid_1      ( stq_out_0_valid_1       ),
+        .outputs_valid_2      ( stq_out_0_valid_2       ),
+        .outputs_valid_3      ( stq_out_0_valid_3       ),
+        .outputs_address_0    ( stq_out_0_address_0     ),
+        .outputs_address_1    ( stq_out_0_address_1     ),
+        .outputs_address_2    ( stq_out_0_address_2     ),
+        .outputs_address_3    ( stq_out_0_address_3     ),
+        .outputs_head_address ( stq_out_0_head_address  ),
+        .outputs_bit_vec      ( stq_out_0_bit_vec       ),
+        .outputs_data         ( stq_out_0_data          ),
+        .outputs_push_fail    ( stq_out_0_push_fail     )
+    );
+
+    // -------- Bank 1 --------
+    ST_Q stq_inst_1 (
+        .clk                  ( clk                     ),
+        .rst                  ( rst                     ),
+        .wb_in_data_valid     ( stq_info_1_data_valid   ),
+        .wb_in_data_address   ( stq_info_1_data_address ),
+        .wb_in_data_bit_vec   ( stq_info_1_data_bit_vec ),
+        .wb_in_data_data      ( stq_info_1_data_data    ),
+        .wb_in_push           ( stq_info_1_push         ),
+        .wb_in_pop            ( stq_info_1_pop          ),
+        .outputs_full         ( stq_out_1_full          ),
+        .outputs_empty        ( stq_out_1_empty         ),
+        .outputs_valid_0      ( stq_out_1_valid_0       ),
+        .outputs_valid_1      ( stq_out_1_valid_1       ),
+        .outputs_valid_2      ( stq_out_1_valid_2       ),
+        .outputs_valid_3      ( stq_out_1_valid_3       ),
+        .outputs_address_0    ( stq_out_1_address_0     ),
+        .outputs_address_1    ( stq_out_1_address_1     ),
+        .outputs_address_2    ( stq_out_1_address_2     ),
+        .outputs_address_3    ( stq_out_1_address_3     ),
+        .outputs_head_address ( stq_out_1_head_address  ),
+        .outputs_bit_vec      ( stq_out_1_bit_vec       ),
+        .outputs_data         ( stq_out_1_data          ),
+        .outputs_push_fail    ( stq_out_1_push_fail     )
+    );
+
+    // -------- Bank 2 --------
+    ST_Q stq_inst_2 (
+        .clk                  ( clk                     ),
+        .rst                  ( rst                     ),
+        .wb_in_data_valid     ( stq_info_2_data_valid   ),
+        .wb_in_data_address   ( stq_info_2_data_address ),
+        .wb_in_data_bit_vec   ( stq_info_2_data_bit_vec ),
+        .wb_in_data_data      ( stq_info_2_data_data    ),
+        .wb_in_push           ( stq_info_2_push         ),
+        .wb_in_pop            ( stq_info_2_pop          ),
+        .outputs_full         ( stq_out_2_full          ),
+        .outputs_empty        ( stq_out_2_empty         ),
+        .outputs_valid_0      ( stq_out_2_valid_0       ),
+        .outputs_valid_1      ( stq_out_2_valid_1       ),
+        .outputs_valid_2      ( stq_out_2_valid_2       ),
+        .outputs_valid_3      ( stq_out_2_valid_3       ),
+        .outputs_address_0    ( stq_out_2_address_0     ),
+        .outputs_address_1    ( stq_out_2_address_1     ),
+        .outputs_address_2    ( stq_out_2_address_2     ),
+        .outputs_address_3    ( stq_out_2_address_3     ),
+        .outputs_head_address ( stq_out_2_head_address  ),
+        .outputs_bit_vec      ( stq_out_2_bit_vec       ),
+        .outputs_data         ( stq_out_2_data          ),
+        .outputs_push_fail    ( stq_out_2_push_fail     )
+    );
+
+    // -------- Bank 3 --------
+    ST_Q stq_inst_3 (
+        .clk                  ( clk                     ),
+        .rst                  ( rst                     ),
+        .wb_in_data_valid     ( stq_info_3_data_valid   ),
+        .wb_in_data_address   ( stq_info_3_data_address ),
+        .wb_in_data_bit_vec   ( stq_info_3_data_bit_vec ),
+        .wb_in_data_data      ( stq_info_3_data_data    ),
+        .wb_in_push           ( stq_info_3_push         ),
+        .wb_in_pop            ( stq_info_3_pop          ),
+        .outputs_full         ( stq_out_3_full          ),
+        .outputs_empty        ( stq_out_3_empty         ),
+        .outputs_valid_0      ( stq_out_3_valid_0       ),
+        .outputs_valid_1      ( stq_out_3_valid_1       ),
+        .outputs_valid_2      ( stq_out_3_valid_2       ),
+        .outputs_valid_3      ( stq_out_3_valid_3       ),
+        .outputs_address_0    ( stq_out_3_address_0     ),
+        .outputs_address_1    ( stq_out_3_address_1     ),
+        .outputs_address_2    ( stq_out_3_address_2     ),
+        .outputs_address_3    ( stq_out_3_address_3     ),
+        .outputs_head_address ( stq_out_3_head_address  ),
+        .outputs_bit_vec      ( stq_out_3_bit_vec       ),
+        .outputs_data         ( stq_out_3_data          ),
+        .outputs_push_fail    ( stq_out_3_push_fail     )
+    );
+
+    // -------- Pack flat ST_Q outputs back into stq_outputs[i] structs --------
+    // Downstream always_combs (stq_heads, dc_dep, stall_flop_next) read these
+    // structs untouched.
     always_comb begin
         // ---- queue 0 ----
-        stq_info[0].push            = stq_info_0_push;
-        stq_info[0].pop             = stq_info_0_pop;
-        stq_info[0].data.valid      = stq_info_0_data_valid;
-        stq_info[0].data.address    = stq_info_0_data_address;
-        stq_info[0].data.bit_vec    = stq_info_0_data_bit_vec;
+        stq_outputs[0].full          = stq_out_0_full;
+        stq_outputs[0].empty         = stq_out_0_empty;
+        stq_outputs[0].head_address  = stq_out_0_head_address;
+        stq_outputs[0].bit_vec       = stq_out_0_bit_vec;
+        stq_outputs[0].push_fail     = stq_out_0_push_fail;
+        stq_outputs[0].valid[0]      = stq_out_0_valid_0;
+        stq_outputs[0].valid[1]      = stq_out_0_valid_1;
+        stq_outputs[0].valid[2]      = stq_out_0_valid_2;
+        stq_outputs[0].valid[3]      = stq_out_0_valid_3;
+        stq_outputs[0].address[0]    = stq_out_0_address_0;
+        stq_outputs[0].address[1]    = stq_out_0_address_1;
+        stq_outputs[0].address[2]    = stq_out_0_address_2;
+        stq_outputs[0].address[3]    = stq_out_0_address_3;
         for (int b = 0; b < CACHE_LINES_SIZE_B; b++) begin
-            stq_info[0].data.data[b] = stq_info_0_data_data[b*8 +: 8];
+            stq_outputs[0].data[b] = stq_out_0_data[b*8 +: 8];
         end
         // ---- queue 1 ----
-        stq_info[1].push            = stq_info_1_push;
-        stq_info[1].pop             = stq_info_1_pop;
-        stq_info[1].data.valid      = stq_info_1_data_valid;
-        stq_info[1].data.address    = stq_info_1_data_address;
-        stq_info[1].data.bit_vec    = stq_info_1_data_bit_vec;
+        stq_outputs[1].full          = stq_out_1_full;
+        stq_outputs[1].empty         = stq_out_1_empty;
+        stq_outputs[1].head_address  = stq_out_1_head_address;
+        stq_outputs[1].bit_vec       = stq_out_1_bit_vec;
+        stq_outputs[1].push_fail     = stq_out_1_push_fail;
+        stq_outputs[1].valid[0]      = stq_out_1_valid_0;
+        stq_outputs[1].valid[1]      = stq_out_1_valid_1;
+        stq_outputs[1].valid[2]      = stq_out_1_valid_2;
+        stq_outputs[1].valid[3]      = stq_out_1_valid_3;
+        stq_outputs[1].address[0]    = stq_out_1_address_0;
+        stq_outputs[1].address[1]    = stq_out_1_address_1;
+        stq_outputs[1].address[2]    = stq_out_1_address_2;
+        stq_outputs[1].address[3]    = stq_out_1_address_3;
         for (int b = 0; b < CACHE_LINES_SIZE_B; b++) begin
-            stq_info[1].data.data[b] = stq_info_1_data_data[b*8 +: 8];
+            stq_outputs[1].data[b] = stq_out_1_data[b*8 +: 8];
         end
         // ---- queue 2 ----
-        stq_info[2].push            = stq_info_2_push;
-        stq_info[2].pop             = stq_info_2_pop;
-        stq_info[2].data.valid      = stq_info_2_data_valid;
-        stq_info[2].data.address    = stq_info_2_data_address;
-        stq_info[2].data.bit_vec    = stq_info_2_data_bit_vec;
+        stq_outputs[2].full          = stq_out_2_full;
+        stq_outputs[2].empty         = stq_out_2_empty;
+        stq_outputs[2].head_address  = stq_out_2_head_address;
+        stq_outputs[2].bit_vec       = stq_out_2_bit_vec;
+        stq_outputs[2].push_fail     = stq_out_2_push_fail;
+        stq_outputs[2].valid[0]      = stq_out_2_valid_0;
+        stq_outputs[2].valid[1]      = stq_out_2_valid_1;
+        stq_outputs[2].valid[2]      = stq_out_2_valid_2;
+        stq_outputs[2].valid[3]      = stq_out_2_valid_3;
+        stq_outputs[2].address[0]    = stq_out_2_address_0;
+        stq_outputs[2].address[1]    = stq_out_2_address_1;
+        stq_outputs[2].address[2]    = stq_out_2_address_2;
+        stq_outputs[2].address[3]    = stq_out_2_address_3;
         for (int b = 0; b < CACHE_LINES_SIZE_B; b++) begin
-            stq_info[2].data.data[b] = stq_info_2_data_data[b*8 +: 8];
+            stq_outputs[2].data[b] = stq_out_2_data[b*8 +: 8];
         end
         // ---- queue 3 ----
-        stq_info[3].push            = stq_info_3_push;
-        stq_info[3].pop             = stq_info_3_pop;
-        stq_info[3].data.valid      = stq_info_3_data_valid;
-        stq_info[3].data.address    = stq_info_3_data_address;
-        stq_info[3].data.bit_vec    = stq_info_3_data_bit_vec;
+        stq_outputs[3].full          = stq_out_3_full;
+        stq_outputs[3].empty         = stq_out_3_empty;
+        stq_outputs[3].head_address  = stq_out_3_head_address;
+        stq_outputs[3].bit_vec       = stq_out_3_bit_vec;
+        stq_outputs[3].push_fail     = stq_out_3_push_fail;
+        stq_outputs[3].valid[0]      = stq_out_3_valid_0;
+        stq_outputs[3].valid[1]      = stq_out_3_valid_1;
+        stq_outputs[3].valid[2]      = stq_out_3_valid_2;
+        stq_outputs[3].valid[3]      = stq_out_3_valid_3;
+        stq_outputs[3].address[0]    = stq_out_3_address_0;
+        stq_outputs[3].address[1]    = stq_out_3_address_1;
+        stq_outputs[3].address[2]    = stq_out_3_address_2;
+        stq_outputs[3].address[3]    = stq_out_3_address_3;
         for (int b = 0; b < CACHE_LINES_SIZE_B; b++) begin
-            stq_info[3].data.data[b] = stq_info_3_data_data[b*8 +: 8];
+            stq_outputs[3].data[b] = stq_out_3_data[b*8 +: 8];
         end
     end
 
@@ -299,22 +470,6 @@ module WB (
         for (int b = 0; b < CACHE_LINES_SIZE_B; b++) begin
             mio_q_output.data[b] = mio_q_data_w[b*8 +: 8];
         end
-    end
-
-
-    // ===================================================================
-    // LEGACY (SV-struct) submodule instantiations -- 1 of 4
-    // ===================================================================
-
-    //Store queue gen
-    genvar i;
-    for(i = 0; i < NUM_WB_ST_QS; i++)begin : gen_st_q
-        ST_Q stq_inst (
-            .clk(clk),
-            .rst(rst),
-            .wb_in(stq_info[i]),
-            .outputs(stq_outputs[i])
-        );
     end
 
 
