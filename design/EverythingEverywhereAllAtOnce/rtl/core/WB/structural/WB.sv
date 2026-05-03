@@ -6,17 +6,20 @@ import interconnect_pkg::*;
 
 // WB.sv (structural-folder copy)
 //
-// Currently only ST_Q_logic is the structural port. ST_Q, ST_Q_MIO_logic,
-// and MIO_Q are the legacy SystemVerilog implementations.
+// Currently ST_Q_logic and ST_Q_MIO_logic are structural ports. ST_Q and
+// MIO_Q are the legacy SystemVerilog implementations.
 //
 // To enable the next structural port: uncomment that submodule's structural
 // block in its .sv file and switch its instantiation here back to flat ports.
 //
-// The only conversion overhead this file carries is around ST_Q_logic:
-//   1. Flatten wb_latches.res_buf (byte_t[32]) into a 256-bit wire bus.
-//   2. Per-bank flat output wires for stq_info_<i>_*.
-//   3. Pack those flat wires back into the stq_info[i] struct array so the
-//      legacy ST_Q instances (which take st_q_inputs_t) are unchanged.
+// Conversion overhead this file carries:
+//   1. Flatten wb_latches.res_buf (byte_t[32]) into a 256-bit wire bus,
+//      shared by ST_Q_logic and ST_Q_MIO_logic.
+//   2. Per-bank flat output wires for stq_info_<i>_* (ST_Q_logic) and a
+//      flat wire bundle for mio_q_input_o_* (ST_Q_MIO_logic).
+//   3. Pack those flat wires back into the stq_info[i] struct array and the
+//      mio_q_input struct so the legacy ST_Q / MIO_Q instances (which take
+//      st_q_inputs_t / mio_inputs_t) are unchanged.
 
 module WB (
     input wire clk,
@@ -231,20 +234,48 @@ module WB (
 
 
     // ===================================================================
-    // LEGACY (SV-struct) submodule instantiations -- 3 of 4
+    // STRUCTURAL ST_Q_MIO_logic
+    //   - Reuses res_buf_flat from above
+    //   - Pack flat outputs back into mio_q_input struct so legacy MIO_Q
+    //     (which takes mio_inputs_t) is unchanged
     // ===================================================================
 
-    //st_q_logic for mio
-    ST_Q_MIO_logic st_q_mio_logic(
-        .wb_valid(wb_latches.valid),
-        .st_paddr_0_mio(wb_latches.ST_PADDR_0),
-        .res_buf(wb_latches.res_buf),
-        .ST_OP(wb_latches.cs.ST_OP),
-        .MIO(wb_latches.MIO),
-        .write_success_mio(write_success_mio),
-        .mio_q_input_o(mio_q_input)
+    wire         mio_q_input_o_data_valid;
+    wire [14:0]  mio_q_input_o_data_address;
+    wire [127:0] mio_q_input_o_data_data;
+    wire         mio_q_input_o_push;
+    wire         mio_q_input_o_pop;
+
+    ST_Q_MIO_logic st_q_mio_logic (
+        .wb_valid                   ( wb_latches.valid           ),
+        .st_paddr_0_mio             ( wb_latches.ST_PADDR_0      ),
+        .res_buf                    ( res_buf_flat               ),
+        .ST_OP                      ( wb_latches.cs.ST_OP        ),
+        .MIO                        ( wb_latches.MIO             ),
+        .write_success_mio          ( write_success_mio          ),
+
+        .mio_q_input_o_data_valid   ( mio_q_input_o_data_valid   ),
+        .mio_q_input_o_data_address ( mio_q_input_o_data_address ),
+        .mio_q_input_o_data_data    ( mio_q_input_o_data_data    ),
+        .mio_q_input_o_push         ( mio_q_input_o_push         ),
+        .mio_q_input_o_pop          ( mio_q_input_o_pop          )
     );
 
+    // -------- Pack flat ST_Q_MIO_logic outputs into mio_q_input struct --------
+    always_comb begin
+        mio_q_input.push         = mio_q_input_o_push;
+        mio_q_input.pop          = mio_q_input_o_pop;
+        mio_q_input.data.valid   = mio_q_input_o_data_valid;
+        mio_q_input.data.address = mio_q_input_o_data_address;
+        for (int b = 0; b < CACHE_LINES_SIZE_B; b++) begin
+            mio_q_input.data.data[b] = mio_q_input_o_data_data[b*8 +: 8];
+        end
+    end
+
+
+    // ===================================================================
+    // LEGACY (SV-struct) submodule instantiations -- 2 of 4
+    // ===================================================================
 
     //Store queue gen
     genvar i;
