@@ -1,10 +1,9 @@
 # Fetch — Design Reference for Structural Port
 
 This document is the working reference for porting the Fetch stage from
-SystemVerilog to structural Verilog 2005. Written during the
-predictor/BTB port and extended for the EXP helpers; reuse it as a
-checklist when porting the rest of Fetch (`SPC_Sel_Logic`,
-`IDM_Ctrl_Logic`, `IDM_Invalidate_Logic`, `ICache_En_Logic`).
+SystemVerilog to structural Verilog 2005. All Fetch helper modules are
+now structural; the only SV left in `Fetch.sv` is the top-level wiring
+(struct declarations, JK flop blocks, mode-mux always_combs).
 
 ---
 
@@ -52,6 +51,8 @@ the fetch-side fault flag, and the mode JK values.
 
 Predictor stack: `BTB`, `Predictor`, `GShare`, `BTFN`, `two_bit_sat_count`.
 Exception helpers: `EXP_Set_logic`, `EXP_Ctrl_ROMS`.
+SPC / IDM helpers: `ICache_En_Logic`, `SPC_Sel_Logic`,
+`IDM_Invalidate_Logic`, `IDM_Ctrl_Logic`.
 
 ### `BTB`
 Direct-mapped, `BTB_ENTRIES` entries (default 64; configure via
@@ -115,6 +116,93 @@ comparator macro is needed.
 
 Currently dead code (Predictor wires GShare). Kept structural for
 parity.
+
+### `ICache_En_Logic`
+Pure combinational. `out = ~exp_mode & ~cs_sb & ~int_mode & ~f_exp & ~DMA_int & rst`
+where `rst` is active low (forces `out = 0` during reset). 5× `INV_N` +
+1× `AND_6`.
+
+### `SPC_Sel_Logic`
+Picks the SPC update source for next cycle and tracks XCL_stall,
+flush_reg, and a registered branch target. Output `sel` is encoded as
+the same 2-bit values as `Fetch_pkg::spc_sel_logic_output_options_e`
+(SPC=00, SPC_P16=01, BR_RESTORE=10, BTB_TARGET=11). Fetch.sv casts the
+2-bit wire back to the enum field via
+`spc_sel_logic_output_options_e'(spc_sel_w)`.
+
+Sel chain (chained `MUX_2` width-2 mirroring the SV if/else priorities):
+```
+inner  = cond_btb     ? BTB_TARGET : SPC_P16
+middle = flush_reg    ? SPC_P16    : inner
+outer1 = push_success ? middle     : SPC
+sel    = flush        ? BR_RESTORE : outer1
+cond_btb = ((br_taken & ~btb_xcl) | XCL_stall) & ~target_same_line
+```
+
+Three registers, all `REG_RST_WE` with active-low rst:
+- `XCL_stall` (1 bit): WE = (case1 | case2 | case3), D = case2 & ~case1
+  where case1=`flush|flush_reg`, case2=`~XCL_stall & br_taken & btb_xcl & push_success`,
+  case3=`XCL_stall & push_success`.
+- `BR_target_reg` (32 bits): WE = `~XCL_stall | push_success`
+  (consensus simplification of the SV `(!XCL_stall) || (XCL_stall && push_success)`),
+  D = `btb_br_target`.
+- `flush_reg` (1 bit): WE = `flush | (flush_reg & push_success)`,
+  D = `flush` (set-dominant, both code paths drive D=flush).
+
+`target_same_line` uses `CMP_N` width=32 over `{btb_target[31:4], 4'b0}`
+vs `spc`. `br_target` output is `MUX_2` width=32 picking
+`BR_target_reg` when `XCL_stall=1`, else `btb_br_target`.
+
+Convention change vs. SV: rst is now active-low (Fetch.sv passes top-level
+`rst` directly instead of `!rst`).
+
+### `IDM_Invalidate_Logic`
+Decides which IDM slots to invalidate this cycle. Three sources of
+invalidates that are OR'd together:
+1. **Global flush** (`flush | exp_pipeclear | int_pipe_clear | ~rst`) —
+   forces all four invalidates plus `no_writes` high.
+2. **slot_in_use_changed** (`eip_slot_num != prev_eip_slot_num`) —
+   invalidates the *previous* eip slot via `prev_eip_slot_oh[i]`.
+3. **will_leave_for_br** — the EIP slot has a valid branch whose `br_eip`
+   matches `eip` and whose `br_btb_target` line differs from `eip`'s line,
+   gated by `decode_forward`. Invalidate eip_slot (and next_slot too if
+   the branch is XCL and next_slot is valid).
+
+Per-slot one-hot decoding via `DECODER_N` (`eip_slot_oh`,
+`prev_eip_slot_oh`); next_slot one-hot is just `eip_slot_oh` rotated by
+1 (no gates). Per-eip-slot field reads (br_valid, br_eip, br_btb_target,
+br_xcl) use `MUX_4` (sel = `eip_slot_num`, 2 bits). `next_slot_valid` is
+4-input AND-OR over the rotated one-hot and the per-slot valid bits.
+`will_leave_for_br` itself is `AND_4(eip_br_valid, br_eip_match,
+br_target_line_diff, decode_forward)` with `br_target_line_match` done
+as `CMP_N` width=28 over the top 28 bits.
+
+`prev_eip` is a 32-bit `REG_RST_WE` (always-WE; resets to 0 — the SV
+reset-to-eip is approximated here, see header comment in the file).
+`prev_eip_next` muxes between `eip` and `eip_slot_br_btb_target` based
+on `(will_leave_for_br & ~case_b)`.
+
+Convention change vs. SV: rst is now active-low. Same Fetch.sv
+adjustment as `SPC_Sel_Logic`.
+
+### `IDM_Ctrl_Logic`
+Pure combinational. Builds per-slot IDM write requests. Per-slot
+control signals:
+```
+wc[i]         = invalidate[i] | ~idm_slot_valid[i]
+sel[i]        = slot_oh[i] & (icache_hit | exp_mode | int_mode) & ~no_writes
+wc_and_sel[i] = wc[i] & sel[i]
+br_active[i]  = wc_and_sel[i] & btb_hit & pred_taken & ~spc_sel_flush_reg
+```
+
+slot_oh from `DECODER_N(2, spc[5:4], slot_oh)`. Per-slot scalar outputs
+fall directly out of the above; per-slot 32-bit outputs use `MUX_2`
+width-32 (zero when not gated). Per-slot 16-byte data output packs
+`data_in` into a 128-bit bus, runs through one `MUX_2` width-128
+per slot, then unpacks back into the unpacked output array.
+
+`push_success = OR_4(wc_and_sel[0..3])`. Slots are mutually exclusive on
+`slot_oh`, so at most one term is hot.
 
 ### `EXP_Set_logic`
 Pure combinational. Three pipe-clear / set outputs, all gated on the rest

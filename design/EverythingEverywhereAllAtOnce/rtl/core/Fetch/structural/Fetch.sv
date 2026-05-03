@@ -69,6 +69,67 @@ module Fetch (
     tlb_outputs_t tlb_outs;
     exp_set_logic_output_t exp_set_logic_outs;
 
+    // ----------------------------------------------------------------
+    // Adapter wires bridging the SV structs in this file to the flat
+    // ports of the structural Verilog 2005 sub-modules.
+    // ----------------------------------------------------------------
+
+    // Per-IDM-slot fields of idm_info_i.idm_slots[*] (consumed by the
+    // structural IDM_Ctrl_Logic and IDM_Invalidate_Logic).
+    wire        idm_slot_valid_w          [0:NUM_IDM_SLOTS-1];
+    wire        idm_slot_br_valid_w       [0:NUM_IDM_SLOTS-1];
+    wire [31:0] idm_slot_br_eip_w         [0:NUM_IDM_SLOTS-1];
+    wire [31:0] idm_slot_br_btb_target_w  [0:NUM_IDM_SLOTS-1];
+    wire        idm_slot_br_xcl_w         [0:NUM_IDM_SLOTS-1];
+
+    // Flat outputs of IDM_Ctrl_Logic, repacked into idm_ctrl_logic_outs.
+    wire        idmc_ld_meta_data_w [0:NUM_IDM_SLOTS-1];
+    wire        idmc_ld_data_w      [0:NUM_IDM_SLOTS-1];
+    wire        idmc_valid_w        [0:NUM_IDM_SLOTS-1];
+    wire        idmc_br_valid_w     [0:NUM_IDM_SLOTS-1];
+    wire [31:0] idmc_br_eip_w       [0:NUM_IDM_SLOTS-1];
+    wire [31:0] idmc_br_target_w    [0:NUM_IDM_SLOTS-1];
+    wire        idmc_br_xcl_w       [0:NUM_IDM_SLOTS-1];
+    wire [7:0]  idmc_data_w         [0:NUM_IDM_SLOTS-1] [0:CACHE_LINES_SIZE_B-1];
+    wire        idmc_push_success_w;
+
+    // SPC sel output as a plain 2-bit wire (cast back to the enum field).
+    wire [1:0]  spc_sel_w;
+
+    // Unpack the IDM slot meta into the flat helper arrays
+    genvar gs;
+    generate
+        for (gs = 0; gs < NUM_IDM_SLOTS; gs = gs + 1) begin : g_idm_slot_unpack
+            assign idm_slot_valid_w[gs]         = idm_info_i.idm_slots[gs].valid;
+            assign idm_slot_br_valid_w[gs]      = idm_info_i.idm_slots[gs].br_valid;
+            assign idm_slot_br_eip_w[gs]        = idm_info_i.idm_slots[gs].br_eip;
+            assign idm_slot_br_btb_target_w[gs] = idm_info_i.idm_slots[gs].br_btb_target;
+            assign idm_slot_br_xcl_w[gs]        = idm_info_i.idm_slots[gs].br_xcl;
+        end
+    endgenerate
+
+    // Repack IDM_Ctrl_Logic flat outputs back into the SV struct fields
+    genvar gs2, gk;
+    generate
+        for (gs2 = 0; gs2 < NUM_IDM_SLOTS; gs2 = gs2 + 1) begin : g_idmc_repack
+            assign idm_ctrl_logic_outs.idm_input.req[gs2].ld_meta_data = idmc_ld_meta_data_w[gs2];
+            assign idm_ctrl_logic_outs.idm_input.req[gs2].ld_data      = idmc_ld_data_w[gs2];
+            assign idm_ctrl_logic_outs.idm_input.req[gs2].valid        = idmc_valid_w[gs2];
+            assign idm_ctrl_logic_outs.idm_input.req[gs2].br_valid     = idmc_br_valid_w[gs2];
+            assign idm_ctrl_logic_outs.idm_input.req[gs2].br_eip       = idmc_br_eip_w[gs2];
+            assign idm_ctrl_logic_outs.idm_input.req[gs2].br_target    = idmc_br_target_w[gs2];
+            assign idm_ctrl_logic_outs.idm_input.req[gs2].br_xcl       = idmc_br_xcl_w[gs2];
+
+            for (gk = 0; gk < CACHE_LINES_SIZE_B; gk = gk + 1) begin : g_idmc_data_repack
+                assign idm_ctrl_logic_outs.idm_input.req[gs2].data[gk] = idmc_data_w[gs2][gk];
+            end
+        end
+    endgenerate
+    assign idm_ctrl_logic_outs.push_success = idmc_push_success_w;
+
+    // Cast the 2-bit SPC sel output into the enum field
+    assign spc_sel_logic_outs.sel = spc_sel_logic_output_options_e'(spc_sel_w);
+
     //gate logic
 
     always_comb begin
@@ -228,49 +289,97 @@ module Fetch (
     );
 
     SPC_Sel_Logic spc_sel_logic(
-        .clk(clk),
-        .rst(!rst),
-        .spc(SPC),
-        .flush(exe_outs_i.br_res_out.flush),
+        .clk          (clk),
+        .rst          (rst),                                  // active-low directly (was !rst)
+        .spc          (SPC),
+        .flush        (exe_outs_i.br_res_out.flush),
+        .decode_stall (decode_outs_i.stall),                  // unused on the structural side, kept for parity
 
-        //probably not needed
-        .decode_stall(decode_outs_i.stall),
+        // btb_output_t fields
+        .btb_hit       (btb_outs.hit),
+        .btb_br_target (btb_outs.br_target),
+        .btb_br_eip    (btb_outs.br_eip),
+        .btb_XCL       (btb_outs.XCL),
+        .btb_br_ucond  (btb_outs.br_ucond),
 
-        .btb_outputs(btb_outs), //btb outs struct
-        .pred_out(predictor_outs), //predictor_outputs_t
-        .idm_ctrl_logic_out(idm_ctrl_logic_outs), //for push success
+        // predictor_output_t
+        .pred_taken            (predictor_outs.taken),
 
-        .outputs(spc_sel_logic_outs)
+        // push_success from IDM_Ctrl_Logic (only field consumed)
+        .idm_ctrl_push_success (idm_ctrl_logic_outs.push_success),
+
+        // spc_sel_logic_output_t fields driven individually
+        .sel           (spc_sel_w),                           // cast to enum above
+        .br_target_sel (spc_sel_logic_outs.br_target_sel),
+        .br_target     (spc_sel_logic_outs.br_target),
+        .flush_reg     (spc_sel_logic_outs.flush_reg)
     );
 
 
     IDM_Ctrl_Logic idm_ctrl_logic (
-        .exp_mode(exp_mode_jk[0]),
-        .int_mode(int_mode_jk),
-        .spc(spc_2_IDM_CTRL),
-        .idm_i(idm_info_i),
-        .invalidate_logic_outs_i(idm_invalidate_logic_outs),
-        .btb_out_i(btb_outs),
-        .pred_out_i(predictor_outs),
-        .icache_out_i(icache_info_i),
-        .spc_sel_logic_out_i(spc_sel_logic_outs),
-        .data_in(idm_ctrl_data_in),
-        .out(idm_ctrl_logic_outs)
+        .exp_mode (exp_mode_jk[0]),
+        .int_mode (int_mode_jk),
+        .spc      (spc_2_IDM_CTRL),
+
+        // idm_outputs_t — only per-slot valid bits used
+        .idm_slot_valid (idm_slot_valid_w),
+
+        // idm_invalidate_logic_output_t fields
+        .invalidate (idm_invalidate_logic_outs.invalidate),
+        .no_writes  (idm_invalidate_logic_outs.no_writes),
+
+        // btb_output_t (br_ucond unused)
+        .btb_hit       (btb_outs.hit),
+        .btb_br_target (btb_outs.br_target),
+        .btb_br_eip    (btb_outs.br_eip),
+        .btb_XCL       (btb_outs.XCL),
+
+        // predictor_output_t
+        .pred_taken    (predictor_outs.taken),
+
+        // icache_2_core_t — only hit consumed
+        .icache_hit    (icache_info_i.hit),
+
+        // spc_sel_logic_output_t — only flush_reg consumed
+        .spc_sel_flush_reg (spc_sel_logic_outs.flush_reg),
+
+        // Cacheline data into IDM (selected outside between rom/icache by idm_ctrl_data_in)
+        .data_in (idm_ctrl_data_in),
+
+        // idm_ctrl_logic_output_t — flat per-slot outputs (repacked into the struct above)
+        .idm_req_ld_meta_data (idmc_ld_meta_data_w),
+        .idm_req_ld_data      (idmc_ld_data_w),
+        .idm_req_valid        (idmc_valid_w),
+        .idm_req_br_valid     (idmc_br_valid_w),
+        .idm_req_br_eip       (idmc_br_eip_w),
+        .idm_req_br_target    (idmc_br_target_w),
+        .idm_req_br_xcl       (idmc_br_xcl_w),
+        .idm_req_data         (idmc_data_w),
+        .push_success         (idmc_push_success_w)
     );
 
 
     IDM_Invalidate_Logic idm_invalidate_logic(
-        .clk(clk),
-        .rst(!rst),
-        .eip(decode_outs_i.eip),
-        .flush(exe_outs_i.br_res_out.flush),
-        .exp_pipeclear(exp_set_logic_outs.exp_pipe_clear),
-        .int_pipe_clear(exp_set_logic_outs.int_pipe_clear),
-        .decode_stall(decode_outs_i.stall),
-        .idm_meta(idm_info_i),
-        .decode_forward(decode_outs_i.decode_forward),
+        .clk            (clk),
+        .rst            (rst),                                // active-low directly (was !rst)
+        .eip            (decode_outs_i.eip),
+        .flush          (exe_outs_i.br_res_out.flush),
+        .exp_pipeclear  (exp_set_logic_outs.exp_pipe_clear),
+        .int_pipe_clear (exp_set_logic_outs.int_pipe_clear),
+        .decode_stall   (decode_outs_i.stall),                // unused on the structural side, kept for parity
 
-        .out_invalidates(idm_invalidate_logic_outs)
+        // idm_outputs_t — only per-slot fields consumed (cacheline data NOT used here)
+        .idm_slot_valid          (idm_slot_valid_w),
+        .idm_slot_br_valid       (idm_slot_br_valid_w),
+        .idm_slot_br_eip         (idm_slot_br_eip_w),
+        .idm_slot_br_btb_target  (idm_slot_br_btb_target_w),
+        .idm_slot_br_xcl         (idm_slot_br_xcl_w),
+
+        .decode_forward (decode_outs_i.decode_forward),
+
+        // idm_invalidate_logic_output_t fields driven individually
+        .invalidate     (idm_invalidate_logic_outs.invalidate),
+        .no_writes      (idm_invalidate_logic_outs.no_writes)
     );
 
 
