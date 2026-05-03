@@ -286,19 +286,24 @@ module Fetch (
         .int_set(DMA_int_jk),
         .exp_mode_jk(exp_mode_jk[0]),
         .int_mode_jk(int_mode_jk),
-        .outputs(exp_set_logic_outs)
+
+        // exp_set_logic_output_t fields driven individually (structural V2005 module)
+        .exp_pipe_clear(exp_set_logic_outs.exp_pipe_clear),
+        .dc_exp_set    (exp_set_logic_outs.dc_exp_set),
+        .int_pipe_clear(exp_set_logic_outs.int_pipe_clear)
     );
 
     EXP_Ctrl_ROMS exp_ctrl_roms(
-        .clk(clk),
+        .clk           (clk),
+        .rst           (rst),                                     // newly added on the structural port
         .exp_pipe_clear(exp_set_logic_outs.exp_pipe_clear),
         .int_pipe_clear(exp_set_logic_outs.int_pipe_clear),
-        .DC_pf(dc_outs_i.exp_pf),
-        .DC_exp(dc_outs_i.exp_present),
-        .Fetch_pf(tlb_outs.pageFault),
-        .DMA_int(DMA_int_jk),
-        .exp_mode(exp_mode_jk[0]),
-        .rom_data_out(rom_data_out)
+        .DC_pf         (dc_outs_i.exp_pf),
+        .DC_exp        (dc_outs_i.exp_present),
+        .Fetch_pf      (tlb_outs.pageFault),
+        .DMA_int       (DMA_int_jk),
+        .exp_mode      (exp_mode_jk[0]),
+        .rom_data_out  (rom_data_out)
     );
 
 

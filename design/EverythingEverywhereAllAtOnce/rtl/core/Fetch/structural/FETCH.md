@@ -2,9 +2,9 @@
 
 This document is the working reference for porting the Fetch stage from
 SystemVerilog to structural Verilog 2005. Written during the
-predictor/BTB port; reuse it as a checklist when porting the rest of
-Fetch (`SPC_Sel_Logic`, `IDM_Ctrl_Logic`, `IDM_Invalidate_Logic`,
-`ICache_En_Logic`, `EXP_Set_logic`, `EXP_Ctrl_ROMS`).
+predictor/BTB port and extended for the EXP helpers; reuse it as a
+checklist when porting the rest of Fetch (`SPC_Sel_Logic`,
+`IDM_Ctrl_Logic`, `IDM_Invalidate_Logic`, `ICache_En_Logic`).
 
 ---
 
@@ -48,7 +48,10 @@ the fetch-side fault flag, and the mode JK values.
 
 ---
 
-## Modules already ported (predictor + BTB)
+## Modules already ported
+
+Predictor stack: `BTB`, `Predictor`, `GShare`, `BTFN`, `two_bit_sat_count`.
+Exception helpers: `EXP_Set_logic`, `EXP_Ctrl_ROMS`.
 
 ### `BTB`
 Direct-mapped, `BTB_ENTRIES` entries (default 64; configure via
@@ -112,6 +115,58 @@ comparator macro is needed.
 
 Currently dead code (Predictor wires GShare). Kept structural for
 parity.
+
+### `EXP_Set_logic`
+Pure combinational. Three pipe-clear / set outputs, all gated on the rest
+of the pipeline being drained:
+
+```
+not_*           = ~rr_valid, ~dc_valid, ~mem_valid, ~exe_valid, ~wb_valid
+f_pipe_clear    = invalid_instruction & not_rr_valid & not_dc_valid &
+                  not_mem_valid & not_exe_valid & not_wb_valid &
+                  f_exp & ~exp_mode_jk
+dc_pipe_clear   = not_mem_valid & not_exe_valid & not_wb_valid &
+                  dc_exp & ~exp_mode_jk
+exp_pipe_clear  = dc_exp ? dc_pipe_clear : f_pipe_clear
+int_pipe_clear  = (same 6-input AND as f_pipe_clear, but with int_set & ~int_mode_jk
+                   replacing f_exp & ~exp_mode_jk)
+dc_exp_set      = dc_pipe_clear
+```
+
+Implemented as 7× `INV_N`, 2× `AND_8`, 1× `AND_5`, 1× `MUX_2`, plus a wire
+`assign` for `dc_exp_set`.
+
+### `EXP_Ctrl_ROMS`
+Picks the IDT entry index for the firing exception/interrupt, latches it on
+the pipe-clear cycle, and emits a 16-byte microcode-style cache line with
+the IDT entry address embedded in bytes 2..5.
+
+Index muxes (all `MUX_2` width=5):
+```
+fetch_exp_out = Fetch_pf ? PF_IDT(14) : GP_IDT(13)
+DC_exp_out    = DC_pf    ? PF_IDT     : GP_IDT
+exp_idx       = DC_exp   ? DC_exp_out : fetch_exp_out
+int_idx       = DMA_int  ? DMA_IDT(7) : DDR_IDT(4)
+rom_idx       = exp_pipe_clear ? exp_idx : int_idx
+```
+
+Storage: a single 5-bit `REG_RST_WE` (`rom_sel`) with WE
+`= exp_pipe_clear | int_pipe_clear` and D `= rom_idx`. Adds an active-low
+`rst` port that the SV reference didn't have — the SV `always_ff` had no
+reset, so `rom_sel` was X at startup. Fetch.sv passes its top-level `rst`.
+
+Address compute: `idtEntryAddy = IDTR + (rom_sel << 3)` via `ADD_N` (32 bits,
+`cin = 0`). The shift is a wire concat — `{24'h0, rom_sel, 3'b0}`.
+**`IDTR` is tied to `32'h0` inside the module** because the SV reference
+declared it but never assigned it (no LIDT mechanism in the design yet).
+If a future LIDT lands, replace the `assign idtr = 32'h0;` with an input
+port.
+
+Output cache line is 16 plain `assign`s — bytes 0/1/6 are constants
+(`8'h31, 8'h32, 8'h30`), bytes 2..5 carry `idtEntryAddy` little-endian,
+bytes 7..15 are `8'h00`. The port stays as the V2005 unpacked-array
+`output wire [7:0] rom_data_out [0:15]` so Fetch.sv's existing
+`byte_t rom_data_out[CACHE_LINES_SIZE_B]` connection works unchanged.
 
 ### `two_bit_sat_count`
 2-bit saturating counter. Reset value `2'b10` (weakly taken). Because

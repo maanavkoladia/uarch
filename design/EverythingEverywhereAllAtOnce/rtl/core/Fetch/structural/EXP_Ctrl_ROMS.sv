@@ -1,97 +1,120 @@
-//this file needs to ouput the isntruncitons needed for
-//taken an isntrunciton
-
-import common_pkg::*;
+// Structural Verilog 2005 port of EXP_Ctrl_ROMS.
+// Reference SV: rtl/core/Fetch/structural/EXP_Ctrl_ROMS.sv (original).
+//
+// Picks the IDT entry index for the firing exception/interrupt, latches it on
+// the pipe-clear cycle, and emits a 16-byte microcode "call handler" cache
+// line whose byte 2..5 carries the IDT entry address.
+//
+// IDT indices (from the SV reference):
+//   GP_IDT  = 5'd13   (general protection fault)
+//   PF_IDT  = 5'd14   (page fault)
+//   DMA_IDT = 5'd7    (DMA interrupt)
+//   DDR_IDT = 5'd4    (DDR placeholder)
+//
+// Pipeline:
+//   fetch_exp_out = Fetch_pf ? PF_IDT : GP_IDT
+//   DC_exp_out    = DC_pf    ? PF_IDT : GP_IDT
+//   exp_idx       = DC_exp   ? DC_exp_out : fetch_exp_out
+//   int_idx       = DMA_int  ? DMA_IDT    : DDR_IDT
+//   rom_idx       = exp_pipe_clear ? exp_idx : int_idx
+//   rom_addr      = rom_idx                       // see comment below
+//   rom_sel       <- rom_addr  when (exp_pipe_clear | int_pipe_clear)
+//   idtEntryAddy  = IDTR + (rom_sel << 3)         // IDTR is tied to 0
+//
+// Output cache line (LSB-first byte index):
+//   byte  0       = 8'h31
+//   byte  1       = 8'h32
+//   byte  2..5    = idtEntryAddy[7:0], [15:8], [23:16], [31:24]
+//   byte  6       = 8'h30
+//   byte  7..15   = 8'h00
+//
+// Notes vs. the SV reference:
+//   * IDTR was declared but never assigned in the SV. Tied to 32'h0 here
+//     (per design decision — no LIDT-style write port yet).
+//   * The SV always_ff had no reset; this port adds an active-low rst for
+//     REG_RST_WE. Fetch.sv passes its top-level rst.
 
 module EXP_Ctrl_ROMS (
-    //fully comb no clk
+    input  wire        clk,
+    input  wire        rst,             // active low
 
-    //exp mux sels
-    input clk,
-    input bool exp_pipe_clear,
-    input bool int_pipe_clear,
-    input logic DC_pf,
-    input logic DC_exp,
-    input logic Fetch_pf,
+    input  wire        exp_pipe_clear,
+    input  wire        int_pipe_clear,
+    input  wire        DC_pf,
+    input  wire        DC_exp,
+    input  wire        Fetch_pf,
+    input  wire        DMA_int,
 
-    //probably from the dma jk 
-    input logic DMA_int,
+    input  wire        exp_mode,        // present in SV port; unused (kept for parity)
 
-    //from the expmode bit in fetch
-    input logic exp_mode,
-
-    output byte_t rom_data_out[CACHE_LINES_SIZE_B]
+    output wire [7:0]  rom_data_out [0:15]
 );
 
-    logic [4:0] rom_sel;
-    uint32_t IDTR;
+    // ----------------------------------------------------------------
+    // IDT-index muxes (all 5 bits wide)
+    // ----------------------------------------------------------------
+    wire [4:0] fetch_exp_out;
+    wire [4:0] DC_exp_out;
+    wire [4:0] exp_idx;
+    wire [4:0] int_idx;
+    wire [4:0] rom_idx;
 
-    // IDT (Interrupt Descriptor Table) entry indices
-    localparam logic [4:0] GP_IDT = 5'd13;  // General Protection Fault
-    localparam logic [4:0] PF_IDT = 5'd14;  // Page Fault
-    localparam logic [4:0] DMA_IDT = 5'd7;  // DMA Interrupt
-    localparam logic [4:0] DDR_IDT = 5'b100;  // DDR (placeholder)
+    `MUX_2(u_fexp,   5, fetch_exp_out, 5'd13, 5'd14, Fetch_pf)   // GP / PF
+    `MUX_2(u_dcexp,  5, DC_exp_out,    5'd13, 5'd14, DC_pf)
+    `MUX_2(u_eidx,   5, exp_idx,       fetch_exp_out, DC_exp_out, DC_exp)
+    `MUX_2(u_iidx,   5, int_idx,       5'd4,  5'd7,  DMA_int)    // DDR / DMA
+    `MUX_2(u_ridx,   5, rom_idx,       int_idx, exp_idx, exp_pipe_clear)
 
-    // Exception/interrupt selection logic
-    // =====================
-    // Fetch exception mux
-    // =====================
-    logic [4:0] fetch_exp_out;
-    assign fetch_exp_out = Fetch_pf ? PF_IDT : GP_IDT;
+    // ----------------------------------------------------------------
+    // rom_addr
+    // SV does {2'b00, rom_idx} into a 5-bit lvalue, which truncates the
+    // top two zeros — the net is just rom_idx. Mirroring that here.
+    // ----------------------------------------------------------------
+    wire [4:0] rom_addr;
+    assign rom_addr = rom_idx;
 
-    // =====================
-    // DC exception mux
-    // =====================
-    logic [4:0] DC_exp_out;
-    assign DC_exp_out = DC_pf ? PF_IDT : GP_IDT;
+    // ----------------------------------------------------------------
+    // rom_sel register (5-bit). WE = exp_pipe_clear | int_pipe_clear.
+    // ----------------------------------------------------------------
+    wire        rom_sel_we;
+    wire [4:0]  rom_sel;
 
-    // =====================
-    // Exception select mux (DC priority)
-    // =====================
-    logic [4:0] exp_idx;
-    assign exp_idx = DC_exp ? DC_exp_out : fetch_exp_out;
+    `OR_2      (u_sel_we,  1, rom_sel_we, exp_pipe_clear, int_pipe_clear)
+    `REG_RST_WE(u_rom_sel, 5, clk, rst, rom_sel_we, rom_addr, rom_sel)
 
-    // =====================
-    // Interrupt mux
-    // =====================
-    logic [4:0] int_idx;
-    assign int_idx = DMA_int ? DMA_IDT : DDR_IDT;
+    // ----------------------------------------------------------------
+    // idtEntryAddy = IDTR + (rom_sel << 3)
+    //   IDTR tied to 0 (settled design decision).
+    //   rom_sel << 3 done as a constant-shift wire concat (no gates).
+    // ----------------------------------------------------------------
+    wire [31:0] idtr;
+    wire [31:0] shifted_rom_sel;
+    wire [31:0] idtEntryAddy;
+    wire        idt_cout_unused;
 
-    // =====================
-    // Final ROM index mux
-    // =====================
-    logic [4:0] rom_idx;
-    assign rom_idx = exp_pipe_clear ? exp_idx : int_idx;
+    assign idtr            = 32'h0;
+    assign shifted_rom_sel = {24'h0, rom_sel, 3'b0};
 
-    // Simple ROM: 32 entries, each 16 bytes
-    //logic [7:0] rom_mem  [0:31][0:15];
+    `ADD_N(u_idt_add, 32, idtEntryAddy, idt_cout_unused, idtr, shifted_rom_sel, 1'b0)
 
-    logic [4:0] rom_addr;
-
-    // Extend 3-bit index to 5-bit ROM address (only use first 8 entries of 32-entry ROM)
-    assign rom_addr = {2'b00, rom_idx};
-
-    //this is by me. On pipeclear we need to clear all the stages. RR exceptions would disapear so we need some way to latch the ROM address we want to use
-    always_ff @(posedge clk) begin
-        if (exp_pipe_clear | int_pipe_clear) begin
-            rom_sel <= rom_addr;
-        end
-    end
-
-    // Initialize ROM from genned ROM
-    uint32_t idtEntryAddy;
-    assign idtEntryAddy = IDTR + (rom_sel<<3);//now this needs to go into bytes 5,4,3,2 of rom_data_out, eveything else should be 
-
-    always_comb begin
-        rom_data_out = '{default: '0};
-        rom_data_out[0] = 8'h31;
-        rom_data_out[1] = 8'h32;
-        rom_data_out[2] = idtEntryAddy[7:0];
-        rom_data_out[3] = idtEntryAddy[15:8];
-        rom_data_out[4] = idtEntryAddy[23:16];
-        rom_data_out[5] = idtEntryAddy[31:24];
-        rom_data_out[6] = 8'h30;
-        for(int i = 7; i < 16; i++) rom_data_out[i] = 0;
-    end
+    // ----------------------------------------------------------------
+    // 16-byte cache line fan-out (pure assigns)
+    // ----------------------------------------------------------------
+    assign rom_data_out[ 0] = 8'h31;
+    assign rom_data_out[ 1] = 8'h32;
+    assign rom_data_out[ 2] = idtEntryAddy[ 7: 0];
+    assign rom_data_out[ 3] = idtEntryAddy[15: 8];
+    assign rom_data_out[ 4] = idtEntryAddy[23:16];
+    assign rom_data_out[ 5] = idtEntryAddy[31:24];
+    assign rom_data_out[ 6] = 8'h30;
+    assign rom_data_out[ 7] = 8'h00;
+    assign rom_data_out[ 8] = 8'h00;
+    assign rom_data_out[ 9] = 8'h00;
+    assign rom_data_out[10] = 8'h00;
+    assign rom_data_out[11] = 8'h00;
+    assign rom_data_out[12] = 8'h00;
+    assign rom_data_out[13] = 8'h00;
+    assign rom_data_out[14] = 8'h00;
+    assign rom_data_out[15] = 8'h00;
 
 endmodule
