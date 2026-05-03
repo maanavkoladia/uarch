@@ -169,11 +169,9 @@ module Decode (
         .dc_cs_dr_upper8(temp_dc_cs.dr_upper8),
         .dc_cs_sr_upper8(temp_dc_cs.sr_upper8),
         .dc_cs_datasize(temp_dc_cs.datasize),
-        .dc_cs_st_optimization_disable(temp_dc_cs.st_optimization_disable),
 
         .mem_cs_ST_OP(temp_mem_cs.ST_OP),
         .mem_cs_LD_OP(temp_mem_cs.LD_OP),
-        .mem_cs_st_optimization_disable(temp_mem_cs.st_optimization_disable),
 
         .exe_cs_ST_OP(temp_exe_cs.ST_OP),
         .exe_cs_OP_TYPE(temp_exe_cs.OP_TYPE[`EXE_OP_W-1:0]),
@@ -188,13 +186,11 @@ module Decode (
         .exe_cs_is_call(temp_exe_cs.is_call),
         .exe_cs_second_flag_needed(temp_exe_cs.second_flag_needed),
         .exe_cs_rep_no_zf_update(temp_exe_cs.rep_no_zf_update),
-        .exe_cs_st_optimization_disable(temp_exe_cs.st_optimization_disable),
 
         .wb_cs_ST_OP(temp_wb_cs.ST_OP),
         .wb_cs_WB_DR(temp_wb_cs.WB_DR),
         .wb_cs_WB_SR(temp_wb_cs.WB_SR),
-        .wb_cs_WB_EAX(temp_wb_cs.WB_EAX),
-        .wb_cs_st_optimization_disable(temp_wb_cs.st_optimization_disable)
+        .wb_cs_WB_EAX(temp_wb_cs.WB_EAX)
     );
 
     decode_gp_gen gp_gen_decode(

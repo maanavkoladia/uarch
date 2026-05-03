@@ -58,11 +58,9 @@ module control_store (
     output wire dc_cs_dr_upper8,
     output wire dc_cs_sr_upper8,
     output wire [1:0] dc_cs_datasize,
-    output wire dc_cs_st_optimization_disable,
 
     output wire mem_cs_ST_OP,
     output wire mem_cs_LD_OP,
-    output wire mem_cs_st_optimization_disable,
 
     output wire exe_cs_ST_OP,
     output wire [`EXE_OP_W-1:0] exe_cs_OP_TYPE,
@@ -77,13 +75,11 @@ module control_store (
     output wire exe_cs_is_call,
     output wire exe_cs_second_flag_needed,
     output wire exe_cs_rep_no_zf_update,
-    output wire exe_cs_st_optimization_disable,
 
     output wire wb_cs_ST_OP,
     output wire wb_cs_WB_DR,
     output wire wb_cs_WB_SR,
-    output wire wb_cs_WB_EAX,
-    output wire wb_cs_st_optimization_disable
+    output wire wb_cs_WB_EAX
 );
 
     wire temp_decode_cs_REP;
@@ -138,11 +134,9 @@ module control_store (
     wire temp_dc_cs_dr_upper8;
     wire temp_dc_cs_sr_upper8;
     wire [1:0] temp_dc_cs_datasize;
-    wire temp_dc_cs_st_optimization_disable;
 
     wire temp_mem_cs_ST_OP;
     wire temp_mem_cs_LD_OP;
-    wire temp_mem_cs_st_optimization_disable;
 
     wire temp_exe_cs_ST_OP;
     wire [`EXE_OP_W-1:0] temp_exe_cs_OP_TYPE;
@@ -157,13 +151,11 @@ module control_store (
     wire temp_exe_cs_is_call;
     wire temp_exe_cs_second_flag_needed;
     wire temp_exe_cs_rep_no_zf_update;
-    wire temp_exe_cs_st_optimization_disable;
 
     wire temp_wb_cs_ST_OP;
     wire temp_wb_cs_WB_DR;
     wire temp_wb_cs_WB_SR;
     wire temp_wb_cs_WB_EAX;
-    wire temp_wb_cs_st_optimization_disable;
 
     // =====================
     // Input wires
@@ -214,7 +206,6 @@ module control_store (
     wire is_far_o;
     wire is_call_o;
     wire second_flag_needed_o;
-    wire st_optimization_disable_o;
 
     wire will_mod_zf_o;
 
@@ -345,7 +336,6 @@ module control_store (
         .is_far_o(is_far_o),
         .is_call_o(is_call_o),
         .second_flag_needed_o(second_flag_needed_o),
-        .st_optimization_disable_o(st_optimization_disable_o),
 
         // Misc
         .will_mod_zf_o(will_mod_zf_o),
@@ -381,6 +371,17 @@ module control_store (
     wire [`SRC_SEL_W-1:0] mod_rm_cs_outs_alu_inputA_override_sel;
     wire [`SRC_SEL_W-1:0] mod_rm_cs_outs_alu_inputB_override_sel;
     wire mod_rm_cs_outs_special_modrm_bs;
+
+    wire [`REG_ID_W-1:0] segment0;
+    `MUX_2(segment0_mux, `REG_ID_W, segment0, HARDCODED_SEGMENT0_o, seg0, seg_override)
+
+    wire [`SRC_SEL_W-1:0] aluA_input;
+    `MUX_2(aluA_input_mux, `SRC_SEL_W, aluA_input, alu_inputA_sel_o, mod_rm_cs_outs_alu_inputA_override_sel, mod_rm_cs_outs_alu_inputA_override)
+
+    wire [`SRC_SEL_W-1:0] aluB_input;
+    `MUX_2(aluB_input_mux, `SRC_SEL_W, aluB_input, alu_inputB_sel_o, mod_rm_cs_outs_alu_inputB_override_sel, mod_rm_cs_outs_alu_inputB_override)
+
+
 
     // DECODE
     assign temp_decode_cs_REP                = REP_o;
@@ -426,7 +427,7 @@ module control_store (
     assign temp_rr_cs_datasize         = DATA_SIZE_o;
     assign temp_rr_cs_will_mod_zf      = will_mod_zf_o;
     assign temp_rr_cs_seg_1_valid      = HARDCODED_SEGMENT1_V_o;
-    assign temp_rr_cs_seg_0_id         = seg_override ? seg0 : HARDCODED_SEGMENT0_o;
+    assign temp_rr_cs_seg_0_id         = segment0;
     assign temp_rr_cs_seg_1_id         = HARDCODED_SEGMENT1_o;
     assign temp_rr_cs_special_modrm_bs = mod_rm_cs_outs_special_modrm_bs;
     assign temp_rr_cs_special_br       = special_br_o;
@@ -438,22 +439,16 @@ module control_store (
     assign temp_dc_cs_dr_upper8 = mod_rm_cs_outs_dr_high8;
     assign temp_dc_cs_sr_upper8 = mod_rm_cs_outs_sr_high8;
     assign temp_dc_cs_datasize = DATA_SIZE_o;
-    assign temp_dc_cs_st_optimization_disable = st_optimization_disable_o;
 
     // MEM
     assign temp_mem_cs_ST_OP = mod_rm_cs_outs_st_op;
     assign temp_mem_cs_LD_OP = mod_rm_cs_outs_ld_op;
-    assign temp_mem_cs_st_optimization_disable = st_optimization_disable_o;
 
     // EXE
     assign temp_exe_cs_ST_OP               = mod_rm_cs_outs_st_op;
     assign temp_exe_cs_OP_TYPE             = OP_TYPE_o;
-    assign temp_exe_cs_alu_inputA_sel      = mod_rm_cs_outs_alu_inputA_override ?
-                                mod_rm_cs_outs_alu_inputA_override_sel :
-                                alu_inputA_sel_o;
-    assign temp_exe_cs_alu_inputB_sel      = mod_rm_cs_outs_alu_inputB_override ?
-                                mod_rm_cs_outs_alu_inputB_override_sel :
-                                alu_inputB_sel_o;
+    assign temp_exe_cs_alu_inputA_sel      = aluA_input;
+    assign temp_exe_cs_alu_inputB_sel      = aluB_input;
     assign temp_exe_cs_branch_target_sel   = branch_target_sel_o;
     assign temp_exe_cs_shift_by_one        = SHIFT_BY_ONE_o;
     assign temp_exe_cs_br_ucond            = br_uncond_o;
@@ -463,7 +458,6 @@ module control_store (
     assign temp_exe_cs_is_call             = is_call_o;
     assign temp_exe_cs_second_flag_needed  = second_flag_needed_o;
     assign temp_exe_cs_rep_no_zf_update    = 1'b0;
-    assign temp_exe_cs_st_optimization_disable = st_optimization_disable_o;
 
 
     // WB
@@ -471,7 +465,6 @@ module control_store (
     assign temp_wb_cs_WB_DR = mod_rm_cs_outs_dr_wr;
     assign temp_wb_cs_WB_SR = mod_rm_cs_outs_sr_wr;
     assign temp_wb_cs_WB_EAX = 1'b0;               //will be overriden in cs_post_processor
-    assign temp_wb_cs_st_optimization_disable = st_optimization_disable_o;
 
 
     modrm_processor mod_rm_cs_gen(
@@ -579,12 +572,10 @@ module control_store (
         .dc_cs_i_dr_upper8              (temp_dc_cs_dr_upper8),
         .dc_cs_i_sr_upper8              (temp_dc_cs_sr_upper8),
         .dc_cs_i_datasize               (temp_dc_cs_datasize),
-        .dc_cs_i_st_optimization_disable(temp_dc_cs_st_optimization_disable),
 
         // mem_cs inputs
         .mem_cs_i_ST_OP                 (temp_mem_cs_ST_OP),
         .mem_cs_i_LD_OP                 (temp_mem_cs_LD_OP),
-        .mem_cs_i_st_optimization_disable(temp_mem_cs_st_optimization_disable),
 
         // exe_cs inputs
         .exe_cs_i_ST_OP                 (temp_exe_cs_ST_OP),
@@ -600,14 +591,12 @@ module control_store (
         .exe_cs_i_is_call               (temp_exe_cs_is_call),
         .exe_cs_i_second_flag_needed    (temp_exe_cs_second_flag_needed),
         .exe_cs_i_rep_no_zf_update      (temp_exe_cs_rep_no_zf_update),
-        .exe_cs_i_st_optimization_disable(temp_exe_cs_st_optimization_disable),
 
         // wb_cs inputs
         .wb_cs_i_ST_OP                  (temp_wb_cs_ST_OP),
         .wb_cs_i_WB_DR                  (temp_wb_cs_WB_DR),
         .wb_cs_i_WB_SR                  (temp_wb_cs_WB_SR),
         .wb_cs_i_WB_EAX                 (temp_wb_cs_WB_EAX),
-        .wb_cs_i_st_optimization_disable(temp_wb_cs_st_optimization_disable),
 
         // decode_cs outputs
         .decode_cs_o_REP                (decode_cs_REP),
@@ -664,12 +653,10 @@ module control_store (
         .dc_cs_o_dr_upper8              (dc_cs_dr_upper8),
         .dc_cs_o_sr_upper8              (dc_cs_sr_upper8),
         .dc_cs_o_datasize               (dc_cs_datasize),
-        .dc_cs_o_st_optimization_disable(dc_cs_st_optimization_disable),
 
         // mem_cs outputs
         .mem_cs_o_ST_OP                 (mem_cs_ST_OP),
         .mem_cs_o_LD_OP                 (mem_cs_LD_OP),
-        .mem_cs_o_st_optimization_disable(mem_cs_st_optimization_disable),
 
         // exe_cs outputs
         .exe_cs_o_ST_OP                 (exe_cs_ST_OP),
@@ -685,14 +672,12 @@ module control_store (
         .exe_cs_o_is_call               (exe_cs_is_call),
         .exe_cs_o_second_flag_needed    (exe_cs_second_flag_needed),
         .exe_cs_o_rep_no_zf_update      (exe_cs_rep_no_zf_update),
-        .exe_cs_o_st_optimization_disable(exe_cs_st_optimization_disable),
 
         // wb_cs outputs
         .wb_cs_o_ST_OP                  (wb_cs_ST_OP),
         .wb_cs_o_WB_DR                  (wb_cs_WB_DR),
         .wb_cs_o_WB_SR                  (wb_cs_WB_SR),
-        .wb_cs_o_WB_EAX                 (wb_cs_WB_EAX),
-        .wb_cs_o_st_optimization_disable(wb_cs_st_optimization_disable)
+        .wb_cs_o_WB_EAX                 (wb_cs_WB_EAX)
     );
 
 endmodule

@@ -61,12 +61,10 @@ module cs_post_processor (
     input wire          dc_cs_i_dr_upper8,
     input wire          dc_cs_i_sr_upper8,
     input wire [1:0]    dc_cs_i_datasize,
-    input wire          dc_cs_i_st_optimization_disable,
 
     // mem_cs inputs
     input wire          mem_cs_i_ST_OP,
     input wire          mem_cs_i_LD_OP,
-    input wire          mem_cs_i_st_optimization_disable,
 
     // exe_cs inputs
     input wire          exe_cs_i_ST_OP,
@@ -82,14 +80,12 @@ module cs_post_processor (
     input wire          exe_cs_i_is_call,
     input wire          exe_cs_i_second_flag_needed,
     input wire          exe_cs_i_rep_no_zf_update,
-    input wire          exe_cs_i_st_optimization_disable,
 
     // wb_cs inputs
     input wire          wb_cs_i_ST_OP,
     input wire          wb_cs_i_WB_DR,
     input wire          wb_cs_i_WB_SR,
     input wire          wb_cs_i_WB_EAX,
-    input wire          wb_cs_i_st_optimization_disable,
 
     // decode_cs outputs (passthrough)
     output wire         decode_cs_o_REP,
@@ -146,12 +142,10 @@ module cs_post_processor (
     output wire         dc_cs_o_dr_upper8,
     output wire         dc_cs_o_sr_upper8,
     output wire [1:0]   dc_cs_o_datasize,
-    output wire         dc_cs_o_st_optimization_disable,
 
     // mem_cs outputs
     output wire         mem_cs_o_ST_OP,
     output wire         mem_cs_o_LD_OP,
-    output wire         mem_cs_o_st_optimization_disable,
 
     // exe_cs outputs
     output wire         exe_cs_o_ST_OP,
@@ -167,14 +161,12 @@ module cs_post_processor (
     output wire         exe_cs_o_is_call,
     output wire         exe_cs_o_second_flag_needed,
     output wire         exe_cs_o_rep_no_zf_update,
-    output wire         exe_cs_o_st_optimization_disable,
 
     // wb_cs outputs
     output wire         wb_cs_o_ST_OP,
     output wire         wb_cs_o_WB_DR,
     output wire         wb_cs_o_WB_SR,
-    output wire         wb_cs_o_WB_EAX,
-    output wire         wb_cs_o_st_optimization_disable
+    output wire         wb_cs_o_WB_EAX
 );
 
     wire [2:0] reg_field;
@@ -312,14 +304,12 @@ module cs_post_processor (
     assign dc_cs_o_dr_upper8              = dc_cs_i_dr_upper8;
     assign dc_cs_o_sr_upper8              = dc_cs_i_sr_upper8;
     assign dc_cs_o_datasize               = dc_cs_i_datasize;
-    assign dc_cs_o_st_optimization_disable = dc_cs_i_st_optimization_disable;
 
     // =====================
     // MEM
     // =====================
     assign mem_cs_o_LD_OP                  = invalid_inst ? 1'b0 : mem_cs_i_LD_OP;
     assign mem_cs_o_ST_OP                  = invalid_inst ? 1'b0 : ff_jmp ? 1'b0 : mem_cs_i_ST_OP;
-    assign mem_cs_o_st_optimization_disable = mem_cs_i_st_optimization_disable;
 
     // =====================
     // EXE
@@ -337,8 +327,6 @@ module cs_post_processor (
     assign exe_cs_o_is_call            = (ff_jmp || ff_push) ? 1'b0 : exe_cs_i_is_call;
     assign exe_cs_o_second_flag_needed = exe_cs_i_second_flag_needed;
     assign exe_cs_o_rep_no_zf_update   = 1'b0;
-    assign exe_cs_o_st_optimization_disable = exe_cs_i_st_optimization_disable;
-
     // =====================
     // WB
     // =====================
@@ -346,6 +334,5 @@ module cs_post_processor (
     assign wb_cs_o_WB_DR                  = invalid_inst ? 1'b0 : (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i_dr_wr;
     assign wb_cs_o_WB_SR                  = invalid_inst ? 1'b0 : xchg ? 1'b1 : ff_jmp ? 1'b0 : rr_cs_i_sr_wr;
     assign wb_cs_o_WB_EAX                 = invalid_inst ? 1'b0 : cmpxchg ? 1'b1 : 1'b0;
-    assign wb_cs_o_st_optimization_disable = wb_cs_i_st_optimization_disable;
 
 endmodule

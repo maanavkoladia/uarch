@@ -1,6 +1,7 @@
 import RegisterRead_pkg::*;
 import Decode_pkg::*;
-
+import reg_ids_pkg::*;
+import control_store_pkg::*;
 module rep_controller (
     input wire clk, rst,
     input bool rep_latch,

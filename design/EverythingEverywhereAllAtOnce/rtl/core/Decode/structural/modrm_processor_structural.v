@@ -60,7 +60,7 @@ module modrm_processor (
     `CMP_N(modrm_case_10100_cmp, 5, modrm_case_10100, {modrm_byte[7:6], modrm_byte[2:0]}, 5'b10100)
 
     wire not_wierd_modrm_case;
-    `NOR_4(not_wierd_modrm_case_gate, 1, not_wierd_modrm_case, modrm_case_00100, modrm_case_00101, modrm_case_01100, __in3modrm_case_10100__)
+    `NOR_4(not_wierd_modrm_case_gate, 1, not_wierd_modrm_case, modrm_case_00100, modrm_case_00101, modrm_case_01100, modrm_case_10100)
 
 
     wire datasize_11;
@@ -70,33 +70,7 @@ module modrm_processor (
     `AND_2(datasize_11_u, 1, datasize_11, datasize[0], datasize[1])
     `NOR_2(datasize_00_u, 1, datasize_00, datasize[0], datasize[1])
     `AND_3(datasize_11_mod_11_u, 1, datasize_11_mod_11, datasize[0], datasize[1], mod_field_is_11)
-    `NOR_3(datasize_00_mod_11_u, 1, datasize_00_mod_11, datasize[0], datasize[0], mod_field_is_not_11)
-
-
-
-    
-
-
-    /* ===================================================================== //
-                alu_inputA, alu_inputB stuff
-    // ===================================================================== */
-    // assign alu_inputA_override = rm_is_dr && (st_op || ld_op);
-    // assign alu_inputB_override = reg_is_dr && ld_op;
-    // assign alu_inputA_override_sel = BUFFER;
-    // assign alu_inputB_override_sel = BUFFER;
-
-    wire alu_inputA_override
-    wire alu_inputB_override;
-    wire [`SRC_SEL_W-1:0] alu_inputA_override_sel;
-    wire [`SRC_SEL_W-1:0] alu_inputB_override_sel;
-    wire st_or_ld_op;
-
-    `OR_2(st_or_ld_op_gate, 1, st_or_ld_op, st_op, ld_op)
-    `AND_2(alu_inputA_over_gate, 1, alu_inputA_override, rm_is_dr, st_or_ld_op)
-    assign alu_inputA_override_sel = `BUFFER;
-    assign alu_inputB_override_sel = `BUFFER;
-
-
+    `NOR_3(datasize_00_mod_11_u, 1, datasize_00_mod_11, datasize[0], datasize[1], mod_field_is_not_11)
 
 
 
@@ -123,6 +97,27 @@ module modrm_processor (
 
 
     assign modrm_but_no_sr = cs_MODRM_BUT_NO_SR;
+
+    
+
+
+    /* ===================================================================== //
+                alu_inputA, alu_inputB stuff
+    // ===================================================================== */
+    // assign alu_inputA_override = rm_is_dr && (st_op || ld_op);
+    // assign alu_inputB_override = reg_is_dr && ld_op;
+    // assign alu_inputA_override_sel = BUFFER;
+    // assign alu_inputB_override_sel = BUFFER;
+
+    wire st_or_ld_op;
+
+    `OR_2(st_or_ld_op_gate, 1, st_or_ld_op, st_op, ld_op)
+    `AND_2(alu_inputA_over_gate, 1, alu_inputA_override, rm_is_dr, st_or_ld_op)
+    `AND_2(alu_inputB_over_gate, 1, alu_inputB_override, reg_is_dr, ld_op)
+
+    assign alu_inputA_override_sel = `BUFFER;
+    assign alu_inputB_override_sel = `BUFFER;
+
 
 
 
@@ -157,7 +152,7 @@ module modrm_processor (
     wire [`REG_ID_W-1:0] rm_dr_not_wierd_dr_id;
 
     assign rm_dr_not_wierd_dr_rd = 1'b1;
-    `AND_2(rm_dr_not_wierd_dr_wr_gate, 1, rm_dr_not_wierd_dr_wr, mod_is_11, cs_MODRM_NEEDED)
+    `AND_2(rm_dr_not_wierd_dr_wr_gate, 1, rm_dr_not_wierd_dr_wr, mod_field_is_11, cs_MODRM_NEEDED)
     `AND_2(rm_dr_not_wierd_dr_high8_gate, 1, rm_dr_not_wierd_dr_high8, datasize_00_mod_11, modrm_byte[2])
 
     //dr_id
@@ -246,7 +241,7 @@ module modrm_processor (
     assign dr_else_dr_rd = 1'b0;
     assign dr_else_dr_wr = 1'b0;
     assign dr_else_dr_high8 = 1'b0;
-    assign dr_else_dr_id = NO_REG;
+    assign dr_else_dr_id = `NO_REG;
 
 
     //////////////selection
@@ -255,7 +250,7 @@ module modrm_processor (
     `MUX_2(dr_rd_ab_u, 1, dr_rd_ab, 
             reg_dr_not_segment_dr_rd, rm_dr_not_wierd_dr_rd, rm_dr_not_wierd)
     `MUX_4(dr_rd_cde_u, 1, dr_rd_cde, 
-            dr_else_dr_rd, hardcoded_dr_dr_rd, reg_is_segment_dr_rd, reg_is_segment_dr_rd, 
+            dr_else_dr_rd, hardcoded_dr_dr_rd, reg_dr_segment_dr_rd, reg_dr_segment_dr_rd, 
             {reg_dr_segment, cs_HARDCODED_DR})
     `MUX_2(dr_rd_u, 1, dr_rd, 
             dr_rd_cde, dr_rd_ab, sel_dr_a_or_b)
@@ -265,7 +260,7 @@ module modrm_processor (
     `MUX_2(dr_wr_ab_u, 1, dr_wr_ab, 
             reg_dr_not_segment_dr_wr, rm_dr_not_wierd_dr_wr, rm_dr_not_wierd)
     `MUX_4(dr_wr_cde_u, 1, dr_wr_cde, 
-            dr_else_dr_wr, hardcoded_dr_dr_wr, reg_is_segment_dr_wr, reg_is_segment_dr_wr, 
+            dr_else_dr_wr, hardcoded_dr_dr_wr, reg_dr_segment_dr_wr, reg_dr_segment_dr_wr, 
             {reg_dr_segment, cs_HARDCODED_DR})
     `MUX_2(dr_wr_u, 1, dr_wr, 
             dr_wr_cde, dr_wr_ab, sel_dr_a_or_b)
@@ -275,17 +270,17 @@ module modrm_processor (
     `MUX_2(dr_high8_ab_u, 1, dr_high8_ab, 
             reg_dr_not_segment_dr_high8, rm_dr_not_wierd_dr_high8, rm_dr_not_wierd)
     `MUX_4(dr_high8_cde_u, 1, dr_high8_cde, 
-            dr_else_dr_high8, hardcoded_dr_dr_high8, reg_is_segment_dr_high8, reg_is_segment_dr_high8, 
+            dr_else_dr_high8, hardcoded_dr_dr_high8, reg_dr_segment_dr_high8, reg_dr_segment_dr_high8, 
             {reg_dr_segment, cs_HARDCODED_DR})
     `MUX_2(dr_high8_u, 1, dr_high8, 
             dr_high8_cde, dr_high8_ab, sel_dr_a_or_b) 
 
-    wire dr_id_ab;
-    wire dr_id_cde;
+    wire [`REG_ID_W-1:0] dr_id_ab;
+    wire [`REG_ID_W-1:0] dr_id_cde;
     `MUX_2(dr_id_ab_u, `REG_ID_W, dr_id_ab, 
             reg_dr_not_segment_dr_id, rm_dr_not_wierd_dr_id, rm_dr_not_wierd)
     `MUX_4(dr_id_cde_u, `REG_ID_W, dr_id_cde, 
-            dr_else_dr_id, hardcoded_dr_dr_id, reg_is_segment_dr_id, reg_is_segment_dr_id, 
+            dr_else_dr_id, hardcoded_dr_dr_id, reg_dr_segment_dr_id, reg_dr_segment_dr_id, 
             {reg_dr_segment, cs_HARDCODED_DR})
     `MUX_2(dr_id_u, `REG_ID_W, dr_id, 
             dr_id_cde, dr_id_ab, sel_dr_a_or_b) 
@@ -329,7 +324,7 @@ module modrm_processor (
     wire [`REG_ID_W-1:0] rm_dr_no_seg_reg_valid_sr_sr_id;
 
     assign rm_dr_no_seg_reg_valid_sr_sr_rd = 1'b1;
-    assign rm_dr_no_seg_reg_valid_sr_sr_wr = 1'b1;
+    assign rm_dr_no_seg_reg_valid_sr_sr_wr = 1'b0;
     `AND_2(rm_dr_no_seg_reg_valid_sr_sr_high8_gate, 1, rm_dr_no_seg_reg_valid_sr_sr_high8, datasize_00, modrm_byte[5])
 
     //sr_id
@@ -416,15 +411,11 @@ module modrm_processor (
     assign sr_else_sr_rd = 1'b0;
     assign sr_else_sr_wr = 1'b0;
     assign sr_else_sr_high8 = 1'b0;
-    assign sr_else_sr_id = NO_REG;
+    assign sr_else_sr_id = `NO_REG;
 
 
 
     //////////////selection
-    wire rm_dr_no_seg_reg_valid_sr;
-    wire reg_dr_not_wierd;
-    wire reg_seg_rm_dr;
-
     wire sr_rd_ab;
     wire sr_rd_cde;
     `MUX_2(sr_rd_ab_u, 1, sr_rd_ab, 
@@ -455,8 +446,8 @@ module modrm_processor (
     `MUX_2(sr_high8_u, 1, sr_high8, 
             sr_high8_cde, sr_high8_ab, sel_sr_a_or_b) 
 
-    wire sr_id_ab;
-    wire sr_id_cde;
+    wire [`REG_ID_W-1:0] sr_id_ab;
+    wire [`REG_ID_W-1:0] sr_id_cde;
     `MUX_2(sr_id_ab_u, `REG_ID_W, sr_id_ab, 
             reg_dr_not_wierd_sr_id, rm_dr_no_seg_reg_valid_sr_sr_id, rm_dr_no_seg_reg_valid_sr)
     `MUX_4(sr_id_cde_u, `REG_ID_W, sr_id_cde, 
@@ -470,11 +461,30 @@ module modrm_processor (
 
 
     //st/ld op setting
-    assign ld_op_unmasked = ((modrm_byte[7:6] != 2'b11) && decode_cs_inputs.MODRM_NEEDED) || decode_cs_inputs.HARDCODED_LD_OP;
-    assign st_op_unmasked = (rm_is_dr && (modrm_byte[7:6] != 2'b11)) || decode_cs_inputs.HARDCODED_ST_OP;
+    wire ld_op_unmasked;
+    wire st_op_unmasked;
+    //assign ld_op_unmasked = ((modrm_byte[7:6] != 2'b11) && decode_cs_inputs.MODRM_NEEDED) || decode_cs_inputs.HARDCODED_LD_OP;
+    //assign st_op_unmasked = (rm_is_dr && (modrm_byte[7:6] != 2'b11)) || decode_cs_inputs.HARDCODED_ST_OP;
 
-    assign ld_op = ld_op_unmasked && !decode_cs_inputs.LD_OP_CANCEL;
-    assign st_op = st_op_unmasked && !decode_cs_inputs.ST_OP_CANCEL;
+    //assign ld_op = ld_op_unmasked && !decode_cs_inputs.LD_OP_CANCEL;
+    //assign st_op = st_op_unmasked && !decode_cs_inputs.ST_OP_CANCEL;
+
+    wire mod_rm_not_11_mod_rm_needed;
+    `AND_2(mod_rm_not_11_mod_rm_needed_u, 1, mod_rm_not_11_mod_rm_needed, mod_field_is_not_11, cs_MODRM_NEEDED)
+    `OR_2(ld_op_unmasked_u, 1, ld_op_unmasked, mod_rm_not_11_mod_rm_needed, cs_HARDCODED_LD_OP)
+
+    wire rm_dr_mod_rm_not_11;
+    `AND_2(rm_dr_mod_rm_not_11_u, 1, rm_dr_mod_rm_not_11, mod_field_is_not_11, rm_is_dr)
+    `OR_2(st_op_unmasked_u, 1, st_op_unmasked, rm_dr_mod_rm_not_11, cs_HARDCODED_ST_OP)
+
+    wire not_ld_op_cancel;
+    wire not_st_op_cancel;
+    `INV_N(ld_op_cancel_inv, 1, cs_LD_OP_CANCEL, not_ld_op_cancel)
+    `INV_N(st_op_cancel_inv, 1, cs_ST_OP_CANCEL, not_st_op_cancel)
+
+    `AND_2(ld_op_u, 1, ld_op, ld_op_unmasked, not_ld_op_cancel)
+    `AND_2(st_op_u, 1, st_op, st_op_unmasked, not_st_op_cancel)
+
 
     //special_modrm_bs = ({modrm_byte[7:6], modrm_byte[2:0]} == 5'b00101 && decode_cs_inputs.MODRM_NEEDED) ? 1'b1 : 1'b0
     `AND_2(special_modrm_bs_u, 1, special_modrm_bs, modrm_case_00101, cs_MODRM_NEEDED)
