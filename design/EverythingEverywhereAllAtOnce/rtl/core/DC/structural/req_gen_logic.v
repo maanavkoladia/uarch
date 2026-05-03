@@ -111,9 +111,13 @@ module req_gen_logic (
     `MUX_2(u_nxt_is_served_mio,       1, next_is_served_mio,
            next_is_served_mio_inner, 1'b0, clear)
 
-    `REG_RST(u_is_served_0_reg,   1, clk,  (rst | !flush), next_is_served_0,   is_served_0)
-    `REG_RST(u_is_served_1_reg,   1, clk,  (rst | !flush), next_is_served_1,   is_served_1)
-    `REG_RST(u_is_served_mio_reg, 1, clk,  (rst | !flush), next_is_served_mio, is_served_mio)
+       wire n_flush;
+       wire rst_or_n_flush;
+       `INV_N(u_flush, 1, flush, n_flush)
+       `OR_2(u_clr_rst, 1, rst_or_n_flush, rst, n_flush)
+    `REG_RST(u_is_served_0_reg,   1, clk,  rst_or_n_flush, next_is_served_0,   is_served_0)
+    `REG_RST(u_is_served_1_reg,   1, clk,  rst_or_n_flush, next_is_served_1,   is_served_1)
+    `REG_RST(u_is_served_mio_reg, 1, clk,  rst_or_n_flush, next_is_served_mio, is_served_mio)
 
        
 //       `REG_RST_WE(u_is_served_0_reg, 1, clk, rst, (set_0 || clear) , next_is_served_0, is_served_0) 
@@ -122,9 +126,7 @@ module req_gen_logic (
     // ----------------------------------------------------------------
     // Local stall (combines exp/dep stalls, used in V signals only)
     // ----------------------------------------------------------------
-    wire stall;
-    `OR_2(u_stall, 1, stall, exp_stall, dep_stall)
-
+   
     // ----------------------------------------------------------------
     // arb_stall (CP)
     //   Factored:  arb_stall = LD_OP & valid &
@@ -169,10 +171,10 @@ module req_gen_logic (
     wire nor4_0;
     wire nor4_1;
     wire nor3_mio;
-
-    `NOR_4(u_nor4_0,   1, nor4_0,   stall, MIO, is_served_0, flush)
-    `NOR_4(u_nor4_1,   1, nor4_1,   stall, MIO, is_served_1, flush)
-    `NOR_3(u_nor3_mio, 1, nor3_mio, stall, is_served_mio, flush)
+    
+    `NOR_3(u_nor4_0,   1, nor4_0, dep_stall, MIO, is_served_0)
+    `NOR_3(u_nor4_1,   1, nor4_1, dep_stall, MIO, is_served_1)
+    `NOR_2(u_nor3_mio, 1, nor3_mio, dep_stall, is_served_mio)
 
     `AND_3(u_ld_addr_0_V,   1, ld_addr_0_V,   nor4_0,   LD_OP, valid)
     `AND_4(u_ld_addr_1_V,   1, ld_addr_1_V,   nor4_1,   LD_OP, valid, XCL)
