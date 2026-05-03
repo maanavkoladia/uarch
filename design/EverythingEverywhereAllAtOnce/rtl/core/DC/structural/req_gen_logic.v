@@ -77,7 +77,8 @@ module req_gen_logic (
 
     `AND_2(u_forward_valid, 1, forward_valid,
            mem_stage_we_valid_unit_o, mem_stage_next_valid_o)
-    `OR_2 (u_clear,         1, clear, forward_valid, flush)
+//     `OR_2 (u_clear,         1, clear, forward_valid, flush)
+     assign clear = forward_valid;
 
     wire set_0;
     wire set_1;
@@ -91,8 +92,12 @@ module req_gen_logic (
     wire next_is_served_1_inner, next_is_served_1;
     wire next_is_served_mio_inner, next_is_served_mio;
 
+
+     //`MUX_4(u_next_is_served_0, 1, next_is_served_0, is_served_0, 1'b1, 1'b0, 1'b0, {clear, set_0})
     `MUX_2(u_nxt_is_served_0_inner,   1, next_is_served_0_inner,
            is_served_0, 1'b1, set_0)
+
+
     `MUX_2(u_nxt_is_served_0,         1, next_is_served_0,
            next_is_served_0_inner, 1'b0, clear)
 
@@ -106,9 +111,13 @@ module req_gen_logic (
     `MUX_2(u_nxt_is_served_mio,       1, next_is_served_mio,
            next_is_served_mio_inner, 1'b0, clear)
 
-    `REG_RST(u_is_served_0_reg,   1, clk, rst, next_is_served_0,   is_served_0)
-    `REG_RST(u_is_served_1_reg,   1, clk, rst, next_is_served_1,   is_served_1)
-    `REG_RST(u_is_served_mio_reg, 1, clk, rst, next_is_served_mio, is_served_mio)
+    `REG_RST(u_is_served_0_reg,   1, clk,  (rst | !flush), next_is_served_0,   is_served_0)
+    `REG_RST(u_is_served_1_reg,   1, clk,  (rst | !flush), next_is_served_1,   is_served_1)
+    `REG_RST(u_is_served_mio_reg, 1, clk,  (rst | !flush), next_is_served_mio, is_served_mio)
+
+       
+//       `REG_RST_WE(u_is_served_0_reg, 1, clk, rst, (set_0 || clear) , next_is_served_0, is_served_0) 
+
 
     // ----------------------------------------------------------------
     // Local stall (combines exp/dep stalls, used in V signals only)
