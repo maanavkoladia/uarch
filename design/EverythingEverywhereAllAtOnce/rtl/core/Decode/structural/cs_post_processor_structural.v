@@ -173,7 +173,7 @@ module cs_post_processor (
     assign reg_field = modrm_byte[5:3];
 
     wire rr_cs_o_LD_OP_holder;
-    assign rr_cs_o_LD_OP_holder = invalid_inst ? 1'b0 : rr_cs_i_LD_OP;
+    `MUX_2(ld_op_holder_mux,      1,          rr_cs_o_LD_OP_holder,  rr_cs_i_LD_OP,             1'b0,    invalid_inst)
 
     // =====================
     // op_in_modrm_subset decode
@@ -200,11 +200,18 @@ module cs_post_processor (
     `AND_2(ff_jmp_gate,  1, ff_jmp,  is_CTRL, rf_eq4)
     `AND_2(ff_push_gate, 1, ff_push, is_CTRL, rf_eq6)
 
+    // combined condition wires reused across sections
+    wire ff_jmp_call_push;
+    `OR_3(ff_jmp_call_push_or, 1, ff_jmp_call_push, ff_jmp, ff_call, ff_push)
+
+    wire ff_jmp_push;
+    `OR_2(ff_jmp_push_or, 1, ff_jmp_push, ff_jmp, ff_push)
+
     // overriden_br_sel
     wire [`SRC_SEL_W-1:0] overriden_br_sel;
-    `MUX_4(overriden_br_sel_mux, `SRC_SEL_W, overriden_br_sel, 
+    `MUX_4(overriden_br_sel_mux, `SRC_SEL_W, overriden_br_sel,
             exe_cs_i_branch_target_sel,
-            exe_cs_i_branch_target_sel, 
+            exe_cs_i_branch_target_sel,
             `DR_REGISTER,
             `BUF32,
             {is_CTRL, rr_cs_o_LD_OP_holder})
@@ -213,11 +220,11 @@ module cs_post_processor (
     wire [`EXE_OP_W-1:0] shf_overriden_op_type, ctrl_overriden_op_type, alu_overriden_op_type, alu_overriden_sub_op_type;
     wire [`EXE_OP_W-1:0] overriden_op_type;
     `MUX_2(shf_overriden_op_type_mux, `EXE_OP_W, shf_overriden_op_type, `SAR, `SAL, rf_eq4)
-    `MUX_4(ctrl_overriden_op_type_mux, `EXE_OP_W, ctrl_overriden_op_type, 
+    `MUX_4(ctrl_overriden_op_type_mux, `EXE_OP_W, ctrl_overriden_op_type,
             `PUSH,
-            `CALL, 
-            `JMP, 
-            `CALL, 
+            `CALL,
+            `JMP,
+            `CALL,
             {rf_eq4, rf_eq2})
     `MUX_2(alu_overriden_sub_op_type_mux, `EXE_OP_W, alu_overriden_sub_op_type, `AND, `SBB, rf_eq3)
     `MUX_8(alu_overriden_op_type_mux, `EXE_OP_W, alu_overriden_op_type,
@@ -230,17 +237,16 @@ module cs_post_processor (
                 alu_overriden_sub_op_type,
                 alu_overriden_sub_op_type,
                 {rf_eq2, rf_eq1, rf_eq0})
-    
-    //shf, alu, ctrl, optype selction between each
-    `MUX_4(total_overriden_op_type_mux, `EXE_OP_W, overriden_op_type, 
-            exe_cs_i_OP_TYPE,
-            ctrl_overriden_op_type, 
-            shf_overriden_op_type, 
-            alu_overriden_op_type, 
-            op_in_modrm_subset)
-    
 
-    
+    //shf, alu, ctrl, optype selction between each
+    `MUX_4(total_overriden_op_type_mux, `EXE_OP_W, overriden_op_type,
+            exe_cs_i_OP_TYPE,
+            ctrl_overriden_op_type,
+            shf_overriden_op_type,
+            alu_overriden_op_type,
+            op_in_modrm_subset)
+
+
 
 
     // =====================
@@ -273,25 +279,32 @@ module cs_post_processor (
     // =====================
     // RR
     // =====================
-    assign rr_cs_o_ST_SEL          = ff_jmp ? 1'b0 : rr_cs_i_ST_SEL;
+    `MUX_2(rr_st_sel_mux,        1,          rr_cs_o_ST_SEL,         rr_cs_i_ST_SEL,            1'b0,    ff_jmp)
     assign rr_cs_o_MODRM_NEEDED    = rr_cs_i_MODRM_NEEDED;
     assign rr_cs_o_RM_IS_DR        = rr_cs_i_RM_IS_DR;
     assign rr_cs_o_SWITCH_LD_ADDY  = rr_cs_i_SWITCH_LD_ADDY;
     assign rr_cs_o_LD_OP           = rr_cs_o_LD_OP_holder;
-    assign rr_cs_o_ST_OP           = invalid_inst ? 1'b0 : ff_jmp ? 1'b0 : rr_cs_i_ST_OP;
+    // sel={invalid_inst, ff_jmp}: 00->rr_cs_i_ST_OP, 01->0, 10->0, 11->0
+    `MUX_4(rr_st_op_mux,          1,          rr_cs_o_ST_OP,          rr_cs_i_ST_OP,             1'b0, 1'b0, 1'b0, {invalid_inst, ff_jmp})
     assign rr_cs_o_MOVS_OP         = rr_cs_i_MOVS_OP;
     assign rr_cs_o_dr_id           = rr_cs_i_dr_id;
-    assign rr_cs_o_sr_id           = ff_jmp ? `NO_REG : rr_cs_i_sr_id;
+    `MUX_2(rr_sr_id_mux,          `REG_ID_W,  rr_cs_o_sr_id,          rr_cs_i_sr_id,             `NO_REG, ff_jmp)
     assign rr_cs_o_dr_rd           = rr_cs_i_dr_rd;
-    assign rr_cs_o_sr_rd           = ff_jmp ? 1'b0 : rr_cs_i_sr_rd;
-    assign rr_cs_o_eax_rd          = cmpxchg ? 1'b1 : 1'b0;
-    assign rr_cs_o_dr_wr           = invalid_inst ? 1'b0 : (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i_dr_wr;
-    assign rr_cs_o_sr_wr           = invalid_inst ? 1'b0 : xchg ? 1'b1 : ff_jmp ? 1'b0 : rr_cs_i_sr_wr;
-    assign rr_cs_o_eax_wr          = invalid_inst ? 1'b0 : cmpxchg ? 1'b1 : 1'b0;
+    `MUX_2(rr_sr_rd_mux,          1,          rr_cs_o_sr_rd,          rr_cs_i_sr_rd,             1'b0,    ff_jmp)
+    `MUX_2(rr_eax_rd_mux,         1,          rr_cs_o_eax_rd,         1'b0,                      1'b1,    cmpxchg)
+    // sel={invalid_inst, ff_jmp_call_push}: 00->rr_cs_i_dr_wr, 01->0, 10->0, 11->0
+    `MUX_4(rr_dr_wr_mux,          1,          rr_cs_o_dr_wr,          rr_cs_i_dr_wr,             1'b0, 1'b0, 1'b0, {invalid_inst, ff_jmp_call_push})
+    // 3-level: invalid_inst>0, xchg>1, ff_jmp>0, else rr_cs_i_sr_wr
+    // inner sel={xchg, ff_jmp}: 00->rr_cs_i_sr_wr, 01->0, 10->1, 11->1
+    wire rr_sr_wr_inner;
+    `MUX_4(rr_sr_wr_inner_mux,    1,          rr_sr_wr_inner,         rr_cs_i_sr_wr,             1'b0, 1'b1, 1'b1, {xchg, ff_jmp})
+    `MUX_2(rr_sr_wr_mux,          1,          rr_cs_o_sr_wr,          rr_sr_wr_inner,            1'b0,    invalid_inst)
+    // sel={invalid_inst, cmpxchg}: 00->0, 01->1, 10->0, 11->0
+    `MUX_4(rr_eax_wr_mux,         1,          rr_cs_o_eax_wr,         1'b0,                      1'b1, 1'b0, 1'b0, {invalid_inst, cmpxchg})
     assign rr_cs_o_datasize        = rr_cs_i_datasize;
     assign rr_cs_o_will_mod_zf     = rr_cs_i_will_mod_zf;
-    assign rr_cs_o_seg_1_valid     = ff_jmp ? 1'b0 : rr_cs_i_seg_1_valid;
-    assign rr_cs_o_seg_0_id        = ff_push ? `DS : rr_cs_i_seg_0_id;
+    `MUX_2(rr_seg_1_valid_mux,    1,          rr_cs_o_seg_1_valid,    rr_cs_i_seg_1_valid,       1'b0,    ff_jmp)
+    `MUX_2(rr_seg_0_id_mux,       `REG_ID_W,  rr_cs_o_seg_0_id,       rr_cs_i_seg_0_id,          `DS,     ff_push)
     assign rr_cs_o_seg_1_id        = rr_cs_i_seg_1_id;
     assign rr_cs_o_special_modrm_bs = rr_cs_i_special_modrm_bs;
     assign rr_cs_o_special_br      = rr_cs_i_special_br;
@@ -299,8 +312,9 @@ module cs_post_processor (
     // =====================
     // DC
     // =====================
-    assign dc_cs_o_LD_OP                  = invalid_inst ? 1'b0 : dc_cs_i_LD_OP;
-    assign dc_cs_o_ST_OP                  = invalid_inst ? 1'b0 : ff_jmp ? 1'b0 : dc_cs_i_ST_OP;
+    `MUX_2(dc_ld_op_mux,          1,          dc_cs_o_LD_OP,          dc_cs_i_LD_OP,             1'b0,    invalid_inst)
+    // sel={invalid_inst, ff_jmp}: 00->dc_cs_i_ST_OP, 01->0, 10->0, 11->0
+    `MUX_4(dc_st_op_mux,          1,          dc_cs_o_ST_OP,          dc_cs_i_ST_OP,             1'b0, 1'b0, 1'b0, {invalid_inst, ff_jmp})
     assign dc_cs_o_dr_upper8              = dc_cs_i_dr_upper8;
     assign dc_cs_o_sr_upper8              = dc_cs_i_sr_upper8;
     assign dc_cs_o_datasize               = dc_cs_i_datasize;
@@ -308,31 +322,42 @@ module cs_post_processor (
     // =====================
     // MEM
     // =====================
-    assign mem_cs_o_LD_OP                  = invalid_inst ? 1'b0 : mem_cs_i_LD_OP;
-    assign mem_cs_o_ST_OP                  = invalid_inst ? 1'b0 : ff_jmp ? 1'b0 : mem_cs_i_ST_OP;
+    `MUX_2(mem_ld_op_mux,         1,          mem_cs_o_LD_OP,         mem_cs_i_LD_OP,            1'b0,    invalid_inst)
+    // sel={invalid_inst, ff_jmp}: 00->mem_cs_i_ST_OP, 01->0, 10->0, 11->0
+    `MUX_4(mem_st_op_mux,         1,          mem_cs_o_ST_OP,         mem_cs_i_ST_OP,            1'b0, 1'b0, 1'b0, {invalid_inst, ff_jmp})
 
     // =====================
     // EXE
     // =====================
-    assign exe_cs_o_ST_OP              = invalid_inst ? 1'b0 : ff_jmp ? 1'b0 : mem_cs_i_ST_OP;
-    assign exe_cs_o_OP_TYPE            = op_in_modrm ? overriden_op_type : exe_cs_i_OP_TYPE;
-    assign exe_cs_o_alu_inputA_sel     = ff_jmp ? `NO_EXE : ff_call ? `NEIP : exe_cs_i_alu_inputA_sel;
-    assign exe_cs_o_alu_inputB_sel     = ff_jmp ? `NO_EXE : exe_cs_i_alu_inputB_sel;
-    assign exe_cs_o_branch_target_sel  = op_in_modrm ? overriden_br_sel : exe_cs_i_branch_target_sel;
+    // sel={invalid_inst, ff_jmp}: 00->mem_cs_i_ST_OP, 01->0, 10->0, 11->0
+    `MUX_4(exe_st_op_mux,         1,          exe_cs_o_ST_OP,         mem_cs_i_ST_OP,            1'b0, 1'b0, 1'b0, {invalid_inst, ff_jmp})
+    `MUX_2(exe_op_type_mux,       `EXE_OP_W,  exe_cs_o_OP_TYPE,       exe_cs_i_OP_TYPE,          overriden_op_type,      op_in_modrm)
+    // sel={ff_jmp, ff_call}: 00->exe_cs_i_alu_inputA_sel, 01->NEIP, 10->NO_EXE, 11->NO_EXE
+    `MUX_4(exe_inputA_sel_mux,    `SRC_SEL_W, exe_cs_o_alu_inputA_sel, exe_cs_i_alu_inputA_sel, `NEIP, `NO_EXE, `NO_EXE, {ff_jmp, ff_call})
+    `MUX_2(exe_inputB_sel_mux,    `SRC_SEL_W, exe_cs_o_alu_inputB_sel, exe_cs_i_alu_inputB_sel, `NO_EXE,        ff_jmp)
+    `MUX_2(exe_br_target_mux,     `SRC_SEL_W, exe_cs_o_branch_target_sel, exe_cs_i_branch_target_sel, overriden_br_sel, op_in_modrm)
     assign exe_cs_o_shift_by_one       = exe_cs_i_shift_by_one;
-    assign exe_cs_o_br_ucond           = ff_push ? 1'b0 : exe_cs_i_br_ucond;
+    `MUX_2(exe_br_ucond_mux,      1,          exe_cs_o_br_ucond,      exe_cs_i_br_ucond,         1'b0,    ff_push)
     assign exe_cs_o_relative_branch    = exe_cs_i_relative_branch;
     assign exe_cs_o_special_br         = exe_cs_i_special_br;
     assign exe_cs_o_is_far             = exe_cs_i_is_far;
-    assign exe_cs_o_is_call            = (ff_jmp || ff_push) ? 1'b0 : exe_cs_i_is_call;
+    `MUX_2(exe_is_call_mux,       1,          exe_cs_o_is_call,       exe_cs_i_is_call,          1'b0,    ff_jmp_push)
     assign exe_cs_o_second_flag_needed = exe_cs_i_second_flag_needed;
     assign exe_cs_o_rep_no_zf_update   = 1'b0;
+
     // =====================
     // WB
     // =====================
-    assign wb_cs_o_ST_OP                  = invalid_inst ? 1'b0 : ff_jmp ? 1'b0 : mem_cs_i_ST_OP;
-    assign wb_cs_o_WB_DR                  = invalid_inst ? 1'b0 : (ff_jmp || ff_call || ff_push) ? 1'b0 : rr_cs_i_dr_wr;
-    assign wb_cs_o_WB_SR                  = invalid_inst ? 1'b0 : xchg ? 1'b1 : ff_jmp ? 1'b0 : rr_cs_i_sr_wr;
-    assign wb_cs_o_WB_EAX                 = invalid_inst ? 1'b0 : cmpxchg ? 1'b1 : 1'b0;
+    // sel={invalid_inst, ff_jmp}: 00->mem_cs_i_ST_OP, 01->0, 10->0, 11->0
+    `MUX_4(wb_st_op_mux,          1,          wb_cs_o_ST_OP,          mem_cs_i_ST_OP,            1'b0, 1'b0, 1'b0, {invalid_inst, ff_jmp})
+    // sel={invalid_inst, ff_jmp_call_push}: 00->rr_cs_i_dr_wr, 01->0, 10->0, 11->0
+    `MUX_4(wb_wb_dr_mux,          1,          wb_cs_o_WB_DR,          rr_cs_i_dr_wr,             1'b0, 1'b0, 1'b0, {invalid_inst, ff_jmp_call_push})
+    // 3-level: invalid_inst>0, xchg>1, ff_jmp>0, else rr_cs_i_sr_wr
+    // inner sel={xchg, ff_jmp}: 00->rr_cs_i_sr_wr, 01->0, 10->1, 11->1
+    wire wb_sr_inner;
+    `MUX_4(wb_sr_inner_mux,       1,          wb_sr_inner,            rr_cs_i_sr_wr,             1'b0, 1'b1, 1'b1, {xchg, ff_jmp})
+    `MUX_2(wb_wb_sr_mux,          1,          wb_cs_o_WB_SR,          wb_sr_inner,               1'b0,    invalid_inst)
+    // sel={invalid_inst, cmpxchg}: 00->0, 01->1, 10->0, 11->0
+    `MUX_4(wb_wb_eax_mux,         1,          wb_cs_o_WB_EAX,         1'b0,                      1'b1, 1'b0, 1'b0, {invalid_inst, cmpxchg})
 
 endmodule
