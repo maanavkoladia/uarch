@@ -16,6 +16,7 @@ allTestCasePaths=(
     "config/MovHeavy"
     "config/simpleFarTest"
     "config/TheBigOne"
+    "config/MMIO"
 )
 
 
