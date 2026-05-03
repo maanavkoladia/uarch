@@ -31,20 +31,12 @@ module MEM (
     // Only the wb_stall field is consumed
     input  wb_outputs_t     wb_outs_i,
 
-    // From dcache -- one port per dcache port (was hit[NUM_DCACHE_PORTS] /
-    //                                          cacheline[NUM_DCACHE_PORTS][CL_B])
-    input  wire             hit_0_i,
-    input  wire             hit_1_i,
-    input  wire             hit_2_i,
-    input  wire             hit_3_i,
+    // From dcache
+    input  bool             hit           [NUM_DCACHE_PORTS],
+    input  byte_t           cacheline     [NUM_DCACHE_PORTS][CACHE_LINES_SIZE_B],
 
-    input  byte_t           cacheline_0_i [CACHE_LINES_SIZE_B],
-    input  byte_t           cacheline_1_i [CACHE_LINES_SIZE_B],
-    input  byte_t           cacheline_2_i [CACHE_LINES_SIZE_B],
-    input  byte_t           cacheline_3_i [CACHE_LINES_SIZE_B],
-
-    input  wire             hit_MIO_i,
-    input  byte_t           line_MIO_i    [CACHE_LINES_SIZE_B],
+    input  bool             hit_MIO,
+    input  byte_t           line_MIO      [CACHE_LINES_SIZE_B],
 
     output exe_latches_t    exe_latches_next_o,
     output mem_outputs_t    outs_o
@@ -70,11 +62,11 @@ module MEM (
     genvar gi;
     generate
         for (gi = 0; gi < CACHE_LINES_SIZE_B; gi = gi + 1) begin : pack_cl
-            assign cacheline_0_packed[gi*8 +: 8] = cacheline_0_i[gi];
-            assign cacheline_1_packed[gi*8 +: 8] = cacheline_1_i[gi];
-            assign cacheline_2_packed[gi*8 +: 8] = cacheline_2_i[gi];
-            assign cacheline_3_packed[gi*8 +: 8] = cacheline_3_i[gi];
-            assign line_MIO_packed   [gi*8 +: 8] = line_MIO_i   [gi];
+            assign cacheline_0_packed[gi*8 +: 8] = cacheline[0][gi];
+            assign cacheline_1_packed[gi*8 +: 8] = cacheline[1][gi];
+            assign cacheline_2_packed[gi*8 +: 8] = cacheline[2][gi];
+            assign cacheline_3_packed[gi*8 +: 8] = cacheline[3][gi];
+            assign line_MIO_packed   [gi*8 +: 8] = line_MIO    [gi];
         end
     endgenerate
 
@@ -201,11 +193,11 @@ module MEM (
     wire vcap_2;
     wire vcap_3;
     wire vcap_mio;
-    `AND_2(and_vcap_0,   1, vcap_0,   hit_0_i,   valid_w)
-    `AND_2(and_vcap_1,   1, vcap_1,   hit_1_i,   valid_w)
-    `AND_2(and_vcap_2,   1, vcap_2,   hit_2_i,   valid_w)
-    `AND_2(and_vcap_3,   1, vcap_3,   hit_3_i,   valid_w)
-    `AND_2(and_vcap_mio, 1, vcap_mio, hit_MIO_i, valid_w)
+    `AND_2(and_vcap_0,   1, vcap_0,   hit[0],   valid_w)
+    `AND_2(and_vcap_1,   1, vcap_1,   hit[1],   valid_w)
+    `AND_2(and_vcap_2,   1, vcap_2,   hit[2],   valid_w)
+    `AND_2(and_vcap_3,   1, vcap_3,   hit[3],   valid_w)
+    `AND_2(and_vcap_mio, 1, vcap_mio, hit_MIO,  valid_w)
 
     // ---------- WE for valid bit registers ----------
     wire we_v_0;
@@ -265,11 +257,11 @@ module MEM (
         .LD_XCL        (LD_XCL_w),
         .LD_OP         (LD_OP_w),
         .MIO           (MIO_w),
-        .hit_0         (hit_0_i),
-        .hit_1         (hit_1_i),
-        .hit_2         (hit_2_i),
-        .hit_3         (hit_3_i),
-        .hit_MIO       (hit_MIO_i),
+        .hit_0         (hit[0]),
+        .hit_1         (hit[1]),
+        .hit_2         (hit[2]),
+        .hit_3         (hit[3]),
+        .hit_MIO       (hit_MIO),
         .hit_buf_v_0   (hit_buf_v_0),
         .hit_buf_v_1   (hit_buf_v_1),
         .hit_buf_v_2   (hit_buf_v_2),
@@ -407,10 +399,10 @@ module MEM (
     `INV_N(inv_hbv_3, 1, hit_buf_v_3, hit_buf_v_3_n)
 
     wire hit_no_buf_0, hit_no_buf_1, hit_no_buf_2, hit_no_buf_3;
-    `AND_2(and_hnb_0, 1, hit_no_buf_0, hit_0_i, hit_buf_v_0_n)
-    `AND_2(and_hnb_1, 1, hit_no_buf_1, hit_1_i, hit_buf_v_1_n)
-    `AND_2(and_hnb_2, 1, hit_no_buf_2, hit_2_i, hit_buf_v_2_n)
-    `AND_2(and_hnb_3, 1, hit_no_buf_3, hit_3_i, hit_buf_v_3_n)
+    `AND_2(and_hnb_0, 1, hit_no_buf_0, hit[0], hit_buf_v_0_n)
+    `AND_2(and_hnb_1, 1, hit_no_buf_1, hit[1], hit_buf_v_1_n)
+    `AND_2(and_hnb_2, 1, hit_no_buf_2, hit[2], hit_buf_v_2_n)
+    `AND_2(and_hnb_3, 1, hit_no_buf_3, hit[3], hit_buf_v_3_n)
 
     // (hit_i & ~hit_buf_v_i) | flush   -- per port
     wire hit_or_flush_0, hit_or_flush_1, hit_or_flush_2, hit_or_flush_3;
@@ -454,7 +446,7 @@ module MEM (
     wire clr_dcache_mio_latch_w;
 
     `INV_N(inv_hbmiov,    1, hit_buf_mio_v,   hit_buf_mio_v_n)
-    `AND_2(and_hMIOnb,    1, hit_MIO_no_buf,  hit_MIO_i, hit_buf_mio_v_n)
+    `AND_2(and_hMIOnb,    1, hit_MIO_no_buf,  hit_MIO, hit_buf_mio_v_n)
     `OR_2 (or_hMIOoflush, 1, hit_MIO_or_flush, hit_MIO_no_buf, flush_w)
     `AND_4(and_clrmio,    1, clr_dcache_mio_latch_w,
            MIO_w, LD_OP_w, hit_MIO_or_flush, valid_w)
