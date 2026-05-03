@@ -9,6 +9,7 @@ GEN_EXE_SRC_FILES = \
 
 # EXE source files
 EXE_SRC_FILES = \
+	$(GEN_EXE_SRC_FILES) \
     $(EXE_PATH_INTERNAL)/alu_input_sel.sv \
     $(EXE_PATH_INTERNAL)/bit_vec_logic.sv \
     $(EXE_PATH_INTERNAL)/branch_res.sv \

@@ -134,7 +134,7 @@ module DCache_Arbitration (
     //oe doee not need ot be checked in the first conditional
     always_comb begin
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            readyForNewReq[i] = (memStage_CLR_REQ[i] && reqs_2_blocks_o[i].oe)
+            readyForNewReq[i] = (memStage_CLR_REQ[i]  && reqs_2_blocks_o[i].oe)
             || (reqs_2_blocks_o[i].we && block_hit_i[i])
             || block_idleness[i];
         end

@@ -11,6 +11,7 @@ FETCH_SRC_FILES = \
 	$(FETCH_PATH_INTERNAL)/Predictor/two_bit_sat_count.sv \
 	$(FETCH_PATH_INTERNAL)/Predictor/Predictor.sv \
 	$(FETCH_PATH_INTERNAL)/BTB.sv \
+	$(FETCH_PATH_INTERNAL)/SegmentTranslation.sv \
 	$(FETCH_PATH_INTERNAL)/SPC_Sel_Logic.sv \
 	$(FETCH_PATH_INTERNAL)/IDM_Ctrl_Logic.sv \
 	$(FETCH_PATH_INTERNAL)/IDM_Invalidate_Logic.sv \
@@ -19,4 +20,5 @@ FETCH_SRC_FILES = \
 	$(FETCH_PATH_INTERNAL)/ICache_En_Logic.sv \
 	$(FETCH_PATH_INTERNAL)/Fetch.sv \
 
-FETCH_STRUCTURAL_SRC_FILES = 
+FETCH_STRUCTURAL_SRC_FILES = \
+	$(FETCH_PATH_INTERNAL)/structural/*.sv

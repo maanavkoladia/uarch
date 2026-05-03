@@ -1,0 +1,42 @@
+
+
+the goal is to port my fetch module in my system verilog project into pure 2005 structural verilog.
+
+we will be doing this one module at a time
+
+I will give you an stdcell lib of macros that you will use to port to structural
+
+DO NOT create your own cells, if you are missing some i will implement/provide for you
+
+i will start with the predictor and btb module in the fetch.sv module
+
+you need to port these five modules, replace the code in them to be structural, you are only allowed to edit these 5 files
+
+BTB.sv
+BTFN.sv
+GShare.sv
+Predictor.sv
+two_bit_sat_count.sv
+
+Take extra time to fully understand how the modules functions and interacts with the rest of the system. 
+
+When porting to structural make sure you dont use any always block just assigns. no turnarys or logical and bitwise operators. it has to be fully gate implentations. you can only use assigns just for wires. 
+
+Also make sure to understand the fetch common package.
+
+When unrolling struct, DO NOT make one giant wire, create more ports as needed, that needs to be readable by me
+
+ensure that the outputs of the modules that you update DO NOT have system verilog construct in them. 
+
+then in the module that instatiates that modules that you port, ie in this case Fetch.sv in the structural folder, make sure to change the
+instantation of them to match the new ports.
+
+for the gshare specifically, make sure that I can still configure the size of the PHT using and macro at the top of the file. same goes BTB
+
+Plan a way to port fetch and make sure you understand how to unroll structs and properly implent the fetch logic. 
+
+Let me know if you have any questions, dont make assumes and take time to understand how fetch modules work.
+
+create an MD how fetch work, when we port future modules, you can use it as reference
+
+

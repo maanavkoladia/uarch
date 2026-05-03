@@ -159,7 +159,7 @@ push: clean
 pull: 
 	git pull
 
-full: clean gen all run compare
+full: clean gen all run compare	
 
 test: clean gen all
 	./test.sh -a 

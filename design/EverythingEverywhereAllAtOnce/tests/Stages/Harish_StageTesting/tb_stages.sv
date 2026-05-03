@@ -23,6 +23,22 @@ module tb_stages ();
     uint32_t flush_count;
     uint32_t vcache_hits;
     uint32_t icache_hits;
+
+    int logfd_spc;
+    int logdf_eip;
+    initial logfd_spc = $fopen("info_log", "w");
+
+    
+    task automatic sample_spc();
+        #6
+        $fdisplay(logfd_spc, "time %0t, cycle_count: %0d, SPC: 0x%0h, EIP: 0x%0h ", $time, cycle_count, `FETCH_UNIT_PATH.SPC, `DECODE_UNIT_PATH.EIP);
+    endtask
+
+
+    always_ff @(posedge clk) begin
+        sample_spc();
+    end
+
     always_ff @(posedge clk) begin
         if(!rst) begin
             idm_empty_cycle_counts <= 0;
