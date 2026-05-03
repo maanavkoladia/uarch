@@ -201,7 +201,7 @@ module pg_cell (
         a, 
         b
     )
-    xor2$ u_prop (
+     `XOR_2 (u_prop, 1,
         p,
         a,
         b
@@ -316,7 +316,7 @@ module sum_cell (
     input  wire c_in,
     output wire sum
 );
-    xor2$ u_xor (
+    `XOR_2   (u_xor, 1,
         sum,
         p,
         c_in
