@@ -1,3 +1,7 @@
+import core_stage_latches_pkg::*;
+import core_common_pkg::*;
+import interconnect_pkg::*;
+
 module mem_miss_stall_logic(
     input valid,
     input bool LD_XCL,

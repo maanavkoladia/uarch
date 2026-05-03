@@ -1,3 +1,5 @@
+import core_stage_latches_pkg::*;
+
 module br_info_processing (
     input bool cs_branch,
     input uint32_t eip,

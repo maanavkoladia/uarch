@@ -128,8 +128,10 @@ module MPS_COMP_EQ #(
     //  Widths not listed below cause a compile-time $fatal.
     // ============================================================
     generate
-
-        if (WIDTH == 2) begin : EQ_2
+        if (WIDTH == 1) begin : EQ_1
+            assign eq = b;
+        end
+        else if (WIDTH == 2) begin : EQ_2
             // 1 level: and2$
             // Critical path: 0.25 + 0.35 = 0.60 ns
             and2$ u0 (

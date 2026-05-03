@@ -8,8 +8,8 @@ module MIO_Q(
 
 
     mio_entry_t mio_q;
-    bool full;
-    bool empty;
+    bool full_q;
+    bool empty_q;
 
     bool next_full;
     bool next_empty;
