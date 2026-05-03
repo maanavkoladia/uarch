@@ -38,7 +38,7 @@ module WB (
 );
 
 
-    bool stall_flop;
+    //bool stall_flop;
     bool stall_flop_next;
     bool mio_push_fail;
 
@@ -103,10 +103,10 @@ module WB (
     };
 
     //stall mask logic for SB and wb
-    always_ff @(posedge clk)begin
-        if(!rst) stall_flop <=0;
-        else stall_flop <= stall_flop_next;
-    end
+    //always_ff @(posedge clk)begin
+    //    if(!rst) stall_flop <=0;
+    //    else stall_flop <= stall_flop_next;
+    //end
 
 
     // ===================================================================
