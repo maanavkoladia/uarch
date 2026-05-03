@@ -1,0 +1,24 @@
+================================================================================
+  SIM vs RTL DUMP COMPARISON  (registers + flags per instruction)
+================================================================================
+  REG  — SIM: 14  RTL: 13
+  FLAG — SIM: 14  RTL: 13
+
+[OK ] #0000  EIP=0x00000000  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0001  EIP=0x00000005  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0002  EIP=0x00000008  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0003  EIP=0x0000000D  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0004  EIP=0x00000010  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0005  EIP=0x00000015  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0006  EIP=0x0000001A  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0007  EIP=0x00000021  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0008  EIP=0x00000024  sar           CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0009  EIP=0x00000026  mov           CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0010  EIP=0x00000029  mov           CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0011  EIP=0x0000002F  mov           CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0012  EIP=0x00000032  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[ONLY_SIM] #0013  EIP=0x00000034  hlt
+
+================================================================================
+  SUMMARY: 13/14 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
+================================================================================
