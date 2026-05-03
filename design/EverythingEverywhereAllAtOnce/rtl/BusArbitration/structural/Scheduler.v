@@ -71,18 +71,21 @@ module Scheduler (
     `REG_RST(lat_dc_eb_2, 15, clk, rst, dCache_2_Sch_evictionBufAddr_2_i, sch_lat_eb_addr_2)
     `REG_RST(lat_dc_eb_3, 15, clk, rst, dCache_2_Sch_evictionBufAddr_3_i, sch_lat_eb_addr_3)
 
-    wire [3:0] sch_lat_mio_req;
-    `REG_RST(lat_mio, 4, clk, rst, dCache_2_Sch_req_mio_i, sch_lat_mio_req)
+     wire [3:0] sch_lat_mio_req;
+     `REG_RST(lat_mio, 4, clk, rst, dCache_2_Sch_req_mio_i, sch_lat_mio_req)
 
-    wire [3:0] sch_lat_dma_req;
-    `REG_RST(lat_dma_req, 4, clk, rst, dma_2_sch_dma_req_i, sch_lat_dma_req)
+     wire [3:0] sch_lat_dma_req;
+     `REG_RST(lat_dma_req, 4, clk, rst, dma_2_sch_dma_req_i, sch_lat_dma_req)
 
-    wire [14:0] sch_lat_dma_write_addr;
-    `REG_RST(lat_dma_addr, 15, clk, rst, dma_2_sch_writeBuf_Address_i, sch_lat_dma_write_addr)
+     wire [14:0] sch_lat_dma_write_addr;
+     `REG_RST(lat_dma_addr, 15, clk, rst, dma_2_sch_writeBuf_Address_i, sch_lat_dma_write_addr)
 
-    wire [7:0]  sch_lat_writeBuf_V_List;
-    `REG_RST(lat_wbV, 8, clk, rst, mem_2_Sch_writeBuf_V_i, sch_lat_writeBuf_V_List)
-
+     wire [7:0]  sch_lat_writeBuf_V_List;
+     `REG_RST(lat_wbV, 8, clk, rst, mem_2_Sch_writeBuf_V_i, sch_lat_writeBuf_V_List)
+       // assign sch_lat_mio_req = dCache_2_Sch_req_mio_i;
+       // assign sch_lat_dma_req = dma_2_sch_dma_req_i;
+       // assign sch_lat_dma_write_addr = sch_lat_dma_write_addr;
+       // assign sch_lat_writeBuf_V_List = sch_lat_writeBuf_V_List;
     // ------------------------------------------------------------------
     // DMA clash cleaning:
     //   if writeBuf_V[ dma_addr[6:4] ] == 1 -> dma_req_clean = NO_REQ

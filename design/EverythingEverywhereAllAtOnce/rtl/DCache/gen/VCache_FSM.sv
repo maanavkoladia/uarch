@@ -115,19 +115,19 @@ wire NS_0_t4;
 
 `OR_5(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4)
 
-// NS_1 = (S_0 & !S_1 & !S_2) | (!S_0 & !S_1 & S_2) | (!S_0 & S_1 & !S_2) | (!S_0 & !S_2 & V_Hit_i & !we_i) | (!S_0 & !S_2 & !V_Hit_i & DC_will_evict_i & EB_V_i) | (!S_0 & !S_2 & !V_Hit_i & DC_will_evict_i & !VC_needs_2_evict_i)
+// NS_1 = (!S_0 & !S_1 & S_2) | (!S_0 & S_1 & !S_2) | (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i) | (!S_1 & !S_2 & !V_Hit_i & DC_will_evict_i & EB_V_i) | (!S_1 & !S_2 & !V_Hit_i & DC_will_evict_i & !VC_needs_2_evict_i)
 wire NS_1_t0;
-`AND_3(NS_1_and0, 1, NS_1_t0, S_0, S_1_inv, S_2_inv)
+`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1_inv, S_2)
 wire NS_1_t1;
-`AND_3(NS_1_and1, 1, NS_1_t1, S_0_inv, S_1_inv, S_2)
+`AND_3(NS_1_and1, 1, NS_1_t1, S_0_inv, S_1, S_2_inv)
 wire NS_1_t2;
-`AND_3(NS_1_and2, 1, NS_1_t2, S_0_inv, S_1, S_2_inv)
+`AND_3(NS_1_and2, 1, NS_1_t2, S_0, S_1_inv, S_2_inv)
 wire NS_1_t3;
-`AND_4(NS_1_and3, 1, NS_1_t3, S_0_inv, S_2_inv, V_Hit_i, we_i_inv)
+`AND_4(NS_1_and3, 1, NS_1_t3, S_1_inv, S_2_inv, V_Hit_i, we_i_inv)
 wire NS_1_t4;
-`AND_5(NS_1_and4, 1, NS_1_t4, S_0_inv, S_2_inv, V_Hit_i_inv, DC_will_evict_i, EB_V_i)
+`AND_5(NS_1_and4, 1, NS_1_t4, S_1_inv, S_2_inv, V_Hit_i_inv, DC_will_evict_i, EB_V_i)
 wire NS_1_t5;
-`AND_5(NS_1_and5, 1, NS_1_t5, S_0_inv, S_2_inv, V_Hit_i_inv, DC_will_evict_i, VC_needs_2_evict_i_inv)
+`AND_5(NS_1_and5, 1, NS_1_t5, S_1_inv, S_2_inv, V_Hit_i_inv, DC_will_evict_i, VC_needs_2_evict_i_inv)
 
 `OR_6(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4, NS_1_t5)
 
@@ -139,13 +139,13 @@ wire NS_2_t1;
 
 `OR_2(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1)
 
-// WR_2_EB_o = (!S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2)
-wire WR_2_EB_o_t0;
-`AND_3(WR_2_EB_o_and0, 1, WR_2_EB_o_t0, S_0_inv, S_1, S_2_inv)
-wire WR_2_EB_o_t1;
-`AND_3(WR_2_EB_o_and1, 1, WR_2_EB_o_t1, S_0_inv, S_1_inv, S_2)
+// WR_2_EB_o = (!S_0 & !S_1 & S_2) | (!S_0 & S_1 & !S_2)
+wire WR_2_EB_o_n0;
+`NAND_3(WR_2_EB_o_nand0, 1, WR_2_EB_o_n0, S_0_inv, S_1_inv, S_2)
+wire WR_2_EB_o_n1;
+`NAND_3(WR_2_EB_o_nand1, 1, WR_2_EB_o_n1, S_0_inv, S_1, S_2_inv)
 
-`OR_2(WR_2_EB_o_or, 1, WR_2_EB_o, WR_2_EB_o_t0, WR_2_EB_o_t1)
+`NAND_2(WR_2_EB_o_nand, 1, WR_2_EB_o, WR_2_EB_o_n0, WR_2_EB_o_n1)
 
 // CLR_D_SWAP_V_o = (S_0 & S_1 & !S_2)
 `AND_3(CLR_D_SWAP_V_o_and, 1, CLR_D_SWAP_V_o, S_0, S_1, S_2_inv)
@@ -154,25 +154,25 @@ wire WR_2_EB_o_t1;
 `AND_3(Read_DSWAP_o_and, 1, Read_DSWAP_o, S_0, S_1, S_2_inv)
 
 // Write_VSWAP_o = (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i)
-wire Write_VSWAP_o_t0;
-`AND_3(Write_VSWAP_o_and0, 1, Write_VSWAP_o_t0, S_0, S_1_inv, S_2_inv)
-wire Write_VSWAP_o_t1;
-`AND_4(Write_VSWAP_o_and1, 1, Write_VSWAP_o_t1, S_1_inv, S_2_inv, V_Hit_i, we_i_inv)
+wire Write_VSWAP_o_n0;
+`NAND_3(Write_VSWAP_o_nand0, 1, Write_VSWAP_o_n0, S_0, S_1_inv, S_2_inv)
+wire Write_VSWAP_o_n1;
+`NAND_4(Write_VSWAP_o_nand1, 1, Write_VSWAP_o_n1, S_1_inv, S_2_inv, V_Hit_i, we_i_inv)
 
-`OR_2(Write_VSWAP_o_or, 1, Write_VSWAP_o, Write_VSWAP_o_t0, Write_VSWAP_o_t1)
+`NAND_2(Write_VSWAP_o_nand, 1, Write_VSWAP_o, Write_VSWAP_o_n0, Write_VSWAP_o_n1)
 
 // Update_LRU_o = (S_0 & S_1 & !S_2)
 `AND_3(Update_LRU_o_and, 1, Update_LRU_o, S_0, S_1, S_2_inv)
 
-// busy_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
-wire busy_o_t0;
-`AND_2(busy_o_and0, 1, busy_o_t0, S_1, S_2_inv)
-wire busy_o_t1;
-`AND_2(busy_o_and1, 1, busy_o_t1, S_0, S_2_inv)
-wire busy_o_t2;
-`AND_3(busy_o_and2, 1, busy_o_t2, S_0_inv, S_1_inv, S_2)
+// busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2)
+wire busy_o_n0;
+`NAND_2(busy_o_nand0, 1, busy_o_n0, S_0, S_2_inv)
+wire busy_o_n1;
+`NAND_2(busy_o_nand1, 1, busy_o_n1, S_1, S_2_inv)
+wire busy_o_n2;
+`NAND_3(busy_o_nand2, 1, busy_o_n2, S_0_inv, S_1_inv, S_2)
 
-`OR_3(busy_o_or, 1, busy_o, busy_o_t0, busy_o_t1, busy_o_t2)
+`NAND_3(busy_o_nand, 1, busy_o, busy_o_n0, busy_o_n1, busy_o_n2)
 
 // blocked_o = (!S_0 & S_1 & !S_2 & EB_V_i)
 `AND_4(blocked_o_and, 1, blocked_o, S_0_inv, S_1, S_2_inv, EB_V_i)

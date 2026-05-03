@@ -40,6 +40,8 @@ Cell library:     std_cell_macros.vh
     `INV_N(unit, 1, in, out)
     `AND_N(unit, 1, out, in0..inN-1)   N in 2..12
     `OR_N (unit, 1, out, in0..inN-1)   N in 2..12
+    `NAND_N(unit, 1, out, in0..inN-1)  N in 2..4   (preferred over AND at small fan-in)
+    `NOR_N (unit, 1, out, in0..inN-1)  N in 2..4   (preferred over OR  at small fan-in)
     `REG_RST(unit, 1, clk, rst, d, q)  -- always samples D, async rst->0
 """
 
@@ -52,6 +54,12 @@ ERROR_STATE_NAME = "ERROR"
 
 # Maximum AND/OR fan-in supported by the macro library (AND_2..AND_12 / OR_2..OR_12)
 MAX_GATE_FANIN = 12
+
+# NAND/NOR are far faster than AND/OR at small fan-ins, so we prefer them for
+# 2..4 input gates: NAND-NAND topology for multi-term SOP and NOR for single
+# product terms whose literals are all negated.  Above this width we fall back
+# to AND/OR (the speed advantage shrinks and trees would need polarity tracking).
+MAX_NAND_FANIN = 4
 
 def log(msg=""):
     print(msg)
@@ -745,6 +753,24 @@ def emit_or(f, unit_base, out_wire, in_wires):
         _reduce_tree(f, "OR", unit_base, out_wire, in_wires)
 
 
+def emit_nand(f, unit_base, out_wire, in_wires):
+    """Emit a single NAND_N macro call (2..MAX_NAND_FANIN)."""
+    n = len(in_wires)
+    if n < 2 or n > MAX_NAND_FANIN:
+        die(f"emit_nand: unsupported fan-in {n} for {unit_base}")
+    ins = ", ".join(in_wires)
+    f.write(f"`NAND_{n}({unit_base}, 1, {out_wire}, {ins})\n")
+
+
+def emit_nor(f, unit_base, out_wire, in_wires):
+    """Emit a single NOR_N macro call (2..MAX_NAND_FANIN)."""
+    n = len(in_wires)
+    if n < 2 or n > MAX_NAND_FANIN:
+        die(f"emit_nor: unsupported fan-in {n} for {unit_base}")
+    ins = ", ".join(in_wires)
+    f.write(f"`NOR_{n}({unit_base}, 1, {out_wire}, {ins})\n")
+
+
 # ---------------------------------------------------------------------------
 # Collect all signals that appear negated -- they need inverter wires.
 # ---------------------------------------------------------------------------
@@ -910,18 +936,52 @@ with open(sv_path, 'w') as f:
             f.write(f"assign {sig} = 1'b0;\n\n")
             continue
 
-        # ── Single product term (AND only, no OR needed) ---------------------
+        # ── Single product term ---------------------------------------------
         if n_terms == 1:
-            wires = [literal_to_wire(lit) for lit in terms[0]]
-            if terms[0] == ['1']:
+            term = terms[0]
+            if term == ['1']:
                 # Constant one (tautology cube).
                 f.write(f"assign {sig} = 1'b1;\n\n")
-            else:
-                emit_and(f, f"{sig}_and", sig, wires)
+                continue
+            # NOR fast-path: !a & !b & ... collapses to NOR(a, b, ...) on the
+            # un-negated source wires -- no extra inverters, swaps a slow AND
+            # of inverted wires for a single fast NOR.
+            if (2 <= len(term) <= MAX_NAND_FANIN
+                    and all(lit.startswith('!') for lit in term)):
+                emit_nor(f, f"{sig}_nor", sig,
+                         [lit.lstrip('!') for lit in term])
                 f.write("\n")
+                continue
+            wires = [literal_to_wire(lit) for lit in term]
+            emit_and(f, f"{sig}_and", sig, wires)
+            f.write("\n")
             continue
 
-        # ── Multiple product terms: AND into temps, then OR -----------------
+        # ── Multiple product terms ------------------------------------------
+        # NAND-NAND fast-path: when every term and the outer OR fit in NAND
+        # fan-in range, swap AND->NAND and OR->NAND.  The per-term inversion
+        # produced by the inner NANDs is cancelled by the outer NAND, so this
+        # adds no inverters relative to AND-OR while replacing every gate on
+        # the critical path with a faster NAND.
+        use_nand_nand = (
+            2 <= n_terms <= MAX_NAND_FANIN
+            and all(2 <= len(t) <= MAX_NAND_FANIN and t != ['1'] for t in terms)
+        )
+
+        if use_nand_nand:
+            term_wires = []
+            for i, term in enumerate(terms):
+                t_wire = f"{sig}_n{i}"   # holds !(product of literals)
+                f.write(f"wire {t_wire};\n")
+                wires = [literal_to_wire(lit) for lit in term]
+                emit_nand(f, f"{sig}_nand{i}", t_wire, wires)
+                term_wires.append(t_wire)
+            f.write("\n")
+            emit_nand(f, f"{sig}_nand", sig, term_wires)
+            f.write("\n")
+            continue
+
+        # Fallback: AND each term into a temp, then OR the temps.
         term_wires = []
         for i, term in enumerate(terms):
             t_wire = f"{sig}_t{i}"

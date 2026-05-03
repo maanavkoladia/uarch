@@ -23,7 +23,7 @@ module Scheduler (
 
     //make the dcache scheduler
     req_2_sch_t dcache_Best_Pick;
-    logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] dcache_Best_Pick_BK_ID;
+    logic [$clog2(NUM_DCACHE_PORTS) - 1 : 0] dcache_Best_Pick_BK_ID, dcache_Best_Pick_BK_ID_ff;
 
 
     Scheduler_DCachePicking dcache_picking_unit (
@@ -34,38 +34,38 @@ module Scheduler (
         .bestPick_BK_ID_o(dcache_Best_Pick_BK_ID)
     );
 
-    always_ff @(posedge clk)begin
+    always_comb begin
         if (!rst) begin
-            sch_latches.i_cache_req <= NO_REQ;
+            sch_latches.i_cache_req = NO_REQ;
 
-            for (int i = 0; i < NUM_DCACHE_PORTS; i++) sch_latches.d_cache_reqs[i] <= NO_REQ;
-            sch_latches.eb_addr <= '{default: '0};
+            for (int i = 0; i < NUM_DCACHE_PORTS; i++) sch_latches.d_cache_reqs[i] = NO_REQ;
+            sch_latches.eb_addr = '{default: '0};
 
-            sch_latches.mio_req <= NO_REQ;
-            sch_latches.dma_write_addr <= 0;
-            sch_latches.dma_req <= NO_REQ;
+            sch_latches.mio_req = NO_REQ;
+            sch_latches.dma_write_addr = 0;
+            sch_latches.dma_req = NO_REQ;
 
-            sch_latches.writeBuf_V_List <= '{default: '0};
+            sch_latches.writeBuf_V_List = '{default: '0};
 
         end else begin
             // ICache
-            sch_latches.i_cache_req <= iCache_2_Sch_i.req;
+            sch_latches.i_cache_req = iCache_2_Sch_i.req;
 
             // DCache (per port)
             for (int i = 0; i < NUM_DCACHE_PORTS; i++) begin
-                sch_latches.d_cache_reqs[i] <= dCache_2_Sch_i.req[i];
-                sch_latches.eb_addr[i]      <= dCache_2_Sch_i.evictionBufAddr[i];
+                sch_latches.d_cache_reqs[i] = dCache_2_Sch_i.req[i];
+                sch_latches.eb_addr[i]      = dCache_2_Sch_i.evictionBufAddr[i];
             end
 
             // MIO (comes from dcache struct)
-            sch_latches.mio_req <= dCache_2_Sch_i.req_mio;
+            sch_latches.mio_req = dCache_2_Sch_i.req_mio;
 
             // DMA
-            sch_latches.dma_req <= dma_2_sch_i.dma_req;
-            sch_latches.dma_write_addr <= dma_2_sch_i.writeBuf_Address;
+            sch_latches.dma_req = dma_2_sch_i.dma_req;
+            sch_latches.dma_write_addr = dma_2_sch_i.writeBuf_Address;
 
             // MEM write buffer valid list
-            sch_latches.writeBuf_V_List <= mem_2_Sch_i.writeBuf_V;
+            sch_latches.writeBuf_V_List = mem_2_Sch_i.writeBuf_V;
         end
     end
 
@@ -90,10 +90,16 @@ module Scheduler (
     req_2_sch_t IC_MIO_DMA_PICK;
     assign IC_MIO_DMA_PICK = IC_MIO_Pick >= dma_req ? IC_MIO_Pick : dma_req;
 
-    req_2_sch_t bestPick;
+    req_2_sch_t bestPick, bestPick_ff;
     assign bestPick = dcache_Best_Pick >= IC_MIO_DMA_PICK ? dcache_Best_Pick : IC_MIO_DMA_PICK;
 
-    assign bestPick_o = bestPick;
-    assign bestPick_bk_id_o = dcache_Best_Pick_BK_ID;
+    assign bestPick_o = bestPick_ff;
+    assign bestPick_bk_id_o = dcache_Best_Pick_BK_ID_ff;
+
+
+    always_ff @(posedge clk)begin
+        dcache_Best_Pick_BK_ID_ff <= dcache_Best_Pick_BK_ID;
+        bestPick_ff <= bestPick;
+    end
 
 endmodule
