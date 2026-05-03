@@ -149,6 +149,7 @@ clean:
 	rm -f ucli.key
 	rm -rf gen/
 	rm -rf logDumps/
+	rm -rf TestResults/
 
 push: clean
 	git add -A

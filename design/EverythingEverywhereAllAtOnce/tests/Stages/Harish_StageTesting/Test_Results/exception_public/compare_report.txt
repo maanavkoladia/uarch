@@ -1,0 +1,62 @@
+================================================================================
+  SIM vs RTL DUMP COMPARISON  (registers + flags per instruction)
+================================================================================
+  REG  — SIM: 14  RTL: 18
+  FLAG — SIM: 14  RTL: 18
+
+[OK ] #0000  EIP=0x00000000  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0001  EIP=0x00000005  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0002  EIP=0x0000000A  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0003  EIP=0x0000000D  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0004  EIP=0x00000012  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0005  EIP=0x00000015  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0006  EIP=0x0000001A  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0007  EIP=0x0000001F  shl           CF=1  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
+[ERR] #0008  EIP=0x00000023  mov         
+       *** REG   ESP: SIM=0x00000300  RTL=0x000002FC
+[ERR] #0009  EIP=0x0000002B  mov           !! EIP MISMATCH SIM=0x0000002B RTL=0x00000023
+       *** REG   ESP: SIM=0x00000300  RTL=0x000002FC
+       *** REG   EDI: SIM=0x00000B00  RTL=0x00000400
+[ERR] #0010  EIP=0x00000030  mov           !! EIP MISMATCH SIM=0x00000030 RTL=0x00000023
+       *** REG   ESP: SIM=0x00000300  RTL=0x000002F4
+       *** REG   EDI: SIM=0x00000B00  RTL=0x00000400
+       *** REG   GS: SIM=0x00000B00  RTL=0x00000000
+[ERR] #0011  EIP=0x00000033  mov           !! EIP MISMATCH SIM=0x00000033 RTL=0x00000052
+       FLAGS  SIM: CF=1  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+       *** FLAG  PF: SIM=1  RTL=0
+       *** FLAG  AF: SIM=0  RTL=1
+       *** FLAG  ZF: SIM=1  RTL=0
+       *** REG   EBX: SIM=0x000003B7  RTL=0x000003B6
+       *** REG   ESP: SIM=0x00000300  RTL=0x000002F4
+       *** REG   ESI: SIM=0x00000400  RTL=0x00000000
+       *** REG   EDI: SIM=0x00000B00  RTL=0x00000400
+       *** REG   GS: SIM=0x00000B00  RTL=0x00000000
+[ERR] #0012  EIP=0x00000038  add           !! EIP MISMATCH SIM=0x00000038 RTL=0x00000056
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  ZF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x000003B7  RTL=0x000003B6
+       *** REG   ESI: SIM=0x00000400  RTL=0x00000000
+       *** REG   EDI: SIM=0x00000B00  RTL=0x00000400
+       *** REG   GS: SIM=0x00000B00  RTL=0x00000000
+[ERR] #0013  EIP=0x0000003C  hlt           !! EIP MISMATCH SIM=0x0000003C RTL=0x00000023
+       FLAGS  SIM: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+       FLAGS  RTL: CF=1  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
+       *** FLAG  CF: SIM=0  RTL=1
+       *** FLAG  PF: SIM=0  RTL=1
+       *** FLAG  ZF: SIM=0  RTL=1
+       *** REG   EBX: SIM=0x000003B7  RTL=0x000003B6
+       *** REG   ESI: SIM=0x00000400  RTL=0x00000000
+       *** REG   EDI: SIM=0x00000B00  RTL=0x00000400
+       *** REG   GS: SIM=0x00000B00  RTL=0x00000000
+[ONLY_RTL] #0014  EIP=0x0000002B  ???
+[ONLY_RTL] #0015  EIP=0x00000030  ???
+[ONLY_RTL] #0016  EIP=0x00000033  ???
+[ONLY_RTL] #0017  EIP=0x00000038  ???
+
+================================================================================
+  SUMMARY: 8/18 matched  |  6 mismatched  |  0 sim-only  |  4 rtl-only
+================================================================================

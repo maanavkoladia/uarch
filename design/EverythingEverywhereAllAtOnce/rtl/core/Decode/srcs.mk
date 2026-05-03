@@ -39,3 +39,32 @@ DECODE_SRC_FILES = \
 
 #dont add gen files here are they are includede in the core srcs.mk file
 DECODE_STRUCTURAL_SRC_FILES = \
+
+
+
+
+
+# GEN_DECODE_SRC_FILES = \
+# 						  $(DECODE_PATH_INTERNAL)/../../defines/reg_ids_define.vh \
+# 						  $(DECODE_PATH_INTERNAL)/../../defines/control_store_define.vh \
+# 						  $(DECODE_PATH_INTERNAL)/structural/gen/MOD_LUT.v \
+# 						  $(DECODE_PATH_INTERNAL)/structural/gen/OP_LUT.v	\
+# 						  $(DECODE_PATH_INTERNAL)/structural/gen/PF_LUT.v \
+# 						  $(DECODE_PATH_INTERNAL)/structural/gen/rep_fsm.sv \
+# 						  $(DECODE_PATH_INTERNAL)/structural/gen/rep_movs_fsm.sv \
+# 						  $(DECODE_PATH_INTERNAL)/structural/gen/rep_cmp_fsm.sv \
+# 						  $(DECODE_PATH_INTERNAL)/structural/gen/ir_logic.v \
+# 						  $(DECODE_PATH_INTERNAL)/structural/gen/rr_valid_logic.v \
+
+# DECODE_SRC_FILES_STRUCTURAL = \
+# 								$(DECODE_PATH_INTERNAL)/structural/disp_finder_structural.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/imm_finder_structural.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/modrm_size.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/num_pf_gen.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/op_size.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/pf_checker.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/pf_vector_gen.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/ppu_structural.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/selection_logic_structural.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/sib_finder_structural.v \
+# 								$(DECODE_PATH_INTERNAL)/structural/predecode_structural.v \

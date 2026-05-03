@@ -1,0 +1,329 @@
+================================================================================
+  SIM vs RTL COMPARISON REPORT
+================================================================================
+  Sim instructions: 318
+  RTL commits:      317
+
+[OK ] #0000  0x00000000  mov           writes=EAX=0x00000100  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0001  0x00000005  mov           writes=DS=0x00000100  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0002  0x00000007  mov           writes=EAX=0x00000300  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0003  0x0000000C  mov           writes=SS=0x00000300  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0004  0x0000000E  mov           writes=ESP=0x00000FFF  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0005  0x00000013  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (RTL no-op: EBX)
+[OK ] #0006  0x00000018  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (RTL no-op: ESI)
+[OK ] #0007  0x0000001D  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0008  0x00000023  mov           writes=EAX=0xAAAA1111  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0009  0x00000025  add           writes=EBX=0xAAAA1111  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0010  0x00000027  mov           writes=EDI=0x00000010  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0011  0x0000002C  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0012  0x00000032  mov           writes=EAX=0xBBBB2222  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0013  0x00000034  add           writes=EBX=0x66653333  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=0
+[OK ] #0014  0x00000036  mov           writes=ECX=0x00000020  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=0
+[OK ] #0015  0x0000003B  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=0
+[OK ] #0016  0x00000041  mov           writes=EAX=0xCCCC3333  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=0
+[OK ] #0017  0x00000043  add           writes=EBX=0x33316666  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0018  0x00000045  mov           writes=EDX=0x00000030  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0019  0x0000004A  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0020  0x00000050  mov           writes=EAX=0xDDDD4444  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0021  0x00000052  add           writes=EBX=0x110EAAAA  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0022  0x00000054  mov           writes=EBP=0x00000040  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0023  0x00000059  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0024  0x00000060  mov           writes=EAX=0xEEEE5555  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0025  0x00000063  add           writes=EBX=0xFFFCFFFF  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0026  0x00000065  mov           writes=EAX=0x00000050  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0027  0x0000006A  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0028  0x00000070  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (RTL no-op: EAX)
+[OK ] #0029  0x00000075  mov           writes=ECX=0xFFFF6666  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0030  0x00000077  add           writes=EBX=0xFFFC6665  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0031  0x00000079  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1  (RTL no-op: ESI)
+[OK ] #0032  0x0000007E  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0033  0x00000085  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0034  0x0000008C  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0035  0x00000093  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0036  0x0000009A  mov           writes=EAX=0x11110001  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0037  0x0000009D  add           writes=EBX=0x110D6666  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0038  0x0000009F  mov           writes=EAX=0x11110002  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0039  0x000000A2  add           writes=EBX=0x221E6668  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0040  0x000000A4  mov           writes=EAX=0x11110003  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0041  0x000000A7  add           writes=EBX=0x332F666B  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0042  0x000000A9  mov           writes=EAX=0x11110004  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0043  0x000000AC  add           writes=EBX=0x4440666F  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0044  0x000000AE  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0045  0x000000B8  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0046  0x000000C2  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0047  0x000000CC  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0048  0x000000D6  mov           writes=EAX=0x22220001  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0049  0x000000DC  add           writes=EBX=0x66626670  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0050  0x000000DE  mov           writes=EAX=0x22220002  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0051  0x000000E4  add           writes=EBX=0x88846672  flags=CF=0 ZF=0 SF=1 OF=1 PF=1 AF=0
+[OK ] #0052  0x000000E6  mov           writes=EAX=0x22220003  flags=CF=0 ZF=0 SF=1 OF=1 PF=1 AF=0
+[OK ] #0053  0x000000EC  add           writes=EBX=0xAAA66675  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0054  0x000000EE  mov           writes=EAX=0x22220004  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0055  0x000000F4  add           writes=EBX=0xCCC86679  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0056  0x000000F6  mov           writes=EDI=0x00000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0057  0x000000FB  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0058  0x00000102  mov           writes=EAX=0x33330001  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0059  0x00000105  add           writes=EBX=0xFFFB667A  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0060  0x00000107  mov           writes=ECX=0x00000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0061  0x0000010C  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0062  0x00000113  mov           writes=EAX=0x33330002  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0063  0x00000116  add           writes=EBX=0x332E667C  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0064  0x00000118  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0  (RTL no-op: ESI)
+[OK ] #0065  0x0000011D  mov           writes=EDI=0x00000060  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0066  0x00000122  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0067  0x00000129  mov           writes=EAX=0x44440001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0068  0x0000012C  add           writes=EBX=0x7772667D  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0069  0x0000012E  mov           writes=ESI=0x00000010  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0070  0x00000133  mov           writes=ECX=0x00000008  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0071  0x00000138  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0072  0x0000013F  mov           writes=EAX=0x44440002  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0073  0x00000142  add           writes=EBX=0xBBB6667F  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0074  0x00000144  mov           writes=ESI=0x00000000  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0075  0x00000149  mov           writes=EDI=0x00000010  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0076  0x0000014E  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0077  0x00000155  mov           writes=EAX=0x55550001  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0078  0x00000158  add           writes=EBX=0x110B6680  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0079  0x0000015A  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0080  0x00000161  mov           writes=EAX=0x55550002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0081  0x00000164  add           writes=EBX=0x66606682  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0082  0x00000166  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0083  0x0000016D  mov           writes=EAX=0x55550003  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0084  0x00000170  add           writes=EBX=0xBBB56685  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0085  0x00000172  mov           writes=EAX=0x00000100  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0086  0x00000177  mov           writes=ECX=0x00000004  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0087  0x0000017C  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0088  0x00000183  mov           writes=EDX=0x55550004  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0089  0x00000186  add           writes=EBX=0x110A6689  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0090  0x00000188  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0  (RTL no-op: ESI)
+[OK ] #0091  0x0000018D  mov           writes=EDI=0x00000008  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0092  0x00000192  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0093  0x0000019A  mov           writes=EAX=0x66660001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0094  0x0000019E  add           writes=EBX=0x7770668A  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0095  0x000001A0  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0096  0x000001AB  mov           writes=EAX=0x66660002  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0097  0x000001B2  add           writes=EBX=0xDDD6668C  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0098  0x000001B4  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0099  0x000001BF  mov           writes=EAX=0x66660003  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0100  0x000001C6  add           writes=EBX=0x443C668F  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0101  0x000001C8  mov           writes=ESI=0x00000300  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0102  0x000001CD  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0103  0x000001D0  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0104  0x000001D4  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0105  0x000001D8  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0106  0x000001DC  mov           writes=EAX=0xDDCCBBAA  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0107  0x000001DE  add           writes=EBX=0x22092239  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0108  0x000001E0  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1  (RTL no-op: EAX)
+[OK ] #0109  0x000001E2  and           writes=EAX=0x000000AA  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0110  0x000001E7  add           writes=EBX=0x220922E3  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0111  0x000001E9  mov           writes=EAX=0x000000BB  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0112  0x000001EC  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0113  0x000001F1  add           writes=EBX=0x2209239E  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0114  0x000001F3  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0115  0x000001F9  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0116  0x000001FF  mov           writes=EAX=0x56781234  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0117  0x00000202  add           writes=EBX=0x788135D2  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0118  0x00000204  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1  (RTL no-op: EAX)
+[OK ] #0119  0x00000208  and           writes=EAX=0x00001234  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0120  0x0000020D  add           writes=EBX=0x78814806  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0121  0x0000020F  mov           writes=ESI=0x00000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0122  0x00000214  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0123  0x0000021A  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0124  0x00000221  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0125  0x00000228  mov           writes=EAX=0xAABBCCDD  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0126  0x0000022B  add           writes=EBX=0x233D14E3  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0127  0x0000022D  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0128  0x00000234  mov           writes=EAX=0x11223344  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0129  0x00000237  add           writes=EBX=0x345F4827  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0130  0x00000239  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0131  0x00000240  mov           writes=EAX=0x55667788  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0132  0x00000243  add           writes=EBX=0x89C5BFAF  flags=CF=0 ZF=0 SF=1 OF=1 PF=1 AF=0
+[OK ] #0133  0x00000245  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=1 AF=0
+[OK ] #0134  0x0000024B  mov           writes=EAX=0x5566FACE  flags=CF=0 ZF=0 SF=1 OF=1 PF=1 AF=0
+[OK ] #0135  0x0000024F  and           writes=EAX=0x0000FACE  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0136  0x00000254  add           writes=EBX=0x89C6BA7D  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0137  0x00000256  mov           writes=ESI=0x00000500  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0138  0x0000025B  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0139  0x00000261  mov           writes=EAX=0xDEADBEEF  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0140  0x00000263  add           writes=EBX=0x6874796C  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
+[OK ] #0141  0x00000265  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
+[OK ] #0142  0x0000026C  mov           writes=ECX=0x00000000  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
+[OK ] #0143  0x00000271  mov           writes=EAX=0x12345678  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
+[OK ] #0144  0x00000274  add           writes=EBX=0x7AA8CFE4  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0145  0x00000276  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0146  0x0000027D  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0147  0x00000284  mov           writes=EAX=0xBBBBBBBB  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0148  0x00000287  add           writes=EBX=0x36648B9F  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0149  0x00000289  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0150  0x00000290  mov           writes=EAX=0x11111111  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0151  0x00000293  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0152  0x0000029A  add           writes=EBX=0x47759CB0  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0153  0x0000029C  mov           writes=EAX=0x22222222  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0154  0x0000029F  add           writes=EBX=0x6997BED2  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0155  0x000002A1  mov           writes=ESI=0x00000600  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0156  0x000002A6  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0157  0x000002AC  mov           writes=EAX=0x22222211  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0158  0x000002AE  and           writes=EAX=0x00000011  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0159  0x000002B3  add           writes=EBX=0x6997BEE3  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0160  0x000002B5  mov           writes=EAX=0x00000022  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0161  0x000002B8  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0162  0x000002BD  add           writes=EBX=0x6997BF05  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0163  0x000002BF  mov           writes=EAX=0x00000033  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0164  0x000002C2  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0165  0x000002C7  add           writes=EBX=0x6997BF38  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0166  0x000002C9  mov           writes=EAX=0x00000044  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0167  0x000002CC  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0168  0x000002D1  add           writes=EBX=0x6997BF7C  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0169  0x000002D3  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0170  0x000002D9  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0171  0x000002DF  mov           writes=EAX=0xDDCCFFEE  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0172  0x000002E2  add           writes=EBX=0x4764BF6A  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0173  0x000002E4  mov           writes=ESI=0x00000700  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0174  0x000002E9  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0175  0x000002EF  mov           writes=EAX=0x00000111  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0176  0x000002F4  add           writes=EAX=0x00001111  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0177  0x000002F6  add           writes=EBX=0x4764D07B  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0178  0x000002F8  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0179  0x000002FF  mov           writes=EAX=0x00000222  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0180  0x00000304  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0181  0x00000307  mov           writes=EAX=0x00002222  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0182  0x0000030A  add           writes=EBX=0x4764F29D  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0183  0x0000030C  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0184  0x00000313  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0185  0x0000031A  mov           writes=EAX=0x00003333  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0186  0x0000031D  add           writes=EBX=0x476525D0  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0187  0x0000031F  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0188  0x00000326  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0189  0x0000032D  mov           writes=EAX=0x0F0F0000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0190  0x00000330  add           writes=EBX=0x567425D0  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0191  0x00000332  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0192  0x00000339  or            writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0193  0x00000340  mov           writes=EAX=0xF0F0F0F0  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0194  0x00000343  add           writes=EBX=0x476516C0  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0195  0x00000345  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0196  0x0000034C  not           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0197  0x0000034F  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX; AF undefined)
+[OK ] #0198  0x00000352  add           writes=EBX=0x385607B0  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0199  0x00000354  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0200  0x0000035B  shl           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0201  0x0000035F  mov           writes=EAX=0x00010000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0202  0x00000362  add           writes=EBX=0x385707B0  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0203  0x00000364  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0204  0x0000036B  sar           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0205  0x0000036F  mov           writes=EAX=0xF8000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0206  0x00000372  add           writes=EBX=0x305707B0  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0207  0x00000374  mov           writes=EAX=0x00000200  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0208  0x00000379  mov           writes=DS=0x00000200  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0209  0x0000037B  mov           writes=ESI=0x00000000  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0210  0x00000380  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0211  0x00000386  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0212  0x0000038D  mov           writes=EAX=0xFEDCBA98  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0213  0x0000038F  add           writes=EBX=0x2F33C248  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0214  0x00000391  mov           writes=EAX=0x76543210  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0215  0x00000394  add           writes=EBX=0xA587F458  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0216  0x00000396  mov           writes=EAX=0x00000100  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0217  0x0000039B  mov           writes=DS=0x00000100  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0218  0x0000039D  mov           writes=ESI=0x00000500  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0219  0x000003A2  mov           writes=EAX=0xDEADBEEF  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+[OK ] #0220  0x000003A4  add           writes=EBX=0x8435B347  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0221  0x000003A6  mov           writes=ESI=0x00000000  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0222  0x000003AB  mov           writes=EDI=0x00000000  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0223  0x000003B0  mov           writes=ECX=0x00000008  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0224  0x000003B5  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0225  0x000003B8  add           writes=EDI=0x00000001  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0226  0x000003BB  add           writes=ECX=0x00000007  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0227  0x000003BE  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0228  0x000003B5  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0229  0x000003B8  add           writes=EDI=0x00000002  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0230  0x000003BB  add           writes=ECX=0x00000006  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0231  0x000003BE  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0232  0x000003B5  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0233  0x000003B8  add           writes=EDI=0x00000003  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0234  0x000003BB  add           writes=ECX=0x00000005  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0235  0x000003BE  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0236  0x000003B5  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0237  0x000003B8  add           writes=EDI=0x00000004  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0238  0x000003BB  add           writes=ECX=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0239  0x000003BE  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0240  0x000003B5  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0241  0x000003B8  add           writes=EDI=0x00000005  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0242  0x000003BB  add           writes=ECX=0x00000003  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0243  0x000003BE  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0244  0x000003B5  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0245  0x000003B8  add           writes=EDI=0x00000006  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0246  0x000003BB  add           writes=ECX=0x00000002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0247  0x000003BE  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0248  0x000003B5  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0249  0x000003B8  add           writes=EDI=0x00000007  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0250  0x000003BB  add           writes=ECX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0251  0x000003BE  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0252  0x000003B5  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0253  0x000003B8  add           writes=EDI=0x00000008  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0254  0x000003BB  add           writes=ECX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0255  0x000003BE  jne           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0256  0x000003C0  mov           writes=EDI=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0257  0x000003C5  mov           writes=ECX=0x00000008  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0258  0x000003CA  mov           writes=EAX=0x00000008  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0259  0x000003CD  add           writes=EBX=0x8435B34F  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0260  0x000003CF  add           writes=EDI=0x00000001  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0261  0x000003D2  add           writes=ECX=0x00000007  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0262  0x000003D5  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0263  0x000003CA  mov           writes=EAX=0x00000007  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0264  0x000003CD  add           writes=EBX=0x8435B356  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0265  0x000003CF  add           writes=EDI=0x00000002  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0266  0x000003D2  add           writes=ECX=0x00000006  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0267  0x000003D5  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0268  0x000003CA  mov           writes=EAX=0x00000006  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0269  0x000003CD  add           writes=EBX=0x8435B35C  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0270  0x000003CF  add           writes=EDI=0x00000003  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0271  0x000003D2  add           writes=ECX=0x00000005  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0272  0x000003D5  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0273  0x000003CA  mov           writes=EAX=0x00000005  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0274  0x000003CD  add           writes=EBX=0x8435B361  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=1
+[OK ] #0275  0x000003CF  add           writes=EDI=0x00000004  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0276  0x000003D2  add           writes=ECX=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0277  0x000003D5  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0278  0x000003CA  mov           writes=EAX=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0279  0x000003CD  add           writes=EBX=0x8435B365  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0280  0x000003CF  add           writes=EDI=0x00000005  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0281  0x000003D2  add           writes=ECX=0x00000003  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0282  0x000003D5  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0283  0x000003CA  mov           writes=EAX=0x00000003  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0284  0x000003CD  add           writes=EBX=0x8435B368  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0285  0x000003CF  add           writes=EDI=0x00000006  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0286  0x000003D2  add           writes=ECX=0x00000002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0287  0x000003D5  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0288  0x000003CA  mov           writes=EAX=0x00000002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0289  0x000003CD  add           writes=EBX=0x8435B36A  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0290  0x000003CF  add           writes=EDI=0x00000007  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0291  0x000003D2  add           writes=ECX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0292  0x000003D5  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0293  0x000003CA  mov           writes=EAX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0294  0x000003CD  add           writes=EBX=0x8435B36B  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0295  0x000003CF  add           writes=EDI=0x00000008  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0296  0x000003D2  add           writes=ECX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0297  0x000003D5  jne           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0298  0x000003D7  mov           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1  (RTL no-op: ESI)
+[OK ] #0299  0x000003DC  mov           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0300  0x000003E2  mov           writes=EAX=0xBBBB0000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0301  0x000003E7  xchg          writes=EAX=0xAAAA0000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0302  0x000003E9  add           writes=EBX=0x2EDFB36B  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=0
+[OK ] #0303  0x000003EB  mov           writes=EAX=0xBBBB0000  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=0
+[OK ] #0304  0x000003ED  add           writes=EBX=0xEA9AB36B  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0305  0x000003EF  mov           writes=ESI=0x00000100  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0306  0x000003F4  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0307  0x000003FA  mov           writes=EAX=0x00000100  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0308  0x000003FF  mov           writes=ES=0x00000100  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0309  0x00000401  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0  (RTL no-op: ESI)
+[OK ] #0310  0x00000406  mov           writes=EDI=0x00000900  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0311  0x0000040B  cld           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0312  0x0000040C  mov           writes=ESI=0x00000900  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0313  0x00000411  mov           writes=EAX=0x00000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0314  0x00000413  add           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0  (RTL no-op: EBX)
+[OK ] #0315  0x00000415  mov           writes=ESI=0x00000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0316  0x0000041A  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[ONLY_SIM] #0317  EIP=0x00000420  hlt           SIM writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+
+================================================================================
+  SUMMARY: 317/318 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
+  (16 RTL no-op write-backs suppressed)
+================================================================================
