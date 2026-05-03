@@ -19,7 +19,7 @@ module WB (
 );
 
 
-    bool stall_flop;
+    //bool stall_flop;
     bool stall_flop_next;
     bool mio_push_fail;
 
