@@ -2,6 +2,7 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import core_common_pkg::*;
 import core_stage_latches_pkg::*;
+import Fetch_pkg::*;
 
 module EXP_Set_logic(
     input  invalid_instruction,

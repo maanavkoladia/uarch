@@ -13,8 +13,8 @@ DECODE_GEN_SRC_FILES = \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/ir_logic.v \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/rr_valid_logic.v \
 
-DECODE_SRC_FILES_STRUCTURAL = \
-								$(DECODE_GEN_SRC_FILES ) \
+DECODE_SRC_FILES_STRUCTURAL__INTERNAL = \
+								$(DECODE_GEN_SRC_FILES) \
 								$(DECODE_PATH_INTERNAL)/structural/disp_finder.v \
 								$(DECODE_PATH_INTERNAL)/structural/imm_finder.v \
 								$(DECODE_PATH_INTERNAL)/structural/modrm_size.v \
@@ -28,7 +28,7 @@ DECODE_SRC_FILES_STRUCTURAL = \
 								$(DECODE_PATH_INTERNAL)/structural/predecode.v \
 
 DECODE_SRC_FILES = \
-					    $(DECODE_GEN_SRC_FILES ) \
+						$(DECODE_SRC_FILES_STRUCTURAL__INTERNAL) \
 						$(DECODE_PATH_INTERNAL)/br_info_processing.sv \
 						$(DECODE_PATH_INTERNAL)/control_store_genned.sv \
 						$(DECODE_PATH_INTERNAL)/control_store.sv \

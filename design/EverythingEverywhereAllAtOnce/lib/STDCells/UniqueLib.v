@@ -18,22 +18,26 @@ module inv_N$ #(
 
 endmodule
 
-module MPS_XOR_IN2 (
-    out,
-    in0,
-    in1
+module MPS_XOR_IN2 #(
+    parameter WIDTH = 1
+)(
+    output [WIDTH-1:0] out,
+    input  [WIDTH-1:0] in0,
+    input  [WIDTH-1:0] in1
 );
 
-    output out;
-    input in0, in1;
+    genvar i;
+    generate
+        for (i = 0; i < WIDTH; i = i + 1) begin : GEN_XOR
+            xor2$ u_xor_g (
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i])
+            );
+        end
+    endgenerate
 
-    xor2$ u_xor (
-        .out(out),
-        .in0(in0),
-        .in1(in1)
-    );
 endmodule
-
 
 module MPS_buffer_delay$ #(
     parameter integer STAGES = 1,
@@ -307,6 +311,38 @@ module MPS_COMP_EQ #(
                 .in0(l0),
                 .in1(l1),
                 .in2(l2)
+            );
+
+        end else if (WIDTH == 22) begin : EQ_22
+            // Level 1 (parallel): 7× nand3$, one per triple of b[0:20]     → 0.35 ns
+            // Level 2 (parallel): 2× nor3$ + 1× nor2$                      → 0.35 ns
+            // Level 3           : and4$(m[0], m[1], m[2], b[21])           → 0.40 ns
+            // Critical path: 0.25 + 0.35 + 0.35 + 0.40 = 1.35 ns
+
+            wire [6:0] n;  // nand3$ layer
+            wire [2:0] m;  // nor layer
+
+            // ---- Level 1: nand3$ ----
+            nand3$ u_n0 (.out(n[0]), .in0(b[ 0]), .in1(b[ 1]), .in2(b[ 2]));
+            nand3$ u_n1 (.out(n[1]), .in0(b[ 3]), .in1(b[ 4]), .in2(b[ 5]));
+            nand3$ u_n2 (.out(n[2]), .in0(b[ 6]), .in1(b[ 7]), .in2(b[ 8]));
+            nand3$ u_n3 (.out(n[3]), .in0(b[ 9]), .in1(b[10]), .in2(b[11]));
+            nand3$ u_n4 (.out(n[4]), .in0(b[12]), .in1(b[13]), .in2(b[14]));
+            nand3$ u_n5 (.out(n[5]), .in0(b[15]), .in1(b[16]), .in2(b[17]));
+            nand3$ u_n6 (.out(n[6]), .in0(b[18]), .in1(b[19]), .in2(b[20]));
+
+            // ---- Level 2: nor3$ / nor2$ ----
+            nor3$ u_m0 (.out(m[0]), .in0(n[0]), .in1(n[1]), .in2(n[2])); // bits  0-8
+            nor3$ u_m1 (.out(m[1]), .in0(n[3]), .in1(n[4]), .in2(n[5])); // bits  9-17
+            nor2$ u_m2 (.out(m[2]), .in0(n[6]), .in1(n[6]));             // bits 18-20 (self-NOR trick → invert)
+
+            // ---- Level 3: and4$ ----
+            and4$ u_eq (
+                .out(eq),
+                .in0(m[0]),
+                .in1(m[1]),
+                .in2(m[2]),
+                .in3(b[21])
             );
 
 
