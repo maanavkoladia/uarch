@@ -4,6 +4,21 @@ import core_common_pkg::*;
 import core_stage_latches_pkg::*;
 import Fetch_pkg::*;
 
+// ----------------------------------------------------------------
+// Fetch — top-level structural port.
+//
+// Inputs / outputs are still SV structs (boundary unchanged: TLB,
+// SegmentTranslation, and the rest of the core consume these structs).
+// Inside the module everything is unrolled into flat wires and driven
+// by structural cells / macros from STDCell_Macros.vh and the JK FF
+// from lib/Gates/lib2.v.
+//
+// TODO(macro lib): there is no JK_FF macro in
+//   lib/STDCells/STDCell_Macros.vh today, so the four mode JKs below
+//   instantiate `jkff8$` from lib/Gates/lib2.v directly and only tap
+//   bit 0. Once a JK_FF macro and underlying cell are added, replace
+//   the four jkff8$ instances here with the macro.
+// ----------------------------------------------------------------
 module Fetch (
     input wire clk,
     input wire rst,
@@ -34,55 +49,81 @@ module Fetch (
     input wire dma_int,
 
     output fetch_outputs_t outs_o
-
 );
 
+    // ----------------------------------------------------------------
+    // Internal storage outputs (driven by structural REG / JKFF cells)
+    // ----------------------------------------------------------------
+    wire [31:0] SPC;            // Structural Program Counter (32-bit reg)
+    wire        DMA_int_jk;     // pending DMA interrupt JK
+    wire        exp_mode_jk_0;  // generic exception mode JK (bit 0)
+    wire        exp_mode_jk_1;  // DC-stage exception mode JK   (bit 1)
+    wire [1:0]  exp_mode_jk;
+    wire        int_mode_jk;    // interrupt servicing JK
 
+    assign exp_mode_jk = {exp_mode_jk_1, exp_mode_jk_0};
 
-    //internal reg to Fetch
-    logic [1:0] exp_mode_jk;
-    bool int_mode_jk;
-    bool DMA_int_jk; //corresponds to unterrupt "unit" Need to figure out how to clear int bit
-    l_address_t SPC;
+    // ----------------------------------------------------------------
+    // Combinational scalar / vector wires
+    // ----------------------------------------------------------------
+    wire        f_exp;
+    wire        tlb_or_exp;
+    wire        not_exp_mode_jk_0;
+    wire        exp_or_int;                 // exp_mode_jk[0|1] | int_mode_jk
+    wire        flush_and_valid;
+    wire        not_flush_and_valid;
+    wire        outs_exp_pipe_clear;
 
+    wire [31:0] seg_xlation_out;
+    wire [7:0]  rom_data_out      [0:CACHE_LINES_SIZE_B-1];
+    wire [7:0]  idm_ctrl_data_in  [0:CACHE_LINES_SIZE_B-1];
+    wire [31:0] next_spc;
+    wire [31:0] spc_16;
+    wire        spc_16_cout;                // unused
+    wire [31:0] br_restore_spc;
+    wire [31:0] br_target;
+    wire [31:0] spc_2_IDM_CTRL;
+    wire [31:0] br_restore_spc_aligned;
+    wire [31:0] br_target_aligned;
 
-    //wires
-    bool f_exp;
-    v_address_t seg_xlation_out;
-    byte_t rom_data_out[CACHE_LINES_SIZE_B];
-    byte_t idm_ctrl_data_in[CACHE_LINES_SIZE_B];
-    l_address_t next_spc;
-    l_address_t spc_16;
-    l_address_t br_restore_spc;
-    l_address_t br_target;
-    l_address_t spc_2_IDM_CTRL;
+    // ----------------------------------------------------------------
+    // JK J/K vectors (8-bit jkff$, bit 0 used; rest tied 0)
+    // ----------------------------------------------------------------
+    wire [7:0]  dma_jk_J,  dma_jk_K,  dma_jk_Q,  dma_jk_QBAR;
+    wire [7:0]  exp0_jk_J, exp0_jk_K, exp0_jk_Q, exp0_jk_QBAR;
+    wire [7:0]  exp1_jk_J, exp1_jk_K, exp1_jk_Q, exp1_jk_QBAR;
+    wire [7:0]  int_jk_J,  int_jk_K,  int_jk_Q,  int_jk_QBAR;
 
-    tlb_inputs_t tlb_inputs;
+    wire        exp0_J_gated;   // J for exp_mode_jk[0] after flush gating
+    wire        exp0_K_gated;   // K for exp_mode_jk[0] after flush gating
+    wire        exp1_J_gated;   // J for exp_mode_jk[1] after flush gating
+    wire        exp1_K_gated;   // K for exp_mode_jk[1] after flush gating
 
-    //logic block outputs
-    btb_output_t btb_outs;
-    spc_sel_logic_output_t spc_sel_logic_outs;
-    predictor_output_t predictor_outs;
-    idm_ctrl_logic_output_t idm_ctrl_logic_outs;
+    // ----------------------------------------------------------------
+    // SV-side structs kept so sub-modules / TLB / SegmentTranslation
+    // (still struct-port) connect unchanged.
+    // ----------------------------------------------------------------
+    tlb_inputs_t                  tlb_inputs;
+    btb_output_t                  btb_outs;
+    spc_sel_logic_output_t        spc_sel_logic_outs;
+    predictor_output_t            predictor_outs;
+    idm_ctrl_logic_output_t       idm_ctrl_logic_outs;
     idm_invalidate_logic_output_t idm_invalidate_logic_outs;
-    bool en_icache;
-    tlb_outputs_t tlb_outs;
-    exp_set_logic_output_t exp_set_logic_outs;
+    tlb_outputs_t                 tlb_outs;
+    exp_set_logic_output_t        exp_set_logic_outs;
+
+    wire        en_icache;
+    wire [1:0]  spc_sel_w;
 
     // ----------------------------------------------------------------
-    // Adapter wires bridging the SV structs in this file to the flat
-    // ports of the structural Verilog 2005 sub-modules.
+    // Adapter wires bridging the SV structs to flat sub-module ports.
     // ----------------------------------------------------------------
-
-    // Per-IDM-slot fields of idm_info_i.idm_slots[*] (consumed by the
-    // structural IDM_Ctrl_Logic and IDM_Invalidate_Logic).
     wire        idm_slot_valid_w          [0:NUM_IDM_SLOTS-1];
     wire        idm_slot_br_valid_w       [0:NUM_IDM_SLOTS-1];
     wire [31:0] idm_slot_br_eip_w         [0:NUM_IDM_SLOTS-1];
     wire [31:0] idm_slot_br_btb_target_w  [0:NUM_IDM_SLOTS-1];
     wire        idm_slot_br_xcl_w         [0:NUM_IDM_SLOTS-1];
 
-    // Flat outputs of IDM_Ctrl_Logic, repacked into idm_ctrl_logic_outs.
     wire        idmc_ld_meta_data_w [0:NUM_IDM_SLOTS-1];
     wire        idmc_ld_data_w      [0:NUM_IDM_SLOTS-1];
     wire        idmc_valid_w        [0:NUM_IDM_SLOTS-1];
@@ -93,10 +134,6 @@ module Fetch (
     wire [7:0]  idmc_data_w         [0:NUM_IDM_SLOTS-1] [0:CACHE_LINES_SIZE_B-1];
     wire        idmc_push_success_w;
 
-    // SPC sel output as a plain 2-bit wire (cast back to the enum field).
-    wire [1:0]  spc_sel_w;
-
-    // Unpack the IDM slot meta into the flat helper arrays
     genvar gs;
     generate
         for (gs = 0; gs < NUM_IDM_SLOTS; gs = gs + 1) begin : g_idm_slot_unpack
@@ -108,7 +145,6 @@ module Fetch (
         end
     endgenerate
 
-    // Repack IDM_Ctrl_Logic flat outputs back into the SV struct fields
     genvar gs2, gk;
     generate
         for (gs2 = 0; gs2 < NUM_IDM_SLOTS; gs2 = gs2 + 1) begin : g_idmc_repack
@@ -126,128 +162,192 @@ module Fetch (
         end
     endgenerate
     assign idm_ctrl_logic_outs.push_success = idmc_push_success_w;
-
-    // Cast the 2-bit SPC sel output into the enum field
     assign spc_sel_logic_outs.sel = spc_sel_logic_output_options_e'(spc_sel_w);
 
-    //gate logic
+    // ----------------------------------------------------------------
+    // Output struct field assigns
+    //   outs_o.exp_pipe_clear = exp_pipe_clear | int_pipe_clear  (OR_2)
+    //   everything else is wire aliasing.
+    // ----------------------------------------------------------------
+    `OR_2(u_outs_exp_pipe_clear_or, 1, outs_exp_pipe_clear,
+            exp_set_logic_outs.exp_pipe_clear, exp_set_logic_outs.int_pipe_clear)
 
-    always_comb begin
-        outs_o.idm_reqs = idm_ctrl_logic_outs.idm_input;
-        outs_o.exp_pipe_clear = exp_set_logic_outs.exp_pipe_clear | exp_set_logic_outs.int_pipe_clear;
-        outs_o.fetch_2_icache.icache_en =  en_icache;
-        outs_o.fetch_2_icache.p_addr = tlb_outs.physical_addr;
-        outs_o.fetch_2_icache.v_addr_i = seg_xlation_out;
-        outs_o.fetch_2_icache.num_valid_IDM_slots = idm_info_i.valid_slots;
-        outs_o.exp_present = f_exp;
-        outs_o.exp_pf = tlb_outs.pageFault;
-        outs_o.exp_mode_jk = exp_mode_jk;
-        outs_o.int_mode_jk = int_mode_jk;
-    end
+    assign outs_o.idm_reqs                              = idm_ctrl_logic_outs.idm_input;
+    assign outs_o.exp_pipe_clear                        = outs_exp_pipe_clear;
+    assign outs_o.fetch_2_icache.icache_en              = en_icache;
+    assign outs_o.fetch_2_icache.p_addr                 = tlb_outs.physical_addr;
+    assign outs_o.fetch_2_icache.v_addr_i               = seg_xlation_out;
+    assign outs_o.fetch_2_icache.num_valid_IDM_slots    = idm_info_i.valid_slots;
+    assign outs_o.exp_present                           = f_exp;
+    assign outs_o.exp_pf                                = tlb_outs.pageFault;
+    assign outs_o.exp_mode_jk                           = exp_mode_jk;
+    assign outs_o.int_mode_jk                           = int_mode_jk;
 
-    assign f_exp = (tlb_outs.gp_exp | tlb_outs.pageFault) & ~exp_mode_jk;
+    // ----------------------------------------------------------------
+    // f_exp = (gp_exp | pageFault) & ~exp_mode_jk[0]
+    // ----------------------------------------------------------------
+    `OR_2 (u_tlb_or_exp,         1, tlb_or_exp,        tlb_outs.gp_exp, tlb_outs.pageFault)
+    `INV_N(u_inv_exp_mode_jk_0,  1, exp_mode_jk_0,     not_exp_mode_jk_0)
+    `AND_2(u_f_exp,              1, f_exp,             tlb_or_exp, not_exp_mode_jk_0)
 
+    // ----------------------------------------------------------------
+    // exp_or_int = exp_mode_jk[0] | exp_mode_jk[1] | int_mode_jk
+    //   (mirrors the SV ``(exp_mode_jk || int_mode_jk)`` reduce.)
+    // ----------------------------------------------------------------
+    `OR_3(u_exp_or_int, 1, exp_or_int, exp_mode_jk_0, exp_mode_jk_1, int_mode_jk)
 
-    assign tlb_inputs = '{
-        virtual_addr : seg_xlation_out, //seg_Xlation outputs
-        write_intention : '0
-    };
+    // ----------------------------------------------------------------
+    // tlb_inputs — kept as a struct because TLB still has struct ports.
+    // Field-level wire aliasing only (no logic).
+    // ----------------------------------------------------------------
+    assign tlb_inputs.virtual_addr    = seg_xlation_out;
+    assign tlb_inputs.write_intention = 1'b0;
 
-    assign idm_ctrl_data_in = (exp_mode_jk ||int_mode_jk) ?
-                               rom_data_out :icache_info_i.instruction_line;
-
-    assign br_restore_spc = exe_outs_i.br_res_out.taken
-                          ? exe_outs_i.br_res_out.br_target
-                          : exe_outs_i.br_res_out.neip;
-
-    assign br_target =  spc_sel_logic_outs.br_target_sel ?
-                        spc_sel_logic_outs.br_target
-                        : btb_outs.br_target;
-
-    assign spc_2_IDM_CTRL = (exp_mode_jk ||int_mode_jk) ? //this might be a stupid way of doing this but I force the slot number address on an exception to 0
-                            32'h00000000 : SPC;   //This wont work if we are doing this routine an interrupt comes in during the exception transition...which it shouldnt?
-
-    assign spc_16 = SPC+16;
-
-    always_comb begin
-        case(spc_sel_logic_outs.sel)
-            Fetch_pkg::SPC: next_spc = SPC;
-            Fetch_pkg::SPC_P16: next_spc = spc_16;
-            Fetch_pkg::BR_RESTORE: next_spc = {br_restore_spc[31:4], 4'b0};
-            Fetch_pkg::BTB_TARGET: next_spc = {br_target[31:4], 4'b0};
-            default: next_spc = 0;
-        endcase
-    end
-
-
-    
-    //DMA JK
-    always_ff@(posedge clk) begin
-        if(!rst)
-            DMA_int_jk <= 0;
-        else begin
-            case({dma_int, exe_outs_i.br_res_out.clr_exp_mode})
-                2'b00: DMA_int_jk <= DMA_int_jk;
-                2'b01: DMA_int_jk <= 0;
-                2'b10: DMA_int_jk <= 1;
-                2'b11: DMA_int_jk <= ~DMA_int_jk;
-                default: DMA_int_jk <= DMA_int_jk;
-            endcase
+    // ----------------------------------------------------------------
+    // idm_ctrl_data_in[i] = exp_or_int ? rom_data_out[i]
+    //                                  : icache_info_i.instruction_line[i]
+    // ----------------------------------------------------------------
+    genvar gd;
+    generate
+        for (gd = 0; gd < CACHE_LINES_SIZE_B; gd = gd + 1) begin : g_idm_data_mux
+            `MUX_2(u_idm_data_mux, 8, idm_ctrl_data_in[gd],
+                    icache_info_i.instruction_line[gd], rom_data_out[gd], exp_or_int)
         end
-    end
+    endgenerate
 
-    
-// exp_mode JK
-    always_ff@(posedge clk) begin
-        if(!rst)
-            exp_mode_jk <= 0;
-        else begin
-            if(exe_outs_i.br_res_out.flush && exe_outs_i.br_res_out.valid) exp_mode_jk <= 0;
-            else begin
+    // ----------------------------------------------------------------
+    // br_restore_spc = taken ? br_target : neip
+    // ----------------------------------------------------------------
+    `MUX_2(u_br_restore_mux, 32, br_restore_spc,
+            exe_outs_i.br_res_out.neip, exe_outs_i.br_res_out.br_target,
+            exe_outs_i.br_res_out.taken)
 
-                //writing this bc its like the jk logic writen out 
-                case({exp_set_logic_outs.exp_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
-                    2'b00: exp_mode_jk[0] <= exp_mode_jk[0];
-                    2'b01: exp_mode_jk[0] <= 0;
-                    2'b10: exp_mode_jk[0] <= 1;
-                    2'b11: exp_mode_jk[0] <= ~exp_mode_jk[0];
-                    default: exp_mode_jk[0] <= exp_mode_jk[0];
-                endcase
+    // ----------------------------------------------------------------
+    // br_target = br_target_sel ? spc_sel_logic.br_target : btb.br_target
+    // ----------------------------------------------------------------
+    `MUX_2(u_br_target_mux, 32, br_target,
+            btb_outs.br_target, spc_sel_logic_outs.br_target,
+            spc_sel_logic_outs.br_target_sel)
 
-                case({exp_set_logic_outs.dc_exp_set, exe_outs_i.br_res_out.clr_exp_mode})
-                    2'b00: exp_mode_jk[1] <= exp_mode_jk[1];
-                    2'b01: exp_mode_jk[1] <= 0;
-                    2'b10: exp_mode_jk[1] <= 1;
-                    2'b11: exp_mode_jk[1] <= ~exp_mode_jk[1];
-                    default: exp_mode_jk[1] <= exp_mode_jk[1];
-                endcase
+    // ----------------------------------------------------------------
+    // spc_2_IDM_CTRL = exp_or_int ? 32'h0 : SPC
+    //   (forces slot-number address to 0 during exp/int routines)
+    // ----------------------------------------------------------------
+    `MUX_2(u_spc_2_idm_ctrl_mux, 32, spc_2_IDM_CTRL,
+            SPC, 32'h00000000, exp_or_int)
 
-            end
-        end
-    end
+    // ----------------------------------------------------------------
+    // spc_16 = SPC + 16   (Kogge-Stone add, cin=0)
+    // ----------------------------------------------------------------
+    `ADD_N(u_spc_plus_16, 32, spc_16, spc_16_cout, SPC, 32'h00000010, 1'b0)
 
-//int JK
-    always_ff@(posedge clk) begin
-        if(!rst)
-            int_mode_jk <= 0;
-        else begin
-            case({exp_set_logic_outs.int_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
-                2'b00: int_mode_jk <= int_mode_jk;
-                2'b01: int_mode_jk <= 0;
-                2'b10: int_mode_jk <= 1;
-                2'b11: int_mode_jk <= ~int_mode_jk;
-                default: int_mode_jk <= int_mode_jk;
-            endcase
-        end
-    end
+    // ----------------------------------------------------------------
+    // next_spc 4-way mux on spc_sel_logic_outs.sel
+    //   00 SPC        : SPC
+    //   01 SPC_P16    : spc_16
+    //   10 BR_RESTORE : {br_restore_spc[31:4], 4'b0}
+    //   11 BTB_TARGET : {br_target[31:4], 4'b0}
+    // ----------------------------------------------------------------
+    assign br_restore_spc_aligned = {br_restore_spc[31:4], 4'b0000};
+    assign br_target_aligned      = {br_target[31:4],      4'b0000};
 
-    //SPC flop
-    always_ff@(posedge clk)begin
-        if(!rst) SPC <= 0;
-        else begin
-            SPC <= next_spc;
-        end
-    end
+    `MUX_4(u_next_spc_mux, 32, next_spc,
+            SPC, spc_16, br_restore_spc_aligned, br_target_aligned,
+            spc_sel_w)
+
+    // ----------------------------------------------------------------
+    // SPC register: 32-bit reg, async-low rst, always-WE.
+    // ----------------------------------------------------------------
+    `REG_RST(u_spc_reg, 32, clk, rst, next_spc, SPC)
+
+    // ----------------------------------------------------------------
+    // Mode JK flops (4 × jkff8$ from lib/Gates/lib2.v, bit 0 only).
+    // jkff8$ has async active-low CLR/PRE — tie PRE high and route the
+    // top-level (active-low) `rst` straight into CLR for power-on reset.
+    //
+    // exp_mode_jk[0] / exp_mode_jk[1] additionally need a synchronous
+    // flush-and-br_valid clear. Fold into J/K so the flop sees J=0,K=1
+    // on a flush cycle (which gives Q=0 next edge):
+    //   J' = J & ~flush_and_valid
+    //   K' = K |  flush_and_valid
+    // ----------------------------------------------------------------
+
+    // flush_and_valid + its inverse
+    `AND_2(u_flush_and_valid, 1, flush_and_valid,
+            exe_outs_i.br_res_out.flush, exe_outs_i.br_res_out.valid)
+    `INV_N(u_inv_flush_and_valid, 1, flush_and_valid, not_flush_and_valid)
+
+    // exp_mode_jk[0] J/K (J = exp_pipe_clear, K = clr_exp_mode)
+    `AND_2(u_exp0_J, 1, exp0_J_gated,
+            exp_set_logic_outs.exp_pipe_clear, not_flush_and_valid)
+    `OR_2 (u_exp0_K, 1, exp0_K_gated,
+            exe_outs_i.br_res_out.clr_exp_mode, flush_and_valid)
+
+    // exp_mode_jk[1] J/K (J = dc_exp_set, K = clr_exp_mode)
+    `AND_2(u_exp1_J, 1, exp1_J_gated,
+            exp_set_logic_outs.dc_exp_set, not_flush_and_valid)
+    `OR_2 (u_exp1_K, 1, exp1_K_gated,
+            exe_outs_i.br_res_out.clr_exp_mode, flush_and_valid)
+
+    // J/K vectors (bit 0 active, rest 0 → hold for unused bits).
+    assign dma_jk_J  = {7'b0, dma_int};
+    assign dma_jk_K  = {7'b0, exe_outs_i.br_res_out.clr_exp_mode};
+    assign exp0_jk_J = {7'b0, exp0_J_gated};
+    assign exp0_jk_K = {7'b0, exp0_K_gated};
+    assign exp1_jk_J = {7'b0, exp1_J_gated};
+    assign exp1_jk_K = {7'b0, exp1_K_gated};
+    assign int_jk_J  = {7'b0, exp_set_logic_outs.int_pipe_clear};
+    assign int_jk_K  = {7'b0, exe_outs_i.br_res_out.clr_exp_mode};
+
+    // TODO: replace the four jkff8$ instances below with a JK_FF macro
+    //       once it is added to lib/STDCells/STDCell_Macros.vh.
+    jkff8$ u_dma_int_jk (
+        .CLK (clk),
+        .CLR (rst),
+        .PRE (1'b1),
+        .J   (dma_jk_J),
+        .K   (dma_jk_K),
+        .Q   (dma_jk_Q),
+        .QBAR(dma_jk_QBAR)
+    );
+    assign DMA_int_jk = dma_jk_Q[0];
+
+    jkff8$ u_exp_mode_jk_0 (
+        .CLK (clk),
+        .CLR (rst),
+        .PRE (1'b1),
+        .J   (exp0_jk_J),
+        .K   (exp0_jk_K),
+        .Q   (exp0_jk_Q),
+        .QBAR(exp0_jk_QBAR)
+    );
+    assign exp_mode_jk_0 = exp0_jk_Q[0];
+
+    jkff8$ u_exp_mode_jk_1 (
+        .CLK (clk),
+        .CLR (rst),
+        .PRE (1'b1),
+        .J   (exp1_jk_J),
+        .K   (exp1_jk_K),
+        .Q   (exp1_jk_Q),
+        .QBAR(exp1_jk_QBAR)
+    );
+    assign exp_mode_jk_1 = exp1_jk_Q[0];
+
+    jkff8$ u_int_mode_jk (
+        .CLK (clk),
+        .CLR (rst),
+        .PRE (1'b1),
+        .J   (int_jk_J),
+        .K   (int_jk_K),
+        .Q   (int_jk_Q),
+        .QBAR(int_jk_QBAR)
+    );
+    assign int_mode_jk = int_jk_Q[0];
+
+    // ----------------------------------------------------------------
+    // Sub-modules (already structural)
+    // ----------------------------------------------------------------
 
     // BTB Training Note:
     // Special branches in exception/interrupt handlers (indicated by CS)
@@ -256,15 +356,14 @@ module Fetch (
     BTB btb(
         .clk(clk),
         .rst(rst),
-        .spc(SPC), //address
+        .spc(SPC),
 
-        .exe_br_valid(exe_outs_i.br_res_out.valid), //bool
-        .exe_br_target(exe_outs_i.br_res_out.br_target), //address_t
-        .exe_br_eip(exe_outs_i.br_res_out.br_eip), //address_t
-        .exe_br_XCL(exe_outs_i.br_res_out.br_XCL),
-        .exe_br_ucond(exe_outs_i.br_res_out.br_ucond), //bool
+        .exe_br_valid (exe_outs_i.br_res_out.valid),
+        .exe_br_target(exe_outs_i.br_res_out.br_target),
+        .exe_br_eip   (exe_outs_i.br_res_out.br_eip),
+        .exe_br_XCL   (exe_outs_i.br_res_out.br_XCL),
+        .exe_br_ucond (exe_outs_i.br_res_out.br_ucond),
 
-        // outputs (struct fields driven individually — module is structural V2005)
         .hit       (btb_outs.hit),
         .br_target (btb_outs.br_target),
         .br_eip    (btb_outs.br_eip),
@@ -276,7 +375,6 @@ module Fetch (
         .clk          (clk),
         .rst          (rst),
 
-        // flat predictor inputs (struct unrolled — only the fields GShare uses)
         .spc          (SPC),
         .btb_hit      (btb_outs.hit),
         .exe_br_valid (exe_outs_i.br_res_out.valid),
@@ -284,69 +382,53 @@ module Fetch (
         .exe_br_eip   (exe_outs_i.br_res_out.br_eip),
         .misprediction(exe_outs_i.br_res_out.miss_prediction),
 
-        // flat predictor output
         .taken        (predictor_outs.taken)
     );
 
     SPC_Sel_Logic spc_sel_logic(
         .clk          (clk),
-        .rst          (rst),                                  // active-low directly (was !rst)
+        .rst          (rst),
         .spc          (SPC),
         .flush        (exe_outs_i.br_res_out.flush),
-        .decode_stall (decode_outs_i.stall),                  // unused on the structural side, kept for parity
+        .decode_stall (decode_outs_i.stall),
 
-        // btb_output_t fields
         .btb_hit       (btb_outs.hit),
         .btb_br_target (btb_outs.br_target),
         .btb_br_eip    (btb_outs.br_eip),
         .btb_XCL       (btb_outs.XCL),
         .btb_br_ucond  (btb_outs.br_ucond),
 
-        // predictor_output_t
         .pred_taken            (predictor_outs.taken),
-
-        // push_success from IDM_Ctrl_Logic (only field consumed)
         .idm_ctrl_push_success (idm_ctrl_logic_outs.push_success),
 
-        // spc_sel_logic_output_t fields driven individually
-        .sel           (spc_sel_w),                           // cast to enum above
+        .sel           (spc_sel_w),
         .br_target_sel (spc_sel_logic_outs.br_target_sel),
         .br_target     (spc_sel_logic_outs.br_target),
         .flush_reg     (spc_sel_logic_outs.flush_reg)
     );
 
-
     IDM_Ctrl_Logic idm_ctrl_logic (
-        .exp_mode (exp_mode_jk[0]),
+        .exp_mode (exp_mode_jk_0),
         .int_mode (int_mode_jk),
         .spc      (spc_2_IDM_CTRL),
 
-        // idm_outputs_t — only per-slot valid bits used
         .idm_slot_valid (idm_slot_valid_w),
 
-        // idm_invalidate_logic_output_t fields
         .invalidate (idm_invalidate_logic_outs.invalidate),
         .no_writes  (idm_invalidate_logic_outs.no_writes),
 
-        // btb_output_t (br_ucond unused)
         .btb_hit       (btb_outs.hit),
         .btb_br_target (btb_outs.br_target),
         .btb_br_eip    (btb_outs.br_eip),
         .btb_XCL       (btb_outs.XCL),
 
-        // predictor_output_t
         .pred_taken    (predictor_outs.taken),
-
-        // icache_2_core_t — only hit consumed
         .icache_hit    (icache_info_i.hit),
 
-        // spc_sel_logic_output_t — only flush_reg consumed
         .spc_sel_flush_reg (spc_sel_logic_outs.flush_reg),
 
-        // Cacheline data into IDM (selected outside between rom/icache by idm_ctrl_data_in)
         .data_in (idm_ctrl_data_in),
 
-        // idm_ctrl_logic_output_t — flat per-slot outputs (repacked into the struct above)
         .idm_req_ld_meta_data (idmc_ld_meta_data_w),
         .idm_req_ld_data      (idmc_ld_data_w),
         .idm_req_valid        (idmc_valid_w),
@@ -358,17 +440,15 @@ module Fetch (
         .push_success         (idmc_push_success_w)
     );
 
-
     IDM_Invalidate_Logic idm_invalidate_logic(
         .clk            (clk),
-        .rst            (rst),                                // active-low directly (was !rst)
+        .rst            (rst),
         .eip            (decode_outs_i.eip),
         .flush          (exe_outs_i.br_res_out.flush),
         .exp_pipeclear  (exp_set_logic_outs.exp_pipe_clear),
         .int_pipe_clear (exp_set_logic_outs.int_pipe_clear),
-        .decode_stall   (decode_outs_i.stall),                // unused on the structural side, kept for parity
+        .decode_stall   (decode_outs_i.stall),
 
-        // idm_outputs_t — only per-slot fields consumed (cacheline data NOT used here)
         .idm_slot_valid          (idm_slot_valid_w),
         .idm_slot_br_valid       (idm_slot_br_valid_w),
         .idm_slot_br_eip         (idm_slot_br_eip_w),
@@ -377,26 +457,23 @@ module Fetch (
 
         .decode_forward (decode_outs_i.decode_forward),
 
-        // idm_invalidate_logic_output_t fields driven individually
         .invalidate     (idm_invalidate_logic_outs.invalidate),
         .no_writes      (idm_invalidate_logic_outs.no_writes)
     );
 
-
     EXP_Set_logic exp_set_logic(
         .invalid_instruction(decode_outs_i.invalid_instruction),
-        .rr_valid(rr_outs_i.valid),
-        .dc_valid(dc_outs_i.valid),
+        .rr_valid (rr_outs_i.valid),
+        .dc_valid (dc_outs_i.valid),
         .mem_valid(mem_outs_i.valid),
         .exe_valid(exe_outs_i.valid),
-        .wb_valid(wb_outs_i.valid),
-        .f_exp(f_exp),
-        .dc_exp(dc_outs_i.exp_present),
-        .int_set(DMA_int_jk),
-        .exp_mode_jk(exp_mode_jk[0]),
+        .wb_valid (wb_outs_i.valid),
+        .f_exp    (f_exp),
+        .dc_exp   (dc_outs_i.exp_present),
+        .int_set  (DMA_int_jk),
+        .exp_mode_jk(exp_mode_jk_0),
         .int_mode_jk(int_mode_jk),
 
-        // exp_set_logic_output_t fields driven individually (structural V2005 module)
         .exp_pipe_clear(exp_set_logic_outs.exp_pipe_clear),
         .dc_exp_set    (exp_set_logic_outs.dc_exp_set),
         .int_pipe_clear(exp_set_logic_outs.int_pipe_clear)
@@ -404,22 +481,21 @@ module Fetch (
 
     EXP_Ctrl_ROMS exp_ctrl_roms(
         .clk           (clk),
-        .rst           (rst),                                     // newly added on the structural port
+        .rst           (rst),
         .exp_pipe_clear(exp_set_logic_outs.exp_pipe_clear),
         .int_pipe_clear(exp_set_logic_outs.int_pipe_clear),
         .DC_pf         (dc_outs_i.exp_pf),
         .DC_exp        (dc_outs_i.exp_present),
         .Fetch_pf      (tlb_outs.pageFault),
         .DMA_int       (DMA_int_jk),
-        .exp_mode      (exp_mode_jk[0]),
+        .exp_mode      (exp_mode_jk_0),
         .rom_data_out  (rom_data_out)
     );
-
 
     //spc to icache path
     ICache_En_Logic icache_en_logic(
         .rst(rst),
-        .exp_mode(exp_mode_jk[0]),
+        .exp_mode(exp_mode_jk_0),
         .cs_sb(rr_outs_i.codeSeg_sb),
         .int_mode(int_mode_jk),
         .DMA_int(DMA_int_jk),
@@ -428,98 +504,16 @@ module Fetch (
     );
 
     TLB tlb(
-        .inputs(tlb_inputs),
+        .inputs (tlb_inputs),
         .outputs(tlb_outs)
     );
 
     SegmentTranslation seg_Xlation(
-        .l_addr_i(SPC),
-        .segValue(rr_outs_i.codeSeg_data),
-        .segLimit(rr_outs_i.codeSeg_limit),
-        .v_addr_o(seg_xlation_out),
+        .l_addr_i (SPC),
+        .segValue (rr_outs_i.codeSeg_data),
+        .segLimit (rr_outs_i.codeSeg_limit),
+        .v_addr_o (seg_xlation_out),
         .gp_fault_o()
     );
 
-
-    endmodule
-
-
-
-
-    /*
-
-    I am going to try to keep all the registers inside of this module and as structural like as possible
-
-    modules in this file:a
-    SPC_SEL_LOGIC
-    BTB
-    Predictor
-    iCache_en_logic
-    TLB
-    Seg_Xlation
-    Qcntrl
-    InvalidLogic
-    EXP_CTRL_ROMS
-
-
-if(v_bk0 & v_bk1) {
-    SPC <= SPC
-}
-
-if(~slot0.v && ~spe[4] && icache_v) slot0.ld = 1;
-if(~slot1.v && spe[4] && icache_v) slot1.ld = 1;
-
-if(current cache line has branch) pend_br = 1;
-
-invalidate_entry1 = headptr[4] && ~(headptr + inst_length)[4];
-invalidate_entry0 = ~headptr[4] && (headptr + inst_length)[4];
-
-
-
-question:
-invalid bank slot in Q but don't want to load?
-
-
-
-
-
-/////////////////////////////////
-xcl branch problem for SPC fetching (figure 1)
-problems:
-xbr -> E (regular intrsduction)
-xbr -> br
-xbr -> xbr
-
-btb outputs xcl, next line, target, br.location
-
-if xcl, load a temp register with br.location with XCL valid bit set. SPC will get SPC + 16
-
-since valid is set, mux will pick br.location instead of SPC to feed into BTB.
-This will keep the BTB predicting the same cache line while the SPC moves on to SPC + 16
-while valid is set, SPC logic will ignore BTB predictions since you don't want to load SPC with BTB prediction target,
-you want to keep SPC the same (SPC + 16 from previous SPC update) so that you finish fetching the next cache line
-in which the xcl branch finishes before moving onto the target cache line.
-
-cache will produce hit signal for the next line which will clear the valid bit of the br.location register,
-same cycle, SPC will get target from BTB.
-
-this also fixes xbr to xbr situation since valid bit would clear same cycle as SPC update.
-This means that there is one cycle of invalidity for the temp register where the updated SPC value is being fed to the BTB
-Next cycle the temp register will be loaded with the br.location and valid bit will be set. xcl status would be reupdated.
-
-
-
-other problems:
-how to invalidate both xcl slots
-
-
-invalidate slot + xcl when EIP = br.location.
-if br.location = EIP, and its not xcl, only invalidate the current slot since slot + xcl = slot + 0 = slot
-if xcl then slot + 1 and slot must be invalidated together.
-
-
-
-*/
-
-
-
+endmodule

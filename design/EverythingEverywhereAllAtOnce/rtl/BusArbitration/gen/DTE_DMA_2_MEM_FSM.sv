@@ -113,11 +113,11 @@ wire NS_2_t1;
 
 `OR_2(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1)
 
-// busy_o = (S_1 & !S_2) | (S_0 & !S_2) | (!S_0 & !S_1 & S_2)
+// busy_o = (S_0 & !S_2) | (S_1 & !S_2) | (!S_0 & !S_1 & S_2)
 wire busy_o_n0;
-`NAND_2(busy_o_nand0, 1, busy_o_n0, S_1, S_2_inv)
+`NAND_2(busy_o_nand0, 1, busy_o_n0, S_0, S_2_inv)
 wire busy_o_n1;
-`NAND_2(busy_o_nand1, 1, busy_o_n1, S_0, S_2_inv)
+`NAND_2(busy_o_nand1, 1, busy_o_n1, S_1, S_2_inv)
 wire busy_o_n2;
 `NAND_3(busy_o_nand2, 1, busy_o_n2, S_0_inv, S_1_inv, S_2)
 

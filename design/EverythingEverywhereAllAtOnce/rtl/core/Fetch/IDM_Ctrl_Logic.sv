@@ -30,11 +30,17 @@ module IDM_Ctrl_Logic (
 
     assign slot_num = spc[OFFSET_BITS+SLOT_BITS-1 : OFFSET_BITS];
 
+
     always_comb begin
         out = '{default: '0};
 
         for (int i = 0; i < NUM_IDM_SLOTS; i++) begin
-            if (invalidate_logic_outs_i.invalidate[i] || !idm_i.idm_slots[i].valid) begin
+            if(invalidate_logic_outs_i.invalidate[i])begin
+                out.idm_input.req[i].ld_meta_data = 1;
+                out.idm_input.req[i].valid = 0;
+                out.idm_input.req[i].br_valid = 0;
+            end
+            if (!idm_i.idm_slots[i].valid) begin
                 //always load bc if miss, set slot to invalid, else load meta
                 //and data
                 out.idm_input.req[i].ld_meta_data = 1;

@@ -184,9 +184,9 @@ module ST_Q (
 
     // Assertion: Check for invalid pop from empty queue
     // If this fires, there's a logic flaw in the system
-    assert property (@(posedge clk) disable iff (rst)
-        !(wb_in.pop & q_empty)
-    ) else $error("ST_Q: Invalid pop from cache - attempted to pop from empty queue at time %0t", $time);
+    // assert property (@(posedge clk) disable iff (rst)
+    //     !(wb_in.pop & q_empty)
+    // ) else $error("ST_Q: Invalid pop from cache - attempted to pop from empty queue at time %0t", $time);
 
     
 

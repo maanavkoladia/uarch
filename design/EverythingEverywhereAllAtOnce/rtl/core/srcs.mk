@@ -15,7 +15,6 @@ include $(CORE_PATH_INTERNAL)/WB/srcs.mk
 CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/IDM/IDM.sv	\
 				 $(CORE_PATH_INTERNAL)/TLB/TLB.sv \
-				 $(CORE_PATH_INTERNAL)/SegmentTranslation/SegmentTranslation.sv \
 				 $(FETCH_SRC_FILES) \
 				 $(DECODE_SRC_FILES) \
 				 $(RR_SRC_FILES) \
@@ -49,7 +48,6 @@ CORE_PKGS = \
 CORE_STRUCTURAL_SRC_FILES = \
 					 $(CORE_PATH_INTERNAL)/IDM/IDM.sv	\
 					 $(CORE_PATH_INTERNAL)/TLB/TLB.sv \
-					 $(CORE_PATH_INTERNAL)/SegmentTranslation/SegmentTranslation.sv \
 					 $(FETCH_STRUCTURAL_SRC_FILES) \
 					 $(DECODE_SRC_FILES) \
 					 $(RR_SRC_FILES) \
