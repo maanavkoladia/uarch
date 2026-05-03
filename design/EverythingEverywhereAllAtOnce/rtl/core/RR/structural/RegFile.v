@@ -1,5 +1,3 @@
-`include "STDCell_Macros.vh"
-
 module RegFile (
     input  wire        clk,
     input  wire        rst,
