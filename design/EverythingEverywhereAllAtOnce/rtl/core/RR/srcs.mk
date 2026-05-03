@@ -11,7 +11,7 @@ RR_GEN_SRC_FILES = \
 RR_SRC_FILES = \
 	$(RR_PATH_INTERNAL)/npu_node1.sv \
 	$(RR_PATH_INTERNAL)/structural/RegFile.v \
-	$(RR_PATH_INTERNAL)/RegSB.sv \
+	$(RR_PATH_INTERNAL)/structural/RegSB.v \
 	$(RR_PATH_INTERNAL)/structural/RR_structural.sv \
 
 RR_STRUCTURAL_SRC_FILES = \

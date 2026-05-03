@@ -1,5 +1,3 @@
-`include "STDCell_Macros.vh"
-
 //=============================================================================
 // RegSB - structural Verilog 2005 port of RegSB.sv
 //
