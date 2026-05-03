@@ -41,297 +41,40 @@ module modrm_processor (
     output wire                    special_modrm_bs
 );
 
-    // =================================================================
-    // Inverted versions of single-bit inputs / signals used downstream.
-    // =================================================================
-    wire n_datasize_1, n_datasize_0;
-    `INV_N(u_inv_ds1, 1, datasize[1], n_datasize_1)
-    `INV_N(u_inv_ds0, 1, datasize[0], n_datasize_0)
-
-    wire n_modrm_7, n_modrm_6, n_modrm_1, n_modrm_0;
-    `INV_N(u_inv_m7, 1, modrm_byte[7], n_modrm_7)
-    `INV_N(u_inv_m6, 1, modrm_byte[6], n_modrm_6)
-    `INV_N(u_inv_m1, 1, modrm_byte[1], n_modrm_1)
-    `INV_N(u_inv_m0, 1, modrm_byte[0], n_modrm_0)
-
-    wire n_cs_MODRM_NEEDED, n_cs_RM_IS_DR, n_cs_REG_IS_DR;
-    wire n_cs_HARDCODED_SR, n_cs_LD_OP_CANCEL, n_cs_ST_OP_CANCEL;
-    wire n_cs_MODRM_BUT_NO_SR;
-    `INV_N(u_inv_modneed, 1, cs_MODRM_NEEDED,    n_cs_MODRM_NEEDED)
-    `INV_N(u_inv_rmisdr,  1, cs_RM_IS_DR,        n_cs_RM_IS_DR)
-    `INV_N(u_inv_regisdr, 1, cs_REG_IS_DR,       n_cs_REG_IS_DR)
-    `INV_N(u_inv_hcsr,    1, cs_HARDCODED_SR,    n_cs_HARDCODED_SR)
-    `INV_N(u_inv_ldcan,   1, cs_LD_OP_CANCEL,    n_cs_LD_OP_CANCEL)
-    `INV_N(u_inv_stcan,   1, cs_ST_OP_CANCEL,    n_cs_ST_OP_CANCEL)
-    `INV_N(u_inv_mbnsr,   1, cs_MODRM_BUT_NO_SR, n_cs_MODRM_BUT_NO_SR)
-
-    // =================================================================
-    // Datasize / mod / rm decode helpers
-    // =================================================================
-    wire is_mmx;        // datasize == 2'b11
-    wire is_8bit;       // datasize == 2'b00
-    wire mod_is_11;
-    wire mod_is_00;
-    wire n_mod_is_11;
-    wire is_mmx_mod11;
-    wire is_8bit_mod11;
-
-    `AND_2(u_is_mmx,        1, is_mmx,        datasize[1], datasize[0])
-    `AND_2(u_is_8bit,       1, is_8bit,       n_datasize_1, n_datasize_0)
-    `AND_2(u_mod_is_11,     1, mod_is_11,     modrm_byte[7], modrm_byte[6])
-    `AND_2(u_mod_is_00,     1, mod_is_00,     n_modrm_7, n_modrm_6)
-    `INV_N(u_inv_mod11,     1, mod_is_11,     n_mod_is_11)
-    `AND_2(u_is_mmx_mod11,  1, is_mmx_mod11,  is_mmx,  mod_is_11)
-    `AND_2(u_is_8bit_mod11, 1, is_8bit_mod11, is_8bit, mod_is_11)
-
-    // rm == 3'b100 / 3'b101
-    wire rm_is_100, rm_is_101;
-    `AND_3(u_rm100, 1, rm_is_100, modrm_byte[2], n_modrm_1, n_modrm_0)
-    `AND_3(u_rm101, 1, rm_is_101, modrm_byte[2], n_modrm_1, modrm_byte[0])
-
-    // special_pattern = (rm==100 & mod!=11) | (mod==00 & rm==101)
-    wire sp_term0, sp_term1, special_pattern, n_special_pattern;
-    `AND_2(u_sp_t0, 1, sp_term0, rm_is_100, n_mod_is_11)
-    `AND_2(u_sp_t1, 1, sp_term1, mod_is_00, rm_is_101)
-    `OR_2 (u_sp_or, 1, special_pattern, sp_term0, sp_term1)
-    `INV_N(u_inv_sp, 1, special_pattern, n_special_pattern)
-
-    // =================================================================
-    // High-level decode state
-    // =================================================================
-    wire rm_is_dr, reg_is_dr, reg_is_segment;
-    wire n_reg_is_segment;
-
-    `AND_3(u_rm_is_dr,  1, rm_is_dr,
-           cs_MODRM_NEEDED, cs_RM_IS_DR,   n_cs_REG_IS_DR)
-    `AND_3(u_reg_is_dr, 1, reg_is_dr,
-           cs_MODRM_NEEDED, n_cs_RM_IS_DR, cs_REG_IS_DR)
-    `AND_2(u_reg_is_seg, 1, reg_is_segment,
-           cs_MODRM_NEEDED, cs_REG_IS_SEGMENT)
-    `INV_N(u_inv_regseg, 1, reg_is_segment, n_reg_is_segment)
-
-    // =================================================================
-    // dr_id / sr_id branch-active flags
-    // =================================================================
-    wire dr_b1, dr_b2, dr_b3, dr_b4;
-    wire sr_b1, sr_b2, sr_b3, sr_b4;
-
-    `AND_2(u_dr_b1, 1, dr_b1, rm_is_dr,  n_special_pattern)
-    `AND_2(u_dr_b2, 1, dr_b2, reg_is_dr, n_reg_is_segment)
-    `AND_2(u_dr_b3, 1, dr_b3, reg_is_segment, reg_is_dr)
-    `AND_2(u_dr_b4, 1, dr_b4, n_cs_MODRM_NEEDED, cs_HARDCODED_DR)
-
-    `AND_4(u_sr_b1, 1, sr_b1,
-           rm_is_dr, n_reg_is_segment, n_cs_MODRM_BUT_NO_SR, n_cs_HARDCODED_SR)
-    `AND_2(u_sr_b2, 1, sr_b2, reg_is_dr, n_special_pattern)
-    `AND_2(u_sr_b3, 1, sr_b3, reg_is_segment, rm_is_dr)
-    assign sr_b4 = cs_HARDCODED_SR;
-
-    // =================================================================
-    // Lookup A: case(modrm_byte[2:0]), candidates depend on (mod==11)
-    //   n=0..3: is_mmx_mod11 ? MMn : <gpr>
-    //   n=4..7: is_mmx_mod11 ? MMn : (is_8bit_mod11 ? <8b alias> : <full gpr>)
-    // =================================================================
-    wire [`REG_ID_W-1:0] A_id0, A_id1, A_id2, A_id3;
-    wire [`REG_ID_W-1:0] A_id4, A_id5, A_id6, A_id7;
-    wire [`REG_ID_W-1:0] A_id4_inner, A_id5_inner, A_id6_inner, A_id7_inner;
-
-    `MUX_2(u_A_id0, `REG_ID_W, A_id0, `EAX, `MM0, is_mmx_mod11)
-    `MUX_2(u_A_id1, `REG_ID_W, A_id1, `ECX, `MM1, is_mmx_mod11)
-    `MUX_2(u_A_id2, `REG_ID_W, A_id2, `EDX, `MM2, is_mmx_mod11)
-    `MUX_2(u_A_id3, `REG_ID_W, A_id3, `EBX, `MM3, is_mmx_mod11)
-
-    `MUX_2(u_A_id4_in, `REG_ID_W, A_id4_inner, `ESP, `EAX, is_8bit_mod11)
-    `MUX_2(u_A_id5_in, `REG_ID_W, A_id5_inner, `EBP, `ECX, is_8bit_mod11)
-    `MUX_2(u_A_id6_in, `REG_ID_W, A_id6_inner, `ESI, `EDX, is_8bit_mod11)
-    `MUX_2(u_A_id7_in, `REG_ID_W, A_id7_inner, `EDI, `EBX, is_8bit_mod11)
-
-    `MUX_2(u_A_id4, `REG_ID_W, A_id4, A_id4_inner, `MM4, is_mmx_mod11)
-    `MUX_2(u_A_id5, `REG_ID_W, A_id5, A_id5_inner, `MM5, is_mmx_mod11)
-    `MUX_2(u_A_id6, `REG_ID_W, A_id6, A_id6_inner, `MM6, is_mmx_mod11)
-    `MUX_2(u_A_id7, `REG_ID_W, A_id7, A_id7_inner, `MM7, is_mmx_mod11)
-
-    wire [`REG_ID_W-1:0] lookup_A_id;
-    `MUX_8(u_lookupA_id, `REG_ID_W, lookup_A_id,
-           A_id0, A_id1, A_id2, A_id3, A_id4, A_id5, A_id6, A_id7,
-           modrm_byte[2:0])
-
-    // high8 set only for indices 4..7 (rm bit2 == 1) and only when 8b & mod==11
-    wire lookup_A_high8;
-    `AND_2(u_A_high8, 1, lookup_A_high8, is_8bit_mod11, modrm_byte[2])
-
-    // =================================================================
-    // Lookup B: case(modrm_byte[5:3]), no mod==11 conditioning
-    // =================================================================
-    wire [`REG_ID_W-1:0] B_id0, B_id1, B_id2, B_id3;
-    wire [`REG_ID_W-1:0] B_id4, B_id5, B_id6, B_id7;
-    wire [`REG_ID_W-1:0] B_id4_inner, B_id5_inner, B_id6_inner, B_id7_inner;
-
-    `MUX_2(u_B_id0, `REG_ID_W, B_id0, `EAX, `MM0, is_mmx)
-    `MUX_2(u_B_id1, `REG_ID_W, B_id1, `ECX, `MM1, is_mmx)
-    `MUX_2(u_B_id2, `REG_ID_W, B_id2, `EDX, `MM2, is_mmx)
-    `MUX_2(u_B_id3, `REG_ID_W, B_id3, `EBX, `MM3, is_mmx)
-
-    `MUX_2(u_B_id4_in, `REG_ID_W, B_id4_inner, `ESP, `EAX, is_8bit)
-    `MUX_2(u_B_id5_in, `REG_ID_W, B_id5_inner, `EBP, `ECX, is_8bit)
-    `MUX_2(u_B_id6_in, `REG_ID_W, B_id6_inner, `ESI, `EDX, is_8bit)
-    `MUX_2(u_B_id7_in, `REG_ID_W, B_id7_inner, `EDI, `EBX, is_8bit)
-
-    `MUX_2(u_B_id4, `REG_ID_W, B_id4, B_id4_inner, `MM4, is_mmx)
-    `MUX_2(u_B_id5, `REG_ID_W, B_id5, B_id5_inner, `MM5, is_mmx)
-    `MUX_2(u_B_id6, `REG_ID_W, B_id6, B_id6_inner, `MM6, is_mmx)
-    `MUX_2(u_B_id7, `REG_ID_W, B_id7, B_id7_inner, `MM7, is_mmx)
-
-    wire [`REG_ID_W-1:0] lookup_B_id;
-    `MUX_8(u_lookupB_id, `REG_ID_W, lookup_B_id,
-           B_id0, B_id1, B_id2, B_id3, B_id4, B_id5, B_id6, B_id7,
-           modrm_byte[5:3])
-
-    wire lookup_B_high8;
-    `AND_2(u_B_high8, 1, lookup_B_high8, is_8bit, modrm_byte[5])
-
-    // =================================================================
-    // Segment lookup: case(modrm_byte[5:3])
-    //   0:ES 1:CS 2:SS 3:DS 4:FS 5:GS 6:NO_REG 7:NO_REG
-    // =================================================================
-    wire [`REG_ID_W-1:0] lookup_seg_id;
-    `MUX_8(u_lookup_seg, `REG_ID_W, lookup_seg_id,
-           `ES, `CS, `SS, `DS, `FS, `GS, `NO_REG, `NO_REG,
-           modrm_byte[5:3])
-
-    // =================================================================
-    // dr_id priority cascade: b1 ? A : b2 ? B : b3 ? Seg : b4 ? HC : NO_REG
-    // =================================================================
-    wire [`REG_ID_W-1:0] dr_id_s0, dr_id_s1, dr_id_s2;
-    `MUX_2(u_dr_id_s0, `REG_ID_W, dr_id_s0, `NO_REG,  cs_HARDCODED_DR_ID, dr_b4)
-    `MUX_2(u_dr_id_s1, `REG_ID_W, dr_id_s1, dr_id_s0, lookup_seg_id,      dr_b3)
-    `MUX_2(u_dr_id_s2, `REG_ID_W, dr_id_s2, dr_id_s1, lookup_B_id,        dr_b2)
-    `MUX_2(u_dr_id_s3, `REG_ID_W, dr_id,    dr_id_s2, lookup_A_id,        dr_b1)
-
-    // =================================================================
-    // sr_id priority cascade: b1 ? B : b2 ? A : b3 ? Seg : b4 ? HC : NO_REG
-    // =================================================================
-    wire [`REG_ID_W-1:0] sr_id_s0, sr_id_s1, sr_id_s2;
-    `MUX_2(u_sr_id_s0, `REG_ID_W, sr_id_s0, `NO_REG,  cs_HARDCODED_SR_ID, sr_b4)
-    `MUX_2(u_sr_id_s1, `REG_ID_W, sr_id_s1, sr_id_s0, lookup_seg_id,      sr_b3)
-    `MUX_2(u_sr_id_s2, `REG_ID_W, sr_id_s2, sr_id_s1, lookup_A_id,        sr_b2)
-    `MUX_2(u_sr_id_s3, `REG_ID_W, sr_id,    sr_id_s2, lookup_B_id,        sr_b1)
-
-    // =================================================================
-    // dr_high8 = (dr_b1 & A_high8) | (dr_b2 & B_high8) | (dr_b4 & HC_DR_HIGH8)
-    // =================================================================
-    wire dr_h8_t0, dr_h8_t1, dr_h8_t2;
-    `AND_2(u_dr_h8_t0, 1, dr_h8_t0, dr_b1, lookup_A_high8)
-    `AND_2(u_dr_h8_t1, 1, dr_h8_t1, dr_b2, lookup_B_high8)
-    `AND_2(u_dr_h8_t2, 1, dr_h8_t2, dr_b4, cs_HARDCODED_DR_HIGH8)
-    `OR_3 (u_dr_h8,    1, dr_high8, dr_h8_t0, dr_h8_t1, dr_h8_t2)
-
-    // sr_high8 = (sr_b1 & B_high8) | (sr_b2 & A_high8)
-    wire sr_h8_t0, sr_h8_t1;
-    `AND_2(u_sr_h8_t0, 1, sr_h8_t0, sr_b1, lookup_B_high8)
-    `AND_2(u_sr_h8_t1, 1, sr_h8_t1, sr_b2, lookup_A_high8)
-    `OR_2 (u_sr_h8,    1, sr_high8, sr_h8_t0, sr_h8_t1)
-
-    // =================================================================
-    // dr_rd / dr_wr / sr_rd / sr_wr
-    // =================================================================
-    wire dr_rd_t3;                       // dr_b4 & HC_DR_RD
-    wire dr_wr_t0, dr_wr_t3;             // dr_b1 & mod==11; dr_b4 & HC_DR_WR
-    wire sr_rd_t3;                       // sr_b4 & HC_SR_RD
-
-    `AND_2(u_dr_rd_t3, 1, dr_rd_t3, dr_b4, cs_HARDCODED_DR_RD)
-    `OR_4 (u_dr_rd,    1, dr_rd,    dr_b1, dr_b2, dr_b3, dr_rd_t3)
-
-    `AND_2(u_dr_wr_t0, 1, dr_wr_t0, dr_b1, mod_is_11)
-    `AND_2(u_dr_wr_t3, 1, dr_wr_t3, dr_b4, cs_HARDCODED_DR_WR)
-    `OR_4 (u_dr_wr,    1, dr_wr,    dr_wr_t0, dr_b2, dr_b3, dr_wr_t3)
-
-    `AND_2(u_sr_rd_t3, 1, sr_rd_t3, sr_b4, cs_HARDCODED_SR_RD)
-    `OR_4 (u_sr_rd,    1, sr_rd,    sr_b1, sr_b2, sr_b3, sr_rd_t3)
-
-    `AND_2(u_sr_wr,    1, sr_wr,    sr_b4, cs_HARDCODED_SR_WR)
-
-    // =================================================================
-    // Load / store op generation
-    //   ld_op_unmasked = (mod!=11 & MODRM_NEEDED) | HARDCODED_LD_OP
-    //   st_op_unmasked = (rm_is_dr & mod!=11)     | HARDCODED_ST_OP
-    //   ld_op = ld_op_unmasked & ~LD_OP_CANCEL
-    //   st_op = st_op_unmasked & ~ST_OP_CANCEL
-    // =================================================================
-    wire ld_op_t0, ld_op_unmasked;
-    wire st_op_t0, st_op_unmasked;
-
-    `AND_2(u_ld_t0,   1, ld_op_t0,        n_mod_is_11, cs_MODRM_NEEDED)
-    `OR_2 (u_ld_un,   1, ld_op_unmasked,  ld_op_t0, cs_HARDCODED_LD_OP)
-    `AND_2(u_ld_op,   1, ld_op,           ld_op_unmasked, n_cs_LD_OP_CANCEL)
-
-    `AND_2(u_st_t0,   1, st_op_t0,        rm_is_dr, n_mod_is_11)
-    `OR_2 (u_st_un,   1, st_op_unmasked,  st_op_t0, cs_HARDCODED_ST_OP)
-    `AND_2(u_st_op,   1, st_op,           st_op_unmasked, n_cs_ST_OP_CANCEL)
-
-    // =================================================================
-    // ALU input override flags + sources (always BUFFER)
-    //   alu_inputA_override = rm_is_dr  & (st_op | ld_op)
-    //   alu_inputB_override = reg_is_dr & ld_op
-    // =================================================================
-    wire st_or_ld;
-    `OR_2 (u_st_or_ld,  1, st_or_ld, st_op, ld_op)
-    `AND_2(u_ovrA,      1, alu_inputA_override, rm_is_dr,  st_or_ld)
-    `AND_2(u_ovrB,      1, alu_inputB_override, reg_is_dr, ld_op)
-
-    assign alu_inputA_override_sel = `BUFFER;
-    assign alu_inputB_override_sel = `BUFFER;
-
-    // =================================================================
-    // special_modrm_bs = (mod==00) & (rm==101) & MODRM_NEEDED
-    // =================================================================
-    `AND_3(u_smb, 1, special_modrm_bs, mod_is_00, rm_is_101, cs_MODRM_NEEDED)
-
-endmodule
-
-
-
-
-
-
-
-
-import reg_ids_pkg::*;
-import core_stage_latches_pkg::*;
-import control_store_pkg::*;
-
-module modrm_processor (
-    input byte_t modrm_byte,
-    input logic [1:0] datasize,
-    input decode_cs_t decode_cs_inputs,
-    output modrm_processor_outs_t outputs
-);
-    reg_ids_e dr_id;
-    reg_ids_e sr_id;
-    bool dr_rd;
-    bool sr_rd;
-    bool dr_wr;
-    bool sr_wr;
-    bool ld_op_unmasked;
-    bool st_op_unmasked;
-    bool ld_op;
-    bool st_op;
-    bool rm_is_dr;
-    bool reg_is_dr;
-    bool reg_is_segment;
-    bool modrm_but_no_sr;
-    bool alu_inputA_override;
-    bool alu_inputB_override;
-    bool dr_high8;
-    bool sr_high8;
-    source_selector_e alu_inputA_override_sel;
-    source_selector_e alu_inputB_override_sel;
-
-
-
-
+    /* ===================================================================== //
+                field bools
+    // ===================================================================== */
     wire mod_field_is_11;
-    `CMP_N(mod_field_cmp, 3, mod_field_is_11, modrm_byte[7:6], 2'b11)
+    `AND_2(mod_field_is_11_u, 1, mod_field_is_11, modrm_byte[7], modrm_byte[6])
+
+    wire mod_field_is_not_11;
+    `NAND_2(mod_field_is_not_11_u, 1, mod_field_is_not_11, modrm_byte[7], modrm_byte[6])
+
+    wire modrm_case_00100;
+    wire modrm_case_00101;
+    wire modrm_case_01100;
+    wire modrm_case_10100;
+    `CMP_N(modrm_case_00100_cmp, 5, modrm_case_00100, {modrm_byte[7:6], modrm_byte[2:0]}, 5'b00100)
+    `CMP_N(modrm_case_00101_cmp, 5, modrm_case_00101, {modrm_byte[7:6], modrm_byte[2:0]}, 5'b00101)
+    `CMP_N(modrm_case_01100_cmp, 5, modrm_case_01100, {modrm_byte[7:6], modrm_byte[2:0]}, 5'b01100)
+    `CMP_N(modrm_case_10100_cmp, 5, modrm_case_10100, {modrm_byte[7:6], modrm_byte[2:0]}, 5'b10100)
+
+    wire not_wierd_modrm_case;
+    `NOR_4(not_wierd_modrm_case_gate, 1, not_wierd_modrm_case, modrm_case_00100, modrm_case_00101, modrm_case_01100, __in3modrm_case_10100__)
+
+
+    wire datasize_11;
+    wire datasize_00;
+    wire datasize_11_mod_11;
+    wire datasize_00_mod_11;
+    `AND_2(datasize_11_u, 1, datasize_11, datasize[0], datasize[1])
+    `NOR_2(datasize_00_u, 1, datasize_00, datasize[0], datasize[1])
+    `AND_3(datasize_11_mod_11_u, 1, datasize_11_mod_11, datasize[0], datasize[1], mod_field_is_11)
+    `NOR_3(datasize_00_mod_11_u, 1, datasize_00_mod_11, datasize[0], datasize[0], mod_field_is_not_11)
+
+
+
+    
 
 
     /* ===================================================================== //
@@ -354,6 +97,9 @@ module modrm_processor (
     assign alu_inputB_override_sel = `BUFFER;
 
 
+
+
+
     /* ===================================================================== //
                 rm_is_dr, reg_is_dr, segment, stuff
     // ===================================================================== */
@@ -366,10 +112,16 @@ module modrm_processor (
     wire reg_is_dr;
     wire reg_is_segment;
     wire modrm_but_no_sr;
+    wire not_rm_is_dr;
+    wire reg_is_seg_inv;
     
     `AND_2(rm_is_dr_gate, 1, rm_is_dr, cs_MODRM_NEEDED, cs_RM_IS_DR)
     `AND_2(reg_is_dr_gate, 1, reg_is_dr, cs_MODRM_NEEDED, cs_REG_IS_DR)
     `AND_2(reg_is_segment_gate, 1, reg_is_segment, cs_MODRM_NEEDED, cs_REG_IS_SEGMENT)
+    `INV_N(not_rm_is_dr_u, 1, rm_is_dr, not_rm_is_dr)
+    `INV_N(reg_seg_inv, 1, reg_is_segment, reg_is_seg_inv)
+
+
     assign modrm_but_no_sr = cs_MODRM_BUT_NO_SR;
 
 
@@ -378,216 +130,340 @@ module modrm_processor (
     /* ===================================================================== //
                 dr_high8, dr_id, dr_rd, dr_wr always_comb block
     // ===================================================================== */
+    // if(rm_is_dr && not_wierd_modrm_case) dr_a    2to1
+    // else if(reg_is_dr && !reg_is_segment) dr_b               2to1
 
-    if(rm_is_dr && 
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00100) &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00101) &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b01100) &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b10100)) 
-    else if(reg_is_dr && !reg_is_segment)
-    else if(reg_is_segment && reg_is_dr)
-    else if(!decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.HARDCODED_DR)
-    else
+    // else if(reg_is_segment && reg_is_dr) dr_c    4to1
+    // else if(decode_cs_inputs.HARDCODED_DR) dr_d
+    // else dr_e
+
+    wire rm_dr_not_wierd;
+    wire reg_dr_not_segment;
+    wire reg_dr_segment;
+
+    `AND_2(rm_dr_not_wierd_gate, 1, rm_dr_not_wierd, rm_is_dr, not_wierd_modrm_case)
+    `AND_2(reg_dr_not_segment_gate, 1, reg_dr_not_segment, reg_is_dr, reg_is_seg_inv)
+    `AND_2(reg_dr_segment_gate, 1, reg_dr_segment, reg_is_segment, reg_is_dr)
+
+    wire sel_dr_a_or_b;
+    `OR_2(sel_dr_a_or_b_u, 1, sel_dr_a_or_b, rm_dr_not_wierd, reg_dr_not_segment)
 
 
-    always_comb begin
-        dr_high8 = 1'b0;
-        //dr reg setting
-        if(rm_is_dr && 
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00100) &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00101) &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b01100) &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b10100)) 
-            begin
-            case(modrm_byte[2:0])    //rm id
-                3'd0: dr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM0 : EAX;
-                3'd1: dr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM1 : ECX;
-                3'd2: dr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM2 : EDX;
-                3'd3: dr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM3 : EBX;
-                3'd4: begin
-                    dr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM4 : 
-                            (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EAX : ESP;
-                    dr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
-                end
-                3'd5: begin
-                    dr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM5 : 
-                            (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? ECX : EBP;
-                    dr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
-                end
-                3'd6: begin
-                    dr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM6 : 
-                            (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EDX : ESI;
-                    dr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
-                end
-                3'd7: begin
-                    dr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM7 :
-                            (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EBX : EDI;
-                    dr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
-                end
-            endcase 
-            dr_rd = 1'b1;
-            dr_wr = (modrm_byte[7:6] == 2'b11 && decode_cs_inputs.MODRM_NEEDED) ? 1'b1 : 1'b0;
-        end
-        else if(reg_is_dr && !reg_is_segment) begin
-            case(modrm_byte[5:3])    //reg id
-                3'd0: dr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
-                3'd1: dr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
-                3'd2: dr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
-                3'd3: dr_id = (datasize[1] && datasize[0]) ? MM3 : EBX;
-                3'd4: begin
-                    dr_id = (datasize[1] && datasize[0]) ? MM4 : 
-                            (!datasize[1] && !datasize[0]) ? EAX : ESP;
-                    dr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
-                end
-                3'd5: begin
-                    dr_id = (datasize[1] && datasize[0]) ? MM5 : 
-                            (!datasize[1] && !datasize[0]) ? ECX : EBP;
-                    dr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
-                end
-                3'd6: begin
-                    dr_id = (datasize[1] && datasize[0]) ? MM6 : 
-                            (!datasize[1] && !datasize[0]) ? EDX : ESI;
-                    dr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
-                end
-                3'd7: begin
-                    dr_id = (datasize[1] && datasize[0]) ? MM7 :
-                            (!datasize[1] && !datasize[0]) ? EBX : EDI;
-                    dr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
-                end
-            endcase
-            dr_rd = 1'b1;
-            dr_wr = 1'b1;
-        end
-        else if(reg_is_segment && reg_is_dr) begin
-            case(modrm_byte[5:3])    //seg orders, given by chat, idk if i trust
-                3'd0: dr_id = ES;
-                3'd1: dr_id = CS;
-                3'd2: dr_id = SS;
-                3'd3: dr_id = DS;
-                3'd4: dr_id = FS;
-                3'd5: dr_id = GS;
-                3'd6: dr_id = NO_REG;
-                3'd7: dr_id = NO_REG;
-            endcase
-            dr_rd = 1'b1;
-            dr_wr = 1'b1;
-        end
-        else if(!decode_cs_inputs.MODRM_NEEDED && decode_cs_inputs.HARDCODED_DR) begin
-            dr_id = decode_cs_inputs.HARDCODED_DR_ID;
-            dr_rd = decode_cs_inputs.HARDCODED_DR_RD;
-            //gonna assume for now that if youre reading this reg then youre gonna write back to it since this is dr
-            //actually not true for fuck ass movs case, but gonna mux outside of here cause fuck that instruction
-            //actually still not true even outside of movs case, what other case? you guessed it, mov. fuck ass instruction
-            dr_wr = decode_cs_inputs.HARDCODED_DR_WR;
-            dr_high8 = decode_cs_inputs.HARDCODED_DR_HIGH8;
-        end
-        else begin
-            dr_id = NO_REG;
-            dr_rd = 1'b0;
-            dr_wr = 1'b0;
-        end
-    end
+    /////////////// rm_dr_not_wierd
+    wire rm_dr_not_wierd_dr_rd;
+    wire rm_dr_not_wierd_dr_wr;
+    wire rm_dr_not_wierd_dr_high8;
+    wire [`REG_ID_W-1:0] rm_dr_not_wierd_dr_id_v[0:7];
+    wire [`REG_ID_W-1:0] rm_dr_not_wierd_dr_id;
+
+    assign rm_dr_not_wierd_dr_rd = 1'b1;
+    `AND_2(rm_dr_not_wierd_dr_wr_gate, 1, rm_dr_not_wierd_dr_wr, mod_is_11, cs_MODRM_NEEDED)
+    `AND_2(rm_dr_not_wierd_dr_high8_gate, 1, rm_dr_not_wierd_dr_high8, datasize_00_mod_11, modrm_byte[2])
+
+    //dr_id
+    `MUX_2(rm_dr_not_wierd_dr_id0_u, `REG_ID_W, rm_dr_not_wierd_dr_id_v[0], `EAX, `MM0, datasize_11_mod_11)
+    `MUX_2(rm_dr_not_wierd_dr_id1_u, `REG_ID_W, rm_dr_not_wierd_dr_id_v[1], `ECX, `MM1, datasize_11_mod_11)
+    `MUX_2(rm_dr_not_wierd_dr_id2_u, `REG_ID_W, rm_dr_not_wierd_dr_id_v[2], `EDX, `MM2, datasize_11_mod_11)
+    `MUX_2(rm_dr_not_wierd_dr_id3_u, `REG_ID_W, rm_dr_not_wierd_dr_id_v[3], `EBX, `MM3, datasize_11_mod_11)
+
+    `MUX_4(rm_dr_not_wierd_dr_id4_u, `REG_ID_W, rm_dr_not_wierd_dr_id_v[4], `ESP, `EAX, `MM4, `MM4, {datasize_11_mod_11, datasize_00_mod_11})
+    `MUX_4(rm_dr_not_wierd_dr_id5_u, `REG_ID_W, rm_dr_not_wierd_dr_id_v[5], `EBP, `ECX, `MM5, `MM5, {datasize_11_mod_11, datasize_00_mod_11})
+    `MUX_4(rm_dr_not_wierd_dr_id6_u, `REG_ID_W, rm_dr_not_wierd_dr_id_v[6], `ESI, `EDX, `MM6, `MM6, {datasize_11_mod_11, datasize_00_mod_11})
+    `MUX_4(rm_dr_not_wierd_dr_id7_u, `REG_ID_W, rm_dr_not_wierd_dr_id_v[7], `EDI, `EBX, `MM7, `MM7, {datasize_11_mod_11, datasize_00_mod_11})
+
+    `MUX_8(rm_dr_not_wierd_dr_id_u, `REG_ID_W, rm_dr_not_wierd_dr_id, 
+            rm_dr_not_wierd_dr_id_v[0], rm_dr_not_wierd_dr_id_v[1], rm_dr_not_wierd_dr_id_v[2], rm_dr_not_wierd_dr_id_v[3],
+            rm_dr_not_wierd_dr_id_v[4], rm_dr_not_wierd_dr_id_v[5], rm_dr_not_wierd_dr_id_v[6], rm_dr_not_wierd_dr_id_v[7],
+            modrm_byte[2:0])
+
+
+
+    /////////////// reg_dr_not_segment
+    wire reg_dr_not_segment_dr_rd;
+    wire reg_dr_not_segment_dr_wr;
+    wire reg_dr_not_segment_dr_high8;
+    wire [`REG_ID_W-1:0] reg_dr_not_segment_dr_id_v[0:7];
+    wire [`REG_ID_W-1:0] reg_dr_not_segment_dr_id;
+
+    assign reg_dr_not_segment_dr_rd = 1'b1;
+    assign reg_dr_not_segment_dr_wr = 1'b1;
+    `AND_2(reg_dr_not_segment_dr_high8_gate, 1, reg_dr_not_segment_dr_high8, datasize_00, modrm_byte[5])
+
+    //dr_id
+    `MUX_2(reg_dr_not_segment_dr_id0_u, `REG_ID_W, reg_dr_not_segment_dr_id_v[0], `EAX, `MM0, datasize_11)
+    `MUX_2(reg_dr_not_segment_dr_id1_u, `REG_ID_W, reg_dr_not_segment_dr_id_v[1], `ECX, `MM1, datasize_11)
+    `MUX_2(reg_dr_not_segment_dr_id2_u, `REG_ID_W, reg_dr_not_segment_dr_id_v[2], `EDX, `MM2, datasize_11)
+    `MUX_2(reg_dr_not_segment_dr_id3_u, `REG_ID_W, reg_dr_not_segment_dr_id_v[3], `EBX, `MM3, datasize_11)
+
+    `MUX_4(reg_dr_not_segment_dr_id4_u, `REG_ID_W, reg_dr_not_segment_dr_id_v[4], `ESP, `EAX, `MM4, `MM4, {datasize_11, datasize_00})
+    `MUX_4(reg_dr_not_segment_dr_id5_u, `REG_ID_W, reg_dr_not_segment_dr_id_v[5], `EBP, `ECX, `MM5, `MM5, {datasize_11, datasize_00})
+    `MUX_4(reg_dr_not_segment_dr_id6_u, `REG_ID_W, reg_dr_not_segment_dr_id_v[6], `ESI, `EDX, `MM6, `MM6, {datasize_11, datasize_00})
+    `MUX_4(reg_dr_not_segment_dr_id7_u, `REG_ID_W, reg_dr_not_segment_dr_id_v[7], `EDI, `EBX, `MM7, `MM7, {datasize_11, datasize_00})
+
+    `MUX_8(reg_dr_not_segment_dr_id_u, `REG_ID_W, reg_dr_not_segment_dr_id, 
+            reg_dr_not_segment_dr_id_v[0], reg_dr_not_segment_dr_id_v[1], reg_dr_not_segment_dr_id_v[2], reg_dr_not_segment_dr_id_v[3],
+            reg_dr_not_segment_dr_id_v[4], reg_dr_not_segment_dr_id_v[5], reg_dr_not_segment_dr_id_v[6], reg_dr_not_segment_dr_id_v[7],
+            modrm_byte[5:3])
 
 
 
 
+    /////////////// reg_dr_segment
+    wire reg_dr_segment_dr_rd;
+    wire reg_dr_segment_dr_wr;
+    wire reg_dr_segment_dr_high8;
+    wire [`REG_ID_W-1:0] reg_dr_segment_dr_id;
+
+    assign reg_dr_segment_dr_rd = 1'b1;
+    assign reg_dr_segment_dr_wr = 1'b1;
+    assign reg_dr_segment_dr_high8 = 1'b0;
+
+    //dr_id
+    `MUX_8(reg_dr_segment_dr_id_u, `REG_ID_W, reg_dr_segment_dr_id, 
+            `ES, `CS, `SS, `DS,
+            `FS, `GS, `NO_REG, `NO_REG,
+            modrm_byte[5:3])
+
+
+
+    /////////////// hardcoded_dr
+    wire hardcoded_dr_dr_rd;
+    wire hardcoded_dr_dr_wr;
+    wire hardcoded_dr_dr_high8;
+    wire [`REG_ID_W-1:0] hardcoded_dr_dr_id;
+
+    assign hardcoded_dr_dr_rd = cs_HARDCODED_DR_RD;
+    assign hardcoded_dr_dr_wr = cs_HARDCODED_DR_WR;
+    assign hardcoded_dr_dr_high8 = cs_HARDCODED_DR_HIGH8;
+    assign hardcoded_dr_dr_id = cs_HARDCODED_DR_ID;
+
+    /////////////// dr_else
+    wire dr_else_dr_rd;
+    wire dr_else_dr_wr;
+    wire dr_else_dr_high8;
+    wire [`REG_ID_W-1:0] dr_else_dr_id;
+
+    assign dr_else_dr_rd = 1'b0;
+    assign dr_else_dr_wr = 1'b0;
+    assign dr_else_dr_high8 = 1'b0;
+    assign dr_else_dr_id = NO_REG;
+
+
+    //////////////selection
+    wire dr_rd_ab;
+    wire dr_rd_cde;
+    `MUX_2(dr_rd_ab_u, 1, dr_rd_ab, 
+            reg_dr_not_segment_dr_rd, rm_dr_not_wierd_dr_rd, rm_dr_not_wierd)
+    `MUX_4(dr_rd_cde_u, 1, dr_rd_cde, 
+            dr_else_dr_rd, hardcoded_dr_dr_rd, reg_is_segment_dr_rd, reg_is_segment_dr_rd, 
+            {reg_dr_segment, cs_HARDCODED_DR})
+    `MUX_2(dr_rd_u, 1, dr_rd, 
+            dr_rd_cde, dr_rd_ab, sel_dr_a_or_b)
+
+    wire dr_wr_ab;
+    wire dr_wr_cde;
+    `MUX_2(dr_wr_ab_u, 1, dr_wr_ab, 
+            reg_dr_not_segment_dr_wr, rm_dr_not_wierd_dr_wr, rm_dr_not_wierd)
+    `MUX_4(dr_wr_cde_u, 1, dr_wr_cde, 
+            dr_else_dr_wr, hardcoded_dr_dr_wr, reg_is_segment_dr_wr, reg_is_segment_dr_wr, 
+            {reg_dr_segment, cs_HARDCODED_DR})
+    `MUX_2(dr_wr_u, 1, dr_wr, 
+            dr_wr_cde, dr_wr_ab, sel_dr_a_or_b)
+
+    wire dr_high8_ab;
+    wire dr_high8_cde;
+    `MUX_2(dr_high8_ab_u, 1, dr_high8_ab, 
+            reg_dr_not_segment_dr_high8, rm_dr_not_wierd_dr_high8, rm_dr_not_wierd)
+    `MUX_4(dr_high8_cde_u, 1, dr_high8_cde, 
+            dr_else_dr_high8, hardcoded_dr_dr_high8, reg_is_segment_dr_high8, reg_is_segment_dr_high8, 
+            {reg_dr_segment, cs_HARDCODED_DR})
+    `MUX_2(dr_high8_u, 1, dr_high8, 
+            dr_high8_cde, dr_high8_ab, sel_dr_a_or_b) 
+
+    wire dr_id_ab;
+    wire dr_id_cde;
+    `MUX_2(dr_id_ab_u, `REG_ID_W, dr_id_ab, 
+            reg_dr_not_segment_dr_id, rm_dr_not_wierd_dr_id, rm_dr_not_wierd)
+    `MUX_4(dr_id_cde_u, `REG_ID_W, dr_id_cde, 
+            dr_else_dr_id, hardcoded_dr_dr_id, reg_is_segment_dr_id, reg_is_segment_dr_id, 
+            {reg_dr_segment, cs_HARDCODED_DR})
+    `MUX_2(dr_id_u, `REG_ID_W, dr_id, 
+            dr_id_cde, dr_id_ab, sel_dr_a_or_b) 
 
 
 
 
-    always_comb begin
-        sr_high8 = 1'b0;
-        //sr reg setting
-        if(rm_is_dr && !reg_is_segment && !modrm_but_no_sr && !decode_cs_inputs.HARDCODED_SR) begin
-            case(modrm_byte[5:3])    //rm id
-                3'd0: sr_id = (datasize[1] && datasize[0]) ? MM0 : EAX;
-                3'd1: sr_id = (datasize[1] && datasize[0]) ? MM1 : ECX;
-                3'd2: sr_id = (datasize[1] && datasize[0]) ? MM2 : EDX;
-                3'd3: sr_id = (datasize[1] && datasize[0]) ? MM3 : EBX;
-                3'd4: begin
-                    sr_id = (datasize[1] && datasize[0]) ? MM4 : 
-                            (!datasize[1] && !datasize[0]) ? EAX : ESP;
-                    sr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
-                end
-                3'd5: begin
-                    sr_id = (datasize[1] && datasize[0]) ? MM5 : 
-                            (!datasize[1] && !datasize[0]) ? ECX : EBP;
-                    sr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
-                end
-                3'd6: begin
-                    sr_id = (datasize[1] && datasize[0]) ? MM6 : 
-                            (!datasize[1] && !datasize[0]) ? EDX : ESI;
-                    sr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
-                end
-                3'd7: begin
-                    sr_id = (datasize[1] && datasize[0]) ? MM7 :
-                            (!datasize[1] && !datasize[0]) ? EBX : EDI;
-                    sr_high8 = (!datasize[1] && !datasize[0]) ? 1'b1 : 1'b0;
-                end
-            endcase
-            sr_rd = 1'b1;
-            sr_wr = 1'b0;
-        end
-        else if(reg_is_dr &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00100) &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b00101) &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b01100) &&
-            ({modrm_byte[7:6], modrm_byte[2:0]} != 5'b10100)) begin
-            case(modrm_byte[2:0])    //reg id
-                3'd0: sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM0 : EAX;
-                3'd1: sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM1 : ECX;
-                3'd2: sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM2 : EDX;
-                3'd3: sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM3 : EBX;
-                3'd4: begin
-                    sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM4 : 
-                            (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EAX : ESP;
-                    sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
-                end
-                3'd5: begin
-                    sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM5 : 
-                            (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? ECX : EBP;
-                   sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
-                end
-                3'd6: begin
-                    sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM6 : 
-                            (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EDX : ESI;
-                    sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
-                end
-                3'd7: begin
-                    sr_id = (datasize[1] && datasize[0] && modrm_byte[7:6] == 2'b11) ? MM7 :
-                            (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? EBX : EDI;
-                    sr_high8 = (!datasize[1] && !datasize[0] && modrm_byte[7:6] == 2'b11) ? 1'b1 : 1'b0;
-                end
-            endcase
-            sr_rd = 1'b1;
-            sr_wr = 1'b0;
-        end
-        else if(reg_is_segment && rm_is_dr) begin
-            case(modrm_byte[5:3])    //seg orders, given by chat, idk if i trust
-                3'd0: sr_id = ES;
-                3'd1: sr_id = CS;
-                3'd2: sr_id = SS;
-                3'd3: sr_id = DS;
-                3'd4: sr_id = FS;
-                3'd5: sr_id = GS;
-                3'd6: sr_id = NO_REG;
-                3'd7: sr_id = NO_REG;
-            endcase
-            sr_rd = 1'b1;
-            sr_wr = 1'b0;
-        end
-        else if(decode_cs_inputs.HARDCODED_SR) begin
-            sr_id = decode_cs_inputs.HARDCODED_SR_ID;
-            sr_rd = decode_cs_inputs.HARDCODED_SR_RD;
-            sr_wr = decode_cs_inputs.HARDCODED_SR_WR;
-        end
-        else begin
-            sr_id = NO_REG;
-            sr_rd = 1'b0;
-            sr_wr = 1'b0;
-        end
-    end
 
+
+
+
+    /* ===================================================================== //
+                sr_high8, sr_id, sr_rd, sr_wr always_comb block
+    // ===================================================================== */
+    // if(rm_is_dr && !reg_is_segment && !modrm_but_no_sr)
+    // else if(reg_is_dr && not_wierd_modrm_case)
+
+    // else if(reg_is_segment && rm_is_dr)
+    // else if(decode_cs_inputs.HARDCODED_SR)
+    // else dr_e
+
+
+    wire rm_dr_no_seg_reg_valid_sr;
+    wire reg_dr_not_wierd;
+    wire reg_seg_rm_dr;
+
+    `NOR_3(rm_dr_no_seg_reg_valid_sr_u, 1, rm_dr_no_seg_reg_valid_sr, not_rm_is_dr, reg_is_segment, modrm_but_no_sr)
+    `AND_2(reg_dr_not_wierd_u, 1, reg_dr_not_wierd, reg_is_dr, not_wierd_modrm_case)
+    `AND_2(reg_seg_rm_dr_u, 1, reg_seg_rm_dr, reg_is_segment, rm_is_dr)
+
+    wire sel_sr_a_or_b;
+    `OR_2(sel_sr_a_or_b_u, 1, sel_sr_a_or_b, rm_dr_no_seg_reg_valid_sr, reg_dr_not_wierd)
+
+
+
+    /////////////// rm_dr_no_seg_reg_valid_sr
+    wire rm_dr_no_seg_reg_valid_sr_sr_rd;
+    wire rm_dr_no_seg_reg_valid_sr_sr_wr;
+    wire rm_dr_no_seg_reg_valid_sr_sr_high8;
+    wire [`REG_ID_W-1:0] rm_dr_no_seg_reg_valid_sr_sr_id_v[0:7];
+    wire [`REG_ID_W-1:0] rm_dr_no_seg_reg_valid_sr_sr_id;
+
+    assign rm_dr_no_seg_reg_valid_sr_sr_rd = 1'b1;
+    assign rm_dr_no_seg_reg_valid_sr_sr_wr = 1'b1;
+    `AND_2(rm_dr_no_seg_reg_valid_sr_sr_high8_gate, 1, rm_dr_no_seg_reg_valid_sr_sr_high8, datasize_00, modrm_byte[5])
+
+    //sr_id
+    `MUX_2(rm_dr_no_seg_reg_valid_sr_sr_id0_u, `REG_ID_W, rm_dr_no_seg_reg_valid_sr_sr_id_v[0], `EAX, `MM0, datasize_11)
+    `MUX_2(rm_dr_no_seg_reg_valid_sr_sr_id1_u, `REG_ID_W, rm_dr_no_seg_reg_valid_sr_sr_id_v[1], `ECX, `MM1, datasize_11)
+    `MUX_2(rm_dr_no_seg_reg_valid_sr_sr_id2_u, `REG_ID_W, rm_dr_no_seg_reg_valid_sr_sr_id_v[2], `EDX, `MM2, datasize_11)
+    `MUX_2(rm_dr_no_seg_reg_valid_sr_sr_id3_u, `REG_ID_W, rm_dr_no_seg_reg_valid_sr_sr_id_v[3], `EBX, `MM3, datasize_11)
+
+    `MUX_4(rm_dr_no_seg_reg_valid_sr_sr_id4_u, `REG_ID_W, rm_dr_no_seg_reg_valid_sr_sr_id_v[4], `ESP, `EAX, `MM4, `MM4, {datasize_11, datasize_00})
+    `MUX_4(rm_dr_no_seg_reg_valid_sr_sr_id5_u, `REG_ID_W, rm_dr_no_seg_reg_valid_sr_sr_id_v[5], `EBP, `ECX, `MM5, `MM5, {datasize_11, datasize_00})
+    `MUX_4(rm_dr_no_seg_reg_valid_sr_sr_id6_u, `REG_ID_W, rm_dr_no_seg_reg_valid_sr_sr_id_v[6], `ESI, `EDX, `MM6, `MM6, {datasize_11, datasize_00})
+    `MUX_4(rm_dr_no_seg_reg_valid_sr_sr_id7_u, `REG_ID_W, rm_dr_no_seg_reg_valid_sr_sr_id_v[7], `EDI, `EBX, `MM7, `MM7, {datasize_11, datasize_00})
+
+    `MUX_8(rm_dr_no_seg_reg_valid_sr_sr_id_u, `REG_ID_W, rm_dr_no_seg_reg_valid_sr_sr_id, 
+            rm_dr_no_seg_reg_valid_sr_sr_id_v[0], rm_dr_no_seg_reg_valid_sr_sr_id_v[1], rm_dr_no_seg_reg_valid_sr_sr_id_v[2], rm_dr_no_seg_reg_valid_sr_sr_id_v[3],
+            rm_dr_no_seg_reg_valid_sr_sr_id_v[4], rm_dr_no_seg_reg_valid_sr_sr_id_v[5], rm_dr_no_seg_reg_valid_sr_sr_id_v[6], rm_dr_no_seg_reg_valid_sr_sr_id_v[7],
+            modrm_byte[5:3])
+
+
+
+    /////////////// rm_dr_no_seg_reg_valid_sr
+    wire reg_dr_not_wierd_sr_rd;
+    wire reg_dr_not_wierd_sr_wr;
+    wire reg_dr_not_wierd_sr_high8;
+    wire [`REG_ID_W-1:0] reg_dr_not_wierd_sr_id_v[0:7];
+    wire [`REG_ID_W-1:0] reg_dr_not_wierd_sr_id;
+
+    assign reg_dr_not_wierd_sr_rd = 1'b1;
+    assign reg_dr_not_wierd_sr_wr = 1'b0;
+    `AND_2(reg_dr_not_wierd_sr_high8_gate, 1, reg_dr_not_wierd_sr_high8, datasize_00_mod_11, modrm_byte[2])
+
+    //sr_id
+    `MUX_2(reg_dr_not_wierd_sr_id0_u, `REG_ID_W, reg_dr_not_wierd_sr_id_v[0], `EAX, `MM0, datasize_11_mod_11)
+    `MUX_2(reg_dr_not_wierd_sr_id1_u, `REG_ID_W, reg_dr_not_wierd_sr_id_v[1], `ECX, `MM1, datasize_11_mod_11)
+    `MUX_2(reg_dr_not_wierd_sr_id2_u, `REG_ID_W, reg_dr_not_wierd_sr_id_v[2], `EDX, `MM2, datasize_11_mod_11)
+    `MUX_2(reg_dr_not_wierd_sr_id3_u, `REG_ID_W, reg_dr_not_wierd_sr_id_v[3], `EBX, `MM3, datasize_11_mod_11)
+
+    `MUX_4(reg_dr_not_wierd_sr_id4_u, `REG_ID_W, reg_dr_not_wierd_sr_id_v[4], `ESP, `EAX, `MM4, `MM4, {datasize_11_mod_11, datasize_00_mod_11})
+    `MUX_4(reg_dr_not_wierd_sr_id5_u, `REG_ID_W, reg_dr_not_wierd_sr_id_v[5], `EBP, `ECX, `MM5, `MM5, {datasize_11_mod_11, datasize_00_mod_11})
+    `MUX_4(reg_dr_not_wierd_sr_id6_u, `REG_ID_W, reg_dr_not_wierd_sr_id_v[6], `ESI, `EDX, `MM6, `MM6, {datasize_11_mod_11, datasize_00_mod_11})
+    `MUX_4(reg_dr_not_wierd_sr_id7_u, `REG_ID_W, reg_dr_not_wierd_sr_id_v[7], `EDI, `EBX, `MM7, `MM7, {datasize_11_mod_11, datasize_00_mod_11})
+
+    `MUX_8(reg_dr_not_wierd_sr_id_u, `REG_ID_W, reg_dr_not_wierd_sr_id, 
+            reg_dr_not_wierd_sr_id_v[0], reg_dr_not_wierd_sr_id_v[1], reg_dr_not_wierd_sr_id_v[2], reg_dr_not_wierd_sr_id_v[3],
+            reg_dr_not_wierd_sr_id_v[4], reg_dr_not_wierd_sr_id_v[5], reg_dr_not_wierd_sr_id_v[6], reg_dr_not_wierd_sr_id_v[7],
+            modrm_byte[2:0])
+
+
+
+    /////////////// reg_dr_segment
+    wire reg_seg_rm_dr_sr_rd;
+    wire reg_seg_rm_dr_sr_wr;
+    wire reg_seg_rm_dr_sr_high8;
+    wire [`REG_ID_W-1:0] reg_seg_rm_dr_sr_id;
+
+    assign reg_seg_rm_dr_sr_rd = 1'b1;
+    assign reg_seg_rm_dr_sr_wr = 1'b0;
+    assign reg_seg_rm_dr_sr_high8 = 1'b0;
+
+    //dr_id
+    `MUX_8(reg_seg_rm_dr_sr_id_u, `REG_ID_W, reg_seg_rm_dr_sr_id, 
+            `ES, `CS, `SS, `DS,
+            `FS, `GS, `NO_REG, `NO_REG,
+            modrm_byte[5:3])
+
+
+    /////////////// hardcoded_sr
+    wire hardcoded_sr_sr_rd;
+    wire hardcoded_sr_sr_wr;
+    wire hardcoded_sr_sr_high8;
+    wire [`REG_ID_W-1:0] hardcoded_sr_sr_id;
+
+    assign hardcoded_sr_sr_rd = cs_HARDCODED_SR_RD;
+    assign hardcoded_sr_sr_wr = cs_HARDCODED_SR_WR;
+    assign hardcoded_sr_sr_high8 = 1'b0;
+    assign hardcoded_sr_sr_id = cs_HARDCODED_SR_ID;
+
+    /////////////// sr_else
+    wire sr_else_sr_rd;
+    wire sr_else_sr_wr;
+    wire sr_else_sr_high8;
+    wire [`REG_ID_W-1:0] sr_else_sr_id;
+
+    assign sr_else_sr_rd = 1'b0;
+    assign sr_else_sr_wr = 1'b0;
+    assign sr_else_sr_high8 = 1'b0;
+    assign sr_else_sr_id = NO_REG;
+
+
+
+    //////////////selection
+    wire rm_dr_no_seg_reg_valid_sr;
+    wire reg_dr_not_wierd;
+    wire reg_seg_rm_dr;
+
+    wire sr_rd_ab;
+    wire sr_rd_cde;
+    `MUX_2(sr_rd_ab_u, 1, sr_rd_ab, 
+            reg_dr_not_wierd_sr_rd, rm_dr_no_seg_reg_valid_sr_sr_rd, rm_dr_no_seg_reg_valid_sr)
+    `MUX_4(sr_rd_cde_u, 1, sr_rd_cde, 
+            sr_else_sr_rd, hardcoded_sr_sr_rd, reg_seg_rm_dr_sr_rd, reg_seg_rm_dr_sr_rd, 
+            {reg_seg_rm_dr, cs_HARDCODED_SR})
+    `MUX_2(sr_rd_u, 1, sr_rd, 
+            sr_rd_cde, sr_rd_ab, sel_sr_a_or_b)
+
+    wire sr_wr_ab;
+    wire sr_wr_cde;
+    `MUX_2(sr_wr_ab_u, 1, sr_wr_ab, 
+            reg_dr_not_wierd_sr_wr, rm_dr_no_seg_reg_valid_sr_sr_wr, rm_dr_no_seg_reg_valid_sr)
+    `MUX_4(sr_wr_cde_u, 1, sr_wr_cde, 
+            sr_else_sr_wr, hardcoded_sr_sr_wr, reg_seg_rm_dr_sr_wr, reg_seg_rm_dr_sr_wr, 
+            {reg_seg_rm_dr, cs_HARDCODED_SR})
+    `MUX_2(sr_wr_u, 1, sr_wr, 
+            sr_wr_cde, sr_wr_ab, sel_sr_a_or_b)
+
+    wire sr_high8_ab;
+    wire sr_high8_cde;
+    `MUX_2(sr_high8_ab_u, 1, sr_high8_ab, 
+            reg_dr_not_wierd_sr_high8, rm_dr_no_seg_reg_valid_sr_sr_high8, rm_dr_no_seg_reg_valid_sr)
+    `MUX_4(sr_high8_cde_u, 1, sr_high8_cde, 
+            sr_else_sr_high8, hardcoded_sr_sr_high8, reg_seg_rm_dr_sr_high8, reg_seg_rm_dr_sr_high8, 
+            {reg_seg_rm_dr, cs_HARDCODED_SR})
+    `MUX_2(sr_high8_u, 1, sr_high8, 
+            sr_high8_cde, sr_high8_ab, sel_sr_a_or_b) 
+
+    wire sr_id_ab;
+    wire sr_id_cde;
+    `MUX_2(sr_id_ab_u, `REG_ID_W, sr_id_ab, 
+            reg_dr_not_wierd_sr_id, rm_dr_no_seg_reg_valid_sr_sr_id, rm_dr_no_seg_reg_valid_sr)
+    `MUX_4(sr_id_cde_u, `REG_ID_W, sr_id_cde, 
+            sr_else_sr_id, hardcoded_sr_sr_id, reg_seg_rm_dr_sr_id, reg_seg_rm_dr_sr_id, 
+            {reg_seg_rm_dr, cs_HARDCODED_SR})
+    `MUX_2(sr_id_u, `REG_ID_W, sr_id, 
+            sr_id_cde, sr_id_ab, sel_sr_a_or_b)  
 
 
 
@@ -600,24 +476,9 @@ module modrm_processor (
     assign ld_op = ld_op_unmasked && !decode_cs_inputs.LD_OP_CANCEL;
     assign st_op = st_op_unmasked && !decode_cs_inputs.ST_OP_CANCEL;
 
+    //special_modrm_bs = ({modrm_byte[7:6], modrm_byte[2:0]} == 5'b00101 && decode_cs_inputs.MODRM_NEEDED) ? 1'b1 : 1'b0
+    `AND_2(special_modrm_bs_u, 1, special_modrm_bs, modrm_case_00101, cs_MODRM_NEEDED)
 
-    assign outputs = '{
-        dr_id   : dr_id,
-        sr_id   : sr_id,
-        dr_rd   : dr_rd,
-        sr_rd   : sr_rd,
-        dr_wr   : dr_wr,
-        sr_wr   : sr_wr,
-        st_op   : st_op,
-        ld_op   : ld_op,
-        dr_high8   : dr_high8,
-        sr_high8   : sr_high8,
-        alu_inputA_override : alu_inputA_override,
-        alu_inputB_override : alu_inputB_override,
-        alu_inputA_override_sel : alu_inputA_override_sel,
-        alu_inputB_override_sel : alu_inputB_override_sel,
-        special_modrm_bs : ({modrm_byte[7:6], modrm_byte[2:0]} == 5'b00101 && decode_cs_inputs.MODRM_NEEDED) ? 1'b1 : 1'b0
-    };
 
 
 endmodule
