@@ -1,4 +1,3 @@
-`include "STDCell_Macros.vh"
 
 //=============================================================================
 // npu_node1 - structural Verilog 2005 port of npu_node1.sv
