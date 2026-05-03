@@ -1,74 +1,64 @@
 // ============================================================================
-// ACTIVE: Pure structural port of ST_Q (4-deep store-queue FIFO).
+// ACTIVE: Pure structural port of ST_Q (5-entry shift-register store queue).
 //
-// FIFO semantics (matches the legacy SV exactly, including the simultaneous-
-// push+pop race on the valid bit -- see PER-SLOT VALID BIT below).
+// Functional summary (matches the new shift-register SV bit-for-bit):
+//   * 5-entry array q[0..4]. q[0] is the head; q[4] is a sentinel that is
+//     ALWAYS invalid (never written by the SV, hardwired to 0 here).
+//   * One-hot pointer next_push[4:0]; bit i set means there are i entries.
+//     Reset = 5'b00001 (empty). Full = 5'b10000.
+//   * Push appends to the slot indicated by next_push (then advances).
+//   * Pop removes q[0] and shifts everything down by one (q[i] <= q[i+1]).
+//   * Push+Pop together shifts down AND inserts new data at the position
+//     vacated, leaving the entry count unchanged.
 //
-//   Pointers head, tail are each clog2(DEPTH)+1 = 3 bits, with the extra MSB
-//   acting as a wrap bit.
-//     head_ptr = head[1:0]   tail_ptr = tail[1:0]
-//     empty:  head == tail                            (all 3 bits equal)
-//     full:   head[2] != tail[2] AND head[1:0] == tail[1:0]
+// Per-cycle slot DIN (when WE_i = vP | vp = 1):
+//   sel = {vP, vp}    DIN_i =
+//   00 (idle)         q[i]                                  (don't care, WE=0)
+//   01 (pop only)     q[i+1]
+//   10 (push only)    next_push[i]   ? wb_in.data : q[i]
+//   11 (push+pop)     next_push[i+1] ? wb_in.data : q[i+1]
 //
-//   Per cycle:
-//     valid_push = push & (~full | pop)
-//     valid_pop  = pop  & ~empty
-//     push_fail  = push & full & ~pop
+// Implemented as one MUX_4 (sel = {vP, vp}) fed by two parallel MUX_2 sub-
+// muxes for in2/in3. Data path is 2 mux levels deep.
 //
-// Per-slot register WE / DIN (faithful to the legacy):
+// next_push register update:
+//   Push only (vP=1, vp=0):  next_push <= next_push << 1
+//   Pop only  (vP=0, vp=1):  next_push <= next_push >> 1
+//   Push+Pop  (vP=1, vp=1):  hold (one in, one out)
+//   Idle      (vP=0, vp=0):  hold
+//   WE = vP XOR vp           (write only when push-only or pop-only)
 //
-//   address / bit_vec / data:
-//     WE_<i>  = push_to_<i>
-//     DIN     = wb_in.data.<field>
-//     -- only the push touches these fields, so no race.
+// Two implementation simplifications, both behaviorally equivalent to the SV:
 //
-//   valid:
-//     WE_<i>  = push_to_<i> | pop_from_<i>
-//     DIN_<i> = push_to_<i> & ~pop_from_<i> & wb_in.data.valid
-//     -- when push and pop hit the SAME slot (only possible when full),
-//        the legacy SV has two NBAs to q[X].valid:
-//            q[X]       <= wb_in.data;       (sets all fields)
-//            q[X].valid <= 1'b0;             (overrides valid)
-//        Per IEEE 1800 the order is undefined, but every common simulator
-//        resolves last-NBA-wins, so pop wins -> valid becomes 0. The AND_3
-//        above implements exactly that: when pop_from_i is asserted,
-//        valid_din is forced to 0 regardless of the incoming wb_in.data.valid.
+//   (a) The legacy SV reset value of next_push = 5'b00001 cannot be expressed
+//       directly with the project's standard MPS_reg_rst_we$ cell (resets to
+//       0). We store next_push[4:1] in a 4-bit register (resets to 4'b0000)
+//       and reconstruct next_push[0] = NOR4(stored). All one-hot semantics
+//       are preserved:
+//         stored=0000 -> next_push=00001 (empty)   <- reset state
+//         stored=0001 -> next_push=00010 (1 entry)
+//         stored=0010 -> next_push=00100 (2)
+//         stored=0100 -> next_push=01000 (3)
+//         stored=1000 -> next_push=10000 (full)
+//       The shifts compose cleanly:
+//         <<1: new_stored = {old_stored[2:0], next_push_low_w}
+//         >>1: new_stored = {1'b0,            old_stored[3:1]}
 //
-// where push_to_i  = valid_push & (tail_ptr == i),
-//       pop_from_i = valid_pop  & (head_ptr == i),
-// each derived via DECODER_N + AND_2.
+//   (b) q[4] is hardwired to all zeros (the SV never writes it after reset).
+//       The MUX_2/MUX_4 inputs that would read q[4] are wired to literal 0.
+//       Synthesis collapses these to AND gates -- no q[4] register needed.
 //
-// Reset (active LOW): all registers clear to 0.  head=tail=0 -> empty.
-//
-// Performance note: q_empty is computed as AND_2(eq_msb, eq_low) reusing the
-// two equality signals already needed for q_full, instead of a redundant
-// 3-bit CMP_N. Same logic, one less comparator on the empty path.
-//
-// Struct unrolling map (st_q_inputs_t wb_in / st_q_outputs_t outputs):
-//   wb_in.data.valid     -> wb_in_data_valid       (1)
-//   wb_in.data.address   -> wb_in_data_address     (15)
-//   wb_in.data.bit_vec   -> wb_in_data_bit_vec     (16)
-//   wb_in.data.data      -> wb_in_data_data        (128)
-//   wb_in.push           -> wb_in_push             (1)
-//   wb_in.pop            -> wb_in_pop              (1)
-//   outputs.full         -> outputs_full           (1)
-//   outputs.empty        -> outputs_empty          (1)
-//   outputs.valid[i]     -> outputs_valid_<i>      (1)   for i = 0..3
-//   outputs.address[i]   -> outputs_address_<i>    (15)  for i = 0..3
-//   outputs.head_address -> outputs_head_address   (15)
-//   outputs.bit_vec      -> outputs_bit_vec        (16)
-//   outputs.data         -> outputs_data           (128)
-//   outputs.push_fail    -> outputs_push_fail      (1)
+// Reset (active LOW): all registers clear to 0 via MPS_reg_rst_we$ CLR(rst).
 //
 // To revert to the legacy SV implementation: comment this module out and
 // uncomment the legacy block at the bottom of this file (and switch the
-// WB.sv instantiation back to the struct-based generate loop).
+// WB.sv instantiations back to the struct-based generate loop).
 // ============================================================================
+
 module ST_Q (
     input  wire         clk,
     input  wire         rst,            // active LOW
 
-    // wb_in (st_q_inputs_t)
     input  wire         wb_in_data_valid,
     input  wire [14:0]  wb_in_data_address,
     input  wire [15:0]  wb_in_data_bit_vec,
@@ -76,7 +66,6 @@ module ST_Q (
     input  wire         wb_in_push,
     input  wire         wb_in_pop,
 
-    // outputs (st_q_outputs_t)
     output wire         outputs_full,
     output wire         outputs_empty,
 
@@ -96,271 +85,321 @@ module ST_Q (
     output wire         outputs_push_fail
 );
 
-    // -------------------------------------------------------------------
-    // Pointer registers (head, tail) and increments
-    // -------------------------------------------------------------------
-    wire [2:0] head_q;
-    wire [2:0] tail_q;
-    wire [1:0] head_ptr_w;
-    wire [1:0] tail_ptr_w;
-    assign head_ptr_w = head_q[1:0];
-    assign tail_ptr_w = tail_q[1:0];
+    // ===================================================================
+    // next_push: 5-bit one-hot pointer
+    //   storage  = next_push_high_q[3:0] = next_push[4:1] (resets to 0)
+    //   computed = next_push_low_w        = NOR(stored)   (= next_push[0])
+    //   reconstructed full view = next_push_w[4:0]
+    // ===================================================================
+    wire [3:0] next_push_high_q;
+    wire       next_push_low_w;
+    wire [4:0] next_push_w;
 
-    wire [2:0] head_plus1_w;
-    wire [2:0] tail_plus1_w;
-    wire       head_plus1_cout_w;   // unused
-    wire       tail_plus1_cout_w;   // unused
-    `ADD_N(u_head_inc, 3, head_plus1_w, head_plus1_cout_w, head_q, 3'b000, 1'b1)
-    `ADD_N(u_tail_inc, 3, tail_plus1_w, tail_plus1_cout_w, tail_q, 3'b000, 1'b1)
+    `NOR_4(u_np_low, 1, next_push_low_w,
+           next_push_high_q[0], next_push_high_q[1],
+           next_push_high_q[2], next_push_high_q[3])
 
-    // -------------------------------------------------------------------
-    // Full / empty detection
-    //   eq_low  = (head[1:0] == tail[1:0])
-    //   eq_msb  = (head[2]   == tail[2])
-    //   q_empty = eq_msb & eq_low                 (all 3 bits equal)
-    //   q_full  = ~eq_msb & eq_low                (lower equal, MSB differ)
-    // -------------------------------------------------------------------
-    wire eq_low_w;
-    wire eq_msb_w;
-    wire neq_msb_w;
-    wire q_full_w;
-    wire q_empty_w;
+    assign next_push_w = {next_push_high_q, next_push_low_w};
 
-    `CMP_N(u_eq_low, 2, eq_low_w, head_ptr_w, tail_ptr_w)
-    `CMP_N(u_eq_msb, 1, eq_msb_w, head_q[2], tail_q[2])
-    `INV_N(u_neq_msb, 1, eq_msb_w, neq_msb_w)
-    `AND_2(u_q_full,  1, q_full_w, neq_msb_w, eq_low_w)
-    `AND_2(u_q_empty, 1, q_empty_w, eq_msb_w, eq_low_w)
+    // ===================================================================
+    // full / empty / valid_push / valid_pop / push_fail
+    //   full  = next_push[4]
+    //   empty = next_push[0]
+    //   valid_push = push & (~full | pop)
+    //   valid_pop  = pop  & ~empty
+    //   push_fail  = push & full & ~pop
+    // ===================================================================
+    wire full_w;
+    wire empty_w;
+    assign full_w  = next_push_high_q[3];   // next_push[4]
+    assign empty_w = next_push_low_w;       // next_push[0]
 
-    // -------------------------------------------------------------------
-    // valid_push / valid_pop / push_fail
-    // -------------------------------------------------------------------
     wire inv_full_w;
     wire inv_empty_w;
     wire inv_pop_in_w;
+    `INV_N(u_inv_full,    1, full_w,    inv_full_w)
+    `INV_N(u_inv_empty,   1, empty_w,   inv_empty_w)
+    `INV_N(u_inv_pop_in,  1, wb_in_pop, inv_pop_in_w)
+
     wire or_notfull_pop_w;
     wire valid_push_w;
     wire valid_pop_w;
-    wire full_and_notpop_w;
-
-    `INV_N(u_inv_full,    1, q_full_w,    inv_full_w)
-    `INV_N(u_inv_empty,   1, q_empty_w,   inv_empty_w)
-    `INV_N(u_inv_pop_in,  1, wb_in_pop,   inv_pop_in_w)
     `OR_2 (u_or_nf_pop,   1, or_notfull_pop_w, inv_full_w, wb_in_pop)
     `AND_2(u_valid_push,  1, valid_push_w, wb_in_push, or_notfull_pop_w)
     `AND_2(u_valid_pop,   1, valid_pop_w,  wb_in_pop,  inv_empty_w)
-    `AND_2(u_full_notpop, 1, full_and_notpop_w, q_full_w, inv_pop_in_w)
+
+    wire full_and_notpop_w;
+    `AND_2(u_full_notpop, 1, full_and_notpop_w, full_w, inv_pop_in_w)
     `AND_2(u_push_fail,   1, outputs_push_fail, wb_in_push, full_and_notpop_w)
 
-    // -------------------------------------------------------------------
-    // Pointer-register next-state and instantiation
-    //   head <= valid_pop  ? head+1 : head
-    //   tail <= valid_push ? tail+1 : tail
-    // -------------------------------------------------------------------
-    wire [2:0] head_din_w;
-    wire [2:0] tail_din_w;
-    `MUX_2(u_head_din, 3, head_din_w, head_q, head_plus1_w, valid_pop_w)
-    `MUX_2(u_tail_din, 3, tail_din_w, tail_q, tail_plus1_w, valid_push_w)
+    assign outputs_full  = full_w;
+    assign outputs_empty = empty_w;
 
-    `REG_RST(u_head, 3, clk, rst, head_din_w, head_q)
-    `REG_RST(u_tail, 3, clk, rst, tail_din_w, tail_q)
+    // ===================================================================
+    // next_push register update
+    //   WE  = (vP & ~vp) | (~vP & vp)             (i.e. vP XOR vp)
+    //   DIN = vp ? right_shift : left_shift
+    //   left_shift  = {high[2:0], low}
+    //   right_shift = {1'b0,      high[3:1]}
+    // ===================================================================
+    wire inv_vp_w;
+    wire inv_vP_w;
+    wire vP_only_w;
+    wire vp_only_w;
+    wire next_push_we_w;
+    `INV_N(u_inv_vp,   1, valid_pop_w,  inv_vp_w)
+    `INV_N(u_inv_vP,   1, valid_push_w, inv_vP_w)
+    `AND_2(u_vP_only,  1, vP_only_w, valid_push_w, inv_vp_w)
+    `AND_2(u_vp_only,  1, vp_only_w, inv_vP_w, valid_pop_w)
+    `OR_2 (u_np_we,    1, next_push_we_w, vP_only_w, vp_only_w)
 
-    // -------------------------------------------------------------------
-    // Slot decoders -- one-hot push and pop targets
-    // -------------------------------------------------------------------
-    wire [3:0] head_dec_w;
-    wire [3:0] tail_dec_w;
-    `DECODER_N(u_head_dec, 2, head_ptr_w, head_dec_w)
-    `DECODER_N(u_tail_dec, 2, tail_ptr_w, tail_dec_w)
+    wire [3:0] np_left_shift_w;
+    wire [3:0] np_right_shift_w;
+    assign np_left_shift_w  = {next_push_high_q[2:0], next_push_low_w};
+    assign np_right_shift_w = {1'b0, next_push_high_q[3:1]};
 
-    // Per-slot push_to_<i> and pop_from_<i>
-    wire push_to_0_w, push_to_1_w, push_to_2_w, push_to_3_w;
-    wire pop_from_0_w, pop_from_1_w, pop_from_2_w, pop_from_3_w;
+    wire [3:0] next_push_din_w;
+    `MUX_2(u_np_din, 4, next_push_din_w, np_left_shift_w, np_right_shift_w, valid_pop_w)
 
-    `AND_2(u_push_to_0, 1, push_to_0_w, valid_push_w, tail_dec_w[0])
-    `AND_2(u_push_to_1, 1, push_to_1_w, valid_push_w, tail_dec_w[1])
-    `AND_2(u_push_to_2, 1, push_to_2_w, valid_push_w, tail_dec_w[2])
-    `AND_2(u_push_to_3, 1, push_to_3_w, valid_push_w, tail_dec_w[3])
+    `REG_RST_WE(u_next_push, 4, clk, rst, next_push_we_w, next_push_din_w, next_push_high_q)
 
-    `AND_2(u_pop_from_0, 1, pop_from_0_w, valid_pop_w, head_dec_w[0])
-    `AND_2(u_pop_from_1, 1, pop_from_1_w, valid_pop_w, head_dec_w[1])
-    `AND_2(u_pop_from_2, 1, pop_from_2_w, valid_pop_w, head_dec_w[2])
-    `AND_2(u_pop_from_3, 1, pop_from_3_w, valid_pop_w, head_dec_w[3])
+    // ===================================================================
+    // Slot register signals (q[0..3])
+    //   q[4] hardwired to literal 0 in the muxes (no register).
+    // ===================================================================
+    wire        q_0_valid_w, q_1_valid_w, q_2_valid_w, q_3_valid_w;
+    wire [14:0] q_0_address_w, q_1_address_w, q_2_address_w, q_3_address_w;
+    wire [15:0] q_0_bit_vec_w, q_1_bit_vec_w, q_2_bit_vec_w, q_3_bit_vec_w;
+    wire [127:0] q_0_data_w, q_1_data_w, q_2_data_w, q_3_data_w;
 
-    // Per-slot valid-bit WE and DIN
-    //   WE_<i>  = push_to_<i> | pop_from_<i>
-    //   DIN_<i> = push_to_<i> & ~pop_from_<i> & wb_in_data_valid
-    //     -> push only (no pop):    DIN = wb_in_data_valid
-    //     -> pop only (no push):    DIN = 0
-    //     -> push AND pop same slot:DIN = 0   (pop wins, matches legacy
-    //                                          last-NBA semantic)
-    //     -> neither:               WE=0 (don't care)
-    wire valid_we_0_w,    valid_we_1_w,    valid_we_2_w,    valid_we_3_w;
-    wire inv_pop_from_0_w,inv_pop_from_1_w,inv_pop_from_2_w,inv_pop_from_3_w;
-    wire valid_din_0_w,   valid_din_1_w,   valid_din_2_w,   valid_din_3_w;
+    // Common slot WE and 4:1 MUX sel
+    wire we_w;
+    wire [1:0] sel_w;
+    `OR_2(u_slot_we, 1, we_w, valid_push_w, valid_pop_w)
+    assign sel_w = {valid_push_w, valid_pop_w};
 
-    `OR_2 (u_valid_we_0, 1, valid_we_0_w, push_to_0_w, pop_from_0_w)
-    `OR_2 (u_valid_we_1, 1, valid_we_1_w, push_to_1_w, pop_from_1_w)
-    `OR_2 (u_valid_we_2, 1, valid_we_2_w, push_to_2_w, pop_from_2_w)
-    `OR_2 (u_valid_we_3, 1, valid_we_3_w, push_to_3_w, pop_from_3_w)
+    // -------- Slot 0 (q[i]=q[0], q[i+1]=q[1]) --------
+    wire        smpo0_valid_w, smpp0_valid_w;
+    wire [14:0] smpo0_address_w, smpp0_address_w;
+    wire [15:0] smpo0_bit_vec_w, smpp0_bit_vec_w;
+    wire [127:0] smpo0_data_w,   smpp0_data_w;
 
-    `INV_N(u_inv_pop_from_0, 1, pop_from_0_w, inv_pop_from_0_w)
-    `INV_N(u_inv_pop_from_1, 1, pop_from_1_w, inv_pop_from_1_w)
-    `INV_N(u_inv_pop_from_2, 1, pop_from_2_w, inv_pop_from_2_w)
-    `INV_N(u_inv_pop_from_3, 1, pop_from_3_w, inv_pop_from_3_w)
+    // smpo0 = next_push[0] ? wb_in.data : q[0]   (push-only sub-mux)
+    `MUX_2(u_smpo0_v, 1,   smpo0_valid_w,   q_0_valid_w,   wb_in_data_valid,   next_push_w[0])
+    `MUX_2(u_smpo0_a, 15,  smpo0_address_w, q_0_address_w, wb_in_data_address, next_push_w[0])
+    `MUX_2(u_smpo0_b, 16,  smpo0_bit_vec_w, q_0_bit_vec_w, wb_in_data_bit_vec, next_push_w[0])
+    `MUX_2(u_smpo0_d, 128, smpo0_data_w,    q_0_data_w,    wb_in_data_data,    next_push_w[0])
 
-    `AND_3(u_valid_din_0, 1, valid_din_0_w, push_to_0_w, inv_pop_from_0_w, wb_in_data_valid)
-    `AND_3(u_valid_din_1, 1, valid_din_1_w, push_to_1_w, inv_pop_from_1_w, wb_in_data_valid)
-    `AND_3(u_valid_din_2, 1, valid_din_2_w, push_to_2_w, inv_pop_from_2_w, wb_in_data_valid)
-    `AND_3(u_valid_din_3, 1, valid_din_3_w, push_to_3_w, inv_pop_from_3_w, wb_in_data_valid)
+    // smpp0 = next_push[1] ? wb_in.data : q[1]   (push+pop sub-mux)
+    `MUX_2(u_smpp0_v, 1,   smpp0_valid_w,   q_1_valid_w,   wb_in_data_valid,   next_push_w[1])
+    `MUX_2(u_smpp0_a, 15,  smpp0_address_w, q_1_address_w, wb_in_data_address, next_push_w[1])
+    `MUX_2(u_smpp0_b, 16,  smpp0_bit_vec_w, q_1_bit_vec_w, wb_in_data_bit_vec, next_push_w[1])
+    `MUX_2(u_smpp0_d, 128, smpp0_data_w,    q_1_data_w,    wb_in_data_data,    next_push_w[1])
 
-    // -------------------------------------------------------------------
-    // Slot registers (per-slot)
-    // -------------------------------------------------------------------
-    wire [14:0]  q_0_address_w, q_1_address_w, q_2_address_w, q_3_address_w;
-    wire [15:0]  q_0_bit_vec_w, q_1_bit_vec_w, q_2_bit_vec_w, q_3_bit_vec_w;
-    wire [127:0] q_0_data_w,    q_1_data_w,    q_2_data_w,    q_3_data_w;
+    // DIN_0 = MUX_4(in0=q[0], in1=q[1], in2=smpo0, in3=smpp0, sel={vP,vp})
+    wire        din_0_valid_w;
+    wire [14:0] din_0_address_w;
+    wire [15:0] din_0_bit_vec_w;
+    wire [127:0] din_0_data_w;
+    `MUX_4(u_din0_v, 1,   din_0_valid_w,   q_0_valid_w,   q_1_valid_w,   smpo0_valid_w,   smpp0_valid_w,   sel_w)
+    `MUX_4(u_din0_a, 15,  din_0_address_w, q_0_address_w, q_1_address_w, smpo0_address_w, smpp0_address_w, sel_w)
+    `MUX_4(u_din0_b, 16,  din_0_bit_vec_w, q_0_bit_vec_w, q_1_bit_vec_w, smpo0_bit_vec_w, smpp0_bit_vec_w, sel_w)
+    `MUX_4(u_din0_d, 128, din_0_data_w,    q_0_data_w,    q_1_data_w,    smpo0_data_w,    smpp0_data_w,    sel_w)
 
-    // ---- slot 0 ----
-    `REG_RST_WE(u_q0_valid, 1,   clk, rst, valid_we_0_w, valid_din_0_w,        outputs_valid_0)
-    `REG_RST_WE(u_q0_addr,  15,  clk, rst, push_to_0_w,  wb_in_data_address,   q_0_address_w)
-    `REG_RST_WE(u_q0_bv,    16,  clk, rst, push_to_0_w,  wb_in_data_bit_vec,   q_0_bit_vec_w)
-    `REG_RST_WE(u_q0_data,  128, clk, rst, push_to_0_w,  wb_in_data_data,      q_0_data_w)
-    // ---- slot 1 ----
-    `REG_RST_WE(u_q1_valid, 1,   clk, rst, valid_we_1_w, valid_din_1_w,        outputs_valid_1)
-    `REG_RST_WE(u_q1_addr,  15,  clk, rst, push_to_1_w,  wb_in_data_address,   q_1_address_w)
-    `REG_RST_WE(u_q1_bv,    16,  clk, rst, push_to_1_w,  wb_in_data_bit_vec,   q_1_bit_vec_w)
-    `REG_RST_WE(u_q1_data,  128, clk, rst, push_to_1_w,  wb_in_data_data,      q_1_data_w)
-    // ---- slot 2 ----
-    `REG_RST_WE(u_q2_valid, 1,   clk, rst, valid_we_2_w, valid_din_2_w,        outputs_valid_2)
-    `REG_RST_WE(u_q2_addr,  15,  clk, rst, push_to_2_w,  wb_in_data_address,   q_2_address_w)
-    `REG_RST_WE(u_q2_bv,    16,  clk, rst, push_to_2_w,  wb_in_data_bit_vec,   q_2_bit_vec_w)
-    `REG_RST_WE(u_q2_data,  128, clk, rst, push_to_2_w,  wb_in_data_data,      q_2_data_w)
-    // ---- slot 3 ----
-    `REG_RST_WE(u_q3_valid, 1,   clk, rst, valid_we_3_w, valid_din_3_w,        outputs_valid_3)
-    `REG_RST_WE(u_q3_addr,  15,  clk, rst, push_to_3_w,  wb_in_data_address,   q_3_address_w)
-    `REG_RST_WE(u_q3_bv,    16,  clk, rst, push_to_3_w,  wb_in_data_bit_vec,   q_3_bit_vec_w)
-    `REG_RST_WE(u_q3_data,  128, clk, rst, push_to_3_w,  wb_in_data_data,      q_3_data_w)
+    `REG_RST_WE(u_q0_v, 1,   clk, rst, we_w, din_0_valid_w,   q_0_valid_w)
+    `REG_RST_WE(u_q0_a, 15,  clk, rst, we_w, din_0_address_w, q_0_address_w)
+    `REG_RST_WE(u_q0_b, 16,  clk, rst, we_w, din_0_bit_vec_w, q_0_bit_vec_w)
+    `REG_RST_WE(u_q0_d, 128, clk, rst, we_w, din_0_data_w,    q_0_data_w)
 
-    // -------------------------------------------------------------------
-    // Direct per-slot address outputs (for dep-check view in WB.sv)
-    // -------------------------------------------------------------------
-    assign outputs_address_0 = q_0_address_w;
-    assign outputs_address_1 = q_1_address_w;
-    assign outputs_address_2 = q_2_address_w;
-    assign outputs_address_3 = q_3_address_w;
+    // -------- Slot 1 (q[i]=q[1], q[i+1]=q[2]) --------
+    wire        smpo1_valid_w, smpp1_valid_w;
+    wire [14:0] smpo1_address_w, smpp1_address_w;
+    wire [15:0] smpo1_bit_vec_w, smpp1_bit_vec_w;
+    wire [127:0] smpo1_data_w,   smpp1_data_w;
 
-    // -------------------------------------------------------------------
-    // Head-selected outputs (head_address, bit_vec, data) via 4:1 muxes
-    // -------------------------------------------------------------------
-    `MUX_4(u_head_addr_mux, 15,  outputs_head_address,
-           q_0_address_w, q_1_address_w, q_2_address_w, q_3_address_w,
-           head_ptr_w)
-    `MUX_4(u_head_bv_mux,   16,  outputs_bit_vec,
-           q_0_bit_vec_w, q_1_bit_vec_w, q_2_bit_vec_w, q_3_bit_vec_w,
-           head_ptr_w)
-    `MUX_4(u_head_data_mux, 128, outputs_data,
-           q_0_data_w,    q_1_data_w,    q_2_data_w,    q_3_data_w,
-           head_ptr_w)
+    `MUX_2(u_smpo1_v, 1,   smpo1_valid_w,   q_1_valid_w,   wb_in_data_valid,   next_push_w[1])
+    `MUX_2(u_smpo1_a, 15,  smpo1_address_w, q_1_address_w, wb_in_data_address, next_push_w[1])
+    `MUX_2(u_smpo1_b, 16,  smpo1_bit_vec_w, q_1_bit_vec_w, wb_in_data_bit_vec, next_push_w[1])
+    `MUX_2(u_smpo1_d, 128, smpo1_data_w,    q_1_data_w,    wb_in_data_data,    next_push_w[1])
 
-    // -------------------------------------------------------------------
-    // Full / empty exposed
-    // -------------------------------------------------------------------
-    assign outputs_full  = q_full_w;
-    assign outputs_empty = q_empty_w;
+    `MUX_2(u_smpp1_v, 1,   smpp1_valid_w,   q_2_valid_w,   wb_in_data_valid,   next_push_w[2])
+    `MUX_2(u_smpp1_a, 15,  smpp1_address_w, q_2_address_w, wb_in_data_address, next_push_w[2])
+    `MUX_2(u_smpp1_b, 16,  smpp1_bit_vec_w, q_2_bit_vec_w, wb_in_data_bit_vec, next_push_w[2])
+    `MUX_2(u_smpp1_d, 128, smpp1_data_w,    q_2_data_w,    wb_in_data_data,    next_push_w[2])
+
+    wire        din_1_valid_w;
+    wire [14:0] din_1_address_w;
+    wire [15:0] din_1_bit_vec_w;
+    wire [127:0] din_1_data_w;
+    `MUX_4(u_din1_v, 1,   din_1_valid_w,   q_1_valid_w,   q_2_valid_w,   smpo1_valid_w,   smpp1_valid_w,   sel_w)
+    `MUX_4(u_din1_a, 15,  din_1_address_w, q_1_address_w, q_2_address_w, smpo1_address_w, smpp1_address_w, sel_w)
+    `MUX_4(u_din1_b, 16,  din_1_bit_vec_w, q_1_bit_vec_w, q_2_bit_vec_w, smpo1_bit_vec_w, smpp1_bit_vec_w, sel_w)
+    `MUX_4(u_din1_d, 128, din_1_data_w,    q_1_data_w,    q_2_data_w,    smpo1_data_w,    smpp1_data_w,    sel_w)
+
+    `REG_RST_WE(u_q1_v, 1,   clk, rst, we_w, din_1_valid_w,   q_1_valid_w)
+    `REG_RST_WE(u_q1_a, 15,  clk, rst, we_w, din_1_address_w, q_1_address_w)
+    `REG_RST_WE(u_q1_b, 16,  clk, rst, we_w, din_1_bit_vec_w, q_1_bit_vec_w)
+    `REG_RST_WE(u_q1_d, 128, clk, rst, we_w, din_1_data_w,    q_1_data_w)
+
+    // -------- Slot 2 (q[i]=q[2], q[i+1]=q[3]) --------
+    wire        smpo2_valid_w, smpp2_valid_w;
+    wire [14:0] smpo2_address_w, smpp2_address_w;
+    wire [15:0] smpo2_bit_vec_w, smpp2_bit_vec_w;
+    wire [127:0] smpo2_data_w,   smpp2_data_w;
+
+    `MUX_2(u_smpo2_v, 1,   smpo2_valid_w,   q_2_valid_w,   wb_in_data_valid,   next_push_w[2])
+    `MUX_2(u_smpo2_a, 15,  smpo2_address_w, q_2_address_w, wb_in_data_address, next_push_w[2])
+    `MUX_2(u_smpo2_b, 16,  smpo2_bit_vec_w, q_2_bit_vec_w, wb_in_data_bit_vec, next_push_w[2])
+    `MUX_2(u_smpo2_d, 128, smpo2_data_w,    q_2_data_w,    wb_in_data_data,    next_push_w[2])
+
+    `MUX_2(u_smpp2_v, 1,   smpp2_valid_w,   q_3_valid_w,   wb_in_data_valid,   next_push_w[3])
+    `MUX_2(u_smpp2_a, 15,  smpp2_address_w, q_3_address_w, wb_in_data_address, next_push_w[3])
+    `MUX_2(u_smpp2_b, 16,  smpp2_bit_vec_w, q_3_bit_vec_w, wb_in_data_bit_vec, next_push_w[3])
+    `MUX_2(u_smpp2_d, 128, smpp2_data_w,    q_3_data_w,    wb_in_data_data,    next_push_w[3])
+
+    wire        din_2_valid_w;
+    wire [14:0] din_2_address_w;
+    wire [15:0] din_2_bit_vec_w;
+    wire [127:0] din_2_data_w;
+    `MUX_4(u_din2_v, 1,   din_2_valid_w,   q_2_valid_w,   q_3_valid_w,   smpo2_valid_w,   smpp2_valid_w,   sel_w)
+    `MUX_4(u_din2_a, 15,  din_2_address_w, q_2_address_w, q_3_address_w, smpo2_address_w, smpp2_address_w, sel_w)
+    `MUX_4(u_din2_b, 16,  din_2_bit_vec_w, q_2_bit_vec_w, q_3_bit_vec_w, smpo2_bit_vec_w, smpp2_bit_vec_w, sel_w)
+    `MUX_4(u_din2_d, 128, din_2_data_w,    q_2_data_w,    q_3_data_w,    smpo2_data_w,    smpp2_data_w,    sel_w)
+
+    `REG_RST_WE(u_q2_v, 1,   clk, rst, we_w, din_2_valid_w,   q_2_valid_w)
+    `REG_RST_WE(u_q2_a, 15,  clk, rst, we_w, din_2_address_w, q_2_address_w)
+    `REG_RST_WE(u_q2_b, 16,  clk, rst, we_w, din_2_bit_vec_w, q_2_bit_vec_w)
+    `REG_RST_WE(u_q2_d, 128, clk, rst, we_w, din_2_data_w,    q_2_data_w)
+
+    // -------- Slot 3 (q[i]=q[3], q[i+1]=q[4]=hardwired 0) --------
+    wire        smpo3_valid_w, smpp3_valid_w;
+    wire [14:0] smpo3_address_w, smpp3_address_w;
+    wire [15:0] smpo3_bit_vec_w, smpp3_bit_vec_w;
+    wire [127:0] smpo3_data_w,   smpp3_data_w;
+
+    `MUX_2(u_smpo3_v, 1,   smpo3_valid_w,   q_3_valid_w,   wb_in_data_valid,   next_push_w[3])
+    `MUX_2(u_smpo3_a, 15,  smpo3_address_w, q_3_address_w, wb_in_data_address, next_push_w[3])
+    `MUX_2(u_smpo3_b, 16,  smpo3_bit_vec_w, q_3_bit_vec_w, wb_in_data_bit_vec, next_push_w[3])
+    `MUX_2(u_smpo3_d, 128, smpo3_data_w,    q_3_data_w,    wb_in_data_data,    next_push_w[3])
+
+    // q[4] inputs are literal 0 (sentinel always invalid)
+    `MUX_2(u_smpp3_v, 1,   smpp3_valid_w,   1'b0,   wb_in_data_valid,   next_push_w[4])
+    `MUX_2(u_smpp3_a, 15,  smpp3_address_w, 15'd0,  wb_in_data_address, next_push_w[4])
+    `MUX_2(u_smpp3_b, 16,  smpp3_bit_vec_w, 16'd0,  wb_in_data_bit_vec, next_push_w[4])
+    `MUX_2(u_smpp3_d, 128, smpp3_data_w,    128'd0, wb_in_data_data,    next_push_w[4])
+
+    wire        din_3_valid_w;
+    wire [14:0] din_3_address_w;
+    wire [15:0] din_3_bit_vec_w;
+    wire [127:0] din_3_data_w;
+    `MUX_4(u_din3_v, 1,   din_3_valid_w,   q_3_valid_w,   1'b0,   smpo3_valid_w,   smpp3_valid_w,   sel_w)
+    `MUX_4(u_din3_a, 15,  din_3_address_w, q_3_address_w, 15'd0,  smpo3_address_w, smpp3_address_w, sel_w)
+    `MUX_4(u_din3_b, 16,  din_3_bit_vec_w, q_3_bit_vec_w, 16'd0,  smpo3_bit_vec_w, smpp3_bit_vec_w, sel_w)
+    `MUX_4(u_din3_d, 128, din_3_data_w,    q_3_data_w,    128'd0, smpo3_data_w,    smpp3_data_w,    sel_w)
+
+    `REG_RST_WE(u_q3_v, 1,   clk, rst, we_w, din_3_valid_w,   q_3_valid_w)
+    `REG_RST_WE(u_q3_a, 15,  clk, rst, we_w, din_3_address_w, q_3_address_w)
+    `REG_RST_WE(u_q3_b, 16,  clk, rst, we_w, din_3_bit_vec_w, q_3_bit_vec_w)
+    `REG_RST_WE(u_q3_d, 128, clk, rst, we_w, din_3_data_w,    q_3_data_w)
+
+    // ===================================================================
+    // Combinational outputs
+    //   q[0] is always the head, so head_address/bit_vec/data are
+    //   direct register taps -- no mux needed (vs the old ring-buffer
+    //   port that used a 4:1 head-select mux).
+    // ===================================================================
+    assign outputs_valid_0      = q_0_valid_w;
+    assign outputs_valid_1      = q_1_valid_w;
+    assign outputs_valid_2      = q_2_valid_w;
+    assign outputs_valid_3      = q_3_valid_w;
+    assign outputs_address_0    = q_0_address_w;
+    assign outputs_address_1    = q_1_address_w;
+    assign outputs_address_2    = q_2_address_w;
+    assign outputs_address_3    = q_3_address_w;
+    assign outputs_head_address = q_0_address_w;
+    assign outputs_bit_vec      = q_0_bit_vec_w;
+    assign outputs_data         = q_0_data_w;
 
 endmodule
 
 
 // ============================================================================
-// COMMENTED OUT: Legacy SystemVerilog implementation. Restore by uncommenting
-// and commenting the structural module above; also flip its WB.sv
-// instantiation back to the struct-based generate loop.
+// COMMENTED OUT: Legacy SystemVerilog implementation (the new shift-register
+// version). Restore by uncommenting this and commenting the structural
+// module above; also flip its WB.sv instantiations back to the struct-based
+// generate loop.
 // ============================================================================
 //
 // import common_pkg::*;
 // import WriteBack_pkg::*;
 //
-// module ST_Q (
-//
-//     input wire clk,
-//     input wire rst,
-//
+// module ST_Q(
+//     input clk,
+//     input rst,
 //     input st_q_inputs_t wb_in,
-//
 //     output st_q_outputs_t outputs
 // );
-//     //head represents the front of the queue. Tail represents the back
-//     //heads points to the current value. Tail points to the next slot.
+//
+//     st_q_entry_t q[ST_Q_DEPTH + 1]; //extra entry should always be invalid
+//     logic [ST_Q_DEPTH: 0] next_push; //one hot encoding I think it will be easier for structural
 //
 //
 //
-//     logic [$clog2(ST_Q_DEPTH):0] head;
-//     logic [$clog2(ST_Q_DEPTH):0] tail;
+//     bool full, empty;
+//     assign full = (next_push == 5'b10000);
+//     assign empty = (next_push == 5'b00001);
 //
-//     logic [$clog2(ST_Q_DEPTH)-1:0] head_ptr;
-//     logic [$clog2(ST_Q_DEPTH)-1:0] tail_ptr;
-//
-//     assign head_ptr = head[$clog2(ST_Q_DEPTH)-1:0];
-//     assign tail_ptr = tail[$clog2(ST_Q_DEPTH)-1:0];
-//
-//     bool q_full, q_empty;
 //     bool valid_push, valid_pop;
+//     assign valid_push = wb_in.push &  (~full | wb_in.pop);
+//     assign valid_pop =  wb_in.pop & (~empty);
 //
+//     //q[0] is where things get popped off
+//     always_ff @(posedge clk)begin
+//         if(!rst) begin
+//             next_push <= 1;
+//             q <= '{default: '0};
+//         end
+//         else begin
+//             if(valid_push)begin
+//                 if(valid_pop)begin
+//                     for(int i = 0; i < ST_Q_DEPTH; i++)begin
+//                         q[i] <= next_push[i+1] ? wb_in.data : q[i+1];
+//                     end
+//                 end
+//                 else begin
+//                     next_push <= next_push <<1;
+//                     for(int i = 0; i < ST_Q_DEPTH; i++)begin
+//                         q[i] <= next_push[i] ? wb_in.data : q[i];
+//                     end
+//                 end
+//             end
+//             else if(valid_pop)begin
+//                 next_push <= next_push >> 1;
+//                 for(int i =0; i < ST_Q_DEPTH; i++)begin
+//                     q[i] <= q[i+1];
+//                 end
+//             end
+//         end
+//     end
 //
-//     //create the q
-//     st_q_entry_t q[ST_Q_DEPTH];
-//
-//     // Extra bit method for full/empty...probably better for combinational logic in structural.
-//     assign q_full = (head[$clog2(ST_Q_DEPTH)] != tail[$clog2(ST_Q_DEPTH)]) &&
-//                     (head[$clog2(ST_Q_DEPTH)-1:0] == tail[$clog2(ST_Q_DEPTH)-1:0]);
-//     assign q_empty = (head == tail);
-//
-//
-//     assign valid_push = wb_in.push &  (~q_full | wb_in.pop);
-//     assign valid_pop =  wb_in.pop & (~q_empty);
-//
-//     //outputs
 //     always_comb begin
-//         outputs.full = q_full;
-//         outputs.empty = q_empty;
-//         outputs.head_address = q[head_ptr].address;
-//         outputs.bit_vec = q[head_ptr].bit_vec;
-//         outputs.data = q[head_ptr].data;
-//         outputs.push_fail = wb_in.push & (q_full & ~wb_in.pop);
-//         //this is for the dep checks
+//         outputs.full = full;
+//         outputs.empty = empty;
+//         outputs.head_address = q[0].address;
+//         outputs.bit_vec = q[0].bit_vec;
+//         //outputs.head_data = q[0].data;
+//         outputs.push_fail = wb_in.push & (full & ~wb_in.pop);
+//         outputs.data = q[0].data;
+//
+//         //this is for forwarding
 //         for(int i = 0;  i < ST_Q_DEPTH; i++)begin
 //             outputs.valid[i] = q[i].valid;
 //             outputs.address[i] = q[i].address;
+//             //outputs.data[i] = q[i].data;
 //         end
 //
 //     end
 //
-//     always_ff @(posedge clk) begin
-//         if (!rst) begin
-//             head <= 0;
-//             tail <= 0;
-//             for(int i = 0; i < ST_Q_DEPTH; i++)begin
-//                 q[i] <= '{default : '0};
-//             end
-//         end
-//         else begin
-//             // Push: write to tail and increment
-//             if(valid_push) begin
-//                 q[tail_ptr] <= wb_in.data;  // wb_in.data is already st_q_entry_t
-//                 tail <= tail + 1;
-//             end
-//             if(valid_pop)begin
-//                 q[head_ptr].valid <= 1'b0;
-//                 head <= head + 1;
-//             end
-//         end
-//     end
 //
-//     // Assertion: Check for invalid pop from empty queue
-//     // If this fires, there's a logic flaw in the system
-//     assert property (@(posedge clk) disable iff (rst)
-//         !(wb_in.pop & q_empty)
-//     ) else $error("ST_Q: Invalid pop from cache - attempted to pop from empty queue at time %0t", $time);
 //
 // endmodule
