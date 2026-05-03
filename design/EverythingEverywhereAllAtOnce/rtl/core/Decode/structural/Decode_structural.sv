@@ -67,8 +67,8 @@ module Decode (
     logic [1:0] SAVED_DATASIZE;
 
 
-    reg_ids_e segment0;
-    bool seg_override;
+    wire [`REG_ID_W-1:0] segment0;
+    wire seg_override;
 
     bool next_rr_valid;
 
@@ -215,13 +215,13 @@ module Decode (
         speculative_target : branch_info_speculative_target
     };
 
-    assign predicted_taken = (idm_outs_i.idm_slots[EIP[5:4]].valid &&
-                            idm_outs_i.idm_slots[EIP[5:4]].br_valid &&
-                            idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP);
-    l_address_t predicted_target;
-    assign predicted_target = predicted_taken ? idm_outs_i.idm_slots[EIP[5:4]].br_btb_target : 32'b0;
-    bool branch_present;
-    assign branch_present = temp_exe_cs.br_ucond || temp_exe_cs.relative_branch || temp_exe_cs.special_br;
+    wire br_eip_eq_EIP;
+    `CMP_N(br_eip_cmp,           32, br_eip_eq_EIP,    idm_outs_i.idm_slots[EIP[5:4]].br_eip,           EIP)
+    `AND_3(predicted_taken_gate,  1, predicted_taken,  idm_outs_i.idm_slots[EIP[5:4]].valid, idm_outs_i.idm_slots[EIP[5:4]].br_valid, br_eip_eq_EIP)
+    wire [31:0] predicted_target;
+    `MUX_2(predicted_target_mux, 32, predicted_target, 32'b0,                                             idm_outs_i.idm_slots[EIP[5:4]].br_btb_target, predicted_taken)
+    wire branch_present;
+    `OR_3(branch_present_gate,    1, branch_present,   temp_exe_cs.br_ucond, temp_exe_cs.relative_branch, temp_exe_cs.special_br)
     br_info_processing br_info_gen(
         .cs_branch(branch_present), .eip(EIP), .br_length(inst_length),
         .pred_taken(predicted_taken), .pred_target(predicted_target), 
@@ -243,14 +243,17 @@ module Decode (
     bool clear_rep;
 
     bool external_set_zf;
-    assign external_set_zf = temp_rr_cs.will_mod_zf && decode_forward;
+    `AND_2(external_set_zf_gate, 1, external_set_zf, temp_rr_cs.will_mod_zf, decode_forward)
+
+    wire not_decode_forward
+    `INV_N(not_decode_forward_inv, 1, decode_forward, not_decode_forward)
 
 
     rep_controller piece_of_shit_rep_controller (
         .clk(clk), .rst(rst), .rep_latch(REP_LATCH),
         .mov_inst(REP_MOV_LATCH), .cmp_inst(REP_CMP_LATCH), .clear_zf(exe_outs_i.clr_ZF_sb),
         .external_set_zf(external_set_zf), .ecx(rr_outs_i.ecx), .ecx_sb(rr_outs_i.ecx_sb),
-        .zf_flag(exe_outs_i.ZF), .stall(!decode_forward), .flush(flush), .exp_pipe_clear(fetch_outs_i.exp_pipe_clear),
+        .zf_flag(exe_outs_i.ZF), .stall(not_decode_forward), .flush(flush), .exp_pipe_clear(fetch_outs_i.exp_pipe_clear),
         .rep_latches(rep_latch_holder), .clear_rep(clear_rep), .saved_segment0(SAVED_SEGMENT0), 
         .saved_segment_override(SAVED_SEGMENT_OVERRIDE), .saved_rep_eip(SAVED_REP_EIP),
         .saved_datasize(SAVED_DATASIZE)
@@ -272,36 +275,53 @@ module Decode (
     );
 
 
-    always_comb begin
-        if(total_pf_vector[9]) begin
-            segment0 = CS; //2e
-            seg_override = 1'b1;
-        end
-        else if (total_pf_vector[8]) begin
-            segment0 = SS;   //36
-            seg_override = 1'b1;
-        end
-        else if (total_pf_vector[7]) begin
-            segment0 = DS;   //3e
-            seg_override = 1'b1;
-        end
-        else if (total_pf_vector[6]) begin
-            segment0 = ES;   //26
-            seg_override = 1'b1;
-        end
-        else if (total_pf_vector[5]) begin
-            segment0 = FS;   //64
-            seg_override = 1'b1;
-        end
-        else if (total_pf_vector[4]) begin
-            segment0 = GS;   //65
-            seg_override = 1'b1;
-        end
-        else begin
-            segment0 = DS;
-            seg_override = 1'b0;
-        end
-    end
+    // always_comb begin
+    //     if(total_pf_vector[9]) begin
+    //         segment0 = CS; //2e
+    //         seg_override = 1'b1;
+    //     end
+    //     else if (total_pf_vector[8]) begin
+    //         segment0 = SS;   //36
+    //         seg_override = 1'b1;
+    //     end
+    //     else if (total_pf_vector[7]) begin
+    //         segment0 = DS;   //3e
+    //         seg_override = 1'b1;
+    //     end
+    //     else if (total_pf_vector[6]) begin
+    //         segment0 = ES;   //26
+    //         seg_override = 1'b1;
+    //     end
+    //     else if (total_pf_vector[5]) begin
+    //         segment0 = FS;   //64
+    //         seg_override = 1'b1;
+    //     end
+    //     else if (total_pf_vector[4]) begin
+    //         segment0 = GS;   //65
+    //         seg_override = 1'b1;
+    //     end
+    //     else begin
+    //         segment0 = DS;
+    //         seg_override = 1'b0;
+    //     end
+    // end
+
+    // seg_override: any segment prefix bit [9:4] is active
+    `OR_6(seg_override_gate, 1, seg_override,
+        total_pf_vector[9], total_pf_vector[8], total_pf_vector[7],
+        total_pf_vector[6], total_pf_vector[5], total_pf_vector[4])
+
+    // segment0: bits [9:4] are one-hot, so encode directly to 3-bit binary select
+    // sel[2]=[9]|[8]  sel[1]=[9]|[6]|[5]  sel[0]=[8]|[6]|[4]
+    // [7] encodes to 000 (same as default DS), so no special case needed
+    // sel: 000->DS  001->GS  010->FS  011->ES  101->SS  110->CS
+    wire seg_sel_2, seg_sel_1, seg_sel_0;
+    `OR_2(seg_sel_2_gate, 1, seg_sel_2, total_pf_vector[9], total_pf_vector[8])
+    `OR_3(seg_sel_1_gate, 1, seg_sel_1, total_pf_vector[9], total_pf_vector[6], total_pf_vector[5])
+    `OR_3(seg_sel_0_gate, 1, seg_sel_0, total_pf_vector[8], total_pf_vector[6], total_pf_vector[4])
+    `MUX_8(segment0_mux, `REG_ID_W, segment0,
+        `DS, `GS, `FS, `ES, `DS, `SS, `CS, `DS,
+        {seg_sel_2, seg_sel_1, seg_sel_0})
 
     // // -----------------------------------------------------------------
     // // Structural register block (replaces the two always_ff blocks).
