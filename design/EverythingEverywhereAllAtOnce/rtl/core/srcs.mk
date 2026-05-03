@@ -51,7 +51,7 @@ CORE_STRUCTURAL_SRC_FILES = \
 					 $(FETCH_STRUCTURAL_SRC_FILES) \
 					 $(DECODE_SRC_FILES) \
 					 $(RR_SRC_FILES) \
-					 $(DC_SRC_FILES) \
+					 $(DC_STRUCTURAL_SRC_FILES) \
 					 $(MEM_STAGE_SRC_FILES) \
 					 $(EXE_SRC_FILES)\
 					 $(WB_SRC_FILES) \
