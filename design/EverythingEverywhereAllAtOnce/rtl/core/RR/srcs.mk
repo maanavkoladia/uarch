@@ -9,7 +9,7 @@ RR_GEN_SRC_FILES = \
 
 # RR source files
 RR_SRC_FILES = \
-	$(RR_PATH_INTERNAL)/npu_node1.sv \
+	$(RR_PATH_INTERNAL)/structural/npu_node1.v \
 	$(RR_PATH_INTERNAL)/structural/RegFile.v \
 	$(RR_PATH_INTERNAL)/structural/RegSB.v \
 	$(RR_PATH_INTERNAL)/structural/RR_structural.sv \
