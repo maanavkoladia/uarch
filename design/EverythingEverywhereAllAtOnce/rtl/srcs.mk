@@ -54,6 +54,7 @@ RTL_DESIGN_STRUCTURAL_HEADERS = \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/io_common_define.vh \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/mem_common_define.vh \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/reg_ids_define.vh \
+								$(RTL_ROOT_PATH_INTERNAL)/defines/exe_structural_defines.vh \
 								$(RTL_ROOT_PATH_INTERNAL)/defines/TLB_define.vh
 
 

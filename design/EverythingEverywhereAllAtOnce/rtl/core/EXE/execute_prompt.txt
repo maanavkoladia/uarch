@@ -1,0 +1,49 @@
+I need to port my execute module to structural verilog 2005
+Tjhis means no assigns that are connected to | & ~ or "timeless unit" operators
+
+Take time to understand how execute works. 
+Consider the fanout within the execute esepcially between alu input sel and the execute units it connects to 
+here is a brief rundown on how fetch works 
+From the latches the data goes into 
+- a ld_buf logic/res buf sel which selects the correct data from the 32 byte buffer I feed in through the latches
+This data represents where in mem my data is and that is determined by the offset of the ld_address_0
+from there data goes into the alu input select module. this module uses the control signals alu input sel A and alu input sel B.
+branch logic as to what the target is from the latches are determined here as well as adjusting data to adjust for half register operations like al or ah 
+. From here the alu input sel generates srA and srB which fanout into a large number of execution units.
+I need to make sure all my signals adhere to a fanout of 4.
+
+Now once the srA and srB are fed into the units (there are a few exception that take in a few more stuff)
+from here the unit operates on them and outputs the necessray flags and register(s) and memory it could change.
+
+Then based off the optype I select which execut unit result I want to choose. 
+
+this would be a large set of muxes so instead what I Want to do is use tristates
+each execut unit result will go into a tristate
+the tristate is gated based off the optype. each optye is differnt and is known before hand.
+so this means the critcal path is basically just the time it takes to get through the tristate. 
+
+this tristate will be done for results and flags.
+
+for res_buf outputs I have to select whihc one to use and then also write it into the next latches in the correct place which is relative to the cache line ST_PADDR_0
+so porting this execute path will mostly just be creating a bunch of relatively simple modules. 
+
+I need to ensure that you dont create structs that are like just 1 giant wire and properly create wires to encapsualte parts of strucuts
+for now keep the exe.sv module with system verilog struct input buts unroll them within the module itself. 
+
+keep in mind the fanout of 4 consideration
+
+use the STD_CELL_MACRO lib to iumplement the structural logic try to use nands and nors rather than ands and ors where possible. 
+If you need a new macro let me know and I Will create it 
+Take time to actually undersatand execute and keep fanout considerations in mind. 
+
+We are going to slowly port the execute unit so frist I want to port everything but the functuional units to structual verilog.
+Create new v files for the new structural modules the file name should be file_name_structural but the module name within the file should be the same as the 
+same as the reference sv file. 
+
+Create a plan as to how to port he execute unit.
+I want a .md with a real guide as to how you will also port fugure functional units.
+So step one is to port the non functional units using the tristate logic stated above as needed 
+ create an md with a guide as well
+ then we will port the fucntional units.
+
+ 
