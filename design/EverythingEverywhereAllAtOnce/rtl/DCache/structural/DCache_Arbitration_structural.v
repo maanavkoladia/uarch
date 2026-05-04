@@ -1,7 +1,16 @@
 // Pure Verilog 2005 port of DCache_Arbitration.
 // Reference: rtl/DCache/structural/DCache_Arbitration.sv
 // All logic via STDCell macros. assign used only for wire aliasing /
-// bit-replication / slicing. No package imports.
+// bit-replication / slicing / unrolled-port<->array glue. No package imports.
+//
+// Port-shape note (Verilog-2005 synthesizability):
+//   Unpacked arrays are NOT allowed in module ports in Verilog-2005.
+//     - 1-bit unpacked arrays (size N) are flattened to packed [N-1:0] vectors.
+//     - Wider unpacked arrays (e.g. wire [14:0] foo [N]) are unrolled to N
+//       individual packed-vector ports (foo_0, foo_1, ..., foo_{N-1}).
+//   To leave the internal logic untouched, this file rebuilds the original
+//   unpacked arrays as internal wires and glues them to the unrolled ports
+//   with simple wire-aliasing assigns at the top/bottom of the module.
 //
 // Behavior (matches updated DCache_Arbitration.sv):
 //   - If (memClrReq & reqs.oe) | (block_hit & reqs.we): the per-block
@@ -38,28 +47,88 @@ module DCache_Arbitration (
     input wire  [14:0] core_ld_addr_0_i,
     input wire         core_ld_addr_1_V_i,
     input wire  [14:0] core_ld_addr_1_i,
-    input wire         core_stq_full_i   [`NUM_WB_ST_QS],
-    input wire         core_stq_empty_i  [`NUM_WB_ST_QS],
-    input wire  [14:0] core_stq_addr_i   [`NUM_WB_ST_QS],
-    input wire  [15:0] core_stq_bitvec_i [`NUM_WB_ST_QS],
-    input wire  [127:0] core_stq_data_i  [`NUM_WB_ST_QS],
-    input wire         core_memClrReq_i  [`DCACHE_NUM_BLOCKS],
 
-    input wire  block_hit_i [`DCACHE_NUM_BLOCKS],
+    // 1-bit unpacked arrays -> packed vectors
+    input wire  [`NUM_WB_ST_QS-1:0]      core_stq_full_i,
+    input wire  [`NUM_WB_ST_QS-1:0]      core_stq_empty_i,
+    input wire  [`DCACHE_NUM_BLOCKS-1:0] core_memClrReq_i,
+    input wire  [`DCACHE_NUM_BLOCKS-1:0] block_hit_i,
+
+    // wide unpacked arrays -> unrolled per-index packed-vector ports
+    input wire  [14:0]  core_stq_addr_0_i,
+    input wire  [14:0]  core_stq_addr_1_i,
+    input wire  [14:0]  core_stq_addr_2_i,
+    input wire  [14:0]  core_stq_addr_3_i,
+
+    input wire  [15:0]  core_stq_bitvec_0_i,
+    input wire  [15:0]  core_stq_bitvec_1_i,
+    input wire  [15:0]  core_stq_bitvec_2_i,
+    input wire  [15:0]  core_stq_bitvec_3_i,
+
+    input wire  [127:0] core_stq_data_0_i,
+    input wire  [127:0] core_stq_data_1_i,
+    input wire  [127:0] core_stq_data_2_i,
+    input wire  [127:0] core_stq_data_3_i,
 
     output wire reqServed_0_o,
     output wire reqServed_1_o,
 
-    output wire         reqs_oe_o    [`DCACHE_NUM_BLOCKS],
-    output wire         reqs_we_o    [`DCACHE_NUM_BLOCKS],
-    output wire  [14:0] reqs_paddr_o [`DCACHE_NUM_BLOCKS],
-    output wire  [15:0] reqs_vec_o   [`DCACHE_NUM_BLOCKS],
-    output wire  [127:0] reqs_data_o [`DCACHE_NUM_BLOCKS],
+    // 1-bit unpacked arrays -> packed vectors
+    output wire [`DCACHE_NUM_BLOCKS-1:0] reqs_oe_o,
+    output wire [`DCACHE_NUM_BLOCKS-1:0] reqs_we_o,
 
-    output wire st_override_o  [`NUM_WB_ST_QS],
-    output wire writeSuccess_o [`NUM_WB_ST_QS]
+    // wide unpacked arrays -> unrolled per-index packed-vector ports
+    output wire [14:0]  reqs_paddr_0_o,
+    output wire [14:0]  reqs_paddr_1_o,
+    output wire [14:0]  reqs_paddr_2_o,
+    output wire [14:0]  reqs_paddr_3_o,
+
+    output wire [15:0]  reqs_vec_0_o,
+    output wire [15:0]  reqs_vec_1_o,
+    output wire [15:0]  reqs_vec_2_o,
+    output wire [15:0]  reqs_vec_3_o,
+
+    output wire [127:0] reqs_data_0_o,
+    output wire [127:0] reqs_data_1_o,
+    output wire [127:0] reqs_data_2_o,
+    output wire [127:0] reqs_data_3_o,
+
+    // 1-bit unpacked arrays -> packed vectors
+    output wire [`NUM_WB_ST_QS-1:0] st_override_o,
+    output wire [`NUM_WB_ST_QS-1:0] writeSuccess_o
 
 );
+
+    // ------------------------------------------------------------------
+    // Re-form the wide unpacked-array inputs as internal arrays so that
+    // the internal logic below can keep using the original [g_i] indexing
+    // unchanged.
+    // ------------------------------------------------------------------
+    wire [14:0]  core_stq_addr_i   [`NUM_WB_ST_QS];
+    wire [15:0]  core_stq_bitvec_i [`NUM_WB_ST_QS];
+    wire [127:0] core_stq_data_i   [`NUM_WB_ST_QS];
+
+    assign core_stq_addr_i[0]   = core_stq_addr_0_i;
+    assign core_stq_addr_i[1]   = core_stq_addr_1_i;
+    assign core_stq_addr_i[2]   = core_stq_addr_2_i;
+    assign core_stq_addr_i[3]   = core_stq_addr_3_i;
+
+    assign core_stq_bitvec_i[0] = core_stq_bitvec_0_i;
+    assign core_stq_bitvec_i[1] = core_stq_bitvec_1_i;
+    assign core_stq_bitvec_i[2] = core_stq_bitvec_2_i;
+    assign core_stq_bitvec_i[3] = core_stq_bitvec_3_i;
+
+    assign core_stq_data_i[0]   = core_stq_data_0_i;
+    assign core_stq_data_i[1]   = core_stq_data_1_i;
+    assign core_stq_data_i[2]   = core_stq_data_2_i;
+    assign core_stq_data_i[3]   = core_stq_data_3_i;
+
+    // Internal mirrors of the (now unrolled) wide outputs. Internal logic
+    // drives these arrays exactly as before; the unrolled ports are then
+    // simple wire aliases of these array elements.
+    wire [14:0]  reqs_paddr_o [`DCACHE_NUM_BLOCKS];
+    wire [15:0]  reqs_vec_o   [`DCACHE_NUM_BLOCKS];
+    wire [127:0] reqs_data_o  [`DCACHE_NUM_BLOCKS];
 
     localparam LD_REQ_BANK_UB    = `DCACHE_BANK_BANK_UB;
     localparam LD_REQ_BANK_LB    = `DCACHE_BANK_BANK_LB;
@@ -220,5 +289,23 @@ module DCache_Arbitration (
     // They are independent of block_hit_i and core_memClrReq_i.
     `OR_4(u_reqServed_0, 1, reqServed_0_o, ld0_valid[0], ld0_valid[1], ld0_valid[2], ld0_valid[3])
     `OR_4(u_reqServed_1, 1, reqServed_1_o, ld1_valid[0], ld1_valid[1], ld1_valid[2], ld1_valid[3])
+
+    // ------------------------------------------------------------------
+    // Glue from internal wide-output arrays to unrolled output ports.
+    // ------------------------------------------------------------------
+    assign reqs_paddr_0_o = reqs_paddr_o[0];
+    assign reqs_paddr_1_o = reqs_paddr_o[1];
+    assign reqs_paddr_2_o = reqs_paddr_o[2];
+    assign reqs_paddr_3_o = reqs_paddr_o[3];
+
+    assign reqs_vec_0_o   = reqs_vec_o[0];
+    assign reqs_vec_1_o   = reqs_vec_o[1];
+    assign reqs_vec_2_o   = reqs_vec_o[2];
+    assign reqs_vec_3_o   = reqs_vec_o[3];
+
+    assign reqs_data_0_o  = reqs_data_o[0];
+    assign reqs_data_1_o  = reqs_data_o[1];
+    assign reqs_data_2_o  = reqs_data_o[2];
+    assign reqs_data_3_o  = reqs_data_o[3];
 
 endmodule

@@ -123,24 +123,29 @@ module DCache_TOP (
 );
 
     // ---------------------------------------------------------------
-    // Local unpacked-array wires that match the DCache_Arbitration ports
+    // Local wires sized to match the (now V2005-clean) arbitration ports.
+    //   - 1-bit arrays    -> packed vectors
+    //   - wide arrays     -> kept as unpacked arrays (still used inside
+    //                        the per-block generate); each element is
+    //                        connected to a unrolled per-index port of
+    //                        the arbitration instance.
+    // The wide stq_addr/bitvec/data inputs are wired straight through
+    // from this module's unrolled top-level inputs to the unrolled
+    // arbitration inputs, so no local shadow array is needed for those.
     // ---------------------------------------------------------------
-    wire        s_arb_stq_full   [`NUM_WB_ST_QS];
-    wire        s_arb_stq_empty  [`NUM_WB_ST_QS];
-    wire [14:0] s_arb_stq_addr   [`NUM_WB_ST_QS];
-    wire [15:0] s_arb_stq_vec    [`NUM_WB_ST_QS];
-    wire [127:0] s_arb_stq_data  [`NUM_WB_ST_QS];
-    wire        s_arb_clrReq     [`DCACHE_NUM_BLOCKS];
-    wire        s_arb_block_hit  [`DCACHE_NUM_BLOCKS];
+    wire [`NUM_WB_ST_QS-1:0]      s_arb_stq_full;
+    wire [`NUM_WB_ST_QS-1:0]      s_arb_stq_empty;
+    wire [`DCACHE_NUM_BLOCKS-1:0] s_arb_clrReq;
+    wire [`DCACHE_NUM_BLOCKS-1:0] s_arb_block_hit;
 
-    wire        s_arb_reqs_oe    [`DCACHE_NUM_BLOCKS];
-    wire        s_arb_reqs_we    [`DCACHE_NUM_BLOCKS];
-    wire [14:0] s_arb_reqs_paddr [`DCACHE_NUM_BLOCKS];
-    wire [15:0] s_arb_reqs_vec   [`DCACHE_NUM_BLOCKS];
-    wire [127:0] s_arb_reqs_data [`DCACHE_NUM_BLOCKS];
+    wire [`DCACHE_NUM_BLOCKS-1:0] s_arb_reqs_oe;
+    wire [`DCACHE_NUM_BLOCKS-1:0] s_arb_reqs_we;
+    wire [14:0]  s_arb_reqs_paddr [`DCACHE_NUM_BLOCKS];
+    wire [15:0]  s_arb_reqs_vec   [`DCACHE_NUM_BLOCKS];
+    wire [127:0] s_arb_reqs_data  [`DCACHE_NUM_BLOCKS];
 
-    wire        arb_st_override_Out  [`NUM_WB_ST_QS];
-    wire        arb_writeSuccess_Out [`NUM_WB_ST_QS];
+    wire [`NUM_WB_ST_QS-1:0] arb_st_override_Out;
+    wire [`NUM_WB_ST_QS-1:0] arb_writeSuccess_Out;
 
     assign s_arb_stq_full[0]  = core_stq_full_0_i;
     assign s_arb_stq_full[1]  = core_stq_full_1_i;
@@ -150,18 +155,6 @@ module DCache_TOP (
     assign s_arb_stq_empty[1] = core_stq_empty_1_i;
     assign s_arb_stq_empty[2] = core_stq_empty_2_i;
     assign s_arb_stq_empty[3] = core_stq_empty_3_i;
-    assign s_arb_stq_addr[0]  = core_stq_addr_0_i;
-    assign s_arb_stq_addr[1]  = core_stq_addr_1_i;
-    assign s_arb_stq_addr[2]  = core_stq_addr_2_i;
-    assign s_arb_stq_addr[3]  = core_stq_addr_3_i;
-    assign s_arb_stq_vec[0]   = core_stq_bitvec_0_i;
-    assign s_arb_stq_vec[1]   = core_stq_bitvec_1_i;
-    assign s_arb_stq_vec[2]   = core_stq_bitvec_2_i;
-    assign s_arb_stq_vec[3]   = core_stq_bitvec_3_i;
-    assign s_arb_stq_data[0]  = core_stq_data_0_i;
-    assign s_arb_stq_data[1]  = core_stq_data_1_i;
-    assign s_arb_stq_data[2]  = core_stq_data_2_i;
-    assign s_arb_stq_data[3]  = core_stq_data_3_i;
     assign s_arb_clrReq[0]    = core_memStage_CLR_REQ_0_i;
     assign s_arb_clrReq[1]    = core_memStage_CLR_REQ_1_i;
     assign s_arb_clrReq[2]    = core_memStage_CLR_REQ_2_i;
@@ -180,20 +173,48 @@ module DCache_TOP (
         .core_ld_addr_0_i   (core_ld_addr_0_i),
         .core_ld_addr_1_V_i (core_ld_addr_1_V_i),
         .core_ld_addr_1_i   (core_ld_addr_1_i),
+
+        // 1-bit packed-vector inputs
         .core_stq_full_i    (s_arb_stq_full),
         .core_stq_empty_i   (s_arb_stq_empty),
-        .core_stq_addr_i    (s_arb_stq_addr),
-        .core_stq_bitvec_i  (s_arb_stq_vec),
-        .core_stq_data_i    (s_arb_stq_data),
         .core_memClrReq_i   (s_arb_clrReq),
         .block_hit_i        (s_arb_block_hit),
+
+        // wide unrolled inputs (wired straight from this module's ports)
+        .core_stq_addr_0_i  (core_stq_addr_0_i),
+        .core_stq_addr_1_i  (core_stq_addr_1_i),
+        .core_stq_addr_2_i  (core_stq_addr_2_i),
+        .core_stq_addr_3_i  (core_stq_addr_3_i),
+        .core_stq_bitvec_0_i(core_stq_bitvec_0_i),
+        .core_stq_bitvec_1_i(core_stq_bitvec_1_i),
+        .core_stq_bitvec_2_i(core_stq_bitvec_2_i),
+        .core_stq_bitvec_3_i(core_stq_bitvec_3_i),
+        .core_stq_data_0_i  (core_stq_data_0_i),
+        .core_stq_data_1_i  (core_stq_data_1_i),
+        .core_stq_data_2_i  (core_stq_data_2_i),
+        .core_stq_data_3_i  (core_stq_data_3_i),
+
         .reqServed_0_o      (arb_req_served_0_out),
         .reqServed_1_o      (arb_req_served_1_out),
+
+        // 1-bit packed-vector outputs
         .reqs_oe_o          (s_arb_reqs_oe),
         .reqs_we_o          (s_arb_reqs_we),
-        .reqs_paddr_o       (s_arb_reqs_paddr),
-        .reqs_vec_o         (s_arb_reqs_vec),
-        .reqs_data_o        (s_arb_reqs_data),
+
+        // wide unrolled outputs -> per-element of local unpacked arrays
+        .reqs_paddr_0_o     (s_arb_reqs_paddr[0]),
+        .reqs_paddr_1_o     (s_arb_reqs_paddr[1]),
+        .reqs_paddr_2_o     (s_arb_reqs_paddr[2]),
+        .reqs_paddr_3_o     (s_arb_reqs_paddr[3]),
+        .reqs_vec_0_o       (s_arb_reqs_vec[0]),
+        .reqs_vec_1_o       (s_arb_reqs_vec[1]),
+        .reqs_vec_2_o       (s_arb_reqs_vec[2]),
+        .reqs_vec_3_o       (s_arb_reqs_vec[3]),
+        .reqs_data_0_o      (s_arb_reqs_data[0]),
+        .reqs_data_1_o      (s_arb_reqs_data[1]),
+        .reqs_data_2_o      (s_arb_reqs_data[2]),
+        .reqs_data_3_o      (s_arb_reqs_data[3]),
+
         .st_override_o      (arb_st_override_Out),
         .writeSuccess_o     (arb_writeSuccess_Out)
     );
