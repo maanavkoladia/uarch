@@ -110,12 +110,19 @@ module MPS_OR_IN4$ (
     output out;
     input in0, in1, in2, in3;
 
-    or4$ g0 (
+    wire in0_bar, in1_bar, in2_bar, in3_bar;
+
+    inv1$ u_in1(.out(in0_bar), .in(in0));
+    inv1$ u_in2(.out(in1_bar), .in(in1));
+    inv1$ u_in3(.out(in2_bar), .in(in2));
+    inv1$ u_in4(.out(in3_bar), .in(in3));
+
+    nand4$ g0(
         .out(out),
-        .in0(in0),
-        .in1(in1),
-        .in2(in2),
-        .in3(in3)
+        .in0(in0_bar),
+        .in1(in1_bar),
+        .in2(in2_bar),
+        .in3(in3_bar)
     );
 
 endmodule

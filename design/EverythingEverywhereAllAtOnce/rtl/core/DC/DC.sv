@@ -20,9 +20,7 @@ module DC (
     input wb_outputs_t wb_outs_i,
 
     input bool req_served_mio,
-    input bool req_served_0,
-    input bool req_served_1,
-
+    input bool req_served_0, req_served_1,
 
     output mem_latches_t mem_latches_next_o,
 

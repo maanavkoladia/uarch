@@ -53,7 +53,10 @@ module DCache_Arbitration (
         reqServed_1_o = 0;
         writeSuccess_o = '{default: '0};
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            if (readyForNewReq[i]) begin
+            if((memStage_CLR_REQ[i] && reqs[i].oe) || (block_hit_i[i] && reqs[i].we )) begin
+                    nextReqs[i] = '{default: '0};
+            end
+            else if (readyForNewReq[i]) begin
                 //store case
                 if (st_override[i] && !core_i.stq_heads[i].empty
                         || (!ldReq_2_BankPresent[i] && !core_i.stq_heads[i].empty)) begin
@@ -99,6 +102,7 @@ module DCache_Arbitration (
         end
     end
 
+
     // store override logic
     always_ff @(posedge clk_i) begin
         if (!rst) st_override <= '{default: '0};
@@ -134,9 +138,9 @@ module DCache_Arbitration (
     //oe doee not need ot be checked in the first conditional
     always_comb begin
         for (int i = 0; i < DCACHE_NUM_BLOCKS; i++) begin
-            readyForNewReq[i] = (memStage_CLR_REQ[i]  && reqs_2_blocks_o[i].oe)
-            || (reqs_2_blocks_o[i].we && block_hit_i[i])
-            || block_idleness[i];
+            readyForNewReq[i] = /* (memStage_CLR_REQ[i]  && reqs_2_blocks_o[i].oe)
+            || (reqs_2_blocks_o[i].we && block_hit_i[i])*/
+            block_idleness[i];
         end
     end
 

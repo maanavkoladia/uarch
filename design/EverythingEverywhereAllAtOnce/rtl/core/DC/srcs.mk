@@ -20,3 +20,12 @@ DC_SRC_FILES = \
 	$(DC_PATH_INTERNAL)/DC.sv \
 
 DC_STRUCTURAL_SRC_FILES = \
+    $(DC_GEN_SRC_FILES) \
+	$(DC_PATH_INTERNAL)structural/npu_node2.v \
+	$(DC_PATH_INTERNAL)structural/in_flight_sb_logic.v \
+	$(DC_PATH_INTERNAL)/structural/wb_stq_sb_logic.v \
+	$(DC_PATH_INTERNAL)/structural/req_gen_logic.v \
+	$(DC_PATH_INTERNAL)/structural/data_size_vec_logic.v \
+	$(DC_PATH_INTERNAL)/structural/segx.v \
+	$(DC_PATH_INTERNAL)/structural/push_address_gen.v \
+ 	$(DC_PATH_INTERNAL)structural/DC_structural.sv \
