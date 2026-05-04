@@ -457,8 +457,7 @@ module MEM_Latches (
     //   effective_we   = write_enable_i OR combined_flush
     // ============================================================
 
-    wire combined_flush;
-    assign combined_flush = flush;
+    wire combined_flush = flush;
     wire effective_we;
 
     //`OR_2(u_mem_combined_flush, 1, combined_flush, flush,           farFlush);
