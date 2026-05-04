@@ -4,6 +4,7 @@
 @stdCells
 @mem.sv
 @mem_miss_stall_logic.sv
+@mem/
 
 
 I want to port my mem stage module in my system verilog project into pure 2005 structural verilog.
