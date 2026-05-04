@@ -367,11 +367,11 @@ module MEM (
     //   (replaces MEM.sv:131-153)
     //
     //   per port i (when ~MIO):
-    //     cond0_i = (bank_num_0 == i) & LD_OP & (hit_i & ~hit_buf_v_i | flush)
+    //     cond0_i = (bank_num_0 == i) & LD_OP & (hit_i & ~hit_buf_v_i)
     //               & valid & ~MIO
     //     cond1_i = (bank_num_1 == i) & LD_OP & LD_XCL
-    //               & (hit_i & ~hit_buf_v_i | flush) & valid & ~MIO
-    //     clr_arb_i = cond0_i | cond1_i
+    //               & (hit_i & ~hit_buf_v_i) & valid & ~MIO
+    //     clr_arb_i = cond0_i | cond1_i | flush     // flush forces all ports
     //
     //   mio :
     //     clr_mio = MIO & LD_OP & (hit_MIO & ~hit_buf_mio_v | flush) & valid
@@ -404,33 +404,28 @@ module MEM (
     `AND_2(and_hnb_2, 1, hit_no_buf_2, hit[2], hit_buf_v_2_n)
     `AND_2(and_hnb_3, 1, hit_no_buf_3, hit[3], hit_buf_v_3_n)
 
-    // (hit_i & ~hit_buf_v_i) | flush   -- per port
-    wire hit_or_flush_0, hit_or_flush_1, hit_or_flush_2, hit_or_flush_3;
-    `OR_2(or_hof_0, 1, hit_or_flush_0, hit_no_buf_0, flush_w)
-    `OR_2(or_hof_1, 1, hit_or_flush_1, hit_no_buf_1, flush_w)
-    `OR_2(or_hof_2, 1, hit_or_flush_2, hit_no_buf_2, flush_w)
-    `OR_2(or_hof_3, 1, hit_or_flush_3, hit_no_buf_3, flush_w)
-
-    // cond0_i  (5-input AND)
+    // cond0_i  (5-input AND) -- no flush; flush is OR'd in at the end
     wire cond0_0, cond0_1, cond0_2, cond0_3;
-    `AND_5(and_c0_0, 1, cond0_0, bnk0_eq_0, LD_OP_w, hit_or_flush_0, valid_w, MIO_n_w)
-    `AND_5(and_c0_1, 1, cond0_1, bnk0_eq_1, LD_OP_w, hit_or_flush_1, valid_w, MIO_n_w)
-    `AND_5(and_c0_2, 1, cond0_2, bnk0_eq_2, LD_OP_w, hit_or_flush_2, valid_w, MIO_n_w)
-    `AND_5(and_c0_3, 1, cond0_3, bnk0_eq_3, LD_OP_w, hit_or_flush_3, valid_w, MIO_n_w)
+    `AND_5(and_c0_0, 1, cond0_0, bnk0_eq_0, LD_OP_w, hit_no_buf_0, valid_w, MIO_n_w)
+    `AND_5(and_c0_1, 1, cond0_1, bnk0_eq_1, LD_OP_w, hit_no_buf_1, valid_w, MIO_n_w)
+    `AND_5(and_c0_2, 1, cond0_2, bnk0_eq_2, LD_OP_w, hit_no_buf_2, valid_w, MIO_n_w)
+    `AND_5(and_c0_3, 1, cond0_3, bnk0_eq_3, LD_OP_w, hit_no_buf_3, valid_w, MIO_n_w)
 
-    // cond1_i  (6-input AND, also requires LD_XCL)
+    // cond1_i  (6-input AND, also requires LD_XCL) -- no flush
     wire cond1_0, cond1_1, cond1_2, cond1_3;
-    `AND_6(and_c1_0, 1, cond1_0, bnk1_eq_0, LD_OP_w, LD_XCL_w, hit_or_flush_0, valid_w, MIO_n_w)
-    `AND_6(and_c1_1, 1, cond1_1, bnk1_eq_1, LD_OP_w, LD_XCL_w, hit_or_flush_1, valid_w, MIO_n_w)
-    `AND_6(and_c1_2, 1, cond1_2, bnk1_eq_2, LD_OP_w, LD_XCL_w, hit_or_flush_2, valid_w, MIO_n_w)
-    `AND_6(and_c1_3, 1, cond1_3, bnk1_eq_3, LD_OP_w, LD_XCL_w, hit_or_flush_3, valid_w, MIO_n_w)
+    `AND_6(and_c1_0, 1, cond1_0, bnk1_eq_0, LD_OP_w, LD_XCL_w, hit_no_buf_0, valid_w, MIO_n_w)
+    `AND_6(and_c1_1, 1, cond1_1, bnk1_eq_1, LD_OP_w, LD_XCL_w, hit_no_buf_1, valid_w, MIO_n_w)
+    `AND_6(and_c1_2, 1, cond1_2, bnk1_eq_2, LD_OP_w, LD_XCL_w, hit_no_buf_2, valid_w, MIO_n_w)
+    `AND_6(and_c1_3, 1, cond1_3, bnk1_eq_3, LD_OP_w, LD_XCL_w, hit_no_buf_3, valid_w, MIO_n_w)
 
-    // Final clr_arb per port
+    // Final clr_arb per port : cond0_i | cond1_i | flush
+    //   (flush unconditionally forces every port to 1, matching MEM.sv:152
+    //    "if(flush) clr_dcache_arb_latches = '{default: '1};")
     wire clr_arb_0, clr_arb_1, clr_arb_2, clr_arb_3;
-    `OR_2(or_clrarb_0, 1, clr_arb_0, cond0_0, cond1_0)
-    `OR_2(or_clrarb_1, 1, clr_arb_1, cond0_1, cond1_1)
-    `OR_2(or_clrarb_2, 1, clr_arb_2, cond0_2, cond1_2)
-    `OR_2(or_clrarb_3, 1, clr_arb_3, cond0_3, cond1_3)
+    `OR_3(or_clrarb_0, 1, clr_arb_0, cond0_0, cond1_0, flush_w)
+    `OR_3(or_clrarb_1, 1, clr_arb_1, cond0_1, cond1_1, flush_w)
+    `OR_3(or_clrarb_2, 1, clr_arb_2, cond0_2, cond1_2, flush_w)
+    `OR_3(or_clrarb_3, 1, clr_arb_3, cond0_3, cond1_3, flush_w)
 
     // Pack into the unpacked-bool array used by the mem_outputs_t struct
     bool clr_dcache_arb_latches_w [NUM_DCACHE_PORTS];
