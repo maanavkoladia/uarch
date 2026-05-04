@@ -79,11 +79,12 @@ EXE_STRUCTURAL_SRC_FILES = \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/pf_flag_sel_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/sf_flag_sel_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/flag_sel/zf_flag_sel_structural.v \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/aaa_op.sv \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/flag_helpers_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/aaa_op_structural.v \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/adc_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/add_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/and_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/bsf_op.sv \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/bsf_op_structural.v \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/call_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/cmp.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/cmpxchg_op.sv \

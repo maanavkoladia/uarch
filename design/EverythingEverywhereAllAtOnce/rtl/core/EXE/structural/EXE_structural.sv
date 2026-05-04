@@ -592,7 +592,13 @@ module EXE (
 
 
     //==========================================================================
-    // FUNCTIONAL UNITS  (still SystemVerilog behavioral — to be ported in step 2)
+    // FUNCTIONAL UNITS  (all structural Verilog 2005)
+    //
+    // Module names match their SV reference exactly so srcs.mk can swap the
+    // implementation by replacing the file extension. mov_op and far_jmp_op
+    // historically took an `exe_cs_operation_type_e` enum on op_type — the
+    // structural ports now expect a flat `wire [`EXE_STRUCT_OP_W-1:0]`, so
+    // those two instances pass `op_type_w` instead of `latches_i.cs.OP_TYPE`.
     //==========================================================================
 
     aaa_op u_aaa (
@@ -639,7 +645,7 @@ module EXE (
     );
 
     bsf_op u_bsf (
-        .srA(srB), .data_size(data_size_w),
+        .srA(srA), .srB(srB), .data_size(data_size_w),
         .dr_o(bsf_dr_o), .res_buf_o(bsf_res_buf_o),
         .ZF(bsf_zf_o)
     );
@@ -703,9 +709,10 @@ module EXE (
         .ZF(sbb_zf_o), .SF(sbb_sf_o), .OF(sbb_of_o)
     );
 
+    //currently going to compile sv
     mov_op u_mov_op (
         .srA(srA), .srB(srB), .data_size(data_size_w),
-        .op_type(latches_i.cs.OP_TYPE),
+        .op_type(op_type_w),
         .curr_cf_flag(flags_reg[CF_IDX]),
         .res_buf_o(mov_res_buf_o), .dr_o(mov_dr_o)
     );
@@ -716,10 +723,18 @@ module EXE (
         .res_buf_o(mov_s_res_buf_o), .dr_o(mov_s_dr_o), .sr_o(mov_s_sr_o)
     );
 
-    xchg_op u_xchg_op (
-        .srA(srA), .srB(srB), .data_size(data_size_w),
+//we really doing some BS right here
+    xchg_op u_xchg_op(
+        .srA(srA), //AX or EAX or RM
+        .srB(srB),   //r32
+        .srA_id(latches_i.dr_id),
+        .srB_id(latches_i.sr_id),
+        .st_op(latches_i.cs.ST_OP),
+        .data_size(data_size_w),
         .sr_data_size_vec(sr_data_size_vec_w),
-        .res_buf(xchg_res_buf), .dr_o(xchg_dr_o), .sr_o(xchg_sr_o)
+        .res_buf(xchg_res_buf),
+        .dr_o(xchg_dr_o), //AX EAX RM
+        .sr_o(xchg_sr_o) //R32
     );
 
     call_op u_call_op (
@@ -741,7 +756,7 @@ module EXE (
     );
 
     far_jmp_op u_far_jmp_op (
-        .op_type(latches_i.cs.OP_TYPE), .srA(srA), .dr_o(far_jmp_dr_o)
+        .op_type(op_type_w), .srA(srA), .dr_o(far_jmp_dr_o)
     );
 
     iretd_op u_iretd_op (
@@ -765,7 +780,7 @@ module EXE (
     );
 
     pop_op u_pop_op (
-        .value_i(srA), .sp_i(srB),
+        .value_i(srA), .sp_i(srB), .curr_dr(latches_i.dr_data), .data_size(data_size_w),
         .dr_o(pop_dr_o), .sr_o(pop_sr_o), .res_buf(pop_res_buf)
     );
 

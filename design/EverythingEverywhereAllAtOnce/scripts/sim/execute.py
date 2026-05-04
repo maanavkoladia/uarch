@@ -31,6 +31,22 @@ class CPU:
         self._dispatch_built = False
         self.DISPATCH = {}
 
+        # State machine for micro-op stepped REP variants.
+        # The RTL pipeline micro-codes REP MOVS / REPE CMPS into multiple
+        # commits per iteration.  To produce a per-commit sim trace that
+        # aligns positionally with the RTL regdump, our REP handlers run
+        # ONE micro-op per `execute()` call and roll EIP back so the main
+        # loop re-enters them on the next cycle.  rep_state holds the
+        # cross-call progression; it's None when no REP is active.
+        #
+        # Schema:
+        #   {'kind': 'movs' | 'repe_cmps',
+        #    'step': int,        # which micro-op to run next
+        #    'size': int,        # bytes per element (1/2/4)
+        #    'inst_addr': int,   # linear addr of the rep instruction
+        #    'src_val': int}     # ETR latch for repe_cmps step 1
+        self.rep_state = None
+
     # ---------------------------------------------------------------
     # Operand helpers
     # ---------------------------------------------------------------
@@ -50,6 +66,10 @@ class CPU:
                 return self.regs.reg_size(op.reg_name) // 8
         if size_suffix:
             return {'b': 1, 'w': 2, 'l': 4, 'q': 8}.get(size_suffix, 4)
+        # Use Capstone-provided memory operand size if available (e.g. BYTE PTR)
+        for op in operands:
+            if op.typ == 'mem' and op.mem_size > 0:
+                return op.mem_size
         # Default to 32-bit for memory-only
         return 4
 
@@ -201,29 +221,179 @@ class CPU:
         self.regs.set('esi', (self.regs.get('esi') + delta) & 0xFFFFFFFF)
         self.regs.set('edi', (self.regs.get('edi') + delta) & 0xFFFFFFFF)
 
+    def _rollback_eip_to(self, inst):
+        """Reset EIP back to the start of `inst` so the main loop re-enters
+        the same handler on the next cycle.  Used by micro-op stepped REP
+        instructions while iteration is still in progress."""
+        cs_base = (self.regs.get('cs') & 0xFFFF) << 16
+        self.regs.eip = (inst.addr - cs_base) & 0xFFFFFFFF
+        return True  # tells main loop EIP was set explicitly
+
+    def _string_op_size(self, inst):
+        """Return element size (bytes) for a string op based on its suffix."""
+        return {'b': 1, 'w': 2, 'l': 4}.get(getattr(inst, 'size_suffix', None), 4)
+
     def exec_rep_movs(self, inst):
-        """REP MOVS - repeat move string ECX times."""
-        suffix_map = {'b': 1, 'w': 2, 'l': 4}
-        size_bytes = suffix_map.get(getattr(inst, 'size_suffix', None), 4)
-        count = self.regs.get('ecx')
-        src_val = self.regs.get('ds')
-        dst_val = self.regs.get('es')
-        df = self.flags.get_df()
-        delta = -size_bytes if df else size_bytes
-        for _ in range(count):
+        """REP MOVS — micro-op stepped to mirror the RTL pipeline.
+
+        The RTL emits two regfile commits per iteration:
+            uop 0:  ECX  := ECX - 1     (commits ECX)
+            uop 1:  copy [DS:ESI] -> [ES:EDI], then ESI/EDI += DF-delta
+                    (commits ESI and EDI)
+
+        Each call to this handler runs exactly one micro-op.  Termination
+        check is after uop 1: if ECX has reached 0, the next cycle resumes
+        normal fetch past the rep instruction; otherwise EIP is rolled back
+        and the next cycle re-enters here with state['step'] flipped.
+        """
+        size_bytes = self._string_op_size(inst)
+
+        # Initialise on first entry (or after a previous REP finished and
+        # left rep_state=None).  We treat ECX==0 like real x86 — the entire
+        # rep is a no-op and produces no commits.
+        if (self.rep_state is None
+                or self.rep_state.get('inst_addr') != inst.addr):
+            if self.regs.get('ecx') == 0:
+                return  # advance EIP normally — no micro-ops emitted
+            self.rep_state = {
+                'kind':       'movs',
+                'step':       0,
+                'size':       size_bytes,
+                'inst_addr':  inst.addr,
+            }
+
+        state = self.rep_state
+
+        if state['step'] == 0:
+            # uop 0: decrement ECX
+            ecx = (self.regs.get('ecx') - 1) & 0xFFFFFFFF
+            self.regs.set('ecx', ecx)
+            state['step'] = 1
+            done = False
+        else:
+            # uop 1: copy + advance ESI/EDI
+            df    = self.flags.get_df()
+            delta = -size_bytes if df else size_bytes
+            ds_val = self.regs.get('ds')
+            es_val = self.regs.get('es')
             src_addr = self.regs.get('esi')
             dst_addr = self.regs.get('edi')
-            val, err = self.mem.read(src_addr, size_bytes, src_val,
+            val, err = self.mem.read(src_addr, size_bytes, ds_val,
                                      'ds', self.regs.seg_limits)
             if err:
                 raise CPUException(f"REP MOVS read DS:ESI error: {err}")
-            err = self.mem.write(dst_addr, size_bytes, val, dst_val,
+            err = self.mem.write(dst_addr, size_bytes, val, es_val,
                                  'es', self.regs.seg_limits)
             if err:
                 raise CPUException(f"REP MOVS write ES:EDI error: {err}")
             self.regs.set('esi', (self.regs.get('esi') + delta) & 0xFFFFFFFF)
             self.regs.set('edi', (self.regs.get('edi') + delta) & 0xFFFFFFFF)
-        self.regs.set('ecx', 0)
+            state['step'] = 0
+            done = (self.regs.get('ecx') == 0)
+
+        if done:
+            self.rep_state = None
+            return  # let EIP advance naturally
+        return self._rollback_eip_to(inst)
+
+    def exec_cmps(self, inst):
+        """CMPS (single, no rep) — compare DS:[ESI] with ES:[EDI].
+        Sets flags like CMP; advances ESI and EDI by ±size based on DF."""
+        size_bytes = self._string_op_size(inst)
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        src_val, err = self.mem.read(self.regs.get('esi'), size_bytes,
+                                     self.regs.get('ds'),
+                                     'ds', self.regs.seg_limits)
+        if err:
+            raise CPUException(f"CMPS read DS:ESI error: {err}")
+        dst_val, err = self.mem.read(self.regs.get('edi'), size_bytes,
+                                     self.regs.get('es'),
+                                     'es', self.regs.seg_limits)
+        if err:
+            raise CPUException(f"CMPS read ES:EDI error: {err}")
+        a = src_val & mask
+        b = dst_val & mask
+        self.flags.update_sub(a, b, a - b, bits)
+
+        delta = -size_bytes if self.flags.get_df() else size_bytes
+        self.regs.set('esi', (self.regs.get('esi') + delta) & 0xFFFFFFFF)
+        self.regs.set('edi', (self.regs.get('edi') + delta) & 0xFFFFFFFF)
+
+    def exec_repe_cmps(self, inst):
+        """REPE/REPZ CMPS — micro-op stepped to mirror the RTL pipeline.
+
+        Per the RTL, each iteration is four micro-ops:
+            uop 0:  ETR := [DS:ESI]               (no visible writes)
+            uop 1:  CMP ETR with [ES:EDI]         (sets flags only)
+            uop 2:  ECX := ECX - 1                (commits ECX)
+            uop 3:  ESI/EDI += DF-delta           (commits ESI and EDI)
+
+        After uop 3 we evaluate the rep termination condition:
+        REPE stops on ECX==0 OR ZF==0 (mismatch).  REP on CMPS is treated
+        identically (REP=REPE for cmps in x86).
+        """
+        size_bytes = self._string_op_size(inst)
+        bits = size_bytes * 8
+        mask = (1 << bits) - 1
+
+        if (self.rep_state is None
+                or self.rep_state.get('inst_addr') != inst.addr):
+            if self.regs.get('ecx') == 0:
+                return  # zero count: no micro-ops, EIP advances
+            self.rep_state = {
+                'kind':       'repe_cmps',
+                'step':       0,
+                'size':       size_bytes,
+                'inst_addr':  inst.addr,
+                'src_val':    0,
+            }
+
+        state = self.rep_state
+
+        if state['step'] == 0:
+            # uop 0: load DS:[ESI] into ETR (internal latch — invisible).
+            val, err = self.mem.read(self.regs.get('esi'), size_bytes,
+                                     self.regs.get('ds'),
+                                     'ds', self.regs.seg_limits)
+            if err:
+                raise CPUException(f"REPE CMPS read DS:ESI error: {err}")
+            state['src_val'] = val & mask
+            state['step'] = 1
+            done = False
+        elif state['step'] == 1:
+            # uop 1: cmp ETR with ES:[EDI] — sets flags only.
+            val, err = self.mem.read(self.regs.get('edi'), size_bytes,
+                                     self.regs.get('es'),
+                                     'es', self.regs.seg_limits)
+            if err:
+                raise CPUException(f"REPE CMPS read ES:EDI error: {err}")
+            a = state['src_val']
+            b = val & mask
+            self.flags.update_sub(a, b, a - b, bits)
+            state['step'] = 2
+            done = False
+        elif state['step'] == 2:
+            # uop 2: decrement ECX (no flag side-effects).
+            ecx = (self.regs.get('ecx') - 1) & 0xFFFFFFFF
+            self.regs.set('ecx', ecx)
+            state['step'] = 3
+            done = False
+        else:
+            # uop 3: advance ESI and EDI in one commit.
+            delta = -size_bytes if self.flags.get_df() else size_bytes
+            self.regs.set('esi', (self.regs.get('esi') + delta) & 0xFFFFFFFF)
+            self.regs.set('edi', (self.regs.get('edi') + delta) & 0xFFFFFFFF)
+            state['step'] = 0
+            ecx_zero = (self.regs.get('ecx') == 0)
+            zf_zero  = (self.flags.get_zf() == 0)
+            done = ecx_zero or zf_zero
+
+        if done:
+            self.rep_state = None
+            return
+        return self._rollback_eip_to(inst)
 
     def exec_hlt(self, inst):
         """HLT - halt processor."""
@@ -335,7 +505,11 @@ class CPU:
 
         if src_val == 0:
             self.flags._set_bit(6, 1)  # ZF = 1
-            # dst is undefined; leave it unchanged
+            # x86 spec says DEST is undefined when src==0.  Both the behavioral
+            # and structural RTL implementations write 0 to DEST in this case
+            # (the structural unit muxes 64'h0 onto dr_o when op32_any=0), so
+            # match that here for trace-level parity with the regdump.
+            self._write_operand(dst_op, 0, size_bytes)
         else:
             self.flags._set_bit(6, 0)  # ZF = 0
             bit_idx = 0
@@ -687,6 +861,10 @@ class CPU:
             "movq": self.exec_mov,
             "movs": self.exec_movs,
             "rep_movs": self.exec_rep_movs,
+            "repe_movs": self.exec_rep_movs,   # rep == repe for movs in x86
+            "cmps":      self.exec_cmps,
+            "rep_cmps":  self.exec_repe_cmps,  # rep == repe for cmps in x86
+            "repe_cmps": self.exec_repe_cmps,
             "and": self.exec_and,
             "or": self.exec_or,
             "not": self.exec_not,

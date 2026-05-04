@@ -716,7 +716,8 @@ module EXE (
 
     // --- BSF: Bit Scan Forward ---
     bsf_op u_bsf (
-        .srA      (srB),            //SR_REG/MEM
+        .srA      (srA),            //DR_REG (current dest value, for partial-write merge)
+        .srB      (srB),            //SR_REG/MEM (value to scan)
         .data_size(data_size),
         .dr_o     (bsf_dr_o),
         .res_buf_o(bsf_res_buf_o),
@@ -869,6 +870,9 @@ module EXE (
     xchg_op u_xchg_op (
         .srA      (srA),
         .srB      (srB),
+        .srA_id   (latches_i.dr_id),
+        .srB_id   (latches_i.sr_id),
+        .st_op    (latches_i.cs.ST_OP),
         .data_size(data_size),
         .sr_data_size_vec(sr_data_size_vec),
         .res_buf  (xchg_res_buf),
@@ -972,6 +976,8 @@ module EXE (
     pop_op u_pop_op (
         .value_i(srA),
         .sp_i   (srB),
+        .curr_dr(latches_i.dr_data),
+        .data_size(data_size),
         .dr_o   (pop_dr_o),
         .sr_o   (pop_sr_o),
         .res_buf(pop_res_buf)
