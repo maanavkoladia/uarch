@@ -514,10 +514,9 @@ module DC_Latches (
     // ============================================================
 
     wire combined_flush;
-    //assign 
     wire effective_we;
 
-    `OR_2(u_dc_combined_flush, 1, combined_flush, flush, exp_pipe_clear);
+    `OR_3(u_dc_combined_flush, 1, combined_flush, flush, farFlush, exp_pipe_clear);
     `OR_2(u_dc_effective_we,   1, effective_we,  write_enable_i,   combined_flush);
 
     // ============================================================
