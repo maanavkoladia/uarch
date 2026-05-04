@@ -13,4 +13,16 @@
 `define NUM_IDM_SLOTS (4)
 `define NUM_SBS (22)
 
+`define UINT8_T_WIDTH (8);
+`define UINT16_T_WIDTH (16);
+`define UINT32_T_WIDTH (32);
+`define UINT64_T_WIDTH (64);
+`define UINTCL_T_WIDTH (128);
+
+`define BYTE_T_WIDTH (8);
+`define BOOL_WIDTH (1);
+`define P_ADDRESS_T_WIDTH (15);
+`define V_ADDRESS_T_WIDTH (32);
+`define L_ADDRESS_T_WIDTH (32);
+
 `endif

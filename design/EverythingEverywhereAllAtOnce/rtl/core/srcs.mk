@@ -7,7 +7,7 @@ include $(CORE_PATH_INTERNAL)/DC/srcs.mk
 include $(CORE_PATH_INTERNAL)/EXE/srcs.mk
 include $(CORE_PATH_INTERNAL)/MEM/srcs.mk
 include $(CORE_PATH_INTERNAL)/WB/srcs.mk
-
+include $(CORE_PATH_INTERNAL)/StageLatches/srcs.mk
 
 CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/IDM/IDM.sv	\
@@ -19,11 +19,7 @@ CORE_SRC_FILES = \
 				 $(MEM_STAGE_SRC_FILES) \
 				 $(EXE_SRC_FILES)\
 				 $(WB_SRC_FILES) \
-				 $(CORE_PATH_INTERNAL)/StageLatches/DC_Latches.sv \
-				 $(CORE_PATH_INTERNAL)/StageLatches/EXE_Latches.sv \
-				 $(CORE_PATH_INTERNAL)/StageLatches/MEM_Latches.sv \
-				 $(CORE_PATH_INTERNAL)/StageLatches/RR_Latches.sv \
-				 $(CORE_PATH_INTERNAL)/StageLatches/WB_Latches.sv \
+				$(STAGE_LATCHES_SRC_FILES) \
 				 $(CORE_PATH_INTERNAL)/EveryThing_TOP.sv \
 
 
@@ -53,29 +49,6 @@ CORE_STRUCTURAL_SRC_FILES = \
 					 $(MEM_STAGE_STRUCTURAL_SRC_FILES) \
 					 $(EXE_STRUCTURAL_SRC_FILES)\
 					 $(WB_STRUCTURAL_SRC_FILES) \
-					 $(CORE_PATH_INTERNAL)/StageLatches/DC_Latches.sv \
-					 $(CORE_PATH_INTERNAL)/StageLatches/EXE_Latches.sv \
-					 $(CORE_PATH_INTERNAL)/StageLatches/MEM_Latches.sv \
-					 $(CORE_PATH_INTERNAL)/StageLatches/RR_Latches.sv \
-					 $(CORE_PATH_INTERNAL)/StageLatches/WB_Latches.sv \
+					 $(STAGE_LATCHES_STRUCTURAL_SRC_FILES) \
 					 $(CORE_PATH_INTERNAL)/EveryThing_TOP.sv \
-
-							#$(FETCH_STRUCTURAL_SRC_FILES) \
-							#$(DECODE_STRUCTURAL_SRC_FILES) \
-							#$(RR_STRUCTURAL_SRC_FILES) \
-							#$(DC_STRUCTURAL_SRC_FILES) \
-							#$(MEM_STAGE_STRUCTURAL_SRC_FILES) \
-							#$(EXE_STRUCTURAL_SRC_FILES)\
-							#$(WB_STRUCTURAL_SRC_FILES) \
-
-#tlb/segx/and IDM need to be added here
-#CORE_STRUCTURAL_SRC_FILES = \
-#							$(CORE_GEN_SRC_FILES) \
-#							$(FETCH_STRUCTURAL_SRC_FILES) \
-#							$(DECODE_STRUCTURAL_SRC_FILES) \
-#							$(RR_STRUCTURAL_SRC_FILES) \
-#							$(DC_STRUCTURAL_SRC_FILES) \
-#							$(MEM_STAGE_STRUCTURAL_SRC_FILES) \
-#							$(EXE_STRUCTURAL_SRC_FILES)\
-#							$(WB_STRUCTURAL_SRC_FILES) \
 
