@@ -684,18 +684,12 @@
 [OK ] #0677  EIP=0x00000A66  bsf           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
 [OK ] #0678  EIP=0x00000A69  add           CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
 [OK ] #0679  EIP=0x00000A6B  mov           CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
-[ERR] #0680  EIP=0x00000A70  bsf         
-       *** REG   ECX: SIM=0x0000001F  RTL=0x00000000
-[ERR] #0681  EIP=0x00000A73  add         
-       *** REG   ECX: SIM=0x0000001F  RTL=0x00000000
-[ERR] #0682  EIP=0x00000A75  mov         
-       *** REG   ECX: SIM=0x0000001F  RTL=0x00000000
-[ERR] #0683  EIP=0x00000A7A  bsf         
-       *** REG   ECX: SIM=0x00000010  RTL=0x00000000
-[ERR] #0684  EIP=0x00000A7D  add         
-       *** REG   ECX: SIM=0x00000010  RTL=0x00000000
-[ERR] #0685  EIP=0x00000A7F  mov         
-       *** REG   ECX: SIM=0x00000010  RTL=0x00000000
+[OK ] #0680  EIP=0x00000A70  bsf           CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0681  EIP=0x00000A73  add           CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0682  EIP=0x00000A75  mov           CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0683  EIP=0x00000A7A  bsf           CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0684  EIP=0x00000A7D  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0685  EIP=0x00000A7F  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
 [OK ] #0686  EIP=0x00000A89  bsf           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
 [OK ] #0687  EIP=0x00000A90  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
 [OK ] #0688  EIP=0x00000A92  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
@@ -864,18 +858,12 @@
 [OK ] #0851  EIP=0x00000D47  xchg          CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
 [OK ] #0852  EIP=0x00000D49  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0853  EIP=0x00000D4E  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[ERR] #0854  EIP=0x00000D50  mov         
-       *** REG   EAX: SIM=0x00000033  RTL=0x00000000
-[ERR] #0855  EIP=0x00000D52  and         
-       *** REG   EAX: SIM=0x00000033  RTL=0x00000000
-[ERR] #0856  EIP=0x00000D57  add         
-       *** REG   EAX: SIM=0x00000033  RTL=0x00000000
-[ERR] #0857  EIP=0x00000D59  mov         
-       *** REG   EAX: SIM=0x00000033  RTL=0x00000000
-[ERR] #0858  EIP=0x00000D5B  mov         
-       *** REG   EAX: SIM=0x00000033  RTL=0x00000000
-[ERR] #0859  EIP=0x00000D5D  xchg        
-       *** REG   EAX: SIM=0x00000033  RTL=0x00000000
+[OK ] #0854  EIP=0x00000D50  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0855  EIP=0x00000D52  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0856  EIP=0x00000D57  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0857  EIP=0x00000D59  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0858  EIP=0x00000D5B  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0859  EIP=0x00000D5D  xchg          CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
 [OK ] #0860  EIP=0x00000D5F  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
 [OK ] #0861  EIP=0x00000D61  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0862  EIP=0x00000D66  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
@@ -1145,5 +1133,5 @@
 [ONLY_SIM] #1126  EIP=0x00001332  hlt
 
 ================================================================================
-  SUMMARY: 1114/1127 matched  |  12 mismatched  |  1 sim-only  |  0 rtl-only
+  SUMMARY: 1126/1127 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
 ================================================================================
