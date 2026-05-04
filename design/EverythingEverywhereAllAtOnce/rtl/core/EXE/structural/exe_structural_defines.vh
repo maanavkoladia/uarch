@@ -9,6 +9,7 @@
 `define EXE_STRUCT_OP_W       6   // exe_cs_operation_type_e: 0..39 → 6 bits
 `define EXE_STRUCT_SRC_SEL_W  5   // source_selector_e: 0..19 → 5 bits
 `define EXE_STRUCT_REG_ID_W   5   // reg_ids_e: 0..25 → 5 bits
+`define EXE_STRUCT_P_ADDR_W   15  // p_address_t = $clog2(PHY_MEM_SIZE=32768) = 15 bits
 
 // ---- exe_cs_operation_type_e encodings ----
 `define EXE_OP_AAA          6'd0

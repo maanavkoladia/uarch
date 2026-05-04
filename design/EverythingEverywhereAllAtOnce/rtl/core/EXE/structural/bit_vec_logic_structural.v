@@ -8,7 +8,7 @@
 //   4'b0011 = AX  → 2 bytes   4'b0111 = EAX → 4 bytes   4'b1111 = RAX → 8 bytes
 
 module bit_vec_logic (
-    input  wire [`ADDRESS_BITS-1:0] st_addr_0,
+    input  wire [`EXE_STRUCT_P_ADDR_W-1:0] st_addr_0,  // p_address_t (15 bits)
     input  wire                     ST_XCL,
     input  wire [3:0]               data_size,
     output wire [15:0]              st_vec0,

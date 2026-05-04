@@ -8,7 +8,7 @@
 
 
 module alu_input_sel (
-    input  wire [`ADDRESS_BITS-1:0]    ld_addr_0,
+    input  wire [`EXE_STRUCT_P_ADDR_W-1:0] ld_addr_0,  // p_address_t (15 bits)
     input  wire [255:0]                res_buf_in,    // packed 32 bytes
     input  wire [63:0]                 imm64,
     input  wire [63:0]                 sr_data,

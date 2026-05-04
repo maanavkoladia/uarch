@@ -5,7 +5,7 @@
 
 module res_buf_logic (
     input  wire [63:0]                 res_info_i,
-    input  wire [`ADDRESS_BITS-1:0]    st_addr_0,
+    input  wire [`EXE_STRUCT_P_ADDR_W-1:0] st_addr_0,  // p_address_t (15 bits)
     output wire [`CACHE_LINES_SIZE_B*2*8-1:0] res_buf  // 256-bit packed: byte i in bits [8i+7:8i]
 );
 

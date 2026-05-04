@@ -290,13 +290,32 @@ module Fetch (
             exe_outs_i.br_res_out.clr_exp_mode, flush_and_valid)
 
     // J/K vectors (bit 0 active, rest 0 → hold for unused bits).
-    assign dma_jk_J  = {7'b0, dma_int};
-    assign dma_jk_K  = {7'b0, exe_outs_i.br_res_out.clr_exp_mode};
+    //
+    // Force-clear masks: when execute asserts clr_exp_mode (K=1), drive J=0 so
+    // a still-asserted set path (e.g. int_pipe_clear riding the same cycle)
+    // cannot toggle the JK back to 1 instead of clearing it.
+    // DMA gets the analogous mask: while servicing (int_mode_jk=1), drive J=0
+    // so a held dma_int line cannot keep re-arming the latch.
+    wire clr_exp_mode_n;
+    wire not_int_mode_jk;
+    wire int_pipe_clear_mask;
+    wire dma_int_mask;
+
+    `INV_N(u_n_clr_exp_mode,  1, exe_outs_i.br_res_out.clr_exp_mode, clr_exp_mode_n)
+    `INV_N(u_n_int_mode_jk,   1, int_mode_jk,                        not_int_mode_jk)
+
+    `AND_2(u_int_force_rst,   1, int_pipe_clear_mask,
+            clr_exp_mode_n, exp_set_logic_outs.int_pipe_clear)
+    `AND_2(u_dma_force_rst,   1, dma_int_mask,
+            not_int_mode_jk, dma_int)
+
+    assign dma_jk_J  = {7'b0, dma_int_mask};
+    assign dma_jk_K  = {7'b0, int_mode_jk};
     assign exp0_jk_J = {7'b0, exp0_J_gated};
     assign exp0_jk_K = {7'b0, exp0_K_gated};
     assign exp1_jk_J = {7'b0, exp1_J_gated};
     assign exp1_jk_K = {7'b0, exp1_K_gated};
-    assign int_jk_J  = {7'b0, exp_set_logic_outs.int_pipe_clear};
+    assign int_jk_J  = {7'b0, int_pipe_clear_mask};
     assign int_jk_K  = {7'b0, exe_outs_i.br_res_out.clr_exp_mode};
 
     // TODO: replace the four jkff8$ instances below with a JK_FF macro
