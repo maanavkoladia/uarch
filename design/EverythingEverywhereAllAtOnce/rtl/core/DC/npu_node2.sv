@@ -57,8 +57,26 @@ module npu_node2 (
     tlb_outputs_t tlb0_out;
     tlb_outputs_t tlb1_out;
 
-    TLB tlb0 (.inputs(tlb0_in), .outputs(tlb0_out));
-    TLB tlb1 (.inputs(tlb1_in), .outputs(tlb1_out));
+
+    TLB tlb0(
+        .virtual_addr(tlb0_in.virtual_addr),
+        .write_intention(tlb0_in.write_intention),
+        .physical_addr(tlb0_out.physical_addr),
+        .physical_addr_valid(tlb0_out.physical_addr_valid),
+        .gp_exp(tlb0_out.gp_exp),
+        .pageFault(tlb0_out.pageFault),
+        .MIO(tlb0_out.MIO)
+    );
+
+    TLB tlb1(
+        .virtual_addr(tlb1_in.virtual_addr),
+        .write_intention(tlb1_in.write_intention),
+        .physical_addr(tlb1_out.physical_addr),
+        .physical_addr_valid(tlb1_out.physical_addr_valid),
+        .gp_exp(tlb1_out.gp_exp),
+        .pageFault(tlb1_out.pageFault),
+        .MIO(tlb1_out.MIO)
+    );
 
     bool tlb0_pagefault, tlb0_generalprotection;
     bool tlb1_pagefault, tlb1_generalprotection;

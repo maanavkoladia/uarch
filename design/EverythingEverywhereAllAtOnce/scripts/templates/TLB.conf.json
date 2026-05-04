@@ -10,9 +10,9 @@
     "num entries"   : "8",
 
     "paths" : [
-        "dut.u_itlb.entries",
-        "dut.u_dtlb.entries",
-        "dut.u_l2tlb.entries"
+        "dut.u_itlb",
+        "dut.u_dtlb",
+        "dut.u_l2tlb"
     ],
 
     "entries" : {

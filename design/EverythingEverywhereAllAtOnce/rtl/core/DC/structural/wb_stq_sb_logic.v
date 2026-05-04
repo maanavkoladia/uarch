@@ -27,21 +27,98 @@
 //     so the bank_hit critical path sees only the per-bank reduction.
 // ----------------------------------------------------------------
 
-`include "common_define.vh"
 
 module wb_stq_sb_logic (
-    input  wire        valid,                                            // unused
+    input  wire        valid,                // unused
     input  wire [14:0] ld_paddr_0,
     input  wire [14:0] ld_paddr_1,
     input  wire        LD_OP,
     input  wire        LD_XCL,
 
     // st_q_2_dep_check_outputs_t.entries[NUM_WB_ST_QS*ST_Q_DEPTH] flattened
-    input  wire [14:0] stq_addr_i  [0:`NUM_WB_ST_QS*`ST_Q_DEPTH-1],
-    input  wire        stq_valid_i [0:`NUM_WB_ST_QS*`ST_Q_DEPTH-1],
+    // into 16 individual scalar ports per field.
+    // Convention: entry index e = bank b * ST_Q_DEPTH + slot i, so e in
+    // 0..3   are bank 0 slots 0..3
+    // 4..7   are bank 1 slots 0..3
+    // 8..11  are bank 2 slots 0..3
+    // 12..15 are bank 3 slots 0..3
+    input  wire [14:0] stq_addr_0,
+    input  wire [14:0] stq_addr_1,
+    input  wire [14:0] stq_addr_2,
+    input  wire [14:0] stq_addr_3,
+    input  wire [14:0] stq_addr_4,
+    input  wire [14:0] stq_addr_5,
+    input  wire [14:0] stq_addr_6,
+    input  wire [14:0] stq_addr_7,
+    input  wire [14:0] stq_addr_8,
+    input  wire [14:0] stq_addr_9,
+    input  wire [14:0] stq_addr_10,
+    input  wire [14:0] stq_addr_11,
+    input  wire [14:0] stq_addr_12,
+    input  wire [14:0] stq_addr_13,
+    input  wire [14:0] stq_addr_14,
+    input  wire [14:0] stq_addr_15,
+
+    input  wire        stq_valid_0,
+    input  wire        stq_valid_1,
+    input  wire        stq_valid_2,
+    input  wire        stq_valid_3,
+    input  wire        stq_valid_4,
+    input  wire        stq_valid_5,
+    input  wire        stq_valid_6,
+    input  wire        stq_valid_7,
+    input  wire        stq_valid_8,
+    input  wire        stq_valid_9,
+    input  wire        stq_valid_10,
+    input  wire        stq_valid_11,
+    input  wire        stq_valid_12,
+    input  wire        stq_valid_13,
+    input  wire        stq_valid_14,
+    input  wire        stq_valid_15,
 
     output wire        stall
 );
+
+    // ----------------------------------------------------------------
+    // Gather the 16 scalar ports into internal arrays so the generate
+    // loop can index them.  These are local wires, not port arrays.
+    // ----------------------------------------------------------------
+    wire [14:0] stq_addr  [`NUM_WB_ST_QS*`ST_Q_DEPTH];
+    wire        stq_valid [`NUM_WB_ST_QS*`ST_Q_DEPTH];
+
+    assign stq_addr[0]  = stq_addr_0;
+    assign stq_addr[1]  = stq_addr_1;
+    assign stq_addr[2]  = stq_addr_2;
+    assign stq_addr[3]  = stq_addr_3;
+    assign stq_addr[4]  = stq_addr_4;
+    assign stq_addr[5]  = stq_addr_5;
+    assign stq_addr[6]  = stq_addr_6;
+    assign stq_addr[7]  = stq_addr_7;
+    assign stq_addr[8]  = stq_addr_8;
+    assign stq_addr[9]  = stq_addr_9;
+    assign stq_addr[10] = stq_addr_10;
+    assign stq_addr[11] = stq_addr_11;
+    assign stq_addr[12] = stq_addr_12;
+    assign stq_addr[13] = stq_addr_13;
+    assign stq_addr[14] = stq_addr_14;
+    assign stq_addr[15] = stq_addr_15;
+
+    assign stq_valid[0]  = stq_valid_0;
+    assign stq_valid[1]  = stq_valid_1;
+    assign stq_valid[2]  = stq_valid_2;
+    assign stq_valid[3]  = stq_valid_3;
+    assign stq_valid[4]  = stq_valid_4;
+    assign stq_valid[5]  = stq_valid_5;
+    assign stq_valid[6]  = stq_valid_6;
+    assign stq_valid[7]  = stq_valid_7;
+    assign stq_valid[8]  = stq_valid_8;
+    assign stq_valid[9]  = stq_valid_9;
+    assign stq_valid[10] = stq_valid_10;
+    assign stq_valid[11] = stq_valid_11;
+    assign stq_valid[12] = stq_valid_12;
+    assign stq_valid[13] = stq_valid_13;
+    assign stq_valid[14] = stq_valid_14;
+    assign stq_valid[15] = stq_valid_15;
 
     // ----------------------------------------------------------------
     // Bank num for each load
@@ -59,31 +136,31 @@ module wb_stq_sb_logic (
     //            from the 4 banks via MUX_4 selected by ld_bank_num.
     // Then compare and AND with valid.
     // ----------------------------------------------------------------
-    wire [10:0] muxed_addr_0 [0:`ST_Q_DEPTH-1];
-    wire [10:0] muxed_addr_1 [0:`ST_Q_DEPTH-1];
-    wire        muxed_valid_0 [0:`ST_Q_DEPTH-1];
-    wire        muxed_valid_1 [0:`ST_Q_DEPTH-1];
-    wire        cmp_0         [0:`ST_Q_DEPTH-1];
-    wire        cmp_1         [0:`ST_Q_DEPTH-1];
-    wire        match_0       [0:`ST_Q_DEPTH-1];
-    wire        match_1       [0:`ST_Q_DEPTH-1];
+    wire [10:0] muxed_addr_0  [`ST_Q_DEPTH];
+    wire [10:0] muxed_addr_1  [`ST_Q_DEPTH];
+    wire        muxed_valid_0 [`ST_Q_DEPTH];
+    wire        muxed_valid_1 [`ST_Q_DEPTH];
+    wire        cmp_0         [`ST_Q_DEPTH];
+    wire        cmp_1         [`ST_Q_DEPTH];
+    wire        match_0       [`ST_Q_DEPTH];
+    wire        match_1       [`ST_Q_DEPTH];
 
     genvar i;
     generate
         for (i = 0; i < `ST_Q_DEPTH; i = i + 1) begin : g_slot
             // Address slices [14:4] for the 4 entries at slot i, one per bank
             wire [10:0] a0_slot, a1_slot, a2_slot, a3_slot;
-            assign a0_slot = stq_addr_i[0*`ST_Q_DEPTH + i][14:4];
-            assign a1_slot = stq_addr_i[1*`ST_Q_DEPTH + i][14:4];
-            assign a2_slot = stq_addr_i[2*`ST_Q_DEPTH + i][14:4];
-            assign a3_slot = stq_addr_i[3*`ST_Q_DEPTH + i][14:4];
+            assign a0_slot = stq_addr[0*`ST_Q_DEPTH + i][14:4];
+            assign a1_slot = stq_addr[1*`ST_Q_DEPTH + i][14:4];
+            assign a2_slot = stq_addr[2*`ST_Q_DEPTH + i][14:4];
+            assign a3_slot = stq_addr[3*`ST_Q_DEPTH + i][14:4];
 
             // Valids for the 4 entries at slot i
             wire v0_slot, v1_slot, v2_slot, v3_slot;
-            assign v0_slot = stq_valid_i[0*`ST_Q_DEPTH + i];
-            assign v1_slot = stq_valid_i[1*`ST_Q_DEPTH + i];
-            assign v2_slot = stq_valid_i[2*`ST_Q_DEPTH + i];
-            assign v3_slot = stq_valid_i[3*`ST_Q_DEPTH + i];
+            assign v0_slot = stq_valid[0*`ST_Q_DEPTH + i];
+            assign v1_slot = stq_valid[1*`ST_Q_DEPTH + i];
+            assign v2_slot = stq_valid[2*`ST_Q_DEPTH + i];
+            assign v3_slot = stq_valid[3*`ST_Q_DEPTH + i];
 
             // Mux to the bank selected by ld0_bank_num / ld1_bank_num
             `MUX_4(u_mux_addr_0,  11, muxed_addr_0[i],

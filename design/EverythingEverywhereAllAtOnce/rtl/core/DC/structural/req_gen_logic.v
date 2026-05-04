@@ -3,7 +3,7 @@
 //
 // Reference: rtl/core/DC/req_gen_logic.sv
 //
-//   stall          = exp_stall | dep_stall
+
 //   forward_valid  = mem_stage_we_valid_unit_o & mem_stage_next_valid_o
 //   clear          = forward_valid | flush
 //   set_X          = req_served_X & valid                 (X in {0,1,mio})
@@ -41,7 +41,6 @@ module req_gen_logic (
     input  wire        LD_OP,
     input  wire        XCL,
     input  wire        dep_stall,
-    input  wire        exp_stall,
     input  wire        MIO,
 
     input  wire [14:0] ld_addr0,
@@ -172,9 +171,9 @@ module req_gen_logic (
     wire nor4_1;
     wire nor3_mio;
     
-    `NOR_3(u_nor4_0,   1, nor4_0, dep_stall, MIO, is_served_0)
-    `NOR_3(u_nor4_1,   1, nor4_1, dep_stall, MIO, is_served_1)
-    `NOR_2(u_nor3_mio, 1, nor3_mio, dep_stall, is_served_mio)
+    `NOR_4(u_nor4_0,   1, nor4_0, dep_stall, MIO, is_served_0, flush)
+    `NOR_4(u_nor4_1,   1, nor4_1, dep_stall, MIO, is_served_1, flush)
+    `NOR_3(u_nor3_mio, 1, nor3_mio, dep_stall, is_served_mio, flush)
 
     `AND_3(u_ld_addr_0_V,   1, ld_addr_0_V,   nor4_0,   LD_OP, valid)
     `AND_4(u_ld_addr_1_V,   1, ld_addr_1_V,   nor4_1,   LD_OP, valid, XCL)

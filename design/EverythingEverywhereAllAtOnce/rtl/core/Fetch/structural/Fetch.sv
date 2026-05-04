@@ -504,8 +504,13 @@ module Fetch (
     );
 
     TLB tlb(
-        .inputs (tlb_inputs),
-        .outputs(tlb_outs)
+        .virtual_addr(tlb_inputs.virtual_addr),
+        .write_intention(tlb_inputs.write_intention),
+        .physical_addr(tlb_outs.physical_addr),
+        .physical_addr_valid(tlb_outs.physical_addr_valid),
+        .gp_exp(tlb_outs.gp_exp),
+        .pageFault(tlb_outs.pageFault),
+        .MIO(tlb_outs.MIO)
     );
 
     SegmentTranslation seg_Xlation(
