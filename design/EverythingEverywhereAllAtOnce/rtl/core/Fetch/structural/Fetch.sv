@@ -13,11 +13,11 @@ import Fetch_pkg::*;
 // by structural cells / macros from STDCell_Macros.vh and the JK FF
 // from lib/Gates/lib2.v.
 //
-// TODO(macro lib): there is no JK_FF macro in
-//   lib/STDCells/STDCell_Macros.vh today, so the four mode JKs below
-//   instantiate `jkff8$` from lib/Gates/lib2.v directly and only tap
-//   bit 0. Once a JK_FF macro and underlying cell are added, replace
-//   the four jkff8$ instances here with the macro.
+// Mode latches (DMA_int_jk, exp_mode_jk[0/1], int_mode_jk) are
+// implemented with REG_RST_WE rather than JK flops so that a "clear"
+// strobe always wins over a coincident "set" — the JK toggle on
+// J=K=1 was letting clr_exp_mode and a still-asserted int_pipe_clear
+// fight, leaving int_mode_jk stuck high.
 // ----------------------------------------------------------------
 module Fetch (
     input wire clk,
@@ -71,7 +71,6 @@ module Fetch (
     wire        not_exp_mode_jk_0;
     wire        exp_or_int;                 // exp_mode_jk[0|1] | int_mode_jk
     wire        flush_and_valid;
-    wire        not_flush_and_valid;
     wire        outs_exp_pipe_clear;
 
     wire [31:0] seg_xlation_out;
@@ -87,17 +86,17 @@ module Fetch (
     wire [31:0] br_target_aligned;
 
     // ----------------------------------------------------------------
-    // JK J/K vectors (8-bit jkff$, bit 0 used; rest tied 0)
+    // Mode-latch set/clear/WE/D wires (REG_RST_WE based; clear-dominates).
     // ----------------------------------------------------------------
-    wire [7:0]  dma_jk_J,  dma_jk_K,  dma_jk_Q,  dma_jk_QBAR;
-    wire [7:0]  exp0_jk_J, exp0_jk_K, exp0_jk_Q, exp0_jk_QBAR;
-    wire [7:0]  exp1_jk_J, exp1_jk_K, exp1_jk_Q, exp1_jk_QBAR;
-    wire [7:0]  int_jk_J,  int_jk_K,  int_jk_Q,  int_jk_QBAR;
+    wire        exp_clr;        // shared clear for exp_mode_jk[0] and [1]
+    wire        not_exp_clr;
+    wire        not_clr_exp_mode;
+    wire        not_int_mode_jk;
 
-    wire        exp0_J_gated;   // J for exp_mode_jk[0] after flush gating
-    wire        exp0_K_gated;   // K for exp_mode_jk[0] after flush gating
-    wire        exp1_J_gated;   // J for exp_mode_jk[1] after flush gating
-    wire        exp1_K_gated;   // K for exp_mode_jk[1] after flush gating
+    wire        exp0_we, exp0_d;
+    wire        exp1_we, exp1_d;
+    wire        int_we,  int_d;
+    wire        dma_we,  dma_d;
 
     // ----------------------------------------------------------------
     // SV-side structs kept so sub-modules / TLB / SegmentTranslation
@@ -261,108 +260,56 @@ module Fetch (
     `REG_RST(u_spc_reg, 32, clk, rst, next_spc, SPC)
 
     // ----------------------------------------------------------------
-    // Mode JK flops (4 × jkff8$ from lib/Gates/lib2.v, bit 0 only).
-    // jkff8$ has async active-low CLR/PRE — tie PRE high and route the
-    // top-level (active-low) `rst` straight into CLR for power-on reset.
+    // Mode latches (REG_RST_WE — async-low rst, sync WE).
     //
-    // exp_mode_jk[0] / exp_mode_jk[1] additionally need a synchronous
-    // flush-and-br_valid clear. Fold into J/K so the flop sees J=0,K=1
-    // on a flush cycle (which gives Q=0 next edge):
-    //   J' = J & ~flush_and_valid
-    //   K' = K |  flush_and_valid
+    // For each latch:  WE = set | clr;  D = set & ~clr.
+    // → clr=0,set=0: WE=0, hold.
+    // → clr=0,set=1: load 1.   clr=1,set=0/1: load 0 (clr always wins).
+    //
+    // exp_mode_jk[0]: set=exp_pipe_clear,    clr=clr_exp_mode | flush_and_valid
+    // exp_mode_jk[1]: set=dc_exp_set,        clr=clr_exp_mode | flush_and_valid
+    // int_mode_jk  : set=int_pipe_clear,     clr=clr_exp_mode
+    // DMA_int_jk   : set=dma_int,            clr=int_mode_jk
+    //
+    // EXP_Set_logic already gates int_pipe_clear with ~int_mode_jk, so once
+    // int_mode_jk is set the set-path stops asserting; the only way out is
+    // clr_exp_mode from execute.
     // ----------------------------------------------------------------
-
-    // flush_and_valid + its inverse
     `AND_2(u_flush_and_valid, 1, flush_and_valid,
             exe_outs_i.br_res_out.flush, exe_outs_i.br_res_out.valid)
-    `INV_N(u_inv_flush_and_valid, 1, flush_and_valid, not_flush_and_valid)
 
-    // exp_mode_jk[0] J/K (J = exp_pipe_clear, K = clr_exp_mode)
-    `AND_2(u_exp0_J, 1, exp0_J_gated,
-            exp_set_logic_outs.exp_pipe_clear, not_flush_and_valid)
-    `OR_2 (u_exp0_K, 1, exp0_K_gated,
+    // Shared clear for both exp latches.
+    `OR_2 (u_exp_clr,         1, exp_clr,
             exe_outs_i.br_res_out.clr_exp_mode, flush_and_valid)
-
-    // exp_mode_jk[1] J/K (J = dc_exp_set, K = clr_exp_mode)
-    `AND_2(u_exp1_J, 1, exp1_J_gated,
-            exp_set_logic_outs.dc_exp_set, not_flush_and_valid)
-    `OR_2 (u_exp1_K, 1, exp1_K_gated,
-            exe_outs_i.br_res_out.clr_exp_mode, flush_and_valid)
-
-    // J/K vectors (bit 0 active, rest 0 → hold for unused bits).
-    //
-    // Force-clear masks: when execute asserts clr_exp_mode (K=1), drive J=0 so
-    // a still-asserted set path (e.g. int_pipe_clear riding the same cycle)
-    // cannot toggle the JK back to 1 instead of clearing it.
-    // DMA gets the analogous mask: while servicing (int_mode_jk=1), drive J=0
-    // so a held dma_int line cannot keep re-arming the latch.
-    wire clr_exp_mode_n;
-    wire not_int_mode_jk;
-    wire int_pipe_clear_mask;
-    wire dma_int_mask;
-
-    `INV_N(u_n_clr_exp_mode,  1, exe_outs_i.br_res_out.clr_exp_mode, clr_exp_mode_n)
+    `INV_N(u_n_exp_clr,       1, exp_clr,                            not_exp_clr)
+    `INV_N(u_n_clr_exp_mode,  1, exe_outs_i.br_res_out.clr_exp_mode, not_clr_exp_mode)
     `INV_N(u_n_int_mode_jk,   1, int_mode_jk,                        not_int_mode_jk)
 
-    `AND_2(u_int_force_rst,   1, int_pipe_clear_mask,
-            clr_exp_mode_n, exp_set_logic_outs.int_pipe_clear)
-    `AND_2(u_dma_force_rst,   1, dma_int_mask,
-            not_int_mode_jk, dma_int)
+    // exp_mode_jk[0]
+    `OR_2 (u_exp0_we, 1, exp0_we,
+            exp_set_logic_outs.exp_pipe_clear, exp_clr)
+    `AND_2(u_exp0_d,  1, exp0_d,
+            exp_set_logic_outs.exp_pipe_clear, not_exp_clr)
+    `REG_RST_WE(u_exp_mode_jk_0_reg, 1, clk, rst, exp0_we, exp0_d, exp_mode_jk_0)
 
-    assign dma_jk_J  = {7'b0, dma_int_mask};
-    assign dma_jk_K  = {7'b0, int_mode_jk};
-    assign exp0_jk_J = {7'b0, exp0_J_gated};
-    assign exp0_jk_K = {7'b0, exp0_K_gated};
-    assign exp1_jk_J = {7'b0, exp1_J_gated};
-    assign exp1_jk_K = {7'b0, exp1_K_gated};
-    assign int_jk_J  = {7'b0, int_pipe_clear_mask};
-    assign int_jk_K  = {7'b0, exe_outs_i.br_res_out.clr_exp_mode};
+    // exp_mode_jk[1]
+    `OR_2 (u_exp1_we, 1, exp1_we,
+            exp_set_logic_outs.dc_exp_set, exp_clr)
+    `AND_2(u_exp1_d,  1, exp1_d,
+            exp_set_logic_outs.dc_exp_set, not_exp_clr)
+    `REG_RST_WE(u_exp_mode_jk_1_reg, 1, clk, rst, exp1_we, exp1_d, exp_mode_jk_1)
 
-    // TODO: replace the four jkff8$ instances below with a JK_FF macro
-    //       once it is added to lib/STDCells/STDCell_Macros.vh.
-    jkff8$ u_dma_int_jk (
-        .CLK (clk),
-        .CLR (rst),
-        .PRE (1'b1),
-        .J   (dma_jk_J),
-        .K   (dma_jk_K),
-        .Q   (dma_jk_Q),
-        .QBAR(dma_jk_QBAR)
-    );
-    assign DMA_int_jk = dma_jk_Q[0];
+    // int_mode_jk
+    `OR_2 (u_int_we, 1, int_we,
+            exp_set_logic_outs.int_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode)
+    `AND_2(u_int_d,  1, int_d,
+            exp_set_logic_outs.int_pipe_clear, not_clr_exp_mode)
+    `REG_RST_WE(u_int_mode_jk_reg, 1, clk, rst, int_we, int_d, int_mode_jk)
 
-    jkff8$ u_exp_mode_jk_0 (
-        .CLK (clk),
-        .CLR (rst),
-        .PRE (1'b1),
-        .J   (exp0_jk_J),
-        .K   (exp0_jk_K),
-        .Q   (exp0_jk_Q),
-        .QBAR(exp0_jk_QBAR)
-    );
-    assign exp_mode_jk_0 = exp0_jk_Q[0];
-
-    jkff8$ u_exp_mode_jk_1 (
-        .CLK (clk),
-        .CLR (rst),
-        .PRE (1'b1),
-        .J   (exp1_jk_J),
-        .K   (exp1_jk_K),
-        .Q   (exp1_jk_Q),
-        .QBAR(exp1_jk_QBAR)
-    );
-    assign exp_mode_jk_1 = exp1_jk_Q[0];
-
-    jkff8$ u_int_mode_jk (
-        .CLK (clk),
-        .CLR (rst),
-        .PRE (1'b1),
-        .J   (int_jk_J),
-        .K   (int_jk_K),
-        .Q   (int_jk_Q),
-        .QBAR(int_jk_QBAR)
-    );
-    assign int_mode_jk = int_jk_Q[0];
+    // DMA_int_jk
+    `OR_2 (u_dma_we, 1, dma_we, dma_int, int_mode_jk)
+    `AND_2(u_dma_d,  1, dma_d,  dma_int, not_int_mode_jk)
+    `REG_RST_WE(u_dma_int_jk_reg, 1, clk, rst, dma_we, dma_d, DMA_int_jk)
 
     // ----------------------------------------------------------------
     // Sub-modules (already structural)

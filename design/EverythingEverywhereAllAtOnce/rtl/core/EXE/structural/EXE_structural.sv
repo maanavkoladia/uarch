@@ -290,6 +290,7 @@ module EXE (
         .sbb_dr_i         (sbb_dr_o),
         .xchg_dr_i        (xchg_dr_o),
         .exp_call_dr_i    (exp_call_dr_o),
+        .iretd_cs_dr_i    (iretd_cs_o),
         .dr_data          (dr_data),
         .dr_o             (dr_next)
     );

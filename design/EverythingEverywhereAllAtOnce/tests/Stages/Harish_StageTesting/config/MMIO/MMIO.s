@@ -45,7 +45,7 @@ seg_init:
     # -------------------------------
     # DDR5: disable power gating (write 0)
     # -------------------------------
-    //call ddr5_routine
+    call ddr5_routine
     
     //ebx should have a 0xbb8 and ecx have a 0
     call dma_routine
