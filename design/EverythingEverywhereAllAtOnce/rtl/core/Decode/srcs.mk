@@ -28,6 +28,7 @@ DECODE_SRC_FILES_STRUCTURAL__INTERNAL = \
 								$(DECODE_PATH_INTERNAL)/structural/predecode.v \
 
 DECODE_SRC_FILES = \
+						$(DECODE_GEN_SRC_FILES) \
 						$(DECODE_SRC_FILES_STRUCTURAL__INTERNAL) \
 						$(DECODE_PATH_INTERNAL)/br_info_processing.sv \
 						$(DECODE_PATH_INTERNAL)/control_store_genned.sv \

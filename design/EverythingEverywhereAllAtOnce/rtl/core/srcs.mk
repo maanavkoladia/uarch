@@ -42,6 +42,7 @@ CORE_PKGS = \
 			$(WB_PKGS) \
 
 
+
 CORE_STRUCTURAL_SRC_FILES = \
 					 $(CORE_PATH_INTERNAL)/IDM/IDM.sv	\
 					 $(CORE_PATH_INTERNAL)/TLB/TLB_structural.v \
@@ -51,7 +52,7 @@ CORE_STRUCTURAL_SRC_FILES = \
 					 $(DC_STRUCTURAL_SRC_FILES) \
 					 $(MEM_STAGE_STRUCTURAL_SRC_FILES) \
 					 $(EXE_SRC_FILES)\
-					 $(WB_SRC_FILES) \
+					 $(WB_STRUCTURAL_SRC_FILES) \
 					 $(CORE_PATH_INTERNAL)/StageLatches/DC_Latches.sv \
 					 $(CORE_PATH_INTERNAL)/StageLatches/EXE_Latches.sv \
 					 $(CORE_PATH_INTERNAL)/StageLatches/MEM_Latches.sv \
