@@ -35,7 +35,7 @@ import tb_debug_pkg::*;
         #(`CLK_PERIOD  * cycles);\
     endtask\
     always begin\
-        #(`CLK_PERIOD/2);\
+        #(`CLK_PERIOD/2.0);\
         clk = ~clk;\
     end\
 

@@ -9,7 +9,7 @@ import Fetch_pkg::*;
 import DCache_common_pkg::*;
 import WriteBack_pkg::*;
 
-`define CLK_PERIOD 8
+`define CLK_PERIOD 7
 
 
 module tb_stages ();
@@ -94,6 +94,43 @@ module tb_stages ();
     initial begin
         $vcdpluson;
         $vcdplusmemon;
+    end
+
+    // ===================== REP CONTROLLER LOG =====================
+    `define REP_PATH `DECODE_UNIT_PATH.piece_of_shit_rep_controller
+    integer repdumpfd;
+    string  rep_log_file_name;
+
+    initial begin
+        if (!$value$plusargs("RTL_REPDUMP_FILE_NAME=%s", rep_log_file_name))
+            rep_log_file_name = "rtl_repdump_default.log";
+        repdumpfd = $fopen(rep_log_file_name, "w");
+        if (repdumpfd == 0) begin
+            $display("ERROR: cannot open repdump file %s", rep_log_file_name);
+            $finish;
+        end
+        $fdisplay(repdumpfd,
+            "cycle  time  rep_fsm  cmp_fsm  movs_fsm  inst_sel  zf_cnt  set_zf clear_zf updateSB cont_cmp exit_cmp cmp_clear movs_clear");
+    end
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            $fdisplay(repdumpfd,
+                "%0d  %0t  %b  %b  %b  %b  %0d  %b %b %b %b %b %b %b",
+                cycle_count, $time,
+                `REP_PATH.rep_fsm_state_bits,
+                `REP_PATH.rep_cmp_fsm_state_bits,
+                `REP_PATH.rep_movs_fsm_state_bits,
+                `REP_PATH.inst_select,
+                `REP_PATH.zf_sb_counter,
+                `REP_PATH.set_zf,
+                `REP_PATH.clear_zf,
+                `REP_PATH.updateSB,
+                `REP_PATH.continue_cmp,
+                `REP_PATH.exit_cmp,
+                `REP_PATH.cmp_clear,
+                `REP_PATH.movs_clear);
+        end
     end
 
     logic instruction_commit;
@@ -253,6 +290,7 @@ module tb_stages ();
 
         $display("Reg Dump File Path: %s", `RTL_REGDUMP_FILE_NAME);
         $display("Flag Dump File Path: %s", `RTL_FLAGDUMP_FILE_NAME);
+        $display("Rep Dump File Path: %s", rep_log_file_name);
         $finish;
         `LOG("Finishing mem System TB");
 

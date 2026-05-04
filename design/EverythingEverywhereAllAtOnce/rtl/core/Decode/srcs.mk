@@ -38,7 +38,7 @@ DECODE_SRC_FILES = \
 						$(DECODE_PATH_INTERNAL)/structural/decode_gp_gen_structural.v \
 						$(DECODE_PATH_INTERNAL)/structural/modrm_processor_structural.v \
 						$(DECODE_PATH_INTERNAL)/structural/sib_processor_structural.v \
-						$(DECODE_PATH_INTERNAL)/rep_controller.sv \
+						$(DECODE_PATH_INTERNAL)/structural/rep_controller_structural.v \
 						$(DECODE_PATH_INTERNAL)/structural/Decode_structural.sv \
 
 

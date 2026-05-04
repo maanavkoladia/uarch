@@ -295,7 +295,7 @@ module modrm_processor (
     /* ===================================================================== //
                 sr_high8, sr_id, sr_rd, sr_wr always_comb block
     // ===================================================================== */
-    // if(rm_is_dr && !reg_is_segment && !modrm_but_no_sr)
+    // if(rm_is_dr && !reg_is_segment && !modrm_but_no_sr && !decode_cs_inputs.HARDCODED_SR)
     // else if(reg_is_dr && not_wierd_modrm_case)
 
     // else if(reg_is_segment && rm_is_dr)
@@ -307,7 +307,7 @@ module modrm_processor (
     wire reg_dr_not_wierd;
     wire reg_seg_rm_dr;
 
-    `NOR_3(rm_dr_no_seg_reg_valid_sr_u, 1, rm_dr_no_seg_reg_valid_sr, not_rm_is_dr, reg_is_segment, modrm_but_no_sr)
+    `NOR_4(rm_dr_no_seg_reg_valid_sr_u, 1, rm_dr_no_seg_reg_valid_sr, not_rm_is_dr, reg_is_segment, modrm_but_no_sr, cs_HARDCODED_SR)
     `AND_2(reg_dr_not_wierd_u, 1, reg_dr_not_wierd, reg_is_dr, not_wierd_modrm_case)
     `AND_2(reg_seg_rm_dr_u, 1, reg_seg_rm_dr, reg_is_segment, rm_is_dr)
 
