@@ -7,9 +7,11 @@ GEN_MEM_SRC_FILES = \
 
 #MEM source files
 MEM_STAGE_SRC_FILES = \
-	$(MEM_PATH_INTERNAL)/mem_miss_stall_logic.v \
-	$(MEM_PATH_INTERNAL)/MEM.sv \
+	$(GEN_MEM_SRC_FILES) \
+	$(MEM_PATH_INTERNAL)/structural/mem_miss_stall_logic_structural.v \
+	$(MEM_PATH_INTERNAL)/structural/MEM_structural.sv \
 
 MEM_STAGE_STRUCTURAL_SRC_FILES = \
+	$(GEN_MEM_SRC_FILES) \
 	$(MEM_PATH_INTERNAL)/structural/mem_miss_stall_logic_structural.v \
 	$(MEM_PATH_INTERNAL)/structural/MEM_structural.sv \
