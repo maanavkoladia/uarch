@@ -91,25 +91,25 @@ EXE_STRUCTURAL_SRC_FILES = \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/far_call_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/iretd_op.sv \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/mov_op_structural.v \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/not_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/or_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/packssdw.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/packsswb.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/paddd.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/paddw.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/pavgb.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/pavgw.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/pop_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/push_op.sv \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/not_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/or_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/packssdw_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/packsswb_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/paddd_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/paddw_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/pavgb_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/pavgw_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/pop_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/push_op_structural.v \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/ret_far_imm_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/ret_far_ops.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/ret_imm_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/ret_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/sal_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/sar_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/sbb_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/xchg_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/movs_op.sv \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/sal_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/sar_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/sbb_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/xchg_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/movs_op_structural.v \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/add_df_op.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/far_jmp.sv \
     $(EXE_PATH_INTERNAL)/FunctionalUnits/exp_call.sv \
