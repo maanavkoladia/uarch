@@ -387,8 +387,8 @@
        *** FLAG  DIFF: AF: SIM=0  RTL=1
 [ERR] #0356  0x000000D4  add           !! EIP MISMATCH (SIM=0x000000D4 RTL=0x000000AE)
        SIM  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-       RTL  writes=EDX=0x76AE9E15  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-       *** WRITE DIFF: EDX: SIM=<not written>  RTL=0x76AE9E15
+       RTL  writes=EDX=0x37D3566C  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EDX: SIM=<not written>  RTL=0x37D3566C
        *** FLAG  DIFF: CF: SIM=0  RTL=1
        *** FLAG  DIFF: AF: SIM=0  RTL=1
 [ERR] #0357  0x000000DB  add           !! EIP MISMATCH (SIM=0x000000DB RTL=0x000000B1)
