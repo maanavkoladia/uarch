@@ -33,10 +33,9 @@ module predecode(
     wire [9:0] pf_vector0, pf_vector1, pf_vector2;
     wire [31:0] sext_inst_length;
     wire inst_length_cout;
-    wire [3:0] inst_valid;
     wire true_inst_valid;
     wire [15:0] adder_cout;
-    wire [31:0] possible_eips[0:15];
+    wire [31:0] possible_neips[0:15];
 
 
     selection_logic sel_log1(.queue(queue), .queue_valid(queue_valid), .EIP(EIP), .IR(IR), .IR_valid_vect(IR_valid_vect));
@@ -44,26 +43,22 @@ module predecode(
     ppu pfs0(.opcode_index(4'd0), .modrm_index(4'd1), .sib_index(4'd2), .IR(IR), .IR_valid_vect(IR_valid_vect),
         .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd1),
         .inst_length(ppu_inst_length[0]), .msd_size_o(ppu_msd_size[0]),
-        .imm_size_o(ppu_imm_size[0]), .disp_size_o(ppu_disp_size[0]), .disp_needed_o(ppu_disp_needed[0]), .sib_size_o(ppu_sib_size[0]), .needrm_o(ppu_needrm[0]), .sib_byte(ppu_sib_byte[0]), .disp(ppu_displacement[0]), .imm64(ppu_imm[0]),
-        .inst_valid(inst_valid[0]));
+        .imm_size_o(ppu_imm_size[0]), .disp_size_o(ppu_disp_size[0]), .disp_needed_o(ppu_disp_needed[0]), .sib_size_o(ppu_sib_size[0]), .needrm_o(ppu_needrm[0]), .sib_byte(ppu_sib_byte[0]), .disp(ppu_displacement[0]), .imm64(ppu_imm[0]));
 
     ppu pfs1(.opcode_index(4'd1), .modrm_index(4'd2), .sib_index(4'd3), .IR(IR), .IR_valid_vect(IR_valid_vect),
         .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd2),
         .inst_length(ppu_inst_length[1]), .msd_size_o(ppu_msd_size[1]),
-        .imm_size_o(ppu_imm_size[1]), .disp_size_o(ppu_disp_size[1]), .disp_needed_o(ppu_disp_needed[1]), .sib_size_o(ppu_sib_size[1]), .needrm_o(ppu_needrm[1]), .sib_byte(ppu_sib_byte[1]), .disp(ppu_displacement[1]), .imm64(ppu_imm[1]),
-        .inst_valid(inst_valid[1]));
+        .imm_size_o(ppu_imm_size[1]), .disp_size_o(ppu_disp_size[1]), .disp_needed_o(ppu_disp_needed[1]), .sib_size_o(ppu_sib_size[1]), .needrm_o(ppu_needrm[1]), .sib_byte(ppu_sib_byte[1]), .disp(ppu_displacement[1]), .imm64(ppu_imm[1]));
 
     ppu pfs2(.opcode_index(4'd2), .modrm_index(4'd3), .sib_index(4'd4), .IR(IR), .IR_valid_vect(IR_valid_vect),
         .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd3),
         .inst_length(ppu_inst_length[2]), .msd_size_o(ppu_msd_size[2]),
-        .imm_size_o(ppu_imm_size[2]), .disp_size_o(ppu_disp_size[2]), .disp_needed_o(ppu_disp_needed[2]), .sib_size_o(ppu_sib_size[2]), .needrm_o(ppu_needrm[2]), .sib_byte(ppu_sib_byte[2]), .disp(ppu_displacement[2]), .imm64(ppu_imm[2]),
-        .inst_valid(inst_valid[2]));
+        .imm_size_o(ppu_imm_size[2]), .disp_size_o(ppu_disp_size[2]), .disp_needed_o(ppu_disp_needed[2]), .sib_size_o(ppu_sib_size[2]), .needrm_o(ppu_needrm[2]), .sib_byte(ppu_sib_byte[2]), .disp(ppu_displacement[2]), .imm64(ppu_imm[2]));
 
     ppu pfs3(.opcode_index(4'd3), .modrm_index(4'd4), .sib_index(4'd5), .IR(IR), .IR_valid_vect(IR_valid_vect),
         .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd4),
         .inst_length(ppu_inst_length[3]), .msd_size_o(ppu_msd_size[3]),
-        .imm_size_o(ppu_imm_size[3]), .disp_size_o(ppu_disp_size[3]), .disp_needed_o(ppu_disp_needed[3]), .sib_size_o(ppu_sib_size[3]), .needrm_o(ppu_needrm[3]), .sib_byte(ppu_sib_byte[3]), .disp(ppu_displacement[3]), .imm64(ppu_imm[3]),
-        .inst_valid(inst_valid[3]));
+        .imm_size_o(ppu_imm_size[3]), .disp_size_o(ppu_disp_size[3]), .disp_needed_o(ppu_disp_needed[3]), .sib_size_o(ppu_sib_size[3]), .needrm_o(ppu_needrm[3]), .sib_byte(ppu_sib_byte[3]), .disp(ppu_displacement[3]), .imm64(ppu_imm[3]));
 
 
     `MUX_4(length_mux, 4, inst_length, ppu_inst_length[0], ppu_inst_length[1], ppu_inst_length[2],
@@ -90,13 +85,8 @@ module predecode(
     `MUX_4(imm_mux, 64, imm64, ppu_imm[0], ppu_imm[1], ppu_imm[2],
         ppu_imm[3], {num_pfs[1], num_pfs[0]})
 
-    `MUX_4(valid_inst_mux, 1, true_inst_valid, inst_valid[0], inst_valid[1], inst_valid[2],
-        inst_valid[3], {num_pfs[1], num_pfs[0]})
-
     `MUX_4(sib_size_mux, 1, sib_size, ppu_sib_size[0], ppu_sib_size[1], ppu_sib_size[2],
         ppu_sib_size[3], {num_pfs[1], num_pfs[0]})
-
-    `INV_N(invalid_inst_inv, 1, true_inst_valid, invalid_inst)
 
 
     wire pf0, pf1, pf2;
@@ -110,7 +100,8 @@ module predecode(
         .total_pf_vector(total_pf_vector));
 
 
-    assign possible_eips[0] = EIP;
+    wire possible_invalid_inst [0:15];
+    assign possible_neips[0] = EIP;
     genvar i;
     generate
         for (i = 1; i < 16; i++) begin : possible_eip_adders
@@ -120,7 +111,7 @@ module predecode(
                 .a   (EIP),
                 .b   (32'(i)),       // cast loop index to 6-bit
                 .cin (1'b0),
-                .sum (possible_eips[i]),
+                .sum (possible_neips[i]),
                 .cout(adder_cout[i])             // unused
             );
         end
@@ -128,11 +119,36 @@ module predecode(
 
     //mux16_32 neip_picker_mux(.in(possible_eips), .sel0(inst_length[0]), .sel1(inst_length[1]), .sel2(inst_length[2]), .sel3(inst_length[3]), .out(NEIP));
     `MUX_16(neip_picker_mux, 32, NEIP, 
-        possible_eips[0], possible_eips[1], possible_eips[2], possible_eips[3], 
-        possible_eips[4], possible_eips[5], possible_eips[6], possible_eips[7], 
-        possible_eips[8], possible_eips[9], possible_eips[10], possible_eips[11], 
-        possible_eips[12], possible_eips[13], possible_eips[14], possible_eips[15], 
+        possible_neips[0], possible_neips[1], possible_neips[2], possible_neips[3], 
+        possible_neips[4], possible_neips[5], possible_neips[6], possible_neips[7], 
+        possible_neips[8], possible_neips[9], possible_neips[10], possible_eips[11], 
+        possible_neips[12], possible_neips[13], possible_neips[14], possible_neips[15], 
         inst_length)
+
+    // generate
+    //     for (i = 1; i < 16; i++) begin : possible_invalid_inst_g
+    //         possible_invalid_inst[i] = !queue_valid[possible_neip[i][5:4]];
+    //     end
+    // endgenerate
+
+    wire [15:0] selected_queue_valid;
+    generate
+        for (i = 1; i < 16; i++) begin : possible_invalid_inst_g
+            `MUX_4(qv_sel_mux, 1, selected_queue_valid[i],
+                queue_valid[0], queue_valid[1], queue_valid[2], queue_valid[3],
+                possible_neips[i][5:4])
+            `INV_N(qv_inv, 1, selected_queue_valid[i], possible_invalid_inst[i])
+        end
+    endgenerate
+
+    `MUX_16(invalid_inst_picker_mux, 1, invalid_inst,
+        possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
+        possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
+        possible_invalid_inst[8], possible_invalid_inst[9], possible_invalid_inst[10], possible_invalid_inst[11],
+        possible_invalid_inst[12], possible_invalid_inst[13], possible_invalid_inst[14], possible_invalid_inst[15],
+        inst_length)
+
+
 
 endmodule
 
