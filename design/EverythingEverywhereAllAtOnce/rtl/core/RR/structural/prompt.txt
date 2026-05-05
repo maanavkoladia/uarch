@@ -1,0 +1,33 @@
+the goal is to port my registerread module in my system verilog project into pure 2005 structural verilog.
+
+I will give you an stdcell lib of macros that you will use to port to structural
+
+DO NOT create your own cells, if you are missing some i will implement/provide for you
+
+Take extra time to fully understand how the modules functions and interacts with the rest of the system. 
+
+When porting to structural make sure you dont use any always block just assigns. no turnarys or logical and bitwise operators. it has to be fully gate implentations. you can only use assigns just for wires. 
+
+Also make sure to understand the registerread common package and other modules
+
+When unrolling struct, DO NOT make one giant wire, create more ports as needed, that needs to be readable by me
+
+ensure that the outputs of the modules that you update DO NOT have system verilog construct in them. 
+
+then in the module that instatiates that modules that you port, ie in this case registerread.sv in the structural folder, make sure to change the
+instantation of them to match the new ports.
+
+Let me know if you have any questions, dont make assumes and take time to understand how registerread modules work.
+
+use the MD thats there to understand how RR works
+
+the regsb module is system verilog, it needs to be ported
+
+for every line that you convert, leave a comment with the equivalent sv line that you converted
+
+DO NOT go and make huge stupid logic.
+
+
+
+
+

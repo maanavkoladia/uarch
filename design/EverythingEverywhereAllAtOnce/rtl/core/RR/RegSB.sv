@@ -56,23 +56,11 @@ module RegSB (
     //make sur edecode only sends in valid dr_wr and sr_wr, can't have false scoreboard setting
     //make sure decode is zeroing out any sensitive cs like sr_wr
     bool cs_wr_to_both;
-    assign cs_wr_to_both = cs_dr_wr && cs_sr_wr && (dr_id == sr_id);
+    assign cs_wr_to_both = (cs_dr_wr && cs_sr_wr && (dr_id == sr_id)) || (cs_dr_wr && cs_eax_wr && (dr_id == EAX));
 
     bool wb_wr_to_both;
     assign wb_wr_to_both = wb_dr0_we && wb_dr1_we && (wb_dr0_id == wb_dr1_id);
 
-
-
-
-    bool wb0_dr_same_id, wb0_sr_same_id, wb1_dr_same_id, wb1_sr_same_id;
-    bool wb0_eax_same_id, wb1_eax_same_id;
-
-    assign wb0_dr_same_id = (dr_id == wb_dr0_id) && (cs_dr_wr && wb_dr0_we);
-    assign wb0_sr_same_id = (sr_id == wb_dr0_id) && (cs_sr_wr && wb_dr0_we);
-    assign wb0_eax_same_id = (EAX == wb_dr0_id) && (cs_eax_wr && wb_dr0_we);
-    assign wb1_dr_same_id = (dr_id == wb_dr1_id) && (cs_dr_wr && wb_dr1_we);
-    assign wb1_sr_same_id = (sr_id == wb_dr1_id) && (cs_sr_wr && wb_dr1_we);
-    assign wb1_eax_same_id = (EAX == wb_dr1_id) && (cs_eax_wr && wb_dr1_we);
 
     assign dep_stall = depStall_Internal;
     assign ecx_sb = SCORE_BOARD[ECX].counter != 0;
@@ -81,21 +69,12 @@ module RegSB (
 
     always_comb begin
         next_SCORE_BOARD = SCORE_BOARD;
-        if (cs_wr_to_both) begin
-            if (updateSB) next_SCORE_BOARD[dr_id].counter++;
-        end else begin
-            if (cs_dr_wr && updateSB) next_SCORE_BOARD[dr_id].counter++;
-            if (cs_sr_wr && updateSB) next_SCORE_BOARD[sr_id].counter++;
-            if (cs_eax_wr && updateSB) next_SCORE_BOARD[EAX].counter++;
-        end
+        if ((cs_dr_wr && updateSB && !cs_wr_to_both) || (cs_wr_to_both && updateSB)) next_SCORE_BOARD[dr_id].counter++;
+        if (cs_sr_wr && updateSB && !cs_wr_to_both) next_SCORE_BOARD[sr_id].counter++;
+        if (cs_eax_wr && updateSB && !cs_wr_to_both) next_SCORE_BOARD[EAX].counter++;
 
-        if (wb_wr_to_both) begin
-            next_SCORE_BOARD[wb_dr0_id].counter--;
-        end else begin
-            //dec logic
-            if (wb_dr0_we) next_SCORE_BOARD[wb_dr0_id].counter--;
-            if (wb_dr1_we) next_SCORE_BOARD[wb_dr1_id].counter--;
-        end
+        if (wb_dr0_we || wb_wr_to_both) next_SCORE_BOARD[wb_dr0_id].counter--;
+        if (wb_dr1_we && !wb_wr_to_both) next_SCORE_BOARD[wb_dr1_id].counter--;
     end
 
     always_ff @(posedge clk) begin
