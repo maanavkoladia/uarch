@@ -1,0 +1,21 @@
+/home/projects/courses/spring_22/ee382n19_16785/lib/time -v 
+/home/projects/courses/spring_22/ee382n19_16785/lib/lib1
+/home/projects/courses/spring_22/ee382n19_16785/lib/lib2
+/home/projects/courses/spring_22/ee382n19_16785/lib/lib3
+/home/projects/courses/spring_22/ee382n19_16785/lib/lib4
+/home/projects/courses/spring_22/ee382n19_16785/lib/lib5
+/home/projects/courses/spring_22/ee382n19_16785/lib/lib6
+
+remove all of these
+and put this lib_header I sent instead
+also any behavioral modules you have
+add it to the lib_header following the same input-output port, empty body pattern
+then fill in <master_file> and <top_module> in that run_fanout.tcl script
+then run design_vision -no_gui -f run_fanout.tcl
+also lib_header should be the first line in the master file
+once you run run_fanout.tcl, you can keep running fanout_check with different argument without exiting design_vision
+fanout.tcl — fanout buffer rule check.
+Source once per design_vision session, then call:
+fanout_check                  -- report violations only
+fanout_check -print_loads     -- also list every leaf load under each violation
+fanout_check -print_only [violation],[warning],[info],[ok] -- only report the specified subset of message class

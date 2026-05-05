@@ -22,6 +22,11 @@ import tb_debug_pkg::*;
 `define WB_UNIT_PATH (temp)
 `define DCACHE_UNIT_PATH uut_AllAtOnce.mem_sys_unit.dcache_unit
 
+// EXE port style. Define when EXE is the pure-Verilog-2005 EXE_structural.v
+// (flat ports). Comment out / undef to fall back to SV struct ports
+// (EXE_structural.sv / EXE.sv).
+`define EXE_PURE_STRUCTURAL
+
 
 // ===================== INIT BLOCK =====================
 // MUST BE INSIDE A MODULE THAT INCLUDES THIS HEADER

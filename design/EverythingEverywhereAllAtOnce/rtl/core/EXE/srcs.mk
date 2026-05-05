@@ -114,5 +114,5 @@ EXE_STRUCTURAL_SRC_FILES = \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/far_jmp_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/exp_call_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/rep_cmp_structural.v \
-    $(EXE_PATH_INTERNAL_STRUCTURAL)/EXE_structural.sv \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/EXE_structural.v \
 

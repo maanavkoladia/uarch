@@ -51,26 +51,36 @@ module VCache_DataStore (
     `INV_N(u_not_store_path, 1, store_path,     not_store_path)
     `AND_2(u_swap_path,      1, swap_path,      not_store_path, read_D_SWAP_i)
 
-    wire clk_duty_mask;
-    wire clk_duty_mask_buffer;
-    reg  fast_clk;
-    initial begin
-        fast_clk = 1;
-    end
-    always begin
-        fast_clk = #2 ~fast_clk;
-    end
+    // wire clk_duty_mask;
+    // wire clk_duty_mask_buffer;
+
+
+    wire delay_rise;
+    wire delay_fall;
+
+ 
+    `BUFFER_DELAY(u_phase_rise, 24, 1, clk, delay_rise);
+    `BUFFER_DELAY(u_phase_fall, 15, 1, clk, delay_fall);
+
 
     wire clk_latch_inv;
     wire inv_clk;
     wire clk_duty_latch_out;
+    wire clk_duty_pre_buf;
 
-    `INV_N(u_clk_latch_inv, 1, clk_duty_latch_out, clk_latch_inv);
-    `REG_RST(u_clk_duty_latch, 1, fast_clk, rst_i, clk_latch_inv, clk_duty_latch_out);
-    `AND_3(u_clk_duty_mask, 1, clk_duty_mask, fast_clk, clk_duty_latch_out, inv_clk);
-    `INV_N(u_inv_clk, 1, clk_i, inv_clk);
 
-    `BUFFER_DELAY(u_phase_duty, 6, 1, clk_duty_mask, clk_duty_mask_buffer)
+    `AND_2(u_clk_duty_mask, 1, clk_duty_mask, delay_rise, delay_fall);
+
+    // wire clk_latch_inv;
+    // wire inv_clk;
+    // wire clk_duty_latch_out;
+
+    // `INV_N(u_clk_latch_inv, 1, clk_duty_latch_out, clk_latch_inv);
+    // `REG_RST(u_clk_duty_latch, 1, fast_clk, rst_i, clk_latch_inv, clk_duty_latch_out);
+    // `AND_3(u_clk_duty_mask, 1, clk_duty_mask, fast_clk, clk_duty_latch_out, inv_clk);
+    // `INV_N(u_inv_clk, 1, clk_i, inv_clk);
+
+    // `BUFFER_DELAY(u_phase_duty, 6, 1, clk_duty_mask, clk_duty_mask_buffer)
 
     wire oe_and_not_busy;
     wire oe_event;
