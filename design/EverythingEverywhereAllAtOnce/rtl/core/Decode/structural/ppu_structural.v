@@ -52,15 +52,14 @@ module ppu (
     modrm_size mod_size(.mod_byte(modrm_byte), .msd_size(msd_size_fake), .sib_needed(sib_size_unmasked), .disp_needed(disp_needed_unmasked), .disp_size(disp_size));
 
     //mux2_3 immmux(.in0(imm_size_fake), .in1(3'b010), .sel(total_pf_vector_3), .out(imm_size));
-    wire [2:0] imm_size_override;
-    wire imm_size_eq_100, imm_size_eq_110;
-    wire immmux_sel, immmux2_sel;
-    `CMP_N(imm_size_eq_100_cmp, 3, imm_size_eq_100, imm_size_fake, 3'b100)
-    `CMP_N(imm_size_eq_110_cmp, 3, imm_size_eq_110, imm_size_fake, 3'b110)
-    `AND_2(immmux_sel_and,  1, immmux_sel,  total_pf_vector_3, imm_size_eq_100)
-    `AND_2(immmux2_sel_and, 1, immmux2_sel, total_pf_vector_3, imm_size_eq_110)
-    `MUX_2(immmux,  3, imm_size_override, imm_size_fake,     3'b010, immmux_sel)
-    `MUX_2(immmux2, 3, imm_size,          imm_size_override, 3'b100, immmux2_sel)
+    // Override fires when P=total_pf_vector_3 AND fake matches 1x0 (i.e. 100 or 110).
+    // In those two cases, output is {fake[1], ~fake[1], 0} — bit 0 is fake[0] either way.
+    wire fake0_n, override;
+    `INV_N(u_fake0_n, 1, imm_size_fake[0], fake0_n)
+    `AND_3(u_override, 1, override, total_pf_vector_3, imm_size_fake[2], fake0_n)
+    assign imm_size[0] = imm_size_fake[0];
+    `XOR_2(u_imm_size_1, 1, imm_size[1], imm_size_fake[1], override)
+    `MUX_2(u_imm_size_2, 1, imm_size[2], imm_size_fake[2], imm_size_fake[1], override)
     
     //mux2_3 msdmux(.in0(3'b000), .in1(msd_size_fake), .sel(needrm), .out(msd_size));
     `MUX_2(msdmux, 3, msd_size, 3'b000, msd_size_fake, needrm)

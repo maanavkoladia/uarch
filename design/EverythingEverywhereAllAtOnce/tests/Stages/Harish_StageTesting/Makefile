@@ -16,7 +16,7 @@ TARGET = system_testing
 STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 8.5
+CLK_PERIOD := 10
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 DCACHE_DUMP_END=100
@@ -41,6 +41,8 @@ LOG = $(LOG_DIR)/sim_run.log
 TRACE_FILE  = $(LOG_DIR)/sim_trace.log
 RTL_LOG    = $(RTL_RUN_LOG_FILE)
 REPORT_FILE = $(LOG_DIR)/dont_read_this.txt
+SIM_REPORT_LOG_FILE = $(LOG_DIR)/sim_report.log
+
 
 NORM_RTL_LOG = $(LOG_DIR)/norm_rtl.log
 NORM_SIM_LOG = $(LOG_DIR)/norm_sim.log
@@ -88,7 +90,7 @@ CC_FLAGS += \
     +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
 	
 
-.PHONY: all run clean see gen full genSoft runSoft
+.PHONY: all run clean see gen full half genSoft runSoft
 
 all: $(TARGET) 
 	
@@ -100,7 +102,7 @@ run: all
 	    +LOG_FILE_NAME=$(RTL_RUN_LOG_FILE) \
 	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
 	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
-	    2>&1 | tee sim.log
+	    2>&1 | tee $(SIM_REPORT_LOG_FILE)
 
 view: run
 	#./$(TARGET) -gui &
@@ -122,7 +124,7 @@ runSoft:
 	    +LOG_FILE_NAME=$(RTL_RUN_LOG_FILE) \
 	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
 	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
-	    2>&1 | tee sim.log
+	    2>&1 | $(SIM_REPORT_LOG_FILE)
 	
 
 genSoft:
@@ -160,6 +162,8 @@ pull:
 	git pull
 
 full: clean gen all run compare	
+
+half: clean gen run
 
 test: clean gen all
 	./test.sh -a 

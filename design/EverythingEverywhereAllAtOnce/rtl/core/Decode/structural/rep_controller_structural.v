@@ -190,17 +190,25 @@ module rep_controller (
         .select_line0_o(movs_inst_select[0])
     );
 
-    // assign updateSB = !stall;
-    wire updateSB;
-    `INV_N(u_updateSB,        1, stall,           updateSB)
-
-    // assign internal_set_zf = rep_latches_cs_will_mod_zf && updateSB;
-    wire internal_set_zf;
-    `AND_2(u_internal_set_zf, 1, internal_set_zf, rep_latches_cs_will_mod_zf, updateSB)
-
-    // assign set_zf = external_set_zf || internal_set_zf;
-    wire set_zf;
-    `OR_2(u_set_zf,           1, set_zf,          external_set_zf, internal_set_zf)
+    // Spec:
+    //   updateSB   = !stall
+    //   set_zf     = external_set_zf | (rep_latches_cs_will_mod_zf & updateSB)
+    //   inc_en     = set_zf & !clear_zf & updateSB
+    //   dec_en     = clear_zf & (!set_zf | !updateSB)
+    //   counter_we = flush | inc_en | dec_en
+    //   counter_din= flush ? 0 : inc_en ? counter_inc : counter_dec
+    //
+    // Algebraic simplification (E=external_set_zf, M=rep_latches_cs_will_mod_zf,
+    // S=stall, C=clear_zf, F=flush):
+    //   set_zf & updateSB = (E | (M & ~S)) & ~S = (E | M) & ~S        := A
+    //   inc_en            = A & ~C = (E | M) & ~S & ~C
+    //   inc_en | dec_en   = (A & ~C) | (~A & C) = A ^ C
+    //   counter_we        = F | (A ^ C)
+    //
+    // Build from e_or_m_n = NOR_2(E, M) so all signals are in NOR form:
+    //   A          = NOR_2(e_or_m_n, S)             // (E|M) & ~S
+    //   inc_en     = NOR_3(e_or_m_n, S, C)          // (E|M) & ~S & ~C
+    //   counter_we = OR_2(F, XOR_2(A, C))
 
     // inc/dec combinational adders
     wire [7:0] counter_inc, counter_dec;
@@ -208,18 +216,16 @@ module rep_controller (
     `ADD_N(u_cnt_inc, 8, counter_inc, cnt_inc_cout, zf_sb_counter, 8'b0,   1'b1)  // counter + 1
     `ADD_N(u_cnt_dec, 8, counter_dec, cnt_dec_cout, zf_sb_counter, 8'hFF,  1'b0)  // counter - 1
 
-    // wire inc_en = set_zf && !clear_zf && updateSB;
-    // wire dec_en = clear_zf && (!set_zf || !updateSB);
-    // wire counter_we = flush || inc_en || dec_en;
-    // wire [7:0] counter_din = flush ? 8'b0 : inc_en ? counter_inc : counter_dec;
-    wire set_zf_n, updateSB_n, szf_usb_n;
-    wire inc_en, dec_en, counter_we;
-    `INV_N(u_set_zf_n,    1, set_zf,    set_zf_n)
-    `INV_N(u_updateSB_n,  1, updateSB,  updateSB_n)
-    `NOR_3(u_inc_en,      1, inc_en,    set_zf_n, clear_zf, updateSB_n)
-    `OR_2(u_szf_usb_n,    1, szf_usb_n, set_zf_n, updateSB_n)
-    `AND_2(u_dec_en,      1, dec_en,    clear_zf,  szf_usb_n)
-    `OR_3(u_counter_we,   1, counter_we, flush, inc_en, dec_en)
+    wire e_or_m_n;
+    wire A;
+    wire any_change;
+    wire inc_en, counter_we;
+    `NOR_2(u_e_or_m_n,    1, e_or_m_n,   external_set_zf, rep_latches_cs_will_mod_zf)
+    `NOR_2(u_A,           1, A,          e_or_m_n,        stall)
+    `NOR_3(u_inc_en,      1, inc_en,     e_or_m_n,        stall,    clear_zf)
+    `XOR_2(u_any_change,  1, any_change, A,               clear_zf)
+    `OR_2 (u_counter_we,  1, counter_we, flush,           any_change)
+
     wire [7:0] counter_din;
     `MUX_4(u_counter_din, 8, counter_din, counter_dec, counter_inc, 8'b0, 8'b0, {flush, inc_en})
 
