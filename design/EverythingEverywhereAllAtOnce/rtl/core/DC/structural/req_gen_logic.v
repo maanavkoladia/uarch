@@ -86,29 +86,25 @@ module req_gen_logic (
     `AND_2(u_set_1,   1, set_1,   req_served_1,   valid)
     `AND_2(u_set_mio, 1, set_mio, req_served_mio, valid)
 
-    // Next-state muxes: clear ? 0 : set_X ? 1 : is_served_X
-    wire next_is_served_0_inner, next_is_served_0;
-    wire next_is_served_1_inner, next_is_served_1;
-    wire next_is_served_mio_inner, next_is_served_mio;
+    // Next-state: next = ~clear & (set_X | is_served_X)
+    //           = NOR_2(clear, NOR_2(set_X, is_served_X))
+    //
+    // Timing rationale:
+    //   forward_valid (latest arrival) hits the OUTER NOR as a plain input —
+    //   no embedded inverter, no NAND stack — faster than a MUX select path.
+    //   set_X (req_served, 2nd-latest) is pre-computed in the inner NOR and
+    //   resolved before forward_valid arrives at the outer gate.
+    wire next_is_served_0, next_is_served_1, next_is_served_mio;
+    wire pre_n_0, pre_n_1, pre_n_mio;
 
+    `NOR_2(u_pre_n_0,            1, pre_n_0,            set_0,   is_served_0)
+    `NOR_2(u_next_is_served_0,   1, next_is_served_0,   clear,   pre_n_0)
 
-     //`MUX_4(u_next_is_served_0, 1, next_is_served_0, is_served_0, 1'b1, 1'b0, 1'b0, {clear, set_0})
-    `MUX_2(u_nxt_is_served_0_inner,   1, next_is_served_0_inner,
-           is_served_0, 1'b1, set_0)
+    `NOR_2(u_pre_n_1,            1, pre_n_1,            set_1,   is_served_1)
+    `NOR_2(u_next_is_served_1,   1, next_is_served_1,   clear,   pre_n_1)
 
-
-    `MUX_2(u_nxt_is_served_0,         1, next_is_served_0,
-           next_is_served_0_inner, 1'b0, clear)
-
-    `MUX_2(u_nxt_is_served_1_inner,   1, next_is_served_1_inner,
-           is_served_1, 1'b1, set_1)
-    `MUX_2(u_nxt_is_served_1,         1, next_is_served_1,
-           next_is_served_1_inner, 1'b0, clear)
-
-    `MUX_2(u_nxt_is_served_mio_inner, 1, next_is_served_mio_inner,
-           is_served_mio, 1'b1, set_mio)
-    `MUX_2(u_nxt_is_served_mio,       1, next_is_served_mio,
-           next_is_served_mio_inner, 1'b0, clear)
+    `NOR_2(u_pre_n_mio,          1, pre_n_mio,          set_mio, is_served_mio)
+    `NOR_2(u_next_is_served_mio, 1, next_is_served_mio, clear,   pre_n_mio)
 
        wire n_flush;
        wire rst_or_n_flush;
@@ -133,22 +129,19 @@ module req_gen_logic (
     //                          | (~rs_0   & ~is_0)   & ~MIO
     //                          | (~rs_1   & ~is_1)   & ~MIO & XCL )
     // ----------------------------------------------------------------
-    wire not_mio;
-    `INV_N(u_inv_mio, 1, MIO, not_mio)
-
     wire nor_rs_is_mio;
-    wire nor_rs_is_0;
-    wire nor_rs_is_1;
-    `NOR_2(u_nor_rs_is_mio, 1, nor_rs_is_mio, req_served_mio, is_served_mio)
-    `NOR_2(u_nor_rs_is_0,   1, nor_rs_is_0,   req_served_0,   is_served_0)
-    `NOR_2(u_nor_rs_is_1,   1, nor_rs_is_1,   req_served_1,   is_served_1)
+    wire nor_rs_is_1_mio;
+    `NOR_2(u_nor_rs_is_mio,   1, nor_rs_is_mio,   req_served_mio, is_served_mio)
 
     wire mio_term;
     wire ld0_term;
     wire ld1_term;
-    `AND_2(u_mio_term, 1, mio_term, nor_rs_is_mio, MIO)
-    `AND_2(u_ld0_term, 1, ld0_term, nor_rs_is_0,   not_mio)
-    `AND_3(u_ld1_term, 1, ld1_term, nor_rs_is_1,   XCL, not_mio)
+    // ld0_term: fold ~MIO into NOR_3 — saves NOR_2+AND_2 → NOR_3 (1 gate level saved on arb_stall path)
+    `AND_2(u_mio_term,     1, mio_term,     nor_rs_is_mio, MIO)
+    `NOR_3(u_ld0_term,     1, ld0_term,     req_served_0,  is_served_0, MIO)
+    // ld1_term: fold ~MIO into NOR_3, leaving only XCL as the positive AND input
+    `NOR_3(u_nor_rs_is_1_mio, 1, nor_rs_is_1_mio, req_served_1, is_served_1, MIO)
+    `AND_2(u_ld1_term,     1, ld1_term,     nor_rs_is_1_mio, XCL)
 
     wire or_terms;
     `OR_3 (u_or_terms,  1, or_terms,   mio_term, ld0_term, ld1_term)
