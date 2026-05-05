@@ -1,4 +1,4 @@
-`default_nettype none
+`default_nettype wire
 
 module mem_bank (
     input wire clk,
@@ -35,7 +35,14 @@ module mem_bank (
     //    .in (mem_bank_controller_send_store_address)
     //);
 
-    `BUFFER_DELAY(u0, 4, 1, mem_bank_controller_send_store_address, mem_bank_controller_send_store_address_delayed);
+    // BUFFER_DELAY chain (4x basic buffer$) ends with a buffer$ that drives
+    // the 5-bit MUX_2 select (5 leaf pins) -> exceeds tier-4. Re-buffer the
+    // chain output with bufferH16$ from lib2. (This module is instantiated
+    // 64 times so this clears 64 violations at once.)
+    wire mem_bank_controller_send_store_address_delayed_pre;
+    `BUFFER_DELAY(u0, 4, 1, mem_bank_controller_send_store_address, mem_bank_controller_send_store_address_delayed_pre);
+    bufferH16$ u0_buf (.out(mem_bank_controller_send_store_address_delayed),
+                       .in (mem_bank_controller_send_store_address_delayed_pre));
     wire [`NUM_SRAM_ADDRESS_BITS-1:0] bank_address_i;
     wire [`MEM_BUS_SIZE-1:0] bank_bus;
     wire [`MEM_BUS_SIZE-1:0] bank_write_data;

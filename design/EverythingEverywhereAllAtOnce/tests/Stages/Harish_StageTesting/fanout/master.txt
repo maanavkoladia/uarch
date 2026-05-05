@@ -28,11 +28,11 @@ lib_header
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/triple_adder.v
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/KoggeStone.v
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/lib/STDCells/KoggeStone_r4.v
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/Mem_Banks/gen/bank_controller_fsm_logic.sv
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/Mem_Controller/gen/mem_controller_fsm.sv
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/mem_TOP_structural.v
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/Mem_Banks/structural/MemBank_Structural.v
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/Mem_Controller/structural/mem_controller_structural.v
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/mem/structural/fanout/bank_controller_fsm_logic.sv
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/mem/structural/fanout/mem_controller_fsm.sv
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/mem/structural/fanout/mem_TOP_structural.v
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/mem/structural/fanout/MemBank_Structural.v
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/mem/structural/fanout/mem_controller_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/ICache_Controller_Logic.sv
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/ICache_TagStore_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/ICache_DataStore_structural.v

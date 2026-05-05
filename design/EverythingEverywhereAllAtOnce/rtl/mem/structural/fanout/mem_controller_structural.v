@@ -111,19 +111,25 @@ module mem_controller(
 
     // Per-chip WE = chip_sel_oh[i] & fsm_ld_address_changed
     wire [15:0] chip_addr_we;
-    // Chip address registers: packed as 16 x 15 bits
-    wire [14:0] chip_addr[0:15];
-    // Row address from each chip = chip_addr[i][14:10]
-    wire [4:0] chip_row[0:15];
+    // Chip address registers DUPLICATED x2 -- _a feeds the MUX_16 (1 load
+    // per row bit), _b feeds the 4 bank_cmd_ld_address assigns (4 loads
+    // per row bit). With each copy now driving <=4 leaf pins per bit,
+    // no buffer is needed (0 ns added). Same WE/clk/rst feeds both.
+    wire [14:0] chip_addr_a[0:15];
+    wire [14:0] chip_addr_b[0:15];
+    wire [4:0]  chip_row[0:15];     // for MUX_16
+    wire [4:0]  chip_row_b[0:15];   // for the 4 bank_cmd_ld_address assigns
 
     genvar ci;
     generate
         for (ci = 0; ci < 16; ci = ci + 1) begin : g_chip
             `AND_2(u_we, 1, chip_addr_we[ci], chip_sel_oh[ci], fsm_ld_address_changed)
 
-            `REG_RST_WE(u_addr, 15, clk, rst, chip_addr_we[ci], address_bus[14:0], chip_addr[ci])
+            `REG_RST_WE(u_addr_a, 15, clk, rst, chip_addr_we[ci], address_bus[14:0], chip_addr_a[ci])
+            `REG_RST_WE(u_addr_b, 15, clk, rst, chip_addr_we[ci], address_bus[14:0], chip_addr_b[ci])
 
-            assign chip_row[ci] = chip_addr[ci][14:10];
+            assign chip_row[ci]   = chip_addr_a[ci][14:10];
+            assign chip_row_b[ci] = chip_addr_b[ci][14:10];
         end
     endgenerate
 
@@ -230,7 +236,7 @@ module mem_controller(
     genvar bi;
     generate
         for (bi = 0; bi < 64; bi = bi + 1) begin : g_ld_addr
-            assign bank_cmd_ld_address[bi*5+:5] = chip_row[bi/4];
+            assign bank_cmd_ld_address[bi*5+:5] = chip_row_b[bi/4];
         end
     endgenerate
 

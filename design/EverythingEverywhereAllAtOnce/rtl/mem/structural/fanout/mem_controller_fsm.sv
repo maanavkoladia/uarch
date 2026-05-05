@@ -81,14 +81,18 @@ wire NS_3;
 //   ERROR                        = 1001  (decimal 9)  // ERROR (trap state)
 
 // ----------------------------------------------------------------
-// State flip-flops
-// `REG_RST samples D on every rising clk edge.
-// Active-high rst drives all state bits to 0 (= IDLE encoding).
+// State flip-flops -- buffer-insert each Q with bufferH16$ from lib2
+// to clear the in-FSM state-bit fanout violations.
 // ----------------------------------------------------------------
-`REG_RST(ff_0, 1, clk, rst, NS_0, S_0)
-`REG_RST(ff_1, 1, clk, rst, NS_1, S_1)
-`REG_RST(ff_2, 1, clk, rst, NS_2, S_2)
-`REG_RST(ff_3, 1, clk, rst, NS_3, S_3)
+wire S_0_pre, S_1_pre, S_2_pre, S_3_pre;
+`REG_RST(ff_0, 1, clk, rst, NS_0, S_0_pre)
+`REG_RST(ff_1, 1, clk, rst, NS_1, S_1_pre)
+`REG_RST(ff_2, 1, clk, rst, NS_2, S_2_pre)
+`REG_RST(ff_3, 1, clk, rst, NS_3, S_3_pre)
+bufferH16$ u_S_0_buf (.out(S_0), .in(S_0_pre));
+bufferH16$ u_S_1_buf (.out(S_1), .in(S_1_pre));
+bufferH16$ u_S_2_buf (.out(S_2), .in(S_2_pre));
+bufferH16$ u_S_3_buf (.out(S_3), .in(S_3_pre));
 
 // ----------------------------------------------------------------
 // Inverters for negated literals

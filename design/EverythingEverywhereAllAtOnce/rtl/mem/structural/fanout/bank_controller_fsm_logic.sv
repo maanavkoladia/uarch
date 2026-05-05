@@ -127,15 +127,21 @@ wire NS_4;
 //   ERROR                        = 10101  (decimal 21)  // ERROR (trap state), synthesised
 
 // ----------------------------------------------------------------
-// State flip-flops
-// `REG_RST samples D on every rising clk edge.
-// Active-high rst drives all state bits to 0 (= IDLE encoding).
+// State flip-flops -- buffer-insert each Q with bufferH16$ from lib2
+// to clear the in-FSM state-bit fanout violations. This FSM is
+// instantiated 64 times (once per bank), so each fix multiplies x64.
 // ----------------------------------------------------------------
-`REG_RST(ff_0, 1, clk, rst, NS_0, S_0)
-`REG_RST(ff_1, 1, clk, rst, NS_1, S_1)
-`REG_RST(ff_2, 1, clk, rst, NS_2, S_2)
-`REG_RST(ff_3, 1, clk, rst, NS_3, S_3)
-`REG_RST(ff_4, 1, clk, rst, NS_4, S_4)
+wire S_0_pre, S_1_pre, S_2_pre, S_3_pre, S_4_pre;
+`REG_RST(ff_0, 1, clk, rst, NS_0, S_0_pre)
+`REG_RST(ff_1, 1, clk, rst, NS_1, S_1_pre)
+`REG_RST(ff_2, 1, clk, rst, NS_2, S_2_pre)
+`REG_RST(ff_3, 1, clk, rst, NS_3, S_3_pre)
+`REG_RST(ff_4, 1, clk, rst, NS_4, S_4_pre)
+bufferH16$ u_S_0_buf (.out(S_0), .in(S_0_pre));
+bufferH16$ u_S_1_buf (.out(S_1), .in(S_1_pre));
+bufferH16$ u_S_2_buf (.out(S_2), .in(S_2_pre));
+bufferH16$ u_S_3_buf (.out(S_3), .in(S_3_pre));
+bufferH16$ u_S_4_buf (.out(S_4), .in(S_4_pre));
 
 // ----------------------------------------------------------------
 // Inverters for negated literals
@@ -279,6 +285,8 @@ wire OE_o_t6;
 `OR_7(OE_o_or, 1, OE_o, OE_o_t0, OE_o_t1, OE_o_t2, OE_o_t3, OE_o_t4, OE_o_t5, OE_o_t6)
 
 // WE_o = (!S_2 & !S_4) | (!S_3 & !S_4) | (!S_0 & !S_1 & !S_4) | (!S_0 & !S_1 & S_2 & !S_3)
+// External fanout per instance ~36 (TRISTATE_L 32-wide enbar + 4 SRAM WR pins).
+// Re-buffer with bufferH64$ from lib2 (tier-64 fits 36).
 wire WE_o_n0;
 `NAND_2(WE_o_nand0, 1, WE_o_n0, S_2_inv, S_4_inv)
 wire WE_o_n1;
@@ -288,7 +296,9 @@ wire WE_o_n2;
 wire WE_o_n3;
 `NAND_4(WE_o_nand3, 1, WE_o_n3, S_0_inv, S_1_inv, S_2, S_3_inv)
 
-`NAND_4(WE_o_nand, 1, WE_o, WE_o_n0, WE_o_n1, WE_o_n2, WE_o_n3)
+wire WE_o_pre;
+`NAND_4(WE_o_nand, 1, WE_o_pre, WE_o_n0, WE_o_n1, WE_o_n2, WE_o_n3)
+bufferH64$ u_WE_o_buf (.out(WE_o), .in(WE_o_pre));
 
 // clear_writebufV_o = (!S_0 & !S_1 & S_2 & !S_3 & S_4)
 `AND_5(clear_writebufV_o_and, 1, clear_writebufV_o, S_0_inv, S_1_inv, S_2, S_3_inv, S_4)

@@ -56,7 +56,11 @@ module mem_TOP (
     wire [31:0] addr_zero;
     assign addr_dis  = 1'b1;
     assign addr_zero = 32'b0;
-    `TRISTATE_L(u_addr_z, 32, addr_dis, addr_zero, address_bus)
+    // Use BUS_TRISTATE (tristate_bus_driver*$) so we don't mix tristate
+    // classes on the addressBus (which is also driven by BusArbitration's
+    // tristate_bus_driver*$ cells). Mixed-class drivers are flagged by
+    // fanout.tcl as a violation; using the same family clears that.
+    `BUS_TRISTATE(u_addr_z, 32, addr_dis, addr_zero, address_bus)
 
     // -----------------------------------------------------------------------
     // Controller -> Bank command buses
