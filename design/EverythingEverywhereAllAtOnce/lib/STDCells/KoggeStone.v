@@ -84,9 +84,6 @@ module kogge_stone_adder #(
     //  sum_cell still uses the external `cin` directly so sum[0]
     //  is unchanged. Without this, sum[i>0] is wrong whenever
     //  cin=1 and bits 0..i-1 form a propagate chain past bit 0.
-    //  With cin=0 the new path collapses to a[0]&b[0] (identical
-    //  to the original pg_cell output), so cin=0 callers are
-    //  unaffected.
     // ----------------------------------------------------------
     wire p0_raw, g0_raw, p0_and_cin;
     `XOR_2(u_p0_xor, 1, p0_raw,     a[0], b[0])

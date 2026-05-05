@@ -26,7 +26,7 @@ module tb_stages ();
 
     int logfd_spc;
     int logdf_eip;
-    initial logfd_spc = $fopen("info_log", "w");
+    initial logfd_spc = $fopen("info.log", "w");
 
     
     task automatic sample_spc();

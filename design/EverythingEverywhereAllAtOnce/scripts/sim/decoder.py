@@ -11,6 +11,10 @@ from capstone.x86 import (
     X86_PREFIX_REP, X86_PREFIX_REPE, X86_PREFIX_REPNE,
 )
 
+# Operand-size override prefix byte (0x66).  Capstone stores raw prefix bytes
+# in insn.prefix so we can check membership directly.
+_OPSIZE_PREFIX = 0x66
+
 
 # --------------------------------------------------------------
 # Capstone disassembler (singleton).  We use the default Intel syntax for the
@@ -49,6 +53,7 @@ class Operand:
         self.seg_prefix = kwargs.get("seg_prefix")
         self.far_seg    = kwargs.get("far_seg")
         self.far_off    = kwargs.get("far_off")
+        self.mem_size   = kwargs.get("mem_size", 0)  # Capstone op.size for MEM operands (bytes)
 
     def __repr__(self):
         if self.typ == "imm":
@@ -78,6 +83,16 @@ _MMX_MNEMONICS = frozenset({
     "movq", "movd",
 })
 
+# Capstone uses Intel "*sd" mnemonics for the 32-bit string ops; the assembler
+# (and our handlers) prefer the AT&T '*sl' form.  Map them explicitly.
+_INTEL_DWORD_STRING_OPS = {
+    "movsd": ("movs", "l"),
+    "cmpsd": ("cmps", "l"),
+    "scasd": ("scas", "l"),
+    "lodsd": ("lods", "l"),
+    "stosd": ("stos", "l"),
+}
+
 # Last-two-char endings that look like a size suffix but aren't.
 _NO_STRIP_ENDINGS = ("al", "bb", "ub", "ul", "hl")
 # Force-strip mnemonics: push/pop end in 'hl' (push/pop) but the 'l' IS the size suffix.
@@ -87,6 +102,8 @@ _FORCE_STRIP_PREFIXES = ("push", "pop")
 def _strip_size_suffix(mnemonic):
     """Return (clean_mnemonic, size_suffix_or_None) using the same rules as the
     old `parse_objdump`.  Mnemonic must already be lowercase."""
+    if mnemonic in _INTEL_DWORD_STRING_OPS:
+        return _INTEL_DWORD_STRING_OPS[mnemonic]
     if (mnemonic in ("hlt", "nop", "lcall", "ljmp", "lret", "lretf", "retf")
             or mnemonic in _MMX_MNEMONICS
             or mnemonic.startswith("j")
@@ -132,7 +149,8 @@ def _capstone_op(insn, op):
         seg_name  = _empty_to_none(insn.reg_name(op.mem.segment).lower() if op.mem.segment else None)
         return Operand("mem",
                        base_reg=base_reg, index_reg=index_reg,
-                       scale=scale, disp=disp, seg_prefix=seg_name)
+                       scale=scale, disp=disp, seg_prefix=seg_name,
+                       mem_size=op.size)
     raise ValueError(f"Unsupported Capstone operand type: {op.type}")
 
 
@@ -156,7 +174,16 @@ def _capstone_to_instruction(insn):
 
     clean, size_suffix = _strip_size_suffix(base_mnem)
     if rep_kind:
-        clean = "rep_" + clean
+        # Distinguish rep / repe / repne so the CMPS family can pick its
+        # termination condition.  REP and REPZ/REPE on CMPS are equivalent in
+        # real silicon, but we keep the prefix the user wrote so the dispatch
+        # key matches exactly what they expect.
+        if rep_kind in ("repe", "repz"):
+            clean = "repe_" + clean
+        elif rep_kind in ("repne", "repnz"):
+            clean = "repne_" + clean
+        else:
+            clean = "rep_" + clean
 
     # Far call / far jump have a single immediate operand of type IMM that
     # is actually the (segment:offset) pair.  Capstone exposes these via
@@ -178,6 +205,12 @@ def _capstone_to_instruction(insn):
         # AT&T order (src, dst).  Reverse for multi-operand instructions.
         if len(operands) > 1:
             operands.reverse()
+
+    # Intel-syntax Capstone never appends 'w'/'l' to push/pop mnemonics.
+    # Detect the operand-size override prefix (0x66) and promote size_suffix.
+    if clean in ('push', 'pop') and size_suffix is None:
+        if _OPSIZE_PREFIX in insn.prefix:
+            size_suffix = 'w'
 
     raw_str = f"{insn.mnemonic}\t{insn.op_str}".strip()
     return Instruction(addr=insn.address, size=insn.size,

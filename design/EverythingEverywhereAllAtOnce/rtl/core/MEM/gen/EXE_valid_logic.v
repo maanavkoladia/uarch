@@ -4,7 +4,7 @@
 // Std : Verilog-2005 (IEEE 1364-2005)
 // WARNING: 4 input vector(s) had no CSV row.
 //          Those vectors produce all-zero outputs (OFF-set default).
-//          See: /misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/gen/EXE_valid_logic_coverage_report.txt
+//          See: /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/gen/EXE_valid_logic_coverage_report.txt
 // ======================================================================
 
 // Truth table (expanded, from CSV)
