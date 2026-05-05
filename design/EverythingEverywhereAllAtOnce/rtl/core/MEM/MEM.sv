@@ -1,4 +1,4 @@
-import core_common_pkg::*;
+mimport core_common_pkg::*;
 import core_stage_latches_pkg::*;
 import common_pkg::*;
 import interconnect_pkg::*;

@@ -1,6 +1,8 @@
 `ifndef TB_UTILS_WB_PATH
 `define TB_UTILS_WB_PATH
 
+`define REGFILE_OUTPUT_STRUCTURAL
+
 ////====================================================
 //// Always-available debug tasks (no macro-generated tasks)
 ////====================================================
@@ -170,34 +172,7 @@
 task automatic print_regfile_dump();
     $fdisplay(`LOG_FD, "[REGFILE DUMP]");
 `ifdef REGFILE_PATH
-    // $fdisplay(`LOG_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
-    //           `REGFILE_PATH.REGISTERS[EAX][31:0],
-    //           `REGFILE_PATH.REGISTERS[EBX][31:0],
-    //           `REGFILE_PATH.REGISTERS[ECX][31:0],
-    //           `REGFILE_PATH.REGISTERS[EDX][31:0]);
-    // $fdisplay(`LOG_FD, "  ESP=0x%08h  EBP=0x%08h  ESI=0x%08h  EDI=0x%08h",
-    //           `REGFILE_PATH.REGISTERS[ESP][31:0],
-    //           `REGFILE_PATH.REGISTERS[EBP][31:0],
-    //           `REGFILE_PATH.REGISTERS[ESI][31:0],
-    //           `REGFILE_PATH.REGISTERS[EDI][31:0]);
-    // $fdisplay(`LOG_FD, "  CS =0x%08h  DS =0x%08h  SS =0x%08h  ES =0x%08h",
-    //           `REGFILE_PATH.REGISTERS[CS][31:0],
-    //           `REGFILE_PATH.REGISTERS[DS][31:0],
-    //           `REGFILE_PATH.REGISTERS[SS][31:0],
-    //           `REGFILE_PATH.REGISTERS[ES][31:0]);
-    // $fdisplay(`LOG_FD, "  FS =0x%08h  GS =0x%08h",
-    //           `REGFILE_PATH.REGISTERS[FS][31:0],
-    //           `REGFILE_PATH.REGISTERS[GS][31:0]);
-    // $fdisplay(`LOG_FD, "  MM0=0x%016h  MM1=0x%016h  MM2=0x%016h  MM3=0x%016h",
-    //           `REGFILE_PATH.REGISTERS[MM0],
-    //           `REGFILE_PATH.REGISTERS[MM1],
-    //           `REGFILE_PATH.REGISTERS[MM2],
-    //           `REGFILE_PATH.REGISTERS[MM3]);
-    // $fdisplay(`LOG_FD, "  MM4=0x%016h  MM5=0x%016h  MM6=0x%016h  MM7=0x%016h",
-    //           `REGFILE_PATH.REGISTERS[MM4],
-    //           `REGFILE_PATH.REGISTERS[MM5],
-    //           `REGFILE_PATH.REGISTERS[MM6],
-    //           `REGFILE_PATH.REGISTERS[MM7]);
+`ifdef REGFILE_OUTPUT_STRUCTURAL
 
     $fdisplay(`LOG_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
               `REGFILE_PATH.REG_EAX_o[31:0],
@@ -227,6 +202,38 @@ task automatic print_regfile_dump();
               `REGFILE_PATH.REG_MM5_o,
               `REGFILE_PATH.REG_MM6_o,
               `REGFILE_PATH.REG_MM7_o);
+`else
+
+    $fdisplay(`LOG_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
+              `REGFILE_PATH.REGISTERS[EAX][31:0],
+              `REGFILE_PATH.REGISTERS[EBX][31:0],
+              `REGFILE_PATH.REGISTERS[ECX][31:0],
+              `REGFILE_PATH.REGISTERS[EDX][31:0]);
+    $fdisplay(`LOG_FD, "  ESP=0x%08h  EBP=0x%08h  ESI=0x%08h  EDI=0x%08h",
+              `REGFILE_PATH.REGISTERS[ESP][31:0],
+              `REGFILE_PATH.REGISTERS[EBP][31:0],
+              `REGFILE_PATH.REGISTERS[ESI][31:0],
+              `REGFILE_PATH.REGISTERS[EDI][31:0]);
+    $fdisplay(`LOG_FD, "  CS =0x%08h  DS =0x%08h  SS =0x%08h  ES =0x%08h",
+              `REGFILE_PATH.REGISTERS[CS][31:0],
+              `REGFILE_PATH.REGISTERS[DS][31:0],
+              `REGFILE_PATH.REGISTERS[SS][31:0],
+              `REGFILE_PATH.REGISTERS[ES][31:0]);
+    $fdisplay(`LOG_FD, "  FS =0x%08h  GS =0x%08h",
+              `REGFILE_PATH.REGISTERS[FS][31:0],
+              `REGFILE_PATH.REGISTERS[GS][31:0]);
+    $fdisplay(`LOG_FD, "  MM0=0x%016h  MM1=0x%016h  MM2=0x%016h  MM3=0x%016h",
+              `REGFILE_PATH.REGISTERS[MM0],
+              `REGFILE_PATH.REGISTERS[MM1],
+              `REGFILE_PATH.REGISTERS[MM2],
+              `REGFILE_PATH.REGISTERS[MM3]);
+    $fdisplay(`LOG_FD, "  MM4=0x%016h  MM5=0x%016h  MM6=0x%016h  MM7=0x%016h",
+              `REGFILE_PATH.REGISTERS[MM4],
+              `REGFILE_PATH.REGISTERS[MM5],
+              `REGFILE_PATH.REGISTERS[MM6],
+              `REGFILE_PATH.REGISTERS[MM7]);
+`endif
+
 `endif
 endtask
 
@@ -237,36 +244,9 @@ endtask
 task automatic dump_regs(input logic [31:0] eip);
     $fdisplay(`REGDUMP_FD, "[REGFILE DUMP] EIP=0x%08h", eip);
 `ifdef REGFILE_PATH
-    // $fdisplay(`REGDUMP_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
-    //           `REGFILE_PATH.REGISTERS[EAX][31:0],
-    //           `REGFILE_PATH.REGISTERS[EBX][31:0],
-    //           `REGFILE_PATH.REGISTERS[ECX][31:0],
-    //           `REGFILE_PATH.REGISTERS[EDX][31:0]);
-    // $fdisplay(`REGDUMP_FD, "  ESP=0x%08h  EBP=0x%08h  ESI=0x%08h  EDI=0x%08h",
-    //           `REGFILE_PATH.REGISTERS[ESP][31:0],
-    //           `REGFILE_PATH.REGISTERS[EBP][31:0],
-    //           `REGFILE_PATH.REGISTERS[ESI][31:0],
-    //           `REGFILE_PATH.REGISTERS[EDI][31:0]);
-    // $fdisplay(`REGDUMP_FD, "  CS =0x%08h  DS =0x%08h  SS =0x%08h  ES =0x%08h",
-    //           `REGFILE_PATH.REGISTERS[CS][31:0],
-    //           `REGFILE_PATH.REGISTERS[DS][31:0],
-    //           `REGFILE_PATH.REGISTERS[SS][31:0],
-    //           `REGFILE_PATH.REGISTERS[ES][31:0]);
-    // $fdisplay(`REGDUMP_FD, "  FS =0x%08h  GS =0x%08h",
-    //           `REGFILE_PATH.REGISTERS[FS][31:0],
-    //           `REGFILE_PATH.REGISTERS[GS][31:0]);
-    // $fdisplay(`REGDUMP_FD, "  MM0=0x%016h  MM1=0x%016h  MM2=0x%016h  MM3=0x%016h",
-    //           `REGFILE_PATH.REGISTERS[MM0],
-    //           `REGFILE_PATH.REGISTERS[MM1],
-    //           `REGFILE_PATH.REGISTERS[MM2],
-    //           `REGFILE_PATH.REGISTERS[MM3]);
-    // $fdisplay(`REGDUMP_FD, "  MM4=0x%016h  MM5=0x%016h  MM6=0x%016h  MM7=0x%016h",
-    //           `REGFILE_PATH.REGISTERS[MM4],
-    //           `REGFILE_PATH.REGISTERS[MM5],
-    //           `REGFILE_PATH.REGISTERS[MM6],
-    //           `REGFILE_PATH.REGISTERS[MM7]);
+`ifdef REGFILE_OUTPUT_STRUCTURAL
 
-        $fdisplay(`REGDUMP_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
+    $fdisplay(`REGDUMP_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
               `REGFILE_PATH.REG_EAX_o[31:0],
               `REGFILE_PATH.REG_EBX_o[31:0],
               `REGFILE_PATH.REG_ECX_o[31:0],
@@ -294,6 +274,37 @@ task automatic dump_regs(input logic [31:0] eip);
               `REGFILE_PATH.REG_MM5_o,
               `REGFILE_PATH.REG_MM6_o,
               `REGFILE_PATH.REG_MM7_o);
+`else
+    $fdisplay(`REGDUMP_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
+              `REGFILE_PATH.REGISTERS[EAX][31:0],
+              `REGFILE_PATH.REGISTERS[EBX][31:0],
+              `REGFILE_PATH.REGISTERS[ECX][31:0],
+              `REGFILE_PATH.REGISTERS[EDX][31:0]);
+    $fdisplay(`REGDUMP_FD, "  ESP=0x%08h  EBP=0x%08h  ESI=0x%08h  EDI=0x%08h",
+              `REGFILE_PATH.REGISTERS[ESP][31:0],
+              `REGFILE_PATH.REGISTERS[EBP][31:0],
+              `REGFILE_PATH.REGISTERS[ESI][31:0],
+              `REGFILE_PATH.REGISTERS[EDI][31:0]);
+    $fdisplay(`REGDUMP_FD, "  CS =0x%08h  DS =0x%08h  SS =0x%08h  ES =0x%08h",
+              `REGFILE_PATH.REGISTERS[CS][31:0],
+              `REGFILE_PATH.REGISTERS[DS][31:0],
+              `REGFILE_PATH.REGISTERS[SS][31:0],
+              `REGFILE_PATH.REGISTERS[ES][31:0]);
+    $fdisplay(`REGDUMP_FD, "  FS =0x%08h  GS =0x%08h",
+              `REGFILE_PATH.REGISTERS[FS][31:0],
+              `REGFILE_PATH.REGISTERS[GS][31:0]);
+    $fdisplay(`REGDUMP_FD, "  MM0=0x%016h  MM1=0x%016h  MM2=0x%016h  MM3=0x%016h",
+              `REGFILE_PATH.REGISTERS[MM0],
+              `REGFILE_PATH.REGISTERS[MM1],
+              `REGFILE_PATH.REGISTERS[MM2],
+              `REGFILE_PATH.REGISTERS[MM3]);
+    $fdisplay(`REGDUMP_FD, "  MM4=0x%016h  MM5=0x%016h  MM6=0x%016h  MM7=0x%016h",
+              `REGFILE_PATH.REGISTERS[MM4],
+              `REGFILE_PATH.REGISTERS[MM5],
+              `REGFILE_PATH.REGISTERS[MM6],
+              `REGFILE_PATH.REGISTERS[MM7]);
+`endif
+
 `endif
 endtask
 

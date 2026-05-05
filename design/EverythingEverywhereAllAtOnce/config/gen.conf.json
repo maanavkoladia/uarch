@@ -100,19 +100,19 @@
         "DC_valid_logic" : {
             "csv" : "rtl/core/RR/gen/dc_valid_logic.csv",
             "outputFilePath": "rtl/core/RR/gen/dc_valid_logic.v",
-            "run Combinational SOP Gen": "true"
+            "run Combinational SOP Gen": "false"
         },
 
         "Mem_Valid_Logic" : {
             "csv" : "rtl/core/DC/gen/mem_valid_logic.csv",
             "outputFilePath": "rtl/core/DC/gen/mem_valid_logic.v",
-            "run Combinational SOP Gen": "true"
+            "run Combinational SOP Gen": "false"
         },
 
         "EXE_Valid_Logic" : {
             "csv" : "rtl/core/MEM/gen/EXE_valid_logic.csv",
             "outputFilePath": "rtl/core/MEM/gen/EXE_valid_logic.v",
-            "run Combinational SOP Gen": "true"
+            "run Combinational SOP Gen": "false"
         },
 
         "WB_Valid_Logic" : {

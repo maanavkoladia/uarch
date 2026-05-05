@@ -35,39 +35,39 @@ module EXE_valid_logic (
 );
 
 // ----------------------------------------------------------------
-// Inverters for negated literals (stage 1, 0.15 ns)
+// Inverters for negated literals
 // ----------------------------------------------------------------
-wire MEM_V_i_inv;
+wire EXE_V_i_inv;
 wire MEM_stall_i_inv;
+wire WB_stall_i_inv;
 
-`INV_N(inv_MEM_V_i, 1, MEM_V_i, MEM_V_i_inv)
+`INV_N(inv_EXE_V_i, 1, EXE_V_i, EXE_V_i_inv)
 `INV_N(inv_MEM_stall_i, 1, MEM_stall_i, MEM_stall_i_inv)
+`INV_N(inv_WB_stall_i, 1, WB_stall_i, WB_stall_i_inv)
 
 // ----------------------------------------------------------------
-// Timing-optimal NOR-NOR (POS) realisation (critical path = 0.55 ns)
+// SOP logic (Quine-McCluskey minimised)
 // ----------------------------------------------------------------
-//   f = (MEM_V_i  & !EXE_V_i)
-//     | (!MEM_stall_i & !WB_stall_i)
-//     | (MEM_V_i  & !WB_stall_i)
-//     | (!MEM_stall_i & !EXE_V_i)
-//   factors as
-//     f = (MEM_V_i + !MEM_stall_i) * (!EXE_V_i + !WB_stall_i)
-//   which is a 2-level POS implemented as NOR-NOR:
-//     !S1 = NOR2(MEM_V_i, MEM_stall_i_inv) = !MEM_V_i & MEM_stall_i
-//     !S2 = AND2(EXE_V_i, WB_stall_i)      = EXE_V_i & WB_stall_i
-//     f   = NOR2(!S1, !S2)                 = S1 * S2
-//   Path: INV(0.15) -> NOR2(0.20) -> NOR2(0.20) = 0.55 ns
-//   (!S2 uses primaries directly; no inverters needed for EXE_V_i / WB_stall_i.)
 
-// EXE_we_o
-wire EXE_we_o_nS1;
-wire EXE_we_o_nS2;
-`NOR_2(EXE_we_o_nor_s1, 1, EXE_we_o_nS1, MEM_V_i, MEM_stall_i_inv)
-`AND_2(EXE_we_o_and_s2, 1, EXE_we_o_nS2, EXE_V_i, WB_stall_i)
-`NOR_2(EXE_we_o_nor_top, 1, EXE_we_o, EXE_we_o_nS1, EXE_we_o_nS2)
+// EXE_we_o = (!MEM_stall_i & !WB_stall_i) | (MEM_V_i & !EXE_V_i) | (!MEM_stall_i & !EXE_V_i) | (MEM_V_i & !WB_stall_i)
+wire EXE_we_o_t0;
+`NAND_2(EXE_we_o_and0, 1, EXE_we_o_t0, MEM_stall_i_inv, WB_stall_i_inv)
+wire EXE_we_o_t1;
+`NAND_2(EXE_we_o_and1, 1, EXE_we_o_t1, MEM_V_i, EXE_V_i_inv)
+wire EXE_we_o_t2;
+`NAND_2(EXE_we_o_and2, 1, EXE_we_o_t2, MEM_stall_i_inv, EXE_V_i_inv)
+wire EXE_we_o_t3;
+`NAND_2(EXE_we_o_and3, 1, EXE_we_o_t3, MEM_V_i, WB_stall_i_inv)
 
-// N_EXE_V_o = (MEM_V_i & !MEM_stall_i) = NOR2(MEM_V_i_inv, MEM_stall_i)
-// Path: INV(0.15) -> NOR2(0.20) = 0.35 ns
-`NOR_2(N_EXE_V_o_nor, 1, N_EXE_V_o, MEM_V_i_inv, MEM_stall_i)
+`NAND_4(EXE_we_o_or, 1, EXE_we_o, EXE_we_o_t0, EXE_we_o_t1, EXE_we_o_t2, EXE_we_o_t3)
+
+// N_EXE_V_o = (MEM_V_i & !MEM_stall_i)
+//`AND_2(N_EXE_V_o_and, 1, N_EXE_V_o, MEM_stall_i_inv)
+
+// N_EXE_V_o = (MEM_V_i & !MEM_stall_i)
+// N_EXE_V_o = !(!MEM_V_i | MEM_stall_i)
+wire MEM_V_i_inv;
+`INV_N(inv_MEM_V_i, 1, MEM_V_i, MEM_V_i_inv)
+`NOR_2(N_EXE_V_o_nand, 1, N_EXE_V_o, MEM_V_i_inv, MEM_stall_i)
 
 endmodule

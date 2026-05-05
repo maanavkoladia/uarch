@@ -280,43 +280,45 @@ module dc_valid_logic (
 );
 
 // ----------------------------------------------------------------
-// Inverters for negated literals
+// Inverters for negated literals (stage 1, 0.15 ns)
 // ----------------------------------------------------------------
-wire DC_V_i_inv;
 wire DC_stall_i_inv;
 wire EXE_V_i_inv;
 wire MEM_V_i_inv;
 wire MEM_stall_i_inv;
-wire RR_stall_i_inv;
+wire RR_V_i_inv;
 wire WB_stall_i_inv;
 
-`INV_N(inv_DC_V_i, 1, DC_V_i, DC_V_i_inv)
 `INV_N(inv_DC_stall_i, 1, DC_stall_i, DC_stall_i_inv)
 `INV_N(inv_EXE_V_i, 1, EXE_V_i, EXE_V_i_inv)
 `INV_N(inv_MEM_V_i, 1, MEM_V_i, MEM_V_i_inv)
 `INV_N(inv_MEM_stall_i, 1, MEM_stall_i, MEM_stall_i_inv)
-`INV_N(inv_RR_stall_i, 1, RR_stall_i, RR_stall_i_inv)
+`INV_N(inv_RR_V_i, 1, RR_V_i, RR_V_i_inv)
 `INV_N(inv_WB_stall_i, 1, WB_stall_i, WB_stall_i_inv)
 
 // ----------------------------------------------------------------
-// SOP logic (Quine-McCluskey minimised)
+// Timing-optimal NAND-NAND realisation (critical path = 0.60 ns)
 // ----------------------------------------------------------------
+//   f = !DC_V_i | T2 | T3 | T4
+//     = NAND4( DC_V_i, !T2, !T3, !T4 )
+//   where !T_i is produced by a NAND of inverted literals:
+//     !T2 = NAND2(DC_stall_i_inv, MEM_V_i_inv)              = DC_stall_i | MEM_V_i
+//     !T3 = NAND3(DC_stall_i_inv, MEM_stall_i_inv, WB_stall_i_inv) = DC_stall_i | MEM_stall_i | WB_stall_i
+//     !T4 = NAND3(DC_stall_i_inv, MEM_stall_i_inv, EXE_V_i_inv)    = DC_stall_i | MEM_stall_i | EXE_V_i
+//   DC_V_i feeds the final NAND4 directly (no inverter needed for T1).
+//   Path: INV(0.15) -> NAND3(0.20) -> NAND4(0.25) = 0.60 ns
 
-// DC_we_o = !DC_V_i | (!DC_stall_i & !MEM_V_i) | (!DC_stall_i & !MEM_stall_i & !EXE_V_i) | (!DC_stall_i & !MEM_stall_i & !WB_stall_i)
-wire DC_we_o_t0;
-wire DC_we_o_and0_buf_mid;
-`INV_N(DC_we_o_and0_buf_i0, 1, DC_V_i_inv, DC_we_o_and0_buf_mid)
-`INV_N(DC_we_o_and0_buf_i1, 1, DC_we_o_and0_buf_mid, DC_we_o_t0)
-wire DC_we_o_t1;
-`AND_2(DC_we_o_and1, 1, DC_we_o_t1, DC_stall_i_inv, MEM_V_i_inv)
-wire DC_we_o_t2;
-`AND_3(DC_we_o_and2, 1, DC_we_o_t2, DC_stall_i_inv, MEM_stall_i_inv, EXE_V_i_inv)
-wire DC_we_o_t3;
-`AND_3(DC_we_o_and3, 1, DC_we_o_t3, DC_stall_i_inv, MEM_stall_i_inv, WB_stall_i_inv)
+// DC_we_o = !DC_V_i | (!DC_stall_i & !MEM_V_i) | (!DC_stall_i & !MEM_stall_i & !WB_stall_i) | (!DC_stall_i & !MEM_stall_i & !EXE_V_i)
+wire DC_we_o_nT2;
+wire DC_we_o_nT3;
+wire DC_we_o_nT4;
+`NAND_2(DC_we_o_nand_t2, 1, DC_we_o_nT2, DC_stall_i_inv, MEM_V_i_inv)
+`NAND_3(DC_we_o_nand_t3, 1, DC_we_o_nT3, DC_stall_i_inv, MEM_stall_i_inv, WB_stall_i_inv)
+`NAND_3(DC_we_o_nand_t4, 1, DC_we_o_nT4, DC_stall_i_inv, MEM_stall_i_inv, EXE_V_i_inv)
+`NAND_4(DC_we_o_nand_top, 1, DC_we_o, DC_V_i, DC_we_o_nT2, DC_we_o_nT3, DC_we_o_nT4)
 
-`OR_4(DC_we_o_or, 1, DC_we_o, DC_we_o_t0, DC_we_o_t1, DC_we_o_t2, DC_we_o_t3)
-
-// N_DC_V_o = (!RR_stall_i & RR_V_i)
-`AND_2(N_DC_V_o_and, 1, N_DC_V_o, RR_stall_i_inv, RR_V_i)
+// N_DC_V_o = (!RR_stall_i & RR_V_i) = NOR2(RR_stall_i, RR_V_i_inv)
+// Path: INV(0.15) -> NOR2(0.20) = 0.35 ns
+`NOR_2(N_DC_V_o_nor, 1, N_DC_V_o, RR_stall_i, RR_V_i_inv)
 
 endmodule
