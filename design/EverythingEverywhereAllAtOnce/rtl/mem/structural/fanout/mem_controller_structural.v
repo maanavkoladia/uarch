@@ -351,8 +351,28 @@ module mem_controller(
     assign store_bank_idx = {address_bus[9:7], bankGroup};
 
     // ---- decoder ----
+    // u_store_dec: same manual 6->64 decoder split as u_bank_dec above.
+    wire [7:0] store_high_oh_pre, store_high_oh;
+    wire [7:0] store_low_oh_pre,  store_low_oh;
+    `DECODER_N(u_store_high_dec, 3, store_bank_idx[5:3], store_high_oh_pre)
+    `DECODER_N(u_store_low_dec,  3, store_bank_idx[2:0], store_low_oh_pre)
+    genvar sdkh, sdkl;
+    generate
+        for (sdkh = 0; sdkh < 8; sdkh = sdkh + 1) begin : g_store_h_buf
+            bufferH16$ u_buf (.out(store_high_oh[sdkh]), .in(store_high_oh_pre[sdkh]));
+        end
+        for (sdkl = 0; sdkl < 8; sdkl = sdkl + 1) begin : g_store_l_buf
+            bufferH16$ u_buf (.out(store_low_oh[sdkl]), .in(store_low_oh_pre[sdkl]));
+        end
+    endgenerate
     wire [63:0] store_oh;
-    `DECODER_N(u_store_dec, 6, store_bank_idx, store_oh)
+    generate
+        for (sdkh = 0; sdkh < 8; sdkh = sdkh + 1) begin : g_store_h_and
+            for (sdkl = 0; sdkl < 8; sdkl = sdkl + 1) begin : g_store_l_and
+                `AND_2(u_s, 1, store_oh[sdkh*8 + sdkl], store_high_oh[sdkh], store_low_oh[sdkl])
+            end
+        end
+    endgenerate
 
     // ---- replicate FSM signal ----
     wire [63:0] fsm_start_store_vec;
