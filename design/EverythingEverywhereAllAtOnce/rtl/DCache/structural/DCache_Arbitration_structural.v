@@ -104,9 +104,9 @@ module DCache_Arbitration (
     // the internal logic below can keep using the original [g_i] indexing
     // unchanged.
     // ------------------------------------------------------------------
-    wire [14:0]  core_stq_addr_i   [`NUM_WB_ST_QS];
-    wire [15:0]  core_stq_bitvec_i [`NUM_WB_ST_QS];
-    wire [127:0] core_stq_data_i   [`NUM_WB_ST_QS];
+    wire [14:0]  core_stq_addr_i   [0 : `NUM_WB_ST_QS - 1];
+    wire [15:0]  core_stq_bitvec_i [0 : `NUM_WB_ST_QS - 1];
+    wire [127:0] core_stq_data_i   [0 : `NUM_WB_ST_QS - 1];
 
     assign core_stq_addr_i[0]   = core_stq_addr_0_i;
     assign core_stq_addr_i[1]   = core_stq_addr_1_i;
@@ -126,9 +126,9 @@ module DCache_Arbitration (
     // Internal mirrors of the (now unrolled) wide outputs. Internal logic
     // drives these arrays exactly as before; the unrolled ports are then
     // simple wire aliases of these array elements.
-    wire [14:0]  reqs_paddr_o [`DCACHE_NUM_BLOCKS];
-    wire [15:0]  reqs_vec_o   [`DCACHE_NUM_BLOCKS];
-    wire [127:0] reqs_data_o  [`DCACHE_NUM_BLOCKS];
+    wire [14:0]  reqs_paddr_o [0 : `DCACHE_NUM_BLOCKS - 1];
+    wire [15:0]  reqs_vec_o   [0 : `DCACHE_NUM_BLOCKS - 1];
+    wire [127:0] reqs_data_o  [0: `DCACHE_NUM_BLOCKS - 1];
 
     localparam LD_REQ_BANK_UB    = `DCACHE_BANK_BANK_UB;
     localparam LD_REQ_BANK_LB    = `DCACHE_BANK_BANK_LB;
@@ -136,6 +136,7 @@ module DCache_Arbitration (
 
     wire [LD_REQ_BANK_WIDTH-1:0] ld_req_0_bankNum;
     wire [LD_REQ_BANK_WIDTH-1:0] ld_req_1_bankNum;
+
     assign ld_req_0_bankNum = core_ld_addr_0_i[LD_REQ_BANK_UB:LD_REQ_BANK_LB];
     assign ld_req_1_bankNum = core_ld_addr_1_i[LD_REQ_BANK_UB:LD_REQ_BANK_LB];
 
