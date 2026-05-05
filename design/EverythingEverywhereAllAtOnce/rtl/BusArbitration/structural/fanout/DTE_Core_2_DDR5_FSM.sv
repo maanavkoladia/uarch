@@ -57,7 +57,13 @@ wire NS_1;
 // Active-high rst drives all state bits to 0 (= IDLE encoding).
 // ----------------------------------------------------------------
 `REG_RST(ff_0, 1, clk, rst, NS_0, S_0)
-`REG_RST(ff_1, 1, clk, rst, NS_1, S_1)
+
+// ff_1 split into 3 copies (a/b/c) -- 0 ns added on internal paths.
+wire S_1_a, S_1_b, S_1_c;
+`REG_RST(ff_1_a, 1, clk, rst, NS_1, S_1_a)
+`REG_RST(ff_1_b, 1, clk, rst, NS_1, S_1_b)
+`REG_RST(ff_1_c, 1, clk, rst, NS_1, S_1_c)
+assign S_1 = S_1_c;
 
 // ----------------------------------------------------------------
 // Inverters for negated literals
@@ -67,7 +73,7 @@ wire S_1_inv;
 wire others_busy_i_inv;
 
 `INV_N(inv_S_0, 1, S_0, S_0_inv)
-`INV_N(inv_S_1, 1, S_1, S_1_inv)
+`INV_N(inv_S_1, 1, S_1_c, S_1_inv)
 `INV_N(inv_others_busy_i, 1, others_busy_i, others_busy_i_inv)
 
 // ----------------------------------------------------------------
@@ -76,12 +82,12 @@ wire others_busy_i_inv;
 
 // NS_0 = S_1
 wire NS_0_and_buf_mid;
-`INV_N(NS_0_and_buf_i0, 1, S_1, NS_0_and_buf_mid)
+`INV_N(NS_0_and_buf_i0, 1, S_1_a, NS_0_and_buf_mid)
 `INV_N(NS_0_and_buf_i1, 1, NS_0_and_buf_mid, NS_0)
 
 // NS_1 = (S_0 & S_1) | (!S_0 & !S_1 & req_hit_i & !others_busy_i)
 wire NS_1_n0;
-`NAND_2(NS_1_nand0, 1, NS_1_n0, S_0, S_1)
+`NAND_2(NS_1_nand0, 1, NS_1_n0, S_0, S_1_a)
 wire NS_1_n1;
 `NAND_4(NS_1_nand1, 1, NS_1_n1, S_0_inv, S_1_inv, req_hit_i, others_busy_i_inv)
 
@@ -89,27 +95,27 @@ wire NS_1_n1;
 
 // busy_o = (!S_0 & S_1) | (S_0 & !S_1)
 wire busy_o_n0;
-`NAND_2(busy_o_nand0, 1, busy_o_n0, S_0_inv, S_1)
+`NAND_2(busy_o_nand0, 1, busy_o_n0, S_0_inv, S_1_a)
 wire busy_o_n1;
 `NAND_2(busy_o_nand1, 1, busy_o_n1, S_0, S_1_inv)
 
 `NAND_2(busy_o_nand, 1, busy_o, busy_o_n0, busy_o_n1)
 
 // reqServed_o = (!S_0 & S_1)
-`AND_2(reqServed_o_and, 1, reqServed_o, S_0_inv, S_1)
+`AND_2(reqServed_o_and, 1, reqServed_o, S_0_inv, S_1_b)
 
 // Drive_Addr_Bus_o = (!S_0 & S_1) | (!S_0 & req_hit_i & !others_busy_i)
 wire Drive_Addr_Bus_o_n0;
-`NAND_2(Drive_Addr_Bus_o_nand0, 1, Drive_Addr_Bus_o_n0, S_0_inv, S_1)
+`NAND_2(Drive_Addr_Bus_o_nand0, 1, Drive_Addr_Bus_o_n0, S_0_inv, S_1_b)
 wire Drive_Addr_Bus_o_n1;
 `NAND_3(Drive_Addr_Bus_o_nand1, 1, Drive_Addr_Bus_o_n1, S_0_inv, req_hit_i, others_busy_i_inv)
 
 `NAND_2(Drive_Addr_Bus_o_nand, 1, Drive_Addr_Bus_o, Drive_Addr_Bus_o_n0, Drive_Addr_Bus_o_n1)
 
 // Drv_DB_o = (!S_0 & S_1)
-`AND_2(Drv_DB_o_and, 1, Drv_DB_o, S_0_inv, S_1)
+`AND_2(Drv_DB_o_and, 1, Drv_DB_o, S_0_inv, S_1_b)
 
 // newPowerGateValueFromCore_o = (!S_0 & S_1)
-`AND_2(newPowerGateValueFromCore_o_and, 1, newPowerGateValueFromCore_o, S_0_inv, S_1)
+`AND_2(newPowerGateValueFromCore_o_and, 1, newPowerGateValueFromCore_o, S_0_inv, S_1_c)
 
 endmodule

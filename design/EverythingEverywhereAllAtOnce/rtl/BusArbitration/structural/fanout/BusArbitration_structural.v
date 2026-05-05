@@ -113,11 +113,20 @@ module BusArbitration (
     wire [3:0] sch_best_pick;
     wire [1:0] sch_best_pick_bk_id;
 
+    // sch_best_pick_ff[3] fanout 5 (>4) -> bufferH16$ on every bit (+0.24 ns)
+    // to keep all 4 bits time-aligned downstream into DTE.bestPick_i.
     wire [3:0] sch_best_pick_ff;
+    wire [3:0] sch_best_pick_ff_pre;
     wire [1:0] sch_best_pick_bk_id_ff;
 
-    `REG_RST(lat_best_pick,       4, clk, rst, sch_best_pick,       sch_best_pick_ff)
+    `REG_RST(lat_best_pick,       4, clk, rst, sch_best_pick,       sch_best_pick_ff_pre)
     `REG_RST(lat_best_pick_bk_id, 2, clk, rst, sch_best_pick_bk_id, sch_best_pick_bk_id_ff)
+    genvar bp_i;
+    generate
+        for (bp_i = 0; bp_i < 4; bp_i = bp_i + 1) begin : g_bp_buf
+            bufferH16$ u_buf (.out(sch_best_pick_ff[bp_i]), .in(sch_best_pick_ff_pre[bp_i]));
+        end
+    endgenerate
 
     // ====================================================================
     // Scheduler

@@ -140,9 +140,9 @@ module DCache_TOP (
 
     wire [`DCACHE_NUM_BLOCKS-1:0] s_arb_reqs_oe;
     wire [`DCACHE_NUM_BLOCKS-1:0] s_arb_reqs_we;
-    wire [14:0]  s_arb_reqs_paddr [`DCACHE_NUM_BLOCKS];
-    wire [15:0]  s_arb_reqs_vec   [`DCACHE_NUM_BLOCKS];
-    wire [127:0] s_arb_reqs_data  [`DCACHE_NUM_BLOCKS];
+    wire [14:0]  s_arb_reqs_paddr [0:`DCACHE_NUM_BLOCKS-1];
+    wire [15:0]  s_arb_reqs_vec   [0:`DCACHE_NUM_BLOCKS-1];
+    wire [127:0] s_arb_reqs_data  [0:`DCACHE_NUM_BLOCKS-1];
 
     wire [`NUM_WB_ST_QS-1:0] arb_st_override_Out;
     wire [`NUM_WB_ST_QS-1:0] arb_writeSuccess_Out;
@@ -223,12 +223,12 @@ module DCache_TOP (
     // Per-block DTE inputs as unpacked arrays
     // (Each generate iteration consumes [g_i] indexed ports.)
     // ---------------------------------------------------------------
-    wire        dte_mem_valid_arr  [`DCACHE_NUM_BLOCKS];
-    wire [3:0]  dte_perm_eb_arr    [`DCACHE_NUM_BLOCKS];
-    wire        dte_perm_ld_arr    [`DCACHE_NUM_BLOCKS];
-    wire        dte_perm_eb1_arr   [`DCACHE_NUM_BLOCKS];
-    wire        dte_eb_clr_arr     [`DCACHE_NUM_BLOCKS];
-    wire        dte_eb_setCmt_arr  [`DCACHE_NUM_BLOCKS];
+    wire        dte_mem_valid_arr  [0:`DCACHE_NUM_BLOCKS-1];
+    wire [3:0]  dte_perm_eb_arr    [0:`DCACHE_NUM_BLOCKS-1];
+    wire        dte_perm_ld_arr    [0:`DCACHE_NUM_BLOCKS-1];
+    wire        dte_perm_eb1_arr   [0:`DCACHE_NUM_BLOCKS-1];
+    wire        dte_eb_clr_arr     [0:`DCACHE_NUM_BLOCKS-1];
+    wire        dte_eb_setCmt_arr  [0:`DCACHE_NUM_BLOCKS-1];
 
     assign dte_mem_valid_arr[0] = dte_mem_valid_0_i;
     assign dte_mem_valid_arr[1] = dte_mem_valid_1_i;
@@ -258,10 +258,10 @@ module DCache_TOP (
     // ---------------------------------------------------------------
     // Per-block DCache_Block outputs (flat per block)
     // ---------------------------------------------------------------
-    wire [127:0] block_dataLineOut [`DCACHE_NUM_BLOCKS];
-    wire         block_hit         [`DCACHE_NUM_BLOCKS];
-    wire [14:0]  block_eb_addr     [`DCACHE_NUM_BLOCKS];
-    wire [3:0]   block_req_2_sch   [`DCACHE_NUM_BLOCKS];
+    wire [127:0] block_dataLineOut [0:`DCACHE_NUM_BLOCKS-1];
+    wire         block_hit         [0:`DCACHE_NUM_BLOCKS-1];
+    wire [14:0]  block_eb_addr     [0:`DCACHE_NUM_BLOCKS-1];
+    wire [3:0]   block_req_2_sch   [0:`DCACHE_NUM_BLOCKS-1];
 
     // ---------------------------------------------------------------
     // 4 DCache_Block instances under the original generate label.
@@ -379,9 +379,9 @@ module DCache_TOP (
     // Observer flat-wire taps (preserved from .sv reference, useful
     // for hierarchical wave probing). Same generate label as .sv.
     // ---------------------------------------------------------------
-    wire [14:0] tap_eb_addr      [`DCACHE_NUM_BLOCKS];
-    wire        tap_block_hit    [`DCACHE_NUM_BLOCKS];
-    wire [3:0]  tap_block_req2sch[`DCACHE_NUM_BLOCKS];
+    wire [14:0] tap_eb_addr      [0:`DCACHE_NUM_BLOCKS-1];
+    wire        tap_block_hit    [0:`DCACHE_NUM_BLOCKS-1];
+    wire [3:0]  tap_block_req2sch[0:`DCACHE_NUM_BLOCKS-1];
 
     generate
         for (i = 0; i < `DCACHE_NUM_BLOCKS; i = i + 1) begin : g_dcache_top_taps

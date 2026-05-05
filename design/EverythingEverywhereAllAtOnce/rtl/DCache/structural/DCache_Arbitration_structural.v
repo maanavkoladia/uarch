@@ -140,15 +140,15 @@ module DCache_Arbitration (
     assign ld_req_0_bankNum = core_ld_addr_0_i[LD_REQ_BANK_UB:LD_REQ_BANK_LB];
     assign ld_req_1_bankNum = core_ld_addr_1_i[LD_REQ_BANK_UB:LD_REQ_BANK_LB];
 
-    wire        not_stq_empty   [`NUM_WB_ST_QS];
-    wire        ld0_valid       [`DCACHE_NUM_BLOCKS];
-    wire        ld1_valid       [`DCACHE_NUM_BLOCKS];
-    wire        st_override_q   [`NUM_WB_ST_QS];
-    wire        reqs_oe_q       [`DCACHE_NUM_BLOCKS];
-    wire        reqs_we_q       [`DCACHE_NUM_BLOCKS];
-    wire [14:0]  reqs_paddr_q   [`DCACHE_NUM_BLOCKS];
-    wire [15:0]  reqs_vec_q     [`DCACHE_NUM_BLOCKS];
-    wire [127:0] reqs_data_q    [`DCACHE_NUM_BLOCKS];
+    wire        not_stq_empty   [0:`NUM_WB_ST_QS-1];
+    wire        ld0_valid       [0:`DCACHE_NUM_BLOCKS-1];
+    wire        ld1_valid       [0:`DCACHE_NUM_BLOCKS-1];
+    wire        st_override_q   [0:`NUM_WB_ST_QS-1];
+    wire        reqs_oe_q       [0:`DCACHE_NUM_BLOCKS-1];
+    wire        reqs_we_q       [0:`DCACHE_NUM_BLOCKS-1];
+    wire [14:0]  reqs_paddr_q   [0:`DCACHE_NUM_BLOCKS-1];
+    wire [15:0]  reqs_vec_q     [0:`DCACHE_NUM_BLOCKS-1];
+    wire [127:0] reqs_data_q    [0:`DCACHE_NUM_BLOCKS-1];
 
     genvar g_ne;
     generate

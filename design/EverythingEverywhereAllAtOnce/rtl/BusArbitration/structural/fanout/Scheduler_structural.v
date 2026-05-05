@@ -50,17 +50,34 @@ module Scheduler (
     //   REG_RST:  active-LOW sync rst (-> 0 == NO_REQ),
     //             we tied to 1'b1 internally so it captures every cycle.
     // ------------------------------------------------------------------
+    // bufferH16$ on every output bit of these 4-bit latched-request registers --
+    // their q[3] fanouts hit 5-6 (>4 tier).  +0.24 ns on the latched-req paths.
     wire [3:0] sch_lat_i_cache_req;
-    `REG_RST(lat_ic_req, 4, clk, rst, iCache_2_Sch_req_i, sch_lat_i_cache_req)
+    wire [3:0] sch_lat_i_cache_req_pre;
+    `REG_RST(lat_ic_req, 4, clk, rst, iCache_2_Sch_req_i, sch_lat_i_cache_req_pre)
 
     wire [3:0] sch_lat_d_cache_reqs_0;
     wire [3:0] sch_lat_d_cache_reqs_1;
     wire [3:0] sch_lat_d_cache_reqs_2;
     wire [3:0] sch_lat_d_cache_reqs_3;
-    `REG_RST(lat_dc_req_0, 4, clk, rst, dCache_2_Sch_req_0_i, sch_lat_d_cache_reqs_0)
-    `REG_RST(lat_dc_req_1, 4, clk, rst, dCache_2_Sch_req_1_i, sch_lat_d_cache_reqs_1)
-    `REG_RST(lat_dc_req_2, 4, clk, rst, dCache_2_Sch_req_2_i, sch_lat_d_cache_reqs_2)
-    `REG_RST(lat_dc_req_3, 4, clk, rst, dCache_2_Sch_req_3_i, sch_lat_d_cache_reqs_3)
+    wire [3:0] sch_lat_d_cache_reqs_0_pre;
+    wire [3:0] sch_lat_d_cache_reqs_1_pre;
+    wire [3:0] sch_lat_d_cache_reqs_2_pre;
+    wire [3:0] sch_lat_d_cache_reqs_3_pre;
+    `REG_RST(lat_dc_req_0, 4, clk, rst, dCache_2_Sch_req_0_i, sch_lat_d_cache_reqs_0_pre)
+    `REG_RST(lat_dc_req_1, 4, clk, rst, dCache_2_Sch_req_1_i, sch_lat_d_cache_reqs_1_pre)
+    `REG_RST(lat_dc_req_2, 4, clk, rst, dCache_2_Sch_req_2_i, sch_lat_d_cache_reqs_2_pre)
+    `REG_RST(lat_dc_req_3, 4, clk, rst, dCache_2_Sch_req_3_i, sch_lat_d_cache_reqs_3_pre)
+    genvar dc_i;
+    generate
+        for (dc_i = 0; dc_i < 4; dc_i = dc_i + 1) begin : g_lat_req_buf
+            bufferH16$ u_buf_ic (.out(sch_lat_i_cache_req[dc_i]),       .in(sch_lat_i_cache_req_pre[dc_i]));
+            bufferH16$ u_buf_d0 (.out(sch_lat_d_cache_reqs_0[dc_i]),    .in(sch_lat_d_cache_reqs_0_pre[dc_i]));
+            bufferH16$ u_buf_d1 (.out(sch_lat_d_cache_reqs_1[dc_i]),    .in(sch_lat_d_cache_reqs_1_pre[dc_i]));
+            bufferH16$ u_buf_d2 (.out(sch_lat_d_cache_reqs_2[dc_i]),    .in(sch_lat_d_cache_reqs_2_pre[dc_i]));
+            bufferH16$ u_buf_d3 (.out(sch_lat_d_cache_reqs_3[dc_i]),    .in(sch_lat_d_cache_reqs_3_pre[dc_i]));
+        end
+    endgenerate
 
     wire [14:0] sch_lat_eb_addr_0;
     wire [14:0] sch_lat_eb_addr_1;
@@ -80,8 +97,16 @@ module Scheduler (
      wire [14:0] sch_lat_dma_write_addr;
      `REG_RST(lat_dma_addr, 15, clk, rst, dma_2_sch_writeBuf_Address_i, sch_lat_dma_write_addr)
 
+     // lat_wbV q[7] fanout 5 -> bufferH16$ on every bit (+0.24 ns).
      wire [7:0]  sch_lat_writeBuf_V_List;
-     `REG_RST(lat_wbV, 8, clk, rst, mem_2_Sch_writeBuf_V_i, sch_lat_writeBuf_V_List)
+     wire [7:0]  sch_lat_writeBuf_V_List_pre;
+     `REG_RST(lat_wbV, 8, clk, rst, mem_2_Sch_writeBuf_V_i, sch_lat_writeBuf_V_List_pre)
+     genvar wbV_i;
+     generate
+         for (wbV_i = 0; wbV_i < 8; wbV_i = wbV_i + 1) begin : g_lat_wbV_buf
+             bufferH16$ u_buf (.out(sch_lat_writeBuf_V_List[wbV_i]), .in(sch_lat_writeBuf_V_List_pre[wbV_i]));
+         end
+     endgenerate
        // assign sch_lat_mio_req = dCache_2_Sch_req_mio_i;
        // assign sch_lat_dma_req = dma_2_sch_dma_req_i;
        // assign sch_lat_dma_write_addr = sch_lat_dma_write_addr;

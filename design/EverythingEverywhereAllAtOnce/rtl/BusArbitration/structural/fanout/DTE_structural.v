@@ -145,9 +145,17 @@ module DTE (
            bp_n3, bestPick_i[2], bestPick_i[1], bestPick_i[0])
     `AND_3(u_eq89, 1, mem_2_dcache_eq89,
            bestPick_i[3], bp_n2, bp_n1)
-    wire mem_2_dcache_req_hit;
-    `OR_2(u_md_req_hit, 1, mem_2_dcache_req_hit,
-          mem_2_dcache_eq7, mem_2_dcache_eq89)
+    // mem_2_dcache_req_hit was fanout 12 -> previously buffered (+0.24 ns).
+    // Now replicated x4 (one OR_2 per consumer FSM) to recover that 0.24 ns:
+    // each copy drives 1 FSM -> 3 internal loads (the 3 SOP terms using req_hit_i),
+    // so each copy is fanout 3 (no buffer needed). Inputs (mem_2_dcache_eq7/89)
+    // grow from fanout 1 -> 4, still <= 4.
+    wire mem_2_dcache_req_hit_0, mem_2_dcache_req_hit_1;
+    wire mem_2_dcache_req_hit_2, mem_2_dcache_req_hit_3;
+    `OR_2(u_md_req_hit_0, 1, mem_2_dcache_req_hit_0, mem_2_dcache_eq7, mem_2_dcache_eq89)
+    `OR_2(u_md_req_hit_1, 1, mem_2_dcache_req_hit_1, mem_2_dcache_eq7, mem_2_dcache_eq89)
+    `OR_2(u_md_req_hit_2, 1, mem_2_dcache_req_hit_2, mem_2_dcache_eq7, mem_2_dcache_eq89)
+    `OR_2(u_md_req_hit_3, 1, mem_2_dcache_req_hit_3, mem_2_dcache_eq7, mem_2_dcache_eq89)
     
 
     // ----- DCache -> MEM: bp ∈ { 6 (DCACHE_EB_WR), 10 (DCACHE_EB_BLOCK_ST), 11 (DCACHE_EB_BLOCKING_LD),
@@ -170,9 +178,12 @@ module DTE (
            bestPick_i[3], bp_n2, bestPick_i[1])
     `AND_3(u_eq1213, 1, dm_eq1213,
            bestPick_i[3], bestPick_i[2], bp_n1)
-    wire dcache_2_mem_req_hit;
-    `OR_3(u_dm_req_hit, 1, dcache_2_mem_req_hit,
-          dm_eq6, dm_eq1011, dm_eq1213)
+    // dcache_2_mem_req_hit was fanout 8 -> previously buffered (+0.24 ns).
+    // Now replicated x2 (each OR_3 drives 2 FSMs); per-copy fanout = 2*2 = 4.
+    // Inputs (dm_eq6, dm_eq1011, dm_eq1213) grow from fanout 1 -> 2.
+    wire dcache_2_mem_req_hit_01, dcache_2_mem_req_hit_23;
+    `OR_3(u_dm_req_hit_01, 1, dcache_2_mem_req_hit_01, dm_eq6, dm_eq1011, dm_eq1213)
+    `OR_3(u_dm_req_hit_23, 1, dcache_2_mem_req_hit_23, dm_eq6, dm_eq1011, dm_eq1213)
     
 
     // ----- Single-enum req_hits — one per enum value -----
@@ -207,8 +218,13 @@ module DTE (
     //     for (int i = 0; i < 4; i++) bk_hit[i] = (bestPick_bk_id_i == i);
     // end
      //structural (commented out):
-    wire [3:0] bk_hit;
-    `DECODER_N(u_bk_dec, 2, bestPick_bk_id_i, bk_hit)
+    // bk_hit[3] was fanout 5 -> previously buffered. Replicate the decoder x2
+    // (one for mem_2_dcache_fsm family, one for dcache_2_mem_fsm family).
+    // Each bit then has fanout = 1 FSM x 3 internal uses = 3, no buffer.
+    wire [3:0] bk_hit_md;  // for mem_2_dcache_fsm_0..3
+    wire [3:0] bk_hit_dm;  // for dcache_2_mem_fsm_0..3
+    `DECODER_N(u_bk_dec_md, 2, bestPick_bk_id_i, bk_hit_md)
+    `DECODER_N(u_bk_dec_dm, 2, bestPick_bk_id_i, bk_hit_dm)
     
 
     // ====================================================================
@@ -260,9 +276,18 @@ module DTE (
            mem_2_icache_busy, ddr5_2_core_busy,
            core_2_ddr5_busy,  core_2_dma_busy)
     `INV_N(u_inv_dma_busy,  1, dma_2_mem_busy, dma_2_mem_busy_n)
-    wire DTE_Busy;
-    `NAND_4(u_nand_dte_busy, 1, DTE_Busy,
-            nor_md_busy, nor_dm_busy, nor_misc_busy, dma_2_mem_busy_n)
+    // DTE_Busy was fanout 13 -> previously buffered (+0.24 ns).
+    // Replicate the NAND_4 x4 to recover that delay; each copy drives 1-4
+    // FSMs (per groupings below). Inputs (nor_md_busy, nor_dm_busy,
+    // nor_misc_busy, dma_2_mem_busy_n) each go from fanout 1 -> 4, still <=4.
+    wire DTE_Busy_a;  // -> mem_2_icache, mem_2_dcache_fsm_0..2 (4 FSMs)
+    wire DTE_Busy_b;  // -> mem_2_dcache_fsm_3, dcache_2_mem_fsm_0..2 (4 FSMs)
+    wire DTE_Busy_c;  // -> dcache_2_mem_fsm_3, ddr5_2_core, core_2_ddr5, core_2_dma (4 FSMs)
+    wire DTE_Busy_d;  // -> dma_2_mem (1 FSM)
+    `NAND_4(u_nand_dte_busy_a, 1, DTE_Busy_a, nor_md_busy, nor_dm_busy, nor_misc_busy, dma_2_mem_busy_n)
+    `NAND_4(u_nand_dte_busy_b, 1, DTE_Busy_b, nor_md_busy, nor_dm_busy, nor_misc_busy, dma_2_mem_busy_n)
+    `NAND_4(u_nand_dte_busy_c, 1, DTE_Busy_c, nor_md_busy, nor_dm_busy, nor_misc_busy, dma_2_mem_busy_n)
+    `NAND_4(u_nand_dte_busy_d, 1, DTE_Busy_d, nor_md_busy, nor_dm_busy, nor_misc_busy, dma_2_mem_busy_n)
     
 
     // ====================================================================
@@ -289,7 +314,7 @@ module DTE (
         .clk             (clk),
         .rst             (rst),
         .req_hit_i       (mem_2_icache_req_hit),
-        .others_busy_i   (DTE_Busy),
+        .others_busy_i   (DTE_Busy_a),
         .mem_ready_i     (mem_2_dte_mem_Ready_i),
         .S_0             (mem_2_icache_S_0_unused),
         .S_1             (mem_2_icache_S_1_unused),
@@ -312,9 +337,9 @@ module DTE (
     DTE_MEM_2_DCache_FSM mem_2_dcache_fsm_0 (
         .clk             (clk),
         .rst             (rst),
-        .req_hit_i       (mem_2_dcache_req_hit),
-        .bank_hit_i      (bk_hit[0]),
-        .others_busy_i   (DTE_Busy),
+        .req_hit_i       (mem_2_dcache_req_hit_0),
+        .bank_hit_i      (bk_hit_md[0]),
+        .others_busy_i   (DTE_Busy_a),
         .mem_ready_i     (mem_2_dte_mem_Ready_i),
         .S_0             (md_S_0_0_u),
         .S_1             (md_S_1_0_u),
@@ -333,9 +358,9 @@ module DTE (
     DTE_MEM_2_DCache_FSM mem_2_dcache_fsm_1 (
         .clk             (clk),
         .rst             (rst),
-        .req_hit_i       (mem_2_dcache_req_hit),
-        .bank_hit_i      (bk_hit[1]),
-        .others_busy_i   (DTE_Busy),
+        .req_hit_i       (mem_2_dcache_req_hit_1),
+        .bank_hit_i      (bk_hit_md[1]),
+        .others_busy_i   (DTE_Busy_a),
         .mem_ready_i     (mem_2_dte_mem_Ready_i),
         .S_0             (md_S_0_1_u),
         .S_1             (md_S_1_1_u),
@@ -354,9 +379,9 @@ module DTE (
     DTE_MEM_2_DCache_FSM mem_2_dcache_fsm_2 (
         .clk             (clk),
         .rst             (rst),
-        .req_hit_i       (mem_2_dcache_req_hit),
-        .bank_hit_i      (bk_hit[2]),
-        .others_busy_i   (DTE_Busy),
+        .req_hit_i       (mem_2_dcache_req_hit_2),
+        .bank_hit_i      (bk_hit_md[2]),
+        .others_busy_i   (DTE_Busy_a),
         .mem_ready_i     (mem_2_dte_mem_Ready_i),
         .S_0             (md_S_0_2_u),
         .S_1             (md_S_1_2_u),
@@ -375,9 +400,9 @@ module DTE (
     DTE_MEM_2_DCache_FSM mem_2_dcache_fsm_3 (
         .clk             (clk),
         .rst             (rst),
-        .req_hit_i       (mem_2_dcache_req_hit),
-        .bank_hit_i      (bk_hit[3]),
-        .others_busy_i   (DTE_Busy),
+        .req_hit_i       (mem_2_dcache_req_hit_3),
+        .bank_hit_i      (bk_hit_md[3]),
+        .others_busy_i   (DTE_Busy_b),
         .mem_ready_i     (mem_2_dte_mem_Ready_i),
         .S_0             (md_S_0_3_u),
         .S_1             (md_S_1_3_u),
@@ -400,9 +425,9 @@ module DTE (
     DTE_DCache_2_MEM_FSM dcache_2_mem_fsm_0 (
         .clk             (clk),
         .rst             (rst),
-        .req_hit_i       (dcache_2_mem_req_hit),
-        .bank_hit_i      (bk_hit[0]),
-        .others_busy_i   (DTE_Busy),
+        .req_hit_i       (dcache_2_mem_req_hit_01),
+        .bank_hit_i      (bk_hit_dm[0]),
+        .others_busy_i   (DTE_Busy_b),
         .S_0             (dm_S_0_0_u),
         .S_1             (dm_S_1_0_u),
         .S_2             (dm_S_2_0_u),
@@ -421,9 +446,9 @@ module DTE (
     DTE_DCache_2_MEM_FSM dcache_2_mem_fsm_1 (
         .clk             (clk),
         .rst             (rst),
-        .req_hit_i       (dcache_2_mem_req_hit),
-        .bank_hit_i      (bk_hit[1]),
-        .others_busy_i   (DTE_Busy),
+        .req_hit_i       (dcache_2_mem_req_hit_01),
+        .bank_hit_i      (bk_hit_dm[1]),
+        .others_busy_i   (DTE_Busy_b),
         .S_0             (dm_S_0_1_u),
         .S_1             (dm_S_1_1_u),
         .S_2             (dm_S_2_1_u),
@@ -442,9 +467,9 @@ module DTE (
     DTE_DCache_2_MEM_FSM dcache_2_mem_fsm_2 (
         .clk             (clk),
         .rst             (rst),
-        .req_hit_i       (dcache_2_mem_req_hit),
-        .bank_hit_i      (bk_hit[2]),
-        .others_busy_i   (DTE_Busy),
+        .req_hit_i       (dcache_2_mem_req_hit_23),
+        .bank_hit_i      (bk_hit_dm[2]),
+        .others_busy_i   (DTE_Busy_b),
         .S_0             (dm_S_0_2_u),
         .S_1             (dm_S_1_2_u),
         .S_2             (dm_S_2_2_u),
@@ -463,9 +488,9 @@ module DTE (
     DTE_DCache_2_MEM_FSM dcache_2_mem_fsm_3 (
         .clk             (clk),
         .rst             (rst),
-        .req_hit_i       (dcache_2_mem_req_hit),
-        .bank_hit_i      (bk_hit[3]),
-        .others_busy_i   (DTE_Busy),
+        .req_hit_i       (dcache_2_mem_req_hit_23),
+        .bank_hit_i      (bk_hit_dm[3]),
+        .others_busy_i   (DTE_Busy_c),
         .S_0             (dm_S_0_3_u),
         .S_1             (dm_S_1_3_u),
         .S_2             (dm_S_2_3_u),
@@ -490,7 +515,7 @@ module DTE (
         .clk             (clk),
         .rst             (rst),
         .req_hit_i       (ddr5_2_core_req_hit),
-        .others_busy_i   (DTE_Busy),
+        .others_busy_i   (DTE_Busy_c),
         .S_0             (ddr5_2_core_S_0_u),
         .S_1             (ddr5_2_core_S_1_u),
         .busy_o          (ddr5_2_core_busy),
@@ -510,7 +535,7 @@ module DTE (
         .clk             (clk),
         .rst             (rst),
         .req_hit_i       (core_2_ddr5_req_hit),
-        .others_busy_i   (DTE_Busy),
+        .others_busy_i   (DTE_Busy_c),
         .S_0             (core_2_ddr5_S_0_u),
         .S_1             (core_2_ddr5_S_1_u),
         .busy_o                     (core_2_ddr5_busy),
@@ -531,7 +556,7 @@ module DTE (
         .clk             (clk),
         .rst             (rst),
         .req_hit_i       (core_2_dma_req_hit),
-        .others_busy_i   (DTE_Busy),
+        .others_busy_i   (DTE_Busy_c),
         .S_0             (core_2_dma_S_0_u),
         .S_1             (core_2_dma_S_1_u),
         .busy_o          (core_2_dma_busy),
@@ -550,7 +575,7 @@ module DTE (
         .clk             (clk),
         .rst             (rst),
         .req_hit_i       (dma_2_mem_req_hit),
-        .others_busy_i   (DTE_Busy),
+        .others_busy_i   (DTE_Busy_d),
         .S_0             (dm2m_S_0_u),
         .S_1             (dm2m_S_1_u),
         .S_2             (dm2m_S_2_u),
@@ -570,10 +595,13 @@ module DTE (
     // ====================================================================
 
     // dte_2_mem.ld_req = mem_2_icache.ld_req | OR(mem_2_dcache.ld_req[i])
-    `OR_5(u_or_ld_req, 1, dte_2_mem_ld_req_o,
+    // dte_2_mem_ld_req_o fanout 9 -> bufferH16$ (+0.24 ns)
+    wire dte_2_mem_ld_req_o_pre;
+    `OR_5(u_or_ld_req, 1, dte_2_mem_ld_req_o_pre,
           mem_2_icache_ld_req,
           mem_2_dcache_ld_req[0], mem_2_dcache_ld_req[1],
           mem_2_dcache_ld_req[2], mem_2_dcache_ld_req[3])
+    bufferH16$ u_or_ld_req_buf (.out(dte_2_mem_ld_req_o), .in(dte_2_mem_ld_req_o_pre));
 
     // dte_2_mem.permission2DriveBus[b] (b=0..3) = OR over all FSMs that
     // drive bus byte b into MEM (icache fill source + per-bank dcache fill)
@@ -595,10 +623,13 @@ module DTE (
           mem_2_dcache_drv_db_b3[2], mem_2_dcache_drv_db_b3[3])
 
     // dte_2_mem.st_req = dma_2_mem.st_req | OR(dcache_2_mem.st_req[i])
-    `OR_5(u_or_st_req, 1, dte_2_mem_st_req_o,
+    // dte_2_mem_st_req_o fanout 7 -> bufferH16$ (+0.24 ns)
+    wire dte_2_mem_st_req_o_pre;
+    `OR_5(u_or_st_req, 1, dte_2_mem_st_req_o_pre,
           dma_2_mem_st_req_single,
           dcache_2_mem_st_req[0], dcache_2_mem_st_req[1],
           dcache_2_mem_st_req[2], dcache_2_mem_st_req[3])
+    bufferH16$ u_or_st_req_buf (.out(dte_2_mem_st_req_o), .in(dte_2_mem_st_req_o_pre));
 
     // dte_out_2_dcache.reqServed_mio = ddr5_2_core | core_2_ddr5 | core_2_dma
     `OR_3(u_or_req_served_mio, 1, dte_out_2_dcache_reqServed_mio_o,
