@@ -885,10 +885,7 @@
 [OK ] #0872  0x00000A37  add           writes=ECX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
 [OK ] #0873  0x00000A3A  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
 [OK ] #0874  0x00000A30  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX)
-[ERR] #0875  0x00000A33  sbb         
-       SIM  writes=EAX=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-       RTL  writes=EAX=0x00000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-       *** FLAG  DIFF: ZF: SIM=1  RTL=0
+[OK ] #0875  0x00000A33  sbb           writes=EAX=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
 [OK ] #0876  0x00000A35  add           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (RTL no-op: EBX)
 [OK ] #0877  0x00000A37  add           writes=ECX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
 [OK ] #0878  0x00000A3A  jne           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
@@ -1030,6 +1027,6 @@
 [ONLY_SIM] #1014  EIP=0x00000B54  hlt           SIM writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
 
 ================================================================================
-  SUMMARY: 1011/1015 matched  |  3 mismatched  |  1 sim-only  |  0 rtl-only
+  SUMMARY: 1012/1015 matched  |  2 mismatched  |  1 sim-only  |  0 rtl-only
   (76 RTL no-op write-backs suppressed)
 ================================================================================

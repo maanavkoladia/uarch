@@ -33,6 +33,11 @@ import tb_debug_pkg::*;
 `define DCACHE_UNIT_PATH (temp)
 `define REGFILE_PATH uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit
 
+// EXE port style. Define when EXE is the pure-Verilog-2005 EXE_structural.v
+// (flat ports). Comment out / undef to fall back to SV struct ports
+// (EXE_structural.sv / EXE.sv).
+`define EXE_PURE_STRUCTURAL
+
 // ===================== DUMP FILE DESCRIPTORS =====================
 `define REGDUMP_FD regdumpfd
 `define FLAGDUMP_FD flagdumpfd

@@ -36,6 +36,73 @@ module EveryThing_TOP (
     exe_latches_t exe_latches, exe_latches_next;
     wb_latches_t wb_latches, wb_latches_next;
 
+    // ---------------------------------------------------------------------
+    // Struct <-> flat-bus bridge for the de-structified WB and EXE stages.
+    // The new WB_structural.v / EXE_structural.v take flat Verilog-2005
+    // ports. The other six stages still take SV struct ports, so this top
+    // file owns the pack/unpack of byte arrays at the WB/EXE boundary.
+    // ---------------------------------------------------------------------
+
+    // -- inbound byte-array packs (struct unpacked array -> packed bus) ----
+    logic [255:0] wb_latches_res_buf_w;
+    logic [255:0] exe_latches_ld_buf_w;
+
+    genvar gi_resbuf_in;
+    generate
+        for (gi_resbuf_in = 0; gi_resbuf_in < CACHE_LINES_SIZE_B*2; gi_resbuf_in = gi_resbuf_in + 1) begin : g_pack_wb_res_buf
+            assign wb_latches_res_buf_w[gi_resbuf_in*8 +: 8] = wb_latches.res_buf[gi_resbuf_in];
+        end
+    endgenerate
+
+    genvar gi_ldbuf_in;
+    generate
+        for (gi_ldbuf_in = 0; gi_ldbuf_in < EXE_BUFFER_SIZE; gi_ldbuf_in = gi_ldbuf_in + 1) begin : g_pack_exe_ld_buf
+            assign exe_latches_ld_buf_w[gi_ldbuf_in*8 +: 8] = exe_latches.ld_buf[gi_ldbuf_in];
+        end
+    endgenerate
+
+    // -- outbound byte-array unpacks (packed bus -> struct unpacked array) -
+    logic [127:0] wb_stq_head_0_data_w, wb_stq_head_1_data_w, wb_stq_head_2_data_w, wb_stq_head_3_data_w;
+    logic [127:0] wb_mio_head_data_w;
+    logic [255:0] exe_wb_latches_next_res_buf_w;
+
+    genvar gi_h0;
+    generate
+        for (gi_h0 = 0; gi_h0 < CACHE_LINES_SIZE_B; gi_h0 = gi_h0 + 1) begin : g_unpack_stq_h0
+            assign wb_outputs.stq_heads[0].data[gi_h0] = wb_stq_head_0_data_w[gi_h0*8 +: 8];
+        end
+    endgenerate
+    genvar gi_h1;
+    generate
+        for (gi_h1 = 0; gi_h1 < CACHE_LINES_SIZE_B; gi_h1 = gi_h1 + 1) begin : g_unpack_stq_h1
+            assign wb_outputs.stq_heads[1].data[gi_h1] = wb_stq_head_1_data_w[gi_h1*8 +: 8];
+        end
+    endgenerate
+    genvar gi_h2;
+    generate
+        for (gi_h2 = 0; gi_h2 < CACHE_LINES_SIZE_B; gi_h2 = gi_h2 + 1) begin : g_unpack_stq_h2
+            assign wb_outputs.stq_heads[2].data[gi_h2] = wb_stq_head_2_data_w[gi_h2*8 +: 8];
+        end
+    endgenerate
+    genvar gi_h3;
+    generate
+        for (gi_h3 = 0; gi_h3 < CACHE_LINES_SIZE_B; gi_h3 = gi_h3 + 1) begin : g_unpack_stq_h3
+            assign wb_outputs.stq_heads[3].data[gi_h3] = wb_stq_head_3_data_w[gi_h3*8 +: 8];
+        end
+    endgenerate
+    genvar gi_mio;
+    generate
+        for (gi_mio = 0; gi_mio < CACHE_LINES_SIZE_B; gi_mio = gi_mio + 1) begin : g_unpack_mio
+            assign wb_outputs.mio_head.data[gi_mio] = wb_mio_head_data_w[gi_mio*8 +: 8];
+        end
+    endgenerate
+    genvar gi_resbuf_out;
+    generate
+        for (gi_resbuf_out = 0; gi_resbuf_out < CACHE_LINES_SIZE_B*2; gi_resbuf_out = gi_resbuf_out + 1) begin : g_unpack_wb_next_res_buf
+            assign wb_latches_next.res_buf[gi_resbuf_out] = exe_wb_latches_next_res_buf_w[gi_resbuf_out*8 +: 8];
+        end
+    endgenerate
+
     // assign rr_outputs = '{default: '0};
     // assign dc_outputs = '{default: '0};
     // assign mem_outputs = '{default: '0};
@@ -191,11 +258,134 @@ module EveryThing_TOP (
     EXE execute_unit (
         .clk(clk),
         .rst(rst),
-        .latches_i(exe_latches),
-        .wb_outs_i(wb_outputs),
-        .rr_outs_i(rr_outputs),
-        .wb_latches_next_o(wb_latches_next),
-        .outs_o(exe_outputs)
+
+        // ---- exe_latches_t (latches_i) ----
+        // Enum-typed control fields default to 32-bit in SV; slice down to
+        // the flat-port widths so the lint stays clean.
+        //   exe_cs_operation_type_e : 6 bits  (40 ops)
+        //   source_selector_e       : 5 bits  (20 sources)
+        .latches_valid                     (exe_latches.valid),
+        .latches_cs_ST_OP                  (exe_latches.cs.ST_OP),
+        .latches_cs_OP_TYPE                (exe_latches.cs.OP_TYPE[5:0]),
+        .latches_cs_alu_inputA_sel         (exe_latches.cs.alu_inputA_sel[4:0]),
+        .latches_cs_alu_inputB_sel         (exe_latches.cs.alu_inputB_sel[4:0]),
+        .latches_cs_branch_target_sel      (exe_latches.cs.branch_target_sel[4:0]),
+        .latches_cs_shift_by_one           (exe_latches.cs.shift_by_one),
+        .latches_cs_br_ucond               (exe_latches.cs.br_ucond),
+        .latches_cs_relative_branch        (exe_latches.cs.relative_branch),
+        .latches_cs_special_br             (exe_latches.cs.special_br),
+        .latches_cs_is_far                 (exe_latches.cs.is_far),
+        .latches_cs_is_call                (exe_latches.cs.is_call),
+        .latches_cs_second_flag_needed     (exe_latches.cs.second_flag_needed),
+        .latches_cs_rep_no_zf_update       (exe_latches.cs.rep_no_zf_update),
+        .latches_wb_cs_ST_OP               (exe_latches.wb_cs.ST_OP),
+        .latches_wb_cs_WB_DR               (exe_latches.wb_cs.WB_DR),
+        .latches_wb_cs_WB_SR               (exe_latches.wb_cs.WB_SR),
+        .latches_wb_cs_WB_EAX              (exe_latches.wb_cs.WB_EAX),
+        .latches_data_size_vec             (exe_latches.data_size_vec),
+        .latches_sr_data_size_vec          (exe_latches.sr_data_size_vec),
+        .latches_shift_sr_up               (exe_latches.shift_sr_up),
+        .latches_shift_sr_down             (exe_latches.shift_sr_down),
+        .latches_ST_XCL                    (exe_latches.ST_XCL),
+        .latches_ST_PADDR_0                (exe_latches.ST_PADDR_0),
+        .latches_ST_PADDR_1                (exe_latches.ST_PADDR_1),
+        .latches_MIO                       (exe_latches.MIO),
+        .latches_br_info_valid             (exe_latches.br_info.valid),
+        .latches_br_info_br_eip            (exe_latches.br_info.br_eip),
+        .latches_br_info_br_xcl            (exe_latches.br_info.br_xcl),
+        .latches_br_info_br_pred_taken    (exe_latches.br_info.br_pred_taken),
+        .latches_br_info_speculative_target(exe_latches.br_info.speculative_target),
+        .latches_br_rel_target             (exe_latches.br_rel_target),
+        .latches_NEIP                      (exe_latches.NEIP),
+        .latches_EIP                       (exe_latches.EIP),
+        .latches_EAX                       (exe_latches.EAX),
+        .latches_imm64                     (exe_latches.imm64),
+        .latches_ld_buf                    (exe_latches_ld_buf_w),
+        .latches_sr_id                     (exe_latches.sr_id),
+        .latches_sr_data                   (exe_latches.sr_data),
+        .latches_dr_id                     (exe_latches.dr_id),
+        .latches_dr_data                   (exe_latches.dr_data),
+        .latches_ld_addy                   (exe_latches.ld_addy),
+
+        // ---- wb_outputs_t (wb_outs_i) ----
+        .wb_outs_wb_stall                  (wb_outputs.wb_stall),
+
+        // ---- rr_outputs_t (rr_outs_i) ----
+        .rr_outs_codeSeg_data              (rr_outputs.codeSeg_data),
+        .rr_outs_regFileValues_0           (rr_outputs.regFileValues[0]),
+        .rr_outs_regFileValues_1           (rr_outputs.regFileValues[1]),
+        .rr_outs_regFileValues_2           (rr_outputs.regFileValues[2]),
+        .rr_outs_regFileValues_3           (rr_outputs.regFileValues[3]),
+        .rr_outs_regFileValues_4           (rr_outputs.regFileValues[4]),
+        .rr_outs_regFileValues_5           (rr_outputs.regFileValues[5]),
+        .rr_outs_regFileValues_6           (rr_outputs.regFileValues[6]),
+        .rr_outs_regFileValues_7           (rr_outputs.regFileValues[7]),
+        .rr_outs_regFileValues_8           (rr_outputs.regFileValues[8]),
+        .rr_outs_regFileValues_9           (rr_outputs.regFileValues[9]),
+        .rr_outs_regFileValues_10          (rr_outputs.regFileValues[10]),
+        .rr_outs_regFileValues_11          (rr_outputs.regFileValues[11]),
+        .rr_outs_regFileValues_12          (rr_outputs.regFileValues[12]),
+        .rr_outs_regFileValues_13          (rr_outputs.regFileValues[13]),
+        .rr_outs_regFileValues_14          (rr_outputs.regFileValues[14]),
+        .rr_outs_regFileValues_15          (rr_outputs.regFileValues[15]),
+        .rr_outs_regFileValues_16          (rr_outputs.regFileValues[16]),
+        .rr_outs_regFileValues_17          (rr_outputs.regFileValues[17]),
+        .rr_outs_regFileValues_18          (rr_outputs.regFileValues[18]),
+        .rr_outs_regFileValues_19          (rr_outputs.regFileValues[19]),
+        .rr_outs_regFileValues_20          (rr_outputs.regFileValues[20]),
+        .rr_outs_regFileValues_21          (rr_outputs.regFileValues[21]),
+        .rr_outs_regFileValues_22          (rr_outputs.regFileValues[22]),
+        .rr_outs_regFileValues_23          (rr_outputs.regFileValues[23]),
+        .rr_outs_regFileValues_24          (rr_outputs.regFileValues[24]),
+        .rr_outs_regFileValues_25          (rr_outputs.regFileValues[25]),
+
+        // ---- wb_latches_t (wb_latches_next_o) ----
+        .wb_latches_next_valid             (wb_latches_next.valid),
+        .wb_latches_next_cs_ST_OP          (wb_latches_next.cs.ST_OP),
+        .wb_latches_next_cs_WB_DR          (wb_latches_next.cs.WB_DR),
+        .wb_latches_next_cs_WB_SR          (wb_latches_next.cs.WB_SR),
+        .wb_latches_next_cs_WB_EAX         (wb_latches_next.cs.WB_EAX),
+        .wb_latches_next_ST_XCL            (wb_latches_next.ST_XCL),
+        .wb_latches_next_ST_PADDR_0        (wb_latches_next.ST_PADDR_0),
+        .wb_latches_next_ST_BIT_VEC_0      (wb_latches_next.ST_BIT_VEC_0),
+        .wb_latches_next_ST_PADDR_1        (wb_latches_next.ST_PADDR_1),
+        .wb_latches_next_ST_BIT_VEC_1      (wb_latches_next.ST_BIT_VEC_1),
+        .wb_latches_next_MIO               (wb_latches_next.MIO),
+        .wb_latches_next_EIP               (wb_latches_next.EIP),
+        .wb_latches_next_res_buf           (exe_wb_latches_next_res_buf_w),
+        .wb_latches_next_sr_id             (wb_latches_next.sr_id),
+        .wb_latches_next_sr_data           (wb_latches_next.sr_data),
+        .wb_latches_next_dr_id             (wb_latches_next.dr_id),
+        .wb_latches_next_dr_data           (wb_latches_next.dr_data),
+        .wb_latches_next_EAX               (wb_latches_next.EAX),
+
+        // ---- exe_outputs_t (outs_o) ----
+        .outs_valid                        (exe_outputs.valid),
+        .outs_br_res_valid                 (exe_outputs.br_res_out.valid),
+        .outs_br_res_flush                 (exe_outputs.br_res_out.flush),
+        .outs_br_res_farFlush              (exe_outputs.br_res_out.farFlush),
+        .outs_br_res_callFlush             (exe_outputs.br_res_out.callFlush),
+        .outs_br_res_miss_prediction       (exe_outputs.br_res_out.miss_prediction),
+        .outs_br_res_br_eip                (exe_outputs.br_res_out.br_eip),
+        .outs_br_res_neip                  (exe_outputs.br_res_out.neip),
+        .outs_br_res_br_target             (exe_outputs.br_res_out.br_target),
+        .outs_br_res_taken                 (exe_outputs.br_res_out.taken),
+        .outs_br_res_br_XCL                (exe_outputs.br_res_out.br_XCL),
+        .outs_br_res_clr_exp_mode          (exe_outputs.br_res_out.clr_exp_mode),
+        .outs_br_res_br_ucond              (exe_outputs.br_res_out.br_ucond),
+        .outs_DR_0_we                      (exe_outputs.DR_0_we),
+        .outs_DR_0_id                      (exe_outputs.DR_0_id),
+        .outs_DR_0_data                    (exe_outputs.DR_0_data),
+        .outs_DR_1_we                      (exe_outputs.DR_1_we),
+        .outs_DR_1_id                      (exe_outputs.DR_1_id),
+        .outs_DR_1_data                    (exe_outputs.DR_1_data),
+        .outs_clr_ZF_sb                    (exe_outputs.clr_ZF_sb),
+        .outs_ZF                           (exe_outputs.ZF),
+        .outs_ST_OP                        (exe_outputs.ST_OP),
+        .outs_ST_XCL                       (exe_outputs.ST_XCL),
+        .outs_ST_PADDR_0                   (exe_outputs.ST_PADDR_0),
+        .outs_ST_PADDR_1                   (exe_outputs.ST_PADDR_1),
+        .outs_wb_stage_latch_we            (exe_outputs.wb_stage_latch_we)
     );
 
     WB_Latches wb_latches_unit (
@@ -209,10 +399,104 @@ module EveryThing_TOP (
     WB write_back_unit (
         .clk(clk),
         .rst(rst),
-        .wb_latches(wb_latches),
-        .write_success(DCacheIn_i.writeSuccess),
-        .write_success_mio(DCacheIn_i.writeSuccess_MIO),
-        .outputs(wb_outputs)
+
+        // ---- wb_latches_t ----
+        .wb_latches_valid                  (wb_latches.valid),
+        .wb_latches_cs_ST_OP               (wb_latches.cs.ST_OP),
+        .wb_latches_cs_WB_DR               (wb_latches.cs.WB_DR),
+        .wb_latches_cs_WB_SR               (wb_latches.cs.WB_SR),
+        .wb_latches_cs_WB_EAX              (wb_latches.cs.WB_EAX),
+        .wb_latches_ST_XCL                 (wb_latches.ST_XCL),
+        .wb_latches_ST_PADDR_0             (wb_latches.ST_PADDR_0),
+        .wb_latches_ST_BIT_VEC_0           (wb_latches.ST_BIT_VEC_0),
+        .wb_latches_ST_PADDR_1             (wb_latches.ST_PADDR_1),
+        .wb_latches_ST_BIT_VEC_1           (wb_latches.ST_BIT_VEC_1),
+        .wb_latches_MIO                    (wb_latches.MIO),
+        .wb_latches_EIP                    (wb_latches.EIP),
+        .wb_latches_res_buf                (wb_latches_res_buf_w),
+        .wb_latches_sr_id                  (wb_latches.sr_id),
+        .wb_latches_sr_data                (wb_latches.sr_data),
+        .wb_latches_dr_id                  (wb_latches.dr_id),
+        .wb_latches_dr_data                (wb_latches.dr_data),
+        .wb_latches_EAX                    (wb_latches.EAX),
+
+        // ---- write_success[NUM_WB_ST_QS] ----
+        .write_success_0                   (DCacheIn_i.writeSuccess[0]),
+        .write_success_1                   (DCacheIn_i.writeSuccess[1]),
+        .write_success_2                   (DCacheIn_i.writeSuccess[2]),
+        .write_success_3                   (DCacheIn_i.writeSuccess[3]),
+        .write_success_mio                 (DCacheIn_i.writeSuccess_MIO),
+
+        // ---- wb_outputs_t scalars ----
+        .outputs_valid                     (wb_outputs.valid),
+        .outputs_wb_stall                  (wb_outputs.wb_stall),
+        .outputs_ST_OP                     (wb_outputs.ST_OP),
+        .outputs_ST_XCL                    (wb_outputs.ST_XCL),
+        .outputs_ST_PADDR_0                (wb_outputs.ST_PADDR_0),
+        .outputs_ST_PADDR_1                (wb_outputs.ST_PADDR_1),
+
+        // ---- wb_outputs_t.stq_heads[0..3] ----
+        .outputs_stq_head_0_full           (wb_outputs.stq_heads[0].full),
+        .outputs_stq_head_0_empty          (wb_outputs.stq_heads[0].empty),
+        .outputs_stq_head_0_address        (wb_outputs.stq_heads[0].address),
+        .outputs_stq_head_0_bit_vec        (wb_outputs.stq_heads[0].bit_vec),
+        .outputs_stq_head_0_data           (wb_stq_head_0_data_w),
+        .outputs_stq_head_1_full           (wb_outputs.stq_heads[1].full),
+        .outputs_stq_head_1_empty          (wb_outputs.stq_heads[1].empty),
+        .outputs_stq_head_1_address        (wb_outputs.stq_heads[1].address),
+        .outputs_stq_head_1_bit_vec        (wb_outputs.stq_heads[1].bit_vec),
+        .outputs_stq_head_1_data           (wb_stq_head_1_data_w),
+        .outputs_stq_head_2_full           (wb_outputs.stq_heads[2].full),
+        .outputs_stq_head_2_empty          (wb_outputs.stq_heads[2].empty),
+        .outputs_stq_head_2_address        (wb_outputs.stq_heads[2].address),
+        .outputs_stq_head_2_bit_vec        (wb_outputs.stq_heads[2].bit_vec),
+        .outputs_stq_head_2_data           (wb_stq_head_2_data_w),
+        .outputs_stq_head_3_full           (wb_outputs.stq_heads[3].full),
+        .outputs_stq_head_3_empty          (wb_outputs.stq_heads[3].empty),
+        .outputs_stq_head_3_address        (wb_outputs.stq_heads[3].address),
+        .outputs_stq_head_3_bit_vec        (wb_outputs.stq_heads[3].bit_vec),
+        .outputs_stq_head_3_data           (wb_stq_head_3_data_w),
+
+        // ---- wb_outputs_t.mio_head ----
+        .outputs_mio_head_full             (wb_outputs.mio_head.full),
+        .outputs_mio_head_empty            (wb_outputs.mio_head.empty),
+        .outputs_mio_head_address          (wb_outputs.mio_head.address),
+        .outputs_mio_head_bit_vec          (wb_outputs.mio_head.bit_vec),
+        .outputs_mio_head_data             (wb_mio_head_data_w),
+
+        // ---- wb_outputs_t.dep_check.entries[0..15] ----
+        .outputs_dep_check_entry_0_valid   (wb_outputs.dep_check.entries[0].valid),
+        .outputs_dep_check_entry_0_address (wb_outputs.dep_check.entries[0].address),
+        .outputs_dep_check_entry_1_valid   (wb_outputs.dep_check.entries[1].valid),
+        .outputs_dep_check_entry_1_address (wb_outputs.dep_check.entries[1].address),
+        .outputs_dep_check_entry_2_valid   (wb_outputs.dep_check.entries[2].valid),
+        .outputs_dep_check_entry_2_address (wb_outputs.dep_check.entries[2].address),
+        .outputs_dep_check_entry_3_valid   (wb_outputs.dep_check.entries[3].valid),
+        .outputs_dep_check_entry_3_address (wb_outputs.dep_check.entries[3].address),
+        .outputs_dep_check_entry_4_valid   (wb_outputs.dep_check.entries[4].valid),
+        .outputs_dep_check_entry_4_address (wb_outputs.dep_check.entries[4].address),
+        .outputs_dep_check_entry_5_valid   (wb_outputs.dep_check.entries[5].valid),
+        .outputs_dep_check_entry_5_address (wb_outputs.dep_check.entries[5].address),
+        .outputs_dep_check_entry_6_valid   (wb_outputs.dep_check.entries[6].valid),
+        .outputs_dep_check_entry_6_address (wb_outputs.dep_check.entries[6].address),
+        .outputs_dep_check_entry_7_valid   (wb_outputs.dep_check.entries[7].valid),
+        .outputs_dep_check_entry_7_address (wb_outputs.dep_check.entries[7].address),
+        .outputs_dep_check_entry_8_valid   (wb_outputs.dep_check.entries[8].valid),
+        .outputs_dep_check_entry_8_address (wb_outputs.dep_check.entries[8].address),
+        .outputs_dep_check_entry_9_valid   (wb_outputs.dep_check.entries[9].valid),
+        .outputs_dep_check_entry_9_address (wb_outputs.dep_check.entries[9].address),
+        .outputs_dep_check_entry_10_valid  (wb_outputs.dep_check.entries[10].valid),
+        .outputs_dep_check_entry_10_address(wb_outputs.dep_check.entries[10].address),
+        .outputs_dep_check_entry_11_valid  (wb_outputs.dep_check.entries[11].valid),
+        .outputs_dep_check_entry_11_address(wb_outputs.dep_check.entries[11].address),
+        .outputs_dep_check_entry_12_valid  (wb_outputs.dep_check.entries[12].valid),
+        .outputs_dep_check_entry_12_address(wb_outputs.dep_check.entries[12].address),
+        .outputs_dep_check_entry_13_valid  (wb_outputs.dep_check.entries[13].valid),
+        .outputs_dep_check_entry_13_address(wb_outputs.dep_check.entries[13].address),
+        .outputs_dep_check_entry_14_valid  (wb_outputs.dep_check.entries[14].valid),
+        .outputs_dep_check_entry_14_address(wb_outputs.dep_check.entries[14].address),
+        .outputs_dep_check_entry_15_valid  (wb_outputs.dep_check.entries[15].valid),
+        .outputs_dep_check_entry_15_address(wb_outputs.dep_check.entries[15].address)
     );
 
 

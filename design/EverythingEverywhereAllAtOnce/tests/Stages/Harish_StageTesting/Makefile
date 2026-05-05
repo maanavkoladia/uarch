@@ -16,7 +16,7 @@ TARGET = system_testing
 STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 8
+CLK_PERIOD := 8.5
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 DCACHE_DUMP_END=100

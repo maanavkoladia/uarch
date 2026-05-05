@@ -1,8 +1,8 @@
 ================================================================================
   SIM vs RTL DUMP COMPARISON  (registers + flags per instruction)
 ================================================================================
-  REG  — SIM: 1015  RTL: 812
-  FLAG — SIM: 1015  RTL: 812
+  REG  — SIM: 1015  RTL: 343
+  FLAG — SIM: 1015  RTL: 343
 
 [OK ] #0000  EIP=0x00000000  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0001  EIP=0x00000005  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
@@ -347,475 +347,475 @@
 [OK ] #0340  EIP=0x00000630  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0341  EIP=0x00000635  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0342  EIP=0x0000063A  cmpxchg       CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0343  EIP=0x0000063D  add           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0344  EIP=0x0000063F  mov           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0345  EIP=0x00000644  mov           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0346  EIP=0x00000649  mov           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0347  EIP=0x0000064E  cmpxchg       CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0348  EIP=0x00000651  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0349  EIP=0x00000653  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0350  EIP=0x00000655  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0351  EIP=0x0000065A  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0352  EIP=0x0000065F  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0353  EIP=0x00000664  push          CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0354  EIP=0x00000665  push          CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0355  EIP=0x00000666  push          CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0356  EIP=0x00000667  pop           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0357  EIP=0x00000668  pop           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0358  EIP=0x00000669  pop           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0359  EIP=0x0000066A  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0360  EIP=0x0000066C  add           CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=1
-[OK ] #0361  EIP=0x0000066E  add           CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0362  EIP=0x00000670  push          CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0363  EIP=0x00000675  push          CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0364  EIP=0x0000067A  pop           CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0365  EIP=0x0000067B  pop           CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0366  EIP=0x0000067C  add           CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0367  EIP=0x0000067E  add           CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0368  EIP=0x00000680  mov           CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0369  EIP=0x0000068A  push          CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0370  EIP=0x00000690  pop           CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0371  EIP=0x00000696  mov           CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0372  EIP=0x0000069C  add           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0373  EIP=0x0000069E  push          CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0374  EIP=0x0000069F  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0375  EIP=0x000006A4  pop           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0376  EIP=0x000006A5  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0377  EIP=0x000006AF  cld           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0378  EIP=0x000006B0  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0379  EIP=0x000006B6  add           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0380  EIP=0x000006B8  std           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=1  OF=0
-[OK ] #0381  EIP=0x000006B9  mov           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=1  OF=0
-[OK ] #0382  EIP=0x000006BF  add           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=1  OF=0
-[OK ] #0383  EIP=0x000006C1  cld           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0384  EIP=0x000006C2  mov           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0385  EIP=0x000006CC  mov           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0386  EIP=0x000006D2  add           CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0387  EIP=0x000006D4  call          CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0388  EIP=0x000006F8  mov           CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0389  EIP=0x000006FD  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0390  EIP=0x00000702  ret           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0391  EIP=0x000006D9  add           CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0392  EIP=0x000006DB  call          CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0393  EIP=0x00000703  mov           CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0394  EIP=0x00000708  sar           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0395  EIP=0x0000070B  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0396  EIP=0x00000710  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0397  EIP=0x00000712  ret           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0398  EIP=0x000006E0  add           CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0399  EIP=0x000006E2  call          CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0400  EIP=0x00000713  mov           CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0401  EIP=0x0000071D  or            CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0402  EIP=0x00000727  or            CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0403  EIP=0x00000731  or            CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0404  EIP=0x0000073B  or            CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0405  EIP=0x00000742  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0406  EIP=0x00000748  and           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0407  EIP=0x00000752  ret           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0408  EIP=0x000006E7  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0409  EIP=0x000006ED  add           CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0410  EIP=0x000006EF  call          CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0411  EIP=0x00000753  mov           CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0412  EIP=0x00000758  mov           CF=1  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0413  EIP=0x0000075D  and           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0414  EIP=0x0000075F  not           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0415  EIP=0x00000761  mov           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0416  EIP=0x00000766  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0417  EIP=0x00000768  shl           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=1
-[OK ] #0418  EIP=0x0000076A  or            CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0419  EIP=0x0000076D  ret           CF=0  PF=0  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0420  EIP=0x000006F4  add           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0421  EIP=0x000006F6  jmp           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0422  EIP=0x0000076E  push          CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0423  EIP=0x00000770  push          CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0424  EIP=0x00000772  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0425  EIP=0x00000777  call          CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0426  EIP=0x000007AB  push          CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0427  EIP=0x000007AC  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0428  EIP=0x000007AE  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0429  EIP=0x000007B1  add           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0430  EIP=0x000007B4  pop           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0431  EIP=0x000007B5  ret           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0432  EIP=0x0000077C  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0433  EIP=0x0000077F  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0434  EIP=0x00000781  push          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0435  EIP=0x00000786  push          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0436  EIP=0x0000078B  call          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0437  EIP=0x000007B6  push          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0438  EIP=0x000007B7  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0439  EIP=0x000007B9  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0440  EIP=0x000007BC  and           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0441  EIP=0x000007BF  pop           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0442  EIP=0x000007C0  ret           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0443  EIP=0x00000790  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0444  EIP=0x00000793  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0445  EIP=0x00000795  push          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0446  EIP=0x0000079A  push          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0447  EIP=0x0000079F  call          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0448  EIP=0x000007C1  push          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0449  EIP=0x000007C2  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0450  EIP=0x000007C4  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0451  EIP=0x000007C7  or            CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0452  EIP=0x000007CA  pop           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0453  EIP=0x000007CB  ret           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0454  EIP=0x000007A4  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0455  EIP=0x000007A7  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0456  EIP=0x000007A9  jmp           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0457  EIP=0x000007CC  call          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0458  EIP=0x000007E3  push          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0459  EIP=0x000007E4  call          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0460  EIP=0x000007D5  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0461  EIP=0x000007DA  shl           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0462  EIP=0x000007DD  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0463  EIP=0x000007E2  ret           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0464  EIP=0x000007E9  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0465  EIP=0x000007EB  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0466  EIP=0x000007ED  and           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0467  EIP=0x000007F3  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0468  EIP=0x000007F5  pop           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0469  EIP=0x000007F6  ret           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0470  EIP=0x000007D1  add           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0471  EIP=0x000007D3  jmp           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0472  EIP=0x000007F7  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0473  EIP=0x000007FC  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0474  EIP=0x00000801  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0475  EIP=0x00000806  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0476  EIP=0x0000080B  push          CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0477  EIP=0x0000080C  push          CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0478  EIP=0x0000080D  push          CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0479  EIP=0x0000080E  push          CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0480  EIP=0x0000080F  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0481  EIP=0x00000814  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0482  EIP=0x00000819  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0483  EIP=0x0000081E  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0484  EIP=0x00000823  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0485  EIP=0x00000825  add           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0486  EIP=0x00000827  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0487  EIP=0x00000829  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0488  EIP=0x0000082B  pop           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0489  EIP=0x0000082C  pop           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0490  EIP=0x0000082D  pop           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0491  EIP=0x0000082E  pop           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0492  EIP=0x0000082F  add           CF=1  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0493  EIP=0x00000831  add           CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0494  EIP=0x00000833  add           CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0495  EIP=0x00000835  add           CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0496  EIP=0x00000837  push          CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0497  EIP=0x0000083C  push          CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0498  EIP=0x00000841  push          CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0499  EIP=0x00000846  push          CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0500  EIP=0x0000084B  push          CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0501  EIP=0x00000850  push          CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0502  EIP=0x00000855  push          CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0503  EIP=0x0000085A  push          CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0504  EIP=0x0000085F  pop           CF=1  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0505  EIP=0x00000860  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0506  EIP=0x00000862  pop           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0507  EIP=0x00000863  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0508  EIP=0x00000865  pop           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0509  EIP=0x00000866  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0510  EIP=0x00000868  pop           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0511  EIP=0x00000869  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0512  EIP=0x0000086B  pop           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0513  EIP=0x0000086C  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0514  EIP=0x0000086E  pop           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0515  EIP=0x0000086F  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0516  EIP=0x00000871  pop           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0517  EIP=0x00000872  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0518  EIP=0x00000874  pop           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0519  EIP=0x00000875  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0520  EIP=0x00000877  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0521  EIP=0x0000087D  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0522  EIP=0x00000887  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0523  EIP=0x0000088C  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0524  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0525  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0526  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0527  EIP=0x0000089C  add           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0528  EIP=0x0000089F  jne           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0529  EIP=0x0000088C  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0530  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0531  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0532  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0533  EIP=0x0000089C  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0534  EIP=0x0000089F  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0535  EIP=0x0000088C  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0536  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=1
-[OK ] #0537  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=1
-[OK ] #0538  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=1
-[OK ] #0539  EIP=0x0000089C  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0540  EIP=0x0000089F  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0541  EIP=0x0000088C  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0542  EIP=0x0000088E  add           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0543  EIP=0x00000894  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0544  EIP=0x00000896  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0545  EIP=0x0000089C  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0546  EIP=0x0000089F  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0547  EIP=0x0000088C  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0548  EIP=0x0000088E  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0549  EIP=0x00000894  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0550  EIP=0x00000896  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0551  EIP=0x0000089C  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0552  EIP=0x0000089F  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0553  EIP=0x0000088C  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0554  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0555  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0556  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0557  EIP=0x0000089C  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0558  EIP=0x0000089F  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0559  EIP=0x0000088C  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0560  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0561  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0562  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0563  EIP=0x0000089C  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0564  EIP=0x0000089F  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0565  EIP=0x0000088C  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0566  EIP=0x0000088E  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0567  EIP=0x00000894  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0568  EIP=0x00000896  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0569  EIP=0x0000089C  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0570  EIP=0x0000089F  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0571  EIP=0x0000088C  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0572  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0573  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0574  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0575  EIP=0x0000089C  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0576  EIP=0x0000089F  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0577  EIP=0x0000088C  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0578  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0579  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0580  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0581  EIP=0x0000089C  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0582  EIP=0x0000089F  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0583  EIP=0x0000088C  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0584  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0585  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0586  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0587  EIP=0x0000089C  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0588  EIP=0x0000089F  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0589  EIP=0x0000088C  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0590  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0591  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0592  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0593  EIP=0x0000089C  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0594  EIP=0x0000089F  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0595  EIP=0x0000088C  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0596  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0597  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0598  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0599  EIP=0x0000089C  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0600  EIP=0x0000089F  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0601  EIP=0x0000088C  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0602  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0603  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0604  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0605  EIP=0x0000089C  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0606  EIP=0x0000089F  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0607  EIP=0x0000088C  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0608  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0609  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0610  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0611  EIP=0x0000089C  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0612  EIP=0x0000089F  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0613  EIP=0x0000088C  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0614  EIP=0x0000088E  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0615  EIP=0x00000894  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0616  EIP=0x00000896  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0617  EIP=0x0000089C  add           CF=1  PF=1  AF=1  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0618  EIP=0x0000089F  jne           CF=1  PF=1  AF=1  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0619  EIP=0x000008A1  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0620  EIP=0x000008A3  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0621  EIP=0x000008AD  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0622  EIP=0x000008B7  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0623  EIP=0x000008BC  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0624  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0625  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0626  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0627  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0628  EIP=0x000008D6  add           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0629  EIP=0x000008D9  jne           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0630  EIP=0x000008BC  mov           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0631  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0632  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0633  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0634  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0635  EIP=0x000008D6  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0636  EIP=0x000008D9  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0637  EIP=0x000008BC  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0638  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0639  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0640  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0641  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0642  EIP=0x000008D6  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0643  EIP=0x000008D9  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0644  EIP=0x000008BC  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0645  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0646  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0647  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0648  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0649  EIP=0x000008D6  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0650  EIP=0x000008D9  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0651  EIP=0x000008BC  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0652  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0653  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0654  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0655  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0656  EIP=0x000008D6  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0657  EIP=0x000008D9  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0658  EIP=0x000008BC  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0659  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0660  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0661  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0662  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0663  EIP=0x000008D6  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0664  EIP=0x000008D9  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0665  EIP=0x000008BC  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0666  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0667  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0668  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0669  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0670  EIP=0x000008D6  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0671  EIP=0x000008D9  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0672  EIP=0x000008BC  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0673  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0674  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0675  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0676  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0677  EIP=0x000008D6  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0678  EIP=0x000008D9  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0679  EIP=0x000008BC  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0680  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0681  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0682  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0683  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0684  EIP=0x000008D6  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0685  EIP=0x000008D9  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0686  EIP=0x000008BC  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0687  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0688  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0689  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0690  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0691  EIP=0x000008D6  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0692  EIP=0x000008D9  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0693  EIP=0x000008BC  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0694  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0695  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0696  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0697  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0698  EIP=0x000008D6  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0699  EIP=0x000008D9  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0700  EIP=0x000008BC  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0701  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0702  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0703  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0704  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0705  EIP=0x000008D6  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0706  EIP=0x000008D9  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0707  EIP=0x000008BC  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0708  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0709  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0710  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0711  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0712  EIP=0x000008D6  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0713  EIP=0x000008D9  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0714  EIP=0x000008BC  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0715  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0716  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0717  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0718  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0719  EIP=0x000008D6  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0720  EIP=0x000008D9  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0721  EIP=0x000008BC  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0722  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0723  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0724  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0725  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0726  EIP=0x000008D6  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0727  EIP=0x000008D9  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0728  EIP=0x000008BC  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0729  EIP=0x000008C2  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0730  EIP=0x000008C8  not           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0731  EIP=0x000008CA  or            CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0732  EIP=0x000008D0  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0733  EIP=0x000008D6  add           CF=1  PF=1  AF=1  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0734  EIP=0x000008D9  jne           CF=1  PF=1  AF=1  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0735  EIP=0x000008DB  add           CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0736  EIP=0x000008DD  mov           CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0737  EIP=0x000008E2  mov           CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0738  EIP=0x000008E7  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0739  EIP=0x000008EA  ja            CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0740  EIP=0x000008F2  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0741  EIP=0x000008F5  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0742  EIP=0x000008FA  add           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0743  EIP=0x000008FD  ja            CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0744  EIP=0x000008FF  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0745  EIP=0x00000902  jmp           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0746  EIP=0x0000090A  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0747  EIP=0x0000090F  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0748  EIP=0x00000912  ja            CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0749  EIP=0x00000914  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0750  EIP=0x0000091A  jmp           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0751  EIP=0x00000922  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0752  EIP=0x00000924  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0753  EIP=0x00000929  push          CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0754  EIP=0x0000092A  shl           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0755  EIP=0x0000092D  push          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0756  EIP=0x0000092E  pop           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0757  EIP=0x0000092F  pop           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0758  EIP=0x00000930  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0759  EIP=0x00000935  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0760  EIP=0x00000938  adc           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0761  EIP=0x0000093A  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0762  EIP=0x0000093C  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0763  EIP=0x00000941  push          CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0764  EIP=0x00000942  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0765  EIP=0x00000947  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0766  EIP=0x0000094A  pop           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0767  EIP=0x0000094B  sbb           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0768  EIP=0x00000951  add           CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0769  EIP=0x00000953  mov           CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0770  EIP=0x00000958  push          CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0771  EIP=0x00000959  mov           CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0772  EIP=0x0000095E  pop           CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0773  EIP=0x0000095F  xchg          CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0774  EIP=0x00000960  bsf           CF=0  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0775  EIP=0x00000963  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0776  EIP=0x00000965  bsf           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0777  EIP=0x00000968  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0778  EIP=0x0000096A  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0779  EIP=0x00000974  push          CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0780  EIP=0x0000097A  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0781  EIP=0x0000097F  xchg          CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0782  EIP=0x00000985  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0783  EIP=0x00000987  pop           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0784  EIP=0x00000988  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0785  EIP=0x0000098A  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0786  EIP=0x0000098F  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0787  EIP=0x00000999  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0788  EIP=0x0000099E  mov           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0789  EIP=0x000009A3  cmpxchg       CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0790  EIP=0x000009AA  mov           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0791  EIP=0x000009B0  add           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=1
-[OK ] #0792  EIP=0x000009B2  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0793  EIP=0x000009B5  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0794  EIP=0x0000098F  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0795  EIP=0x00000999  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0796  EIP=0x0000099E  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0797  EIP=0x000009A3  cmpxchg       CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0798  EIP=0x000009AA  mov           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0799  EIP=0x000009B0  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0800  EIP=0x000009B2  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0801  EIP=0x000009B5  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0802  EIP=0x0000098F  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0803  EIP=0x00000999  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0804  EIP=0x0000099E  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0805  EIP=0x000009A3  cmpxchg       CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0806  EIP=0x000009AA  mov           CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0807  EIP=0x000009B0  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
-[OK ] #0808  EIP=0x000009B2  add           CF=1  PF=1  AF=1  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0809  EIP=0x000009B5  jne           CF=1  PF=1  AF=1  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0810  EIP=0x000009B7  mov           CF=1  PF=1  AF=1  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0811  EIP=0x000009BC  or            CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[ONLY_SIM] #0343  EIP=0x0000063D  add
+[ONLY_SIM] #0344  EIP=0x0000063F  mov
+[ONLY_SIM] #0345  EIP=0x00000644  mov
+[ONLY_SIM] #0346  EIP=0x00000649  mov
+[ONLY_SIM] #0347  EIP=0x0000064E  cmpxchg
+[ONLY_SIM] #0348  EIP=0x00000651  add
+[ONLY_SIM] #0349  EIP=0x00000653  add
+[ONLY_SIM] #0350  EIP=0x00000655  mov
+[ONLY_SIM] #0351  EIP=0x0000065A  mov
+[ONLY_SIM] #0352  EIP=0x0000065F  mov
+[ONLY_SIM] #0353  EIP=0x00000664  push
+[ONLY_SIM] #0354  EIP=0x00000665  push
+[ONLY_SIM] #0355  EIP=0x00000666  push
+[ONLY_SIM] #0356  EIP=0x00000667  pop
+[ONLY_SIM] #0357  EIP=0x00000668  pop
+[ONLY_SIM] #0358  EIP=0x00000669  pop
+[ONLY_SIM] #0359  EIP=0x0000066A  add
+[ONLY_SIM] #0360  EIP=0x0000066C  add
+[ONLY_SIM] #0361  EIP=0x0000066E  add
+[ONLY_SIM] #0362  EIP=0x00000670  push
+[ONLY_SIM] #0363  EIP=0x00000675  push
+[ONLY_SIM] #0364  EIP=0x0000067A  pop
+[ONLY_SIM] #0365  EIP=0x0000067B  pop
+[ONLY_SIM] #0366  EIP=0x0000067C  add
+[ONLY_SIM] #0367  EIP=0x0000067E  add
+[ONLY_SIM] #0368  EIP=0x00000680  mov
+[ONLY_SIM] #0369  EIP=0x0000068A  push
+[ONLY_SIM] #0370  EIP=0x00000690  pop
+[ONLY_SIM] #0371  EIP=0x00000696  mov
+[ONLY_SIM] #0372  EIP=0x0000069C  add
+[ONLY_SIM] #0373  EIP=0x0000069E  push
+[ONLY_SIM] #0374  EIP=0x0000069F  mov
+[ONLY_SIM] #0375  EIP=0x000006A4  pop
+[ONLY_SIM] #0376  EIP=0x000006A5  mov
+[ONLY_SIM] #0377  EIP=0x000006AF  cld
+[ONLY_SIM] #0378  EIP=0x000006B0  mov
+[ONLY_SIM] #0379  EIP=0x000006B6  add
+[ONLY_SIM] #0380  EIP=0x000006B8  std
+[ONLY_SIM] #0381  EIP=0x000006B9  mov
+[ONLY_SIM] #0382  EIP=0x000006BF  add
+[ONLY_SIM] #0383  EIP=0x000006C1  cld
+[ONLY_SIM] #0384  EIP=0x000006C2  mov
+[ONLY_SIM] #0385  EIP=0x000006CC  mov
+[ONLY_SIM] #0386  EIP=0x000006D2  add
+[ONLY_SIM] #0387  EIP=0x000006D4  call
+[ONLY_SIM] #0388  EIP=0x000006F8  mov
+[ONLY_SIM] #0389  EIP=0x000006FD  add
+[ONLY_SIM] #0390  EIP=0x00000702  ret
+[ONLY_SIM] #0391  EIP=0x000006D9  add
+[ONLY_SIM] #0392  EIP=0x000006DB  call
+[ONLY_SIM] #0393  EIP=0x00000703  mov
+[ONLY_SIM] #0394  EIP=0x00000708  sar
+[ONLY_SIM] #0395  EIP=0x0000070B  and
+[ONLY_SIM] #0396  EIP=0x00000710  not
+[ONLY_SIM] #0397  EIP=0x00000712  ret
+[ONLY_SIM] #0398  EIP=0x000006E0  add
+[ONLY_SIM] #0399  EIP=0x000006E2  call
+[ONLY_SIM] #0400  EIP=0x00000713  mov
+[ONLY_SIM] #0401  EIP=0x0000071D  or
+[ONLY_SIM] #0402  EIP=0x00000727  or
+[ONLY_SIM] #0403  EIP=0x00000731  or
+[ONLY_SIM] #0404  EIP=0x0000073B  or
+[ONLY_SIM] #0405  EIP=0x00000742  not
+[ONLY_SIM] #0406  EIP=0x00000748  and
+[ONLY_SIM] #0407  EIP=0x00000752  ret
+[ONLY_SIM] #0408  EIP=0x000006E7  mov
+[ONLY_SIM] #0409  EIP=0x000006ED  add
+[ONLY_SIM] #0410  EIP=0x000006EF  call
+[ONLY_SIM] #0411  EIP=0x00000753  mov
+[ONLY_SIM] #0412  EIP=0x00000758  mov
+[ONLY_SIM] #0413  EIP=0x0000075D  and
+[ONLY_SIM] #0414  EIP=0x0000075F  not
+[ONLY_SIM] #0415  EIP=0x00000761  mov
+[ONLY_SIM] #0416  EIP=0x00000766  and
+[ONLY_SIM] #0417  EIP=0x00000768  shl
+[ONLY_SIM] #0418  EIP=0x0000076A  or
+[ONLY_SIM] #0419  EIP=0x0000076D  ret
+[ONLY_SIM] #0420  EIP=0x000006F4  add
+[ONLY_SIM] #0421  EIP=0x000006F6  jmp
+[ONLY_SIM] #0422  EIP=0x0000076E  push
+[ONLY_SIM] #0423  EIP=0x00000770  push
+[ONLY_SIM] #0424  EIP=0x00000772  mov
+[ONLY_SIM] #0425  EIP=0x00000777  call
+[ONLY_SIM] #0426  EIP=0x000007AB  push
+[ONLY_SIM] #0427  EIP=0x000007AC  mov
+[ONLY_SIM] #0428  EIP=0x000007AE  mov
+[ONLY_SIM] #0429  EIP=0x000007B1  add
+[ONLY_SIM] #0430  EIP=0x000007B4  pop
+[ONLY_SIM] #0431  EIP=0x000007B5  ret
+[ONLY_SIM] #0432  EIP=0x0000077C  add
+[ONLY_SIM] #0433  EIP=0x0000077F  add
+[ONLY_SIM] #0434  EIP=0x00000781  push
+[ONLY_SIM] #0435  EIP=0x00000786  push
+[ONLY_SIM] #0436  EIP=0x0000078B  call
+[ONLY_SIM] #0437  EIP=0x000007B6  push
+[ONLY_SIM] #0438  EIP=0x000007B7  mov
+[ONLY_SIM] #0439  EIP=0x000007B9  mov
+[ONLY_SIM] #0440  EIP=0x000007BC  and
+[ONLY_SIM] #0441  EIP=0x000007BF  pop
+[ONLY_SIM] #0442  EIP=0x000007C0  ret
+[ONLY_SIM] #0443  EIP=0x00000790  add
+[ONLY_SIM] #0444  EIP=0x00000793  add
+[ONLY_SIM] #0445  EIP=0x00000795  push
+[ONLY_SIM] #0446  EIP=0x0000079A  push
+[ONLY_SIM] #0447  EIP=0x0000079F  call
+[ONLY_SIM] #0448  EIP=0x000007C1  push
+[ONLY_SIM] #0449  EIP=0x000007C2  mov
+[ONLY_SIM] #0450  EIP=0x000007C4  mov
+[ONLY_SIM] #0451  EIP=0x000007C7  or
+[ONLY_SIM] #0452  EIP=0x000007CA  pop
+[ONLY_SIM] #0453  EIP=0x000007CB  ret
+[ONLY_SIM] #0454  EIP=0x000007A4  add
+[ONLY_SIM] #0455  EIP=0x000007A7  add
+[ONLY_SIM] #0456  EIP=0x000007A9  jmp
+[ONLY_SIM] #0457  EIP=0x000007CC  call
+[ONLY_SIM] #0458  EIP=0x000007E3  push
+[ONLY_SIM] #0459  EIP=0x000007E4  call
+[ONLY_SIM] #0460  EIP=0x000007D5  mov
+[ONLY_SIM] #0461  EIP=0x000007DA  shl
+[ONLY_SIM] #0462  EIP=0x000007DD  and
+[ONLY_SIM] #0463  EIP=0x000007E2  ret
+[ONLY_SIM] #0464  EIP=0x000007E9  mov
+[ONLY_SIM] #0465  EIP=0x000007EB  not
+[ONLY_SIM] #0466  EIP=0x000007ED  and
+[ONLY_SIM] #0467  EIP=0x000007F3  or
+[ONLY_SIM] #0468  EIP=0x000007F5  pop
+[ONLY_SIM] #0469  EIP=0x000007F6  ret
+[ONLY_SIM] #0470  EIP=0x000007D1  add
+[ONLY_SIM] #0471  EIP=0x000007D3  jmp
+[ONLY_SIM] #0472  EIP=0x000007F7  mov
+[ONLY_SIM] #0473  EIP=0x000007FC  mov
+[ONLY_SIM] #0474  EIP=0x00000801  mov
+[ONLY_SIM] #0475  EIP=0x00000806  mov
+[ONLY_SIM] #0476  EIP=0x0000080B  push
+[ONLY_SIM] #0477  EIP=0x0000080C  push
+[ONLY_SIM] #0478  EIP=0x0000080D  push
+[ONLY_SIM] #0479  EIP=0x0000080E  push
+[ONLY_SIM] #0480  EIP=0x0000080F  mov
+[ONLY_SIM] #0481  EIP=0x00000814  mov
+[ONLY_SIM] #0482  EIP=0x00000819  mov
+[ONLY_SIM] #0483  EIP=0x0000081E  mov
+[ONLY_SIM] #0484  EIP=0x00000823  add
+[ONLY_SIM] #0485  EIP=0x00000825  add
+[ONLY_SIM] #0486  EIP=0x00000827  add
+[ONLY_SIM] #0487  EIP=0x00000829  add
+[ONLY_SIM] #0488  EIP=0x0000082B  pop
+[ONLY_SIM] #0489  EIP=0x0000082C  pop
+[ONLY_SIM] #0490  EIP=0x0000082D  pop
+[ONLY_SIM] #0491  EIP=0x0000082E  pop
+[ONLY_SIM] #0492  EIP=0x0000082F  add
+[ONLY_SIM] #0493  EIP=0x00000831  add
+[ONLY_SIM] #0494  EIP=0x00000833  add
+[ONLY_SIM] #0495  EIP=0x00000835  add
+[ONLY_SIM] #0496  EIP=0x00000837  push
+[ONLY_SIM] #0497  EIP=0x0000083C  push
+[ONLY_SIM] #0498  EIP=0x00000841  push
+[ONLY_SIM] #0499  EIP=0x00000846  push
+[ONLY_SIM] #0500  EIP=0x0000084B  push
+[ONLY_SIM] #0501  EIP=0x00000850  push
+[ONLY_SIM] #0502  EIP=0x00000855  push
+[ONLY_SIM] #0503  EIP=0x0000085A  push
+[ONLY_SIM] #0504  EIP=0x0000085F  pop
+[ONLY_SIM] #0505  EIP=0x00000860  add
+[ONLY_SIM] #0506  EIP=0x00000862  pop
+[ONLY_SIM] #0507  EIP=0x00000863  add
+[ONLY_SIM] #0508  EIP=0x00000865  pop
+[ONLY_SIM] #0509  EIP=0x00000866  add
+[ONLY_SIM] #0510  EIP=0x00000868  pop
+[ONLY_SIM] #0511  EIP=0x00000869  add
+[ONLY_SIM] #0512  EIP=0x0000086B  pop
+[ONLY_SIM] #0513  EIP=0x0000086C  add
+[ONLY_SIM] #0514  EIP=0x0000086E  pop
+[ONLY_SIM] #0515  EIP=0x0000086F  add
+[ONLY_SIM] #0516  EIP=0x00000871  pop
+[ONLY_SIM] #0517  EIP=0x00000872  add
+[ONLY_SIM] #0518  EIP=0x00000874  pop
+[ONLY_SIM] #0519  EIP=0x00000875  add
+[ONLY_SIM] #0520  EIP=0x00000877  mov
+[ONLY_SIM] #0521  EIP=0x0000087D  mov
+[ONLY_SIM] #0522  EIP=0x00000887  mov
+[ONLY_SIM] #0523  EIP=0x0000088C  mov
+[ONLY_SIM] #0524  EIP=0x0000088E  add
+[ONLY_SIM] #0525  EIP=0x00000894  mov
+[ONLY_SIM] #0526  EIP=0x00000896  mov
+[ONLY_SIM] #0527  EIP=0x0000089C  add
+[ONLY_SIM] #0528  EIP=0x0000089F  jne
+[ONLY_SIM] #0529  EIP=0x0000088C  mov
+[ONLY_SIM] #0530  EIP=0x0000088E  add
+[ONLY_SIM] #0531  EIP=0x00000894  mov
+[ONLY_SIM] #0532  EIP=0x00000896  mov
+[ONLY_SIM] #0533  EIP=0x0000089C  add
+[ONLY_SIM] #0534  EIP=0x0000089F  jne
+[ONLY_SIM] #0535  EIP=0x0000088C  mov
+[ONLY_SIM] #0536  EIP=0x0000088E  add
+[ONLY_SIM] #0537  EIP=0x00000894  mov
+[ONLY_SIM] #0538  EIP=0x00000896  mov
+[ONLY_SIM] #0539  EIP=0x0000089C  add
+[ONLY_SIM] #0540  EIP=0x0000089F  jne
+[ONLY_SIM] #0541  EIP=0x0000088C  mov
+[ONLY_SIM] #0542  EIP=0x0000088E  add
+[ONLY_SIM] #0543  EIP=0x00000894  mov
+[ONLY_SIM] #0544  EIP=0x00000896  mov
+[ONLY_SIM] #0545  EIP=0x0000089C  add
+[ONLY_SIM] #0546  EIP=0x0000089F  jne
+[ONLY_SIM] #0547  EIP=0x0000088C  mov
+[ONLY_SIM] #0548  EIP=0x0000088E  add
+[ONLY_SIM] #0549  EIP=0x00000894  mov
+[ONLY_SIM] #0550  EIP=0x00000896  mov
+[ONLY_SIM] #0551  EIP=0x0000089C  add
+[ONLY_SIM] #0552  EIP=0x0000089F  jne
+[ONLY_SIM] #0553  EIP=0x0000088C  mov
+[ONLY_SIM] #0554  EIP=0x0000088E  add
+[ONLY_SIM] #0555  EIP=0x00000894  mov
+[ONLY_SIM] #0556  EIP=0x00000896  mov
+[ONLY_SIM] #0557  EIP=0x0000089C  add
+[ONLY_SIM] #0558  EIP=0x0000089F  jne
+[ONLY_SIM] #0559  EIP=0x0000088C  mov
+[ONLY_SIM] #0560  EIP=0x0000088E  add
+[ONLY_SIM] #0561  EIP=0x00000894  mov
+[ONLY_SIM] #0562  EIP=0x00000896  mov
+[ONLY_SIM] #0563  EIP=0x0000089C  add
+[ONLY_SIM] #0564  EIP=0x0000089F  jne
+[ONLY_SIM] #0565  EIP=0x0000088C  mov
+[ONLY_SIM] #0566  EIP=0x0000088E  add
+[ONLY_SIM] #0567  EIP=0x00000894  mov
+[ONLY_SIM] #0568  EIP=0x00000896  mov
+[ONLY_SIM] #0569  EIP=0x0000089C  add
+[ONLY_SIM] #0570  EIP=0x0000089F  jne
+[ONLY_SIM] #0571  EIP=0x0000088C  mov
+[ONLY_SIM] #0572  EIP=0x0000088E  add
+[ONLY_SIM] #0573  EIP=0x00000894  mov
+[ONLY_SIM] #0574  EIP=0x00000896  mov
+[ONLY_SIM] #0575  EIP=0x0000089C  add
+[ONLY_SIM] #0576  EIP=0x0000089F  jne
+[ONLY_SIM] #0577  EIP=0x0000088C  mov
+[ONLY_SIM] #0578  EIP=0x0000088E  add
+[ONLY_SIM] #0579  EIP=0x00000894  mov
+[ONLY_SIM] #0580  EIP=0x00000896  mov
+[ONLY_SIM] #0581  EIP=0x0000089C  add
+[ONLY_SIM] #0582  EIP=0x0000089F  jne
+[ONLY_SIM] #0583  EIP=0x0000088C  mov
+[ONLY_SIM] #0584  EIP=0x0000088E  add
+[ONLY_SIM] #0585  EIP=0x00000894  mov
+[ONLY_SIM] #0586  EIP=0x00000896  mov
+[ONLY_SIM] #0587  EIP=0x0000089C  add
+[ONLY_SIM] #0588  EIP=0x0000089F  jne
+[ONLY_SIM] #0589  EIP=0x0000088C  mov
+[ONLY_SIM] #0590  EIP=0x0000088E  add
+[ONLY_SIM] #0591  EIP=0x00000894  mov
+[ONLY_SIM] #0592  EIP=0x00000896  mov
+[ONLY_SIM] #0593  EIP=0x0000089C  add
+[ONLY_SIM] #0594  EIP=0x0000089F  jne
+[ONLY_SIM] #0595  EIP=0x0000088C  mov
+[ONLY_SIM] #0596  EIP=0x0000088E  add
+[ONLY_SIM] #0597  EIP=0x00000894  mov
+[ONLY_SIM] #0598  EIP=0x00000896  mov
+[ONLY_SIM] #0599  EIP=0x0000089C  add
+[ONLY_SIM] #0600  EIP=0x0000089F  jne
+[ONLY_SIM] #0601  EIP=0x0000088C  mov
+[ONLY_SIM] #0602  EIP=0x0000088E  add
+[ONLY_SIM] #0603  EIP=0x00000894  mov
+[ONLY_SIM] #0604  EIP=0x00000896  mov
+[ONLY_SIM] #0605  EIP=0x0000089C  add
+[ONLY_SIM] #0606  EIP=0x0000089F  jne
+[ONLY_SIM] #0607  EIP=0x0000088C  mov
+[ONLY_SIM] #0608  EIP=0x0000088E  add
+[ONLY_SIM] #0609  EIP=0x00000894  mov
+[ONLY_SIM] #0610  EIP=0x00000896  mov
+[ONLY_SIM] #0611  EIP=0x0000089C  add
+[ONLY_SIM] #0612  EIP=0x0000089F  jne
+[ONLY_SIM] #0613  EIP=0x0000088C  mov
+[ONLY_SIM] #0614  EIP=0x0000088E  add
+[ONLY_SIM] #0615  EIP=0x00000894  mov
+[ONLY_SIM] #0616  EIP=0x00000896  mov
+[ONLY_SIM] #0617  EIP=0x0000089C  add
+[ONLY_SIM] #0618  EIP=0x0000089F  jne
+[ONLY_SIM] #0619  EIP=0x000008A1  add
+[ONLY_SIM] #0620  EIP=0x000008A3  mov
+[ONLY_SIM] #0621  EIP=0x000008AD  mov
+[ONLY_SIM] #0622  EIP=0x000008B7  mov
+[ONLY_SIM] #0623  EIP=0x000008BC  mov
+[ONLY_SIM] #0624  EIP=0x000008C2  and
+[ONLY_SIM] #0625  EIP=0x000008C8  not
+[ONLY_SIM] #0626  EIP=0x000008CA  or
+[ONLY_SIM] #0627  EIP=0x000008D0  mov
+[ONLY_SIM] #0628  EIP=0x000008D6  add
+[ONLY_SIM] #0629  EIP=0x000008D9  jne
+[ONLY_SIM] #0630  EIP=0x000008BC  mov
+[ONLY_SIM] #0631  EIP=0x000008C2  and
+[ONLY_SIM] #0632  EIP=0x000008C8  not
+[ONLY_SIM] #0633  EIP=0x000008CA  or
+[ONLY_SIM] #0634  EIP=0x000008D0  mov
+[ONLY_SIM] #0635  EIP=0x000008D6  add
+[ONLY_SIM] #0636  EIP=0x000008D9  jne
+[ONLY_SIM] #0637  EIP=0x000008BC  mov
+[ONLY_SIM] #0638  EIP=0x000008C2  and
+[ONLY_SIM] #0639  EIP=0x000008C8  not
+[ONLY_SIM] #0640  EIP=0x000008CA  or
+[ONLY_SIM] #0641  EIP=0x000008D0  mov
+[ONLY_SIM] #0642  EIP=0x000008D6  add
+[ONLY_SIM] #0643  EIP=0x000008D9  jne
+[ONLY_SIM] #0644  EIP=0x000008BC  mov
+[ONLY_SIM] #0645  EIP=0x000008C2  and
+[ONLY_SIM] #0646  EIP=0x000008C8  not
+[ONLY_SIM] #0647  EIP=0x000008CA  or
+[ONLY_SIM] #0648  EIP=0x000008D0  mov
+[ONLY_SIM] #0649  EIP=0x000008D6  add
+[ONLY_SIM] #0650  EIP=0x000008D9  jne
+[ONLY_SIM] #0651  EIP=0x000008BC  mov
+[ONLY_SIM] #0652  EIP=0x000008C2  and
+[ONLY_SIM] #0653  EIP=0x000008C8  not
+[ONLY_SIM] #0654  EIP=0x000008CA  or
+[ONLY_SIM] #0655  EIP=0x000008D0  mov
+[ONLY_SIM] #0656  EIP=0x000008D6  add
+[ONLY_SIM] #0657  EIP=0x000008D9  jne
+[ONLY_SIM] #0658  EIP=0x000008BC  mov
+[ONLY_SIM] #0659  EIP=0x000008C2  and
+[ONLY_SIM] #0660  EIP=0x000008C8  not
+[ONLY_SIM] #0661  EIP=0x000008CA  or
+[ONLY_SIM] #0662  EIP=0x000008D0  mov
+[ONLY_SIM] #0663  EIP=0x000008D6  add
+[ONLY_SIM] #0664  EIP=0x000008D9  jne
+[ONLY_SIM] #0665  EIP=0x000008BC  mov
+[ONLY_SIM] #0666  EIP=0x000008C2  and
+[ONLY_SIM] #0667  EIP=0x000008C8  not
+[ONLY_SIM] #0668  EIP=0x000008CA  or
+[ONLY_SIM] #0669  EIP=0x000008D0  mov
+[ONLY_SIM] #0670  EIP=0x000008D6  add
+[ONLY_SIM] #0671  EIP=0x000008D9  jne
+[ONLY_SIM] #0672  EIP=0x000008BC  mov
+[ONLY_SIM] #0673  EIP=0x000008C2  and
+[ONLY_SIM] #0674  EIP=0x000008C8  not
+[ONLY_SIM] #0675  EIP=0x000008CA  or
+[ONLY_SIM] #0676  EIP=0x000008D0  mov
+[ONLY_SIM] #0677  EIP=0x000008D6  add
+[ONLY_SIM] #0678  EIP=0x000008D9  jne
+[ONLY_SIM] #0679  EIP=0x000008BC  mov
+[ONLY_SIM] #0680  EIP=0x000008C2  and
+[ONLY_SIM] #0681  EIP=0x000008C8  not
+[ONLY_SIM] #0682  EIP=0x000008CA  or
+[ONLY_SIM] #0683  EIP=0x000008D0  mov
+[ONLY_SIM] #0684  EIP=0x000008D6  add
+[ONLY_SIM] #0685  EIP=0x000008D9  jne
+[ONLY_SIM] #0686  EIP=0x000008BC  mov
+[ONLY_SIM] #0687  EIP=0x000008C2  and
+[ONLY_SIM] #0688  EIP=0x000008C8  not
+[ONLY_SIM] #0689  EIP=0x000008CA  or
+[ONLY_SIM] #0690  EIP=0x000008D0  mov
+[ONLY_SIM] #0691  EIP=0x000008D6  add
+[ONLY_SIM] #0692  EIP=0x000008D9  jne
+[ONLY_SIM] #0693  EIP=0x000008BC  mov
+[ONLY_SIM] #0694  EIP=0x000008C2  and
+[ONLY_SIM] #0695  EIP=0x000008C8  not
+[ONLY_SIM] #0696  EIP=0x000008CA  or
+[ONLY_SIM] #0697  EIP=0x000008D0  mov
+[ONLY_SIM] #0698  EIP=0x000008D6  add
+[ONLY_SIM] #0699  EIP=0x000008D9  jne
+[ONLY_SIM] #0700  EIP=0x000008BC  mov
+[ONLY_SIM] #0701  EIP=0x000008C2  and
+[ONLY_SIM] #0702  EIP=0x000008C8  not
+[ONLY_SIM] #0703  EIP=0x000008CA  or
+[ONLY_SIM] #0704  EIP=0x000008D0  mov
+[ONLY_SIM] #0705  EIP=0x000008D6  add
+[ONLY_SIM] #0706  EIP=0x000008D9  jne
+[ONLY_SIM] #0707  EIP=0x000008BC  mov
+[ONLY_SIM] #0708  EIP=0x000008C2  and
+[ONLY_SIM] #0709  EIP=0x000008C8  not
+[ONLY_SIM] #0710  EIP=0x000008CA  or
+[ONLY_SIM] #0711  EIP=0x000008D0  mov
+[ONLY_SIM] #0712  EIP=0x000008D6  add
+[ONLY_SIM] #0713  EIP=0x000008D9  jne
+[ONLY_SIM] #0714  EIP=0x000008BC  mov
+[ONLY_SIM] #0715  EIP=0x000008C2  and
+[ONLY_SIM] #0716  EIP=0x000008C8  not
+[ONLY_SIM] #0717  EIP=0x000008CA  or
+[ONLY_SIM] #0718  EIP=0x000008D0  mov
+[ONLY_SIM] #0719  EIP=0x000008D6  add
+[ONLY_SIM] #0720  EIP=0x000008D9  jne
+[ONLY_SIM] #0721  EIP=0x000008BC  mov
+[ONLY_SIM] #0722  EIP=0x000008C2  and
+[ONLY_SIM] #0723  EIP=0x000008C8  not
+[ONLY_SIM] #0724  EIP=0x000008CA  or
+[ONLY_SIM] #0725  EIP=0x000008D0  mov
+[ONLY_SIM] #0726  EIP=0x000008D6  add
+[ONLY_SIM] #0727  EIP=0x000008D9  jne
+[ONLY_SIM] #0728  EIP=0x000008BC  mov
+[ONLY_SIM] #0729  EIP=0x000008C2  and
+[ONLY_SIM] #0730  EIP=0x000008C8  not
+[ONLY_SIM] #0731  EIP=0x000008CA  or
+[ONLY_SIM] #0732  EIP=0x000008D0  mov
+[ONLY_SIM] #0733  EIP=0x000008D6  add
+[ONLY_SIM] #0734  EIP=0x000008D9  jne
+[ONLY_SIM] #0735  EIP=0x000008DB  add
+[ONLY_SIM] #0736  EIP=0x000008DD  mov
+[ONLY_SIM] #0737  EIP=0x000008E2  mov
+[ONLY_SIM] #0738  EIP=0x000008E7  add
+[ONLY_SIM] #0739  EIP=0x000008EA  ja
+[ONLY_SIM] #0740  EIP=0x000008F2  add
+[ONLY_SIM] #0741  EIP=0x000008F5  mov
+[ONLY_SIM] #0742  EIP=0x000008FA  add
+[ONLY_SIM] #0743  EIP=0x000008FD  ja
+[ONLY_SIM] #0744  EIP=0x000008FF  add
+[ONLY_SIM] #0745  EIP=0x00000902  jmp
+[ONLY_SIM] #0746  EIP=0x0000090A  mov
+[ONLY_SIM] #0747  EIP=0x0000090F  add
+[ONLY_SIM] #0748  EIP=0x00000912  ja
+[ONLY_SIM] #0749  EIP=0x00000914  add
+[ONLY_SIM] #0750  EIP=0x0000091A  jmp
+[ONLY_SIM] #0751  EIP=0x00000922  add
+[ONLY_SIM] #0752  EIP=0x00000924  mov
+[ONLY_SIM] #0753  EIP=0x00000929  push
+[ONLY_SIM] #0754  EIP=0x0000092A  shl
+[ONLY_SIM] #0755  EIP=0x0000092D  push
+[ONLY_SIM] #0756  EIP=0x0000092E  pop
+[ONLY_SIM] #0757  EIP=0x0000092F  pop
+[ONLY_SIM] #0758  EIP=0x00000930  mov
+[ONLY_SIM] #0759  EIP=0x00000935  add
+[ONLY_SIM] #0760  EIP=0x00000938  adc
+[ONLY_SIM] #0761  EIP=0x0000093A  add
+[ONLY_SIM] #0762  EIP=0x0000093C  mov
+[ONLY_SIM] #0763  EIP=0x00000941  push
+[ONLY_SIM] #0764  EIP=0x00000942  mov
+[ONLY_SIM] #0765  EIP=0x00000947  add
+[ONLY_SIM] #0766  EIP=0x0000094A  pop
+[ONLY_SIM] #0767  EIP=0x0000094B  sbb
+[ONLY_SIM] #0768  EIP=0x00000951  add
+[ONLY_SIM] #0769  EIP=0x00000953  mov
+[ONLY_SIM] #0770  EIP=0x00000958  push
+[ONLY_SIM] #0771  EIP=0x00000959  mov
+[ONLY_SIM] #0772  EIP=0x0000095E  pop
+[ONLY_SIM] #0773  EIP=0x0000095F  xchg
+[ONLY_SIM] #0774  EIP=0x00000960  bsf
+[ONLY_SIM] #0775  EIP=0x00000963  add
+[ONLY_SIM] #0776  EIP=0x00000965  bsf
+[ONLY_SIM] #0777  EIP=0x00000968  add
+[ONLY_SIM] #0778  EIP=0x0000096A  mov
+[ONLY_SIM] #0779  EIP=0x00000974  push
+[ONLY_SIM] #0780  EIP=0x0000097A  mov
+[ONLY_SIM] #0781  EIP=0x0000097F  xchg
+[ONLY_SIM] #0782  EIP=0x00000985  add
+[ONLY_SIM] #0783  EIP=0x00000987  pop
+[ONLY_SIM] #0784  EIP=0x00000988  add
+[ONLY_SIM] #0785  EIP=0x0000098A  mov
+[ONLY_SIM] #0786  EIP=0x0000098F  mov
+[ONLY_SIM] #0787  EIP=0x00000999  mov
+[ONLY_SIM] #0788  EIP=0x0000099E  mov
+[ONLY_SIM] #0789  EIP=0x000009A3  cmpxchg
+[ONLY_SIM] #0790  EIP=0x000009AA  mov
+[ONLY_SIM] #0791  EIP=0x000009B0  add
+[ONLY_SIM] #0792  EIP=0x000009B2  add
+[ONLY_SIM] #0793  EIP=0x000009B5  jne
+[ONLY_SIM] #0794  EIP=0x0000098F  mov
+[ONLY_SIM] #0795  EIP=0x00000999  mov
+[ONLY_SIM] #0796  EIP=0x0000099E  mov
+[ONLY_SIM] #0797  EIP=0x000009A3  cmpxchg
+[ONLY_SIM] #0798  EIP=0x000009AA  mov
+[ONLY_SIM] #0799  EIP=0x000009B0  add
+[ONLY_SIM] #0800  EIP=0x000009B2  add
+[ONLY_SIM] #0801  EIP=0x000009B5  jne
+[ONLY_SIM] #0802  EIP=0x0000098F  mov
+[ONLY_SIM] #0803  EIP=0x00000999  mov
+[ONLY_SIM] #0804  EIP=0x0000099E  mov
+[ONLY_SIM] #0805  EIP=0x000009A3  cmpxchg
+[ONLY_SIM] #0806  EIP=0x000009AA  mov
+[ONLY_SIM] #0807  EIP=0x000009B0  add
+[ONLY_SIM] #0808  EIP=0x000009B2  add
+[ONLY_SIM] #0809  EIP=0x000009B5  jne
+[ONLY_SIM] #0810  EIP=0x000009B7  mov
+[ONLY_SIM] #0811  EIP=0x000009BC  or
 [ONLY_SIM] #0812  EIP=0x000009BF  or
 [ONLY_SIM] #0813  EIP=0x000009C4  bsf
 [ONLY_SIM] #0814  EIP=0x000009C7  add
@@ -1021,5 +1021,5 @@
 [ONLY_SIM] #1014  EIP=0x00000B54  hlt
 
 ================================================================================
-  SUMMARY: 812/1015 matched  |  0 mismatched  |  203 sim-only  |  0 rtl-only
+  SUMMARY: 343/1015 matched  |  0 mismatched  |  672 sim-only  |  0 rtl-only
 ================================================================================

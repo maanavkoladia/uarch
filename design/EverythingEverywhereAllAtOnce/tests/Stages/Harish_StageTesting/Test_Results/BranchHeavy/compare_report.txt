@@ -1,8 +1,8 @@
 ================================================================================
   SIM vs RTL DUMP COMPARISON  (registers + flags per instruction)
 ================================================================================
-  REG  — SIM: 287  RTL: 272
-  FLAG — SIM: 287  RTL: 272
+  REG  — SIM: 287  RTL: 286
+  FLAG — SIM: 287  RTL: 286
 
 [OK ] #0000  EIP=0x00000000  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0001  EIP=0x00000005  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
@@ -276,22 +276,22 @@
 [OK ] #0269  EIP=0x000001E3  pop           CF=1  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0270  EIP=0x000001E4  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0271  EIP=0x000001E6  call          CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
-[ONLY_SIM] #0272  EIP=0x000001FC  mov
-[ONLY_SIM] #0273  EIP=0x00000201  ret
-[ONLY_SIM] #0274  EIP=0x000001EB  and
-[ONLY_SIM] #0275  EIP=0x000001EE  ja
-[ONLY_SIM] #0276  EIP=0x000001F8  add
-[ONLY_SIM] #0277  EIP=0x000001FA  jmp
-[ONLY_SIM] #0278  EIP=0x00000202  mov
-[ONLY_SIM] #0279  EIP=0x00000207  mov
-[ONLY_SIM] #0280  EIP=0x00000209  ljmp
-[ONLY_SIM] #0281  EIP=0x00000000  mov
-[ONLY_SIM] #0282  EIP=0x00000005  mov
-[ONLY_SIM] #0283  EIP=0x00000007  mov
-[ONLY_SIM] #0284  EIP=0x0000000C  mov
-[ONLY_SIM] #0285  EIP=0x0000000E  mov
+[OK ] #0272  EIP=0x000001FC  mov           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0273  EIP=0x00000201  ret           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0274  EIP=0x000001EB  and           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0275  EIP=0x000001EE  ja            CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0276  EIP=0x000001F8  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0277  EIP=0x000001FA  jmp           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0278  EIP=0x00000202  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0279  EIP=0x00000207  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0280  EIP=0x00000209  ljmp          CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0281  EIP=0x00000000  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0282  EIP=0x00000005  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0283  EIP=0x00000007  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0284  EIP=0x0000000C  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0285  EIP=0x0000000E  mov           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
 [ONLY_SIM] #0286  EIP=0x00000015  hlt
 
 ================================================================================
-  SUMMARY: 272/287 matched  |  0 mismatched  |  15 sim-only  |  0 rtl-only
+  SUMMARY: 286/287 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
 ================================================================================

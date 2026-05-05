@@ -78,7 +78,11 @@ module tb_stages ();
     assign program_halted = `DECODE_UNIT_PATH.HALT_REG;
 
     always_comb begin
+`ifdef EXE_PURE_STRUCTURAL
+        instruction_commit = !`EXE_UNIT_PATH.stall_flop && `EXE_UNIT_PATH.outs_valid;
+`else
         instruction_commit = !`EXE_UNIT_PATH.stall_flop && `EXE_UNIT_PATH.outs_o.valid;
+`endif
         exeforwards = `EXE_UNIT_PATH.wb_stage_we_valid_unit_o && `EXE_UNIT_PATH.wb_stage_next_vaild_o;
     end
 
@@ -89,11 +93,19 @@ module tb_stages ();
 
         if (instruction_commit) begin
             needToDumpRegFile  <= 1;
+`ifdef EXE_PURE_STRUCTURAL
+            saved_reg_dump_EIP <= `EXE_UNIT_PATH.latches_EIP;
+`else
             saved_reg_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
+`endif
         end else needToDumpRegFile <= 0;
         if (exeforwards) begin
             needToDumpFlags <= 1;
+`ifdef EXE_PURE_STRUCTURAL
+            saved_flag_dump_EIP <= `EXE_UNIT_PATH.latches_EIP;
+`else
             saved_flag_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
+`endif
             savedFlags[CF_IDX] <= `EXE_UNIT_PATH.cf_flag_o;
             savedFlags[PF_IDX] <= `EXE_UNIT_PATH.pf_flag_o;
             savedFlags[AF_IDX] <= `EXE_UNIT_PATH.af_flag_o;
@@ -191,7 +203,7 @@ module tb_stages ();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(15000);
+        DelayClks(5000);
         //print_all();
         $display("\n\n\nprogram completion cycle count: %0d", finish_time);
         $display("flush count: %0d", flush_count);
