@@ -32,4 +32,4 @@ DC_STRUCTURAL_SRC_FILES = \
 	$(DC_PATH_INTERNAL)/structural/data_size_vec_logic.v \
 	$(DC_PATH_INTERNAL)/structural/segx.v \
 	$(DC_PATH_INTERNAL)/structural/push_address_gen.v \
- 	$(DC_PATH_INTERNAL)/structural/DC_structural.sv \
+ 	$(DC_PATH_INTERNAL)/structural/DC_structural.v \

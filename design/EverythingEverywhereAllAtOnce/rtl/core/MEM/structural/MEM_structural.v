@@ -23,7 +23,6 @@
 // the per-byte cacheline pack and per-byte ld_buf unpack generates -- both
 // arrays are now passed as packed buses on the port boundary.
 
-`include "exe_structural_defines.vh"
 
 module MEM (
     input  wire        clk,

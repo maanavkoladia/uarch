@@ -69,5 +69,5 @@ DECODE_STRUCTURAL_SRC_FILES = \
 						$(DECODE_PATH_INTERNAL)/structural/modrm_processor_structural.v \
 						$(DECODE_PATH_INTERNAL)/structural/sib_processor_structural.v \
 						$(DECODE_PATH_INTERNAL)/structural/rep_controller_structural.v \
-						$(DECODE_PATH_INTERNAL)/structural/Decode_structural.sv \
+						$(DECODE_PATH_INTERNAL)/structural/Decode_structural.v \
 

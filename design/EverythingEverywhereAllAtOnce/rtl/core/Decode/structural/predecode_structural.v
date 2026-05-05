@@ -236,7 +236,7 @@ module predecode(
     assign possible_neips[0] = EIP;
     genvar i;
     generate
-        for (i = 1; i < 16; i++) begin : possible_eip_adders
+        for (i = 1; i < 16; i = i + 1) begin : possible_eip_adders
             kogge_stone_adder #(
                 .WIDTH(32)
             ) IR_index_adder (
@@ -265,7 +265,7 @@ module predecode(
 
     wire [15:0] selected_queue_valid;
     generate
-        for (i = 1; i < 16; i++) begin : possible_invalid_inst_g
+        for (i = 1; i < 16; i = i + 1) begin : possible_invalid_inst_g
             `MUX_4(qv_sel_mux, 1, selected_queue_valid[i],
                 queue_valid[0], queue_valid[1], queue_valid[2], queue_valid[3],
                 possible_neips[i][5:4])

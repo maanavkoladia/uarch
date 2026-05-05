@@ -122,8 +122,7 @@ endmodule
 */
 
 
-import core_stage_latches_pkg::*;
-
+`define STRUCTURAL_DC_STAGE_LATCHES
 `ifdef STRUCTURAL_DC_STAGE_LATCHES
 //fully unrolled stage latch, every leaf field of dc_latches_t gets its own port.
 module DC_Latches (

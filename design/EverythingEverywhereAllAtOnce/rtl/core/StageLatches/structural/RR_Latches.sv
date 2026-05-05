@@ -111,7 +111,7 @@
 
 */
 
-import core_stage_latches_pkg::*;
+`define STRUCTURAL_RR_STAGE_LATCHES
 
 `ifdef STRUCTURAL_RR_STAGE_LATCHES
 //fully unrolled stage latch, every leaf field (×2 banks: normal/rep) gets its own port.

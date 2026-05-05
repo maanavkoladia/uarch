@@ -31,16 +31,18 @@ module IDM_Invalidate_Logic (
     input  wire        decode_stall,         // unused — kept for parity with SV port
 
     // idm_outputs_t — only the fields this module reads (cacheline data NOT used)
-    input  wire        idm_slot_valid          [0:3],
-    input  wire        idm_slot_br_valid       [0:3],
-    input  wire [31:0] idm_slot_br_eip         [0:3],
-    input  wire [31:0] idm_slot_br_btb_target  [0:3],
-    input  wire        idm_slot_br_xcl         [0:3],
+    // Per-slot fields packed: bit i corresponds to slot i (4 slots).
+    // 32-bit fields packed LSB-first: idm_slot_br_eip[i*32 +: 32] is slot i.
+    input  wire [3:0]   idm_slot_valid,
+    input  wire [3:0]   idm_slot_br_valid,
+    input  wire [127:0] idm_slot_br_eip,
+    input  wire [127:0] idm_slot_br_btb_target,
+    input  wire [3:0]   idm_slot_br_xcl,
 
     input  wire        decode_forward,
 
-    // idm_invalidate_logic_output_t fields
-    output wire        invalidate              [0:3],
+    // idm_invalidate_logic_output_t fields (packed: bit i = slot i)
+    output wire [3:0]  invalidate,
     output wire        no_writes
 );
 
@@ -92,12 +94,12 @@ module IDM_Invalidate_Logic (
            idm_slot_br_valid[2],       idm_slot_br_valid[3],       eip_slot_num)
 
     `MUX_4(u_eip_breip, 32, eip_slot_br_eip,
-           idm_slot_br_eip[0],         idm_slot_br_eip[1],
-           idm_slot_br_eip[2],         idm_slot_br_eip[3],         eip_slot_num)
+           idm_slot_br_eip[0*32 +: 32], idm_slot_br_eip[1*32 +: 32],
+           idm_slot_br_eip[2*32 +: 32], idm_slot_br_eip[3*32 +: 32], eip_slot_num)
 
     `MUX_4(u_eip_brbt, 32, eip_slot_br_btb_target,
-           idm_slot_br_btb_target[0],  idm_slot_br_btb_target[1],
-           idm_slot_br_btb_target[2],  idm_slot_br_btb_target[3],  eip_slot_num)
+           idm_slot_br_btb_target[0*32 +: 32], idm_slot_br_btb_target[1*32 +: 32],
+           idm_slot_br_btb_target[2*32 +: 32], idm_slot_br_btb_target[3*32 +: 32], eip_slot_num)
 
     `MUX_4(u_eip_brxc,  1, eip_slot_br_xcl,
            idm_slot_br_xcl[0],         idm_slot_br_xcl[1],

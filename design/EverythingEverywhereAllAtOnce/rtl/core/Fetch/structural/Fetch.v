@@ -192,8 +192,11 @@ module Fetch (
     wire        outs_exp_pipe_clear_w;
 
     wire [31:0] seg_xlation_out;
-    wire [7:0]  rom_data_out      [0:15];
-    wire [7:0]  idm_ctrl_data_in  [0:15];
+    // EXP_Ctrl_ROMS now drives a packed 128-bit bus (was unpacked byte
+    // array in the SV original). idm_ctrl_data_in is the per-slot data
+    // bus going into IDM_Ctrl_Logic, also packed 128-bit.
+    wire [127:0] rom_data_out;
+    wire [127:0] idm_ctrl_data_in;
     wire [31:0] next_spc;
     wire [31:0] spc_16;
     wire        spc_16_cout;
@@ -257,10 +260,9 @@ module Fetch (
     wire        spc_sel_logic_outs_flush_reg;
 
     // ----------------------------------------------------------------
-    // idm_invalidate_logic_output_t -- unrolled (invalidate is a 4-slot
-    // unpacked array of nets, kept that way to drive submodule ports).
+    // idm_invalidate_logic_output_t -- packed (bit i = slot i, 4 slots).
     // ----------------------------------------------------------------
-    wire        idm_invalidate_logic_outs_invalidate [0:3];
+    wire [3:0]  idm_invalidate_logic_outs_invalidate;
     wire        idm_invalidate_logic_outs_no_writes;
 
     // ----------------------------------------------------------------
@@ -315,95 +317,103 @@ module Fetch (
     wire        en_icache;
 
     // ----------------------------------------------------------------
-    // Adapter wires bridging the flat input/output ports to the
-    // existing structural sub-modules whose ports use unpacked nets.
+    // Adapter wires bridging the flat per-slot input ports of Fetch into
+    // the now-packed-bus per-slot ports of IDM_Invalidate_Logic and
+    // IDM_Ctrl_Logic. Each {wire[3], wire[2], wire[1], wire[0]} pack mirrors
+    // the original `_w[0..3]` unpacked array indexing (slot 0 in LSBs).
     // ----------------------------------------------------------------
-    wire        idm_slot_valid_w          [0:3];
-    wire        idm_slot_br_valid_w       [0:3];
-    wire [31:0] idm_slot_br_eip_w         [0:3];
-    wire [31:0] idm_slot_br_btb_target_w  [0:3];
-    wire        idm_slot_br_xcl_w         [0:3];
+    wire [3:0]   idm_slot_valid_w;
+    wire [3:0]   idm_slot_br_valid_w;
+    wire [127:0] idm_slot_br_eip_w;
+    wire [127:0] idm_slot_br_btb_target_w;
+    wire [3:0]   idm_slot_br_xcl_w;
 
-    assign idm_slot_valid_w[0]         = idm_info_idm_slots_0_valid;
-    assign idm_slot_valid_w[1]         = idm_info_idm_slots_1_valid;
-    assign idm_slot_valid_w[2]         = idm_info_idm_slots_2_valid;
-    assign idm_slot_valid_w[3]         = idm_info_idm_slots_3_valid;
+    assign idm_slot_valid_w = {
+        idm_info_idm_slots_3_valid,
+        idm_info_idm_slots_2_valid,
+        idm_info_idm_slots_1_valid,
+        idm_info_idm_slots_0_valid
+    };
 
-    assign idm_slot_br_valid_w[0]      = idm_info_idm_slots_0_br_valid;
-    assign idm_slot_br_valid_w[1]      = idm_info_idm_slots_1_br_valid;
-    assign idm_slot_br_valid_w[2]      = idm_info_idm_slots_2_br_valid;
-    assign idm_slot_br_valid_w[3]      = idm_info_idm_slots_3_br_valid;
+    assign idm_slot_br_valid_w = {
+        idm_info_idm_slots_3_br_valid,
+        idm_info_idm_slots_2_br_valid,
+        idm_info_idm_slots_1_br_valid,
+        idm_info_idm_slots_0_br_valid
+    };
 
-    assign idm_slot_br_eip_w[0]        = idm_info_idm_slots_0_br_eip;
-    assign idm_slot_br_eip_w[1]        = idm_info_idm_slots_1_br_eip;
-    assign idm_slot_br_eip_w[2]        = idm_info_idm_slots_2_br_eip;
-    assign idm_slot_br_eip_w[3]        = idm_info_idm_slots_3_br_eip;
+    assign idm_slot_br_eip_w = {
+        idm_info_idm_slots_3_br_eip,
+        idm_info_idm_slots_2_br_eip,
+        idm_info_idm_slots_1_br_eip,
+        idm_info_idm_slots_0_br_eip
+    };
 
-    assign idm_slot_br_btb_target_w[0] = idm_info_idm_slots_0_br_btb_target;
-    assign idm_slot_br_btb_target_w[1] = idm_info_idm_slots_1_br_btb_target;
-    assign idm_slot_br_btb_target_w[2] = idm_info_idm_slots_2_br_btb_target;
-    assign idm_slot_br_btb_target_w[3] = idm_info_idm_slots_3_br_btb_target;
+    assign idm_slot_br_btb_target_w = {
+        idm_info_idm_slots_3_br_btb_target,
+        idm_info_idm_slots_2_br_btb_target,
+        idm_info_idm_slots_1_br_btb_target,
+        idm_info_idm_slots_0_br_btb_target
+    };
 
-    assign idm_slot_br_xcl_w[0]        = idm_info_idm_slots_0_br_xcl;
-    assign idm_slot_br_xcl_w[1]        = idm_info_idm_slots_1_br_xcl;
-    assign idm_slot_br_xcl_w[2]        = idm_info_idm_slots_2_br_xcl;
-    assign idm_slot_br_xcl_w[3]        = idm_info_idm_slots_3_br_xcl;
+    assign idm_slot_br_xcl_w = {
+        idm_info_idm_slots_3_br_xcl,
+        idm_info_idm_slots_2_br_xcl,
+        idm_info_idm_slots_1_br_xcl,
+        idm_info_idm_slots_0_br_xcl
+    };
 
-    // IDM_Ctrl_Logic submodule scratch wires (unpacked) -> repacked outward.
-    wire        idmc_ld_meta_data_w [0:3];
-    wire        idmc_ld_data_w      [0:3];
-    wire        idmc_valid_w        [0:3];
-    wire        idmc_br_valid_w     [0:3];
-    wire [31:0] idmc_br_eip_w       [0:3];
-    wire [31:0] idmc_br_target_w    [0:3];
-    wire        idmc_br_xcl_w       [0:3];
-    wire [7:0]  idmc_data_w         [0:3] [0:15];
+    // IDM_Ctrl_Logic submodule scratch wires (packed) -> fan out to the
+    // flat per-slot Fetch outputs.
+    wire [3:0]   idmc_ld_meta_data_w;
+    wire [3:0]   idmc_ld_data_w;
+    wire [3:0]   idmc_valid_w;
+    wire [3:0]   idmc_br_valid_w;
+    wire [127:0] idmc_br_eip_w;
+    wire [127:0] idmc_br_target_w;
+    wire [3:0]   idmc_br_xcl_w;
+    wire [511:0] idmc_data_w;
     wire        idmc_push_success_w;
 
-    // Fan in from the per-slot unpacked submodule outputs to the
-    // flattened idm_ctrl_logic_outs_* wires.
+    // Fan out from the per-slot packed submodule outputs to the flattened
+    // idm_ctrl_logic_outs_* wires. 1-bit fields use bit indexing on the
+    // 4-bit packed wire; 32-bit fields use a 32-bit slice of the 128-bit
+    // wire; 128-bit data fields use a 128-bit slice of the 512-bit wire.
     assign idm_ctrl_logic_outs_idm_input_req_0_ld_meta_data = idmc_ld_meta_data_w[0];
     assign idm_ctrl_logic_outs_idm_input_req_0_ld_data      = idmc_ld_data_w[0];
     assign idm_ctrl_logic_outs_idm_input_req_0_valid        = idmc_valid_w[0];
     assign idm_ctrl_logic_outs_idm_input_req_0_br_valid     = idmc_br_valid_w[0];
-    assign idm_ctrl_logic_outs_idm_input_req_0_br_eip       = idmc_br_eip_w[0];
-    assign idm_ctrl_logic_outs_idm_input_req_0_br_target    = idmc_br_target_w[0];
+    assign idm_ctrl_logic_outs_idm_input_req_0_br_eip       = idmc_br_eip_w   [0*32 +: 32];
+    assign idm_ctrl_logic_outs_idm_input_req_0_br_target    = idmc_br_target_w[0*32 +: 32];
     assign idm_ctrl_logic_outs_idm_input_req_0_br_xcl       = idmc_br_xcl_w[0];
+    assign idm_ctrl_logic_outs_idm_input_req_0_data         = idmc_data_w     [0*128 +: 128];
 
     assign idm_ctrl_logic_outs_idm_input_req_1_ld_meta_data = idmc_ld_meta_data_w[1];
     assign idm_ctrl_logic_outs_idm_input_req_1_ld_data      = idmc_ld_data_w[1];
     assign idm_ctrl_logic_outs_idm_input_req_1_valid        = idmc_valid_w[1];
     assign idm_ctrl_logic_outs_idm_input_req_1_br_valid     = idmc_br_valid_w[1];
-    assign idm_ctrl_logic_outs_idm_input_req_1_br_eip       = idmc_br_eip_w[1];
-    assign idm_ctrl_logic_outs_idm_input_req_1_br_target    = idmc_br_target_w[1];
+    assign idm_ctrl_logic_outs_idm_input_req_1_br_eip       = idmc_br_eip_w   [1*32 +: 32];
+    assign idm_ctrl_logic_outs_idm_input_req_1_br_target    = idmc_br_target_w[1*32 +: 32];
     assign idm_ctrl_logic_outs_idm_input_req_1_br_xcl       = idmc_br_xcl_w[1];
+    assign idm_ctrl_logic_outs_idm_input_req_1_data         = idmc_data_w     [1*128 +: 128];
 
     assign idm_ctrl_logic_outs_idm_input_req_2_ld_meta_data = idmc_ld_meta_data_w[2];
     assign idm_ctrl_logic_outs_idm_input_req_2_ld_data      = idmc_ld_data_w[2];
     assign idm_ctrl_logic_outs_idm_input_req_2_valid        = idmc_valid_w[2];
     assign idm_ctrl_logic_outs_idm_input_req_2_br_valid     = idmc_br_valid_w[2];
-    assign idm_ctrl_logic_outs_idm_input_req_2_br_eip       = idmc_br_eip_w[2];
-    assign idm_ctrl_logic_outs_idm_input_req_2_br_target    = idmc_br_target_w[2];
+    assign idm_ctrl_logic_outs_idm_input_req_2_br_eip       = idmc_br_eip_w   [2*32 +: 32];
+    assign idm_ctrl_logic_outs_idm_input_req_2_br_target    = idmc_br_target_w[2*32 +: 32];
     assign idm_ctrl_logic_outs_idm_input_req_2_br_xcl       = idmc_br_xcl_w[2];
+    assign idm_ctrl_logic_outs_idm_input_req_2_data         = idmc_data_w     [2*128 +: 128];
 
     assign idm_ctrl_logic_outs_idm_input_req_3_ld_meta_data = idmc_ld_meta_data_w[3];
     assign idm_ctrl_logic_outs_idm_input_req_3_ld_data      = idmc_ld_data_w[3];
     assign idm_ctrl_logic_outs_idm_input_req_3_valid        = idmc_valid_w[3];
     assign idm_ctrl_logic_outs_idm_input_req_3_br_valid     = idmc_br_valid_w[3];
-    assign idm_ctrl_logic_outs_idm_input_req_3_br_eip       = idmc_br_eip_w[3];
-    assign idm_ctrl_logic_outs_idm_input_req_3_br_target    = idmc_br_target_w[3];
+    assign idm_ctrl_logic_outs_idm_input_req_3_br_eip       = idmc_br_eip_w   [3*32 +: 32];
+    assign idm_ctrl_logic_outs_idm_input_req_3_br_target    = idmc_br_target_w[3*32 +: 32];
     assign idm_ctrl_logic_outs_idm_input_req_3_br_xcl       = idmc_br_xcl_w[3];
-
-    // Pack the per-slot unpacked byte arrays (16 bytes each) into 128-bit buses.
-    genvar gpi;
-    generate
-        for (gpi = 0; gpi < 16; gpi = gpi + 1) begin : g_idmc_pack
-            assign idm_ctrl_logic_outs_idm_input_req_0_data[gpi*8 +: 8] = idmc_data_w[0][gpi];
-            assign idm_ctrl_logic_outs_idm_input_req_1_data[gpi*8 +: 8] = idmc_data_w[1][gpi];
-            assign idm_ctrl_logic_outs_idm_input_req_2_data[gpi*8 +: 8] = idmc_data_w[2][gpi];
-            assign idm_ctrl_logic_outs_idm_input_req_3_data[gpi*8 +: 8] = idmc_data_w[3][gpi];
-        end
-    endgenerate
+    assign idm_ctrl_logic_outs_idm_input_req_3_data         = idmc_data_w     [3*128 +: 128];
 
     assign idm_ctrl_logic_outs_push_success = idmc_push_success_w;
 
@@ -476,12 +486,14 @@ module Fetch (
     // ----------------------------------------------------------------
     // idm_ctrl_data_in[i] = exp_or_int ? rom_data_out[i]
     //                                  : icache_info_instruction_line[i*8 +: 8]
+    // (Both rom_data_out and idm_ctrl_data_in are now packed 128-bit
+    // buses, so byte i lives at [i*8 +: 8].)
     // ----------------------------------------------------------------
     genvar gd;
     generate
         for (gd = 0; gd < 16; gd = gd + 1) begin : g_idm_data_mux
-            `MUX_2(u_idm_data_mux, 8, idm_ctrl_data_in[gd],
-                    icache_info_instruction_line[gd*8 +: 8], rom_data_out[gd], exp_or_int)
+            `MUX_2(u_idm_data_mux, 8, idm_ctrl_data_in[gd*8 +: 8],
+                    icache_info_instruction_line[gd*8 +: 8], rom_data_out[gd*8 +: 8], exp_or_int)
         end
     endgenerate
 

@@ -59,7 +59,7 @@ include $(PROJECT_ROOT)/Make.build
 
 GEN_CONF = $(TEST_CASE_PATH)/startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_stages
+TOP_MODULE_NAME = tb_instance
 
 STARTUP_FILES = \
 				gen/diskLoader.v \
@@ -69,15 +69,19 @@ STARTUP_FILES = \
 				gen/coreRegLoader.sv \
 				gen/tlb_loader.sv
 
-TB_FILES = \
-		   $(STARTUP_FILES) \
-		   debugUtils/debug_pkg.sv \
-		   tb_stages.sv
+		   
+
+#TB_FILES = \
+#		   $(STARTUP_FILES) \
+#		   debugUtils/debug_pkg.sv \
+#		   tb_instance.sv
+
+TB_FILES = tb_instance.sv
 
 SRC_FILES :=
 
 ifeq ($(STRUCTRURAL), true)
-	SRC_FILES += $(RTL_STRUCTURAL_HEADERS) $(RTL_STRUCTURAL_SRC_FILES) $(TB_FILES)	
+	SRC_FILES += $(RTL_PKGS) $(RTL_STRUCTURAL_HEADERS) $(RTL_STRUCTURAL_SRC_FILES) $(TB_FILES)	
 else
 	SRC_FILES += $(RTL_PKGS) $(RTL_SRC_FILES) $(TB_FILES)	
 endif

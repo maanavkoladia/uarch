@@ -81,7 +81,7 @@
 
 */
 
-import core_stage_latches_pkg::*;
+`define STRUCTURAL_EXE_STAGE_LATCHES
 
 `ifdef STRUCTURAL_EXE_STAGE_LATCHES
 //fully unrolled stage latch, every field of exe_latches_t gets its own port.

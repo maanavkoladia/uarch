@@ -26,8 +26,6 @@
 //                          pfn_winner[b] = OR(hit_i & pfn_i[b])
 // ----------------------------------------------------------------
 
-import common_pkg::*;
-import TLB_pkg::*;
 
 module TLB (
     // --- inputs (tlb_inputs_t unrolled) ---
@@ -41,6 +39,18 @@ module TLB (
     output wire        pageFault,
     output wire        MIO
 );
+
+    // ----------------------------------------------------------------
+    // Width constants (mirror rtl/core/TLB/pkg/TLB_pkg.sv +
+    // rtl/defines/common_define.vh + rtl/defines/TLB_define.vh).
+    // Local so the file compiles in pure Verilog 2005 without relying on
+    // package import or `define expansion at the use sites.
+    //   ADDRESS_BITS = 32, PAGE_SIZE = 4096, OFFSET_BITS = 12,
+    //   VPN_BITS     = ADDRESS_BITS - OFFSET_BITS = 20
+    // ----------------------------------------------------------------
+    localparam ADDRESS_BITS = 32;
+    localparam OFFSET_BITS  = 12;
+    localparam VPN_BITS     = 20;
 
     // ----------------------------------------------------------------
     // Per-entry storage.  Externally written by the tlb_loader.

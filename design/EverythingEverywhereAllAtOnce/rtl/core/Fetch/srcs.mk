@@ -21,5 +21,20 @@ FETCH_SRC_FILES = \
 	$(FETCH_PATH_INTERNAL)/ICache_En_Logic.sv \
 	$(FETCH_PATH_INTERNAL)/Fetch.sv \
 
+# Explicit list (no glob) -- the structural folder also contains
+# Fetch.sv (the SV/struct-port reference), which must not be compiled
+# alongside the flat-port Fetch.v that the structural top instantiates.
 FETCH_STRUCTURAL_SRC_FILES = \
-	$(FETCH_PATH_INTERNAL)/structural/*.*v
+	$(FETCH_PATH_INTERNAL)/structural/BTB.sv \
+	$(FETCH_PATH_INTERNAL)/structural/BTFN.sv \
+	$(FETCH_PATH_INTERNAL)/structural/EXP_Ctrl_ROMS.sv \
+	$(FETCH_PATH_INTERNAL)/structural/EXP_Set_logic.sv \
+	$(FETCH_PATH_INTERNAL)/structural/GShare.sv \
+	$(FETCH_PATH_INTERNAL)/structural/ICache_En_Logic.sv \
+	$(FETCH_PATH_INTERNAL)/structural/IDM_Ctrl_Logic.sv \
+	$(FETCH_PATH_INTERNAL)/structural/IDM_Invalidate_Logic.sv \
+	$(FETCH_PATH_INTERNAL)/structural/Predictor.sv \
+	$(FETCH_PATH_INTERNAL)/structural/SegmentTranslation_structural.sv \
+	$(FETCH_PATH_INTERNAL)/structural/SPC_Sel_Logic.sv \
+	$(FETCH_PATH_INTERNAL)/structural/two_bit_sat_count.sv \
+	$(FETCH_PATH_INTERNAL)/structural/Fetch.v \

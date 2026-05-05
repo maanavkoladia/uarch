@@ -82,8 +82,7 @@
         feeds REG_RST_WE.d, with we = effective_we.
 
 */
-
-import core_stage_latches_pkg::*;
+`define STRUCTURAL_MEM_STAGE_LATCHES
 
 `ifdef STRUCTURAL_MEM_STAGE_LATCHES
 //fully unrolled stage latch, every leaf field of mem_latches_t gets its own port.

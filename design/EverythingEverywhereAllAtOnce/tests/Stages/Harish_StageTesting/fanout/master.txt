@@ -38,8 +38,6 @@ lib_header
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/ICache_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/ICache_TagStore_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/I_VCache_structural.v
-/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/DCache/gen/DCache_Bank_FSM.sv
-/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/DCache/gen/VCache_FSM.sv
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/DCache/structural/fanout/DCache_Arbitration_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/DCache/structural/fanout/DCache_Bank_DataStore_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/DCache/structural/fanout/DCache_Bank_FSM.sv

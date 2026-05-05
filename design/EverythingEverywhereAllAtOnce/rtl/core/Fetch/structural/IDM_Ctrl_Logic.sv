@@ -45,11 +45,16 @@ module IDM_Ctrl_Logic (
     input  wire        int_mode,
     input  wire [31:0] spc,
 
-    // idm_outputs_t -- only per-slot valid bits used here
-    input  wire        idm_slot_valid    [0:3],
+    // idm_outputs_t -- only per-slot valid bits used here.
+    // All per-slot signals are packed buses now (was unpacked array ports
+    // in the SV original) so this file compiles in pure Verilog 2005:
+    //   bit i  in 4-bit buses corresponds to slot i.
+    //   bits   i*32 +: 32 in 128-bit buses correspond to slot i.
+    //   bits   i*128 +: 128 in 512-bit buses correspond to slot i.
+    input  wire [3:0]   idm_slot_valid,
 
     // idm_invalidate_logic_output_t fields
-    input  wire        invalidate        [0:3],
+    input  wire [3:0]   invalidate,
     input  wire        no_writes,
 
     // btb_output_t fields (br_ucond unused)
@@ -68,18 +73,18 @@ module IDM_Ctrl_Logic (
     // spc_sel_logic_output_t -- only flush_reg consumed
     input  wire        spc_sel_flush_reg,
 
-    // Cacheline data going into the IDM
-    input  wire [7:0]  data_in           [0:15],
+    // Cacheline data going into the IDM (LSB-first byte packing)
+    input  wire [127:0] data_in,
 
-    // idm_ctrl_logic_output_t -- flat per-slot fields
-    output wire        idm_req_ld_meta_data [0:3],
-    output wire        idm_req_ld_data      [0:3],
-    output wire        idm_req_valid        [0:3],
-    output wire        idm_req_br_valid     [0:3],
-    output wire [31:0] idm_req_br_eip       [0:3],
-    output wire [31:0] idm_req_br_target    [0:3],
-    output wire        idm_req_br_xcl       [0:3],
-    output wire [7:0]  idm_req_data         [0:3] [0:15],
+    // idm_ctrl_logic_output_t -- flat per-slot fields, packed
+    output wire [3:0]   idm_req_ld_meta_data,
+    output wire [3:0]   idm_req_ld_data,
+    output wire [3:0]   idm_req_valid,
+    output wire [3:0]   idm_req_br_valid,
+    output wire [127:0] idm_req_br_eip,
+    output wire [127:0] idm_req_br_target,
+    output wire [3:0]   idm_req_br_xcl,
+    output wire [511:0] idm_req_data,
 
     output wire        push_success
 );
@@ -170,32 +175,18 @@ module IDM_Ctrl_Logic (
     //   br_target[i] = br_active[i] ? btb_br_target : 0
     //   data[i]      = wr_en[i]     ? data_in       : 0
     //
-    // The cacheline data is an unpacked 16-byte array. Pack it into a
-    // 128-bit wire for one wide MUX_2 per slot, then unpack back into
-    // the unpacked output array.
+    // The cacheline data is now an already-packed 128-bit bus on the input
+    // port; no inner pack step needed. Each slot's 128-bit data output is
+    // a slice of the packed 512-bit idm_req_data bus.
     // ----------------------------------------------------------------
-    wire [127:0] data_in_packed;
-    generate
-        for (i = 0; i < 16; i = i + 1) begin : g_pack_data_in
-            assign data_in_packed[i*8 +: 8] = data_in[i];
-        end
-    endgenerate
-
     generate
         for (i = 0; i < 4; i = i + 1) begin : g_slot_wide_out
-            wire [127:0] slot_data_packed;
-
-            `MUX_2(u_be, 32,  idm_req_br_eip[i],
+            `MUX_2(u_be, 32,  idm_req_br_eip[i*32 +: 32],
                    32'h0,  btb_br_eip,    br_active[i])
-            `MUX_2(u_bt, 32,  idm_req_br_target[i],
+            `MUX_2(u_bt, 32,  idm_req_br_target[i*32 +: 32],
                    32'h0,  btb_br_target, br_active[i])
-            `MUX_2(u_dm, 128, slot_data_packed,
-                   128'h0, data_in_packed, wr_en[i])
-
-            genvar k;
-            for (k = 0; k < 16; k = k + 1) begin : g_unpack_data
-                assign idm_req_data[i][k] = slot_data_packed[k*8 +: 8];
-            end
+            `MUX_2(u_dm, 128, idm_req_data[i*128 +: 128],
+                   128'h0, data_in,        wr_en[i])
         end
     endgenerate
 

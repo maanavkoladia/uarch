@@ -28,8 +28,7 @@
 
 */
 
-import core_stage_latches_pkg::*;
-
+`define STRUCTURAL_WB_STAGE_LATCHES
 `ifdef STRUCTURAL_WB_STAGE_LATCHES
 //fully unrolled stage latch, every field of wb_latches_t gets its own port.
 //res_buf is flattened to UINTCL_T_WIDTH*2 = 256 bits.
