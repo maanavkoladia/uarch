@@ -1,3 +1,5 @@
+/*
+
 import core_stage_latches_pkg::*;
 
 module DC_Latches (
@@ -21,8 +23,6 @@ module DC_Latches (
     end
     
 endmodule
-
-/*
 
     typedef struct {
         bool valid;
@@ -120,6 +120,7 @@ endmodule
       is NOT used in the clear logic (matches the updated RR/MEM behavior).
 
 */
+
 
 import core_stage_latches_pkg::*;
 
