@@ -6,7 +6,7 @@ NS_0 = (S_0 & wait_i) | (S_0 & S_1 & S_2) | (!S_0 & !S_1 & start_i & !wait_i) | 
 
 NS_1 = (S_1 & wait_i) | (S_0 & S_1) | (S_1 & !S_2) | (S_0 & !S_2 & !exit_mov_i) | (S_0 & !S_2 & wait_i) | (S_0 & S_2 & cont_cmp_i & !wait_i) | (S_0 & S_2 & !exit_cmp_i & !wait_i)
 
-NS_2 = (S_2 & wait_i) | (S_1 & S_2) | (!S_0 & S_2) | (S_0 & S_1 & !wait_i) | (S_0 & !S_1 & wait_i) | (S_2 & cont_cmp_i & exit_cmp_i) | (S_2 & !cont_cmp_i & !exit_cmp_i)
+NS_2 = (!S_0 & S_2) | (S_2 & wait_i) | (S_0 & S_1 & !wait_i) | (S_0 & !S_1 & wait_i) | (S_2 & cont_cmp_i & exit_cmp_i) | (S_2 & !cont_cmp_i & !exit_cmp_i)
 
 clear_rep_o = (S_0 & !S_1 & !S_2 & exit_mov_i & !wait_i) | (S_0 & !S_1 & S_2 & !cont_cmp_i & exit_cmp_i & !wait_i)
 
