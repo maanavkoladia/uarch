@@ -117,8 +117,8 @@ proc print_loads_tree {tree top_name indent} {
 # (contains 'rst') or "block" (contains 'lock'). Returns "clock", "reset", or "".
 proc detect_clock_or_reset {leaf_name} {
     foreach tok [split [string tolower $leaf_name] "_"] {
-        if {$tok eq "clk" || $tok eq "clock"} { return "clock" }
-        if {$tok eq "rst" || $tok eq "reset"
+        if {$tok eq "clk" || $tok eq "clock"  || $tok eq "fast_clk" || $tok eq "clk_duty_mask" || $tok eq "clk_i" || $tok eq "clk_duty_mask_buffer"  } { return "clock" }
+        if {$tok eq "rst" || $tok eq "reset" || $tok eq "rst_i"
             || $tok eq "rstn" || $tok eq "resetn"
             || $tok eq "nrst" || $tok eq "nreset"} { return "reset" }
     }

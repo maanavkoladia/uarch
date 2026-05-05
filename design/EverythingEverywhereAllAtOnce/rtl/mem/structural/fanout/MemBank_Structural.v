@@ -71,7 +71,10 @@ module mem_bank (
     //    .out(driveMemBus_bar),
     //    .in (driveMemBus_i)
     //);
-    `INV_N(u3, 1, driveMemBus_i, driveMemBus_bar);
+    // u3 was INV_N (bufferHInv64$ inside) but driveMemBus_bar drives the
+    // enbar of TRISTATE_L for MEM_BUS_SIZE=128 -- 128 leaf pins, exceeds
+    // tier-64. Use bufferHInv256$ from lib2 directly.
+    bufferHInv256$ u3 (.out(driveMemBus_bar), .in(driveMemBus_i));
 
     //mps_tristateL_width#(
     //    .WIDTH(`MEM_BUS_SIZE)

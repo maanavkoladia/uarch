@@ -106,8 +106,17 @@ module mem_controller(
     // Write: when fsm_ld_address_changed AND chipNum == i, latch address_bus
 
     // One-hot chip select
+    // Each chip_sel_oh bit drives ~5 leaf pins (1 chip_we + 4 bank_ld_addr_chg).
+    // The decoder leaf cells (mux2$-class) violate tier-16 -- buffer per bit.
+    wire [15:0] chip_sel_oh_pre;
     wire [15:0] chip_sel_oh;
-    `DECODER_N(u_chip_dec, 4, chipNum, chip_sel_oh)
+    `DECODER_N(u_chip_dec, 4, chipNum, chip_sel_oh_pre)
+    genvar csg;
+    generate
+        for (csg = 0; csg < 16; csg = csg + 1) begin : g_chip_sel_oh_buf
+            bufferH16$ u_buf (.out(chip_sel_oh[csg]), .in(chip_sel_oh_pre[csg]));
+        end
+    endgenerate
 
     // Per-chip WE = chip_sel_oh[i] & fsm_ld_address_changed
     wire [15:0] chip_addr_we;
@@ -138,8 +147,17 @@ module mem_controller(
     // ================================================================
 
     // ---- One-hot bank-group select ----
+    // Each bg_sel_oh[i] drives ~6 leaf pins (1 bg_set + 1 bg_addr_we + 4 bg_wb fillX).
+    // Buffer at the decoder output (same pattern as chip_sel_oh).
+    wire [7:0] bg_sel_oh_pre;
     wire [7:0] bg_sel_oh;
-    `DECODER_N(u_bg_dec, 3, bankGroup, bg_sel_oh)
+    `DECODER_N(u_bg_dec, 3, bankGroup, bg_sel_oh_pre)
+    genvar bgg;
+    generate
+        for (bgg = 0; bgg < 8; bgg = bgg + 1) begin : g_bg_sel_oh_buf
+            bufferH16$ u_buf (.out(bg_sel_oh[bgg]), .in(bg_sel_oh_pre[bgg]));
+        end
+    endgenerate
 
     // ---- writeBuf_Valid (1-bit per group) ----
     //   SET   = fsm_set_WriteBuf_V & bg_sel_oh[i]
@@ -176,17 +194,23 @@ module mem_controller(
     endgenerate
 
     // ---- bankGroup address registers (15 bits each) ----
-    wire [14:0] bg_addr[0:7];
-    wire [7:0] bg_addr_we;
-    wire [4:0] bg_row[0:7];
+    // DUPLICATED x2 -- bg_row was driving 8 banks per group bit (>4).
+    // Each copy now drives 4 banks. Same WE/clk/rst feeds both copies.
+    wire [14:0] bg_addr_a[0:7];
+    wire [14:0] bg_addr_b[0:7];
+    wire [7:0]  bg_addr_we;
+    wire [4:0]  bg_row_a[0:7];
+    wire [4:0]  bg_row_b[0:7];
 
     generate
         for (ci = 0; ci < 8; ci = ci + 1) begin : g_bg_addr
             `AND_2(u_we, 1, bg_addr_we[ci], fsm_set_WriteBuf_V, bg_sel_oh[ci])
 
-            `REG_RST_WE(u_ar, 15, clk, rst, bg_addr_we[ci], address_bus[14:0], bg_addr[ci])
+            `REG_RST_WE(u_ar_a, 15, clk, rst, bg_addr_we[ci], address_bus[14:0], bg_addr_a[ci])
+            `REG_RST_WE(u_ar_b, 15, clk, rst, bg_addr_we[ci], address_bus[14:0], bg_addr_b[ci])
 
-            assign bg_row[ci] = bg_addr[ci][14:10];
+            assign bg_row_a[ci] = bg_addr_a[ci][14:10];
+            assign bg_row_b[ci] = bg_addr_b[ci][14:10];
         end
     endgenerate
 
@@ -196,6 +220,11 @@ module mem_controller(
     // Each fill loads 4 bytes from data_bus[31:0].
     // WE for byte in group i = fillX & bg_sel_oh[i]
 
+    // bg_wb_pre = direct register output. bg_wb is the buffered version
+    // routed to bank_cmd_writeBuf. Each bg_wb_pre[ci] bit was driven
+    // straight into 8 banks' writeBuf_i (fanout=8 > 4). Re-buffer per bit
+    // with bufferH16$ from lib2 in g_bg_wb_buf below.
+    wire [127:0] bg_wb_pre[0:7];
     wire [127:0] bg_wb[0:7];
 
     generate
@@ -207,25 +236,37 @@ module mem_controller(
             `AND_2(u_f3, 1, f3_we, fsm_fill3, bg_sel_oh[ci])
 
             // fill0: bytes 0-3
-            `REG_RST_WE(u_b0, 8, clk, rst, f0_we, data_bus[7:0], bg_wb[ci][7:0])
-            `REG_RST_WE(u_b1, 8, clk, rst, f0_we, data_bus[15:8], bg_wb[ci][15:8])
-            `REG_RST_WE(u_b2, 8, clk, rst, f0_we, data_bus[23:16], bg_wb[ci][23:16])
-            `REG_RST_WE(u_b3, 8, clk, rst, f0_we, data_bus[31:24], bg_wb[ci][31:24])
+            `REG_RST_WE(u_b0, 8, clk, rst, f0_we, data_bus[7:0], bg_wb_pre[ci][7:0])
+            `REG_RST_WE(u_b1, 8, clk, rst, f0_we, data_bus[15:8], bg_wb_pre[ci][15:8])
+            `REG_RST_WE(u_b2, 8, clk, rst, f0_we, data_bus[23:16], bg_wb_pre[ci][23:16])
+            `REG_RST_WE(u_b3, 8, clk, rst, f0_we, data_bus[31:24], bg_wb_pre[ci][31:24])
             // fill1: bytes 4-7
-            `REG_RST_WE(u_b4, 8, clk, rst, f1_we, data_bus[7:0], bg_wb[ci][39:32])
-            `REG_RST_WE(u_b5, 8, clk, rst, f1_we, data_bus[15:8], bg_wb[ci][47:40])
-            `REG_RST_WE(u_b6, 8, clk, rst, f1_we, data_bus[23:16], bg_wb[ci][55:48])
-            `REG_RST_WE(u_b7, 8, clk, rst, f1_we, data_bus[31:24], bg_wb[ci][63:56])
+            `REG_RST_WE(u_b4, 8, clk, rst, f1_we, data_bus[7:0], bg_wb_pre[ci][39:32])
+            `REG_RST_WE(u_b5, 8, clk, rst, f1_we, data_bus[15:8], bg_wb_pre[ci][47:40])
+            `REG_RST_WE(u_b6, 8, clk, rst, f1_we, data_bus[23:16], bg_wb_pre[ci][55:48])
+            `REG_RST_WE(u_b7, 8, clk, rst, f1_we, data_bus[31:24], bg_wb_pre[ci][63:56])
             // fill2: bytes 8-11
-            `REG_RST_WE(u_b8, 8, clk, rst, f2_we, data_bus[7:0], bg_wb[ci][71:64])
-            `REG_RST_WE(u_b9, 8, clk, rst, f2_we, data_bus[15:8], bg_wb[ci][79:72])
-            `REG_RST_WE(u_b10, 8, clk, rst, f2_we, data_bus[23:16], bg_wb[ci][87:80])
-            `REG_RST_WE(u_b11, 8, clk, rst, f2_we, data_bus[31:24], bg_wb[ci][95:88])
+            `REG_RST_WE(u_b8, 8, clk, rst, f2_we, data_bus[7:0], bg_wb_pre[ci][71:64])
+            `REG_RST_WE(u_b9, 8, clk, rst, f2_we, data_bus[15:8], bg_wb_pre[ci][79:72])
+            `REG_RST_WE(u_b10, 8, clk, rst, f2_we, data_bus[23:16], bg_wb_pre[ci][87:80])
+            `REG_RST_WE(u_b11, 8, clk, rst, f2_we, data_bus[31:24], bg_wb_pre[ci][95:88])
             // fill3: bytes 12-15
-            `REG_RST_WE(u_b12, 8, clk, rst, f3_we, data_bus[7:0], bg_wb[ci][103:96])
-            `REG_RST_WE(u_b13, 8, clk, rst, f3_we, data_bus[15:8], bg_wb[ci][111:104])
-            `REG_RST_WE(u_b14, 8, clk, rst, f3_we, data_bus[23:16], bg_wb[ci][119:112])
-            `REG_RST_WE(u_b15, 8, clk, rst, f3_we, data_bus[31:24], bg_wb[ci][127:120])
+            `REG_RST_WE(u_b12, 8, clk, rst, f3_we, data_bus[7:0], bg_wb_pre[ci][103:96])
+            `REG_RST_WE(u_b13, 8, clk, rst, f3_we, data_bus[15:8], bg_wb_pre[ci][111:104])
+            `REG_RST_WE(u_b14, 8, clk, rst, f3_we, data_bus[23:16], bg_wb_pre[ci][119:112])
+            `REG_RST_WE(u_b15, 8, clk, rst, f3_we, data_bus[31:24], bg_wb_pre[ci][127:120])
+        end
+    endgenerate
+
+    // Per-bit bufferH16$ from lib2: each bg_wb_pre bit feeds 8 banks. Buffer
+    // brings driver into tier-16 compliance (1024 cells; 0.24 ns added on
+    // the writeBuf data path -- non-critical store-data path).
+    genvar wbg, wbb;
+    generate
+        for (wbg = 0; wbg < 8; wbg = wbg + 1) begin : g_bg_wb_buf
+            for (wbb = 0; wbb < 128; wbb = wbb + 1) begin : g_b
+                bufferH16$ u_buf (.out(bg_wb[wbg][wbb]), .in(bg_wb_pre[wbg][wbb]));
+            end
         end
     endgenerate
 
@@ -256,8 +297,30 @@ module mem_controller(
     // OUTPUT: bank_cmd_driveMemBus  (64 banks)
     // ================================================================
     // Default 0. When fsm_set_ld_tristate, set for bank_num_for_chip.
+    // u_bank_dec: 6->64 decoder. Inner u_high/u_low outputs each drive 8 ANDs
+    // (fanout 8 -> tier-16 violation). Replace with manual 2x DECODER_N(3) +
+    // bufferH16$ on intermediate outputs + 64 AND_2 combiner.
+    wire [7:0] bank_high_oh_pre, bank_high_oh;
+    wire [7:0] bank_low_oh_pre,  bank_low_oh;
+    `DECODER_N(u_bank_high_dec, 3, bank_num_for_chip[5:3], bank_high_oh_pre)
+    `DECODER_N(u_bank_low_dec,  3, bank_num_for_chip[2:0], bank_low_oh_pre)
+    genvar bdkh, bdkl;
+    generate
+        for (bdkh = 0; bdkh < 8; bdkh = bdkh + 1) begin : g_bank_h_buf
+            bufferH16$ u_buf (.out(bank_high_oh[bdkh]), .in(bank_high_oh_pre[bdkh]));
+        end
+        for (bdkl = 0; bdkl < 8; bdkl = bdkl + 1) begin : g_bank_l_buf
+            bufferH16$ u_buf (.out(bank_low_oh[bdkl]), .in(bank_low_oh_pre[bdkl]));
+        end
+    endgenerate
     wire [63:0] bank_oh;
-    `DECODER_N(u_bank_dec, 6, bank_num_for_chip, bank_oh)
+    generate
+        for (bdkh = 0; bdkh < 8; bdkh = bdkh + 1) begin : g_bank_h_and
+            for (bdkl = 0; bdkl < 8; bdkl = bdkl + 1) begin : g_bank_l_and
+                `AND_2(u_b, 1, bank_oh[bdkh*8 + bdkl], bank_high_oh[bdkh], bank_low_oh[bdkl])
+            end
+        end
+    endgenerate
 
     // replicate scalar to 64 bits
     wire [63:0] fsm_set_ld_tristate_vec;
@@ -273,7 +336,8 @@ module mem_controller(
     //      bankGroupTable[i].address[14:10], i=group, j=bank-in-group)
     generate
         for (bi = 0; bi < 64; bi = bi + 1) begin : g_st_addr
-            assign bank_cmd_st_address[bi*5+:5] = bg_row[bi%8];
+            // Banks 0..3 in each group use _a copy; banks 4..7 use _b copy.
+            assign bank_cmd_st_address[bi*5+:5] = (bi/8 < 4) ? bg_row_a[bi%8] : bg_row_b[bi%8];
         end
     endgenerate
 
@@ -361,6 +425,9 @@ module mem_controller(
             banks_precharged[63], bank_num_for_chip)
 
     // ---- Final hit AND ----
-    `AND_3(u_hit, 1, hit_into_fsm, dte_ld_req, addr_match, sel_precharge)
+    // u_hit drives mem_controller_fsm.hit_i which has ~5 internal SOP-term loads.
+    wire hit_into_fsm_pre;
+    `AND_3(u_hit, 1, hit_into_fsm_pre, dte_ld_req, addr_match, sel_precharge)
+    bufferH16$ u_hit_buf (.out(hit_into_fsm), .in(hit_into_fsm_pre));
 
 endmodule

@@ -127,9 +127,10 @@ wire NS_4;
 //   ERROR                        = 10101  (decimal 21)  // ERROR (trap state), synthesised
 
 // ----------------------------------------------------------------
-// State flip-flops -- buffer-insert each Q with bufferH16$ from lib2
-// to clear the in-FSM state-bit fanout violations. This FSM is
-// instantiated 64 times (once per bank), so each fix multiplies x64.
+// State flip-flops -- buffer-insert each Q with bufferH64$ from lib2.
+// (Round 1 used bufferH16$ but the actual in-FSM fanout per state bit
+// is ~16-17 SOP-term inputs which exceeds tier-16. bufferH64$ covers
+// up to 64 loads.) This FSM is instantiated 64 times (one per bank).
 // ----------------------------------------------------------------
 wire S_0_pre, S_1_pre, S_2_pre, S_3_pre, S_4_pre;
 `REG_RST(ff_0, 1, clk, rst, NS_0, S_0_pre)
@@ -137,11 +138,20 @@ wire S_0_pre, S_1_pre, S_2_pre, S_3_pre, S_4_pre;
 `REG_RST(ff_2, 1, clk, rst, NS_2, S_2_pre)
 `REG_RST(ff_3, 1, clk, rst, NS_3, S_3_pre)
 `REG_RST(ff_4, 1, clk, rst, NS_4, S_4_pre)
-bufferH16$ u_S_0_buf (.out(S_0), .in(S_0_pre));
-bufferH16$ u_S_1_buf (.out(S_1), .in(S_1_pre));
-bufferH16$ u_S_2_buf (.out(S_2), .in(S_2_pre));
-bufferH16$ u_S_3_buf (.out(S_3), .in(S_3_pre));
-bufferH16$ u_S_4_buf (.out(S_4), .in(S_4_pre));
+bufferH64$ u_S_0_buf (.out(S_0), .in(S_0_pre));
+bufferH64$ u_S_1_buf (.out(S_1), .in(S_1_pre));
+bufferH64$ u_S_2_buf (.out(S_2), .in(S_2_pre));
+bufferH64$ u_S_3_buf (.out(S_3), .in(S_3_pre));
+bufferH64$ u_S_4_buf (.out(S_4), .in(S_4_pre));
+
+// ----------------------------------------------------------------
+// Input buffer on start_store_i -- per-instance fanout=8 (7 SOP terms +
+// 1 inverter). Buffering here also fixes the upstream u_ss(and2$_64)
+// driver's per-bit fanout (mem_controller_structural.v): with the buf
+// in place, the AND output drives only 1 leaf pin per bank.
+// ----------------------------------------------------------------
+wire start_store_i_buf;
+bufferH16$ u_start_store_i_buf (.out(start_store_i_buf), .in(start_store_i));
 
 // ----------------------------------------------------------------
 // Inverters for negated literals
@@ -170,7 +180,7 @@ wire start_store_i_inv;
 wire NS_0_t0;
 `AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_1, S_4_inv)
 wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_3_inv, S_4_inv, start_store_i)
+`AND_3(NS_0_and1, 1, NS_0_t1, S_3_inv, S_4_inv, start_store_i_buf)
 wire NS_0_t2;
 `AND_3(NS_0_and2, 1, NS_0_t2, S_0_inv, S_2_inv, S_3_inv)
 wire NS_0_t3;
@@ -182,7 +192,7 @@ wire NS_0_t5;
 wire NS_0_t6;
 `AND_3(NS_0_and6, 1, NS_0_t6, S_0_inv, S_4_inv, ld_address_change_i)
 wire NS_0_t7;
-`AND_3(NS_0_and7, 1, NS_0_t7, S_0_inv, S_4_inv, start_store_i)
+`AND_3(NS_0_and7, 1, NS_0_t7, S_0_inv, S_4_inv, start_store_i_buf)
 
 `OR_8(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5, NS_0_t6, NS_0_t7)
 
@@ -224,13 +234,13 @@ wire NS_2_t7;
 
 // NS_3 = (!S_1 & !S_4 & start_store_i) | (!S_0 & !S_4 & start_store_i) | (S_1 & !S_2 & S_3 & !S_4) | (!S_3 & !S_4 & start_store_i) | (!S_0 & S_2 & S_3 & !S_4) | (S_0 & !S_1 & S_3 & !S_4) | (!S_1 & S_3 & !S_4 & !ld_address_change_i) | (S_0 & S_1 & S_2 & !S_3 & !S_4 & !ld_address_change_i)
 wire NS_3_t0;
-`AND_3(NS_3_and0, 1, NS_3_t0, S_1_inv, S_4_inv, start_store_i)
+`AND_3(NS_3_and0, 1, NS_3_t0, S_1_inv, S_4_inv, start_store_i_buf)
 wire NS_3_t1;
-`AND_3(NS_3_and1, 1, NS_3_t1, S_0_inv, S_4_inv, start_store_i)
+`AND_3(NS_3_and1, 1, NS_3_t1, S_0_inv, S_4_inv, start_store_i_buf)
 wire NS_3_t2;
 `AND_4(NS_3_and2, 1, NS_3_t2, S_1, S_2_inv, S_3, S_4_inv)
 wire NS_3_t3;
-`AND_3(NS_3_and3, 1, NS_3_t3, S_3_inv, S_4_inv, start_store_i)
+`AND_3(NS_3_and3, 1, NS_3_t3, S_3_inv, S_4_inv, start_store_i_buf)
 wire NS_3_t4;
 `AND_4(NS_3_and4, 1, NS_3_t4, S_0_inv, S_2, S_3, S_4_inv)
 wire NS_3_t5;
@@ -254,7 +264,7 @@ wire NS_4_t2;
 
 // st_addr_release_o = (!S_4 & start_store_i) | (!S_2 & !S_3 & S_4) | (S_1 & S_3 & !S_4) | (S_2 & S_3 & !S_4) | (S_0 & S_3 & !S_4)
 wire st_addr_release_o_t0;
-`AND_2(st_addr_release_o_and0, 1, st_addr_release_o_t0, S_4_inv, start_store_i)
+`AND_2(st_addr_release_o_and0, 1, st_addr_release_o_t0, S_4_inv, start_store_i_buf)
 wire st_addr_release_o_t1;
 `AND_3(st_addr_release_o_and1, 1, st_addr_release_o_t1, S_2_inv, S_3_inv, S_4)
 wire st_addr_release_o_t2;
@@ -268,7 +278,7 @@ wire st_addr_release_o_t4;
 
 // OE_o = (!S_4 & start_store_i) | (!S_2 & !S_3 & S_4) | (S_1 & S_3 & !S_4) | (S_2 & S_3 & !S_4) | (!S_0 & !S_1 & !S_3 & S_4) | (S_0 & S_3 & !S_4) | (!S_0 & !S_1 & !S_2 & !S_3)
 wire OE_o_t0;
-`AND_2(OE_o_and0, 1, OE_o_t0, S_4_inv, start_store_i)
+`AND_2(OE_o_and0, 1, OE_o_t0, S_4_inv, start_store_i_buf)
 wire OE_o_t1;
 `AND_3(OE_o_and1, 1, OE_o_t1, S_2_inv, S_3_inv, S_4)
 wire OE_o_t2;
@@ -298,7 +308,9 @@ wire WE_o_n3;
 
 wire WE_o_pre;
 `NAND_4(WE_o_nand, 1, WE_o_pre, WE_o_n0, WE_o_n1, WE_o_n2, WE_o_n3)
-bufferH64$ u_WE_o_buf (.out(WE_o), .in(WE_o_pre));
+// Round 2: bufferH64$ -> bufferH256$. Actual fanout is ~132 (TRISTATE_L
+// MEM_BUS_SIZE=128 enbar pins + 4 SRAM WR + small).
+bufferH256$ u_WE_o_buf (.out(WE_o), .in(WE_o_pre));
 
 // clear_writebufV_o = (!S_0 & !S_1 & S_2 & !S_3 & S_4)
 `AND_5(clear_writebufV_o_and, 1, clear_writebufV_o, S_0_inv, S_1_inv, S_2, S_3_inv, S_4)
