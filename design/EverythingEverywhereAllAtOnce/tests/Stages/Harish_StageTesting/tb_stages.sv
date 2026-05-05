@@ -47,9 +47,9 @@ module tb_stages ();
             icache_hits <= 0;
         end
         else begin
-            if (`FETCH_UNIT_PATH.outs_o.fetch_2_icache.num_valid_IDM_slots == 0) idm_empty_cycle_counts++;
+            //if (`FETCH_UNIT_PATH.outs_o.fetch_2_icache.num_valid_IDM_slots == 0) idm_empty_cycle_counts++;
             //if (`EXE_UNIT_PATH.branch_resolution_o.flush == 1) flush_count++;
-            if (uut_AllAtOnce.mem_sys_unit.icache_unit.icache_hit == 1) icache_hits++;
+            //if (uut_AllAtOnce.mem_sys_unit.icache_unit.icache_hit == 1) icache_hits++;
         end
     end
 
@@ -193,6 +193,7 @@ module tb_stages ();
         @(posedge clk) @(posedge clk) force uut_AllAtOnce.core_unit.fetch_unit.SPC = 32'h0000;
         force uut_AllAtOnce.core_unit.decode_unit.EIP = 32'h0000;
         @(posedge clk) rst = 1;
+        $display("RST UP at : %d", $time);
         release uut_AllAtOnce.core_unit.fetch_unit.SPC;
         release uut_AllAtOnce.core_unit.decode_unit.EIP;
         @(posedge clk)

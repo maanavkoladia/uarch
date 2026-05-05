@@ -16,7 +16,7 @@ TARGET = system_testing
 STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 10
+CLK_PERIOD := 100
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 DCACHE_DUMP_END=100
@@ -59,7 +59,7 @@ include $(PROJECT_ROOT)/Make.build
 
 GEN_CONF = $(TEST_CASE_PATH)/startUpGen.conf.json
 
-TOP_MODULE_NAME = tb_instance
+TOP_MODULE_NAME = tb_stages
 
 STARTUP_FILES = \
 				gen/diskLoader.v \
@@ -71,12 +71,12 @@ STARTUP_FILES = \
 
 		   
 
-#TB_FILES = \
-#		   $(STARTUP_FILES) \
-#		   debugUtils/debug_pkg.sv \
-#		   tb_instance.sv
+TB_FILES = \
+		   $(STARTUP_FILES) \
+		   debugUtils/debug_pkg.sv \
+		   tb_stages.sv
 
-TB_FILES = tb_instance.sv
+#TB_FILES = tb_instance.sv
 
 SRC_FILES :=
 

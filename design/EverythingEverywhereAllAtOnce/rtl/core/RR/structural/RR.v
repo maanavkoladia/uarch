@@ -534,6 +534,8 @@ module RR (
     //   The SV declares `segment_limit_reg_entry_t SEGMENT_LIMITS[7]`
     //   and never assigns it; we mirror that here.
     // ----------------------------------------------------------------
+    reg [31:0] SEGMENT_LIMITS[7];
+
     wire [31:0] SEGMENT_LIMIT_CS;
     wire [31:0] SEGMENT_LIMIT_DS;
     wire [31:0] SEGMENT_LIMIT_SS;
@@ -541,6 +543,14 @@ module RR (
     wire [31:0] SEGMENT_LIMIT_FS;
     wire [31:0] SEGMENT_LIMIT_GS;
     wire [31:0] SEGMENT_LIMIT_EXPS;
+
+    assign SEGMENT_LIMIT_CS = SEGMENT_LIMITS[0];
+    assign SEGMENT_LIMIT_DS = SEGMENT_LIMITS[1];
+    assign SEGMENT_LIMIT_SS = SEGMENT_LIMITS[2];
+    assign SEGMENT_LIMIT_ES = SEGMENT_LIMITS[3];
+    assign SEGMENT_LIMIT_FS = SEGMENT_LIMITS[4];
+    assign SEGMENT_LIMIT_GS = SEGMENT_LIMITS[5];
+    assign SEGMENT_LIMIT_EXPS = SEGMENT_LIMITS[6];
 
     // SB outputs / dep-stall plumbing
     wire        ecx_sb;
