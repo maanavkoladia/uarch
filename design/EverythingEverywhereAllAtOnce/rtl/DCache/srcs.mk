@@ -27,5 +27,4 @@ DCACHE_PKGS = \
 
 DCACHE_STRUCTURAL_SRC_FILES = \
 			  $(DCACHE_GEN_SRC_FILES) \
-			  $(DCACHE_PATH_INTERNAL)/structural/*.sv
-							  
+			  $(DCACHE_PATH_INTERNAL)/structural/*.v						  

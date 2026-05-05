@@ -1,4 +1,6 @@
 import reg_ids_pkg::*;
+import core_stage_latches_pkg::*;
+import core_common_pkg::*;
 
 module Decode (
     input wire clk,

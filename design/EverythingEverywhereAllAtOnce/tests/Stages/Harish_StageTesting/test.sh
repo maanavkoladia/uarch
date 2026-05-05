@@ -26,11 +26,11 @@ SingleTestFull() {
     base=$(basename "$casePath") 
     testCaseOutDir="$scriptDir/$outDir/$base/"
 
-    echo -e "\n\n\nRunning the $casePath test case, results are in $testCaseOutDir"
+    echo -e "\n\n\nRunning the $casePath test case, results are in $testCaseOutDir" >> $regTestLog
 
     make full TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
 
-    tail ${testCaseOutDir}/compare_report.txt
+    tail ${testCaseOutDir}/compare_report.txt >> $regTestLog
 
     #-DTEST_CASE_PATH="$casePath"
 }

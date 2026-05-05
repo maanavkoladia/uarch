@@ -75,9 +75,28 @@ module kogge_stone_adder #(
     // ----------------------------------------------------------
     //  Stage 0 — Pre-processing
     //  Instantiate one PG cell per input bit.
+    //
+    //  Bit 0 is special-cased to fold `cin` into its generate
+    //  signal so the prefix tree correctly delivers the carry into
+    //  bits 1..WIDTH-1:
+    //     g_eff[0] = (a[0] & b[0]) | ((a[0] ^ b[0]) & cin)
+    //  p[0] stays as the raw propagate (a[0] ^ b[0]); the bit-0
+    //  sum_cell still uses the external `cin` directly so sum[0]
+    //  is unchanged. Without this, sum[i>0] is wrong whenever
+    //  cin=1 and bits 0..i-1 form a propagate chain past bit 0.
+    //  With cin=0 the new path collapses to a[0]&b[0] (identical
+    //  to the original pg_cell output), so cin=0 callers are
+    //  unaffected.
     // ----------------------------------------------------------
+    wire p0_raw, g0_raw, p0_and_cin;
+    `XOR_2(u_p0_xor, 1, p0_raw,     a[0], b[0])
+    `AND_2(u_g0_and, 1, g0_raw,     a[0], b[0])
+    `AND_2(u_p0_cin, 1, p0_and_cin, p0_raw, cin)
+    `OR_2 (u_g0_or,  1, g_arr[0],   g0_raw, p0_and_cin)
+    assign p_arr[0] = p0_raw;
+
     generate
-        for (i = 0; i < WIDTH; i = i + 1) begin : gen_pg
+        for (i = 1; i < WIDTH; i = i + 1) begin : gen_pg
             pg_cell u_pg (
                 .a(a[i]),
                 .b(b[i]),
@@ -201,7 +220,7 @@ module pg_cell (
         a, 
         b
     )
-    xor2$ u_prop (
+     `XOR_2 (u_prop, 1,
         p,
         a,
         b
@@ -316,7 +335,7 @@ module sum_cell (
     input  wire c_in,
     output wire sum
 );
-    xor2$ u_xor (
+    `XOR_2   (u_xor, 1,
         sum,
         p,
         c_in

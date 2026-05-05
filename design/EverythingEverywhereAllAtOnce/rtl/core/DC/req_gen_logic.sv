@@ -39,9 +39,6 @@ module req_gen_logic(
     bool is_served_1;
     bool is_served_mio;
 
-    bool stall;
-    assign stall = exp_stall || dep_stall;
-
     //is dc ready to move forwward with valid logic
     bool forward_valid;
 
@@ -53,7 +50,7 @@ module req_gen_logic(
     assign ld_0_stall = (~req_served_0 &  ~is_served_0 & LD_OP & ~MIO);
     assign ld_1_stall = (~req_served_1 & ~is_served_1 & LD_OP & XCL & ~MIO);
 
-    assign arb_stall = (mio_stall | ld_0_stall | ld_1_stall) & valid;
+    assign arb_stall = (mio_stall | ld_0_stall | ld_1_stall);
 
 
 
@@ -90,9 +87,9 @@ module req_gen_logic(
     assign ld_addr_1 = ld_addr1 & 32'hFFFFFFF0;
     assign ld_addr_mio = ld_addrMIO & 32'hFFFFFFF0;
 
-    assign ld_addr_1_V = ~stall & LD_OP & XCL & valid & ~MIO & ~is_served_1 & ~flush;
-    assign ld_addr_0_V = ~stall & LD_OP & valid & ~MIO & ~is_served_0 & ~flush;
-    assign ld_addr_mio_V = ~stall & LD_OP & valid & MIO & ~is_served_mio & ~flush;
+    assign ld_addr_1_V = ~dep_stall & LD_OP & XCL & valid & ~MIO & ~is_served_1 & ~flush;
+    assign ld_addr_0_V = ~dep_stall & LD_OP & valid & ~MIO & ~is_served_0 & ~flush;
+    assign ld_addr_mio_V = ~dep_stall & LD_OP & valid & MIO & ~is_served_mio & ~flush;
 
 
 

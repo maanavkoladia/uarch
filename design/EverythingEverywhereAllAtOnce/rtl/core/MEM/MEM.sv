@@ -1,6 +1,7 @@
 import core_common_pkg::*;
 import core_stage_latches_pkg::*;
 import common_pkg::*;
+import interconnect_pkg::*;
 
 module MEM (
     input wire clk,
@@ -133,23 +134,23 @@ module MEM (
     always_comb begin
         clr_dcache_arb_latches = '{default : '0};
         clr_dcache_mio_latch = 0;
-            if(!latches_i.MIO) begin
-                for(int i = 0; i < NUM_DCACHE_PORTS; i++)begin
-                    if(bank_num_0 == i && latches_i.cs.LD_OP && ((hit[i] && ~hit_buf_v[i]) || flush)
-                        && latches_i.valid)begin
-                        clr_dcache_arb_latches[i] = 1;
-                    end
-                    if(bank_num_1 == i && latches_i.cs.LD_OP && latches_i.LD_XCL &&((hit[i] && ~hit_buf_v[i]) || flush)
-                        && latches_i.valid)begin
-                        clr_dcache_arb_latches[i] = 1;
-                    end
+        if(!latches_i.MIO) begin
+            for(int i = 0; i < NUM_DCACHE_PORTS; i++)begin
+                if(bank_num_0 == i && latches_i.cs.LD_OP && ((hit[i] && ~hit_buf_v[i]))
+                    && latches_i.valid)begin
+                    clr_dcache_arb_latches[i] = 1;
                 end
-            end 
-            if(latches_i.MIO && latches_i.cs.LD_OP && ((hit_MIO && ~hit_buf_mio_v) ||flush)
-                && latches_i.valid)begin
-                clr_dcache_mio_latch = 1;
+                if(bank_num_1 == i && latches_i.cs.LD_OP && latches_i.LD_XCL &&((hit[i] && ~hit_buf_v[i]))
+                    && latches_i.valid)begin
+                    clr_dcache_arb_latches[i] = 1;
+                end
             end
-    
+        end 
+        if(latches_i.MIO && latches_i.cs.LD_OP && ((hit_MIO && ~hit_buf_mio_v) ||flush)
+            && latches_i.valid)begin
+            clr_dcache_mio_latch = 1;
+        end
+        if(flush) clr_dcache_arb_latches = '{default: '1};
     end
 
 

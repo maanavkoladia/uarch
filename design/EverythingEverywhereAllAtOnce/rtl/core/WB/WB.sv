@@ -19,14 +19,14 @@ module WB (
 );
 
 
-    bool stall_flop;
+    //bool stall_flop;
     bool stall_flop_next;
     bool mio_push_fail;
 
     st_q_inputs_t stq_info[NUM_WB_ST_QS];
     st_q_outputs_t stq_outputs[NUM_WB_ST_QS];
     mio_inputs_t mio_q_input;
-    reg_wb_logic_outputs_t reg_wb_logic_outs;
+    //reg_wb_logic_outputs_t reg_wb_logic_outs;
 
     st_q_2_dep_check_outputs_t dc_dep;
     st_q_2_dcache_t stq_heads[NUM_WB_ST_QS];
@@ -85,10 +85,10 @@ module WB (
     };
 
     //stall mask logic for SB and wb
-    always_ff @(posedge clk)begin
-        if(!rst) stall_flop <=0;
-        else stall_flop <= stall_flop_next;
-    end
+    //always_ff @(posedge clk)begin
+    //    if(!rst) stall_flop <=0;
+    //    else stall_flop <= stall_flop_next;
+    //end
 
     //store queue push pop logic 
     ST_Q_logic st_q_logic(

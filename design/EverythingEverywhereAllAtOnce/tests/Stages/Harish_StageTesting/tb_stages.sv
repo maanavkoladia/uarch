@@ -23,19 +23,21 @@ module tb_stages ();
     uint32_t flush_count;
     uint32_t i_vcache_hits;
     uint32_t icache_hits;
-    uint32_t dep_stall_count;
-    uint32_t rr_stall_count;
-    uint32_t decode_invalid_count;
-    uint32_t branch_counts;
-    uint32_t d_vcache0_hits;
-    uint32_t d_vcache1_hits;
-    uint32_t d_vcache2_hits;
-    uint32_t d_vcache3_hits;
-    uint32_t dcache0_hits;
-    uint32_t dcache1_hits;
-    uint32_t dcache2_hits;
-    uint32_t dcache3_hits;
-    uint32_t btb_hits;
+
+    int logfd_spc;
+    int logdf_eip;
+    initial logfd_spc = $fopen("info_log", "w");
+
+    
+    task automatic sample_spc();
+        #6
+        $fdisplay(logfd_spc, "time %0t, cycle_count: %0d, SPC: 0x%0h, EIP: 0x%0h ", $time, cycle_count, `FETCH_UNIT_PATH.SPC, `DECODE_UNIT_PATH.EIP);
+    endtask
+
+
+    always_ff @(posedge clk) begin
+        sample_spc();
+    end
 
     always_ff @(posedge clk) begin
         if(!rst) begin
@@ -43,51 +45,11 @@ module tb_stages ();
             flush_count <= 0;
             i_vcache_hits <= 0;
             icache_hits <= 0;
-            dep_stall_count <= 0;
-            rr_stall_count <= 0;
-            decode_invalid_count <= 0;
-            branch_counts <= 0;
-
-            d_vcache0_hits <= 0;
-            d_vcache1_hits <= 0;
-            d_vcache2_hits <= 0;
-            d_vcache3_hits <= 0;
-            dcache0_hits <= 0;
-            dcache1_hits <= 0;
-            dcache2_hits <= 0;
-            dcache3_hits <= 0;
-
-            btb_hits <= 0;
         end
         else begin
             if (`FETCH_UNIT_PATH.outs_o.fetch_2_icache.num_valid_IDM_slots == 0) idm_empty_cycle_counts++;
-            if (`EXE_UNIT_PATH.branch_resolution_o.flush == 1) flush_count++;
-            if (uut_AllAtOnce.mem_sys_unit.icache_unit.i_vcache_hit == 1) i_vcache_hits++;
+            //if (`EXE_UNIT_PATH.branch_resolution_o.flush == 1) flush_count++;
             if (uut_AllAtOnce.mem_sys_unit.icache_unit.icache_hit == 1) icache_hits++;
-            if (`DC_UNIT_PATH.dep_stall) dep_stall_count++;
-            if (`RR_UNIT_PATH.outs_o.stall) rr_stall_count++;
-            if (`DECODE_UNIT_PATH.invalid_inst) decode_invalid_count++;
-            if (`EXE_UNIT_PATH.latches_i.valid && 
-                    (`EXE_UNIT_PATH.latches_i.cs.OP_TYPE == JMP || 
-                    `EXE_UNIT_PATH.latches_i.cs.OP_TYPE == CALL ||
-                    `EXE_UNIT_PATH.latches_i.cs.OP_TYPE == RET ||
-                    `EXE_UNIT_PATH.latches_i.cs.OP_TYPE == RET_IMM)) branch_counts++;
-            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.vcache_outputs.hit) d_vcache0_hits++;
-            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[0].block.dcache_bank_outputs.hit) dcache0_hits++;
-
-            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[1].block.vcache_outputs.hit) d_vcache1_hits++;
-            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[1].block.dcache_bank_outputs.hit) dcache1_hits++;
-
-            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[2].block.vcache_outputs.hit) d_vcache2_hits++;
-            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[2].block.dcache_bank_outputs.hit) dcache2_hits++;
-
-            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[3].block.vcache_outputs.hit) d_vcache3_hits++;
-            if (uut_AllAtOnce.mem_sys_unit.dcache_unit.g_dcache_block[3].block.dcache_bank_outputs.hit) dcache3_hits++;
-
-            if ((`DECODE_UNIT_PATH.idm_outs_i.idm_slots[EIP[5:4]].br_eip == EIP)
-                        && (`DECODE_UNIT_PATH.idm_outs_i.idm_slots[EIP[5:4]].valid)
-                        && (`DECODE_UNIT_PATH.idm_outs_i.idm_slots[EIP[5:4]].br_valid)
-                        && `DECODE_UNIT_PATH.decode_forward) btb_hits++;
         end
     end
 
@@ -100,38 +62,6 @@ module tb_stages ();
     `define REP_PATH `DECODE_UNIT_PATH.piece_of_shit_rep_controller
     integer repdumpfd;
     string  rep_log_file_name;
-
-    initial begin
-        if (!$value$plusargs("RTL_REPDUMP_FILE_NAME=%s", rep_log_file_name))
-            rep_log_file_name = "rtl_repdump_default.log";
-        repdumpfd = $fopen(rep_log_file_name, "w");
-        if (repdumpfd == 0) begin
-            $display("ERROR: cannot open repdump file %s", rep_log_file_name);
-            $finish;
-        end
-        $fdisplay(repdumpfd,
-            "cycle  time  rep_fsm  cmp_fsm  movs_fsm  inst_sel  zf_cnt  set_zf clear_zf updateSB cont_cmp exit_cmp cmp_clear movs_clear");
-    end
-
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            $fdisplay(repdumpfd,
-                "%0d  %0t  %b  %b  %b  %b  %0d  %b %b %b %b %b %b %b",
-                cycle_count, $time,
-                `REP_PATH.rep_fsm_state_bits,
-                `REP_PATH.rep_cmp_fsm_state_bits,
-                `REP_PATH.rep_movs_fsm_state_bits,
-                `REP_PATH.inst_select,
-                `REP_PATH.zf_sb_counter,
-                `REP_PATH.set_zf,
-                `REP_PATH.clear_zf,
-                `REP_PATH.updateSB,
-                `REP_PATH.continue_cmp,
-                `REP_PATH.exit_cmp,
-                `REP_PATH.cmp_clear,
-                `REP_PATH.movs_clear);
-        end
-    end
 
     logic instruction_commit;
     logic exeforwards;
@@ -261,31 +191,13 @@ module tb_stages ();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(25000);
+        DelayClks(5000);
         //print_all();
         $display("\n\n\nprogram completion cycle count: %0d", finish_time);
         $display("flush count: %0d", flush_count);
         $display("idm empty count: %0d", idm_empty_cycle_counts);
         $display("num i_vcache hits: %0d", i_vcache_hits);
         $display("num icache hits: %0d\n", icache_hits);
-        $display("dep stall count: %0d", dep_stall_count);
-        $display("rr stall count: %0d", rr_stall_count);
-        $display("invalid inst decode count: %0d", decode_invalid_count);
-        $display("num branch count: %0d\n", branch_counts);
-
-        $display("d_vcache0 hit count: %0d", d_vcache0_hits);
-        $display("dcache0 hit count: %0d", dcache0_hits);
-
-        $display("d_vcache1 hit count: %0d", d_vcache1_hits);
-        $display("dcache1 hit count: %0d", dcache1_hits);
-
-        $display("d_vcache2 hit count: %0d", d_vcache2_hits);
-        $display("dcache2 hit count: %0d", dcache2_hits);
-
-        $display("d_vcache3 hit count: %0d", d_vcache3_hits);
-        $display("dcache3 hit count: %0d\n", dcache3_hits);
-
-        $display("btb hit count: %0d\n\n", btb_hits);
 
 
         $display("Reg Dump File Path: %s", `RTL_REGDUMP_FILE_NAME);

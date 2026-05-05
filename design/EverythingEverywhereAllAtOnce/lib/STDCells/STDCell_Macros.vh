@@ -4,6 +4,10 @@
 `define INV_N(__unitName__, __width__, __in__, __out__) \
     inv_N$ #(.WIDTH(__width__)) __unitName__ ( .in(__in__), .out(__out__) );
 
+`define XOR_2(__unitName__, __width__, __out__, __in0__, __in1__) \
+    MPS_XOR_IN2 #(.WIDTH(__width__)) __unitName__ (.out(__out__), .in0(__in0__), .in1(__in1__));
+
+
 `define AND_2(__unitName__, __width__, __out__, __in0__, __in1__) \
     and2_N$ #(.WIDTH(__width__)) __unitName__ ( .out(__out__), .in0(__in0__), .in1(__in1__) );
 `define AND_3(__unitName__, __width__, __out__, __in0__, __in1__, __in2__) \
@@ -81,6 +85,7 @@
 
 `define NOR_4(__unitName__, __width__, __out__, __in0__, __in1__, __in2__, __in3__) \
     nor4_N$ #(.WIDTH(__width__)) __unitName__ ( .out(__out__), .in0(__in0__), .in1(__in1__), .in2(__in2__), .in3(__in3__) );
+
 
 ///////////////////////muxes/////////////////////////////
 `define MUX_2(__unitName__, __width__, __out__, __in0__, __in1__, __sel__) \
@@ -225,7 +230,8 @@
     );
 
 //////////////////// REG WITH WE ////////////////////
-//active low rst
+//active low rst, do not use signals other than rst for the rst input, this is
+//async rst
 `define REG_RST_WE(__unitName__, __width__, __clk__, __rst__, __we__, __din__, __dout__) \
     MPS_reg_rst_we$ #(.WIDTH(__width__)) __unitName__ ( \
         .clk(__clk__), \

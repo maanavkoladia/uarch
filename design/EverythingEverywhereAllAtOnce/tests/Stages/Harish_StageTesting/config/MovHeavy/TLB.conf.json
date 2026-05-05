@@ -10,11 +10,11 @@
     "num entries"   : "8",
 
     "paths" : [
-        "uut_AllAtOnce.core_unit.fetch_unit.tlb.tlb",
-        "uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0.tlb",
-        "uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1.tlb",
-        "uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0.tlb",
-        "uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1.tlb"
+        "uut_AllAtOnce.core_unit.fetch_unit.tlb",
+        "uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0",
+        "uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1",
+        "uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0",
+        "uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1"
     ],
 
     "entries" : {

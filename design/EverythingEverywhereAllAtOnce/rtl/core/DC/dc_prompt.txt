@@ -1,0 +1,37 @@
+It is now time to port dc
+
+The goal: create a plan to properly port dc in to 2005 structural verilog. 
+We will slowly integrate every module one at a time. 
+
+Use the STD_MacroLib to implement the logic.
+
+Put all new files in a structural folder within the DC. do not edit the sv files use them as referene when creating the structural verision
+Try to reduce the number of ands and ors and try to use more nands and nors instead
+
+Here is an overview of what dc does 
+DC takes in partially logical address and puts them through segment translation and the tlb. this gives us a physical address
+With that physical address, one for loads and one for stores have to check if our loads depend on any stores that are currently in the pipeline or in the store queue. 
+this is what the inflight_sb_logic checks for and the wb_stq_sb_logic does. 
+
+these modules are on the critical path. these moduels tell us if there is a dependency and therefore determines if we make a load request to the cache. 
+
+The time it takes to do this is critical so reducing this time is very very important. take to find optimizations in how the logic can be implemented here.
+
+For later stages we sometimes need need to generate a new store address specifically for pushes. this is what the push address gen logic is for. (not on cp)
+we also need to take the data size that was created in our decode stage expand it to a 4 bit vecot and that is done in data_size_vec_logic this also determines if we need to shift our data in some way if we are adding 8 bit registesr.
+
+The important is that dc interfaces with dcache arbitration which is overall slow. so it is import we send out requests as fast as possible that is the main target when port or main thing to keep track of
+still make sure however that the logic in the sturctural files match the .sv files of their respective counter parts
+
+make sure to add verilog folders to the verilog folder and name them <svfile name>_structural however the module name within  a file should match exactly the sv file name. 
+all genvars or module isntantiations should match the same naming as the respective sv file. take time to udnerstand how the logic works. 
+
+then create a plan on how to implement each module 1 by 1. I need you to implement 1 then stop and wait for me check that it works before moving on to the next module.
+
+ensure you follow structural verilog 2005 rules. 
+
+ask me questions as needed. 
+
+create a comphrensive plan that ports dc.
+
+the dc top module should still have sv inputs and outputs but the strcuts that are passed in should be unrolled before being passsed into modules. 
