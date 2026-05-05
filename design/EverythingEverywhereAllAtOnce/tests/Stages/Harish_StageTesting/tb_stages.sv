@@ -26,7 +26,7 @@ module tb_stages ();
 
     int logfd_spc;
     int logdf_eip;
-    initial logfd_spc = $fopen("info_log", "w");
+    initial logfd_spc = $fopen("info.log", "w");
 
     
     task automatic sample_spc();
@@ -187,7 +187,7 @@ module tb_stages ();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(5000);
+        DelayClks(25000);
         //print_all();
         $display("program completion cycle count: %0d", finish_time);
         $display("flush count: %0d", flush_count);
