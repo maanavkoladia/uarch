@@ -27,13 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-# Override with TC=<name> to select a config folder by name:
-#   make full TC=SomeOtherTest
-# Or pass a full path directly:
-#   make full TEST_CASE_PATH=/abs/path/to/config
-
 TEST_CASE_PATH ?= $(TEST_DIR)/config/TheBigOne/
-
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)

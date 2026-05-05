@@ -86,11 +86,11 @@ wire NS_1_n1;
 
 `NAND_2(NS_1_nand, 1, NS_1, NS_1_n0, NS_1_n1)
 
-// busy_o = (S_0 & !S_1) | (!S_0 & S_1)
+// busy_o = (!S_0 & S_1) | (S_0 & !S_1)
 wire busy_o_n0;
-`NAND_2(busy_o_nand0, 1, busy_o_n0, S_0, S_1_inv)
+`NAND_2(busy_o_nand0, 1, busy_o_n0, S_0_inv, S_1)
 wire busy_o_n1;
-`NAND_2(busy_o_nand1, 1, busy_o_n1, S_0_inv, S_1)
+`NAND_2(busy_o_nand1, 1, busy_o_n1, S_0, S_1_inv)
 
 `NAND_2(busy_o_nand, 1, busy_o, busy_o_n0, busy_o_n1)
 

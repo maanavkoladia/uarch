@@ -46,27 +46,36 @@ module RegSB (
     //nv, maybe not since just use segnment0/1 id since if needed here we will wait.
     //write back will send clear signal in dr0_id, must be able to clear segreg through that
 
+    // bool updateSB;
+    // assign updateSB = !depStall_Internal && instructionforward;
+    wire updateSB;
     wire depStall_Internal;
+    wire depStall_Internal_n;
+    `INV_N(u_depStall_Internal_inv, 1, depStall_Internal, depStall_Internal_n)
+    `AND_2(u_updateSB_and, 1, updateSB, depStall_Internal_n, instructionforward)
 
     // 2D arrays indexed by reg id (see reg_ids_define.vh: CS=0 ... NO_REG=25)
     wire [3:0] SB_o   [0:`NUM_REGS-1];
+
+    wire       we_SB_0  [0:`NUM_REGS-1];
+    wire [3:0] din_SB_0 [0:`NUM_REGS-1];
+    wire [3:0] din_SB_gated_0 [0:`NUM_REGS-1];
+
+    wire       we_SB_1  [0:`NUM_REGS-1];
+    wire [3:0] din_SB_1 [0:`NUM_REGS-1];
+    wire [3:0] din_SB_gated_1 [0:`NUM_REGS-1];
+
     wire       we_SB  [0:`NUM_REGS-1];
     wire [3:0] din_SB [0:`NUM_REGS-1];
-    wire [3:0] din_SB_gated [0:`NUM_REGS-1];
 
     genvar gi_sb_reg;
     generate
         for (gi_sb_reg = 0; gi_sb_reg < `NUM_REGS; gi_sb_reg = gi_sb_reg + 1) begin : g_sb_reg
-            `REG_RST_WE(u_sb_reg, 4, clk, rst, we_SB[gi_sb_reg], din_SB_gated[gi_sb_reg], SB_o[gi_sb_reg])
+            `REG_RST_WE(u_sb_reg, 4, clk, rst, we_SB[gi_sb_reg], din_SB[gi_sb_reg], SB_o[gi_sb_reg])
+            `MUX_2(u_sb_we_mux, 1, we_SB[gi_sb_reg], we_SB_0[gi_sb_reg], we_SB_1[gi_sb_reg], updateSB)
+            `MUX_2(u_sb_din_mux, 4, din_SB[gi_sb_reg], din_SB_gated_0[gi_sb_reg], din_SB_gated_1[gi_sb_reg], updateSB)
         end
     endgenerate
-
-    // bool updateSB;
-    // assign updateSB = !depStall_Internal && instructionforward;
-    wire updateSB;
-    wire depStall_Internal_n;
-    `INV_N(u_depStall_Internal_inv, 1, depStall_Internal, depStall_Internal_n)
-    `AND_2(u_updateSB_and, 1, updateSB, depStall_Internal_n, instructionforward)
 
     // bool cs_wr_to_both;
     // assign cs_wr_to_both = (cs_dr_wr && cs_sr_wr && (dr_id == sr_id))
@@ -99,19 +108,6 @@ module RegSB (
     `CMP_N(u_codeseg_sb_cmp, 4, codeseg_sb_inv, SB_o[`CS], 4'b0)
     `INV_N(u_codeseg_sb_inv, 1, codeseg_sb_inv, codeSeg_sb)
 
-
-    //////////////////////////////////////////// increment phase //////////////////////////
-    wire [3:0] SB_post_inc_o [0:`NUM_REGS-1];
-    wire [3:0] SB_incd_o     [0:`NUM_REGS-1];
-
-    wire [`NUM_REGS-1:0] inc_cout;
-
-    genvar gi_sb_inc;
-    generate
-        for (gi_sb_inc = 0; gi_sb_inc < `NUM_REGS; gi_sb_inc = gi_sb_inc + 1) begin : g_sb_inc
-            `ADD_N(u_sb_inc, 4, SB_incd_o[gi_sb_inc], inc_cout[gi_sb_inc], SB_o[gi_sb_inc], 4'b1, 1'b0)
-        end
-    endgenerate
 
     wire [`REG_ID_W-1:0] sb_id_wire [0:`NUM_REGS-1];
     assign sb_id_wire[0]  = `CS;
@@ -146,18 +142,17 @@ module RegSB (
     `INV_N(u_cs_wr_to_both_inv, 1, cs_wr_to_both, cs_wr_to_both_n)
 
     // dr_path_term = (cs_dr_wr && updateSB && !cs_wr_to_both) || (cs_wr_to_both && updateSB)
-    wire dr_path_t1, dr_path_t2, dr_path_term;
-    `AND_3(u_dr_path_t1_and,  1, dr_path_t1,   cs_dr_wr,      updateSB, cs_wr_to_both_n)
-    `AND_2(u_dr_path_t2_and,  1, dr_path_t2,   cs_wr_to_both, updateSB)
-    `OR_2 (u_dr_path_term_or, 1, dr_path_term, dr_path_t1,    dr_path_t2)
+    wire dr_path_t1, dr_path_term;
+    `AND_2(u_dr_path_t1_and,  1, dr_path_t1,   cs_dr_wr,  cs_wr_to_both_n)
+    `OR_2 (u_dr_path_term_or, 1, dr_path_term, dr_path_t1,    cs_wr_to_both)
 
     // sr_path_term = cs_sr_wr && updateSB && !cs_wr_to_both
     wire sr_path_term;
-    `AND_3(u_sr_path_term_and, 1, sr_path_term, cs_sr_wr, updateSB, cs_wr_to_both_n)
+    `AND_2(u_sr_path_term_and, 1, sr_path_term, cs_sr_wr, cs_wr_to_both_n)
 
     // eax_path_term = cs_eax_wr && updateSB && !cs_wr_to_both
     wire eax_path_term;
-    `AND_3(u_eax_path_term_and, 1, eax_path_term, cs_eax_wr, updateSB, cs_wr_to_both_n)
+    `AND_2(u_eax_path_term_and, 1, eax_path_term, cs_eax_wr, cs_wr_to_both_n)
 
     wire wb_wr_to_both_n;
     `INV_N(u_wb_wr_to_both_inv, 1, wb_wr_to_both, wb_wr_to_both_n)
@@ -175,66 +170,162 @@ module RegSB (
     `OR_3(u_ld_st_rep_op_or, 1, ld_st_rep_op, LD_OP, ST_OP, REP_OP)
 
 
-    // ---------------- sel_inc ----------------
-    wire [`NUM_REGS-1:0] sel_inc;
 
-    genvar gi_sel_inc;
+    //////////////////////////////////////////// increment phase updateSB = 0 //////////////////////////
+    wire [3:0] SB_post_inc0_o [0:`NUM_REGS-1];
+    wire [3:0] SB_incd0_o     [0:`NUM_REGS-1];
+
+    wire [`NUM_REGS-1:0] inc_cout_0;
+
+    genvar gi_sb_inc_0;
     generate
-        for (gi_sel_inc = 0; gi_sel_inc < `NUM_REGS; gi_sel_inc = gi_sel_inc + 1) begin : g_sel_inc
+        for (gi_sb_inc_0 = 0; gi_sb_inc_0 < `NUM_REGS; gi_sb_inc_0 = gi_sb_inc_0 + 1) begin : g_sb_inc_0
+            `ADD_N(u_sb_inc, 4, SB_incd0_o[gi_sb_inc_0], inc_cout_0[gi_sb_inc_0], SB_o[gi_sb_inc_0], 4'b1, 1'b0)
+        end
+    endgenerate
+
+    // ---------------- sel_inc_0 ----------------
+    wire [`NUM_REGS-1:0] sel_inc_0;
+
+    genvar gi_sel_inc_0;
+    generate
+        for (gi_sel_inc_0 = 0; gi_sel_inc_0 < `NUM_REGS; gi_sel_inc_0 = gi_sel_inc_0 + 1) begin : g_sel_inc_0
             wire dr_eq_id, sr_eq_id, eax_eq_id;
-            `CMP_N(u_dr_eq_id_cmp,  `REG_ID_W, dr_eq_id,  dr_id, sb_id_wire[gi_sel_inc])
-            `CMP_N(u_sr_eq_id_cmp,  `REG_ID_W, sr_eq_id,  sr_id, sb_id_wire[gi_sel_inc])
-            `CMP_N(u_eax_eq_id_cmp, `REG_ID_W, eax_eq_id, `EAX,  sb_id_wire[gi_sel_inc])
+            `CMP_N(u_dr_eq_id_cmp,  `REG_ID_W, dr_eq_id,  dr_id, sb_id_wire[gi_sel_inc_0])
+            `CMP_N(u_sr_eq_id_cmp,  `REG_ID_W, sr_eq_id,  sr_id, sb_id_wire[gi_sel_inc_0])
+            `CMP_N(u_eax_eq_id_cmp, `REG_ID_W, eax_eq_id, `EAX,  sb_id_wire[gi_sel_inc_0])
 
             wire dr_term, sr_term, eax_term;
             `AND_2(u_dr_term_and,  1, dr_term,  dr_path_term,  dr_eq_id)
             `AND_2(u_sr_term_and,  1, sr_term,  sr_path_term,  sr_eq_id)
             `AND_2(u_eax_term_and, 1, eax_term, eax_path_term, eax_eq_id)
 
-            `OR_3 (u_sel_inc_or,    1, sel_inc[gi_sel_inc], dr_term, sr_term, eax_term)
-            `MUX_2(u_post_inc_mux,  4, SB_post_inc_o[gi_sel_inc], SB_o[gi_sel_inc], SB_incd_o[gi_sel_inc], sel_inc[gi_sel_inc])
+            wire sel_inc_ungated;
+            `OR_3 (u_sel_inc_or,    1, sel_inc_ungated, dr_term, sr_term, eax_term)
+            `AND_2 (u_sel_updatesb, 1, sel_inc_0[gi_sel_inc_0], sel_inc_ungated, 1'b0)          //updateSB = 0
+            `MUX_2(u_post_inc_mux,  4, SB_post_inc0_o[gi_sel_inc_0], SB_o[gi_sel_inc_0], SB_incd0_o[gi_sel_inc_0], sel_inc_0[gi_sel_inc_0])
         end
     endgenerate
 
 
 
-    /////////////////////////////////////////// dec phase ///////////////////////////
-    wire [3:0] SB_decd_o     [0:`NUM_REGS-1];
+    /////////////////////////////////////////// dec phase , updateSB = 0 ///////////////////////////
+    wire [3:0] SB_decd0_o     [0:`NUM_REGS-1];
 
-    wire [`NUM_REGS-1:0] dec_cout;
+    wire [`NUM_REGS-1:0] dec_cout_0;
 
-    genvar gi_sb_dec;
+    genvar gi_sb_dec_0;
     generate
-        for (gi_sb_dec = 0; gi_sb_dec < `NUM_REGS; gi_sb_dec = gi_sb_dec + 1) begin : g_sb_dec
-            `ADD_N(u_sb_dec, 4, SB_decd_o[gi_sb_dec], dec_cout[gi_sb_dec], SB_post_inc_o[gi_sb_dec], 4'hF, 1'b0)
+        for (gi_sb_dec_0 = 0; gi_sb_dec_0 < `NUM_REGS; gi_sb_dec_0 = gi_sb_dec_0 + 1) begin : g_sb_dec_0
+            `ADD_N(u_sb_dec, 4, SB_decd0_o[gi_sb_dec_0], dec_cout_0[gi_sb_dec_0], SB_post_inc0_o[gi_sb_dec_0], 4'hF, 1'b0)
         end
     endgenerate
 
-    wire [`NUM_REGS-1:0] sel_dec;
+    wire [`NUM_REGS-1:0] sel_dec_0;
 
-    genvar gi_sel_dec;
+    genvar gi_sel_dec_0;
     generate
-        for (gi_sel_dec = 0; gi_sel_dec < `NUM_REGS; gi_sel_dec = gi_sel_dec + 1) begin : g_sel_dec
+        for (gi_sel_dec_0 = 0; gi_sel_dec_0 < `NUM_REGS; gi_sel_dec_0 = gi_sel_dec_0 + 1) begin : g_sel_dec_0
             wire wb_dr0_eq_id, wb_dr1_eq_id;
-            `CMP_N(u_wb_dr0_eq_id_cmp, `REG_ID_W, wb_dr0_eq_id, wb_dr0_id, sb_id_wire[gi_sel_dec])
-            `CMP_N(u_wb_dr1_eq_id_cmp, `REG_ID_W, wb_dr1_eq_id, wb_dr1_id, sb_id_wire[gi_sel_dec])
+            `CMP_N(u_wb_dr0_eq_id_cmp, `REG_ID_W, wb_dr0_eq_id, wb_dr0_id, sb_id_wire[gi_sel_dec_0])
+            `CMP_N(u_wb_dr1_eq_id_cmp, `REG_ID_W, wb_dr1_eq_id, wb_dr1_id, sb_id_wire[gi_sel_dec_0])
 
             wire dec_term0, dec_term1;
             `AND_2(u_dec_term0_and, 1, dec_term0, wb_dr0_or_both,   wb_dr0_eq_id)
             `AND_2(u_dec_term1_and, 1, dec_term1, wb_dr1_we_n_both, wb_dr1_eq_id)
 
-            `OR_2 (u_sel_dec_or,   1, sel_dec[gi_sel_dec], dec_term0, dec_term1)
-            `MUX_2(u_din_sb_mux,   4, din_SB[gi_sel_dec],  SB_post_inc_o[gi_sel_dec], SB_decd_o[gi_sel_dec], sel_dec[gi_sel_dec])
+            `OR_2 (u_sel_dec_or,   1, sel_dec_0[gi_sel_dec_0], dec_term0, dec_term1)
+            `MUX_2(u_din_sb_mux,   4, din_SB_0[gi_sel_dec_0],  SB_post_inc0_o[gi_sel_dec_0], SB_decd0_o[gi_sel_dec_0], sel_dec_0[gi_sel_dec_0])
         end
     endgenerate
 
-    genvar gi_we;
+    genvar gi_we_0;
     generate
-        for (gi_we = 0; gi_we < `NUM_REGS; gi_we = gi_we + 1) begin : g_we
-            `OR_3 (u_we_sb_or,       1, we_SB[gi_we],        sel_inc[gi_we], sel_dec[gi_we], flush)
-            `MUX_2(u_din_gated_mux,  4, din_SB_gated[gi_we], din_SB[gi_we],  4'b0, flush)
+        for (gi_we_0 = 0; gi_we_0 < `NUM_REGS; gi_we_0 = gi_we_0 + 1) begin : g_we_0
+            `OR_3 (u_we_sb_or,       1, we_SB_0[gi_we_0],        sel_inc_0[gi_we_0], sel_dec_0[gi_we_0], flush)
+            `MUX_2(u_din_gated_mux,  4, din_SB_gated_0[gi_we_0], din_SB_0[gi_we_0],  4'b0, flush)
         end
     endgenerate
+
+
+        //////////////////////////////////////////// increment phase updateSB = 1 //////////////////////////
+    wire [3:0] SB_post_inc1_o [0:`NUM_REGS-1];
+    wire [3:0] SB_incd1_o     [0:`NUM_REGS-1];
+
+    wire [`NUM_REGS-1:0] inc_cout_1;
+
+    genvar gi_sb_inc_1;
+    generate
+        for (gi_sb_inc_1 = 0; gi_sb_inc_1 < `NUM_REGS; gi_sb_inc_1 = gi_sb_inc_1 + 1) begin : g_sb_inc_1
+            `ADD_N(u_sb_inc, 4, SB_incd1_o[gi_sb_inc_1], inc_cout_1[gi_sb_inc_1], SB_o[gi_sb_inc_1], 4'b1, 1'b0)
+        end
+    endgenerate
+
+    // ---------------- sel_inc_1 ----------------
+    wire [`NUM_REGS-1:0] sel_inc_1;
+
+    genvar gi_sel_inc_1;
+    generate
+        for (gi_sel_inc_1 = 0; gi_sel_inc_1 < `NUM_REGS; gi_sel_inc_1 = gi_sel_inc_1 + 1) begin : g_sel_inc_1
+            wire dr_eq_id, sr_eq_id, eax_eq_id;
+            `CMP_N(u_dr_eq_id_cmp,  `REG_ID_W, dr_eq_id,  dr_id, sb_id_wire[gi_sel_inc_1])
+            `CMP_N(u_sr_eq_id_cmp,  `REG_ID_W, sr_eq_id,  sr_id, sb_id_wire[gi_sel_inc_1])
+            `CMP_N(u_eax_eq_id_cmp, `REG_ID_W, eax_eq_id, `EAX,  sb_id_wire[gi_sel_inc_1])
+
+            wire dr_term, sr_term, eax_term;
+            `AND_2(u_dr_term_and,  1, dr_term,  dr_path_term,  dr_eq_id)
+            `AND_2(u_sr_term_and,  1, sr_term,  sr_path_term,  sr_eq_id)
+            `AND_2(u_eax_term_and, 1, eax_term, eax_path_term, eax_eq_id)
+
+            wire sel_inc_ungated;
+            `OR_3 (u_sel_inc_or,    1, sel_inc_ungated, dr_term, sr_term, eax_term)
+            `AND_2 (u_sel_updatesb, 1, sel_inc_1[gi_sel_inc_1], sel_inc_ungated, 1'b1)          //updateSB = 1
+            `MUX_2(u_post_inc_mux,  4, SB_post_inc1_o[gi_sel_inc_1], SB_o[gi_sel_inc_1], SB_incd1_o[gi_sel_inc_1], sel_inc_1[gi_sel_inc_1])
+        end
+    endgenerate
+
+
+
+    /////////////////////////////////////////// dec phase , updateSB = 1 ///////////////////////////
+    wire [3:0] SB_decd1_o     [0:`NUM_REGS-1];
+
+    wire [`NUM_REGS-1:0] dec_cout_1;
+
+    genvar gi_sb_dec_1;
+    generate
+        for (gi_sb_dec_1 = 0; gi_sb_dec_1 < `NUM_REGS; gi_sb_dec_1 = gi_sb_dec_1 + 1) begin : g_sb_dec_1
+            `ADD_N(u_sb_dec, 4, SB_decd1_o[gi_sb_dec_1], dec_cout_1[gi_sb_dec_1], SB_post_inc1_o[gi_sb_dec_1], 4'hF, 1'b0)
+        end
+    endgenerate
+
+    wire [`NUM_REGS-1:0] sel_dec_1;
+
+    genvar gi_sel_dec_1;
+    generate
+        for (gi_sel_dec_1 = 0; gi_sel_dec_1 < `NUM_REGS; gi_sel_dec_1 = gi_sel_dec_1 + 1) begin : g_sel_dec_1
+            wire wb_dr0_eq_id, wb_dr1_eq_id;
+            `CMP_N(u_wb_dr0_eq_id_cmp, `REG_ID_W, wb_dr0_eq_id, wb_dr0_id, sb_id_wire[gi_sel_dec_1])
+            `CMP_N(u_wb_dr1_eq_id_cmp, `REG_ID_W, wb_dr1_eq_id, wb_dr1_id, sb_id_wire[gi_sel_dec_1])
+
+            wire dec_term0, dec_term1;
+            `AND_2(u_dec_term0_and, 1, dec_term0, wb_dr0_or_both,   wb_dr0_eq_id)
+            `AND_2(u_dec_term1_and, 1, dec_term1, wb_dr1_we_n_both, wb_dr1_eq_id)
+
+            `OR_2 (u_sel_dec_or,   1, sel_dec_1[gi_sel_dec_1], dec_term0, dec_term1)
+            `MUX_2(u_din_sb_mux,   4, din_SB_1[gi_sel_dec_1],  SB_post_inc1_o[gi_sel_dec_1], SB_decd1_o[gi_sel_dec_1], sel_dec_1[gi_sel_dec_1])
+        end
+    endgenerate
+
+    genvar gi_we_1;
+    generate
+        for (gi_we_1 = 0; gi_we_1 < `NUM_REGS; gi_we_1 = gi_we_1 + 1) begin : g_we_1
+            `OR_3 (u_we_sb_or,       1, we_SB_1[gi_we_1],        sel_inc_1[gi_we_1], sel_dec_1[gi_we_1], flush)
+            `MUX_2(u_din_gated_mux,  4, din_SB_gated_1[gi_we_1], din_SB_1[gi_we_1],  4'b0, flush)
+        end
+    endgenerate
+
+
+
 
     // ---------------- stall logic ----------------
     wire dr_stall, sr_stall, seg0_stall, seg1_stall, sib_base_stall, sib_idx_stall, eax_stall;
