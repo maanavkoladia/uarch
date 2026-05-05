@@ -85,11 +85,11 @@ EXE_STRUCTURAL_SRC_FILES = \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/add_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/and_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/bsf_op_structural.v \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/call_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/cmp.sv \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/call_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/cmp_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/cmpxchg_op_structural.v \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/far_call_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/iretd_op.sv \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/far_call_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/iretd_op_structural.v\
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/mov_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/not_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/or_op_structural.v \
@@ -101,18 +101,18 @@ EXE_STRUCTURAL_SRC_FILES = \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/pavgw_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/pop_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/push_op_structural.v \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/ret_far_imm_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/ret_far_ops.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/ret_imm_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/ret_op.sv \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/ret_far_imm_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/ret_far_ops_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/ret_imm_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/ret_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/sal_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/sar_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/sbb_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/xchg_op_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/movs_op_structural.v \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/add_df_op.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/far_jmp.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/exp_call.sv \
-    $(EXE_PATH_INTERNAL)/FunctionalUnits/rep_cmp.sv \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/add_df_op_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/far_jmp_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/exp_call_structural.v \
+    $(EXE_PATH_INTERNAL_STRUCTURAL)/FunctionalUnits/rep_cmp_structural.v \
     $(EXE_PATH_INTERNAL_STRUCTURAL)/EXE_structural.sv \
 
