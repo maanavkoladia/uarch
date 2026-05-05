@@ -94,7 +94,7 @@
         "RR_valid_logic" : {
             "csv" : "rtl/core/Decode/structural/gen/rr_valid_logic.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rr_valid_logic.v",
-            "run Combinational SOP Gen": "true"
+            "run Combinational SOP Gen": "false"
         },
 
         "DC_valid_logic" : {
