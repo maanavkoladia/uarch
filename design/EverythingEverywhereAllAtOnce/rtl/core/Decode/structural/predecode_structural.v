@@ -2,8 +2,8 @@ module predecode(
     input clk, rst,
     input [511:0] queue,
     input [3:0] queue_valid,
-    input reg [31:0] EIP,
-    output reg [31:0] NEIP,
+    input [31:0] EIP,
+    output [31:0] NEIP,
     output [3:0] inst_length,
     output [7:0] sib_byte,
     output sib_size,
@@ -18,17 +18,17 @@ module predecode(
 );
 
     wire [127:0] IR; //16 byte
-    wire [15:0] IR_valid_vect;
-    wire [3:0] ppu_inst_length[0:3];
-    wire [2:0] ppu_imm_size[0:3];
-    wire [2:0] ppu_msd_size[0:3];
-    wire [7:0] ppu_sib_byte[0:3];
-    wire [31:0] ppu_displacement[0:3];
-    wire [63:0] ppu_imm[0:3];
-    wire [3:0] ppu_needrm;
-    wire [3:0] ppu_disp_size;
-    wire [3:0] ppu_disp_needed;
-    wire [3:0] ppu_sib_size;
+    // per-pf-combo outputs (suffix _<pf1><pf3>) — driven by the parallel ppu instances pfs<i>_<bb>
+    wire [3:0]  ppu_inst_length_00[0:3], ppu_inst_length_01[0:3], ppu_inst_length_10[0:3], ppu_inst_length_11[0:3];
+    wire [2:0]  ppu_imm_size_00[0:3],    ppu_imm_size_01[0:3],    ppu_imm_size_10[0:3],    ppu_imm_size_11[0:3];
+    wire [2:0]  ppu_msd_size_00[0:3],    ppu_msd_size_01[0:3],    ppu_msd_size_10[0:3],    ppu_msd_size_11[0:3];
+    wire [7:0]  ppu_sib_byte_00[0:3],    ppu_sib_byte_01[0:3],    ppu_sib_byte_10[0:3],    ppu_sib_byte_11[0:3];
+    wire [31:0] ppu_displacement_00[0:3],ppu_displacement_01[0:3],ppu_displacement_10[0:3],ppu_displacement_11[0:3];
+    wire [63:0] ppu_imm_00[0:3],         ppu_imm_01[0:3],         ppu_imm_10[0:3],         ppu_imm_11[0:3];
+    wire [3:0]  ppu_needrm_00,           ppu_needrm_01,           ppu_needrm_10,           ppu_needrm_11;
+    wire [3:0]  ppu_disp_size_00,        ppu_disp_size_01,        ppu_disp_size_10,        ppu_disp_size_11;
+    wire [3:0]  ppu_disp_needed_00,      ppu_disp_needed_01,      ppu_disp_needed_10,      ppu_disp_needed_11;
+    wire [3:0]  ppu_sib_size_00,         ppu_sib_size_01,         ppu_sib_size_10,         ppu_sib_size_11;
     wire [1:0] num_pfs;
     wire [9:0] pf_vector0, pf_vector1, pf_vector2;
     wire [31:0] sext_inst_length;
@@ -38,55 +38,187 @@ module predecode(
     wire [31:0] possible_neips[0:15];
 
 
-    selection_logic sel_log1(.queue(queue), .queue_valid(queue_valid), .EIP(EIP), .IR(IR), .IR_valid_vect(IR_valid_vect));
+    selection_logic sel_log1(.queue(queue), .queue_valid(queue_valid), .EIP(EIP), .IR(IR));
 
-    ppu pfs0(.opcode_index(4'd0), .modrm_index(4'd1), .sib_index(4'd2), .IR(IR), .IR_valid_vect(IR_valid_vect),
-        .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd1),
-        .inst_length(ppu_inst_length[0]), .msd_size_o(ppu_msd_size[0]),
-        .imm_size_o(ppu_imm_size[0]), .disp_size_o(ppu_disp_size[0]), .disp_needed_o(ppu_disp_needed[0]), .sib_size_o(ppu_sib_size[0]), .needrm_o(ppu_needrm[0]), .sib_byte(ppu_sib_byte[0]), .disp(ppu_displacement[0]), .imm64(ppu_imm[0]));
+    // 16 parallel ppu instances: pfs<i>_<b1><b3> with hardcoded {total_pf_vector_1, total_pf_vector_3} = bb
+    // i is num_pfs_plusone-1 (also opcode_index)
+    ppu pfs0_00(.modrm_index(4'd1), .sib_index(4'd2), .IR(IR), .opcode_byte(IR[0*8 +: 8]), .modrm_byte(IR[1*8 +: 8]),
+        .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0), .num_pfs_plusone(3'd1),
+        .inst_length(ppu_inst_length_00[0]), .msd_size_o(ppu_msd_size_00[0]),
+        .imm_size_o(ppu_imm_size_00[0]), .disp_size_o(ppu_disp_size_00[0]), .disp_needed_o(ppu_disp_needed_00[0]), .sib_size_o(ppu_sib_size_00[0]), .needrm_o(ppu_needrm_00[0]), .sib_byte(ppu_sib_byte_00[0]), .disp(ppu_displacement_00[0]), .imm64(ppu_imm_00[0]));
 
-    ppu pfs1(.opcode_index(4'd1), .modrm_index(4'd2), .sib_index(4'd3), .IR(IR), .IR_valid_vect(IR_valid_vect),
-        .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd2),
-        .inst_length(ppu_inst_length[1]), .msd_size_o(ppu_msd_size[1]),
-        .imm_size_o(ppu_imm_size[1]), .disp_size_o(ppu_disp_size[1]), .disp_needed_o(ppu_disp_needed[1]), .sib_size_o(ppu_sib_size[1]), .needrm_o(ppu_needrm[1]), .sib_byte(ppu_sib_byte[1]), .disp(ppu_displacement[1]), .imm64(ppu_imm[1]));
+    ppu pfs0_01(.modrm_index(4'd1), .sib_index(4'd2), .IR(IR), .opcode_byte(IR[0*8 +: 8]), .modrm_byte(IR[1*8 +: 8]),
+        .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1), .num_pfs_plusone(3'd1),
+        .inst_length(ppu_inst_length_01[0]), .msd_size_o(ppu_msd_size_01[0]),
+        .imm_size_o(ppu_imm_size_01[0]), .disp_size_o(ppu_disp_size_01[0]), .disp_needed_o(ppu_disp_needed_01[0]), .sib_size_o(ppu_sib_size_01[0]), .needrm_o(ppu_needrm_01[0]), .sib_byte(ppu_sib_byte_01[0]), .disp(ppu_displacement_01[0]), .imm64(ppu_imm_01[0]));
 
-    ppu pfs2(.opcode_index(4'd2), .modrm_index(4'd3), .sib_index(4'd4), .IR(IR), .IR_valid_vect(IR_valid_vect),
-        .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd3),
-        .inst_length(ppu_inst_length[2]), .msd_size_o(ppu_msd_size[2]),
-        .imm_size_o(ppu_imm_size[2]), .disp_size_o(ppu_disp_size[2]), .disp_needed_o(ppu_disp_needed[2]), .sib_size_o(ppu_sib_size[2]), .needrm_o(ppu_needrm[2]), .sib_byte(ppu_sib_byte[2]), .disp(ppu_displacement[2]), .imm64(ppu_imm[2]));
+    ppu pfs0_10(.modrm_index(4'd1), .sib_index(4'd2), .IR(IR), .opcode_byte(IR[0*8 +: 8]), .modrm_byte(IR[1*8 +: 8]),
+        .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0), .num_pfs_plusone(3'd1),
+        .inst_length(ppu_inst_length_10[0]), .msd_size_o(ppu_msd_size_10[0]),
+        .imm_size_o(ppu_imm_size_10[0]), .disp_size_o(ppu_disp_size_10[0]), .disp_needed_o(ppu_disp_needed_10[0]), .sib_size_o(ppu_sib_size_10[0]), .needrm_o(ppu_needrm_10[0]), .sib_byte(ppu_sib_byte_10[0]), .disp(ppu_displacement_10[0]), .imm64(ppu_imm_10[0]));
 
-    ppu pfs3(.opcode_index(4'd3), .modrm_index(4'd4), .sib_index(4'd5), .IR(IR), .IR_valid_vect(IR_valid_vect),
-        .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd4),
-        .inst_length(ppu_inst_length[3]), .msd_size_o(ppu_msd_size[3]),
-        .imm_size_o(ppu_imm_size[3]), .disp_size_o(ppu_disp_size[3]), .disp_needed_o(ppu_disp_needed[3]), .sib_size_o(ppu_sib_size[3]), .needrm_o(ppu_needrm[3]), .sib_byte(ppu_sib_byte[3]), .disp(ppu_displacement[3]), .imm64(ppu_imm[3]));
+    ppu pfs0_11(.modrm_index(4'd1), .sib_index(4'd2), .IR(IR), .opcode_byte(IR[0*8 +: 8]), .modrm_byte(IR[1*8 +: 8]),
+        .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1), .num_pfs_plusone(3'd1),
+        .inst_length(ppu_inst_length_11[0]), .msd_size_o(ppu_msd_size_11[0]),
+        .imm_size_o(ppu_imm_size_11[0]), .disp_size_o(ppu_disp_size_11[0]), .disp_needed_o(ppu_disp_needed_11[0]), .sib_size_o(ppu_sib_size_11[0]), .needrm_o(ppu_needrm_11[0]), .sib_byte(ppu_sib_byte_11[0]), .disp(ppu_displacement_11[0]), .imm64(ppu_imm_11[0]));
 
 
-    `MUX_4(length_mux, 4, inst_length, ppu_inst_length[0], ppu_inst_length[1], ppu_inst_length[2],
-        ppu_inst_length[3], {num_pfs[1], num_pfs[0]})
+    ppu pfs1_00(.modrm_index(4'd2), .sib_index(4'd3), .IR(IR), .opcode_byte(IR[1*8 +: 8]), .modrm_byte(IR[2*8 +: 8]),
+        .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0), .num_pfs_plusone(3'd2),
+        .inst_length(ppu_inst_length_00[1]), .msd_size_o(ppu_msd_size_00[1]),
+        .imm_size_o(ppu_imm_size_00[1]), .disp_size_o(ppu_disp_size_00[1]), .disp_needed_o(ppu_disp_needed_00[1]), .sib_size_o(ppu_sib_size_00[1]), .needrm_o(ppu_needrm_00[1]), .sib_byte(ppu_sib_byte_00[1]), .disp(ppu_displacement_00[1]), .imm64(ppu_imm_00[1]));
 
-    `MUX_4(sib_mux, 8, sib_byte, ppu_sib_byte[0], ppu_sib_byte[1], ppu_sib_byte[2], ppu_sib_byte[3],
+    ppu pfs1_01(.modrm_index(4'd2), .sib_index(4'd3), .IR(IR), .opcode_byte(IR[1*8 +: 8]), .modrm_byte(IR[2*8 +: 8]),
+        .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1), .num_pfs_plusone(3'd2),
+        .inst_length(ppu_inst_length_01[1]), .msd_size_o(ppu_msd_size_01[1]),
+        .imm_size_o(ppu_imm_size_01[1]), .disp_size_o(ppu_disp_size_01[1]), .disp_needed_o(ppu_disp_needed_01[1]), .sib_size_o(ppu_sib_size_01[1]), .needrm_o(ppu_needrm_01[1]), .sib_byte(ppu_sib_byte_01[1]), .disp(ppu_displacement_01[1]), .imm64(ppu_imm_01[1]));
+
+    ppu pfs1_10(.modrm_index(4'd2), .sib_index(4'd3), .IR(IR), .opcode_byte(IR[1*8 +: 8]), .modrm_byte(IR[2*8 +: 8]),
+        .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0), .num_pfs_plusone(3'd2),
+        .inst_length(ppu_inst_length_10[1]), .msd_size_o(ppu_msd_size_10[1]),
+        .imm_size_o(ppu_imm_size_10[1]), .disp_size_o(ppu_disp_size_10[1]), .disp_needed_o(ppu_disp_needed_10[1]), .sib_size_o(ppu_sib_size_10[1]), .needrm_o(ppu_needrm_10[1]), .sib_byte(ppu_sib_byte_10[1]), .disp(ppu_displacement_10[1]), .imm64(ppu_imm_10[1]));
+
+    ppu pfs1_11(.modrm_index(4'd2), .sib_index(4'd3), .IR(IR), .opcode_byte(IR[1*8 +: 8]), .modrm_byte(IR[2*8 +: 8]),
+        .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1), .num_pfs_plusone(3'd2),
+        .inst_length(ppu_inst_length_11[1]), .msd_size_o(ppu_msd_size_11[1]),
+        .imm_size_o(ppu_imm_size_11[1]), .disp_size_o(ppu_disp_size_11[1]), .disp_needed_o(ppu_disp_needed_11[1]), .sib_size_o(ppu_sib_size_11[1]), .needrm_o(ppu_needrm_11[1]), .sib_byte(ppu_sib_byte_11[1]), .disp(ppu_displacement_11[1]), .imm64(ppu_imm_11[1]));
+
+
+    ppu pfs2_00(.modrm_index(4'd3), .sib_index(4'd4), .IR(IR), .opcode_byte(IR[2*8 +: 8]), .modrm_byte(IR[3*8 +: 8]),
+        .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0), .num_pfs_plusone(3'd3),
+        .inst_length(ppu_inst_length_00[2]), .msd_size_o(ppu_msd_size_00[2]),
+        .imm_size_o(ppu_imm_size_00[2]), .disp_size_o(ppu_disp_size_00[2]), .disp_needed_o(ppu_disp_needed_00[2]), .sib_size_o(ppu_sib_size_00[2]), .needrm_o(ppu_needrm_00[2]), .sib_byte(ppu_sib_byte_00[2]), .disp(ppu_displacement_00[2]), .imm64(ppu_imm_00[2]));
+
+    ppu pfs2_01(.modrm_index(4'd3), .sib_index(4'd4), .IR(IR), .opcode_byte(IR[2*8 +: 8]), .modrm_byte(IR[3*8 +: 8]),
+        .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1), .num_pfs_plusone(3'd3),
+        .inst_length(ppu_inst_length_01[2]), .msd_size_o(ppu_msd_size_01[2]),
+        .imm_size_o(ppu_imm_size_01[2]), .disp_size_o(ppu_disp_size_01[2]), .disp_needed_o(ppu_disp_needed_01[2]), .sib_size_o(ppu_sib_size_01[2]), .needrm_o(ppu_needrm_01[2]), .sib_byte(ppu_sib_byte_01[2]), .disp(ppu_displacement_01[2]), .imm64(ppu_imm_01[2]));
+
+    ppu pfs2_10(.modrm_index(4'd3), .sib_index(4'd4), .IR(IR), .opcode_byte(IR[2*8 +: 8]), .modrm_byte(IR[3*8 +: 8]),
+        .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0), .num_pfs_plusone(3'd3),
+        .inst_length(ppu_inst_length_10[2]), .msd_size_o(ppu_msd_size_10[2]),
+        .imm_size_o(ppu_imm_size_10[2]), .disp_size_o(ppu_disp_size_10[2]), .disp_needed_o(ppu_disp_needed_10[2]), .sib_size_o(ppu_sib_size_10[2]), .needrm_o(ppu_needrm_10[2]), .sib_byte(ppu_sib_byte_10[2]), .disp(ppu_displacement_10[2]), .imm64(ppu_imm_10[2]));
+
+    ppu pfs2_11(.modrm_index(4'd3), .sib_index(4'd4), .IR(IR), .opcode_byte(IR[2*8 +: 8]), .modrm_byte(IR[3*8 +: 8]),
+        .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1), .num_pfs_plusone(3'd3),
+        .inst_length(ppu_inst_length_11[2]), .msd_size_o(ppu_msd_size_11[2]),
+        .imm_size_o(ppu_imm_size_11[2]), .disp_size_o(ppu_disp_size_11[2]), .disp_needed_o(ppu_disp_needed_11[2]), .sib_size_o(ppu_sib_size_11[2]), .needrm_o(ppu_needrm_11[2]), .sib_byte(ppu_sib_byte_11[2]), .disp(ppu_displacement_11[2]), .imm64(ppu_imm_11[2]));
+
+
+    ppu pfs3_00(.modrm_index(4'd4), .sib_index(4'd5), .IR(IR), .opcode_byte(IR[3*8 +: 8]), .modrm_byte(IR[4*8 +: 8]),
+        .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0), .num_pfs_plusone(3'd4),
+        .inst_length(ppu_inst_length_00[3]), .msd_size_o(ppu_msd_size_00[3]),
+        .imm_size_o(ppu_imm_size_00[3]), .disp_size_o(ppu_disp_size_00[3]), .disp_needed_o(ppu_disp_needed_00[3]), .sib_size_o(ppu_sib_size_00[3]), .needrm_o(ppu_needrm_00[3]), .sib_byte(ppu_sib_byte_00[3]), .disp(ppu_displacement_00[3]), .imm64(ppu_imm_00[3]));
+
+    ppu pfs3_01(.modrm_index(4'd4), .sib_index(4'd5), .IR(IR), .opcode_byte(IR[3*8 +: 8]), .modrm_byte(IR[4*8 +: 8]),
+        .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1), .num_pfs_plusone(3'd4),
+        .inst_length(ppu_inst_length_01[3]), .msd_size_o(ppu_msd_size_01[3]),
+        .imm_size_o(ppu_imm_size_01[3]), .disp_size_o(ppu_disp_size_01[3]), .disp_needed_o(ppu_disp_needed_01[3]), .sib_size_o(ppu_sib_size_01[3]), .needrm_o(ppu_needrm_01[3]), .sib_byte(ppu_sib_byte_01[3]), .disp(ppu_displacement_01[3]), .imm64(ppu_imm_01[3]));
+
+    ppu pfs3_10(.modrm_index(4'd4), .sib_index(4'd5), .IR(IR), .opcode_byte(IR[3*8 +: 8]), .modrm_byte(IR[4*8 +: 8]),
+        .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0), .num_pfs_plusone(3'd4),
+        .inst_length(ppu_inst_length_10[3]), .msd_size_o(ppu_msd_size_10[3]),
+        .imm_size_o(ppu_imm_size_10[3]), .disp_size_o(ppu_disp_size_10[3]), .disp_needed_o(ppu_disp_needed_10[3]), .sib_size_o(ppu_sib_size_10[3]), .needrm_o(ppu_needrm_10[3]), .sib_byte(ppu_sib_byte_10[3]), .disp(ppu_displacement_10[3]), .imm64(ppu_imm_10[3]));
+
+    ppu pfs3_11(.modrm_index(4'd4), .sib_index(4'd5), .IR(IR), .opcode_byte(IR[3*8 +: 8]), .modrm_byte(IR[4*8 +: 8]),
+        .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1), .num_pfs_plusone(3'd4),
+        .inst_length(ppu_inst_length_11[3]), .msd_size_o(ppu_msd_size_11[3]),
+        .imm_size_o(ppu_imm_size_11[3]), .disp_size_o(ppu_disp_size_11[3]), .disp_needed_o(ppu_disp_needed_11[3]), .sib_size_o(ppu_sib_size_11[3]), .needrm_o(ppu_needrm_11[3]), .sib_byte(ppu_sib_byte_11[3]), .disp(ppu_displacement_11[3]), .imm64(ppu_imm_11[3]));
+
+
+    // per-pf-combo intermediate outputs — final mux across {_00,_01,_10,_11} happens next step
+    wire [3:0]  inst_length_00,  inst_length_01,  inst_length_10,  inst_length_11;
+    wire [7:0]  sib_byte_00,     sib_byte_01,     sib_byte_10,     sib_byte_11;
+    wire [31:0] disp_00,         disp_01,         disp_10,         disp_11;
+    wire        disp_size_00,    disp_size_01,    disp_size_10,    disp_size_11;
+    wire        disp_needed_00,  disp_needed_01,  disp_needed_10,  disp_needed_11;
+    wire [63:0] imm64_00,        imm64_01,        imm64_10,        imm64_11;
+    wire        sib_size_00,     sib_size_01,     sib_size_10,     sib_size_11;
+
+    `MUX_4(length_mux_00, 4, inst_length_00, ppu_inst_length_00[0], ppu_inst_length_00[1], ppu_inst_length_00[2],
+        ppu_inst_length_00[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(length_mux_01, 4, inst_length_01, ppu_inst_length_01[0], ppu_inst_length_01[1], ppu_inst_length_01[2],
+        ppu_inst_length_01[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(length_mux_10, 4, inst_length_10, ppu_inst_length_10[0], ppu_inst_length_10[1], ppu_inst_length_10[2],
+        ppu_inst_length_10[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(length_mux_11, 4, inst_length_11, ppu_inst_length_11[0], ppu_inst_length_11[1], ppu_inst_length_11[2],
+        ppu_inst_length_11[3], {num_pfs[1], num_pfs[0]})
+
+    `MUX_4(sib_mux_00, 8, sib_byte_00, ppu_sib_byte_00[0], ppu_sib_byte_00[1], ppu_sib_byte_00[2], ppu_sib_byte_00[3],
         {num_pfs[1], num_pfs[0]})
+    `MUX_4(sib_mux_01, 8, sib_byte_01, ppu_sib_byte_01[0], ppu_sib_byte_01[1], ppu_sib_byte_01[2], ppu_sib_byte_01[3],
+        {num_pfs[1], num_pfs[0]})
+    `MUX_4(sib_mux_10, 8, sib_byte_10, ppu_sib_byte_10[0], ppu_sib_byte_10[1], ppu_sib_byte_10[2], ppu_sib_byte_10[3],
+        {num_pfs[1], num_pfs[0]})
+    `MUX_4(sib_mux_11, 8, sib_byte_11, ppu_sib_byte_11[0], ppu_sib_byte_11[1], ppu_sib_byte_11[2], ppu_sib_byte_11[3],
+        {num_pfs[1], num_pfs[0]})
+
+    `MUX_4(disp_mux_00, 32, disp_00, ppu_displacement_00[0], ppu_displacement_00[1], ppu_displacement_00[2],
+        ppu_displacement_00[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(disp_mux_01, 32, disp_01, ppu_displacement_01[0], ppu_displacement_01[1], ppu_displacement_01[2],
+        ppu_displacement_01[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(disp_mux_10, 32, disp_10, ppu_displacement_10[0], ppu_displacement_10[1], ppu_displacement_10[2],
+        ppu_displacement_10[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(disp_mux_11, 32, disp_11, ppu_displacement_11[0], ppu_displacement_11[1], ppu_displacement_11[2],
+        ppu_displacement_11[3], {num_pfs[1], num_pfs[0]})
+
+    `MUX_4(disp_size_mux_00, 1, disp_size_00, ppu_disp_size_00[0], ppu_disp_size_00[1], ppu_disp_size_00[2],
+        ppu_disp_size_00[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(disp_size_mux_01, 1, disp_size_01, ppu_disp_size_01[0], ppu_disp_size_01[1], ppu_disp_size_01[2],
+        ppu_disp_size_01[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(disp_size_mux_10, 1, disp_size_10, ppu_disp_size_10[0], ppu_disp_size_10[1], ppu_disp_size_10[2],
+        ppu_disp_size_10[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(disp_size_mux_11, 1, disp_size_11, ppu_disp_size_11[0], ppu_disp_size_11[1], ppu_disp_size_11[2],
+        ppu_disp_size_11[3], {num_pfs[1], num_pfs[0]})
+
+    `MUX_4(disp_needed_mux_00, 1, disp_needed_00, ppu_disp_needed_00[0], ppu_disp_needed_00[1], ppu_disp_needed_00[2],
+        ppu_disp_needed_00[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(disp_needed_mux_01, 1, disp_needed_01, ppu_disp_needed_01[0], ppu_disp_needed_01[1], ppu_disp_needed_01[2],
+        ppu_disp_needed_01[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(disp_needed_mux_10, 1, disp_needed_10, ppu_disp_needed_10[0], ppu_disp_needed_10[1], ppu_disp_needed_10[2],
+        ppu_disp_needed_10[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(disp_needed_mux_11, 1, disp_needed_11, ppu_disp_needed_11[0], ppu_disp_needed_11[1], ppu_disp_needed_11[2],
+        ppu_disp_needed_11[3], {num_pfs[1], num_pfs[0]})
+
+    `MUX_4(imm_mux_00, 64, imm64_00, ppu_imm_00[0], ppu_imm_00[1], ppu_imm_00[2],
+        ppu_imm_00[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(imm_mux_01, 64, imm64_01, ppu_imm_01[0], ppu_imm_01[1], ppu_imm_01[2],
+        ppu_imm_01[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(imm_mux_10, 64, imm64_10, ppu_imm_10[0], ppu_imm_10[1], ppu_imm_10[2],
+        ppu_imm_10[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(imm_mux_11, 64, imm64_11, ppu_imm_11[0], ppu_imm_11[1], ppu_imm_11[2],
+        ppu_imm_11[3], {num_pfs[1], num_pfs[0]})
+
+    `MUX_4(sib_size_mux_00, 1, sib_size_00, ppu_sib_size_00[0], ppu_sib_size_00[1], ppu_sib_size_00[2],
+        ppu_sib_size_00[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(sib_size_mux_01, 1, sib_size_01, ppu_sib_size_01[0], ppu_sib_size_01[1], ppu_sib_size_01[2],
+        ppu_sib_size_01[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(sib_size_mux_10, 1, sib_size_10, ppu_sib_size_10[0], ppu_sib_size_10[1], ppu_sib_size_10[2],
+        ppu_sib_size_10[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(sib_size_mux_11, 1, sib_size_11, ppu_sib_size_11[0], ppu_sib_size_11[1], ppu_sib_size_11[2],
+        ppu_sib_size_11[3], {num_pfs[1], num_pfs[0]})
 
     `MUX_4(opcode_mux, 8, opcode_byte, IR[0*8 +: 8], IR[1*8 +: 8], IR[2*8 +: 8],
         IR[3*8 +: 8], {num_pfs[1], num_pfs[0]})
-
     `MUX_4(modrm_mux, 8, modrm_byte, IR[1*8 +: 8], IR[2*8 +: 8], IR[3*8 +: 8],
         IR[4*8 +: 8], {num_pfs[1], num_pfs[0]})
 
-    `MUX_4(disp_mux, 32, disp, ppu_displacement[0], ppu_displacement[1], ppu_displacement[2],
-        ppu_displacement[3], {num_pfs[1], num_pfs[0]})
 
-    `MUX_4(disp_size_mux, 1, disp_size, ppu_disp_size[0], ppu_disp_size[1], ppu_disp_size[2],
-        ppu_disp_size[3], {num_pfs[1], num_pfs[0]})
 
-    `MUX_4(disp_needed_mux, 1, disp_needed, ppu_disp_needed[0], ppu_disp_needed[1], ppu_disp_needed[2],
-        ppu_disp_needed[3], {num_pfs[1], num_pfs[0]})
-
-    `MUX_4(imm_mux, 64, imm64, ppu_imm[0], ppu_imm[1], ppu_imm[2],
-        ppu_imm[3], {num_pfs[1], num_pfs[0]})
-
-    `MUX_4(sib_size_mux, 1, sib_size, ppu_sib_size[0], ppu_sib_size[1], ppu_sib_size[2],
-        ppu_sib_size[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4(length_mux, 4, inst_length, inst_length_00, inst_length_01, inst_length_10,
+        inst_length_11, {total_pf_vector[1], total_pf_vector[3]})
+    `MUX_4(sib_mux, 8, sib_byte, sib_byte_00, sib_byte_01, sib_byte_10,
+        sib_byte_11, {total_pf_vector[1], total_pf_vector[3]})
+    `MUX_4(disp_mux, 32, disp, disp_00, disp_01, disp_10,
+        disp_11, {total_pf_vector[1], total_pf_vector[3]})
+    `MUX_4(disp_size_mux, 1, disp_size, disp_size_00, disp_size_01, disp_size_10,
+        disp_size_11, {total_pf_vector[1], total_pf_vector[3]})
+    `MUX_4(disp_needed_mux, 1, disp_needed, disp_needed_00, disp_needed_01, disp_needed_10,
+        disp_needed_11, {total_pf_vector[1], total_pf_vector[3]})
+    `MUX_4(imm_mux, 64, imm64, imm64_00, imm64_01, imm64_10,
+        imm64_11, {total_pf_vector[1], total_pf_vector[3]})
+    `MUX_4(sib_size_mux, 1, sib_size, sib_size_00, sib_size_01, sib_size_10,
+        sib_size_11, {total_pf_vector[1], total_pf_vector[3]})
 
 
     wire pf0, pf1, pf2;

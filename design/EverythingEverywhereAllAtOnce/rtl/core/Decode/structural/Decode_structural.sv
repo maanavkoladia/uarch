@@ -340,42 +340,29 @@ module Decode (
     assign cond1 = predicted_taken;     //minus decode forward, will have to get gated at end
     `NOR_2(u_cond0, 1, cond0, HALT_REG, REP_LATCH)
 
-    wire penc_valid_tent0;
-    wire [2:0] penc_out_tent0;
-    pencoder8_3v$ eip_penc_tent0 (1'b0, {4'b0, 1'b0, cond2, cond1, cond0}, penc_out_tent0, penc_valid_tent0);
-    wire [31:0] eip_next_tent0;
-    wire eip_next_we_tent0_i;
-    wire eip_next_we_tent0;
-    `MUX_4(u_eip_next_tent0, 32, eip_next_tent0,
-            NEIP, idm_outs_i.idm_slots[EIP[5:4]].br_btb_target,
-            exe_outs_i.br_res_out.br_target, 32'b0, penc_out_tent0[1:0])
-    `MUX_4(u_eip_next_we_tent0_mux, 1, eip_next_we_tent0_i,
-            decode_forward, decode_forward,
-            1'b1, 1'b1, penc_out_tent0[1:0])
-    `AND_2(u_eip_next_we_tent0, 1, eip_next_we_tent0, eip_next_we_tent0_i, penc_valid_tent0)
-
-    wire penc_valid_tent1;
-    wire [2:0] penc_out_tent1;
-    pencoder8_3v$ eip_penc_tent1 (1'b0, {4'b0, 1'b1, cond2, cond1, cond0}, penc_out_tent1, penc_valid_tent1);
-    wire [31:0] eip_next_tent1;
-    wire eip_next_we_tent1_i;
-    wire eip_next_we_tent1;
-    `MUX_4(u_eip_next_tent1, 32, eip_next_tent1,
-            NEIP, idm_outs_i.idm_slots[EIP[5:4]].br_btb_target,
-            exe_outs_i.br_res_out.br_target, 32'b0, penc_out_tent1[1:0])
-    `MUX_4(u_eip_next_we_tent1_mux, 1, eip_next_we_tent1_i,
-            decode_forward, decode_forward,
-            1'b1, 1'b1, penc_out_tent1[1:0])
-    `AND_2(u_eip_next_we_tent1, 1, eip_next_we_tent1, eip_next_we_tent1_i, penc_valid_tent1)
-
-
+    wire penc_valid;
+    wire [2:0] penc_out;
+    pencoder8_3v$ eip_penc (1'b0, {4'b0, cond3, cond2, cond1, cond0}, penc_out, penc_valid);
     wire [31:0] eip_next;
-    wire eip_next_we;
-    `MUX_2(u_eip_next, 32, eip_next, eip_next_tent0, eip_next_tent1, cond3)
+    `MUX_4(u_eip_next, 32, eip_next,
+            NEIP, idm_outs_i.idm_slots[EIP[5:4]].br_btb_target,
+            exe_outs_i.br_res_out.br_target, 32'b0, penc_out[1:0])
 
-    `MUX_2(u_eip_we_next, 1, eip_next_we, 
-            eip_next_we_tent0, eip_next_we_tent1, cond3)
-    
+    // we paths precomputed for decode_forward = 0 / 1, muxed at the end.
+    //   df=0: we_i = {00->0, 01->0, 10->1, 11->1}[penc_out]
+    //   df=1: we_i = {00->1, 01->1, 10->1, 11->1} = 1
+    wire eip_next_we_i_df0;
+    wire eip_next_we_df0;
+    `MUX_4(u_eip_next_we_mux_df0, 1, eip_next_we_i_df0,
+            1'b0, 1'b0, 1'b1, 1'b1, penc_out[1:0])
+    `AND_2(u_eip_next_we_df0, 1, eip_next_we_df0, eip_next_we_i_df0, penc_valid)
+
+    wire eip_next_we_df1;
+    assign eip_next_we_df1 = penc_valid;
+
+    wire eip_next_we;
+    `MUX_2(u_eip_next_we, 1, eip_next_we, eip_next_we_df0, eip_next_we_df1, decode_forward)
+
     `REG_RST_WE(u_eip, 32, clk, rst, eip_next_we, eip_next, EIP)
 
 

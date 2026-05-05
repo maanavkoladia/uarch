@@ -2,8 +2,7 @@ module selection_logic (
     input [511:0] queue,
     input [31:0] EIP,
     input [3:0] queue_valid,
-    output [127:0] IR,
-    output [15:0] IR_valid_vect
+    output [127:0] IR
 );
 
     wire [5:0] sel_index [0:15];
@@ -29,13 +28,6 @@ module selection_logic (
 
         .i5_i(EIP[5]), .i4_i(EIP[4]), .i3_i(EIP[3]), .i2_i(EIP[2]), .i1_i(EIP[1]), .i0_i(EIP[0])
     );
-
-    assign IR_valid_vect = {queue_valid[sel_index[15][5:4]], queue_valid[sel_index[14][5:4]], queue_valid[sel_index[13][5:4]], queue_valid[sel_index[12][5:4]],
-                            queue_valid[sel_index[11][5:4]], queue_valid[sel_index[10][5:4]], queue_valid[sel_index[9][5:4]], queue_valid[sel_index[8][5:4]],
-                            queue_valid[sel_index[7][5:4]], queue_valid[sel_index[6][5:4]], queue_valid[sel_index[5][5:4]], queue_valid[sel_index[4][5:4]],
-                            queue_valid[sel_index[3][5:4]], queue_valid[sel_index[2][5:4]], queue_valid[sel_index[1][5:4]], queue_valid[sel_index[0][5:4]]};        
-
-
 
     genvar i;
     // generate
