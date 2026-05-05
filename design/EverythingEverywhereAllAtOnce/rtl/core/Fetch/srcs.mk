@@ -22,4 +22,4 @@ FETCH_SRC_FILES = \
 	$(FETCH_PATH_INTERNAL)/Fetch.sv \
 
 FETCH_STRUCTURAL_SRC_FILES = \
-	$(FETCH_PATH_INTERNAL)/structural/*.sv
+	$(FETCH_PATH_INTERNAL)/structural/*.*v

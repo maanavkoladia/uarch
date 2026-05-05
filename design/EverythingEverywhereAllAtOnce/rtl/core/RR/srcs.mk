@@ -15,6 +15,12 @@ RR_SRC_FILES = \
 	$(RR_PATH_INTERNAL)/RegSB.sv \
 	$(RR_PATH_INTERNAL)/RR.sv \
 
+
+#RR_STRUCTURAL_SRC_FILES = \
+#						  $(RR_PATH_INTERNAL)/../../defines/reg_ids_define.vh \
+						  $(RR_PATH_INTERNAL)/structural/fanout/*.*v
+
+
 RR_STRUCTURAL_SRC_FILES = \
 	$(RR_PATH_INTERNAL)/../../defines/reg_ids_define.vh \
     $(RR_GEN_SRC_FILES) \
