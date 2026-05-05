@@ -362,6 +362,60 @@ module MEM (
         end
     endgenerate
 
+    // // ld_buf_unmasked = {up_buf, low_buf} where low_buf=C0, up_buf=line_in_1_masked
+    // wire [LD_BITS-1:0] ld_buf_unmasked_0;
+    // assign ld_buf_unmasked_0 = {line_in_1_masked, C0_w};
+
+    // wire [LD_BITS-1:0] ld_buf_packed_0;
+    // `MUX_2(mux_ldbuf_0, LD_BITS, ld_buf_packed_0,
+    //        {LD_BITS{1'b0}}, ld_buf_unmasked_0, 1'b0) //forward valid = 0
+
+    // // Unpack ld_buf_packed back into a byte_t[EXE_BUFFER_SIZE] for the
+    // // exe_latches struct field.
+    // byte_t ld_buf_0 [EXE_BUFFER_SIZE];
+    // genvar lb_0;
+    // generate
+    //     for (lb_0 = 0; lb_0 < EXE_BUFFER_SIZE; lb_0 = lb_0 + 1) begin : unpack_ldbuf_0
+    //         assign ld_buf_0[lb_0] = ld_buf_packed_0[lb_0*8 +: 8];
+    //     end
+    // endgenerate
+
+
+
+
+    // // ld_buf_unmasked = {up_buf, low_buf} where low_buf=C0, up_buf=line_in_1_masked
+    // wire [LD_BITS-1:0] ld_buf_unmasked_1;
+    // assign ld_buf_unmasked_1 = {line_in_1_masked, C0_w};
+
+    // wire [LD_BITS-1:0] ld_buf_packed_1;
+    // `MUX_2(mux_ldbuf_1, LD_BITS, ld_buf_packed_1,
+    //        {LD_BITS{1'b0}}, ld_buf_unmasked_1, 1'b1)    //forward valid = 1
+
+    // // Unpack ld_buf_packed back into a byte_t[EXE_BUFFER_SIZE] for the
+    // // exe_latches struct field.
+    // byte_t ld_buf_1 [EXE_BUFFER_SIZE];
+    // genvar lb_1;
+    // generate
+    //     for (lb_1 = 0; lb_1 < EXE_BUFFER_SIZE; lb_1 = lb_1 + 1) begin : unpack_ldbuf_1
+    //         assign ld_buf_1[lb_1] = ld_buf_packed_1[lb_1*8 +: 8];
+    //     end
+    // endgenerate
+
+
+
+
+    //    //final assignment
+    // byte_t ld_buf [EXE_BUFFER_SIZE];
+    // genvar ld_final_i;
+    // generate
+    //     for (ld_final_i = 0; ld_final_i < EXE_BUFFER_SIZE; ld_final_i = ld_final_i + 1) begin : final_ldbuf_g
+    //         `MUX_2 (u_ld_buf_mux, 8, ld_buf[ld_final_i], ld_buf_0[ld_final_i], ld_buf_1[ld_final_i], forward_valid_w);
+    //     end
+    // endgenerate
+
+
+
+
     // =========================================================================
     // CLR_DCACHE_ARB_LATCHES  (per port)  &  CLR_DCACHE_MIO_LATCH
     //   (replaces MEM.sv:131-153)
