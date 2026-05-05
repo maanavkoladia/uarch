@@ -1,0 +1,35 @@
+@lib/STDCells/STDCell_Macros.vh  
+@rtl/defines/interconnect_define.vh  
+@rtl/pkgs/interconnect_pkg.sv  
+@rtl/defines/common_define.vh  
+@rtl/pkgs/common_pkg.sv
+@rtl/core/StageLatches/structural
+@rtl/core/StageLatches/
+
+look at the .sv files in the StageLatch/structural folder. I need these sv files ported to structural 2005-verilog using the macros defined in the STDCell_Macros.vh.
+
+Put all structural implementations of each module into the structural folder
+
+Let me know which macros need to be implement if you need any beyond the std macro lib. Do not implement them yourself I will implement them for you. 
+
+When porting to structural make sure you dont use any always block just assigns. no ternarys or logical and bitwise operators. it has to be fully gate implentations. you can only use assigns just for wires. 
+
+we will go one stage at a time, there are a total of 5 stagelatch modules in the structural folder that neod to be ported
+
+first we will do the wb stage latches
+
+i have already started the wb latches for you, be very careful to do this correctly
+
+Let me know if you have any questions, dont make assumptions and take time to understand how stage latch modules work.
+
+for this, leave the system verilog ports for now, but also create macro wrapped ports that will be expanded later, I will define it at the top of the file once i want to switch
+
+
+
+
+
+
+
+
+
+
