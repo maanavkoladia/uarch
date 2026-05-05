@@ -2,7 +2,7 @@
   SIM vs RTL COMPARISON REPORT
 ================================================================================
   Sim instructions: 38
-  RTL commits:      37
+  RTL commits:      30
 
 [OK ] #0000  0x00000000  mov           writes=EAX=0x00002004  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
 [OK ] #0001  0x00000005  mov           writes=DS=0x00002004  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
@@ -34,16 +34,16 @@
 [OK ] #0027  0x0000001A  retf          writes=CS=0x00000000,ESP=0x00000FEB  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
 [OK ] #0028  0x00000031  pop           writes=EBX=0xDEADBEEF,ESP=0x00000FEF  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
 [OK ] #0029  0x00000032  pop           writes=ECX=0x33333333,ESP=0x00000FF3  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0030  0x00000033  pop           writes=EDX=0x22222222,ESP=0x00000FF7  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0031  0x00000034  pop           writes=ESI=0x11111111,ESP=0x00000FFB  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0032  0x00000035  ljmp          writes=CS=0x00005678  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0033  0x00000000  mov           writes=ECX=0x11223344  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0034  0x00000005  ljmp          writes=CS=0x00009890  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0035  0x00012345  mov           writes=EAX=0x00000100  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0036  0x0001234A  mov           writes=EBX=0x55667788  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_SIM] #0030  EIP=0x00000033  pop           SIM writes=EDX=0x22222222,ESP=0x00000FF7  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_SIM] #0031  EIP=0x00000034  pop           SIM writes=ESI=0x11111111,ESP=0x00000FFB  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_SIM] #0032  EIP=0x00000035  ljmp          SIM writes=CS=0x00005678  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_SIM] #0033  EIP=0x00000000  mov           SIM writes=ECX=0x11223344  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_SIM] #0034  EIP=0x00000005  ljmp          SIM writes=CS=0x00009890  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_SIM] #0035  EIP=0x00012345  mov           SIM writes=EAX=0x00000100  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_SIM] #0036  EIP=0x0001234A  mov           SIM writes=EBX=0x55667788  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
 [ONLY_SIM] #0037  EIP=0x0001234F  hlt           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
 
 ================================================================================
-  SUMMARY: 37/38 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
+  SUMMARY: 30/38 matched  |  0 mismatched  |  8 sim-only  |  0 rtl-only
   (1 RTL no-op write-backs suppressed)
 ================================================================================

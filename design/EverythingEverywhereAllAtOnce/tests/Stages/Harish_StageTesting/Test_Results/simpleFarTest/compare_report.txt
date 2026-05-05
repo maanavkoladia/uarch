@@ -1,8 +1,8 @@
 ================================================================================
   SIM vs RTL DUMP COMPARISON  (registers + flags per instruction)
 ================================================================================
-  REG  — SIM: 38  RTL: 37
-  FLAG — SIM: 38  RTL: 37
+  REG  — SIM: 38  RTL: 30
+  FLAG — SIM: 38  RTL: 30
 
 [OK ] #0000  EIP=0x00000000  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0001  EIP=0x00000005  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
@@ -34,15 +34,15 @@
 [OK ] #0027  EIP=0x0000001A  retf          CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0028  EIP=0x00000031  pop           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0029  EIP=0x00000032  pop           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0030  EIP=0x00000033  pop           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0031  EIP=0x00000034  pop           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0032  EIP=0x00000035  ljmp          CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0033  EIP=0x00000000  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0034  EIP=0x00000005  ljmp          CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0035  EIP=0x00012345  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0036  EIP=0x0001234A  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[ONLY_SIM] #0030  EIP=0x00000033  pop
+[ONLY_SIM] #0031  EIP=0x00000034  pop
+[ONLY_SIM] #0032  EIP=0x00000035  ljmp
+[ONLY_SIM] #0033  EIP=0x00000000  mov
+[ONLY_SIM] #0034  EIP=0x00000005  ljmp
+[ONLY_SIM] #0035  EIP=0x00012345  mov
+[ONLY_SIM] #0036  EIP=0x0001234A  mov
 [ONLY_SIM] #0037  EIP=0x0001234F  hlt
 
 ================================================================================
-  SUMMARY: 37/38 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
+  SUMMARY: 30/38 matched  |  0 mismatched  |  8 sim-only  |  0 rtl-only
 ================================================================================
