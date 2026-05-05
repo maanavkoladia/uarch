@@ -33,11 +33,11 @@ lib_header
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/mem_TOP_structural.v
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/Mem_Banks/structural/MemBank_Structural.v
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/mem/Mem_Controller/structural/mem_controller_structural.v
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/ICache/gen/ICache_Controller_Logic.sv
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/ICache_TagStore_structural.v
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/ICache_DataStore_structural.v
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/I_VCache_structural.v
-/home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/ICache_structural.v
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/ICache_Controller_Logic.sv
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/ICache_TagStore_structural.v
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/ICache_DataStore_structural.v
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/I_VCache_structural.v
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/ICache/structural/fanout/ICache_structural.v
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/DCache/gen/DCache_Bank_FSM.sv
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/DCache/gen/VCache_FSM.sv
 /home/ecelrc/students/mak4738/uarch/design_project/design/EverythingEverywhereAllAtOnce/rtl/DCache/structural/DCache_Arbitration_structural.v
