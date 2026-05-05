@@ -9,7 +9,7 @@ module inv_N$ #(
 
     generate
         for (i = 0; i < WIDTH; i = i + 1) begin : GEN_INV
-            inv1$ u_inv (
+            bufferHInv16$ u_inv (
                 .out(out[i]),
                 .in (in[i])
             );
