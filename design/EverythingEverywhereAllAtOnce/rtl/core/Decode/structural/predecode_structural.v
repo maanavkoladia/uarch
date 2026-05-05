@@ -121,7 +121,7 @@ module predecode(
     `MUX_16(neip_picker_mux, 32, NEIP, 
         possible_neips[0], possible_neips[1], possible_neips[2], possible_neips[3], 
         possible_neips[4], possible_neips[5], possible_neips[6], possible_neips[7], 
-        possible_neips[8], possible_neips[9], possible_neips[10], possible_eips[11], 
+        possible_neips[8], possible_neips[9], possible_neips[10], possible_neips[11], 
         possible_neips[12], possible_neips[13], possible_neips[14], possible_neips[15], 
         inst_length)
 
