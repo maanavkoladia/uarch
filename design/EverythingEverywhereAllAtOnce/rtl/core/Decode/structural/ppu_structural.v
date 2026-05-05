@@ -13,8 +13,7 @@ module ppu (
     output needrm_o,
     output [7:0] sib_byte,
     output [31:0] disp,
-    output [63:0] imm64,
-    output inst_valid
+    output [63:0] imm64
 );
     wire [2:0] msd_size;
     wire [2:0] imm_size;
@@ -81,80 +80,5 @@ module ppu (
     wire [3:0] disp_adder_cout;
 
     imm_finder immfinder0(.imm_index(imm_index), .IR(IR), .imm64(imm64));
-
-
-    //assign disp_index[0] = sib_index + sib_size;
-    //assign disp_index[1] = sib_index + sib_size + 4'd1;
-    //assign disp_index[2] = sib_index + sib_size + 4'd2;
-    //assign disp_index[3] = sib_index + sib_size + 4'd3;
-    `ADD_N(disp_index0_adder, 4, disp_index[0], disp_adder_cout[0], sib_index, {3'b0, sib_size}, 1'b0)
-    `ADD_N(disp_index1_adder, 4, disp_index[1], disp_adder_cout[1], disp_index[0], 4'd1, 1'b0)
-    `ADD_N(disp_index2_adder, 4, disp_index[2], disp_adder_cout[2], disp_index[0], 4'd2, 1'b0)
-    `ADD_N(disp_index3_adder, 4, disp_index[3], disp_adder_cout[3], disp_index[0], 4'd3, 1'b0)
-
-
-    //assign disp_valid[0] = disp_needed ? IR_valid_vect[disp_index[0]] : 1'b1;
-    //assign disp_valid[1] = disp_needed && disp_size ? IR_valid_vect[disp_index[1]] : 1'b1;
-    //assign disp_valid[2] = disp_needed && disp_size ? IR_valid_vect[disp_index[2]] : 1'b1;
-    //assign disp_valid[3] = disp_needed && disp_size ? IR_valid_vect[disp_index[3]] : 1'b1;
-    wire disp32_needed;
-    `AND_2(disp32_needed_and, 1, disp32_needed, disp_needed, disp_size)
-    `MUX_2(disp_valid0_mux, 1, disp_valid[0], 1'b1, IR_valid_vect[disp_index[0]], disp_needed)
-    `MUX_2(disp_valid1_mux, 1, disp_valid[1], 1'b1, IR_valid_vect[disp_index[1]], disp32_needed)
-    `MUX_2(disp_valid2_mux, 1, disp_valid[2], 1'b1, IR_valid_vect[disp_index[2]], disp32_needed)
-    `MUX_2(disp_valid3_mux, 1, disp_valid[3], 1'b1, IR_valid_vect[disp_index[3]], disp32_needed)
-
-
-
-// imm_valid_index[0..7] = imm_index + N
-    `ADD_N(imm_valid_index0_adder, 4, imm_valid_index[0], imm_idx_cout[0], imm_index, 4'd0, 1'b0)
-    `ADD_N(imm_valid_index1_adder, 4, imm_valid_index[1], imm_idx_cout[1], imm_index, 4'd1, 1'b0)
-    `ADD_N(imm_valid_index2_adder, 4, imm_valid_index[2], imm_idx_cout[2], imm_index, 4'd2, 1'b0)
-    `ADD_N(imm_valid_index3_adder, 4, imm_valid_index[3], imm_idx_cout[3], imm_index, 4'd3, 1'b0)
-    `ADD_N(imm_valid_index4_adder, 4, imm_valid_index[4], imm_idx_cout[4], imm_index, 4'd4, 1'b0)
-    `ADD_N(imm_valid_index5_adder, 4, imm_valid_index[5], imm_idx_cout[5], imm_index, 4'd5, 1'b0)
-    `ADD_N(imm_valid_index6_adder, 4, imm_valid_index[6], imm_idx_cout[6], imm_index, 4'd6, 1'b0)
-    `ADD_N(imm_valid_index7_adder, 4, imm_valid_index[7], imm_idx_cout[7], imm_index, 4'd7, 1'b0)
-
-    // No GT macro exists, so implement imm_size > N with gate-level boolean reduction:
-    //   > 0  =>  |imm_size           (any bit set)
-    //   > 1  =>  imm_size[2:1] != 0  (bit1 or higher)
-    //   > 2  =>  [2] | ([1] & [0])
-    //   > 3  =>  [2] | [1]
-    //   > 4  =>  [2] & ([1] | [0])
-    //   > 5  =>  [2] & [1]
-
-    wire imm_size_gt0, imm_size_gt1;
-    wire imm_size_gt2, imm_size_gt2_and;
-    wire imm_size_gt3;
-    wire imm_size_gt4, imm_size_gt4_inner_or;
-    wire imm_size_gt5;
-
-    `OR_3(imm_gt0_or,          1, imm_size_gt0,          imm_size[0], imm_size[1], imm_size[2])
-    `OR_2(imm_gt1_or,          1, imm_size_gt1,          imm_size[1], imm_size[2])
-    `AND_2(imm_gt2_and,        1, imm_size_gt2_and,      imm_size[0], imm_size[1])
-    `OR_2(imm_gt2_or,          1, imm_size_gt2,          imm_size_gt2_and, imm_size[2])
-    `OR_2(imm_gt3_or,          1, imm_size_gt3,          imm_size[1], imm_size[2])
-    `OR_2(imm_gt4_inner_or,    1, imm_size_gt4_inner_or, imm_size[0], imm_size[1])
-    `AND_2(imm_gt4_and,        1, imm_size_gt4,          imm_size[2], imm_size_gt4_inner_or)
-    `AND_2(imm_gt5_and,        1, imm_size_gt5,          imm_size[1], imm_size[2])
-
-    `MUX_2(imm_valid0_mux, 1, imm_valid[0], 1'b1, IR_valid_vect[imm_valid_index[0]], imm_size_gt0)
-    `MUX_2(imm_valid1_mux, 1, imm_valid[1], 1'b1, IR_valid_vect[imm_valid_index[1]], imm_size_gt1)
-    `MUX_2(imm_valid2_mux, 1, imm_valid[2], 1'b1, IR_valid_vect[imm_valid_index[2]], imm_size_gt2)
-    `MUX_2(imm_valid3_mux, 1, imm_valid[3], 1'b1, IR_valid_vect[imm_valid_index[3]], imm_size_gt3)
-    `MUX_2(imm_valid4_mux, 1, imm_valid[4], 1'b1, IR_valid_vect[imm_valid_index[4]], imm_size_gt4)
-    `MUX_2(imm_valid5_mux, 1, imm_valid[5], 1'b1, IR_valid_vect[imm_valid_index[5]], imm_size_gt5)
-    assign imm_valid[6] = 1'b1;
-    assign imm_valid[7] = 1'b1;
-
-    // inst_valid = &disp_valid && &imm_valid && op_valid && mod_valid && sib_valid
-    // imm_valid[6] and [7] are tied 1'b1 so excluded from AND reduction
-    wire disp_valid_all, imm_valid_all;
-    `AND_4(disp_valid_and, 1, disp_valid_all, disp_valid[0], disp_valid[1], disp_valid[2], disp_valid[3])
-    `AND_6(imm_valid_and,  1, imm_valid_all,  imm_valid[0], imm_valid[1], imm_valid[2], imm_valid[3], imm_valid[4], imm_valid[5])
-    `AND_5(inst_valid_and, 1, inst_valid,     disp_valid_all, imm_valid_all, op_valid, mod_valid, sib_valid)
-
-
 
 endmodule

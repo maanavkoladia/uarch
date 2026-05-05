@@ -8,7 +8,14 @@ module disp_finder (
     wire adder_cout;
     `ADD_N(disp_index_adder, 4, disp_index, adder_cout, sib_index, {3'b0, sib_size}, 1'b0)
 
-    assign disp = IR[disp_index*8 +: 32];
+    // assign disp = IR[disp_index*8 +: 32];
+    `MUX_16(disp_mux, 32, disp,
+        IR[0*8  +: 32], IR[1*8  +: 32], IR[2*8  +: 32], IR[3*8  +: 32],
+        IR[4*8  +: 32], IR[5*8  +: 32], IR[6*8  +: 32], IR[7*8  +: 32],
+        IR[8*8  +: 32], IR[9*8  +: 32], IR[10*8 +: 32], IR[11*8 +: 32],
+        IR[12*8 +: 32],
+        {8'b0,  IR[127:104]}, {16'b0, IR[127:112]}, {24'b0, IR[127:120]},
+        disp_index)
 
 endmodule
 
