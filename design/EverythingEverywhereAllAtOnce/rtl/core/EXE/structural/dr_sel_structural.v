@@ -37,6 +37,7 @@ module dr_sel (
     input  wire [63:0] sbb_dr_i,
     input  wire [63:0] xchg_dr_i,
     input  wire [63:0] exp_call_dr_i,
+    input  wire [63:0] iretd_cs_dr_i,
     input  wire [63:0] dr_data,
 
     output wire [63:0] dr_o
@@ -48,7 +49,7 @@ module dr_sel (
     wire is_packssdw, is_packsswb, is_paddd, is_paddw, is_pavgb, is_pavgw;
     wire is_pop, is_ret_far, is_ret_far_imm, is_far_call;
     wire is_far_jmp32, is_far_jmp16;
-    wire is_sal, is_sar, is_sbb, is_xchg, is_exp_call;
+    wire is_sal, is_sar, is_sbb, is_xchg, is_exp_call, is_iretd;
 
     `CMP_N(u_cmp_aaa,         `EXE_STRUCT_OP_W, is_aaa,         op_type, `EXE_OP_AAA)
     `CMP_N(u_cmp_adc,         `EXE_STRUCT_OP_W, is_adc,         op_type, `EXE_OP_ADC)
@@ -79,6 +80,9 @@ module dr_sel (
     `CMP_N(u_cmp_sbb,         `EXE_STRUCT_OP_W, is_sbb,         op_type, `EXE_OP_SBB)
     `CMP_N(u_cmp_xchg,        `EXE_STRUCT_OP_W, is_xchg,        op_type, `EXE_OP_XCHG)
     `CMP_N(u_cmp_exp_call,    `EXE_STRUCT_OP_W, is_exp_call,    op_type, `EXE_OP_EXP_CALL)
+    `CMP_N(u_cmp_iretd,    `EXE_STRUCT_OP_W, is_iretd,        op_type, `EXE_OP_IRETD)
+
+
 
     // ---- Shared-input enables (active high) for ops that drive same source ----
     wire en_mov, en_far_jmp;
@@ -90,7 +94,7 @@ module dr_sel (
     wire enbar_mov, enbar_movs, enbar_not, enbar_or;
     wire enbar_packssdw, enbar_packsswb, enbar_paddd, enbar_paddw, enbar_pavgb, enbar_pavgw;
     wire enbar_pop, enbar_ret_far, enbar_ret_far_imm, enbar_far_call, enbar_far_jmp;
-    wire enbar_sal, enbar_sar, enbar_sbb, enbar_xchg, enbar_exp_call;
+    wire enbar_sal, enbar_sar, enbar_sbb, enbar_xchg, enbar_exp_call, enbar_iretd;
 
     `INV_N(u_inv_aaa,         1, is_aaa,         enbar_aaa)
     `INV_N(u_inv_adc,         1, is_adc,         enbar_adc)
@@ -119,6 +123,7 @@ module dr_sel (
     `INV_N(u_inv_sbb,         1, is_sbb,         enbar_sbb)
     `INV_N(u_inv_xchg,        1, is_xchg,        enbar_xchg)
     `INV_N(u_inv_exp_call,    1, is_exp_call,    enbar_exp_call)
+    `INV_N(u_inv_iretd,    1, is_iretd,    enbar_iretd)
 
     // ---- Shared tristated bus, driven by exactly one of 26 tristateL$ when WB_DR=1 ----
     wire [63:0] tristated_bus;
@@ -150,6 +155,7 @@ module dr_sel (
     `TRISTATE_L(u_tri_sbb,         64, enbar_sbb,         sbb_dr_i,         tristated_bus)
     `TRISTATE_L(u_tri_xchg,        64, enbar_xchg,        xchg_dr_i,        tristated_bus)
     `TRISTATE_L(u_tri_exp_call,    64, enbar_exp_call,    exp_call_dr_i,    tristated_bus)
+    `TRISTATE_L(u_tri_iretd,       64, enbar_iretd,       iretd_cs_dr_i,    tristated_bus)
 
     // ---- Final 2:1 mux: WB_DR ? tristated_bus : dr_data ----
     `MUX_2(u_mux_dr_o, 64, dr_o, dr_data, tristated_bus, WB_DR)

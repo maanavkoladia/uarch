@@ -32,6 +32,7 @@ module dr_sel (
     input uint64_t sbb_dr_i,
     input uint64_t xchg_dr_i,
     input uint64_t exp_call_dr_i,
+    input uint64_t iretd_cs_dr_i,
     input uint64_t dr_data,
     
     // Selected output
@@ -68,6 +69,7 @@ module dr_sel (
             SAR:      dr_o = sar_dr_i;
             SBB:      dr_o = sbb_dr_i;
             XCHG:     dr_o = xchg_dr_i;
+            IRETD:    dr_o = iretd_cs_dr_i;
             EXP_CALL: dr_o = exp_call_dr_i;
             default:  dr_o = dr_data;
         endcase
@@ -75,72 +77,3 @@ module dr_sel (
 
 endmodule
 
-
-/* notes for porting
-
-// Use the parallel decode + OR approach
-// Synthesis will optimize the OR tree automatically
-always_comb begin
-    logic [22:0] sel;
-    sel[0]  = (op_type == AAA_OP);
-    sel[1]  = (op_type == ADC_OP);
-    // ... all 23
-    
-    dr_o = ({64{sel[0]}} & aaa_dr_i) |
-           ({64{sel[1]}} & adc_dr_i) |
-           ({64{sel[2]}} & add_dr_i) |
-           // ... all 23
-           64'h0;  // default
-end
-
-Fastest Approach: Parallel Decode + Wide OR
-Timing: ~7-8 gate delays total
-
-Comparator: ~2 gates
-AND gate: ~1 gate
-OR tree (5 levels): ~5 gates
-Even Faster: Tristate Buffers (ASIC only)
-Timing: ~3-4 gate delays total
-
-Decoder: ~2 gates
-Tristate buffer: ~2 gates
-No OR tree!
-Comparison
-Approach	Delay	Area	Power	Notes
-Tristate	3-4 gates ✓	Medium	Low	ASIC only, not FPGA
-Parallel + OR	7-8 gates	Large	High	All comparators active
-Binary Mux Tree	10 gates	Small	Medium	What I showed earlier
-
-
-                                   RESULT
-                                       |
-                        ┌──────────────┴──────────────┐
-                     op[2]=0                       op[2]=1
-                        |                              |
-                  level2_mux0                    level2_mux1
-                        |                              |
-            ┌───────────┴──────────┐       ┌───────────┴──────────┐
-         op[1]=0              op[1]=1   op[1]=0              op[1]=1
-            |                    |         |                    |
-      level1_mux0          level1_mux1  level1_mux2        level1_mux3
-            |                    |         |                    |
-      ┌─────┴─────┐        ┌─────┴─────┐ ┌─────┴─────┐      ┌─────┴─────┐
-   op[0]=0    op[0]=1   op[0]=0   op[0]=1 op[0]=0  op[0]=1 op[0]=0   op[0]=1
-      |          |         |         |       |        |       |          |
-    ADD        SUB       AND        OR      XOR      SHL     0x0        0x0
-   (000)      (001)     (010)     (011)   (100)    (101)   (110)      (111)
-
-For dr_sel with 23 operations, you'd need:
-
-5 bits to encode (2^5 = 32 possible values, 23 used)
-5 levels of muxes
-Round up to 32 inputs (pad with zeros for unused slots 24-32)
-Level 1: 16 muxes (pair up 32 inputs using bit[0])
-Level 2: 8 muxes (using bit[1])
-Level 3: 4 muxes (using bit[2])
-Level 4: 2 muxes (using bit[3])
-Level 5: 1 mux (using bit[4]) → final output
-
-Total: 31 two-input muxes, each 64 bits wide.
-
-*/
