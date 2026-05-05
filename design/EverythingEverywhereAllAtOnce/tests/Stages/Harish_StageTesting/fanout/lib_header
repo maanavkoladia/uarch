@@ -271,7 +271,7 @@ module DiskWrapper (
     input wire [31:0] ld_diskAddr,
     input wire [31:0] ld_num_bytes,
     output reg disk_ld_Buffer_V,
-    output wire [8*4096-1:0] disk_ld_Buffer_
+    output wire [8*4096-1:0] disk_ld_Buffer_o
 );
 endmodule
 
