@@ -40,7 +40,7 @@ CORE_PKGS = \
 
 
 CORE_STRUCTURAL_SRC_FILES = \
-					 $(CORE_PATH_INTERNAL)/IDM/IDM.sv	\
+					 $(CORE_PATH_INTERNAL)/IDM/structural/IDM_structural.sv	\
 					 $(CORE_PATH_INTERNAL)/TLB/TLB_structural.v \
 					 $(FETCH_STRUCTURAL_SRC_FILES) \
 					 $(DECODE_SRC_FILES) \
