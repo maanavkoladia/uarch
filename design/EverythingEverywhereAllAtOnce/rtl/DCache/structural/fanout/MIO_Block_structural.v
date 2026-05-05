@@ -54,7 +54,9 @@ module MIO_Block (
     `OR_3(u_rfnr,           1, readyForNewReq, we_and_served, clr_and_oe, block_idle)
 
     wire keep_select;
-    `INV_N(u_keep_sel, 1, readyForNewReq, keep_select)
+    // u_keep_sel previously expanded to bufferHInv64$ but fanout=145 exceeds
+    // tier-64. Use bufferHInv256$ directly. 0 ns added (just tier upsize).
+    bufferHInv256$ u_keep_sel (.out(keep_select), .in(readyForNewReq));
 
     wire ld_select, st_select;
     `AND_2(u_ld_sel, 1, ld_select, readyForNewReq, ld_addr_MIO_V)
@@ -87,8 +89,15 @@ module MIO_Block (
     `AND_2(u_dat_keep, 128, data_keep_g, block_req_data_q,    keep_sel_128)
     `OR_2(u_next_dat,  128, next_data,   data_st_g, data_keep_g)
 
-    `REG_RST(u_reg_oe,  1,   clk, rst, next_oe,    block_req_oe_q)
-    `REG_RST(u_reg_we,  1,   clk, rst, next_we,    block_req_we_q)
+    // u_reg_oe / u_reg_we singleton regs -- each Q fanout=5 (just over tier-4).
+    // bufferH16$ at register output -- +0.24 ns. MIO request control, not on
+    // the cache-read critical path.
+    wire block_req_oe_q_pre;
+    wire block_req_we_q_pre;
+    `REG_RST(u_reg_oe,  1,   clk, rst, next_oe,    block_req_oe_q_pre)
+    `REG_RST(u_reg_we,  1,   clk, rst, next_we,    block_req_we_q_pre)
+    bufferH16$ u_reg_oe_buf (.out(block_req_oe_q), .in(block_req_oe_q_pre));
+    bufferH16$ u_reg_we_buf (.out(block_req_we_q), .in(block_req_we_q_pre));
     `REG_RST(u_reg_pa,  15,  clk, rst, next_paddr, block_req_paddr_q)
     `REG_RST(u_reg_dat, 128, clk, rst, next_data,  block_req_data_q)
 

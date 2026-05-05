@@ -26,6 +26,10 @@ module VCache (
     input  wire         block_busy_i,
 
     output wire         outputs_hit_o,
+    // 4 replicated copies of `hit` from VCache_TagStore -- each driven by
+    // its own NAND_4 + bufferH64$ inside the TagStore. DCache_Block uses
+    // these to feed the 32 MUX_4 chunks (each copy serves 8 chunks).
+    output wire [3:0]   outputs_hit_for_mux_o,
     output wire         outputs_miss_o,
     output wire         outputs_swapBuf_valid_o,
     output wire         outputs_swapBuf_dirty_o,
@@ -38,6 +42,10 @@ module VCache (
     output wire [127:0] outputs_lineOut_o,
     output wire [14:0]  outputs_addrOut_o
 );
+
+    // Replicated hit copies from VCache_TagStore (cascade-fix; +0.30 ns)
+    wire [3:0] vcache_hit_for_mux;   // 4 copies for DCache_Block's 32 MUX_4 chunks
+    wire [3:0] vcache_hit_for_DS;    // 4 copies for VCache_DataStore byte groups
 
     wire fsm_S_0, fsm_S_1, fsm_S_2;
     wire fsm_WR_2_EB;
@@ -72,12 +80,19 @@ module VCache (
     wire        reqInUse_oe;
     wire        reqInUse_we;
     wire [14:0] reqInUse_paddr;
+    wire [14:0] reqInUse_paddr_for_ts;   // dedicated copy -> VCache_TagStore.p_addr_i
     wire [127:0] reqInUse_stq_data;
     wire [15:0] reqInUse_vec;
 
     `MUX_2(u_reqInUse_oe,    1,   reqInUse_oe,       blockReq_oe_i,       savedReq_oe_q,       useSavedReq)
     `MUX_2(u_reqInUse_we,    1,   reqInUse_we,       blockReq_we_i,       savedReq_we_q,       useSavedReq)
-    `MUX_2(u_reqInUse_paddr, 15,  reqInUse_paddr,    blockReq_paddr_i,    savedReq_paddr_q,    useSavedReq)
+    // u_reqInUse_paddr replicated x2: original drives swapBuf_addr_d reg D
+    // pin (1 load/bit) + dead VCache_DataStore port (0 loads). _ts copy
+    // drives only VCache_TagStore.p_addr_i (4 CMP_N pins = 4 loads/bit on
+    // bits 14:6, 0 on lower bits). 0 ns added (parallel mux). Clears the 9
+    // fanout=5 violations per VCache instance (4 banks x 9 = 36 cleared).
+    `MUX_2(u_reqInUse_paddr,    15, reqInUse_paddr,        blockReq_paddr_i, savedReq_paddr_q, useSavedReq)
+    `MUX_2(u_reqInUse_paddr_ts, 15, reqInUse_paddr_for_ts, blockReq_paddr_i, savedReq_paddr_q, useSavedReq)
     `MUX_2(u_reqInUse_stq,   128, reqInUse_stq_data, blockReq_stq_data_i, savedReq_stq_data_q, useSavedReq)
     `MUX_2(u_reqInUse_vec,   16,  reqInUse_vec,      blockReq_vec_i,      savedReq_vec_q,      useSavedReq)
 
@@ -132,7 +147,7 @@ module VCache (
     VCache_TagStore vcache_tag_store_unit (
         .clk                     (clk),
         .rst                     (rst),
-        .p_addr_i                (reqInUse_paddr),
+        .p_addr_i                (reqInUse_paddr_for_ts),
         .oe_i                    (reqInUse_oe),
         .we_i                    (reqInUse_we),
         .Read_DSWAP_i            (fsm_Read_DSWAP),
@@ -147,6 +162,8 @@ module VCache (
         .Update_LRU              (fsm_Update_LRU),
         .tagOut_o                (currTag),
         .hit_o                   (hit),
+        .hit_for_mux_o           (vcache_hit_for_mux),
+        .hit_for_DS_o            (vcache_hit_for_DS),
         .miss_o                  (miss),
         .hitIDX_o                (hitIDX),
         .evictionIDX_o           (evictionIDX),
@@ -168,7 +185,7 @@ module VCache (
         .Write_VSWAP_i             (fsm_Write_VSWAP),
         .busy_i                    (block_busy_i),
         .WR_2_EB                   (fsm_WR_2_EB),
-        .tagStore_hit_i            (hit),
+        .tagStore_hit_i            (vcache_hit_for_DS),
         .useSavedIDX               (useSavedIDX),
         .hitIDX_i                  (hitIDX),
         .evictionIDX_i             (evictionIDX),
@@ -177,6 +194,7 @@ module VCache (
     );
 
     assign outputs_hit_o                       = hit;
+    assign outputs_hit_for_mux_o               = vcache_hit_for_mux;
     assign outputs_miss_o                      = miss;
     assign outputs_swapBuf_valid_o             = swapBuf_valid_q;
     assign outputs_swapBuf_dirty_o             = swapBuf_dirty_q;

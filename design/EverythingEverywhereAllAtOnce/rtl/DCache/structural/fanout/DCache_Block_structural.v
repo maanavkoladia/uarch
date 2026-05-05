@@ -40,6 +40,8 @@ module DCache_Block (
     // Flat nets carrying child outputs (replaces struct locals)
     // ---------------------------------------------------------------
     wire        bank_hit_flat;
+    wire [31:0] bank_hit_for_mux_flat;   // 32 replicated copies (bank-side cascade)
+    wire [3:0]  vcache_hit_for_mux_flat; // 4 replicated copies (vcache-side, bufferH64$ each)
     wire        bank_swapBuf_valid_flat;
     wire        bank_swapBuf_dirty_flat;
     wire [14:0] bank_swapBuf_addr_flat;
@@ -74,7 +76,11 @@ module DCache_Block (
     // block_busy = bank.busy | vcache.busy
     // ---------------------------------------------------------------
     wire block_busy;
-    `OR_2(u_block_busy, 1, block_busy, bank_busy_flat, vcache_busy_flat)
+    // block_busy fanout=5 (gates inputs across submodules, off read crit path).
+    // bufferH16$ at output, +0.24 ns.
+    wire block_busy_pre;
+    `OR_2(u_block_busy, 1, block_busy_pre, bank_busy_flat, vcache_busy_flat)
+    bufferH16$ u_block_busy_buf (.out(block_busy), .in(block_busy_pre));
 
     // ---------------------------------------------------------------
     // DCache_Bank instance
@@ -102,6 +108,7 @@ module DCache_Block (
         .dataBus                          (dataBus),
 
         .dcacheBankOut_hit_o                      (bank_hit_flat),
+        .dcacheBankOut_hit_for_mux_o              (bank_hit_for_mux_flat),
         .dcacheBankOut_swapBuf_valid_o            (bank_swapBuf_valid_flat),
         .dcacheBankOut_swapBuf_dirty_o            (bank_swapBuf_dirty_flat),
         .dcacheBankOut_swapBuf_addr_o             (bank_swapBuf_addr_flat),
@@ -139,6 +146,7 @@ module DCache_Block (
         .block_busy_i       (block_busy),
 
         .outputs_hit_o                      (vcache_hit_flat),
+        .outputs_hit_for_mux_o              (vcache_hit_for_mux_flat),
         .outputs_miss_o                     (vcache_miss_flat),
         .outputs_swapBuf_valid_o            (vcache_swapBuf_valid_flat),
         .outputs_swapBuf_dirty_o            (vcache_swapBuf_dirty_flat),
@@ -175,18 +183,31 @@ module DCache_Block (
 
     // ---------------------------------------------------------------
     // dataLineOut: 4:1 mux on {bank_hit, vcache_hit}
-    // sel=00: bank, sel=01: vcache, sel=10: bank, sel=11: 0
+    // sel=00: zero, sel=01: vcache, sel=10: bank, sel=11: bank-wins
+    //
+    // FANOUT FIX: original MUX_4(128) had a single 2-bit select feeding all
+    // 128 mux4 cells -> 128-load fanout on each select bit. We split into
+    // 32 chunks of MUX_4(4) -- each chunk has its own bank_hit copy
+    // (per-chunk fanout 4) and reuses one of the 4 vcache_hit copies
+    // (each vcache copy drives 8 chunks * 4 cells = 32 loads, handled by
+    // bufferH64$ in VCache_TagStore).
     // ---------------------------------------------------------------
-    wire [1:0]   datasel;
-    assign datasel = {bank_hit_flat, vcache_hit_flat};
     wire [127:0] dataLineOut_flat;
 
-    `MUX_4(u_dataLineOut_mux, 128, dataLineOut_flat,
-        bank_data_lineOut_flat,
-        vcache_lineOut_flat,
-        bank_data_lineOut_flat,
-        128'b0,
-        datasel)
+    genvar dlk;
+    generate
+        for (dlk = 0; dlk < 32; dlk = dlk + 1) begin : g_dataLineOut_chunk
+            wire [1:0] datasel_chunk;
+            assign datasel_chunk = {bank_hit_for_mux_flat[dlk],
+                                    vcache_hit_for_mux_flat[dlk/8]};
+            `MUX_4(u_dataLineOut_chunk, 4, dataLineOut_flat[dlk*4 +: 4],
+                bank_data_lineOut_flat[dlk*4 +: 4],
+                vcache_lineOut_flat[dlk*4 +: 4],
+                bank_data_lineOut_flat[dlk*4 +: 4],
+                4'b0,
+                datasel_chunk)
+        end
+    endgenerate
 
     assign outputs_dataLineOut_o = dataLineOut_flat;
 
@@ -268,9 +289,14 @@ module DCache_Block (
     wire [`ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
     assign address_bus_fake = {17'b0, addr_bus_fake15};
 
+    // addr_drive_enbar fanout=32 (one per address-bus tristate cell). bufferH64$
+    // at NOR output, +0.30 ns. Off cache-read critical path -- this gates bus
+    // tri-state drivers, used during address arbitration windows.
     wire addr_drive_enbar;
-    `NOR_2(u_addr_drive_en, 1, addr_drive_enbar,
+    wire addr_drive_enbar_pre;
+    `NOR_2(u_addr_drive_en, 1, addr_drive_enbar_pre,
         permissionToDriveAddrBus_Ld_i, permissionToDriveAddrBus_eb_i)
+    bufferH64$ u_addr_drive_en_buf (.out(addr_drive_enbar), .in(addr_drive_enbar_pre));
 
     `BUS_TRISTATE(u_addr_bus_tri, `ADDRESS_BUS_WIDTH_BITS,
         addr_drive_enbar, address_bus_fake, address_bus)

@@ -201,9 +201,15 @@ module DCache_Arbitration (
             wire not_ld0_at_bank, store_valid_w;
             `INV_N(u_not_ld0,     1, ld0_at_bank,    not_ld0_at_bank)
             `AND_2(u_store_valid, 1, store_valid_w,  block_idleness, st_sel)
-            `AND_3(u_ld0_valid,   1, ld0_valid[g_i], block_idleness, not_st_sel, ld0_at_bank)
-            `AND_4(u_ld1_valid, 1, ld1_valid[g_i],
+            // ld0_valid/ld1_valid each fan out 18 (any_new + next_oe + 15 paddr
+            // mask + reqServed). bufferH64$ at the AND output -- +0.30 ns.
+            // Consumers feed REG_RST_WE D ports (next clock); plenty of slack.
+            wire ld0_valid_pre, ld1_valid_pre;
+            `AND_3(u_ld0_valid,   1, ld0_valid_pre, block_idleness, not_st_sel, ld0_at_bank)
+            `AND_4(u_ld1_valid,   1, ld1_valid_pre,
                    block_idleness, not_st_sel, not_ld0_at_bank, ld1_at_bank)
+            bufferH64$ u_ld0_valid_buf (.out(ld0_valid[g_i]), .in(ld0_valid_pre));
+            bufferH64$ u_ld1_valid_buf (.out(ld1_valid[g_i]), .in(ld1_valid_pre));
 
             // ---------- clear-latch (memClr/hit kill an active req) ----
             // Only one AND-gate from the late hit/memClr signals.
@@ -221,7 +227,13 @@ module DCache_Arbitration (
             // the data path with clear_latch.
             wire any_new_req, latch_we;
             `OR_3(u_any_new, 1, any_new_req, store_valid_w, ld0_valid[g_i], ld1_valid[g_i])
-            `OR_2(u_latch_we, 1, latch_we, clear_latch, any_new_req)
+            // latch_we fanout=6 (drives WE on 5 REG_RST_WE per bank, after r4
+            // includes a bufferH16$ wrapper for u_reg_oe/we so 5 + small flat).
+            // bufferH16$ +0.24 ns, off cache hit path (this gates the next
+            // request register update, 1 cycle removed from access).
+            wire latch_we_pre;
+            `OR_2(u_latch_we, 1, latch_we_pre, clear_latch, any_new_req)
+            bufferH16$ u_latch_we_buf (.out(latch_we), .in(latch_we_pre));
 
             // ---------- next-state data into the req latches ----------
             // oe: high only on a new ld; clear case yields 0 naturally.
@@ -253,8 +265,17 @@ module DCache_Arbitration (
             `AND_2(u_next_dat, 128, nextReqs_data, core_stq_data_i[g_i],   store_valid_128)
 
             // ---------- registers: WE-gated REG_RST_WE ----------
-            `REG_RST_WE(u_reg_oe,  1,   clk_i, rst, latch_we, nextReqs_oe,    reqs_oe_q[g_i])
-            `REG_RST_WE(u_reg_we,  1,   clk_i, rst, latch_we, nextReqs_we,    reqs_we_q[g_i])
+            // Buffered: u_reg_oe / u_reg_we register Q drives ~15 flattened
+            // loads (NOR_2 idle + AND_2 clr + external port to DCache_Block
+            // fanning out to Bank/VCache/EvictionBuf). bufferH16$ inserted
+            // at register output -- +0.24 ns. NOT on cache-read critical path
+            // (these gate FSM transitions, not the tag-compare path).
+            wire reqs_oe_q_pre;
+            wire reqs_we_q_pre;
+            `REG_RST_WE(u_reg_oe,  1,   clk_i, rst, latch_we, nextReqs_oe,    reqs_oe_q_pre)
+            `REG_RST_WE(u_reg_we,  1,   clk_i, rst, latch_we, nextReqs_we,    reqs_we_q_pre)
+            bufferH16$ u_reg_oe_buf (.out(reqs_oe_q[g_i]), .in(reqs_oe_q_pre));
+            bufferH16$ u_reg_we_buf (.out(reqs_we_q[g_i]), .in(reqs_we_q_pre));
             `REG_RST_WE(u_reg_pa,  15,  clk_i, rst, latch_we, nextReqs_paddr, reqs_paddr_q[g_i])
             `REG_RST_WE(u_reg_vec, 16,  clk_i, rst, latch_we, nextReqs_vec,   reqs_vec_q[g_i])
             `REG_RST_WE(u_reg_dat, 128, clk_i, rst, latch_we, nextReqs_data,  reqs_data_q[g_i])
@@ -279,7 +300,12 @@ module DCache_Arbitration (
             wire keep_ov, st_override_d;
             `AND_2(u_keep_ov, 1, keep_ov,       not_stq_empty[g_st], st_override_q[g_st])
             `OR_2(u_ov_d,     1, st_override_d, core_stq_full_i[g_st], keep_ov)
-            `REG_RST(u_ov_reg, 1, clk_i, rst, st_override_d, st_override_q[g_st])
+            // u_ov_reg.Q fanout=10. bufferH16$ at register output -- +0.24 ns.
+            // st_override_q feeds u_keep_ov internal + u_st_or_no_ld in g_arb_block
+            // + external st_override_o port. Off cache-read critical path.
+            wire st_override_q_pre;
+            `REG_RST(u_ov_reg, 1, clk_i, rst, st_override_d, st_override_q_pre)
+            bufferH16$ u_ov_reg_buf (.out(st_override_q[g_st]), .in(st_override_q_pre));
             assign st_override_o[g_st] = st_override_q[g_st];
         end
     endgenerate

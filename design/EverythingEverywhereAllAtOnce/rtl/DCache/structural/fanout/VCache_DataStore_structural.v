@@ -21,7 +21,8 @@ module VCache_DataStore (
     input  wire         busy_i,
     input  wire         WR_2_EB,
 
-    input  wire         tagStore_hit_i,
+    // 4-copy hit bus from VCache_TagStore (each bit drives 4 byte iters)
+    input  wire [3:0]   tagStore_hit_i,
     input  wire         useSavedIDX,
 
     input  wire [1:0]   hitIDX_i,
@@ -37,19 +38,46 @@ module VCache_DataStore (
            hitIDX_i,
            evictionIDX_i,
            WR_2_EB)
-    `MUX_2(u_addr_final, 2, ADDRESS_2_DataStore,
-           step1,
-           savedIDX_i,
-           useSavedIDX)
+    // u_addr_final 2-bit output drove 16 ram8b4w$.A ports (fanout 16 per bit).
+    // Replicate the mux x4 (gi/4 chunking, 4 ram cells per copy) -- 0 ns added
+    // (parallel muxes). step1, savedIDX_i, useSavedIDX inputs go from fanout
+    // 1 -> 4 (<=4 OK). ADDRESS_2_DataStore alias kept for any legacy use.
+    wire [1:0] addr_quad [0:3];
+    genvar gaq;
+    generate
+        for (gaq = 0; gaq < 4; gaq = gaq + 1) begin : g_addr_final
+            `MUX_2(u_addr_final, 2, addr_quad[gaq],
+                   step1,
+                   savedIDX_i,
+                   useSavedIDX)
+        end
+    endgenerate
+    assign ADDRESS_2_DataStore = addr_quad[0];
 
     wire not_busy;
     wire store_path;
     wire not_store_path;
     wire swap_path;
     `INV_N(u_not_busy,       1, busy_i,         not_busy)
-    `AND_2(u_store_path,     1, store_path,     not_busy, we_i)
+    // store_path fanout 145 (16 byte iters * 9 internal loads each).
+    // bufferH256$ on output -- single buffer for now, +0.54 ns added on
+    // VCache store path. Can be split into 4 chunks of 4-byte iters with
+    // 0.30 ns / fully restructured for 0 ns in a follow-up round.
+    wire store_path_pre;
+    `AND_2(u_store_path,     1, store_path_pre, not_busy, we_i)
+    bufferH256$ u_store_path_buf (.out(store_path), .in(store_path_pre));
     `INV_N(u_not_store_path, 1, store_path,     not_store_path)
-    `AND_2(u_swap_path,      1, swap_path,      not_store_path, read_D_SWAP_i)
+    // swap_path fanout was 16 (one OR_2 per byte iter). Replicate AND_2 x4 =
+    // 0 ns. swap_path[k/4] feeds 4 byte iters per copy. not_store_path /
+    // read_D_SWAP_i fanout 1->4 (<=4 OK).
+    wire [3:0] swap_path_quad;
+    genvar gsp;
+    generate
+        for (gsp = 0; gsp < 4; gsp = gsp + 1) begin : g_swap_path
+            `AND_2(u_swap_path, 1, swap_path_quad[gsp], not_store_path, read_D_SWAP_i)
+        end
+    endgenerate
+    assign swap_path = swap_path_quad[0];
 
     wire clk_duty_mask;
     wire clk_duty_mask_buffer;
@@ -102,11 +130,12 @@ module VCache_DataStore (
     genvar gi;
     generate
         for (gi = 0; gi < 16; gi = gi + 1) begin : g_vcache_data_store_ram_cells
+            // Use replicated hit-copy [gi/4] so each copy drives <=4 loads.
             `AND_3(u_store_evt, 1, store_byte_event[gi],
-                   store_path, st_data_vec_i[gi], tagStore_hit_i)
+                   store_path, st_data_vec_i[gi], tagStore_hit_i[gi/4])
 
             `OR_2 (u_byte_write, 1, byte_write_event[gi],
-                   store_byte_event[gi], swap_path)
+                   store_byte_event[gi], swap_path_quad[gi/4])
 
             nand3$ u_wr_actual (
                 .out(WR_2_DataStore_actual[gi]),
@@ -121,7 +150,7 @@ module VCache_DataStore (
                    store_path)
 
             ram8b4w$ v_cache_data_store_ramCell (
-                .A   (ADDRESS_2_DataStore),
+                .A   (addr_quad[gi/4]),
                 .WR  (WR_2_DataStore_actual[gi]),
                 .DIN (DIN_flat[gi*8 +: 8]),
                 .OE  (OE_2_DataStore_actual),
