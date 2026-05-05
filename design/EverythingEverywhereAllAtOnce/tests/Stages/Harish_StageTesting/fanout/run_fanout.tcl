@@ -2,7 +2,7 @@ set target_library ""
 set link_library "*"
 
 
-set __top_module__  "icache_inst "
+set __top_module__  "ICache"
 set __masterfile__  "./master.txt"
 
 define_design_lib WORK -path ./WORK

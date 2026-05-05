@@ -264,15 +264,14 @@ input [4:0] A; inout [31:0] DIO;
 input OE,WR,CE;
 endmodule
 
-
-
 module DiskWrapper (
-    input wire clk;
-    input wire rst, ;
-    input wire ld_write_buf_req;
-    input wire [31:0] ld_diskAddr;
-    input wire [31:0] ld_num_bytes;
-    output reg disk_ld_Buffer_V;
-    output wire [8*`PAGE_SIZE-1:0] disk_ld_Buffer_;
+    input wire clk,
+    input wire rst,
+    input wire ld_write_buf_req,
+    input wire [31:0] ld_diskAddr,
+    input wire [31:0] ld_num_bytes,
+    output reg disk_ld_Buffer_V,
+    output wire [8*4096-1:0] disk_ld_Buffer_
+);
 endmodule
 
