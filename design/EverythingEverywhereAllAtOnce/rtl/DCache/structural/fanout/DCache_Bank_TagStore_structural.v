@@ -24,6 +24,11 @@ module DCache_Bank_TagStore (
 
     output wire [5:0]  tagOut_o,                  // DCACHE_BANK_TAG_WIDTH = 6
     output wire        currLine_V_o,
+    // Dedicated copy of currLine_V_o for FSM consumption. Internal MUX_8
+    // replicated ×2 so each output drives a distinct downstream cluster
+    // (one feeds u_clv_buf bufferH16$ for tag_eq_and_v dups; this one feeds
+    // FSM Line_valid_i which has ~7 internal SOP-term uses). 0 ns added.
+    output wire        currLine_V_for_fsm_o,
     output wire        currLine_Dirty_o
 );
 
@@ -38,11 +43,20 @@ module DCache_Bank_TagStore (
     wire [7:0] valid_q;
     wire [7:0] dirty_q;
 
+    // fill_or_ldswap fanout=17 (gates valid_we + dirty_we + dirty_d for 8 lines
+    // x ~2 paths). bufferH64$ at output -- +0.30 ns. Off cache read-hit path
+    // (this fires only on fill / load-from-V-swap, both miss-path operations).
     wire fill_or_ldswap;
-    `OR_2(u_fill_or_ldswap, 1, fill_or_ldswap, fill3_i, ld_From_V_Swap_i)
+    wire fill_or_ldswap_pre;
+    `OR_2(u_fill_or_ldswap, 1, fill_or_ldswap_pre, fill3_i, ld_From_V_Swap_i)
+    bufferH64$ u_fill_or_ldswap_buf (.out(fill_or_ldswap), .in(fill_or_ldswap_pre));
 
+    // ldswap_dirty fanout=8 (gated by 8 dirty_d muxes). bufferH16$ at output --
+    // +0.24 ns. Off read crit path (drives dirty-bit value during V-swap load).
     wire ldswap_dirty;
-    `AND_2(u_ldswap_dirty, 1, ldswap_dirty, ld_From_V_Swap_i, V_Cache_SwapBuf_DirtyBit)
+    wire ldswap_dirty_pre;
+    `AND_2(u_ldswap_dirty, 1, ldswap_dirty_pre, ld_From_V_Swap_i, V_Cache_SwapBuf_DirtyBit)
+    bufferH16$ u_ldswap_dirty_buf (.out(ldswap_dirty), .in(ldswap_dirty_pre));
 
     wire [7:0] valid_we;
     wire [7:0] dirty_we;
@@ -64,7 +78,15 @@ module DCache_Bank_TagStore (
         end
     endgenerate
 
+    // Replicated u_valid_mux ×2: one for buffer/hit path (currLine_V_o ->
+    // u_clv_buf), one for FSM (currLine_V_for_fsm_o -> Line_valid_i which
+    // expands to 7 SOP-term uses internally). 0 ns added. valid_q fanout
+    // 1 -> 2 (<=4 OK), index fanout 1 -> 2 (<=4 OK).
     `MUX_8(u_valid_mux, 1, currLine_V_o,
+           valid_q[0], valid_q[1], valid_q[2], valid_q[3],
+           valid_q[4], valid_q[5], valid_q[6], valid_q[7],
+           index)
+    `MUX_8(u_valid_mux_fsm, 1, currLine_V_for_fsm_o,
            valid_q[0], valid_q[1], valid_q[2], valid_q[3],
            valid_q[4], valid_q[5], valid_q[6], valid_q[7],
            index)

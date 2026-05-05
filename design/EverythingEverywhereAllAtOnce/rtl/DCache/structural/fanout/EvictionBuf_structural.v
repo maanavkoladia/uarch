@@ -47,7 +47,11 @@ module EvictionBuf (
 
     `OR_2 (u_validReq,         1, validReq,        blockReq_oe_i,  blockReq_we_i)
     `INV_N(u_eb_valid_bar,     1, eb_valid,        eb_valid_bar)
-    `AND_2(u_LDEB_qual,        1, LD_EB_qual,      vcache_LD_EB_i, eb_valid_bar)
+    // u_LDEB_qual fanout=6 (drives LD_EB_qual_bar INV + we_valid_path OR + flat).
+    // bufferH16$ +0.24 ns, off cache read-hit path (EB load-from-VCache control).
+    wire LD_EB_qual_pre;
+    `AND_2(u_LDEB_qual,        1, LD_EB_qual_pre,  vcache_LD_EB_i, eb_valid_bar)
+    bufferH16$ u_LDEB_qual_buf (.out(LD_EB_qual), .in(LD_EB_qual_pre));
     `INV_N(u_LDEB_qual_bar,    1, LD_EB_qual,      LD_EB_qual_bar)
     `AND_2(u_clr_qual,         1, clr_qual,        LD_EB_qual_bar, eb_clr_i)
     `INV_N(u_clr_qual_bar,     1, clr_qual,        clr_qual_bar)
@@ -57,9 +61,21 @@ module EvictionBuf (
 
     `CMP_N(u_addr_eq,         11, addr_eq,         blockReq_paddr_i[14:4], eb_address[14:4])
     `AND_2(u_valid_validReq,   1, valid_and_validReq, validReq, eb_valid)
-    `AND_2(u_reqHit,           1, ebOut_reqHit_o,  valid_and_validReq, addr_eq)
+    // u_reqHit fanout=5 (drives ebOut_reqHit_o port -> flattens to 5 flat consumers
+    // in DCache_Block FSM/Bank/VCache). bufferH16$ +0.24 ns, on EB-hit path which
+    // is parallel to the cache hit determination (EB hit serves stale data faster
+    // when present, so a +0.24 ns delay here is masked by the slower cache path).
+    wire ebOut_reqHit_pre;
+    `AND_2(u_reqHit,           1, ebOut_reqHit_pre, valid_and_validReq, addr_eq)
+    bufferH16$ u_reqHit_buf (.out(ebOut_reqHit_o), .in(ebOut_reqHit_pre));
 
-    `REG_RST_WE(u_eb_valid_reg,   1,   clk_i, rst_i, we_valid_path, LD_EB_qual,       eb_valid)
+    // u_eb_valid_reg.Q fanout=6 (eb_valid_bar INV, valid_and_validReq AND,
+    // ebOut_valid_o port -- which fans out across Bank/VCache/EB consumers).
+    // bufferH16$ at register output -- +0.24 ns. eb_valid feeds the EB hit
+    // determination but the addr_eq compare is the dominant delay there.
+    wire eb_valid_pre;
+    `REG_RST_WE(u_eb_valid_reg,   1,   clk_i, rst_i, we_valid_path, LD_EB_qual,       eb_valid_pre)
+    bufferH16$ u_eb_valid_buf (.out(eb_valid), .in(eb_valid_pre));
     `REG_RST_WE(u_eb_commit_reg,  1,   clk_i, rst_i, we_commiting,  set_commit_qual,  eb_commiting)
     `REG_RST_WE(u_eb_addr_reg,   15,   clk_i, rst_i, LD_EB_qual,    vcache_addrOut_i, eb_address)
     `REG_RST_WE(u_eb_line_reg,  128,   clk_i, rst_i, LD_EB_qual,    vcache_lineOut_i, eb_dataLine)

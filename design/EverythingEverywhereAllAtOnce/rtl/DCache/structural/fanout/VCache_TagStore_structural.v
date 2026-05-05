@@ -29,6 +29,11 @@ module VCache_TagStore (
 
     output wire [8:0]  tagOut_o,                     // V_CACHE_TAG_WIDTH = 9
     output wire        hit_o,
+    // 4 replicated copies of `hit` (each driven by its own NAND_4 + bufferH64$)
+    // for downstream consumers. Each copy can drive <=64 loads (covers the
+    // 32 mux4 cells per group + DS group). +0.30 ns added on vcache_hit path.
+    output wire [3:0]  hit_for_mux_o,
+    output wire [3:0]  hit_for_DS_o,
     output wire        miss_o,
 
     output wire [1:0]  hitIDX_o,
@@ -48,7 +53,19 @@ module VCache_TagStore (
     wire [3:0] tagMetaStore_valid_q;
     wire [3:0] tagMetaStore_dirty_q;
 
+    // savedIDX register quadruplicated: bit 1 fanout was 9 (decoder + 4 muxes +
+    // LRU + output port). 4 parallel reg64e$ run in parallel = 0 ns.
+    // After r4 we found _c at fanout 7 because output port flattens through
+    // VCache_DataStore u_addr_final x4 replicas + LRU. Splitting LRU and port
+    // into separate copies brings each <=4.
+    //   savedIDX_q   -> u_saveIDX_dec only (4 internal decoder cells)
+    //   savedIDX_q_b -> u_oe_idx, u_tag_vswap_idx, u_tag_eb_idx, u_dirty_idx (4 mux loads)
+    //   savedIDX_q_c -> LRU_unit.savedIDX (3 internal LRU loads)
+    //   savedIDX_q_d -> savedIDX_o output port (4 loads in DataStore u_addr_final dups)
     wire [1:0] savedIDX_q;
+    wire [1:0] savedIDX_q_b;
+    wire [1:0] savedIDX_q_c;
+    wire [1:0] savedIDX_q_d;
 
     wire [1:0] currLRU_IDX;
 
@@ -88,14 +105,23 @@ module VCache_TagStore (
 
     `MUX_2 (u_oe_idx, 2, OE_2_TagStore_idx,
             currLRU_IDX,
-            savedIDX_q,
+            savedIDX_q_b,
             use_savedIDX)
     `DECODER_N(u_oe_idx_dec, 2, OE_2_TagStore_idx, oe_idx_decoded)
 
     `OR_2  (u_oe_or_we,       1, oe_or_we, we_i, oe_i)
     `INV_N (u_not_busy,       1, busy_i, not_busy)
 
-    `AND_2 (u_doAccess,       1, doAccess, oe_or_we, not_busy)
+    // doAccess fanout was 12 (4 g_tagStore_OE nor2$ + 4 u_way_hit + 3
+    // u_way_hit_*_idx + 1 u_miss). Triplicate AND_2 = 0 ns added.
+    //   doAccess   -> g_tagStore_OE x4 nor2$ inputs (4 loads, gates RAM OE)
+    //   doAccess_b -> u_way_hit_0..3 (4 NAND_3)
+    //   doAccess_c -> u_way_hit_1_idx..3_idx (3) + u_miss (1) = 4 loads
+    // oe_or_we / not_busy fanout 1->3 (<=4 OK).
+    wire doAccess_b, doAccess_c;
+    `AND_2 (u_doAccess,       1, doAccess,   oe_or_we, not_busy)
+    `AND_2 (u_doAccess_b,     1, doAccess_b, oe_or_we, not_busy)
+    `AND_2 (u_doAccess_c,     1, doAccess_c, oe_or_we, not_busy)
     `OR_2  (u_wr2eb_or_vswap, 1, wr2eb_or_vswap, WR_2_EB_i, Write_VSWAP_i)
 
     genvar goe;
@@ -149,20 +175,79 @@ module VCache_TagStore (
     `CMP_N(u_tag_eq_2, 9, tag_eq[2], DOUT_of_TagStore_2, p_addr_fields_tag)
     `CMP_N(u_tag_eq_3, 9, tag_eq[3], DOUT_of_TagStore_3, p_addr_fields_tag)
 
-    `NAND_3(u_way_hit_0, 1, way_hit[0], doAccess, tagMetaStore_valid_q[0], tag_eq[0])
-    `NAND_3(u_way_hit_1, 1, way_hit[1], doAccess, tagMetaStore_valid_q[1], tag_eq[1])
-    `NAND_3(u_way_hit_2, 1, way_hit[2], doAccess, tagMetaStore_valid_q[2], tag_eq[2])
-    `NAND_3(u_way_hit_3, 1, way_hit[3], doAccess, tagMetaStore_valid_q[3], tag_eq[3])
+    // way_hit[0] used only by u_hit dups (4 loads). way_hit[1..3] are also
+    // used by u_hitIdx_0/1, so replicate them x2 (one for u_hit dups, one for
+    // hitIdx) to keep per-net fanout <=4. 0 ns added (no buffer).
+    // doAccess (4 inputs to NAND_3 below) replaced by doAccess_b for the 4
+    // u_hit-feed copies and doAccess_c for the 3 _idx copies (split for fanout).
+    `NAND_3(u_way_hit_0, 1, way_hit[0], doAccess_b, tagMetaStore_valid_q[0], tag_eq[0])
 
-    `NAND_4 (u_hit,          1, hit, way_hit[0], way_hit[1], way_hit[2], way_hit[3])
+    wire way_hit_1_idx, way_hit_2_idx, way_hit_3_idx;
+    `NAND_3(u_way_hit_1, 1, way_hit[1], doAccess_b, tagMetaStore_valid_q[1], tag_eq[1])
+    `NAND_3(u_way_hit_1_idx, 1, way_hit_1_idx, doAccess_c, tagMetaStore_valid_q[1], tag_eq[1])
+    `NAND_3(u_way_hit_2, 1, way_hit[2], doAccess_b, tagMetaStore_valid_q[2], tag_eq[2])
+    `NAND_3(u_way_hit_2_idx, 1, way_hit_2_idx, doAccess_c, tagMetaStore_valid_q[2], tag_eq[2])
+    `NAND_3(u_way_hit_3, 1, way_hit[3], doAccess_b, tagMetaStore_valid_q[3], tag_eq[3])
+    `NAND_3(u_way_hit_3_idx, 1, way_hit_3_idx, doAccess_c, tagMetaStore_valid_q[3], tag_eq[3])
+
+    // ================================================================
+    // CASCADE-FIXED `hit` CHAIN (was fanout 151 single NAND_4)
+    //
+    // 4 NAND_4 copies + bufferH64$ on each. Each buffered copy drives one
+    // partition of consumers (DataStore, mux chunks, misc). way_hit[i]
+    // each get 4 loads (one per copy) <=4 OK -- no upstream cascade needed.
+    // hit critical-path delay added: +0.30 ns (single bufferH64$ in series).
+    //
+    // hit_dup_buf[0]: misc internal (u_not_hit, u_writeSuccess, hit_o port)
+    // hit_dup_buf[1]: DataStore via hit_for_DS_o (16 byte iters, replicated 4x for <=4 per net)
+    // hit_dup_buf[2..3]: 32 mux chunks split as 16 chunks each
+    //                   (DCache_Block uses hit_for_mux_o[k/8])
+    // ================================================================
+    wire [3:0] hit_dup;
+    wire [3:0] hit_dup_buf;
+    `NAND_4(u_hit_0, 1, hit_dup[0], way_hit[0], way_hit[1], way_hit[2], way_hit[3])
+    `NAND_4(u_hit_1, 1, hit_dup[1], way_hit[0], way_hit[1], way_hit[2], way_hit[3])
+    `NAND_4(u_hit_2, 1, hit_dup[2], way_hit[0], way_hit[1], way_hit[2], way_hit[3])
+    `NAND_4(u_hit_3, 1, hit_dup[3], way_hit[0], way_hit[1], way_hit[2], way_hit[3])
+    bufferH64$ u_hit_buf_0 (.out(hit_dup_buf[0]), .in(hit_dup[0]));
+    bufferH64$ u_hit_buf_1 (.out(hit_dup_buf[1]), .in(hit_dup[1]));
+    bufferH64$ u_hit_buf_2 (.out(hit_dup_buf[2]), .in(hit_dup[2]));
+    bufferH64$ u_hit_buf_3 (.out(hit_dup_buf[3]), .in(hit_dup[3]));
+
+    // hit (misc): drives u_not_hit, u_writeSuccess, output hit_o
+    assign hit = hit_dup_buf[0];
+
+    // 4 hit copies for VCache_DataStore byte groups (1 group = 4 byte iters)
+    // (parent VCache routes hit_for_DS_o[3:0] to VCache_DataStore.tagStore_hit_i[3:0])
+    assign hit_for_DS_o = {4{hit_dup_buf[1]}};
+
+    // 4 hit copies for the 32 MUX_4 chunks in DCache_Block
+    // Each hit_for_mux_o[k] is reused across 8 of the 32 chunks (k = chunk_idx/8)
+    assign hit_for_mux_o[0] = hit_dup_buf[0];
+    assign hit_for_mux_o[1] = hit_dup_buf[1];
+    assign hit_for_mux_o[2] = hit_dup_buf[2];
+    assign hit_for_mux_o[3] = hit_dup_buf[3];
+
     `INV_N(u_not_hit,      1, hit, not_hit)
 
-    `AND_2(u_miss,         1, miss, doAccess, not_hit)
+    // u_miss fanout=13 (drives FSM V_Miss_i + various flat consumers). bufferH16$
+    // at output -- +0.24 ns. Off read-hit critical path (FSM transitions / miss
+    // signaling), parallel with downstream hit-data routing.
+    wire miss_pre;
+    `AND_2(u_miss,         1, miss_pre, doAccess_c, not_hit)
+    bufferH16$ u_miss_buf (.out(miss), .in(miss_pre));
     `AND_2(u_writeSuccess, 1, writeSuccess, hit, we_i)
 
+    // hitIdx is on the read critical path (drives DataStore addr select via
+    // hitIDX_o port). Each NAND_2 fanout was 5 (savedIDX mux + 3 tag muxes
+    // + hitIDX_o port that flattens externally). Replicate x2 = 0 ns -- both
+    // copies run in parallel; way_hit_*_idx fanout grows 1->2 (<=4 OK).
     wire [1:0] hitIdx;
-    `NAND_2(u_hitIdx_1, 1, hitIdx[1], way_hit[2], way_hit[3])
-    `NAND_2(u_hitIdx_0, 1, hitIdx[0], way_hit[1], way_hit[3])
+    wire [1:0] hitIdx_b;
+    `NAND_2(u_hitIdx_1,   1, hitIdx[1],   way_hit_2_idx, way_hit_3_idx)
+    `NAND_2(u_hitIdx_0,   1, hitIdx[0],   way_hit_1_idx, way_hit_3_idx)
+    `NAND_2(u_hitIdx_1_b, 1, hitIdx_b[1], way_hit_2_idx, way_hit_3_idx)
+    `NAND_2(u_hitIdx_0_b, 1, hitIdx_b[0], way_hit_1_idx, way_hit_3_idx)
 
     wire [3:0] hitIdx_decoded;
     `DECODER_N(u_hitIdx_dec, 2, hitIdx, hitIdx_decoded)
@@ -193,32 +278,52 @@ module VCache_TagStore (
            hitIdx,
            currLRU_IDX,
            DCache_Will_Evict_i)
-    `REG_RST_WE(u_savedIDX, 2, clk, rst, saveIDX, savedIDX_d, savedIDX_q)
+    `REG_RST_WE(u_savedIDX,    2, clk, rst, saveIDX, savedIDX_d, savedIDX_q)
+    `REG_RST_WE(u_savedIDX_qb, 2, clk, rst, saveIDX, savedIDX_d, savedIDX_q_b)
+    // savedIDX_q_c[1] still showed fanout=7 because LRU's MPS_reg_rst_we$
+    // expansion exposes more leaves than the apparent 3 internal LRU loads.
+    // bufferH16$ on bit 1 only -- +0.24 ns on LRU update path (off cache
+    // read-hit critical path; LRU is replacement-policy state).
+    wire [1:0] savedIDX_q_c_pre;
+    `REG_RST_WE(u_savedIDX_qc, 2, clk, rst, saveIDX, savedIDX_d, savedIDX_q_c_pre)
+    assign savedIDX_q_c[0] = savedIDX_q_c_pre[0];
+    bufferH16$ u_savedIDX_qc_b1_buf (.out(savedIDX_q_c[1]), .in(savedIDX_q_c_pre[1]));
+    `REG_RST_WE(u_savedIDX_qd, 2, clk, rst, saveIDX, savedIDX_d, savedIDX_q_d)
 
     LRU LRU_unit (
         .clk        (clk),
         .rst        (rst),
         .updateLRU  (Update_LRU),
-        .savedIDX   (savedIDX_q),
+        .savedIDX   (savedIDX_q_c),
         .currLRU_IDX(currLRU_IDX)
     );
 
+    // u_tag_vswap_idx / u_tag_eb_idx: mux2$ output drives MUX_4(width=9) select
+    // (9 internal mux4$ cells per select bit). fanout=9 violates -- bufferH16$
+    // at output. +0.24 ns on the EB/VSWAP write path -- NOT on the read-hit
+    // critical path (tag_eq path uses `tagOut_o` which goes via u_tagOut MUX_2).
+    wire [1:0] tag_out_write_to_vswap_idx_pre;
+    `MUX_2(u_tag_vswap_idx, 2, tag_out_write_to_vswap_idx_pre,
+           hitIdx_b,
+           savedIDX_q_b,
+           use_savedIDX)
     wire [1:0] tag_out_write_to_vswap_idx;
-    `MUX_2(u_tag_vswap_idx, 2, tag_out_write_to_vswap_idx,
-           hitIdx,
-           savedIDX_q,
-           use_savedIDX)
+    bufferH16$ u_tag_vswap_idx_buf0 (.out(tag_out_write_to_vswap_idx[0]), .in(tag_out_write_to_vswap_idx_pre[0]));
+    bufferH16$ u_tag_vswap_idx_buf1 (.out(tag_out_write_to_vswap_idx[1]), .in(tag_out_write_to_vswap_idx_pre[1]));
 
-    wire [1:0] tag_out_write_to_eb_idx;
-    `MUX_2(u_tag_eb_idx, 2, tag_out_write_to_eb_idx,
+    wire [1:0] tag_out_write_to_eb_idx_pre;
+    `MUX_2(u_tag_eb_idx, 2, tag_out_write_to_eb_idx_pre,
            currLRU_IDX,
-           savedIDX_q,
+           savedIDX_q_b,
            use_savedIDX)
+    wire [1:0] tag_out_write_to_eb_idx;
+    bufferH16$ u_tag_eb_idx_buf0 (.out(tag_out_write_to_eb_idx[0]), .in(tag_out_write_to_eb_idx_pre[0]));
+    bufferH16$ u_tag_eb_idx_buf1 (.out(tag_out_write_to_eb_idx[1]), .in(tag_out_write_to_eb_idx_pre[1]));
 
     wire [1:0] currLine_Dirty_idx;
     `MUX_2(u_dirty_idx, 2, currLine_Dirty_idx,
            hitIdx,
-           savedIDX_q,
+           savedIDX_q_b,
            use_savedIDX)
 
     wire [8:0] vswap_tag;
@@ -260,8 +365,12 @@ module VCache_TagStore (
 
     assign hit_o         = hit;
     assign miss_o        = miss;
-    assign hitIDX_o      = hitIdx;
-    assign savedIDX_o    = savedIDX_q;
+    assign hitIDX_o      = hitIdx_b;
+    // savedIDX_o output port driven by savedIDX_q_d (dedicated copy).
+    // The output flattens through VCache_DataStore u_addr_final x4 replicas
+    // -> 4 loads on bit 1. Keeping LRU on savedIDX_q_c, port on _d separates
+    // them so each <=4 loads.
+    assign savedIDX_o    = savedIDX_q_d;
     assign evictionIDX_o = tag_out_write_to_eb_idx;
 
 endmodule

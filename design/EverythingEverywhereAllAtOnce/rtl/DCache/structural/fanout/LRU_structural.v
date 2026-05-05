@@ -37,9 +37,14 @@ module LRU (
     `INV_N(u_right_bar, 1, LRU_RIGHT_LEAF_q, LRU_RIGHT_LEAF_bar)
 
     assign currLRU_IDX[1] = LRU_ROOT_bar;
-    `MUX_2(u_currLRU_lo, 1, currLRU_IDX[0],
+    // currLRU_IDX[0] fanout=5 (4 muxes inside VCache_TagStore consume it).
+    // bufferH16$ at output -- +0.24 ns. LRU output is replacement-decision only
+    // (not on read-hit path).
+    wire currLRU_IDX_lo_pre;
+    `MUX_2(u_currLRU_lo, 1, currLRU_IDX_lo_pre,
            LRU_RIGHT_LEAF_bar,
            LRU_LEFT_LEAF_bar,
            LRU_ROOT_q)
+    bufferH16$ u_currLRU_lo_buf (.out(currLRU_IDX[0]), .in(currLRU_IDX_lo_pre));
 
 endmodule

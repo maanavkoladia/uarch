@@ -27,7 +27,10 @@ module DCache_Bank_DataStore (
     input  wire [127:0] vcache_swapBuf_line_i,
     input  wire [31:0]  dataBus_i,
 
-    input  wire         tagStore_hit_i,
+    // tagStore_hit_i is now a 4-copy bus (each bit drives 4 byte iterations)
+    // to keep the per-net fanout <= 4 throughout the cascade. All 4 bits
+    // carry the same value (replicated source AND_2 in DCache_Bank).
+    input  wire [3:0]   tagStore_hit_i,
 
     output wire [127:0] lineOut_o
 );
@@ -68,10 +71,17 @@ module DCache_Bank_DataStore (
     // `INV_N(u_inv_clk, 1, clk, inv_clk);
     // `BUFFER_DELAY(u_phase, 6, 1, clk_duty_pre_buf, clk_duty_mask);
 
+    // u_oe_actual nor2$ output (drives ram OE) had fanout=16 (one OE pin per
+    // ram cell across 16 byte iters). Replicate ×4 = 0 ns added (parallel NOR
+    // gates). Each copy drives 4 ram cells. Inputs (write2_Dwap_i, oe_and_not_busy)
+    // fanout 1->4 (<=4 OK). On read critical path (gates ram OE), so 0-ns mandatory.
     wire oe_and_not_busy;
-    wire OE_2_DataStore;
+    wire [3:0] OE_2_DataStore_quad;
     `AND_2(u_oe_and_nb, 1, oe_and_not_busy, oe, not_busy)
-    nor2$ u_oe_actual (.out(OE_2_DataStore), .in0(write2_Dwap_i), .in1(oe_and_not_busy));
+    nor2$ u_oe_actual_a (.out(OE_2_DataStore_quad[0]), .in0(write2_Dwap_i), .in1(oe_and_not_busy));
+    nor2$ u_oe_actual_b (.out(OE_2_DataStore_quad[1]), .in0(write2_Dwap_i), .in1(oe_and_not_busy));
+    nor2$ u_oe_actual_c (.out(OE_2_DataStore_quad[2]), .in0(write2_Dwap_i), .in1(oe_and_not_busy));
+    nor2$ u_oe_actual_d (.out(OE_2_DataStore_quad[3]), .in0(write2_Dwap_i), .in1(oe_and_not_busy));
 
     wire [127:0] DOUT_flat;
     wire [15:0]  WR_2_DataStore_actual;
@@ -98,8 +108,9 @@ module DCache_Bank_DataStore (
                 assign range_slice = dataBus_i[(gi-12)*8 +: 8];
             end
 
+            // Use replicated hit-copy [gi/4] so each copy drives <=4 loads.
             `AND_5(u_store_evt, 1, store_event[gi],
-                   st_data_vec[gi], we, not_busy, tagStore_hit_i, no_high_pri)
+                   st_data_vec[gi], we, not_busy, tagStore_hit_i[gi/4], no_high_pri)
 
             `OR_3 (u_byte_write, 1, byte_write[gi],
                    ld_From_V_Swap_i, range_fill, store_event[gi])
@@ -120,7 +131,7 @@ module DCache_Bank_DataStore (
                 .A   (index),
                 .WR  (WR_2_DataStore_actual[gi]),
                 .DIN (DIN_flat[gi*8 +: 8]),
-                .OE  (OE_2_DataStore),
+                .OE  (OE_2_DataStore_quad[gi/4]),
                 .DOUT(DOUT_flat[gi*8 +: 8])
             );
         end
