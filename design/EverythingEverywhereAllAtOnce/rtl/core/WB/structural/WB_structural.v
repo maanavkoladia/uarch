@@ -14,6 +14,7 @@
 // same as the SV version; the only deletions are the per-byte pack/unpack
 // generates that were translating struct byte-arrays to/from packed buses.
 
+
 module WB (
     input  wire         clk,
     input  wire         rst,
