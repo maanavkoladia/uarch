@@ -31,7 +31,11 @@ module EveryThing_TOP (
 
     input wire inFromDMA_i_intOut,
 
-    output core_2_icache_t out2ICache_o,
+    input wire out2ICache_o_icache_en,
+    input wire [14:0] out2ICache_o_p_addr,
+    input wire [31:0] out2ICache_o_v_addr_i,
+    input wire [1:0] out2ICache_o_num_valid_IDM_slots,
+
     //core2 icache
     //
     //core 2 dcache
@@ -997,7 +1001,10 @@ module EveryThing_TOP (
     // assign wb_outputs = '{default: '0};
 
     //assign icache out and dache out
-    assign out2ICache_o                      = fetch_outputs.fetch_2_icache;
+    assign out2ICache_o_icache_en = fetch_outputs.fetch_2_icache.icache_en;
+    assign out2ICache_o_p_addr = fetch_outputs.fetch_2_icache.p_addr;
+    assign out2ICache_o_v_addr_i = fetch_outputs.fetch_2_icache.v_addr_i;
+    assign out2ICache_o_num_valid_IDM_slots = fetch_outputs.fetch_2_icache.num_valid_IDM_slots;
 
     //dealing with dc to dcache  (field-by-field; data byte arrays for
     //stq_heads/stq_info_mio are filled by the unpack generate above)
