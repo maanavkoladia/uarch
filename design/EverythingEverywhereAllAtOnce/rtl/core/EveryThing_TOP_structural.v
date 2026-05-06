@@ -9,8 +9,8 @@ module EveryThing_TOP (
     input wire rst,
 
     //icache 2 core
-    input wire ICacheIn_i_hit = ICacheIn_i.hit,
-    input wire [127:0] ICacheIn_i_instruction_line = ICacheIn_i.instruction_line,
+    input wire ICacheIn_i_hit,
+    input wire [127:0] ICacheIn_i_instruction_line,
 
     input wire DCache_i_DCachereqServed_0,
     input wire DCache_i_reqServed_1,
