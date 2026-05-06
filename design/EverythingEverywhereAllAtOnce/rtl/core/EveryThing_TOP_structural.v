@@ -215,82 +215,8 @@ module EveryThing_TOP (
     // The flat wires above are the source-of-truth driven by WB; this
     // struct is populated field-by-field for `.wb_outs_i(wb_outputs)`.
     // ---------------------------------------------------------------------
-    wb_outputs_t wb_outputs;
+    //wb_outputs_t wb_outputs;
 
-    assign wb_outputs.valid       = wb_outputs_valid;
-    assign wb_outputs.wb_stall    = wb_outputs_wb_stall;
-    assign wb_outputs.ST_OP       = wb_outputs_ST_OP;
-    assign wb_outputs.ST_XCL      = wb_outputs_ST_XCL;
-    assign wb_outputs.ST_PADDR_0  = wb_outputs_ST_PADDR_0;
-    assign wb_outputs.ST_PADDR_1  = wb_outputs_ST_PADDR_1;
-
-    // stq_heads[0..3] -- scalar fields direct, data byte array via genvar
-    assign wb_outputs.stq_heads[0].full    = wb_outputs_stq_heads_0_full;
-    assign wb_outputs.stq_heads[0].empty   = wb_outputs_stq_heads_0_empty;
-    assign wb_outputs.stq_heads[0].address = wb_outputs_stq_heads_0_address;
-    assign wb_outputs.stq_heads[0].bit_vec = wb_outputs_stq_heads_0_bit_vec;
-    assign wb_outputs.stq_heads[1].full    = wb_outputs_stq_heads_1_full;
-    assign wb_outputs.stq_heads[1].empty   = wb_outputs_stq_heads_1_empty;
-    assign wb_outputs.stq_heads[1].address = wb_outputs_stq_heads_1_address;
-    assign wb_outputs.stq_heads[1].bit_vec = wb_outputs_stq_heads_1_bit_vec;
-    assign wb_outputs.stq_heads[2].full    = wb_outputs_stq_heads_2_full;
-    assign wb_outputs.stq_heads[2].empty   = wb_outputs_stq_heads_2_empty;
-    assign wb_outputs.stq_heads[2].address = wb_outputs_stq_heads_2_address;
-    assign wb_outputs.stq_heads[2].bit_vec = wb_outputs_stq_heads_2_bit_vec;
-    assign wb_outputs.stq_heads[3].full    = wb_outputs_stq_heads_3_full;
-    assign wb_outputs.stq_heads[3].empty   = wb_outputs_stq_heads_3_empty;
-    assign wb_outputs.stq_heads[3].address = wb_outputs_stq_heads_3_address;
-    assign wb_outputs.stq_heads[3].bit_vec = wb_outputs_stq_heads_3_bit_vec;
-
-    assign wb_outputs.mio_head.full    = wb_outputs_mio_head_full;
-    assign wb_outputs.mio_head.empty   = wb_outputs_mio_head_empty;
-    assign wb_outputs.mio_head.address = wb_outputs_mio_head_address;
-    assign wb_outputs.mio_head.bit_vec = wb_outputs_mio_head_bit_vec;
-
-    genvar gi_wb_struct_data;
-    generate
-        for (gi_wb_struct_data = 0; gi_wb_struct_data < CACHE_LINES_SIZE_B; gi_wb_struct_data = gi_wb_struct_data + 1) begin : g_pack_wb_struct_data
-            assign wb_outputs.stq_heads[0].data[gi_wb_struct_data] = wb_outputs_stq_heads_0_data[gi_wb_struct_data*8 +: 8];
-            assign wb_outputs.stq_heads[1].data[gi_wb_struct_data] = wb_outputs_stq_heads_1_data[gi_wb_struct_data*8 +: 8];
-            assign wb_outputs.stq_heads[2].data[gi_wb_struct_data] = wb_outputs_stq_heads_2_data[gi_wb_struct_data*8 +: 8];
-            assign wb_outputs.stq_heads[3].data[gi_wb_struct_data] = wb_outputs_stq_heads_3_data[gi_wb_struct_data*8 +: 8];
-            assign wb_outputs.mio_head.data[gi_wb_struct_data]     = wb_outputs_mio_head_data[gi_wb_struct_data*8 +: 8];
-        end
-    endgenerate
-
-    // dep_check.entries[0..15]
-    assign wb_outputs.dep_check.entries[0].valid    = wb_outputs_dep_check_entry_0_valid;
-    assign wb_outputs.dep_check.entries[0].address  = wb_outputs_dep_check_entry_0_address;
-    assign wb_outputs.dep_check.entries[1].valid    = wb_outputs_dep_check_entry_1_valid;
-    assign wb_outputs.dep_check.entries[1].address  = wb_outputs_dep_check_entry_1_address;
-    assign wb_outputs.dep_check.entries[2].valid    = wb_outputs_dep_check_entry_2_valid;
-    assign wb_outputs.dep_check.entries[2].address  = wb_outputs_dep_check_entry_2_address;
-    assign wb_outputs.dep_check.entries[3].valid    = wb_outputs_dep_check_entry_3_valid;
-    assign wb_outputs.dep_check.entries[3].address  = wb_outputs_dep_check_entry_3_address;
-    assign wb_outputs.dep_check.entries[4].valid    = wb_outputs_dep_check_entry_4_valid;
-    assign wb_outputs.dep_check.entries[4].address  = wb_outputs_dep_check_entry_4_address;
-    assign wb_outputs.dep_check.entries[5].valid    = wb_outputs_dep_check_entry_5_valid;
-    assign wb_outputs.dep_check.entries[5].address  = wb_outputs_dep_check_entry_5_address;
-    assign wb_outputs.dep_check.entries[6].valid    = wb_outputs_dep_check_entry_6_valid;
-    assign wb_outputs.dep_check.entries[6].address  = wb_outputs_dep_check_entry_6_address;
-    assign wb_outputs.dep_check.entries[7].valid    = wb_outputs_dep_check_entry_7_valid;
-    assign wb_outputs.dep_check.entries[7].address  = wb_outputs_dep_check_entry_7_address;
-    assign wb_outputs.dep_check.entries[8].valid    = wb_outputs_dep_check_entry_8_valid;
-    assign wb_outputs.dep_check.entries[8].address  = wb_outputs_dep_check_entry_8_address;
-    assign wb_outputs.dep_check.entries[9].valid    = wb_outputs_dep_check_entry_9_valid;
-    assign wb_outputs.dep_check.entries[9].address  = wb_outputs_dep_check_entry_9_address;
-    assign wb_outputs.dep_check.entries[10].valid   = wb_outputs_dep_check_entry_10_valid;
-    assign wb_outputs.dep_check.entries[10].address = wb_outputs_dep_check_entry_10_address;
-    assign wb_outputs.dep_check.entries[11].valid   = wb_outputs_dep_check_entry_11_valid;
-    assign wb_outputs.dep_check.entries[11].address = wb_outputs_dep_check_entry_11_address;
-    assign wb_outputs.dep_check.entries[12].valid   = wb_outputs_dep_check_entry_12_valid;
-    assign wb_outputs.dep_check.entries[12].address = wb_outputs_dep_check_entry_12_address;
-    assign wb_outputs.dep_check.entries[13].valid   = wb_outputs_dep_check_entry_13_valid;
-    assign wb_outputs.dep_check.entries[13].address = wb_outputs_dep_check_entry_13_address;
-    assign wb_outputs.dep_check.entries[14].valid   = wb_outputs_dep_check_entry_14_valid;
-    assign wb_outputs.dep_check.entries[14].address = wb_outputs_dep_check_entry_14_address;
-    assign wb_outputs.dep_check.entries[15].valid   = wb_outputs_dep_check_entry_15_valid;
-    assign wb_outputs.dep_check.entries[15].address = wb_outputs_dep_check_entry_15_address;
 
     // ---------------------------------------------------------------------
     // dc_outputs / mem_outputs struct shims (re-declarations).
