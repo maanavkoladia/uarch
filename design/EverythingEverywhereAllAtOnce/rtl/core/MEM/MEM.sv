@@ -185,7 +185,9 @@ module MEM (
             ld_buf[i] = low_buf[i];
             ld_buf[i+CACHE_LINES_SIZE_B] = up_buf[i];
         end
-        if(!forward_valid) ld_buf = '{default: '0};
+        // forward_valid no longer zeroes ld_buf — when forward_valid=0 the
+        // exe_latches_next.valid bit is also 0, so EXE ignores ld_buf anyway.
+        // Removing the gate kills the 256-fanout load on forward_valid that
     end
 
 

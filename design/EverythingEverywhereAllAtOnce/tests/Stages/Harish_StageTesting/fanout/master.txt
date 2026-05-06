@@ -90,4 +90,7 @@ lib_header
 /misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/EXE/structural/FunctionalUnits/exp_call_structural.v
 /misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/EXE/structural/FunctionalUnits/rep_cmp_structural.v
 /misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/EXE/structural/EXE_structural.v
-/misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/tests/Stages/Harish_StageTesting/fanout/tbs/tb_fanout_ICache.v
+/misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/gen/EXE_valid_logic.v
+/misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/structural/mem_miss_stall_logic_structural.v
+/misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/structural/MEM_structural.v
+/misc/scratch/je28497/uarch/design/EverythingEverywhereAllAtOnce/tests/Stages/Harish_StageTesting/fanout/tbs/tb_fanout_MEM.v

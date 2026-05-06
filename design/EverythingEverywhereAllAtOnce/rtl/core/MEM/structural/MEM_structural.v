@@ -499,9 +499,14 @@ module MEM (
     wire [LD_BITS-1:0] ld_buf_unmasked;
     assign ld_buf_unmasked = {line_in_1_masked, C0_w};
 
+    // forward_valid no longer gates ld_buf — the next-stage valid bit
+    // (next_exe_v_o_w) is the only thing forward_valid still influences via
+    // the hit-buf register WEs. EXE ignores ld_buf when its valid bit is 0,
+    // so leaving ld_buf as the raw line concatenation is functionally
+    // equivalent. Eliminates the 256-fanout load on forward_valid_w that
+    // was the dominant MEM-stage fanout violation.
     wire [LD_BITS-1:0] ld_buf_packed;
-    `MUX_2(mux_ldbuf, LD_BITS, ld_buf_packed,
-           {LD_BITS{1'b0}}, ld_buf_unmasked, forward_valid_w)
+    assign ld_buf_packed = ld_buf_unmasked;
 
     // =========================================================================
     // CLR_DCACHE_ARB_LATCHES  (per port)  &  CLR_DCACHE_MIO_LATCH
