@@ -15,9 +15,9 @@ module npu_node1 (
     input logic [1:0] datasize,
 
     input uint32_t seg0_data,
-    input segment_limit_reg_entry_t segment0_limit,
+    input uint32_t segment0_limit,
     input uint32_t seg1_data,
-    input segment_limit_reg_entry_t segment1_limit,
+    input uint32_t segment1_limit,
     input bool seg1_valid,
 
     input bool modrm_needed,
@@ -46,15 +46,15 @@ module npu_node1 (
     assign seg1_limit_w_datasize = (seg1_valid) ? seg1_limit_w_datasize_temp : seg0_limit_w_datasize;
 
     assign #3 seg0_limit_w_datasize = (datasize[1] == 1'b1) ? 
-                                        (datasize[0] == 1'b1) ? segment0_limit.limit - 32'd7 : segment0_limit.limit - 32'd3 :
-                                        (datasize[0] == 1'b1) ? segment0_limit.limit - 32'd1 : segment0_limit.limit;
+                                        (datasize[0] == 1'b1) ? segment0_limit - 32'd7 : segment0_limit - 32'd3 :
+                                        (datasize[0] == 1'b1) ? segment0_limit - 32'd1 : segment0_limit;
 
     assign #3 seg1_limit_w_datasize_temp = (datasize[1] == 1'b1) ? 
-                                        (datasize[0] == 1'b1) ? segment1_limit.limit - 32'd7 : segment1_limit.limit - 32'd3 :
-                                        (datasize[0] == 1'b1) ? segment1_limit.limit - 32'd1 : segment1_limit.limit;
+                                        (datasize[0] == 1'b1) ? segment1_limit - 32'd7 : segment1_limit - 32'd3 :
+                                        (datasize[0] == 1'b1) ? segment1_limit - 32'd1 : segment1_limit;
 
-    assign seg0_limit_wo_datasize = segment0_limit.limit;
-    assign seg1_limit_wo_datasize = (seg1_valid) ? segment1_limit.limit : segment0_limit.limit;
+    assign seg0_limit_wo_datasize = segment0_limit;
+    assign seg1_limit_wo_datasize = (seg1_valid) ? segment1_limit : segment0_limit;
 
     uint32_t sib_nonsense;
     uint32_t shift_result;
