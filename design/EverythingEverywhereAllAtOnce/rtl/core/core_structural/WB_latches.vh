@@ -20,7 +20,7 @@
     wire [31:0] wb_latches_EAX;
 
 
-        WB_Latches wb_latches_unit (
+    WB_Latches wb_latches_unit (
         .clk            (clk),
         .rst            (rst),
         .write_enable_i (exe_outputs_wb_stage_latch_we),
