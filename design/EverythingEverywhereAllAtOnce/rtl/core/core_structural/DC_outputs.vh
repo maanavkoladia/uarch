@@ -1,0 +1,1 @@
+`define wb_outputs

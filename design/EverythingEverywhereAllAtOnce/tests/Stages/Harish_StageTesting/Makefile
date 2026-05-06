@@ -152,6 +152,7 @@ clean:
 	rm -rf gen/
 	rm -rf logDumps/
 	rm -rf TestResults/
+	$(MAKE) -C fanout clean
 
 push: clean
 	git add -A
