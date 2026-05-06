@@ -30,7 +30,8 @@ module RR (
     assign latchesInUse = decode_outs_i.rep_latch ? latches_i.rep_latches : latches_i.normal_latches;
 
     //6 bc 6 seg regs and their respctive limits
-    segment_limit_reg_entry_t SEGMENT_LIMITS[NUM_SEG_REGS];  //CS, DS, ES, FS, GS, SS, EXPS
+    // segment_limit_reg_entry_t SEGMENT_LIMITS[NUM_SEG_REGS];  //CS, DS, ES, FS, GS, SS, EXPS
+    uint32_t SEGMENT_LIMITS[NUM_SEG_REGS];
 
 
     //SB Oouts
@@ -269,7 +270,7 @@ module RR (
             set_ZF_sb   : latchesInUse.cs.will_mod_zf,
             codeSeg_sb  : cs_sb,
             codeSeg_data  : reg_out.CS_data,
-            codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID].limit,
+            codeSeg_limit  : SEGMENT_LIMITS[CS_LIMIT_ID],
             dc_stage_latch_we : dc_latches_we,
             regFileValues : reg_out.regFileValues_o
         };
