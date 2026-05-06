@@ -964,8 +964,10 @@ module EveryThing_TOP (
     assign rr_latches_next.rep_latches.exe_cs.branch_target_sel     = {27'b0, rr_latches_next_rep_latches_exe_cs_branch_target_sel_w};
 
     // ---------------------------------------------------------------------
-    // Decode IDM data pack: idm_outputs.idm_slots[i].data is byte_t[16].
-    // Decode_structural.v takes 128-bit packed buses per slot.
+    // IDM data unpack: IDM_structural.v drives a 128-bit packed bus per slot;
+    // unpack each into idm_outputs.idm_slots[i].data (byte_t[16]) so any
+    // struct-field consumers see the same bytes that Decode_structural.v
+    // reads off the packed bus.
     // ---------------------------------------------------------------------
     wire [127:0] idm_outs_idm_slots_0_data_w;
     wire [127:0] idm_outs_idm_slots_1_data_w;
@@ -974,11 +976,11 @@ module EveryThing_TOP (
 
     genvar gi_idm_data;
     generate
-        for (gi_idm_data = 0; gi_idm_data < CACHE_LINES_SIZE_B; gi_idm_data = gi_idm_data + 1) begin : g_pack_idm_data
-            assign idm_outs_idm_slots_0_data_w[gi_idm_data*8 +: 8] = idm_outputs.idm_slots[0].data[gi_idm_data];
-            assign idm_outs_idm_slots_1_data_w[gi_idm_data*8 +: 8] = idm_outputs.idm_slots[1].data[gi_idm_data];
-            assign idm_outs_idm_slots_2_data_w[gi_idm_data*8 +: 8] = idm_outputs.idm_slots[2].data[gi_idm_data];
-            assign idm_outs_idm_slots_3_data_w[gi_idm_data*8 +: 8] = idm_outputs.idm_slots[3].data[gi_idm_data];
+        for (gi_idm_data = 0; gi_idm_data < CACHE_LINES_SIZE_B; gi_idm_data = gi_idm_data + 1) begin : g_unpack_idm_data
+            assign idm_outputs.idm_slots[0].data[gi_idm_data] = idm_outs_idm_slots_0_data_w[gi_idm_data*8 +: 8];
+            assign idm_outputs.idm_slots[1].data[gi_idm_data] = idm_outs_idm_slots_1_data_w[gi_idm_data*8 +: 8];
+            assign idm_outputs.idm_slots[2].data[gi_idm_data] = idm_outs_idm_slots_2_data_w[gi_idm_data*8 +: 8];
+            assign idm_outputs.idm_slots[3].data[gi_idm_data] = idm_outs_idm_slots_3_data_w[gi_idm_data*8 +: 8];
         end
     endgenerate
 
@@ -1181,8 +1183,76 @@ module EveryThing_TOP (
     IDM idm_unit (
         .clk(clk),
         .rst(rst),
-        .fetch_outs_i(fetch_outputs),
-        .idm_outs_o(idm_outputs)
+
+        // ---- fetch_outputs_t (fetch_outs_i) -- only the fields IDM consumes ----
+        .fetch_outs_exp_pipe_clear                  (fetch_outputs.exp_pipe_clear),
+
+        .fetch_outs_idm_reqs_req_0_ld_meta_data     (fetch_outputs.idm_reqs.req[0].ld_meta_data),
+        .fetch_outs_idm_reqs_req_0_ld_data          (fetch_outputs.idm_reqs.req[0].ld_data),
+        .fetch_outs_idm_reqs_req_0_valid            (fetch_outputs.idm_reqs.req[0].valid),
+        .fetch_outs_idm_reqs_req_0_br_valid         (fetch_outputs.idm_reqs.req[0].br_valid),
+        .fetch_outs_idm_reqs_req_0_br_eip           (fetch_outputs.idm_reqs.req[0].br_eip),
+        .fetch_outs_idm_reqs_req_0_br_target        (fetch_outputs.idm_reqs.req[0].br_target),
+        .fetch_outs_idm_reqs_req_0_br_xcl           (fetch_outputs.idm_reqs.req[0].br_xcl),
+        .fetch_outs_idm_reqs_req_0_data             (outs_idm_reqs_req_0_data_w),
+
+        .fetch_outs_idm_reqs_req_1_ld_meta_data     (fetch_outputs.idm_reqs.req[1].ld_meta_data),
+        .fetch_outs_idm_reqs_req_1_ld_data          (fetch_outputs.idm_reqs.req[1].ld_data),
+        .fetch_outs_idm_reqs_req_1_valid            (fetch_outputs.idm_reqs.req[1].valid),
+        .fetch_outs_idm_reqs_req_1_br_valid         (fetch_outputs.idm_reqs.req[1].br_valid),
+        .fetch_outs_idm_reqs_req_1_br_eip           (fetch_outputs.idm_reqs.req[1].br_eip),
+        .fetch_outs_idm_reqs_req_1_br_target        (fetch_outputs.idm_reqs.req[1].br_target),
+        .fetch_outs_idm_reqs_req_1_br_xcl           (fetch_outputs.idm_reqs.req[1].br_xcl),
+        .fetch_outs_idm_reqs_req_1_data             (outs_idm_reqs_req_1_data_w),
+
+        .fetch_outs_idm_reqs_req_2_ld_meta_data     (fetch_outputs.idm_reqs.req[2].ld_meta_data),
+        .fetch_outs_idm_reqs_req_2_ld_data          (fetch_outputs.idm_reqs.req[2].ld_data),
+        .fetch_outs_idm_reqs_req_2_valid            (fetch_outputs.idm_reqs.req[2].valid),
+        .fetch_outs_idm_reqs_req_2_br_valid         (fetch_outputs.idm_reqs.req[2].br_valid),
+        .fetch_outs_idm_reqs_req_2_br_eip           (fetch_outputs.idm_reqs.req[2].br_eip),
+        .fetch_outs_idm_reqs_req_2_br_target        (fetch_outputs.idm_reqs.req[2].br_target),
+        .fetch_outs_idm_reqs_req_2_br_xcl           (fetch_outputs.idm_reqs.req[2].br_xcl),
+        .fetch_outs_idm_reqs_req_2_data             (outs_idm_reqs_req_2_data_w),
+
+        .fetch_outs_idm_reqs_req_3_ld_meta_data     (fetch_outputs.idm_reqs.req[3].ld_meta_data),
+        .fetch_outs_idm_reqs_req_3_ld_data          (fetch_outputs.idm_reqs.req[3].ld_data),
+        .fetch_outs_idm_reqs_req_3_valid            (fetch_outputs.idm_reqs.req[3].valid),
+        .fetch_outs_idm_reqs_req_3_br_valid         (fetch_outputs.idm_reqs.req[3].br_valid),
+        .fetch_outs_idm_reqs_req_3_br_eip           (fetch_outputs.idm_reqs.req[3].br_eip),
+        .fetch_outs_idm_reqs_req_3_br_target        (fetch_outputs.idm_reqs.req[3].br_target),
+        .fetch_outs_idm_reqs_req_3_br_xcl           (fetch_outputs.idm_reqs.req[3].br_xcl),
+        .fetch_outs_idm_reqs_req_3_data             (outs_idm_reqs_req_3_data_w),
+
+        // ---- idm_outputs_t (idm_outs_o) -- per-slot unroll ----
+        .idm_outs_valid_slots                       (idm_outputs.valid_slots),
+
+        .idm_outs_idm_slots_0_valid                 (idm_outputs.idm_slots[0].valid),
+        .idm_outs_idm_slots_0_br_valid              (idm_outputs.idm_slots[0].br_valid),
+        .idm_outs_idm_slots_0_br_eip                (idm_outputs.idm_slots[0].br_eip),
+        .idm_outs_idm_slots_0_br_btb_target         (idm_outputs.idm_slots[0].br_btb_target),
+        .idm_outs_idm_slots_0_br_xcl                (idm_outputs.idm_slots[0].br_xcl),
+        .idm_outs_idm_slots_0_data                  (idm_outs_idm_slots_0_data_w),
+
+        .idm_outs_idm_slots_1_valid                 (idm_outputs.idm_slots[1].valid),
+        .idm_outs_idm_slots_1_br_valid              (idm_outputs.idm_slots[1].br_valid),
+        .idm_outs_idm_slots_1_br_eip                (idm_outputs.idm_slots[1].br_eip),
+        .idm_outs_idm_slots_1_br_btb_target         (idm_outputs.idm_slots[1].br_btb_target),
+        .idm_outs_idm_slots_1_br_xcl                (idm_outputs.idm_slots[1].br_xcl),
+        .idm_outs_idm_slots_1_data                  (idm_outs_idm_slots_1_data_w),
+
+        .idm_outs_idm_slots_2_valid                 (idm_outputs.idm_slots[2].valid),
+        .idm_outs_idm_slots_2_br_valid              (idm_outputs.idm_slots[2].br_valid),
+        .idm_outs_idm_slots_2_br_eip                (idm_outputs.idm_slots[2].br_eip),
+        .idm_outs_idm_slots_2_br_btb_target         (idm_outputs.idm_slots[2].br_btb_target),
+        .idm_outs_idm_slots_2_br_xcl                (idm_outputs.idm_slots[2].br_xcl),
+        .idm_outs_idm_slots_2_data                  (idm_outs_idm_slots_2_data_w),
+
+        .idm_outs_idm_slots_3_valid                 (idm_outputs.idm_slots[3].valid),
+        .idm_outs_idm_slots_3_br_valid              (idm_outputs.idm_slots[3].br_valid),
+        .idm_outs_idm_slots_3_br_eip                (idm_outputs.idm_slots[3].br_eip),
+        .idm_outs_idm_slots_3_br_btb_target         (idm_outputs.idm_slots[3].br_btb_target),
+        .idm_outs_idm_slots_3_br_xcl                (idm_outputs.idm_slots[3].br_xcl),
+        .idm_outs_idm_slots_3_data                  (idm_outs_idm_slots_3_data_w)
     );
 
     Decode decode_unit (

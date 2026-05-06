@@ -1,0 +1,93 @@
+{
+   "Module Name"   : "tlb_loader",
+    
+    "outputPath"    : "gen/",
+
+    "startUpDelay"  : "30",
+
+    "num tlbs"      : "5",
+
+    "num entries"   : "8",
+
+    "paths" : [
+        "uut_AllAtOnce.core_unit.fetch_unit.tlb",
+        "uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb0",
+        "uut_AllAtOnce.core_unit.dc_unit.ld_neuralnet_part2.tlb1",
+        "uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb0",
+        "uut_AllAtOnce.core_unit.dc_unit.st_neuralnet_part2.tlb1"
+    ],
+
+    "entries" : {
+        "0" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "0",
+            "MMIO"    : "0",
+            "VPN"     : "20'h00000",
+            "PFN"     : "3'h0"
+        },
+
+        "1" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "0",
+            "VPN"     : "20'h00100",
+            "PFN"     : "3'h2"
+        },
+
+        "2" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "0",
+            "VPN"     : "20'h00101",
+            "PFN"     : "3'h4"
+        },
+
+        "3" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "0",
+            "VPN"     : "20'h12340",
+            "PFN"     : "3'h7"
+        },
+
+        "4" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "0",
+            "VPN"     : "20'h12341",
+            "PFN"     : "3'h6"
+        },
+
+        "5" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "0",
+            "VPN"     : "20'h9ADC0",
+            "PFN"     : "3'h5"
+        },
+
+        "6" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "0",
+            "VPN"     : "20'h9ADC1",
+            "PFN"     : "3'h1"
+        },
+
+        "7" : {
+            "valid"   : "1",
+            "present" : "1",
+            "r_w"     : "1",
+            "MMIO"    : "0",
+            "VPN"     : "20'hFFFF0",
+            "PFN"     : "3'h3"
+        }
+    }
+}
