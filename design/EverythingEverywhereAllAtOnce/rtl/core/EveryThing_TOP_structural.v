@@ -2,6 +2,7 @@ import common_pkg::*;
 import interconnect_pkg::*;
 import core_common_pkg::*;
 import core_stage_latches_pkg::*;
+import reg_ids_pkg::*;
 
 module EveryThing_TOP (
     input wire clk,
@@ -104,9 +105,11 @@ module EveryThing_TOP (
     endgenerate
 
     // ---------------------------------------------------------------------
-    // RR enum-width bridge: RR_structural's flat outputs for the forwarded
+    // RR enum-width bridge: RR_structural.v's flat outputs for the forwarded
     // exe_cs control signals are 6-bit OP_TYPE / 5-bit *_sel; the SV
     // `dc_latches_t.exe_cs` struct fields are 32-bit (default-int enum).
+    // Capture the narrow flat outputs into bridge wires and zero-extend
+    // into the struct fields.
     // ---------------------------------------------------------------------
     wire [5:0] dc_latches_next_exe_cs_OP_TYPE_w;
     wire [4:0] dc_latches_next_exe_cs_alu_inputA_sel_w;
@@ -119,69 +122,48 @@ module EveryThing_TOP (
     assign dc_latches_next.exe_cs.branch_target_sel  = {27'b0, dc_latches_next_exe_cs_branch_target_sel_w};
 
     // ---------------------------------------------------------------------
-    // DC enum-width bridge: DC_structural's flat ports for exe_cs control
-    // signals are sized to their architectural widths (6-bit OP_TYPE,
-    // 5-bit *_sel) while the SV `mem_latches_t.exe_cs` struct fields are
-    // 32-bit (default-int enum). Capture the narrow flat outputs into
-    // bridge wires and zero-extend into the struct fields.
+    // Decode enum-width bridges: Decode_structural.v's flat outputs for
+    // the forwarded exe_cs control signals are 6-bit OP_TYPE / 5-bit *_sel
+    // for both normal_latches and rep_latches; the SV
+    // `rr_latches_general_t.exe_cs` struct fields are 32-bit (default-int
+    // enum). Zero-extend each into the corresponding struct field.
     // ---------------------------------------------------------------------
-    wire [5:0] mem_latches_next_exe_cs_OP_TYPE_w;
-    wire [4:0] mem_latches_next_exe_cs_alu_inputA_sel_w;
-    wire [4:0] mem_latches_next_exe_cs_alu_inputB_sel_w;
-    wire [4:0] mem_latches_next_exe_cs_branch_target_sel_w;
+    wire [5:0] rr_latches_next_normal_latches_exe_cs_OP_TYPE_w;
+    wire [4:0] rr_latches_next_normal_latches_exe_cs_alu_inputA_sel_w;
+    wire [4:0] rr_latches_next_normal_latches_exe_cs_alu_inputB_sel_w;
+    wire [4:0] rr_latches_next_normal_latches_exe_cs_branch_target_sel_w;
 
-    assign mem_latches_next.exe_cs.OP_TYPE            = {26'b0, mem_latches_next_exe_cs_OP_TYPE_w};
-    assign mem_latches_next.exe_cs.alu_inputA_sel     = {27'b0, mem_latches_next_exe_cs_alu_inputA_sel_w};
-    assign mem_latches_next.exe_cs.alu_inputB_sel     = {27'b0, mem_latches_next_exe_cs_alu_inputB_sel_w};
-    assign mem_latches_next.exe_cs.branch_target_sel  = {27'b0, mem_latches_next_exe_cs_branch_target_sel_w};
+    wire [5:0] rr_latches_next_rep_latches_exe_cs_OP_TYPE_w;
+    wire [4:0] rr_latches_next_rep_latches_exe_cs_alu_inputA_sel_w;
+    wire [4:0] rr_latches_next_rep_latches_exe_cs_alu_inputB_sel_w;
+    wire [4:0] rr_latches_next_rep_latches_exe_cs_branch_target_sel_w;
+
+    assign rr_latches_next.normal_latches.exe_cs.OP_TYPE            = {26'b0, rr_latches_next_normal_latches_exe_cs_OP_TYPE_w};
+    assign rr_latches_next.normal_latches.exe_cs.alu_inputA_sel     = {27'b0, rr_latches_next_normal_latches_exe_cs_alu_inputA_sel_w};
+    assign rr_latches_next.normal_latches.exe_cs.alu_inputB_sel     = {27'b0, rr_latches_next_normal_latches_exe_cs_alu_inputB_sel_w};
+    assign rr_latches_next.normal_latches.exe_cs.branch_target_sel  = {27'b0, rr_latches_next_normal_latches_exe_cs_branch_target_sel_w};
+
+    assign rr_latches_next.rep_latches.exe_cs.OP_TYPE               = {26'b0, rr_latches_next_rep_latches_exe_cs_OP_TYPE_w};
+    assign rr_latches_next.rep_latches.exe_cs.alu_inputA_sel        = {27'b0, rr_latches_next_rep_latches_exe_cs_alu_inputA_sel_w};
+    assign rr_latches_next.rep_latches.exe_cs.alu_inputB_sel        = {27'b0, rr_latches_next_rep_latches_exe_cs_alu_inputB_sel_w};
+    assign rr_latches_next.rep_latches.exe_cs.branch_target_sel     = {27'b0, rr_latches_next_rep_latches_exe_cs_branch_target_sel_w};
 
     // ---------------------------------------------------------------------
-    // MEM cache-array pack: DCacheIn_i.cacheline / line_MIO are SV unpacked
-    // byte_t arrays.  MEM_structural.v's flat ports take 128-bit packed
-    // buses, so pack each per-port byte array into a 128-bit wire here.
+    // Decode IDM data pack: idm_outputs.idm_slots[i].data is byte_t[16].
+    // Decode_structural.v takes 128-bit packed buses per slot.
     // ---------------------------------------------------------------------
-    wire [127:0] mem_cacheline_0_w;
-    wire [127:0] mem_cacheline_1_w;
-    wire [127:0] mem_cacheline_2_w;
-    wire [127:0] mem_cacheline_3_w;
-    wire [127:0] mem_line_MIO_w;
+    wire [127:0] idm_outs_idm_slots_0_data_w;
+    wire [127:0] idm_outs_idm_slots_1_data_w;
+    wire [127:0] idm_outs_idm_slots_2_data_w;
+    wire [127:0] idm_outs_idm_slots_3_data_w;
 
-    genvar gi_mem_cl;
+    genvar gi_idm_data;
     generate
-        for (gi_mem_cl = 0; gi_mem_cl < CACHE_LINES_SIZE_B; gi_mem_cl = gi_mem_cl + 1) begin : g_pack_mem_cl
-            assign mem_cacheline_0_w[gi_mem_cl*8 +: 8] = DCacheIn_i.cacheline[0][gi_mem_cl];
-            assign mem_cacheline_1_w[gi_mem_cl*8 +: 8] = DCacheIn_i.cacheline[1][gi_mem_cl];
-            assign mem_cacheline_2_w[gi_mem_cl*8 +: 8] = DCacheIn_i.cacheline[2][gi_mem_cl];
-            assign mem_cacheline_3_w[gi_mem_cl*8 +: 8] = DCacheIn_i.cacheline[3][gi_mem_cl];
-            assign mem_line_MIO_w   [gi_mem_cl*8 +: 8] = DCacheIn_i.line_MIO   [gi_mem_cl];
-        end
-    endgenerate
-
-    // ---------------------------------------------------------------------
-    // MEM enum-width bridge: same pattern as DC for exe_cs forwarded into
-    // exe_latches_next.cs.
-    // ---------------------------------------------------------------------
-    wire [5:0] exe_latches_next_cs_OP_TYPE_w;
-    wire [4:0] exe_latches_next_cs_alu_inputA_sel_w;
-    wire [4:0] exe_latches_next_cs_alu_inputB_sel_w;
-    wire [4:0] exe_latches_next_cs_branch_target_sel_w;
-
-    assign exe_latches_next.cs.OP_TYPE            = {26'b0, exe_latches_next_cs_OP_TYPE_w};
-    assign exe_latches_next.cs.alu_inputA_sel     = {27'b0, exe_latches_next_cs_alu_inputA_sel_w};
-    assign exe_latches_next.cs.alu_inputB_sel     = {27'b0, exe_latches_next_cs_alu_inputB_sel_w};
-    assign exe_latches_next.cs.branch_target_sel  = {27'b0, exe_latches_next_cs_branch_target_sel_w};
-
-    // ---------------------------------------------------------------------
-    // MEM ld_buf unpack: MEM_structural.v outputs ld_buf as a 256-bit
-    // packed bus; the SV `exe_latches_t.ld_buf` is byte_t[EXE_BUFFER_SIZE].
-    // Capture the packed bus and unpack it into the struct field array.
-    // ---------------------------------------------------------------------
-    wire [255:0] exe_latches_next_ld_buf_w;
-
-    genvar gi_mem_ldbuf;
-    generate
-        for (gi_mem_ldbuf = 0; gi_mem_ldbuf < EXE_BUFFER_SIZE; gi_mem_ldbuf = gi_mem_ldbuf + 1) begin : g_unpack_mem_ldbuf
-            assign exe_latches_next.ld_buf[gi_mem_ldbuf] = exe_latches_next_ld_buf_w[gi_mem_ldbuf*8 +: 8];
+        for (gi_idm_data = 0; gi_idm_data < CACHE_LINES_SIZE_B; gi_idm_data = gi_idm_data + 1) begin : g_pack_idm_data
+            assign idm_outs_idm_slots_0_data_w[gi_idm_data*8 +: 8] = idm_outputs.idm_slots[0].data[gi_idm_data];
+            assign idm_outs_idm_slots_1_data_w[gi_idm_data*8 +: 8] = idm_outputs.idm_slots[1].data[gi_idm_data];
+            assign idm_outs_idm_slots_2_data_w[gi_idm_data*8 +: 8] = idm_outputs.idm_slots[2].data[gi_idm_data];
+            assign idm_outs_idm_slots_3_data_w[gi_idm_data*8 +: 8] = idm_outputs.idm_slots[3].data[gi_idm_data];
         end
     endgenerate
 
@@ -234,16 +216,235 @@ module EveryThing_TOP (
 
     Decode decode_unit (
         .clk(clk),
-        .rst(rst),  
-        .idm_outs_i(idm_outputs),
-        .fetch_outs_i(fetch_outputs),
-        .rr_outs_i(rr_outputs),
-        .dc_outs_i(dc_outputs),
-        .mem_outs_i(mem_outputs),
-        .exe_outs_i(exe_outputs),
-        .wb_outs_i(wb_outputs),
-        .rr_latches_next(rr_latches_next),
-        .outs_o(decode_outputs)
+        .rst(rst),
+
+        // ---- idm_outputs_t (idm_outs_i) -- per-slot unroll ----
+        .idm_outs_idm_slots_0_valid          (idm_outputs.idm_slots[0].valid),
+        .idm_outs_idm_slots_0_br_valid       (idm_outputs.idm_slots[0].br_valid),
+        .idm_outs_idm_slots_0_br_eip         (idm_outputs.idm_slots[0].br_eip),
+        .idm_outs_idm_slots_0_br_btb_target  (idm_outputs.idm_slots[0].br_btb_target),
+        .idm_outs_idm_slots_0_br_xcl         (idm_outputs.idm_slots[0].br_xcl),
+        .idm_outs_idm_slots_0_data           (idm_outs_idm_slots_0_data_w),
+
+        .idm_outs_idm_slots_1_valid          (idm_outputs.idm_slots[1].valid),
+        .idm_outs_idm_slots_1_br_valid       (idm_outputs.idm_slots[1].br_valid),
+        .idm_outs_idm_slots_1_br_eip         (idm_outputs.idm_slots[1].br_eip),
+        .idm_outs_idm_slots_1_br_btb_target  (idm_outputs.idm_slots[1].br_btb_target),
+        .idm_outs_idm_slots_1_br_xcl         (idm_outputs.idm_slots[1].br_xcl),
+        .idm_outs_idm_slots_1_data           (idm_outs_idm_slots_1_data_w),
+
+        .idm_outs_idm_slots_2_valid          (idm_outputs.idm_slots[2].valid),
+        .idm_outs_idm_slots_2_br_valid       (idm_outputs.idm_slots[2].br_valid),
+        .idm_outs_idm_slots_2_br_eip         (idm_outputs.idm_slots[2].br_eip),
+        .idm_outs_idm_slots_2_br_btb_target  (idm_outputs.idm_slots[2].br_btb_target),
+        .idm_outs_idm_slots_2_br_xcl         (idm_outputs.idm_slots[2].br_xcl),
+        .idm_outs_idm_slots_2_data           (idm_outs_idm_slots_2_data_w),
+
+        .idm_outs_idm_slots_3_valid          (idm_outputs.idm_slots[3].valid),
+        .idm_outs_idm_slots_3_br_valid       (idm_outputs.idm_slots[3].br_valid),
+        .idm_outs_idm_slots_3_br_eip         (idm_outputs.idm_slots[3].br_eip),
+        .idm_outs_idm_slots_3_br_btb_target  (idm_outputs.idm_slots[3].br_btb_target),
+        .idm_outs_idm_slots_3_br_xcl         (idm_outputs.idm_slots[3].br_xcl),
+        .idm_outs_idm_slots_3_data           (idm_outs_idm_slots_3_data_w),
+
+        // ---- fetch_outputs_t (fetch_outs_i) ----
+        .fetch_outs_exp_pipe_clear           (fetch_outputs.exp_pipe_clear),
+        .fetch_outs_exp_mode_jk              (fetch_outputs.exp_mode_jk),
+        .fetch_outs_int_mode_jk              (fetch_outputs.int_mode_jk),
+
+        // ---- rr_outputs_t (rr_outs_i) ----
+        .rr_outs_valid                       (rr_outputs.valid),
+        .rr_outs_stall                       (rr_outputs.stall),
+        .rr_outs_ecx_sb                      (rr_outputs.ecx_sb),
+        .rr_outs_ecx                         (rr_outputs.ecx),
+        .rr_outs_eax                         (rr_outputs.eax),
+        .rr_outs_codeSeg_limit               (rr_outputs.codeSeg_limit),
+
+        // ---- dc_outputs_t (dc_outs_i) ----
+        .dc_outs_valid                       (dc_outputs.valid),
+        .dc_outs_stall                       (dc_outputs.stall),
+        .dc_outs_dc_eip                      (dc_outputs.dc_eip),
+
+        // ---- mem_outputs_t (mem_outs_i) ----
+        .mem_outs_valid                      (mem_outputs.valid),
+        .mem_outs_stall                      (mem_outputs.stall),
+
+        // ---- exe_outputs_t (exe_outs_i) ----
+        .exe_outs_valid                      (exe_outputs.valid),
+        .exe_outs_br_res_valid               (exe_outputs.br_res_out.valid),
+        .exe_outs_br_res_flush               (exe_outputs.br_res_out.flush),
+        .exe_outs_br_res_br_target           (exe_outputs.br_res_out.br_target),
+        .exe_outs_clr_ZF_sb                  (exe_outputs.clr_ZF_sb),
+        .exe_outs_ZF                         (exe_outputs.ZF),
+
+        // ---- wb_outputs_t (wb_outs_i) ----
+        .wb_outs_wb_stall                    (wb_outputs.wb_stall),
+
+        // ====================================================================
+        // rr_latches_t (rr_latches_next) -- normal_latches
+        // ====================================================================
+        .rr_latches_next_normal_latches_valid                       (rr_latches_next.normal_latches.valid),
+
+        // rr_cs_t
+        .rr_latches_next_normal_latches_cs_ST_SEL                   (rr_latches_next.normal_latches.cs.ST_SEL),
+        .rr_latches_next_normal_latches_cs_MODRM_NEEDED             (rr_latches_next.normal_latches.cs.MODRM_NEEDED),
+        .rr_latches_next_normal_latches_cs_RM_IS_DR                 (rr_latches_next.normal_latches.cs.RM_IS_DR),
+        .rr_latches_next_normal_latches_cs_SWITCH_LD_ADDY           (rr_latches_next.normal_latches.cs.SWITCH_LD_ADDY),
+        .rr_latches_next_normal_latches_cs_LD_OP                    (rr_latches_next.normal_latches.cs.LD_OP),
+        .rr_latches_next_normal_latches_cs_ST_OP                    (rr_latches_next.normal_latches.cs.ST_OP),
+        .rr_latches_next_normal_latches_cs_dr_id                    (rr_latches_next.normal_latches.cs.dr_id),
+        .rr_latches_next_normal_latches_cs_sr_id                    (rr_latches_next.normal_latches.cs.sr_id),
+        .rr_latches_next_normal_latches_cs_dr_rd                    (rr_latches_next.normal_latches.cs.dr_rd),
+        .rr_latches_next_normal_latches_cs_sr_rd                    (rr_latches_next.normal_latches.cs.sr_rd),
+        .rr_latches_next_normal_latches_cs_eax_rd                   (rr_latches_next.normal_latches.cs.eax_rd),
+        .rr_latches_next_normal_latches_cs_dr_wr                    (rr_latches_next.normal_latches.cs.dr_wr),
+        .rr_latches_next_normal_latches_cs_sr_wr                    (rr_latches_next.normal_latches.cs.sr_wr),
+        .rr_latches_next_normal_latches_cs_eax_wr                   (rr_latches_next.normal_latches.cs.eax_wr),
+        .rr_latches_next_normal_latches_cs_MOVS_OP                  (rr_latches_next.normal_latches.cs.MOVS_OP),
+        .rr_latches_next_normal_latches_cs_datasize                 (rr_latches_next.normal_latches.cs.datasize),
+        .rr_latches_next_normal_latches_cs_will_mod_zf              (rr_latches_next.normal_latches.cs.will_mod_zf),
+        .rr_latches_next_normal_latches_cs_seg_1_valid              (rr_latches_next.normal_latches.cs.seg_1_valid),
+        .rr_latches_next_normal_latches_cs_seg_0_id                 (rr_latches_next.normal_latches.cs.seg_0_id),
+        .rr_latches_next_normal_latches_cs_seg_1_id                 (rr_latches_next.normal_latches.cs.seg_1_id),
+        .rr_latches_next_normal_latches_cs_special_modrm_bs         (rr_latches_next.normal_latches.cs.special_modrm_bs),
+        .rr_latches_next_normal_latches_cs_special_br               (rr_latches_next.normal_latches.cs.special_br),
+
+        // dc_cs_t
+        .rr_latches_next_normal_latches_dc_cs_LD_OP                 (rr_latches_next.normal_latches.dc_cs.LD_OP),
+        .rr_latches_next_normal_latches_dc_cs_ST_OP                 (rr_latches_next.normal_latches.dc_cs.ST_OP),
+        .rr_latches_next_normal_latches_dc_cs_dr_upper8             (rr_latches_next.normal_latches.dc_cs.dr_upper8),
+        .rr_latches_next_normal_latches_dc_cs_sr_upper8             (rr_latches_next.normal_latches.dc_cs.sr_upper8),
+        .rr_latches_next_normal_latches_dc_cs_datasize              (rr_latches_next.normal_latches.dc_cs.datasize),
+
+        // mem_cs_t
+        .rr_latches_next_normal_latches_mem_cs_ST_OP                (rr_latches_next.normal_latches.mem_cs.ST_OP),
+        .rr_latches_next_normal_latches_mem_cs_LD_OP                (rr_latches_next.normal_latches.mem_cs.LD_OP),
+
+        // exe_cs_t (enum-width bridges for the four 32-bit struct fields)
+        .rr_latches_next_normal_latches_exe_cs_ST_OP                (rr_latches_next.normal_latches.exe_cs.ST_OP),
+        .rr_latches_next_normal_latches_exe_cs_OP_TYPE              (rr_latches_next_normal_latches_exe_cs_OP_TYPE_w),
+        .rr_latches_next_normal_latches_exe_cs_alu_inputA_sel       (rr_latches_next_normal_latches_exe_cs_alu_inputA_sel_w),
+        .rr_latches_next_normal_latches_exe_cs_alu_inputB_sel       (rr_latches_next_normal_latches_exe_cs_alu_inputB_sel_w),
+        .rr_latches_next_normal_latches_exe_cs_branch_target_sel    (rr_latches_next_normal_latches_exe_cs_branch_target_sel_w),
+        .rr_latches_next_normal_latches_exe_cs_shift_by_one         (rr_latches_next.normal_latches.exe_cs.shift_by_one),
+        .rr_latches_next_normal_latches_exe_cs_br_ucond             (rr_latches_next.normal_latches.exe_cs.br_ucond),
+        .rr_latches_next_normal_latches_exe_cs_relative_branch      (rr_latches_next.normal_latches.exe_cs.relative_branch),
+        .rr_latches_next_normal_latches_exe_cs_special_br           (rr_latches_next.normal_latches.exe_cs.special_br),
+        .rr_latches_next_normal_latches_exe_cs_is_far               (rr_latches_next.normal_latches.exe_cs.is_far),
+        .rr_latches_next_normal_latches_exe_cs_is_call              (rr_latches_next.normal_latches.exe_cs.is_call),
+        .rr_latches_next_normal_latches_exe_cs_second_flag_needed   (rr_latches_next.normal_latches.exe_cs.second_flag_needed),
+        .rr_latches_next_normal_latches_exe_cs_rep_no_zf_update     (rr_latches_next.normal_latches.exe_cs.rep_no_zf_update),
+
+        // wb_cs_t
+        .rr_latches_next_normal_latches_wb_cs_ST_OP                 (rr_latches_next.normal_latches.wb_cs.ST_OP),
+        .rr_latches_next_normal_latches_wb_cs_WB_DR                 (rr_latches_next.normal_latches.wb_cs.WB_DR),
+        .rr_latches_next_normal_latches_wb_cs_WB_SR                 (rr_latches_next.normal_latches.wb_cs.WB_SR),
+        .rr_latches_next_normal_latches_wb_cs_WB_EAX                (rr_latches_next.normal_latches.wb_cs.WB_EAX),
+
+        // br_info_t
+        .rr_latches_next_normal_latches_br_info_valid               (rr_latches_next.normal_latches.br_info.valid),
+        .rr_latches_next_normal_latches_br_info_br_eip              (rr_latches_next.normal_latches.br_info.br_eip),
+        .rr_latches_next_normal_latches_br_info_br_xcl              (rr_latches_next.normal_latches.br_info.br_xcl),
+        .rr_latches_next_normal_latches_br_info_br_pred_taken       (rr_latches_next.normal_latches.br_info.br_pred_taken),
+        .rr_latches_next_normal_latches_br_info_speculative_target  (rr_latches_next.normal_latches.br_info.speculative_target),
+
+        .rr_latches_next_normal_latches_NEIP                        (rr_latches_next.normal_latches.NEIP),
+        .rr_latches_next_normal_latches_EIP                         (rr_latches_next.normal_latches.EIP),
+        .rr_latches_next_normal_latches_EAX                         (rr_latches_next.normal_latches.EAX),
+        .rr_latches_next_normal_latches_imm64                       (rr_latches_next.normal_latches.imm64),
+
+        .rr_latches_next_normal_latches_sib_idx_id                  (rr_latches_next.normal_latches.sib_idx_id),
+        .rr_latches_next_normal_latches_sib_base_id                 (rr_latches_next.normal_latches.sib_base_id),
+        .rr_latches_next_normal_latches_sib_needed                  (rr_latches_next.normal_latches.sib_needed),
+        .rr_latches_next_normal_latches_sib_scale                   (rr_latches_next.normal_latches.sib_scale),
+        .rr_latches_next_normal_latches_disp_needed                 (rr_latches_next.normal_latches.disp_needed),
+        .rr_latches_next_normal_latches_disp_size                   (rr_latches_next.normal_latches.disp_size),
+        .rr_latches_next_normal_latches_displacement                (rr_latches_next.normal_latches.displacement),
+
+        // ====================================================================
+        // rr_latches_t (rr_latches_next) -- rep_latches
+        // ====================================================================
+        .rr_latches_next_rep_latches_valid                       (rr_latches_next.rep_latches.valid),
+
+        .rr_latches_next_rep_latches_cs_ST_SEL                   (rr_latches_next.rep_latches.cs.ST_SEL),
+        .rr_latches_next_rep_latches_cs_MODRM_NEEDED             (rr_latches_next.rep_latches.cs.MODRM_NEEDED),
+        .rr_latches_next_rep_latches_cs_RM_IS_DR                 (rr_latches_next.rep_latches.cs.RM_IS_DR),
+        .rr_latches_next_rep_latches_cs_SWITCH_LD_ADDY           (rr_latches_next.rep_latches.cs.SWITCH_LD_ADDY),
+        .rr_latches_next_rep_latches_cs_LD_OP                    (rr_latches_next.rep_latches.cs.LD_OP),
+        .rr_latches_next_rep_latches_cs_ST_OP                    (rr_latches_next.rep_latches.cs.ST_OP),
+        .rr_latches_next_rep_latches_cs_dr_id                    (rr_latches_next.rep_latches.cs.dr_id),
+        .rr_latches_next_rep_latches_cs_sr_id                    (rr_latches_next.rep_latches.cs.sr_id),
+        .rr_latches_next_rep_latches_cs_dr_rd                    (rr_latches_next.rep_latches.cs.dr_rd),
+        .rr_latches_next_rep_latches_cs_sr_rd                    (rr_latches_next.rep_latches.cs.sr_rd),
+        .rr_latches_next_rep_latches_cs_eax_rd                   (rr_latches_next.rep_latches.cs.eax_rd),
+        .rr_latches_next_rep_latches_cs_dr_wr                    (rr_latches_next.rep_latches.cs.dr_wr),
+        .rr_latches_next_rep_latches_cs_sr_wr                    (rr_latches_next.rep_latches.cs.sr_wr),
+        .rr_latches_next_rep_latches_cs_eax_wr                   (rr_latches_next.rep_latches.cs.eax_wr),
+        .rr_latches_next_rep_latches_cs_MOVS_OP                  (rr_latches_next.rep_latches.cs.MOVS_OP),
+        .rr_latches_next_rep_latches_cs_datasize                 (rr_latches_next.rep_latches.cs.datasize),
+        .rr_latches_next_rep_latches_cs_will_mod_zf              (rr_latches_next.rep_latches.cs.will_mod_zf),
+        .rr_latches_next_rep_latches_cs_seg_1_valid              (rr_latches_next.rep_latches.cs.seg_1_valid),
+        .rr_latches_next_rep_latches_cs_seg_0_id                 (rr_latches_next.rep_latches.cs.seg_0_id),
+        .rr_latches_next_rep_latches_cs_seg_1_id                 (rr_latches_next.rep_latches.cs.seg_1_id),
+        .rr_latches_next_rep_latches_cs_special_modrm_bs         (rr_latches_next.rep_latches.cs.special_modrm_bs),
+        .rr_latches_next_rep_latches_cs_special_br               (rr_latches_next.rep_latches.cs.special_br),
+
+        .rr_latches_next_rep_latches_dc_cs_LD_OP                 (rr_latches_next.rep_latches.dc_cs.LD_OP),
+        .rr_latches_next_rep_latches_dc_cs_ST_OP                 (rr_latches_next.rep_latches.dc_cs.ST_OP),
+        .rr_latches_next_rep_latches_dc_cs_dr_upper8             (rr_latches_next.rep_latches.dc_cs.dr_upper8),
+        .rr_latches_next_rep_latches_dc_cs_sr_upper8             (rr_latches_next.rep_latches.dc_cs.sr_upper8),
+        .rr_latches_next_rep_latches_dc_cs_datasize              (rr_latches_next.rep_latches.dc_cs.datasize),
+
+        .rr_latches_next_rep_latches_mem_cs_ST_OP                (rr_latches_next.rep_latches.mem_cs.ST_OP),
+        .rr_latches_next_rep_latches_mem_cs_LD_OP                (rr_latches_next.rep_latches.mem_cs.LD_OP),
+
+        .rr_latches_next_rep_latches_exe_cs_ST_OP                (rr_latches_next.rep_latches.exe_cs.ST_OP),
+        .rr_latches_next_rep_latches_exe_cs_OP_TYPE              (rr_latches_next_rep_latches_exe_cs_OP_TYPE_w),
+        .rr_latches_next_rep_latches_exe_cs_alu_inputA_sel       (rr_latches_next_rep_latches_exe_cs_alu_inputA_sel_w),
+        .rr_latches_next_rep_latches_exe_cs_alu_inputB_sel       (rr_latches_next_rep_latches_exe_cs_alu_inputB_sel_w),
+        .rr_latches_next_rep_latches_exe_cs_branch_target_sel    (rr_latches_next_rep_latches_exe_cs_branch_target_sel_w),
+        .rr_latches_next_rep_latches_exe_cs_shift_by_one         (rr_latches_next.rep_latches.exe_cs.shift_by_one),
+        .rr_latches_next_rep_latches_exe_cs_br_ucond             (rr_latches_next.rep_latches.exe_cs.br_ucond),
+        .rr_latches_next_rep_latches_exe_cs_relative_branch      (rr_latches_next.rep_latches.exe_cs.relative_branch),
+        .rr_latches_next_rep_latches_exe_cs_special_br           (rr_latches_next.rep_latches.exe_cs.special_br),
+        .rr_latches_next_rep_latches_exe_cs_is_far               (rr_latches_next.rep_latches.exe_cs.is_far),
+        .rr_latches_next_rep_latches_exe_cs_is_call              (rr_latches_next.rep_latches.exe_cs.is_call),
+        .rr_latches_next_rep_latches_exe_cs_second_flag_needed   (rr_latches_next.rep_latches.exe_cs.second_flag_needed),
+        .rr_latches_next_rep_latches_exe_cs_rep_no_zf_update     (rr_latches_next.rep_latches.exe_cs.rep_no_zf_update),
+
+        .rr_latches_next_rep_latches_wb_cs_ST_OP                 (rr_latches_next.rep_latches.wb_cs.ST_OP),
+        .rr_latches_next_rep_latches_wb_cs_WB_DR                 (rr_latches_next.rep_latches.wb_cs.WB_DR),
+        .rr_latches_next_rep_latches_wb_cs_WB_SR                 (rr_latches_next.rep_latches.wb_cs.WB_SR),
+        .rr_latches_next_rep_latches_wb_cs_WB_EAX                (rr_latches_next.rep_latches.wb_cs.WB_EAX),
+
+        .rr_latches_next_rep_latches_br_info_valid               (rr_latches_next.rep_latches.br_info.valid),
+        .rr_latches_next_rep_latches_br_info_br_eip              (rr_latches_next.rep_latches.br_info.br_eip),
+        .rr_latches_next_rep_latches_br_info_br_xcl              (rr_latches_next.rep_latches.br_info.br_xcl),
+        .rr_latches_next_rep_latches_br_info_br_pred_taken       (rr_latches_next.rep_latches.br_info.br_pred_taken),
+        .rr_latches_next_rep_latches_br_info_speculative_target  (rr_latches_next.rep_latches.br_info.speculative_target),
+
+        .rr_latches_next_rep_latches_NEIP                        (rr_latches_next.rep_latches.NEIP),
+        .rr_latches_next_rep_latches_EIP                         (rr_latches_next.rep_latches.EIP),
+        .rr_latches_next_rep_latches_EAX                         (rr_latches_next.rep_latches.EAX),
+        .rr_latches_next_rep_latches_imm64                       (rr_latches_next.rep_latches.imm64),
+
+        .rr_latches_next_rep_latches_sib_idx_id                  (rr_latches_next.rep_latches.sib_idx_id),
+        .rr_latches_next_rep_latches_sib_base_id                 (rr_latches_next.rep_latches.sib_base_id),
+        .rr_latches_next_rep_latches_sib_needed                  (rr_latches_next.rep_latches.sib_needed),
+        .rr_latches_next_rep_latches_sib_scale                   (rr_latches_next.rep_latches.sib_scale),
+        .rr_latches_next_rep_latches_disp_needed                 (rr_latches_next.rep_latches.disp_needed),
+        .rr_latches_next_rep_latches_disp_size                   (rr_latches_next.rep_latches.disp_size),
+        .rr_latches_next_rep_latches_displacement                (rr_latches_next.rep_latches.displacement),
+
+        // ---- decode_outputs_t (outs_o) ----
+        .outs_valid                          (decode_outputs.valid),
+        .outs_stall                          (decode_outputs.stall),
+        .outs_eip                            (decode_outputs.eip),
+        .outs_invalid_instruction            (decode_outputs.invalid_instruction),
+        .outs_decode_gp                      (decode_outputs.decode_gp),
+        .outs_rr_stage_latch_we              (decode_outputs.rr_stage_latch_we),
+        .outs_rep_latch                      (decode_outputs.rep_latch),
+        .outs_decode_forward                 (decode_outputs.decode_forward)
     );
 
     RR_Latches rr_latches_unit (
@@ -573,212 +774,16 @@ module EveryThing_TOP (
     DC dc_unit (
         .clk(clk),
         .rst(rst),
-
-        // ---- dc_latches_t (latches_i) ----
-        .latches_valid                          (dc_latches.valid),
-
-        // dc_cs_t
-        .latches_cs_LD_OP                       (dc_latches.cs.LD_OP),
-        .latches_cs_ST_OP                       (dc_latches.cs.ST_OP),
-        .latches_cs_dr_upper8                   (dc_latches.cs.dr_upper8),
-        .latches_cs_sr_upper8                   (dc_latches.cs.sr_upper8),
-        .latches_cs_datasize                    (dc_latches.cs.datasize),
-
-        // mem_cs_t
-        .latches_mem_cs_ST_OP                   (dc_latches.mem_cs.ST_OP),
-        .latches_mem_cs_LD_OP                   (dc_latches.mem_cs.LD_OP),
-
-        // exe_cs_t (slice enums down to flat-port widths)
-        .latches_exe_cs_ST_OP                   (dc_latches.exe_cs.ST_OP),
-        .latches_exe_cs_OP_TYPE                 (dc_latches.exe_cs.OP_TYPE[5:0]),
-        .latches_exe_cs_alu_inputA_sel          (dc_latches.exe_cs.alu_inputA_sel[4:0]),
-        .latches_exe_cs_alu_inputB_sel          (dc_latches.exe_cs.alu_inputB_sel[4:0]),
-        .latches_exe_cs_branch_target_sel       (dc_latches.exe_cs.branch_target_sel[4:0]),
-        .latches_exe_cs_shift_by_one            (dc_latches.exe_cs.shift_by_one),
-        .latches_exe_cs_br_ucond                (dc_latches.exe_cs.br_ucond),
-        .latches_exe_cs_relative_branch         (dc_latches.exe_cs.relative_branch),
-        .latches_exe_cs_special_br              (dc_latches.exe_cs.special_br),
-        .latches_exe_cs_is_far                  (dc_latches.exe_cs.is_far),
-        .latches_exe_cs_is_call                 (dc_latches.exe_cs.is_call),
-        .latches_exe_cs_second_flag_needed      (dc_latches.exe_cs.second_flag_needed),
-        .latches_exe_cs_rep_no_zf_update        (dc_latches.exe_cs.rep_no_zf_update),
-
-        // wb_cs_t
-        .latches_wb_cs_ST_OP                    (dc_latches.wb_cs.ST_OP),
-        .latches_wb_cs_WB_DR                    (dc_latches.wb_cs.WB_DR),
-        .latches_wb_cs_WB_SR                    (dc_latches.wb_cs.WB_SR),
-        .latches_wb_cs_WB_EAX                   (dc_latches.wb_cs.WB_EAX),
-
-        // br_info_t
-        .latches_br_info_valid                  (dc_latches.br_info.valid),
-        .latches_br_info_br_eip                 (dc_latches.br_info.br_eip),
-        .latches_br_info_br_xcl                 (dc_latches.br_info.br_xcl),
-        .latches_br_info_br_pred_taken          (dc_latches.br_info.br_pred_taken),
-        .latches_br_info_speculative_target     (dc_latches.br_info.speculative_target),
-
-        .latches_rr_gp                          (dc_latches.rr_gp),
-
-        // load-side address / segmentation
-        .latches_ld_vaddy                       (dc_latches.ld_vaddy),
-        .latches_seg0_limit_w_datasize          (dc_latches.seg0_limit_w_datasize),
-        .latches_seg0_limit_wo_datasize         (dc_latches.seg0_limit_wo_datasize),
-        .latches_next_ld_vaddy                  (dc_latches.next_ld_vaddy),
-        .latches_ld_laddy                       (dc_latches.ld_laddy),
-        .latches_ld_stack_access                (dc_latches.ld_stack_access),
-
-        // store-side address / segmentation
-        .latches_st_vaddy                       (dc_latches.st_vaddy),
-        .latches_seg1_limit_w_datasize          (dc_latches.seg1_limit_w_datasize),
-        .latches_seg1_limit_wo_datasize         (dc_latches.seg1_limit_wo_datasize),
-        .latches_next_st_vaddy                  (dc_latches.next_st_vaddy),
-        .latches_st_laddy                       (dc_latches.st_laddy),
-        .latches_st_stack_access                (dc_latches.st_stack_access),
-
-        .latches_NEIP                           (dc_latches.NEIP),
-        .latches_EIP                            (dc_latches.EIP),
-        .latches_EAX                            (dc_latches.EAX),
-        .latches_imm64                          (dc_latches.imm64),
-
-        .latches_sr_id                          (dc_latches.sr_id),
-        .latches_sr_data                        (dc_latches.sr_data),
-        .latches_dr_id                          (dc_latches.dr_id),
-        .latches_dr_data                        (dc_latches.dr_data),
-
-        // ---- fetch_outputs_t (fetch_outs_i) ----
-        .fetch_outs_exp_pipe_clear              (fetch_outputs.exp_pipe_clear),
-
-        // ---- mem_outputs_t (mem_outs_i) ----
-        .mem_outs_valid                         (mem_outputs.valid),
-        .mem_outs_stall                         (mem_outputs.stall),
-        .mem_outs_ST_OP                         (mem_outputs.ST_OP),
-        .mem_outs_ST_XCL                        (mem_outputs.ST_XCL),
-        .mem_outs_ST_PADDR_0                    (mem_outputs.ST_PADDR_0),
-        .mem_outs_ST_PADDR_1                    (mem_outputs.ST_PADDR_1),
-
-        // ---- exe_outputs_t (exe_outs_i) ----
-        .exe_outs_valid                         (exe_outputs.valid),
-        .exe_outs_ST_OP                         (exe_outputs.ST_OP),
-        .exe_outs_ST_XCL                        (exe_outputs.ST_XCL),
-        .exe_outs_ST_PADDR_0                    (exe_outputs.ST_PADDR_0),
-        .exe_outs_ST_PADDR_1                    (exe_outputs.ST_PADDR_1),
-        .exe_outs_br_res_flush                  (exe_outputs.br_res_out.flush),
-
-        // ---- wb_outputs_t (wb_outs_i) ----
-        .wb_outs_valid                          (wb_outputs.valid),
-        .wb_outs_wb_stall                       (wb_outputs.wb_stall),
-        .wb_outs_ST_OP                          (wb_outputs.ST_OP),
-        .wb_outs_ST_XCL                         (wb_outputs.ST_XCL),
-        .wb_outs_ST_PADDR_0                     (wb_outputs.ST_PADDR_0),
-        .wb_outs_ST_PADDR_1                     (wb_outputs.ST_PADDR_1),
-
-        // ---- wb_outputs_t.dep_check.entries[0..15] ----
-        .wb_outs_dep_check_entry_0_valid        (wb_outputs.dep_check.entries[0].valid),
-        .wb_outs_dep_check_entry_0_address      (wb_outputs.dep_check.entries[0].address),
-        .wb_outs_dep_check_entry_1_valid        (wb_outputs.dep_check.entries[1].valid),
-        .wb_outs_dep_check_entry_1_address      (wb_outputs.dep_check.entries[1].address),
-        .wb_outs_dep_check_entry_2_valid        (wb_outputs.dep_check.entries[2].valid),
-        .wb_outs_dep_check_entry_2_address      (wb_outputs.dep_check.entries[2].address),
-        .wb_outs_dep_check_entry_3_valid        (wb_outputs.dep_check.entries[3].valid),
-        .wb_outs_dep_check_entry_3_address      (wb_outputs.dep_check.entries[3].address),
-        .wb_outs_dep_check_entry_4_valid        (wb_outputs.dep_check.entries[4].valid),
-        .wb_outs_dep_check_entry_4_address      (wb_outputs.dep_check.entries[4].address),
-        .wb_outs_dep_check_entry_5_valid        (wb_outputs.dep_check.entries[5].valid),
-        .wb_outs_dep_check_entry_5_address      (wb_outputs.dep_check.entries[5].address),
-        .wb_outs_dep_check_entry_6_valid        (wb_outputs.dep_check.entries[6].valid),
-        .wb_outs_dep_check_entry_6_address      (wb_outputs.dep_check.entries[6].address),
-        .wb_outs_dep_check_entry_7_valid        (wb_outputs.dep_check.entries[7].valid),
-        .wb_outs_dep_check_entry_7_address      (wb_outputs.dep_check.entries[7].address),
-        .wb_outs_dep_check_entry_8_valid        (wb_outputs.dep_check.entries[8].valid),
-        .wb_outs_dep_check_entry_8_address      (wb_outputs.dep_check.entries[8].address),
-        .wb_outs_dep_check_entry_9_valid        (wb_outputs.dep_check.entries[9].valid),
-        .wb_outs_dep_check_entry_9_address      (wb_outputs.dep_check.entries[9].address),
-        .wb_outs_dep_check_entry_10_valid       (wb_outputs.dep_check.entries[10].valid),
-        .wb_outs_dep_check_entry_10_address     (wb_outputs.dep_check.entries[10].address),
-        .wb_outs_dep_check_entry_11_valid       (wb_outputs.dep_check.entries[11].valid),
-        .wb_outs_dep_check_entry_11_address     (wb_outputs.dep_check.entries[11].address),
-        .wb_outs_dep_check_entry_12_valid       (wb_outputs.dep_check.entries[12].valid),
-        .wb_outs_dep_check_entry_12_address     (wb_outputs.dep_check.entries[12].address),
-        .wb_outs_dep_check_entry_13_valid       (wb_outputs.dep_check.entries[13].valid),
-        .wb_outs_dep_check_entry_13_address     (wb_outputs.dep_check.entries[13].address),
-        .wb_outs_dep_check_entry_14_valid       (wb_outputs.dep_check.entries[14].valid),
-        .wb_outs_dep_check_entry_14_address     (wb_outputs.dep_check.entries[14].address),
-        .wb_outs_dep_check_entry_15_valid       (wb_outputs.dep_check.entries[15].valid),
-        .wb_outs_dep_check_entry_15_address     (wb_outputs.dep_check.entries[15].address),
-
-        // ---- dcache request-served handshakes ----
-        .req_served_mio                         (DCacheIn_i.reqServed_MIO),
-        .req_served_0                           (DCacheIn_i.reqServed_0),
-        .req_served_1                           (DCacheIn_i.reqServed_1),
-
-        // ---- mem_latches_t (mem_latches_next_o) ----
-        .mem_latches_next_valid                         (mem_latches_next.valid),
-
-        .mem_latches_next_cs_ST_OP                      (mem_latches_next.cs.ST_OP),
-        .mem_latches_next_cs_LD_OP                      (mem_latches_next.cs.LD_OP),
-
-        .mem_latches_next_exe_cs_ST_OP                  (mem_latches_next.exe_cs.ST_OP),
-        .mem_latches_next_exe_cs_OP_TYPE                (mem_latches_next_exe_cs_OP_TYPE_w),
-        .mem_latches_next_exe_cs_alu_inputA_sel         (mem_latches_next_exe_cs_alu_inputA_sel_w),
-        .mem_latches_next_exe_cs_alu_inputB_sel         (mem_latches_next_exe_cs_alu_inputB_sel_w),
-        .mem_latches_next_exe_cs_branch_target_sel      (mem_latches_next_exe_cs_branch_target_sel_w),
-        .mem_latches_next_exe_cs_shift_by_one           (mem_latches_next.exe_cs.shift_by_one),
-        .mem_latches_next_exe_cs_br_ucond               (mem_latches_next.exe_cs.br_ucond),
-        .mem_latches_next_exe_cs_relative_branch        (mem_latches_next.exe_cs.relative_branch),
-        .mem_latches_next_exe_cs_special_br             (mem_latches_next.exe_cs.special_br),
-        .mem_latches_next_exe_cs_is_far                 (mem_latches_next.exe_cs.is_far),
-        .mem_latches_next_exe_cs_is_call                (mem_latches_next.exe_cs.is_call),
-        .mem_latches_next_exe_cs_second_flag_needed     (mem_latches_next.exe_cs.second_flag_needed),
-        .mem_latches_next_exe_cs_rep_no_zf_update       (mem_latches_next.exe_cs.rep_no_zf_update),
-
-        .mem_latches_next_wb_cs_ST_OP                   (mem_latches_next.wb_cs.ST_OP),
-        .mem_latches_next_wb_cs_WB_DR                   (mem_latches_next.wb_cs.WB_DR),
-        .mem_latches_next_wb_cs_WB_SR                   (mem_latches_next.wb_cs.WB_SR),
-        .mem_latches_next_wb_cs_WB_EAX                  (mem_latches_next.wb_cs.WB_EAX),
-
-        .mem_latches_next_br_info_valid                 (mem_latches_next.br_info.valid),
-        .mem_latches_next_br_info_br_eip                (mem_latches_next.br_info.br_eip),
-        .mem_latches_next_br_info_br_xcl                (mem_latches_next.br_info.br_xcl),
-        .mem_latches_next_br_info_br_pred_taken         (mem_latches_next.br_info.br_pred_taken),
-        .mem_latches_next_br_info_speculative_target    (mem_latches_next.br_info.speculative_target),
-
-        .mem_latches_next_data_size_vec                 (mem_latches_next.data_size_vec),
-        .mem_latches_next_sr_data_size_vec              (mem_latches_next.sr_data_size_vec),
-        .mem_latches_next_shift_sr_up                   (mem_latches_next.shift_sr_up),
-        .mem_latches_next_shift_sr_down                 (mem_latches_next.shift_sr_down),
-
-        .mem_latches_next_ST_XCL                        (mem_latches_next.ST_XCL),
-        .mem_latches_next_ST_PADDR_0                    (mem_latches_next.ST_PADDR_0),
-        .mem_latches_next_ST_PADDR_1                    (mem_latches_next.ST_PADDR_1),
-        .mem_latches_next_MIO                           (mem_latches_next.MIO),
-
-        .mem_latches_next_NEIP                          (mem_latches_next.NEIP),
-        .mem_latches_next_EIP                           (mem_latches_next.EIP),
-        .mem_latches_next_EAX                           (mem_latches_next.EAX),
-        .mem_latches_next_imm64                         (mem_latches_next.imm64),
-
-        .mem_latches_next_sr_id                         (mem_latches_next.sr_id),
-        .mem_latches_next_sr_data                       (mem_latches_next.sr_data),
-        .mem_latches_next_dr_id                         (mem_latches_next.dr_id),
-        .mem_latches_next_dr_data                       (mem_latches_next.dr_data),
-
-        .mem_latches_next_LD_XCL                        (mem_latches_next.LD_XCL),
-        .mem_latches_next_swapLines                     (mem_latches_next.swapLines),
-        .mem_latches_next_LD_PADDR_0                    (mem_latches_next.LD_PADDR_0),
-        .mem_latches_next_LD_PADDR_1                    (mem_latches_next.LD_PADDR_1),
-
-        // ---- dc_outputs_t (dc_outs_o) ----
-        .dc_outs_valid                                  (dc_outputs.valid),
-        .dc_outs_dc_eip                                 (dc_outputs.dc_eip),
-        .dc_outs_stall                                  (dc_outputs.stall),
-        .dc_outs_exp_pf                                 (dc_outputs.exp_pf),
-        .dc_outs_exp_present                            (dc_outputs.exp_present),
-        .dc_outs_ld_addr_0_V                            (dc_outputs.ld_addr_0_V),
-        .dc_outs_ld_addr_0                              (dc_outputs.ld_addr_0),
-        .dc_outs_ld_addr_1_V                            (dc_outputs.ld_addr_1_V),
-        .dc_outs_ld_addr_1                              (dc_outputs.ld_addr_1),
-        .dc_outs_ld_addr_MIO_V                          (dc_outputs.ld_addr_MIO_V),
-        .dc_outs_ld_addr_MIO                            (dc_outputs.ld_addr_MIO),
-        .dc_outs_mem_stage_latch_we                     (dc_outputs.mem_stage_latch_we)
+        .latches_i(dc_latches),
+        .fetch_outs_i(fetch_outputs),
+        .mem_outs_i(mem_outputs),
+        .exe_outs_i(exe_outputs),
+        .wb_outs_i(wb_outputs),
+        .mem_latches_next_o(mem_latches_next),
+        .req_served_mio(DCacheIn_i.reqServed_MIO),
+        .req_served_0(DCacheIn_i.reqServed_0),
+        .req_served_1(DCacheIn_i.reqServed_1),
+        .dc_outs_o(dc_outputs)
     );
 
 
@@ -798,159 +803,16 @@ module EveryThing_TOP (
         .clk(clk),
         .rst(rst),
 
-        // ---- mem_latches_t (latches_i) ----
-        .latches_valid                          (mem_latches.valid),
+        .latches_i (mem_latches),
+        .exe_outs_i(exe_outputs),
+        .wb_outs_i (wb_outputs),
 
-        // mem_cs_t
-        .latches_cs_ST_OP                       (mem_latches.cs.ST_OP),
-        .latches_cs_LD_OP                       (mem_latches.cs.LD_OP),
-
-        // exe_cs_t (slice enums down to flat-port widths)
-        .latches_exe_cs_ST_OP                   (mem_latches.exe_cs.ST_OP),
-        .latches_exe_cs_OP_TYPE                 (mem_latches.exe_cs.OP_TYPE[5:0]),
-        .latches_exe_cs_alu_inputA_sel          (mem_latches.exe_cs.alu_inputA_sel[4:0]),
-        .latches_exe_cs_alu_inputB_sel          (mem_latches.exe_cs.alu_inputB_sel[4:0]),
-        .latches_exe_cs_branch_target_sel       (mem_latches.exe_cs.branch_target_sel[4:0]),
-        .latches_exe_cs_shift_by_one            (mem_latches.exe_cs.shift_by_one),
-        .latches_exe_cs_br_ucond                (mem_latches.exe_cs.br_ucond),
-        .latches_exe_cs_relative_branch         (mem_latches.exe_cs.relative_branch),
-        .latches_exe_cs_special_br              (mem_latches.exe_cs.special_br),
-        .latches_exe_cs_is_far                  (mem_latches.exe_cs.is_far),
-        .latches_exe_cs_is_call                 (mem_latches.exe_cs.is_call),
-        .latches_exe_cs_second_flag_needed      (mem_latches.exe_cs.second_flag_needed),
-        .latches_exe_cs_rep_no_zf_update        (mem_latches.exe_cs.rep_no_zf_update),
-
-        // wb_cs_t
-        .latches_wb_cs_ST_OP                    (mem_latches.wb_cs.ST_OP),
-        .latches_wb_cs_WB_DR                    (mem_latches.wb_cs.WB_DR),
-        .latches_wb_cs_WB_SR                    (mem_latches.wb_cs.WB_SR),
-        .latches_wb_cs_WB_EAX                   (mem_latches.wb_cs.WB_EAX),
-
-        // br_info_t
-        .latches_br_info_valid                  (mem_latches.br_info.valid),
-        .latches_br_info_br_eip                 (mem_latches.br_info.br_eip),
-        .latches_br_info_br_xcl                 (mem_latches.br_info.br_xcl),
-        .latches_br_info_br_pred_taken          (mem_latches.br_info.br_pred_taken),
-        .latches_br_info_speculative_target     (mem_latches.br_info.speculative_target),
-
-        .latches_data_size_vec                  (mem_latches.data_size_vec),
-        .latches_sr_data_size_vec               (mem_latches.sr_data_size_vec),
-        .latches_shift_sr_up                    (mem_latches.shift_sr_up),
-        .latches_shift_sr_down                  (mem_latches.shift_sr_down),
-
-        .latches_ST_XCL                         (mem_latches.ST_XCL),
-        .latches_ST_PADDR_0                     (mem_latches.ST_PADDR_0),
-        .latches_ST_PADDR_1                     (mem_latches.ST_PADDR_1),
-        .latches_MIO                            (mem_latches.MIO),
-
-        .latches_NEIP                           (mem_latches.NEIP),
-        .latches_EIP                            (mem_latches.EIP),
-        .latches_EAX                            (mem_latches.EAX),
-        .latches_imm64                          (mem_latches.imm64),
-
-        .latches_sr_id                          (mem_latches.sr_id),
-        .latches_sr_data                        (mem_latches.sr_data),
-        .latches_dr_id                          (mem_latches.dr_id),
-        .latches_dr_data                        (mem_latches.dr_data),
-
-        .latches_LD_XCL                         (mem_latches.LD_XCL),
-        .latches_swapLines                      (mem_latches.swapLines),
-        .latches_LD_PADDR_0                     (mem_latches.LD_PADDR_0),
-        .latches_LD_PADDR_1                     (mem_latches.LD_PADDR_1),
-
-        // ---- exe_outputs_t (exe_outs_i) ----
-        .exe_outs_valid                         (exe_outputs.valid),
-        .exe_outs_br_res_flush                  (exe_outputs.br_res_out.flush),
-
-        // ---- wb_outputs_t (wb_outs_i) ----
-        .wb_outs_wb_stall                       (wb_outputs.wb_stall),
-
-        // ---- dcache-side inputs ----
-        .hit_0                                  (DCacheIn_i.hit[0]),
-        .hit_1                                  (DCacheIn_i.hit[1]),
-        .hit_2                                  (DCacheIn_i.hit[2]),
-        .hit_3                                  (DCacheIn_i.hit[3]),
-        .cacheline_0                            (mem_cacheline_0_w),
-        .cacheline_1                            (mem_cacheline_1_w),
-        .cacheline_2                            (mem_cacheline_2_w),
-        .cacheline_3                            (mem_cacheline_3_w),
-        .hit_MIO                                (DCacheIn_i.hit_MIO),
-        .line_MIO                               (mem_line_MIO_w),
-
-        // ---- exe_latches_t (exe_latches_next_o) ----
-        .exe_latches_next_valid                         (exe_latches_next.valid),
-
-        // exe_cs_t (enum-width bridges for the four 32-bit struct fields)
-        .exe_latches_next_cs_ST_OP                      (exe_latches_next.cs.ST_OP),
-        .exe_latches_next_cs_OP_TYPE                    (exe_latches_next_cs_OP_TYPE_w),
-        .exe_latches_next_cs_alu_inputA_sel             (exe_latches_next_cs_alu_inputA_sel_w),
-        .exe_latches_next_cs_alu_inputB_sel             (exe_latches_next_cs_alu_inputB_sel_w),
-        .exe_latches_next_cs_branch_target_sel          (exe_latches_next_cs_branch_target_sel_w),
-        .exe_latches_next_cs_shift_by_one               (exe_latches_next.cs.shift_by_one),
-        .exe_latches_next_cs_br_ucond                   (exe_latches_next.cs.br_ucond),
-        .exe_latches_next_cs_relative_branch            (exe_latches_next.cs.relative_branch),
-        .exe_latches_next_cs_special_br                 (exe_latches_next.cs.special_br),
-        .exe_latches_next_cs_is_far                     (exe_latches_next.cs.is_far),
-        .exe_latches_next_cs_is_call                    (exe_latches_next.cs.is_call),
-        .exe_latches_next_cs_second_flag_needed         (exe_latches_next.cs.second_flag_needed),
-        .exe_latches_next_cs_rep_no_zf_update           (exe_latches_next.cs.rep_no_zf_update),
-
-        // wb_cs_t
-        .exe_latches_next_wb_cs_ST_OP                   (exe_latches_next.wb_cs.ST_OP),
-        .exe_latches_next_wb_cs_WB_DR                   (exe_latches_next.wb_cs.WB_DR),
-        .exe_latches_next_wb_cs_WB_SR                   (exe_latches_next.wb_cs.WB_SR),
-        .exe_latches_next_wb_cs_WB_EAX                  (exe_latches_next.wb_cs.WB_EAX),
-
-        .exe_latches_next_data_size_vec                 (exe_latches_next.data_size_vec),
-        .exe_latches_next_sr_data_size_vec              (exe_latches_next.sr_data_size_vec),
-        .exe_latches_next_shift_sr_up                   (exe_latches_next.shift_sr_up),
-        .exe_latches_next_shift_sr_down                 (exe_latches_next.shift_sr_down),
-
-        .exe_latches_next_ST_XCL                        (exe_latches_next.ST_XCL),
-        .exe_latches_next_ST_PADDR_0                    (exe_latches_next.ST_PADDR_0),
-        .exe_latches_next_ST_PADDR_1                    (exe_latches_next.ST_PADDR_1),
-        .exe_latches_next_MIO                           (exe_latches_next.MIO),
-
-        // br_info_t
-        .exe_latches_next_br_info_valid                 (exe_latches_next.br_info.valid),
-        .exe_latches_next_br_info_br_eip                (exe_latches_next.br_info.br_eip),
-        .exe_latches_next_br_info_br_xcl                (exe_latches_next.br_info.br_xcl),
-        .exe_latches_next_br_info_br_pred_taken         (exe_latches_next.br_info.br_pred_taken),
-        .exe_latches_next_br_info_speculative_target    (exe_latches_next.br_info.speculative_target),
-
-        .exe_latches_next_br_rel_target                 (exe_latches_next.br_rel_target),
-
-        .exe_latches_next_NEIP                          (exe_latches_next.NEIP),
-        .exe_latches_next_EIP                           (exe_latches_next.EIP),
-        .exe_latches_next_EAX                           (exe_latches_next.EAX),
-        .exe_latches_next_imm64                         (exe_latches_next.imm64),
-
-        // ld_buf : 256-bit packed bus -> unpacked into struct field above
-        .exe_latches_next_ld_buf                        (exe_latches_next_ld_buf_w),
-
-        .exe_latches_next_sr_id                         (exe_latches_next.sr_id),
-        .exe_latches_next_sr_data                       (exe_latches_next.sr_data),
-        .exe_latches_next_dr_id                         (exe_latches_next.dr_id),
-        .exe_latches_next_dr_data                       (exe_latches_next.dr_data),
-
-        .exe_latches_next_ld_addy                       (exe_latches_next.ld_addy),
-
-        // ---- mem_outputs_t (outs_o) ----
-        .outs_valid                             (mem_outputs.valid),
-        .outs_stall                             (mem_outputs.stall),
-        .outs_ST_XCL                            (mem_outputs.ST_XCL),
-        .outs_ST_PADDR_0                        (mem_outputs.ST_PADDR_0),
-        .outs_ST_PADDR_1                        (mem_outputs.ST_PADDR_1),
-        .outs_ST_OP                             (mem_outputs.ST_OP),
-        .outs_exe_stage_latch_we                (mem_outputs.exe_stage_latch_we),
-
-        // clr_dcache_arb_latches per-port unroll
-        .outs_clr_dcache_arb_latches_0          (mem_outputs.clr_dcache_arb_latches[0]),
-        .outs_clr_dcache_arb_latches_1          (mem_outputs.clr_dcache_arb_latches[1]),
-        .outs_clr_dcache_arb_latches_2          (mem_outputs.clr_dcache_arb_latches[2]),
-        .outs_clr_dcache_arb_latches_3          (mem_outputs.clr_dcache_arb_latches[3]),
-
-        .outs_clr_dcache_mio_latch              (mem_outputs.clr_dcache_mio_latch)
+        .hit(DCacheIn_i.hit),
+        .cacheline(DCacheIn_i.cacheline),
+        .exe_latches_next_o(exe_latches_next),
+        .hit_MIO(DCacheIn_i.hit_MIO),
+        .line_MIO(DCacheIn_i.line_MIO),
+        .outs_o(mem_outputs)
     );
 
 
