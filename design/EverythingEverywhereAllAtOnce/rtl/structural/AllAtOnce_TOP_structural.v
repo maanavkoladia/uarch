@@ -19,6 +19,7 @@ module AllAtOnce_TOP (
     wire [14:0] core2icache_p_addr;
     wire [31:0] core2icache_v_addr_i;
     wire [1:0] core2icache_num_valid_IDM_slots;
+
     st_q_2_dcache_t                 stq2dcache;  // unused at this scope
     core_2_dcache_t                 core2dcache;
     dcache_2_core_t                 dcache2core;
@@ -119,10 +120,10 @@ module AllAtOnce_TOP (
         .rst(rst),
 
         // core_2_icache_t inputs (unpacked)
-        .icache_icache_en_i          (core2icache.icache_en),
-        .icache_p_addr_i             (core2icache.p_addr),
-        .icache_v_addr_i             (core2icache.v_addr_i),
-        .icache_num_valid_IDM_slots_i(core2icache.num_valid_IDM_slots),
+        .icache_icache_en_i          (core2icache_icache_en),
+        .icache_p_addr_i             (core2icache_p_addr),
+        .icache_v_addr_i             (core2icache_v_addr_i),
+        .icache_num_valid_IDM_slots_i(core2icache_num_valid_IDM_slots),
 
         // icache_2_core_t outputs (unpacked)
         .icache_hit_o             (icache_hit_w),

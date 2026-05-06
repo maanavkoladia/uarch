@@ -1047,8 +1047,8 @@ module EveryThing_TOP (
         .rst(rst),
 
         // ---- icache_2_core_t (icache_info_i) ----
-        .icache_info_hit             (ICacheIn_i.hit),
-        .icache_info_instruction_line(icache_info_instruction_line_w),
+        .icache_info_hit             (ICacheIn_i_hit),
+        .icache_info_instruction_line(ICacheIn_i_instruction_line),
 
         // ---- idm_outputs_t (idm_info_i) -- per-slot unroll ----
         .idm_info_idm_slots_0_valid        (idm_outputs.idm_slots[0].valid),
@@ -1113,7 +1113,7 @@ module EveryThing_TOP (
         // ---- wb_outputs (flat wires) ----
         .wb_outs_valid(wb_outputs_valid),
 
-        .dma_int(inFromDMA_i.intOut),
+        .dma_int(inFromDMA_i_intOut),
 
         // ---- fetch_outputs_t (outs_o) ----
         .outs_fetch_2_icache_icache_en          (fetch_outputs.fetch_2_icache.icache_en),
@@ -2204,9 +2204,9 @@ module EveryThing_TOP (
         .exe_outs_i(exe_outputs),
         .wb_outs_i(wb_outputs),
         .mem_latches_next_o(mem_latches_next),
-        .req_served_mio(DCacheIn_i.reqServed_MIO),
-        .req_served_0(DCacheIn_i.reqServed_0),
-        .req_served_1(DCacheIn_i.reqServed_1),
+        .req_served_mio(DCacheIn_i_reqServed_MIO),
+        .req_served_0(DCacheIn_i_reqServed_0),
+        .req_served_1(DCacheIn_i_reqServed_1),
         .dc_outs_o(dc_outputs)
     );
 
@@ -2764,11 +2764,11 @@ module EveryThing_TOP (
         .wb_latches_EAX         (wb_latches_EAX),
 
         // ---- write_success[NUM_WB_ST_QS] ----
-        .write_success_0  (DCacheIn_i.writeSuccess[0]),
-        .write_success_1  (DCacheIn_i.writeSuccess[1]),
-        .write_success_2  (DCacheIn_i.writeSuccess[2]),
-        .write_success_3  (DCacheIn_i.writeSuccess[3]),
-        .write_success_mio(DCacheIn_i.writeSuccess_MIO),
+        .write_success_0  (DCache_i_writeSuccess_0),
+        .write_success_1  (DCache_i_writeSuccess_0),
+        .write_success_2  (DCache_i_writeSuccess_2),
+        .write_success_3  (DCache_i_writeSuccess_3),
+        .write_success_mio(DCache_i_writeSuccess_MIO),
 
         // ---- wb_outputs scalars (flat) ----
         .outputs_valid     (wb_outputs_valid),
