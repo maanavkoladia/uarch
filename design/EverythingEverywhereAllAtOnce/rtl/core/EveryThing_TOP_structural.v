@@ -104,6 +104,21 @@ module EveryThing_TOP (
     endgenerate
 
     // ---------------------------------------------------------------------
+    // RR enum-width bridge: RR_structural's flat outputs for the forwarded
+    // exe_cs control signals are 6-bit OP_TYPE / 5-bit *_sel; the SV
+    // `dc_latches_t.exe_cs` struct fields are 32-bit (default-int enum).
+    // ---------------------------------------------------------------------
+    wire [5:0] dc_latches_next_exe_cs_OP_TYPE_w;
+    wire [4:0] dc_latches_next_exe_cs_alu_inputA_sel_w;
+    wire [4:0] dc_latches_next_exe_cs_alu_inputB_sel_w;
+    wire [4:0] dc_latches_next_exe_cs_branch_target_sel_w;
+
+    assign dc_latches_next.exe_cs.OP_TYPE            = {26'b0, dc_latches_next_exe_cs_OP_TYPE_w};
+    assign dc_latches_next.exe_cs.alu_inputA_sel     = {27'b0, dc_latches_next_exe_cs_alu_inputA_sel_w};
+    assign dc_latches_next.exe_cs.alu_inputB_sel     = {27'b0, dc_latches_next_exe_cs_alu_inputB_sel_w};
+    assign dc_latches_next.exe_cs.branch_target_sel  = {27'b0, dc_latches_next_exe_cs_branch_target_sel_w};
+
+    // ---------------------------------------------------------------------
     // DC enum-width bridge: DC_structural's flat ports for exe_cs control
     // signals are sized to their architectural widths (6-bit OP_TYPE,
     // 5-bit *_sel) while the SV `mem_latches_t.exe_cs` struct fields are
@@ -245,15 +260,303 @@ module EveryThing_TOP (
     RR rr_unit (
         .clk(clk),
         .rst(rst),
-        .latches_i(rr_latches),
-        .fetch_outs_i(fetch_outputs),
-        .decode_outs_i(decode_outputs),
-        .dc_outs_i(dc_outputs),
-        .mem_outs_i(mem_outputs),
-        .exe_outs_i(exe_outputs),
-        .wb_outs_i(wb_outputs),
-        .dc_latches_next(dc_latches_next),
-        .outs_o(rr_outputs)
+
+        // ====================================================================
+        // rr_latches_t (latches_i) -- normal_latches
+        // ====================================================================
+        .latches_normal_latches_valid                       (rr_latches.normal_latches.valid),
+
+        // rr_cs_t
+        .latches_normal_latches_cs_ST_SEL                   (rr_latches.normal_latches.cs.ST_SEL),
+        .latches_normal_latches_cs_MODRM_NEEDED             (rr_latches.normal_latches.cs.MODRM_NEEDED),
+        .latches_normal_latches_cs_RM_IS_DR                 (rr_latches.normal_latches.cs.RM_IS_DR),
+        .latches_normal_latches_cs_SWITCH_LD_ADDY           (rr_latches.normal_latches.cs.SWITCH_LD_ADDY),
+        .latches_normal_latches_cs_LD_OP                    (rr_latches.normal_latches.cs.LD_OP),
+        .latches_normal_latches_cs_ST_OP                    (rr_latches.normal_latches.cs.ST_OP),
+        .latches_normal_latches_cs_dr_id                    (rr_latches.normal_latches.cs.dr_id),
+        .latches_normal_latches_cs_sr_id                    (rr_latches.normal_latches.cs.sr_id),
+        .latches_normal_latches_cs_dr_rd                    (rr_latches.normal_latches.cs.dr_rd),
+        .latches_normal_latches_cs_sr_rd                    (rr_latches.normal_latches.cs.sr_rd),
+        .latches_normal_latches_cs_eax_rd                   (rr_latches.normal_latches.cs.eax_rd),
+        .latches_normal_latches_cs_dr_wr                    (rr_latches.normal_latches.cs.dr_wr),
+        .latches_normal_latches_cs_sr_wr                    (rr_latches.normal_latches.cs.sr_wr),
+        .latches_normal_latches_cs_eax_wr                   (rr_latches.normal_latches.cs.eax_wr),
+        .latches_normal_latches_cs_MOVS_OP                  (rr_latches.normal_latches.cs.MOVS_OP),
+        .latches_normal_latches_cs_datasize                 (rr_latches.normal_latches.cs.datasize),
+        .latches_normal_latches_cs_will_mod_zf              (rr_latches.normal_latches.cs.will_mod_zf),
+        .latches_normal_latches_cs_seg_1_valid              (rr_latches.normal_latches.cs.seg_1_valid),
+        .latches_normal_latches_cs_seg_0_id                 (rr_latches.normal_latches.cs.seg_0_id),
+        .latches_normal_latches_cs_seg_1_id                 (rr_latches.normal_latches.cs.seg_1_id),
+        .latches_normal_latches_cs_special_modrm_bs         (rr_latches.normal_latches.cs.special_modrm_bs),
+        .latches_normal_latches_cs_special_br               (rr_latches.normal_latches.cs.special_br),
+
+        // dc_cs_t
+        .latches_normal_latches_dc_cs_LD_OP                 (rr_latches.normal_latches.dc_cs.LD_OP),
+        .latches_normal_latches_dc_cs_ST_OP                 (rr_latches.normal_latches.dc_cs.ST_OP),
+        .latches_normal_latches_dc_cs_dr_upper8             (rr_latches.normal_latches.dc_cs.dr_upper8),
+        .latches_normal_latches_dc_cs_sr_upper8             (rr_latches.normal_latches.dc_cs.sr_upper8),
+        .latches_normal_latches_dc_cs_datasize              (rr_latches.normal_latches.dc_cs.datasize),
+
+        // mem_cs_t
+        .latches_normal_latches_mem_cs_ST_OP                (rr_latches.normal_latches.mem_cs.ST_OP),
+        .latches_normal_latches_mem_cs_LD_OP                (rr_latches.normal_latches.mem_cs.LD_OP),
+
+        // exe_cs_t (slice enums down to flat-port widths)
+        .latches_normal_latches_exe_cs_ST_OP                (rr_latches.normal_latches.exe_cs.ST_OP),
+        .latches_normal_latches_exe_cs_OP_TYPE              (rr_latches.normal_latches.exe_cs.OP_TYPE[5:0]),
+        .latches_normal_latches_exe_cs_alu_inputA_sel       (rr_latches.normal_latches.exe_cs.alu_inputA_sel[4:0]),
+        .latches_normal_latches_exe_cs_alu_inputB_sel       (rr_latches.normal_latches.exe_cs.alu_inputB_sel[4:0]),
+        .latches_normal_latches_exe_cs_branch_target_sel    (rr_latches.normal_latches.exe_cs.branch_target_sel[4:0]),
+        .latches_normal_latches_exe_cs_shift_by_one         (rr_latches.normal_latches.exe_cs.shift_by_one),
+        .latches_normal_latches_exe_cs_br_ucond             (rr_latches.normal_latches.exe_cs.br_ucond),
+        .latches_normal_latches_exe_cs_relative_branch      (rr_latches.normal_latches.exe_cs.relative_branch),
+        .latches_normal_latches_exe_cs_special_br           (rr_latches.normal_latches.exe_cs.special_br),
+        .latches_normal_latches_exe_cs_is_far               (rr_latches.normal_latches.exe_cs.is_far),
+        .latches_normal_latches_exe_cs_is_call              (rr_latches.normal_latches.exe_cs.is_call),
+        .latches_normal_latches_exe_cs_second_flag_needed   (rr_latches.normal_latches.exe_cs.second_flag_needed),
+        .latches_normal_latches_exe_cs_rep_no_zf_update     (rr_latches.normal_latches.exe_cs.rep_no_zf_update),
+
+        // wb_cs_t
+        .latches_normal_latches_wb_cs_ST_OP                 (rr_latches.normal_latches.wb_cs.ST_OP),
+        .latches_normal_latches_wb_cs_WB_DR                 (rr_latches.normal_latches.wb_cs.WB_DR),
+        .latches_normal_latches_wb_cs_WB_SR                 (rr_latches.normal_latches.wb_cs.WB_SR),
+        .latches_normal_latches_wb_cs_WB_EAX                (rr_latches.normal_latches.wb_cs.WB_EAX),
+
+        // br_info_t
+        .latches_normal_latches_br_info_valid               (rr_latches.normal_latches.br_info.valid),
+        .latches_normal_latches_br_info_br_eip              (rr_latches.normal_latches.br_info.br_eip),
+        .latches_normal_latches_br_info_br_xcl              (rr_latches.normal_latches.br_info.br_xcl),
+        .latches_normal_latches_br_info_br_pred_taken       (rr_latches.normal_latches.br_info.br_pred_taken),
+        .latches_normal_latches_br_info_speculative_target  (rr_latches.normal_latches.br_info.speculative_target),
+
+        .latches_normal_latches_NEIP                        (rr_latches.normal_latches.NEIP),
+        .latches_normal_latches_EIP                         (rr_latches.normal_latches.EIP),
+        .latches_normal_latches_EAX                         (rr_latches.normal_latches.EAX),
+        .latches_normal_latches_imm64                       (rr_latches.normal_latches.imm64),
+
+        .latches_normal_latches_sib_idx_id                  (rr_latches.normal_latches.sib_idx_id),
+        .latches_normal_latches_sib_base_id                 (rr_latches.normal_latches.sib_base_id),
+        .latches_normal_latches_sib_needed                  (rr_latches.normal_latches.sib_needed),
+        .latches_normal_latches_sib_scale                   (rr_latches.normal_latches.sib_scale),
+        .latches_normal_latches_disp_needed                 (rr_latches.normal_latches.disp_needed),
+        .latches_normal_latches_disp_size                   (rr_latches.normal_latches.disp_size),
+        .latches_normal_latches_displacement                (rr_latches.normal_latches.displacement),
+
+        // ====================================================================
+        // rr_latches_t (latches_i) -- rep_latches
+        // ====================================================================
+        .latches_rep_latches_valid                          (rr_latches.rep_latches.valid),
+
+        // rr_cs_t
+        .latches_rep_latches_cs_ST_SEL                      (rr_latches.rep_latches.cs.ST_SEL),
+        .latches_rep_latches_cs_MODRM_NEEDED                (rr_latches.rep_latches.cs.MODRM_NEEDED),
+        .latches_rep_latches_cs_RM_IS_DR                    (rr_latches.rep_latches.cs.RM_IS_DR),
+        .latches_rep_latches_cs_SWITCH_LD_ADDY              (rr_latches.rep_latches.cs.SWITCH_LD_ADDY),
+        .latches_rep_latches_cs_LD_OP                       (rr_latches.rep_latches.cs.LD_OP),
+        .latches_rep_latches_cs_ST_OP                       (rr_latches.rep_latches.cs.ST_OP),
+        .latches_rep_latches_cs_dr_id                       (rr_latches.rep_latches.cs.dr_id),
+        .latches_rep_latches_cs_sr_id                       (rr_latches.rep_latches.cs.sr_id),
+        .latches_rep_latches_cs_dr_rd                       (rr_latches.rep_latches.cs.dr_rd),
+        .latches_rep_latches_cs_sr_rd                       (rr_latches.rep_latches.cs.sr_rd),
+        .latches_rep_latches_cs_eax_rd                      (rr_latches.rep_latches.cs.eax_rd),
+        .latches_rep_latches_cs_dr_wr                       (rr_latches.rep_latches.cs.dr_wr),
+        .latches_rep_latches_cs_sr_wr                       (rr_latches.rep_latches.cs.sr_wr),
+        .latches_rep_latches_cs_eax_wr                      (rr_latches.rep_latches.cs.eax_wr),
+        .latches_rep_latches_cs_MOVS_OP                     (rr_latches.rep_latches.cs.MOVS_OP),
+        .latches_rep_latches_cs_datasize                    (rr_latches.rep_latches.cs.datasize),
+        .latches_rep_latches_cs_will_mod_zf                 (rr_latches.rep_latches.cs.will_mod_zf),
+        .latches_rep_latches_cs_seg_1_valid                 (rr_latches.rep_latches.cs.seg_1_valid),
+        .latches_rep_latches_cs_seg_0_id                    (rr_latches.rep_latches.cs.seg_0_id),
+        .latches_rep_latches_cs_seg_1_id                    (rr_latches.rep_latches.cs.seg_1_id),
+        .latches_rep_latches_cs_special_modrm_bs            (rr_latches.rep_latches.cs.special_modrm_bs),
+        .latches_rep_latches_cs_special_br                  (rr_latches.rep_latches.cs.special_br),
+
+        // dc_cs_t
+        .latches_rep_latches_dc_cs_LD_OP                    (rr_latches.rep_latches.dc_cs.LD_OP),
+        .latches_rep_latches_dc_cs_ST_OP                    (rr_latches.rep_latches.dc_cs.ST_OP),
+        .latches_rep_latches_dc_cs_dr_upper8                (rr_latches.rep_latches.dc_cs.dr_upper8),
+        .latches_rep_latches_dc_cs_sr_upper8                (rr_latches.rep_latches.dc_cs.sr_upper8),
+        .latches_rep_latches_dc_cs_datasize                 (rr_latches.rep_latches.dc_cs.datasize),
+
+        // mem_cs_t
+        .latches_rep_latches_mem_cs_ST_OP                   (rr_latches.rep_latches.mem_cs.ST_OP),
+        .latches_rep_latches_mem_cs_LD_OP                   (rr_latches.rep_latches.mem_cs.LD_OP),
+
+        // exe_cs_t (slice)
+        .latches_rep_latches_exe_cs_ST_OP                   (rr_latches.rep_latches.exe_cs.ST_OP),
+        .latches_rep_latches_exe_cs_OP_TYPE                 (rr_latches.rep_latches.exe_cs.OP_TYPE[5:0]),
+        .latches_rep_latches_exe_cs_alu_inputA_sel          (rr_latches.rep_latches.exe_cs.alu_inputA_sel[4:0]),
+        .latches_rep_latches_exe_cs_alu_inputB_sel          (rr_latches.rep_latches.exe_cs.alu_inputB_sel[4:0]),
+        .latches_rep_latches_exe_cs_branch_target_sel       (rr_latches.rep_latches.exe_cs.branch_target_sel[4:0]),
+        .latches_rep_latches_exe_cs_shift_by_one            (rr_latches.rep_latches.exe_cs.shift_by_one),
+        .latches_rep_latches_exe_cs_br_ucond                (rr_latches.rep_latches.exe_cs.br_ucond),
+        .latches_rep_latches_exe_cs_relative_branch         (rr_latches.rep_latches.exe_cs.relative_branch),
+        .latches_rep_latches_exe_cs_special_br              (rr_latches.rep_latches.exe_cs.special_br),
+        .latches_rep_latches_exe_cs_is_far                  (rr_latches.rep_latches.exe_cs.is_far),
+        .latches_rep_latches_exe_cs_is_call                 (rr_latches.rep_latches.exe_cs.is_call),
+        .latches_rep_latches_exe_cs_second_flag_needed      (rr_latches.rep_latches.exe_cs.second_flag_needed),
+        .latches_rep_latches_exe_cs_rep_no_zf_update        (rr_latches.rep_latches.exe_cs.rep_no_zf_update),
+
+        // wb_cs_t
+        .latches_rep_latches_wb_cs_ST_OP                    (rr_latches.rep_latches.wb_cs.ST_OP),
+        .latches_rep_latches_wb_cs_WB_DR                    (rr_latches.rep_latches.wb_cs.WB_DR),
+        .latches_rep_latches_wb_cs_WB_SR                    (rr_latches.rep_latches.wb_cs.WB_SR),
+        .latches_rep_latches_wb_cs_WB_EAX                   (rr_latches.rep_latches.wb_cs.WB_EAX),
+
+        // br_info_t
+        .latches_rep_latches_br_info_valid                  (rr_latches.rep_latches.br_info.valid),
+        .latches_rep_latches_br_info_br_eip                 (rr_latches.rep_latches.br_info.br_eip),
+        .latches_rep_latches_br_info_br_xcl                 (rr_latches.rep_latches.br_info.br_xcl),
+        .latches_rep_latches_br_info_br_pred_taken          (rr_latches.rep_latches.br_info.br_pred_taken),
+        .latches_rep_latches_br_info_speculative_target     (rr_latches.rep_latches.br_info.speculative_target),
+
+        .latches_rep_latches_NEIP                           (rr_latches.rep_latches.NEIP),
+        .latches_rep_latches_EIP                            (rr_latches.rep_latches.EIP),
+        .latches_rep_latches_EAX                            (rr_latches.rep_latches.EAX),
+        .latches_rep_latches_imm64                          (rr_latches.rep_latches.imm64),
+
+        .latches_rep_latches_sib_idx_id                     (rr_latches.rep_latches.sib_idx_id),
+        .latches_rep_latches_sib_base_id                    (rr_latches.rep_latches.sib_base_id),
+        .latches_rep_latches_sib_needed                     (rr_latches.rep_latches.sib_needed),
+        .latches_rep_latches_sib_scale                      (rr_latches.rep_latches.sib_scale),
+        .latches_rep_latches_disp_needed                    (rr_latches.rep_latches.disp_needed),
+        .latches_rep_latches_disp_size                      (rr_latches.rep_latches.disp_size),
+        .latches_rep_latches_displacement                   (rr_latches.rep_latches.displacement),
+
+        // ====================================================================
+        // fetch_outputs_t / decode_outputs_t / dc_outputs_t / mem_outputs_t /
+        // exe_outputs_t / wb_outputs_t  (only the consumed fields)
+        // ====================================================================
+        .fetch_outs_exp_pipe_clear                          (fetch_outputs.exp_pipe_clear),
+        .decode_outs_rep_latch                              (decode_outputs.rep_latch),
+        .decode_outs_decode_gp                              (decode_outputs.decode_gp),
+        .dc_outs_valid                                      (dc_outputs.valid),
+        .dc_outs_stall                                      (dc_outputs.stall),
+        .mem_outs_valid                                     (mem_outputs.valid),
+        .mem_outs_stall                                     (mem_outputs.stall),
+        .exe_outs_valid                                     (exe_outputs.valid),
+        .exe_outs_br_res_flush                              (exe_outputs.br_res_out.flush),
+        .exe_outs_br_res_farFlush                           (exe_outputs.br_res_out.farFlush),
+        .exe_outs_br_res_callFlush                          (exe_outputs.br_res_out.callFlush),
+        .exe_outs_DR_0_we                                   (exe_outputs.DR_0_we),
+        .exe_outs_DR_0_id                                   (exe_outputs.DR_0_id),
+        .exe_outs_DR_0_data                                 (exe_outputs.DR_0_data),
+        .exe_outs_DR_1_we                                   (exe_outputs.DR_1_we),
+        .exe_outs_DR_1_id                                   (exe_outputs.DR_1_id),
+        .exe_outs_DR_1_data                                 (exe_outputs.DR_1_data),
+        .wb_outs_wb_stall                                   (wb_outputs.wb_stall),
+
+        // ====================================================================
+        // dc_latches_t (dc_latches_next)
+        // ====================================================================
+        .dc_latches_next_valid                              (dc_latches_next.valid),
+
+        // dc_cs_t
+        .dc_latches_next_cs_LD_OP                           (dc_latches_next.cs.LD_OP),
+        .dc_latches_next_cs_ST_OP                           (dc_latches_next.cs.ST_OP),
+        .dc_latches_next_cs_dr_upper8                       (dc_latches_next.cs.dr_upper8),
+        .dc_latches_next_cs_sr_upper8                       (dc_latches_next.cs.sr_upper8),
+        .dc_latches_next_cs_datasize                        (dc_latches_next.cs.datasize),
+
+        // mem_cs_t
+        .dc_latches_next_mem_cs_ST_OP                       (dc_latches_next.mem_cs.ST_OP),
+        .dc_latches_next_mem_cs_LD_OP                       (dc_latches_next.mem_cs.LD_OP),
+
+        // exe_cs_t (enum-width bridges for the four 32-bit struct fields)
+        .dc_latches_next_exe_cs_ST_OP                       (dc_latches_next.exe_cs.ST_OP),
+        .dc_latches_next_exe_cs_OP_TYPE                     (dc_latches_next_exe_cs_OP_TYPE_w),
+        .dc_latches_next_exe_cs_alu_inputA_sel              (dc_latches_next_exe_cs_alu_inputA_sel_w),
+        .dc_latches_next_exe_cs_alu_inputB_sel              (dc_latches_next_exe_cs_alu_inputB_sel_w),
+        .dc_latches_next_exe_cs_branch_target_sel           (dc_latches_next_exe_cs_branch_target_sel_w),
+        .dc_latches_next_exe_cs_shift_by_one                (dc_latches_next.exe_cs.shift_by_one),
+        .dc_latches_next_exe_cs_br_ucond                    (dc_latches_next.exe_cs.br_ucond),
+        .dc_latches_next_exe_cs_relative_branch             (dc_latches_next.exe_cs.relative_branch),
+        .dc_latches_next_exe_cs_special_br                  (dc_latches_next.exe_cs.special_br),
+        .dc_latches_next_exe_cs_is_far                      (dc_latches_next.exe_cs.is_far),
+        .dc_latches_next_exe_cs_is_call                     (dc_latches_next.exe_cs.is_call),
+        .dc_latches_next_exe_cs_second_flag_needed          (dc_latches_next.exe_cs.second_flag_needed),
+        .dc_latches_next_exe_cs_rep_no_zf_update            (dc_latches_next.exe_cs.rep_no_zf_update),
+
+        // wb_cs_t
+        .dc_latches_next_wb_cs_ST_OP                        (dc_latches_next.wb_cs.ST_OP),
+        .dc_latches_next_wb_cs_WB_DR                        (dc_latches_next.wb_cs.WB_DR),
+        .dc_latches_next_wb_cs_WB_SR                        (dc_latches_next.wb_cs.WB_SR),
+        .dc_latches_next_wb_cs_WB_EAX                       (dc_latches_next.wb_cs.WB_EAX),
+
+        // br_info_t
+        .dc_latches_next_br_info_valid                      (dc_latches_next.br_info.valid),
+        .dc_latches_next_br_info_br_eip                     (dc_latches_next.br_info.br_eip),
+        .dc_latches_next_br_info_br_xcl                     (dc_latches_next.br_info.br_xcl),
+        .dc_latches_next_br_info_br_pred_taken              (dc_latches_next.br_info.br_pred_taken),
+        .dc_latches_next_br_info_speculative_target         (dc_latches_next.br_info.speculative_target),
+
+        .dc_latches_next_rr_gp                              (dc_latches_next.rr_gp),
+
+        .dc_latches_next_ld_vaddy                           (dc_latches_next.ld_vaddy),
+        .dc_latches_next_seg0_limit_w_datasize              (dc_latches_next.seg0_limit_w_datasize),
+        .dc_latches_next_seg0_limit_wo_datasize             (dc_latches_next.seg0_limit_wo_datasize),
+        .dc_latches_next_next_ld_vaddy                      (dc_latches_next.next_ld_vaddy),
+        .dc_latches_next_ld_laddy                           (dc_latches_next.ld_laddy),
+        .dc_latches_next_ld_stack_access                    (dc_latches_next.ld_stack_access),
+
+        .dc_latches_next_st_vaddy                           (dc_latches_next.st_vaddy),
+        .dc_latches_next_seg1_limit_w_datasize              (dc_latches_next.seg1_limit_w_datasize),
+        .dc_latches_next_seg1_limit_wo_datasize             (dc_latches_next.seg1_limit_wo_datasize),
+        .dc_latches_next_next_st_vaddy                      (dc_latches_next.next_st_vaddy),
+        .dc_latches_next_st_laddy                           (dc_latches_next.st_laddy),
+        .dc_latches_next_st_stack_access                    (dc_latches_next.st_stack_access),
+
+        .dc_latches_next_NEIP                               (dc_latches_next.NEIP),
+        .dc_latches_next_EIP                                (dc_latches_next.EIP),
+        .dc_latches_next_EAX                                (dc_latches_next.EAX),
+        .dc_latches_next_imm64                              (dc_latches_next.imm64),
+
+        .dc_latches_next_sr_id                              (dc_latches_next.sr_id),
+        .dc_latches_next_sr_data                            (dc_latches_next.sr_data),
+        .dc_latches_next_dr_id                              (dc_latches_next.dr_id),
+        .dc_latches_next_dr_data                            (dc_latches_next.dr_data),
+
+        // ====================================================================
+        // rr_outputs_t (outs_o)
+        // ====================================================================
+        .outs_valid                                         (rr_outputs.valid),
+        .outs_stall                                         (rr_outputs.stall),
+        .outs_ecx_sb                                        (rr_outputs.ecx_sb),
+        .outs_ecx                                           (rr_outputs.ecx),
+        .outs_eax                                           (rr_outputs.eax),
+        .outs_set_ZF_sb                                     (rr_outputs.set_ZF_sb),
+        .outs_codeSeg_sb                                    (rr_outputs.codeSeg_sb),
+        .outs_codeSeg_data                                  (rr_outputs.codeSeg_data),
+        .outs_codeSeg_limit                                 (rr_outputs.codeSeg_limit),
+        .outs_dc_stage_latch_we                             (rr_outputs.dc_stage_latch_we),
+
+        // regFileValues_o[NUM_REGS=26] -- one 64-bit element per reg id
+        .outs_regFileValues_0                               (rr_outputs.regFileValues[0]),
+        .outs_regFileValues_1                               (rr_outputs.regFileValues[1]),
+        .outs_regFileValues_2                               (rr_outputs.regFileValues[2]),
+        .outs_regFileValues_3                               (rr_outputs.regFileValues[3]),
+        .outs_regFileValues_4                               (rr_outputs.regFileValues[4]),
+        .outs_regFileValues_5                               (rr_outputs.regFileValues[5]),
+        .outs_regFileValues_6                               (rr_outputs.regFileValues[6]),
+        .outs_regFileValues_7                               (rr_outputs.regFileValues[7]),
+        .outs_regFileValues_8                               (rr_outputs.regFileValues[8]),
+        .outs_regFileValues_9                               (rr_outputs.regFileValues[9]),
+        .outs_regFileValues_10                              (rr_outputs.regFileValues[10]),
+        .outs_regFileValues_11                              (rr_outputs.regFileValues[11]),
+        .outs_regFileValues_12                              (rr_outputs.regFileValues[12]),
+        .outs_regFileValues_13                              (rr_outputs.regFileValues[13]),
+        .outs_regFileValues_14                              (rr_outputs.regFileValues[14]),
+        .outs_regFileValues_15                              (rr_outputs.regFileValues[15]),
+        .outs_regFileValues_16                              (rr_outputs.regFileValues[16]),
+        .outs_regFileValues_17                              (rr_outputs.regFileValues[17]),
+        .outs_regFileValues_18                              (rr_outputs.regFileValues[18]),
+        .outs_regFileValues_19                              (rr_outputs.regFileValues[19]),
+        .outs_regFileValues_20                              (rr_outputs.regFileValues[20]),
+        .outs_regFileValues_21                              (rr_outputs.regFileValues[21]),
+        .outs_regFileValues_22                              (rr_outputs.regFileValues[22]),
+        .outs_regFileValues_23                              (rr_outputs.regFileValues[23]),
+        .outs_regFileValues_24                              (rr_outputs.regFileValues[24]),
+        .outs_regFileValues_25                              (rr_outputs.regFileValues[25])
     );
 
     DC_Latches dc_latches_unit (
