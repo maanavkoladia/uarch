@@ -1,9 +1,3 @@
-import common_pkg::*;
-import interconnect_pkg::*;
-import core_common_pkg::*;
-import core_stage_latches_pkg::*;
-import reg_ids_pkg::*;
-
 module EveryThing_TOP (
     input wire clk,
     input wire rst,
