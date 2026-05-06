@@ -16,7 +16,7 @@ TARGET = system_testing
 STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 8.5
+CLK_PERIOD := 9 
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 	p	DCACHE_DUMP_END=100
@@ -124,7 +124,7 @@ runSoft:
 	    +LOG_FILE_NAME=$(RTL_RUN_LOG_FILE) \
 	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
 	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
-	    2>&1 | $(SIM_REPORT_LOG_FILE)
+	    2>&1 | tee $(SIM_REPORT_LOG_FILE)
 	
 
 genSoft:

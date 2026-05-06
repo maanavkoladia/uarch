@@ -11,8 +11,8 @@ STAGE_LATCHES_SRC_FILES = \
 
 
 STAGE_LATCHES_STRUCTURAL_SRC_FILES = \
-				 $(STAGE_LATCH_PATH_INTERNAL)/structural/DC_Latches.sv \
-				 $(STAGE_LATCH_PATH_INTERNAL)/structural/EXE_Latches.sv \
-				 $(STAGE_LATCH_PATH_INTERNAL)/structural/MEM_Latches.sv \
-				 $(STAGE_LATCH_PATH_INTERNAL)/structural/RR_Latches.sv \
-				 $(STAGE_LATCH_PATH_INTERNAL)/structural/WB_Latches.sv \
+				 $(STAGE_LATCH_PATH_INTERNAL)/structural/DC_Latches.v \
+				 $(STAGE_LATCH_PATH_INTERNAL)/structural/EXE_Latches.v \
+				 $(STAGE_LATCH_PATH_INTERNAL)/structural/MEM_Latches.v \
+				 $(STAGE_LATCH_PATH_INTERNAL)/structural/RR_Latches.v \
+				 $(STAGE_LATCH_PATH_INTERNAL)/structural/WB_Latches.v \

@@ -266,7 +266,7 @@ task automatic dump_regs(input logic [31:0] eip);
     //           `REGFILE_PATH.REGISTERS[MM6],
     //           `REGFILE_PATH.REGISTERS[MM7]);
 
-        $fdisplay(`REGDUMP_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
+    $fdisplay(`REGDUMP_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
               `REGFILE_PATH.REG_EAX_o[31:0],
               `REGFILE_PATH.REG_EBX_o[31:0],
               `REGFILE_PATH.REG_ECX_o[31:0],

@@ -1,92 +1,86 @@
-/*
+// =============================================================================
+// MEM_Latches  (pure Verilog-2005 structural stage latch)
+//
+//   Reference SV struct (kept for documentation):
+//     typedef struct {
+//         bool valid;  //we had a br in decode
+//         l_address_t br_eip;
+//         bool br_xcl;
+//         bool br_pred_taken;
+//         l_address_t speculative_target;
+//     } br_info_t;
+//
+//     typedef struct {
+//         bool ST_OP;
+//         bool LD_OP;
+//     } mem_cs_t;
+//
+//     typedef struct {
+//         bool ST_OP;
+//         exe_cs_operation_type_e OP_TYPE;
+//         source_selector_e alu_inputA_sel;
+//         source_selector_e alu_inputB_sel;
+//         source_selector_e branch_target_sel;
+//         bool shift_by_one;
+//         bool br_ucond;
+//         bool relative_branch;
+//         bool special_br;
+//         bool is_far;
+//         bool is_call;
+//         bool second_flag_needed;
+//         bool rep_no_zf_update;
+//     } exe_cs_t;
+//
+//     typedef struct {
+//         bool ST_OP;
+//         bool WB_DR;
+//         bool WB_SR;
+//         bool WB_EAX;
+//     } wb_cs_t;
+//
+//     typedef struct {
+//         bool valid;
+//         mem_cs_t cs;
+//         exe_cs_t exe_cs;
+//         wb_cs_t wb_cs;
+//         br_info_t br_info;
+//         logic [3:0] data_size_vec;
+//         logic [3:0] sr_data_size_vec;
+//         bool shift_sr_up;
+//         bool shift_sr_down;
+//         bool ST_XCL;
+//         p_address_t ST_PADDR_0;
+//         p_address_t ST_PADDR_1;
+//         bool MIO;
+//         l_address_t NEIP;
+//         l_address_t EIP;
+//         uint32_t EAX;
+//         uint64_t imm64;
+//         reg_ids_e sr_id;
+//         uint64_t  sr_data;
+//         reg_ids_e dr_id;
+//         uint64_t  dr_data;
+//         bool LD_XCL;
+//         bool swapLines;
+//         p_address_t LD_PADDR_0;
+//         p_address_t LD_PADDR_1;
+//     } mem_latches_t;
+//
+//   Flush behavior (matches non-structural reference):
+//     - !rst                           -> latches <= 0  (REG_RST_WE async reset)
+//     - flush || farFlush              -> latches <= 0  (regardless of write_enable_i)
+//     - write_enable_i && !any_flush   -> latches <= nextLatches
+//     - !write_enable_i && !any_flush  -> hold
+//     Implementation:
+//       combined_flush = flush OR farFlush
+//       effective_we   = write_enable_i OR combined_flush
+//       per-field MUX_2 selects (combined_flush ? 0 : nextLatches), output
+//       feeds REG_RST_WE.d, with we = effective_we.
+//
+//   - SV `import` removed; no struct/typedef/enum used.
+//   - Every field is its own scalar/vector port (`.field` -> `_field`).
+// =============================================================================
 
-    typedef struct {
-        bool valid;  //we had a br in decode
-        l_address_t br_eip;
-        bool br_xcl;
-        bool br_pred_taken;
-        l_address_t speculative_target;
-    } br_info_t;
-
-    typedef struct {
-        bool ST_OP;
-        bool LD_OP;
-    } mem_cs_t;
-
-    typedef struct {
-        bool ST_OP;
-        exe_cs_operation_type_e OP_TYPE;
-        source_selector_e alu_inputA_sel;
-        source_selector_e alu_inputB_sel;
-        source_selector_e branch_target_sel;
-        bool shift_by_one;
-        bool br_ucond;
-        bool relative_branch;
-        bool special_br;
-        bool is_far;
-        bool is_call;
-        bool second_flag_needed;
-        bool rep_no_zf_update;
-    } exe_cs_t;
-
-    typedef struct {
-        bool ST_OP;
-        bool WB_DR;
-        bool WB_SR;
-        bool WB_EAX;
-    } wb_cs_t;
-
-    typedef struct {
-        bool valid;
-        mem_cs_t cs;
-        exe_cs_t exe_cs;
-        wb_cs_t wb_cs;
-        br_info_t br_info;
-
-        logic [3:0] data_size_vec;
-        logic [3:0] sr_data_size_vec;
-        bool shift_sr_up;
-        bool shift_sr_down;
-
-        bool ST_XCL;
-        p_address_t ST_PADDR_0;
-        p_address_t ST_PADDR_1;
-        bool MIO;
-
-        l_address_t NEIP;
-        l_address_t EIP;
-        uint32_t EAX;
-
-        uint64_t imm64;
-
-        reg_ids_e sr_id;
-        uint64_t  sr_data;
-        reg_ids_e dr_id;
-        uint64_t  dr_data;
-
-        bool LD_XCL;
-        bool swapLines;
-        p_address_t LD_PADDR_0;
-        p_address_t LD_PADDR_1;
-    } mem_latches_t;
-
-    Flush behavior (matches non-structural reference):
-      - !rst                           -> latches <= 0  (REG_RST_WE async reset)
-      - flush || farFlush              -> latches <= 0  (regardless of write_enable_i)
-      - write_enable_i && !any_flush   -> latches <= nextLatches
-      - !write_enable_i && !any_flush  -> hold
-      Implementation:
-        combined_flush = flush OR farFlush
-        effective_we   = write_enable_i OR combined_flush
-        per-field MUX_2 selects (combined_flush ? 0 : nextLatches), output
-        feeds REG_RST_WE.d, with we = effective_we.
-
-*/
-
-import core_stage_latches_pkg::*;
-
-`ifdef STRUCTURAL_MEM_STAGE_LATCHES
-//fully unrolled stage latch, every leaf field of mem_latches_t gets its own port.
 module MEM_Latches (
     input wire clk,
     input wire rst,
@@ -212,244 +206,6 @@ module MEM_Latches (
     output wire [14:0] latches_LD_PADDR_0_o,
     output wire [14:0] latches_LD_PADDR_1_o
 );
-`else
-module MEM_Latches (
-    input wire clk,
-    input wire rst,
-    input mem_latches_t nextLatches_i,
-    input wire write_enable_i,
-    input wire flush,
-    input wire farFlush,
-    output mem_latches_t latches_o
-);
-
-    // ---- alias wires (same names as the unrolled-port version) ----
-    wire        nextLatches_valid_i;
-
-    wire        nextLatches_cs_ST_OP_i;
-    wire        nextLatches_cs_LD_OP_i;
-
-    wire        nextLatches_exe_cs_ST_OP_i;
-    wire [31:0] nextLatches_exe_cs_OP_TYPE_i;
-    wire [31:0] nextLatches_exe_cs_alu_inputA_sel_i;
-    wire [31:0] nextLatches_exe_cs_alu_inputB_sel_i;
-    wire [31:0] nextLatches_exe_cs_branch_target_sel_i;
-    wire        nextLatches_exe_cs_shift_by_one_i;
-    wire        nextLatches_exe_cs_br_ucond_i;
-    wire        nextLatches_exe_cs_relative_branch_i;
-    wire        nextLatches_exe_cs_special_br_i;
-    wire        nextLatches_exe_cs_is_far_i;
-    wire        nextLatches_exe_cs_is_call_i;
-    wire        nextLatches_exe_cs_second_flag_needed_i;
-    wire        nextLatches_exe_cs_rep_no_zf_update_i;
-
-    wire        nextLatches_wb_cs_ST_OP_i;
-    wire        nextLatches_wb_cs_WB_DR_i;
-    wire        nextLatches_wb_cs_WB_SR_i;
-    wire        nextLatches_wb_cs_WB_EAX_i;
-
-    wire        nextLatches_br_info_valid_i;
-    wire [31:0] nextLatches_br_info_br_eip_i;
-    wire        nextLatches_br_info_br_xcl_i;
-    wire        nextLatches_br_info_br_pred_taken_i;
-    wire [31:0] nextLatches_br_info_speculative_target_i;
-
-    wire [3:0]  nextLatches_data_size_vec_i;
-    wire [3:0]  nextLatches_sr_data_size_vec_i;
-    wire        nextLatches_shift_sr_up_i;
-    wire        nextLatches_shift_sr_down_i;
-
-    wire        nextLatches_ST_XCL_i;
-    wire [14:0] nextLatches_ST_PADDR_0_i;
-    wire [14:0] nextLatches_ST_PADDR_1_i;
-    wire        nextLatches_MIO_i;
-
-    wire [31:0] nextLatches_NEIP_i;
-    wire [31:0] nextLatches_EIP_i;
-    wire [31:0] nextLatches_EAX_i;
-
-    wire [63:0] nextLatches_imm64_i;
-
-    wire [4:0]  nextLatches_sr_id_i;
-    wire [63:0] nextLatches_sr_data_i;
-    wire [4:0]  nextLatches_dr_id_i;
-    wire [63:0] nextLatches_dr_data_i;
-
-    wire        nextLatches_LD_XCL_i;
-    wire        nextLatches_swapLines_i;
-    wire [14:0] nextLatches_LD_PADDR_0_i;
-    wire [14:0] nextLatches_LD_PADDR_1_i;
-
-    wire        latches_valid_o;
-
-    wire        latches_cs_ST_OP_o;
-    wire        latches_cs_LD_OP_o;
-
-    wire        latches_exe_cs_ST_OP_o;
-    wire [31:0] latches_exe_cs_OP_TYPE_o;
-    wire [31:0] latches_exe_cs_alu_inputA_sel_o;
-    wire [31:0] latches_exe_cs_alu_inputB_sel_o;
-    wire [31:0] latches_exe_cs_branch_target_sel_o;
-    wire        latches_exe_cs_shift_by_one_o;
-    wire        latches_exe_cs_br_ucond_o;
-    wire        latches_exe_cs_relative_branch_o;
-    wire        latches_exe_cs_special_br_o;
-    wire        latches_exe_cs_is_far_o;
-    wire        latches_exe_cs_is_call_o;
-    wire        latches_exe_cs_second_flag_needed_o;
-    wire        latches_exe_cs_rep_no_zf_update_o;
-
-    wire        latches_wb_cs_ST_OP_o;
-    wire        latches_wb_cs_WB_DR_o;
-    wire        latches_wb_cs_WB_SR_o;
-    wire        latches_wb_cs_WB_EAX_o;
-
-    wire        latches_br_info_valid_o;
-    wire [31:0] latches_br_info_br_eip_o;
-    wire        latches_br_info_br_xcl_o;
-    wire        latches_br_info_br_pred_taken_o;
-    wire [31:0] latches_br_info_speculative_target_o;
-
-    wire [3:0]  latches_data_size_vec_o;
-    wire [3:0]  latches_sr_data_size_vec_o;
-    wire        latches_shift_sr_up_o;
-    wire        latches_shift_sr_down_o;
-
-    wire        latches_ST_XCL_o;
-    wire [14:0] latches_ST_PADDR_0_o;
-    wire [14:0] latches_ST_PADDR_1_o;
-    wire        latches_MIO_o;
-
-    wire [31:0] latches_NEIP_o;
-    wire [31:0] latches_EIP_o;
-    wire [31:0] latches_EAX_o;
-
-    wire [63:0] latches_imm64_o;
-
-    wire [4:0]  latches_sr_id_o;
-    wire [63:0] latches_sr_data_o;
-    wire [4:0]  latches_dr_id_o;
-    wire [63:0] latches_dr_data_o;
-
-    wire        latches_LD_XCL_o;
-    wire        latches_swapLines_o;
-    wire [14:0] latches_LD_PADDR_0_o;
-    wire [14:0] latches_LD_PADDR_1_o;
-
-    // ---- bridge SV struct fields -> alias wires ----
-    assign nextLatches_valid_i                         = nextLatches_i.valid;
-
-    assign nextLatches_cs_ST_OP_i                      = nextLatches_i.cs.ST_OP;
-    assign nextLatches_cs_LD_OP_i                      = nextLatches_i.cs.LD_OP;
-
-    assign nextLatches_exe_cs_ST_OP_i                  = nextLatches_i.exe_cs.ST_OP;
-    assign nextLatches_exe_cs_OP_TYPE_i                = nextLatches_i.exe_cs.OP_TYPE;
-    assign nextLatches_exe_cs_alu_inputA_sel_i         = nextLatches_i.exe_cs.alu_inputA_sel;
-    assign nextLatches_exe_cs_alu_inputB_sel_i         = nextLatches_i.exe_cs.alu_inputB_sel;
-    assign nextLatches_exe_cs_branch_target_sel_i      = nextLatches_i.exe_cs.branch_target_sel;
-    assign nextLatches_exe_cs_shift_by_one_i           = nextLatches_i.exe_cs.shift_by_one;
-    assign nextLatches_exe_cs_br_ucond_i               = nextLatches_i.exe_cs.br_ucond;
-    assign nextLatches_exe_cs_relative_branch_i        = nextLatches_i.exe_cs.relative_branch;
-    assign nextLatches_exe_cs_special_br_i             = nextLatches_i.exe_cs.special_br;
-    assign nextLatches_exe_cs_is_far_i                 = nextLatches_i.exe_cs.is_far;
-    assign nextLatches_exe_cs_is_call_i                = nextLatches_i.exe_cs.is_call;
-    assign nextLatches_exe_cs_second_flag_needed_i     = nextLatches_i.exe_cs.second_flag_needed;
-    assign nextLatches_exe_cs_rep_no_zf_update_i       = nextLatches_i.exe_cs.rep_no_zf_update;
-
-    assign nextLatches_wb_cs_ST_OP_i                   = nextLatches_i.wb_cs.ST_OP;
-    assign nextLatches_wb_cs_WB_DR_i                   = nextLatches_i.wb_cs.WB_DR;
-    assign nextLatches_wb_cs_WB_SR_i                   = nextLatches_i.wb_cs.WB_SR;
-    assign nextLatches_wb_cs_WB_EAX_i                  = nextLatches_i.wb_cs.WB_EAX;
-
-    assign nextLatches_br_info_valid_i                 = nextLatches_i.br_info.valid;
-    assign nextLatches_br_info_br_eip_i                = nextLatches_i.br_info.br_eip;
-    assign nextLatches_br_info_br_xcl_i                = nextLatches_i.br_info.br_xcl;
-    assign nextLatches_br_info_br_pred_taken_i         = nextLatches_i.br_info.br_pred_taken;
-    assign nextLatches_br_info_speculative_target_i    = nextLatches_i.br_info.speculative_target;
-
-    assign nextLatches_data_size_vec_i                 = nextLatches_i.data_size_vec;
-    assign nextLatches_sr_data_size_vec_i              = nextLatches_i.sr_data_size_vec;
-    assign nextLatches_shift_sr_up_i                   = nextLatches_i.shift_sr_up;
-    assign nextLatches_shift_sr_down_i                 = nextLatches_i.shift_sr_down;
-
-    assign nextLatches_ST_XCL_i                        = nextLatches_i.ST_XCL;
-    assign nextLatches_ST_PADDR_0_i                    = nextLatches_i.ST_PADDR_0;
-    assign nextLatches_ST_PADDR_1_i                    = nextLatches_i.ST_PADDR_1;
-    assign nextLatches_MIO_i                           = nextLatches_i.MIO;
-
-    assign nextLatches_NEIP_i                          = nextLatches_i.NEIP;
-    assign nextLatches_EIP_i                           = nextLatches_i.EIP;
-    assign nextLatches_EAX_i                           = nextLatches_i.EAX;
-
-    assign nextLatches_imm64_i                         = nextLatches_i.imm64;
-
-    assign nextLatches_sr_id_i                         = nextLatches_i.sr_id;
-    assign nextLatches_sr_data_i                       = nextLatches_i.sr_data;
-    assign nextLatches_dr_id_i                         = nextLatches_i.dr_id;
-    assign nextLatches_dr_data_i                       = nextLatches_i.dr_data;
-
-    assign nextLatches_LD_XCL_i                        = nextLatches_i.LD_XCL;
-    assign nextLatches_swapLines_i                     = nextLatches_i.swapLines;
-    assign nextLatches_LD_PADDR_0_i                    = nextLatches_i.LD_PADDR_0;
-    assign nextLatches_LD_PADDR_1_i                    = nextLatches_i.LD_PADDR_1;
-
-    assign latches_o.valid                             = latches_valid_o;
-
-    assign latches_o.cs.ST_OP                          = latches_cs_ST_OP_o;
-    assign latches_o.cs.LD_OP                          = latches_cs_LD_OP_o;
-
-    assign latches_o.exe_cs.ST_OP                      = latches_exe_cs_ST_OP_o;
-    assign latches_o.exe_cs.OP_TYPE                    = exe_cs_operation_type_e'(latches_exe_cs_OP_TYPE_o);
-    assign latches_o.exe_cs.alu_inputA_sel             = source_selector_e'(latches_exe_cs_alu_inputA_sel_o);
-    assign latches_o.exe_cs.alu_inputB_sel             = source_selector_e'(latches_exe_cs_alu_inputB_sel_o);
-    assign latches_o.exe_cs.branch_target_sel          = source_selector_e'(latches_exe_cs_branch_target_sel_o);
-    assign latches_o.exe_cs.shift_by_one               = latches_exe_cs_shift_by_one_o;
-    assign latches_o.exe_cs.br_ucond                   = latches_exe_cs_br_ucond_o;
-    assign latches_o.exe_cs.relative_branch            = latches_exe_cs_relative_branch_o;
-    assign latches_o.exe_cs.special_br                 = latches_exe_cs_special_br_o;
-    assign latches_o.exe_cs.is_far                     = latches_exe_cs_is_far_o;
-    assign latches_o.exe_cs.is_call                    = latches_exe_cs_is_call_o;
-    assign latches_o.exe_cs.second_flag_needed         = latches_exe_cs_second_flag_needed_o;
-    assign latches_o.exe_cs.rep_no_zf_update           = latches_exe_cs_rep_no_zf_update_o;
-
-    assign latches_o.wb_cs.ST_OP                       = latches_wb_cs_ST_OP_o;
-    assign latches_o.wb_cs.WB_DR                       = latches_wb_cs_WB_DR_o;
-    assign latches_o.wb_cs.WB_SR                       = latches_wb_cs_WB_SR_o;
-    assign latches_o.wb_cs.WB_EAX                      = latches_wb_cs_WB_EAX_o;
-
-    assign latches_o.br_info.valid                     = latches_br_info_valid_o;
-    assign latches_o.br_info.br_eip                    = latches_br_info_br_eip_o;
-    assign latches_o.br_info.br_xcl                    = latches_br_info_br_xcl_o;
-    assign latches_o.br_info.br_pred_taken             = latches_br_info_br_pred_taken_o;
-    assign latches_o.br_info.speculative_target        = latches_br_info_speculative_target_o;
-
-    assign latches_o.data_size_vec                     = latches_data_size_vec_o;
-    assign latches_o.sr_data_size_vec                  = latches_sr_data_size_vec_o;
-    assign latches_o.shift_sr_up                       = latches_shift_sr_up_o;
-    assign latches_o.shift_sr_down                     = latches_shift_sr_down_o;
-
-    assign latches_o.ST_XCL                            = latches_ST_XCL_o;
-    assign latches_o.ST_PADDR_0                        = latches_ST_PADDR_0_o;
-    assign latches_o.ST_PADDR_1                        = latches_ST_PADDR_1_o;
-    assign latches_o.MIO                               = latches_MIO_o;
-
-    assign latches_o.NEIP                              = latches_NEIP_o;
-    assign latches_o.EIP                               = latches_EIP_o;
-    assign latches_o.EAX                               = latches_EAX_o;
-
-    assign latches_o.imm64                             = latches_imm64_o;
-
-    assign latches_o.sr_id                             = reg_ids_e'(latches_sr_id_o);
-    assign latches_o.sr_data                           = latches_sr_data_o;
-    assign latches_o.dr_id                             = reg_ids_e'(latches_dr_id_o);
-    assign latches_o.dr_data                           = latches_dr_data_o;
-
-    assign latches_o.LD_XCL                            = latches_LD_XCL_o;
-    assign latches_o.swapLines                         = latches_swapLines_o;
-    assign latches_o.LD_PADDR_0                        = latches_LD_PADDR_0_o;
-    assign latches_o.LD_PADDR_1                        = latches_LD_PADDR_1_o;
-
-`endif
 
     // ============================================================
     // Combined flush + effective WE

@@ -40,7 +40,7 @@ CORE_PKGS = \
 
 
 CORE_STRUCTURAL_SRC_FILES = \
-					 $(CORE_PATH_INTERNAL)/IDM/structural/IDM_structural.sv	\
+					 $(CORE_PATH_INTERNAL)/IDM/structural/IDM_structural.v	\
 					 $(CORE_PATH_INTERNAL)/TLB/TLB_structural.v \
 					 $(FETCH_STRUCTURAL_SRC_FILES) \
 					 $(DECODE_STRUCTURAL_SRC_FILES) \
@@ -49,6 +49,6 @@ CORE_STRUCTURAL_SRC_FILES = \
 					 $(MEM_STAGE_STRUCTURAL_SRC_FILES) \
 					 $(EXE_STRUCTURAL_SRC_FILES) \
 					 $(WB_STRUCTURAL_SRC_FILES) \
-					 $(STAGE_LATCHES_SRC_FILES) \
-					 $(CORE_PATH_INTERNAL)/EveryThing_TOP.sv \
+					 $(STAGE_LATCHES_STRUCTURAL_SRC_FILES) \
+					 $(CORE_PATH_INTERNAL)/EveryThing_TOP_structural.v \
 

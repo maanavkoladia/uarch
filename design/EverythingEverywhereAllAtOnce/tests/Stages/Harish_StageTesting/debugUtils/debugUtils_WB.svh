@@ -1,7 +1,6 @@
 `ifndef TB_UTILS_WB_PATH
 `define TB_UTILS_WB_PATH
 
-//`define REGFILE_OUTPUT_STRUCTURAL
 
 ////====================================================
 //// Always-available debug tasks (no macro-generated tasks)
@@ -165,6 +164,8 @@
 //`endif
 //endtask
 //
+
+`define REGFILE_OUTPUT_STRUCTURAL
 
 // --- REGFILE DUMP ---
 // Full snapshot of GPRs and segment registers.

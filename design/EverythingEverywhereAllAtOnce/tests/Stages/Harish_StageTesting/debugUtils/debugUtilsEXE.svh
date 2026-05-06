@@ -19,7 +19,7 @@
 // flat-port branch.
 //====================================================
 
-
+`define EXE_PURE_STRUCTURAL
 // --- EXE LATCHES ---
 task automatic print_exe_latches();
     $fdisplay(`LOG_FD, "[EXE LATCHES]");
