@@ -39,7 +39,7 @@ module EveryThing_TOP (
     //core2 icache
     //
     //core 2 dcache
-
+    //will be unrolled at some point
     //dcache 2 core these need to be assinged from dc outs and wb outs
     output core_2_dcache_t out2DCache_o
 
