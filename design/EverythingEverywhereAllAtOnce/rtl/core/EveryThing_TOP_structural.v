@@ -966,15 +966,6 @@ module EveryThing_TOP (
     // ---------------------------------------------------------------------
     wire [127:0] icache_info_instruction_line_w;
 
-    genvar gi_icache_il;
-    generate
-        for (
-            gi_icache_il = 0; gi_icache_il < CACHE_LINES_SIZE_B; gi_icache_il = gi_icache_il + 1
-        ) begin : g_pack_icache_il
-            assign icache_info_instruction_line_w[gi_icache_il*8 +: 8] = ICacheIn_i.instruction_line[gi_icache_il];
-        end
-    endgenerate
-
     wire [127:0] outs_idm_reqs_req_0_data_w;
     wire [127:0] outs_idm_reqs_req_1_data_w;
     wire [127:0] outs_idm_reqs_req_2_data_w;
