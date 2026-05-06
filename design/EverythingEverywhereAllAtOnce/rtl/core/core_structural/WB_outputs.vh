@@ -1,7 +1,5 @@
 `define WB_OUTPUTS
 
-
-    // ---- wb_outputs_t : WB.outputs_* (driven by WB) ----
     wire        wb_outputs_valid;
     wire        wb_outputs_wb_stall;
     wire        wb_outputs_ST_OP;
@@ -9,7 +7,6 @@
     wire [14:0] wb_outputs_ST_PADDR_0;
     wire [14:0] wb_outputs_ST_PADDR_1;
 
-    // stq_heads[0..3]
     wire        wb_outputs_stq_heads_0_full,    wb_outputs_stq_heads_0_empty;
     wire [14:0] wb_outputs_stq_heads_0_address;
     wire [15:0] wb_outputs_stq_heads_0_bit_vec;
@@ -27,13 +24,11 @@
     wire [15:0] wb_outputs_stq_heads_3_bit_vec;
     wire [127:0] wb_outputs_stq_heads_3_data;
 
-    // mio_head
     wire        wb_outputs_mio_head_full, wb_outputs_mio_head_empty;
     wire [14:0] wb_outputs_mio_head_address;
     wire [15:0] wb_outputs_mio_head_bit_vec;
     wire [127:0] wb_outputs_mio_head_data;
 
-    // dep_check.entries[0..15]
     wire        wb_outputs_dep_check_entry_0_valid;
     wire [14:0] wb_outputs_dep_check_entry_0_address;
     wire        wb_outputs_dep_check_entry_1_valid;
