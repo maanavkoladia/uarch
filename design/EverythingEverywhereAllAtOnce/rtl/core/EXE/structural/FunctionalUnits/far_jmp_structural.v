@@ -13,7 +13,11 @@ module far_jmp_op (
 );
 
     wire is_jmp16;
-    `CMP_N(u_cmp_jmp16, `EXE_STRUCT_OP_W, is_jmp16, op_type, `EXE_OP_FAR_JMP16)
+    wire is_jmp16_raw;
+    `CMP_N(u_cmp_jmp16, `EXE_STRUCT_OP_W, is_jmp16_raw, op_type, `EXE_OP_FAR_JMP16)
+    // is_jmp16 feeds the 64-bit u_mux_dr select (fanout=64, exact fit for
+    // bufferH64$ rated 64, 0.30 ns typ).
+    bufferH64$ u_buf_is_jmp16 (.out(is_jmp16), .in(is_jmp16_raw));
 
     `MUX_2(u_mux_dr, 64, dr_o, {48'd0, srA[47:32]}, {48'd0, srA[31:16]}, is_jmp16)
 

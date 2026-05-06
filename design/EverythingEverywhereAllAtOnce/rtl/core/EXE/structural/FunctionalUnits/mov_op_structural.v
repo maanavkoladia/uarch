@@ -27,7 +27,15 @@ module mov_op (
     `AND_2(u_and_cancel, 1, cancel_mov, is_cmovc, cf_inv)
 
     wire [3:0] masked_ds;
-    `MUX_2(u_mux_ds, 4, masked_ds, data_size, 4'b0000, cancel_mov)
+    wire [3:0] masked_ds_raw;
+    `MUX_2(u_mux_ds, 4, masked_ds_raw, data_size, 4'b0000, cancel_mov)
+    // Per-bit fanout differs by mux width below: ds[0] feeds u_mux_b0 (8),
+    // ds[1] feeds u_mux_b1 (8), ds[2] feeds u_mux_hi (16), ds[3] feeds
+    // u_mux_t (32). Use the smallest H-buffer per bit.
+    bufferH16$ u_buf_ds0 (.out(masked_ds[0]), .in(masked_ds_raw[0]));
+    bufferH16$ u_buf_ds1 (.out(masked_ds[1]), .in(masked_ds_raw[1]));
+    bufferH16$ u_buf_ds2 (.out(masked_ds[2]), .in(masked_ds_raw[2]));
+    bufferH64$ u_buf_ds3 (.out(masked_ds[3]), .in(masked_ds_raw[3]));
 
     wire [7:0]  m_b0, m_b1;
     wire [15:0] m_hi;

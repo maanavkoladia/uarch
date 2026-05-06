@@ -43,8 +43,11 @@ module packssdw_sat_lane (
 
     wire sign_inv;
     `INV_N(u_inv_sign, 1, x[31], sign_inv)
-    wire pos_ov;
-    `AND_2(u_and_pos, 1, pos_ov, sign_inv, any_high_set)
+    wire pos_ov, pos_ov_raw;
+    `AND_2(u_and_pos, 1, pos_ov_raw, sign_inv, any_high_set)
+    // pos_ov drives 16 mux2$ select pins inside u_mux_p (fanout 16, exact fit
+    // for bufferH16$ at 0.24 ns typ).
+    bufferH16$ u_buf_pos_ov (.out(pos_ov), .in(pos_ov_raw));
 
     // OR over inverted high16 (i.e., NAND of high16): invert each bit, then OR
     wire [15:0] high16_inv;
@@ -57,8 +60,10 @@ module packssdw_sat_lane (
     wire any_high_clear;
     `NAND_4(u_nandn, 1, any_high_clear, nor_n0, nor_n1, nor_n2, nor_n3)
 
-    wire neg_ov;
-    `AND_2(u_and_neg, 1, neg_ov, x[31], any_high_clear)
+    wire neg_ov, neg_ov_raw;
+    `AND_2(u_and_neg, 1, neg_ov_raw, x[31], any_high_clear)
+    // neg_ov drives 16 mux2$ select pins inside u_mux_n (fanout 16).
+    bufferH16$ u_buf_neg_ov (.out(neg_ov), .in(neg_ov_raw));
 
     // Output mux: pos_ov  ? 0x7FFF : x[15:0]
     //             then neg_ov ? 0x8000 : sat_pos

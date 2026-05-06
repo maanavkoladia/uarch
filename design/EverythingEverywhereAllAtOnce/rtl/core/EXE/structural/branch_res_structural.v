@@ -48,7 +48,10 @@ module branch_res (
 
     // valid = stage_valid_i & br_info_valid_i
     wire valid;
-    `AND_2(u_and_valid, 1, valid, stage_valid_i, br_info_valid_i)
+    wire valid_raw;
+    `AND_2(u_and_valid, 1, valid_raw, stage_valid_i, br_info_valid_i)
+    // valid fanout 7 → bufferH16$ smallest fit.
+    bufferH16$ u_buf_valid (.out(valid), .in(valid_raw));
 
     // second_flag_result = second_flag_needed_i ? ~CF : 1'b1
     wire nCF;

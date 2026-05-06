@@ -28,7 +28,11 @@ module aaa_op (
 
     // adjust = gt9 OR AF_flag_in
     wire adjust;
-    `OR_2(u_or_adj, 1, adjust, gt9, AF_flag_in)
+    wire adjust_raw;
+    `OR_2(u_or_adj, 1, adjust_raw, gt9, AF_flag_in)
+    // Buffer adjust with bufferH64$: fanout 18 exceeds bufferH16$'s 16-load
+    // rating; bufferH64$ (rated 64, 0.30 ns typ) is the next size up.
+    bufferH64$ u_buf_adj (.out(adjust), .in(adjust_raw));
 
     // AL + 6 (8-bit)
     wire [7:0] al_p6;

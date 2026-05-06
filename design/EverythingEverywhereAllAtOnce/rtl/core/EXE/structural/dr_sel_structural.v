@@ -96,34 +96,38 @@ module dr_sel (
     wire enbar_pop, enbar_ret_far, enbar_ret_far_imm, enbar_far_call, enbar_far_jmp;
     wire enbar_sal, enbar_sar, enbar_sbb, enbar_xchg, enbar_exp_call, enbar_iretd;
 
-    `INV_N(u_inv_aaa,         1, is_aaa,         enbar_aaa)
-    `INV_N(u_inv_adc,         1, is_adc,         enbar_adc)
-    `INV_N(u_inv_add,         1, is_add,         enbar_add)
-    `INV_N(u_inv_add_df,      1, is_add_df,      enbar_add_df)
-    `INV_N(u_inv_and,         1, is_and,         enbar_and)
-    `INV_N(u_inv_bsf,         1, is_bsf,         enbar_bsf)
-    `INV_N(u_inv_cmpxchg,     1, is_cmpxchg,     enbar_cmpxchg)
-    `INV_N(u_inv_mov,         1, en_mov,         enbar_mov)
-    `INV_N(u_inv_movs,        1, is_movs,        enbar_movs)
-    `INV_N(u_inv_not,         1, is_not,         enbar_not)
-    `INV_N(u_inv_or,          1, is_or,          enbar_or)
-    `INV_N(u_inv_packssdw,    1, is_packssdw,    enbar_packssdw)
-    `INV_N(u_inv_packsswb,    1, is_packsswb,    enbar_packsswb)
-    `INV_N(u_inv_paddd,       1, is_paddd,       enbar_paddd)
-    `INV_N(u_inv_paddw,       1, is_paddw,       enbar_paddw)
-    `INV_N(u_inv_pavgb,       1, is_pavgb,       enbar_pavgb)
-    `INV_N(u_inv_pavgw,       1, is_pavgw,       enbar_pavgw)
-    `INV_N(u_inv_pop,         1, is_pop,         enbar_pop)
-    `INV_N(u_inv_ret_far,     1, is_ret_far,     enbar_ret_far)
-    `INV_N(u_inv_ret_far_imm, 1, is_ret_far_imm, enbar_ret_far_imm)
-    `INV_N(u_inv_far_call,    1, is_far_call,    enbar_far_call)
-    `INV_N(u_inv_far_jmp,     1, en_far_jmp,     enbar_far_jmp)
-    `INV_N(u_inv_sal,         1, is_sal,         enbar_sal)
-    `INV_N(u_inv_sar,         1, is_sar,         enbar_sar)
-    `INV_N(u_inv_sbb,         1, is_sbb,         enbar_sbb)
-    `INV_N(u_inv_xchg,        1, is_xchg,        enbar_xchg)
-    `INV_N(u_inv_exp_call,    1, is_exp_call,    enbar_exp_call)
-    `INV_N(u_inv_iretd,    1, is_iretd,    enbar_iretd)
+    // Each enbar_* drives a 64-bit TRISTATE_L's enable pin (fanout=64). INV_N
+    // expands to bufferHInv16$ (rated 16) — too small. bufferHInv64$ is rated
+    // 64 and 0.39 ns typ, faster than a 2-stage HInv16->H64 chain (~0.45 ns).
+    // Logic preserved: bufferHInv64$ inverts the same way INV_N's HInv16 did.
+    bufferHInv64$ u_inv_aaa         (.out(enbar_aaa),         .in(is_aaa));
+    bufferHInv64$ u_inv_adc         (.out(enbar_adc),         .in(is_adc));
+    bufferHInv64$ u_inv_add         (.out(enbar_add),         .in(is_add));
+    bufferHInv64$ u_inv_add_df      (.out(enbar_add_df),      .in(is_add_df));
+    bufferHInv64$ u_inv_and         (.out(enbar_and),         .in(is_and));
+    bufferHInv64$ u_inv_bsf         (.out(enbar_bsf),         .in(is_bsf));
+    bufferHInv64$ u_inv_cmpxchg     (.out(enbar_cmpxchg),     .in(is_cmpxchg));
+    bufferHInv64$ u_inv_mov         (.out(enbar_mov),         .in(en_mov));
+    bufferHInv64$ u_inv_movs        (.out(enbar_movs),        .in(is_movs));
+    bufferHInv64$ u_inv_not         (.out(enbar_not),         .in(is_not));
+    bufferHInv64$ u_inv_or          (.out(enbar_or),          .in(is_or));
+    bufferHInv64$ u_inv_packssdw    (.out(enbar_packssdw),    .in(is_packssdw));
+    bufferHInv64$ u_inv_packsswb    (.out(enbar_packsswb),    .in(is_packsswb));
+    bufferHInv64$ u_inv_paddd       (.out(enbar_paddd),       .in(is_paddd));
+    bufferHInv64$ u_inv_paddw       (.out(enbar_paddw),       .in(is_paddw));
+    bufferHInv64$ u_inv_pavgb       (.out(enbar_pavgb),       .in(is_pavgb));
+    bufferHInv64$ u_inv_pavgw       (.out(enbar_pavgw),       .in(is_pavgw));
+    bufferHInv64$ u_inv_pop         (.out(enbar_pop),         .in(is_pop));
+    bufferHInv64$ u_inv_ret_far     (.out(enbar_ret_far),     .in(is_ret_far));
+    bufferHInv64$ u_inv_ret_far_imm (.out(enbar_ret_far_imm), .in(is_ret_far_imm));
+    bufferHInv64$ u_inv_far_call    (.out(enbar_far_call),    .in(is_far_call));
+    bufferHInv64$ u_inv_far_jmp     (.out(enbar_far_jmp),     .in(en_far_jmp));
+    bufferHInv64$ u_inv_sal         (.out(enbar_sal),         .in(is_sal));
+    bufferHInv64$ u_inv_sar         (.out(enbar_sar),         .in(is_sar));
+    bufferHInv64$ u_inv_sbb         (.out(enbar_sbb),         .in(is_sbb));
+    bufferHInv64$ u_inv_xchg        (.out(enbar_xchg),        .in(is_xchg));
+    bufferHInv64$ u_inv_exp_call    (.out(enbar_exp_call),    .in(is_exp_call));
+    bufferHInv64$ u_inv_iretd       (.out(enbar_iretd),       .in(is_iretd));
 
     // ---- Shared tristated bus, driven by exactly one of 26 tristateL$ when WB_DR=1 ----
     wire [63:0] tristated_bus;

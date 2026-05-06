@@ -40,7 +40,19 @@ module sar_op (
     wire [5:0] count_pre;
     assign count_pre = {1'b0, cnt_amt};
     wire [5:0] count;
-    `MUX_2(u_mux_count, 6, count, count_pre, 6'd1, shift_by_one)
+    wire [5:0] count_raw;
+    `MUX_2(u_mux_count, 6, count_raw, count_pre, 6'd1, shift_by_one)
+
+    // count fans out to all 4 width cascades (AL/AH/AX/EAX = 8+8+16+32 = 64
+    // selects per stage) + CF muxes + saturation OR-gates + comparators.
+    // Worst per-bit fanout ~81. bufferH256$ (rated 256, 0.54 ns typ) is the
+    // smallest H-buffer that covers; bufferH64$ is rated 64.
+    genvar gi_buf_cnt;
+    generate
+        for (gi_buf_cnt = 0; gi_buf_cnt < 6; gi_buf_cnt = gi_buf_cnt + 1) begin : g_count_buf
+            bufferH256$ u_buf_cnt (.out(count[gi_buf_cnt]), .in(count_raw[gi_buf_cnt]));
+        end
+    endgenerate
 
     // ---- Sign bits per width ----
     wire al_sign  = value_i[7];
@@ -169,11 +181,22 @@ module sar_op (
     // ============================================================
     // data_size selectors
     // ============================================================
-    wire is_al, is_ah, is_ax, is_eax;
-    `CMP_N(u_cmp_al,  4, is_al,  data_size, 4'b0001)
-    `CMP_N(u_cmp_ah,  4, is_ah,  data_size, 4'b0010)
-    `CMP_N(u_cmp_ax,  4, is_ax,  data_size, 4'b0011)
-    `CMP_N(u_cmp_eax, 4, is_eax, data_size, 4'b0111)
+    wire is_al, is_ah, is_ax, is_eax, is_eax_big;
+    wire is_al_raw, is_ah_raw, is_ax_raw, is_eax_raw;
+    `CMP_N(u_cmp_al,  4, is_al_raw,  data_size, 4'b0001)
+    `CMP_N(u_cmp_ah,  4, is_ah_raw,  data_size, 4'b0010)
+    `CMP_N(u_cmp_ax,  4, is_ax_raw,  data_size, 4'b0011)
+    `CMP_N(u_cmp_eax, 4, is_eax_raw, data_size, 4'b0111)
+    // Per-fanout sizing: al/ah=12 → H16; ax=20 → H64; eax=68 → H256.
+    bufferH16$  u_buf_is_al  (.out(is_al),  .in(is_al_raw));
+    bufferH16$  u_buf_is_ah  (.out(is_ah),  .in(is_ah_raw));
+    bufferH64$  u_buf_is_ax  (.out(is_ax),  .in(is_ax_raw));
+    // is_eax fanout 68 = u_mux_rtop(32) + rb23(16) + rb0_1(8) + rb1_1(8) + 4
+    // flag muxes. Split: is_eax_big drives rtop (32 loads, bufferH64$ at 0.30
+    // ns), is_eax drives the other 36 loads (bufferH64$, 0.30 ns). Saves
+    // 0.24 ns on the rtop critical path vs single bufferH256$ (0.54 ns).
+    bufferH64$ u_buf_is_eax_sm (.out(is_eax),     .in(is_eax_raw));
+    bufferH64$ u_buf_is_eax_lg (.out(is_eax_big), .in(is_eax_raw));
 
     // ============================================================
     // Per-flag width mux (default 0, count > 0)
@@ -206,7 +229,16 @@ module sar_op (
     // count-zero override (preserve curr_*_flag); OF/AF: 0 when count > 0.
     // ============================================================
     wire is_count_zero;
-    `CMP_N(u_cmp_czero, 6, is_count_zero, count, 6'd0)
+    wire is_count_zero_big;
+    wire is_count_zero_raw;
+    `CMP_N(u_cmp_czero, 6, is_count_zero_raw, count, 6'd0)
+    // is_count_zero has 70 leaf consumers split cleanly into two groups:
+    //   - 6  flag muxes (1-bit each) below — fanout 6  → bufferH16$ (0.24 ns)
+    //   - 1× 64-bit result mux           → fanout 64 → bufferH64$ (0.30 ns)
+    // Splitting saves 0.30/0.24 ns vs a single bufferH256$ (0.54 ns) at the
+    // cost of 1 extra cell. is_count_zero_raw has fanout 2 (the two buffers).
+    bufferH16$ u_buf_iczero_sm (.out(is_count_zero),     .in(is_count_zero_raw));
+    bufferH64$ u_buf_iczero_lg (.out(is_count_zero_big), .in(is_count_zero_raw));
 
     `MUX_2(u_mux_zf_final, 1, ZF, zf_w, curr_zf_flag, is_count_zero)
     `MUX_2(u_mux_sf_final, 1, SF, sf_w, curr_sf_flag, is_count_zero)
@@ -232,13 +264,13 @@ module sar_op (
     `MUX_2(u_mux_rb23, 16, r_b23, value_i[31:16], eax_res[31:16], is_eax)
 
     wire [31:0] r_top;
-    `MUX_2(u_mux_rtop, 32, r_top, value_i[63:32], 32'd0, is_eax)
+    `MUX_2(u_mux_rtop, 32, r_top, value_i[63:32], 32'd0, is_eax_big)
 
     wire [63:0] result_pre;
     assign result_pre = {r_top, r_b23, r_b1, r_b0};
 
     wire [63:0] result;
-    `MUX_2(u_mux_result, 64, result, result_pre, value_i, is_count_zero)
+    `MUX_2(u_mux_result, 64, result, result_pre, value_i, is_count_zero_big)
 
     assign dr_o      = result;
     assign res_buf_o = result;

@@ -16,12 +16,18 @@ module bit_vec_logic (
 );
 
     // ---- Decode data_size into 5 one-hot size signals ----
-    wire is_AL, is_AH, is_AX, is_EAX, is_RAX;
-    `CMP_N(u_cmp_AL,  4, is_AL,  data_size, 4'b0001)
-    `CMP_N(u_cmp_AH,  4, is_AH,  data_size, 4'b0010)
-    `CMP_N(u_cmp_AX,  4, is_AX,  data_size, 4'b0011)
-    `CMP_N(u_cmp_EAX, 4, is_EAX, data_size, 4'b0111)
-    `CMP_N(u_cmp_RAX, 4, is_RAX, data_size, 4'b1111)
+    wire is_AL, is_AH, is_AX;
+    wire is_EAX_raw, is_RAX_raw;  // direct and4$ outputs (fanout must stay = 1)
+    wire is_EAX, is_RAX;          // buffered: drives the 3 OR-tree inputs each
+    `CMP_N(u_cmp_AL,  4, is_AL,      data_size, 4'b0001)
+    `CMP_N(u_cmp_AH,  4, is_AH,      data_size, 4'b0010)
+    `CMP_N(u_cmp_AX,  4, is_AX,      data_size, 4'b0011)
+    `CMP_N(u_cmp_EAX, 4, is_EAX_raw, data_size, 4'b0111)
+    `CMP_N(u_cmp_RAX, 4, is_RAX_raw, data_size, 4'b1111)
+    // bufferH16$ handles up to 16 loads; satisfies the fanout checker
+    // (each comparator output drives 3 OR gates → bufferH16$ absorbs that fanout)
+    bufferH16$ u_buf_EAX (.out(is_EAX), .in(is_EAX_raw));
+    bufferH16$ u_buf_RAX (.out(is_RAX), .in(is_RAX_raw));
 
     // ---- Build mask_for_size: 16-bit value with num_bytes low bits = 1 ----
     //   AL/AH (1 byte)  → 16'h0001
@@ -71,8 +77,17 @@ module bit_vec_logic (
     // ---- end_of_st_addr_1 = start_offset + num_bytes (4-bit Kogge-Stone add) ----
     // We only need the lower 4 bits as offset_xcl.
     wire [3:0] end_of_addr_lo;
+    wire [3:0] end_of_addr_lo_raw;
     wire end_of_addr_cout;
-    `ADD_N(u_add_end, 4, end_of_addr_lo, end_of_addr_cout, start_offset, num_bytes, 1'b0)
+    `ADD_N(u_add_end, 4, end_of_addr_lo_raw, end_of_addr_cout, start_offset, num_bytes, 1'b0)
+
+    // Buffer end_of_addr_lo with bufferH16$ (LSB has fanout 16, exact fit).
+    genvar gi_ea;
+    generate
+        for (gi_ea = 0; gi_ea < 4; gi_ea = gi_ea + 1) begin : g_ea_buf
+            bufferH16$ u_buf_ea (.out(end_of_addr_lo[gi_ea]), .in(end_of_addr_lo_raw[gi_ea]));
+        end
+    endgenerate
 
     wire [3:0] offset_xcl;
     assign offset_xcl = end_of_addr_lo;

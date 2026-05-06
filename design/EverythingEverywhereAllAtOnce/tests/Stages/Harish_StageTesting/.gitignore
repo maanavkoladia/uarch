@@ -1,3 +1,7 @@
 gen/
 
 venv
+
+.syn
+
+.pvl

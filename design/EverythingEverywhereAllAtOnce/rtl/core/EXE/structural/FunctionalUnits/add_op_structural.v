@@ -26,11 +26,19 @@ module add_op (
 );
 
     // ---- 4 width-isolated adders (each producing N+1-bit sum for CF tap) ----
-    wire [8:0]  al_sum;   wire al_cout;
-    `ADD_N(u_add_al, 9,  al_sum,  al_cout,  {1'b0, srA[7:0]},   {1'b0, srB[7:0]},   1'b0)
+    wire [8:0]  al_sum_raw;   wire al_cout;
+    wire [8:0]  al_sum;       wire al_sum_b7_buf;
+    `ADD_N(u_add_al, 9,  al_sum_raw,  al_cout,  {1'b0, srA[7:0]},   {1'b0, srB[7:0]},   1'b0)
+    // Only al_sum[7] (sign bit) has fanout 5 — feeds SF, lane mux, ZF, etc.
+    // Buffer just that bit; other bits stay direct (no extra delay paid).
+    bufferH16$ u_buf_al_sum_b7 (.out(al_sum_b7_buf), .in(al_sum_raw[7]));
+    assign al_sum = {al_sum_raw[8], al_sum_b7_buf, al_sum_raw[6:0]};
 
-    wire [8:0]  ah_sum;   wire ah_cout;
-    `ADD_N(u_add_ah, 9,  ah_sum,  ah_cout,  {1'b0, srA[15:8]},  {1'b0, srB[15:8]},  1'b0)
+    wire [8:0]  ah_sum_raw;   wire ah_cout;
+    wire [8:0]  ah_sum;       wire ah_sum_b7_buf;
+    `ADD_N(u_add_ah, 9,  ah_sum_raw,  ah_cout,  {1'b0, srA[15:8]},  {1'b0, srB[15:8]},  1'b0)
+    bufferH16$ u_buf_ah_sum_b7 (.out(ah_sum_b7_buf), .in(ah_sum_raw[7]));
+    assign ah_sum = {ah_sum_raw[8], ah_sum_b7_buf, ah_sum_raw[6:0]};
 
     wire [16:0] ax_sum;   wire ax_cout;
     `ADD_N(u_add_ax, 17, ax_sum,  ax_cout,  {1'b0, srA[15:0]},  {1'b0, srB[15:0]},  1'b0)
@@ -45,10 +53,17 @@ module add_op (
 
     // ---- data_size selectors ----
     wire is_al, is_ah, is_ax, is_eax;
-    `CMP_N(u_cmp_al,  4, is_al,  data_size, 4'b0001)
-    `CMP_N(u_cmp_ah,  4, is_ah,  data_size, 4'b0010)
-    `CMP_N(u_cmp_ax,  4, is_ax,  data_size, 4'b0011)
-    `CMP_N(u_cmp_eax, 4, is_eax, data_size, 4'b0111)
+    wire is_al_raw, is_ah_raw, is_ax_raw, is_eax_raw;
+    `CMP_N(u_cmp_al,  4, is_al_raw,  data_size, 4'b0001)
+    `CMP_N(u_cmp_ah,  4, is_ah_raw,  data_size, 4'b0010)
+    `CMP_N(u_cmp_ax,  4, is_ax_raw,  data_size, 4'b0011)
+    `CMP_N(u_cmp_eax, 4, is_eax_raw, data_size, 4'b0111)
+    // Per-fanout sizing: is_al/ah=13 fit bufferH16$; is_ax=21 and is_eax=37
+    // need bufferH64$ (rated 64). Smallest H-buffer per signal.
+    bufferH16$ u_buf_is_al  (.out(is_al),  .in(is_al_raw));
+    bufferH16$ u_buf_is_ah  (.out(is_ah),  .in(is_ah_raw));
+    bufferH64$ u_buf_is_ax  (.out(is_ax),  .in(is_ax_raw));
+    bufferH64$ u_buf_is_eax (.out(is_eax), .in(is_eax_raw));
 
     // ---- merged_result lanes ----
     // Lane 0 (bits [7:0]): srA / al_sum / ax_sum / eax_sum

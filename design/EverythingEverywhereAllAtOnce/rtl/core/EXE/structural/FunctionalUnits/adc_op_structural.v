@@ -24,8 +24,17 @@ module adc_op (
 );
 
     wire [32:0] sum;
+    wire [32:0] sum_raw;
     wire        cout;
-    `ADD_N(u_add, 33, sum, cout, {1'b0, srA[31:0]}, {1'b0, srB[31:0]}, CF_in)
+    `ADD_N(u_add, 33, sum_raw, cout, {1'b0, srA[31:0]}, {1'b0, srB[31:0]}, CF_in)
+
+    // Buffer sum with bufferH16$ (worst-bit fanout 5).
+    genvar gi_su;
+    generate
+        for (gi_su = 0; gi_su < 33; gi_su = gi_su + 1) begin : g_sum_buf
+            bufferH16$ u_buf_su (.out(sum[gi_su]), .in(sum_raw[gi_su]));
+        end
+    endgenerate
 
     assign dr_o      = {32'd0, sum[31:0]};
     assign res_buf_o = {32'd0, sum[31:0]};

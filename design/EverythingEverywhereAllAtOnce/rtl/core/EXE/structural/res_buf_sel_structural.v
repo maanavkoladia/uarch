@@ -64,30 +64,38 @@ module res_buf_sel (
     wire matched_in_first_16;
     `NAND_4(u_nand_first16, 1, matched_in_first_16, grp_a_zero, grp_b_zero, grp_c_zero, grp_d_zero)
     wire match_any;
-    `OR_2(u_or_match_any, 1, match_any, matched_in_first_16, is_exp_call)
+    wire match_any_raw;
+    `OR_2(u_or_match_any, 1, match_any_raw, matched_in_first_16, is_exp_call)
+    // match_any feeds 64 mux2$ select pins inside u_mux_res_buf_o (fanout 64).
+    // bufferH64$ is the exact-fit choice (rated 64, 0.30 ns typ).
+    bufferH64$ u_buf_match_any (.out(match_any), .in(match_any_raw));
 
     // ---- Active-low enables ----
     wire enbar_adc, enbar_add, enbar_and, enbar_call, enbar_cmpxchg, enbar_far_call;
     wire enbar_mov, enbar_movs, enbar_not, enbar_or, enbar_push, enbar_pop;
     wire enbar_sar, enbar_sal, enbar_sbb, enbar_xchg, enbar_exp_call;
 
-    `INV_N(u_inv_adc,      1, is_adc,      enbar_adc)
-    `INV_N(u_inv_add,      1, is_add,      enbar_add)
-    `INV_N(u_inv_and,      1, is_and,      enbar_and)
-    `INV_N(u_inv_call,     1, is_call,     enbar_call)
-    `INV_N(u_inv_cmpxchg,  1, is_cmpxchg,  enbar_cmpxchg)
-    `INV_N(u_inv_far_call, 1, is_far_call, enbar_far_call)
-    `INV_N(u_inv_mov,      1, is_mov,      enbar_mov)
-    `INV_N(u_inv_movs,     1, is_movs,     enbar_movs)
-    `INV_N(u_inv_not,      1, is_not,      enbar_not)
-    `INV_N(u_inv_or,       1, is_or,       enbar_or)
-    `INV_N(u_inv_push,     1, is_push,     enbar_push)
-    `INV_N(u_inv_pop,      1, is_pop,      enbar_pop)
-    `INV_N(u_inv_sar,      1, is_sar,      enbar_sar)
-    `INV_N(u_inv_sal,      1, is_sal,      enbar_sal)
-    `INV_N(u_inv_sbb,      1, is_sbb,      enbar_sbb)
-    `INV_N(u_inv_xchg,     1, is_xchg,     enbar_xchg)
-    `INV_N(u_inv_exp_call, 1, is_exp_call, enbar_exp_call)
+    // Each enbar_* drives a 64-bit TRISTATE_L's enable pin (fanout=64 inside
+    // the macro). INV_N expands to bufferHInv16$ which is rated 16 — too
+    // small. bufferHInv64$ is purpose-built for this load (rated 64, 0.39 ns
+    // typ) and is faster than a 2-stage HInv16->H64 chain (~0.45 ns).
+    bufferHInv64$ u_inv_adc      (.out(enbar_adc),      .in(is_adc));
+    bufferHInv64$ u_inv_add      (.out(enbar_add),      .in(is_add));
+    bufferHInv64$ u_inv_and      (.out(enbar_and),      .in(is_and));
+    bufferHInv64$ u_inv_call     (.out(enbar_call),     .in(is_call));
+    bufferHInv64$ u_inv_cmpxchg  (.out(enbar_cmpxchg),  .in(is_cmpxchg));
+    bufferHInv64$ u_inv_far_call (.out(enbar_far_call), .in(is_far_call));
+    bufferHInv64$ u_inv_mov      (.out(enbar_mov),      .in(is_mov));
+    bufferHInv64$ u_inv_movs     (.out(enbar_movs),     .in(is_movs));
+    bufferHInv64$ u_inv_not      (.out(enbar_not),      .in(is_not));
+    bufferHInv64$ u_inv_or       (.out(enbar_or),       .in(is_or));
+    bufferHInv64$ u_inv_push     (.out(enbar_push),     .in(is_push));
+    bufferHInv64$ u_inv_pop      (.out(enbar_pop),      .in(is_pop));
+    bufferHInv64$ u_inv_sar      (.out(enbar_sar),      .in(is_sar));
+    bufferHInv64$ u_inv_sal      (.out(enbar_sal),      .in(is_sal));
+    bufferHInv64$ u_inv_sbb      (.out(enbar_sbb),      .in(is_sbb));
+    bufferHInv64$ u_inv_xchg     (.out(enbar_xchg),     .in(is_xchg));
+    bufferHInv64$ u_inv_exp_call (.out(enbar_exp_call), .in(is_exp_call));
 
     // ---- 17 tristateL$ drivers feed the shared bus (one fires when match_any=1) ----
     wire [63:0] tristated_bus;
@@ -112,6 +120,16 @@ module res_buf_sel (
     // ---- Final 2:1 mux: match_any ? tristated_bus : 64'h0 ----
     wire [63:0] zero64;
     assign zero64 = 64'h0;
-    `MUX_2(u_mux_res_buf_o, 64, res_buf_o, zero64, tristated_bus, match_any)
+    wire [63:0] res_buf_o_raw;
+    `MUX_2(u_mux_res_buf_o, 64, res_buf_o_raw, zero64, tristated_bus, match_any)
+
+    // Buffer res_buf_o with bufferH16$ (0.24 ns typ, rated 16 loads) — fanout
+    // is exactly 16, the largest load bufferH16$ supports without slowdown.
+    genvar gi_buf_rb;
+    generate
+        for (gi_buf_rb = 0; gi_buf_rb < 64; gi_buf_rb = gi_buf_rb + 1) begin : g_rb_buf
+            bufferH16$ u_buf (.out(res_buf_o[gi_buf_rb]), .in(res_buf_o_raw[gi_buf_rb]));
+        end
+    endgenerate
 
 endmodule

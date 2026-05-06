@@ -106,11 +106,19 @@ module cmp (
 
     // ---- data_size selectors ----
     wire is_001, is_010, is_011, is_111, is_al;
-    `CMP_N(u_cmp_001, 4, is_001, data_size, 4'b0001)
-    `CMP_N(u_cmp_010, 4, is_010, data_size, 4'b0010)
-    `CMP_N(u_cmp_011, 4, is_011, data_size, 4'b0011)
-    `CMP_N(u_cmp_111, 4, is_111, data_size, 4'b0111)
-    `OR_2(u_or_al, 1, is_al, is_001, is_010)
+    wire is_011_raw, is_111_raw;
+    `CMP_N(u_cmp_001, 4, is_001,     data_size, 4'b0001)
+    `CMP_N(u_cmp_010, 4, is_010,     data_size, 4'b0010)
+    `CMP_N(u_cmp_011, 4, is_011_raw, data_size, 4'b0011)
+    `CMP_N(u_cmp_111, 4, is_111_raw, data_size, 4'b0111)
+    wire is_al_raw;
+    `OR_2(u_or_al, 1, is_al_raw, is_001, is_010)
+    // is_al feeds 6 mux selects (zf/sf/cf/pf flag muxes etc.) — bufferH16$.
+    bufferH16$ u_buf_is_al (.out(is_al), .in(is_al_raw));
+    // is_011 / is_111 each feed 4 flag-mux selects (zf/sf/cf/pf) plus other
+    // small consumers — fanout 6 per signal. bufferH16$ is the smallest fit.
+    bufferH16$ u_buf_is_011 (.out(is_011), .in(is_011_raw));
+    bufferH16$ u_buf_is_111 (.out(is_111), .in(is_111_raw));
 
     // ---- Per-flag chain of MUX_2 (default 0) ----
     // out_step1 = is_eax ? eax : 0
@@ -118,9 +126,13 @@ module cmp (
     // out_final = is_al  ? al  : out_step2
 
     wire zf_s1, zf_s2;
-    `MUX_2(u_mux_zf_s1, 1, zf_s1, 1'b0,  eax_zf, is_111)
-    `MUX_2(u_mux_zf_s2, 1, zf_s2, zf_s1, ax_zf,  is_011)
-    `MUX_2(u_mux_zf,    1, ZF,    zf_s2, al_zf,  is_al)
+    wire ZF_raw;
+    `MUX_2(u_mux_zf_s1, 1, zf_s1,  1'b0,  eax_zf, is_111)
+    `MUX_2(u_mux_zf_s2, 1, zf_s2,  zf_s1, ax_zf,  is_011)
+    `MUX_2(u_mux_zf,    1, ZF_raw, zf_s2, al_zf,  is_al)
+    // Buffer ZF with bufferH256$: external fanout 97 exceeds bufferH64$'s
+    // 64-load rating; bufferH256$ (rated 256, 0.54 ns typ) is the next size.
+    bufferH256$ u_buf_zf (.out(ZF), .in(ZF_raw));
 
     wire sf_s1, sf_s2;
     `MUX_2(u_mux_sf_s1, 1, sf_s1, 1'b0,  eax_sf, is_111)

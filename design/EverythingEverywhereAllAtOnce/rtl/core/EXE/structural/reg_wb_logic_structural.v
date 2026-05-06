@@ -27,7 +27,10 @@ module reg_wb_logic (
 
     // is_exp_call = (op_type == EXP_CALL)
     wire is_exp_call;
-    `CMP_N(u_cmp_exp_call, `EXE_STRUCT_OP_W, is_exp_call, op_type, `EXE_OP_EXP_CALL)
+    wire is_exp_call_raw;
+    `CMP_N(u_cmp_exp_call, `EXE_STRUCT_OP_W, is_exp_call_raw, op_type, `EXE_OP_EXP_CALL)
+    // is_exp_call fanout 5 → bufferH16$ smallest fit.
+    bufferH16$ u_buf_is_exp_call (.out(is_exp_call), .in(is_exp_call_raw));
 
     // dr0_id_o = is_exp_call ? CS : dr_id
     wire [`EXE_STRUCT_REG_ID_W-1:0] cs_id;

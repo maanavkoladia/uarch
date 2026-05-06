@@ -1,228 +1,263 @@
+`timescale 1ns/1ps
+
 module tb_fanout_ICache ();
 
-    // ---------------------------------------------------------------
+    // ----------------------------------------------------------------
     // Clock / reset
-    // ---------------------------------------------------------------
+    // ----------------------------------------------------------------
     reg clk;
     reg rst;
 
     initial clk = 0;
-    always #5 clk = ~clk;
+    always #4 clk = ~clk;
 
-    // ---------------------------------------------------------------
-    // ICache inputs
-    // ---------------------------------------------------------------
-    reg        icache_icache_en_i;
-    reg [14:0] icache_p_addr_i;
-    reg [31:0] icache_v_addr_i;
-    reg [2:0]  icache_num_valid_IDM_slots_i;
+    // ----------------------------------------------------------------
+    // WB inputs -- wb_latches_t
+    // ----------------------------------------------------------------
+    reg         wb_latches_valid;
+    reg         wb_latches_cs_ST_OP;
+    reg         wb_latches_cs_WB_DR;
+    reg         wb_latches_cs_WB_SR;
+    reg         wb_latches_cs_WB_EAX;
+    reg         wb_latches_ST_XCL;
+    reg [14:0]  wb_latches_ST_PADDR_0;
+    reg [15:0]  wb_latches_ST_BIT_VEC_0;
+    reg [14:0]  wb_latches_ST_PADDR_1;
+    reg [15:0]  wb_latches_ST_BIT_VEC_1;
+    reg         wb_latches_MIO;
+    reg [31:0]  wb_latches_EIP;
+    reg [255:0] wb_latches_res_buf;
+    reg [4:0]   wb_latches_sr_id;
+    reg [63:0]  wb_latches_sr_data;
+    reg [4:0]   wb_latches_dr_id;
+    reg [63:0]  wb_latches_dr_data;
+    reg [31:0]  wb_latches_EAX;
 
-    // ---------------------------------------------------------------
-    // ICache outputs
-    // ---------------------------------------------------------------
-    wire        icache_hit_o;
-    wire [127:0] icache_instruction_line_o;
+    // ----------------------------------------------------------------
+    // WB inputs -- write_success
+    // ----------------------------------------------------------------
+    reg         write_success_0;
+    reg         write_success_1;
+    reg         write_success_2;
+    reg         write_success_3;
+    reg         write_success_mio;
 
-    // ---------------------------------------------------------------
-    // DCache load inputs
-    // ---------------------------------------------------------------
-    reg        core_ld_addr_0_V_i;
-    reg [14:0] core_ld_addr_0_i;
-    reg        core_ld_addr_1_V_i;
-    reg [14:0] core_ld_addr_1_i;
+    // ----------------------------------------------------------------
+    // WB outputs -- scalar
+    // ----------------------------------------------------------------
+    wire         outputs_valid;
+    wire         outputs_wb_stall;
+    wire         outputs_ST_OP;
+    wire         outputs_ST_XCL;
+    wire [14:0]  outputs_ST_PADDR_0;
+    wire [14:0]  outputs_ST_PADDR_1;
 
-    // ---------------------------------------------------------------
-    // DCache store queue inputs
-    // ---------------------------------------------------------------
-    reg        core_stq_full_0_i;
-    reg        core_stq_full_1_i;
-    reg        core_stq_full_2_i;
-    reg        core_stq_full_3_i;
-    reg        core_stq_empty_0_i;
-    reg        core_stq_empty_1_i;
-    reg        core_stq_empty_2_i;
-    reg        core_stq_empty_3_i;
-    reg [14:0] core_stq_addr_0_i;
-    reg [14:0] core_stq_addr_1_i;
-    reg [14:0] core_stq_addr_2_i;
-    reg [14:0] core_stq_addr_3_i;
-    reg [15:0] core_stq_bitvec_0_i;
-    reg [15:0] core_stq_bitvec_1_i;
-    reg [15:0] core_stq_bitvec_2_i;
-    reg [15:0] core_stq_bitvec_3_i;
-    reg [127:0] core_stq_data_0_i;
-    reg [127:0] core_stq_data_1_i;
-    reg [127:0] core_stq_data_2_i;
-    reg [127:0] core_stq_data_3_i;
+    // ----------------------------------------------------------------
+    // WB outputs -- stq_heads
+    // ----------------------------------------------------------------
+    wire         outputs_stq_head_0_full;
+    wire         outputs_stq_head_0_empty;
+    wire [14:0]  outputs_stq_head_0_address;
+    wire [15:0]  outputs_stq_head_0_bit_vec;
+    wire [127:0] outputs_stq_head_0_data;
 
-    // ---------------------------------------------------------------
-    // DCache MIO inputs
-    // ---------------------------------------------------------------
-    reg        core_ld_addr_MIO_V_i;
-    reg [14:0] core_ld_addr_MIO_i;
-    reg        core_stq_info_mio_empty_i;
-    reg [14:0] core_stq_info_mio_addr_i;
-    reg [127:0] core_stq_info_mio_data_i;
+    wire         outputs_stq_head_1_full;
+    wire         outputs_stq_head_1_empty;
+    wire [14:0]  outputs_stq_head_1_address;
+    wire [15:0]  outputs_stq_head_1_bit_vec;
+    wire [127:0] outputs_stq_head_1_data;
 
-    // ---------------------------------------------------------------
-    // Mem stage clear requests
-    // ---------------------------------------------------------------
-    reg core_memStage_CLR_REQ_0_i;
-    reg core_memStage_CLR_REQ_1_i;
-    reg core_memStage_CLR_REQ_2_i;
-    reg core_memStage_CLR_REQ_3_i;
-    reg core_memStage_CLR_REQ_MIO_i;
+    wire         outputs_stq_head_2_full;
+    wire         outputs_stq_head_2_empty;
+    wire [14:0]  outputs_stq_head_2_address;
+    wire [15:0]  outputs_stq_head_2_bit_vec;
+    wire [127:0] outputs_stq_head_2_data;
 
-    // ---------------------------------------------------------------
-    // DCache outputs
-    // ---------------------------------------------------------------
-    wire        out2Core_reqServed_0_o;
-    wire        out2Core_reqServed_1_o;
-    wire        out2Core_hit_0_o;
-    wire        out2Core_hit_1_o;
-    wire        out2Core_hit_2_o;
-    wire        out2Core_hit_3_o;
-    wire [127:0] out2Core_cacheline_0_o;
-    wire [127:0] out2Core_cacheline_1_o;
-    wire [127:0] out2Core_cacheline_2_o;
-    wire [127:0] out2Core_cacheline_3_o;
-    wire        out2Core_writeSuccess_0_o;
-    wire        out2Core_writeSuccess_1_o;
-    wire        out2Core_writeSuccess_2_o;
-    wire        out2Core_writeSuccess_3_o;
-    wire        out2Core_writeSuccess_MIO_o;
-    wire        out2Core_hit_MIO_o;
-    wire        out2Core_reqServed_MIO_o;
-    wire [127:0] out2Core_line_MIO_o;
+    wire         outputs_stq_head_3_full;
+    wire         outputs_stq_head_3_empty;
+    wire [14:0]  outputs_stq_head_3_address;
+    wire [15:0]  outputs_stq_head_3_bit_vec;
+    wire [127:0] outputs_stq_head_3_data;
 
-    // ---------------------------------------------------------------
-    // DMA output
-    // ---------------------------------------------------------------
-    wire dma_intOut_o;
+    // ----------------------------------------------------------------
+    // WB outputs -- mio_head
+    // ----------------------------------------------------------------
+    wire         outputs_mio_head_full;
+    wire         outputs_mio_head_empty;
+    wire [14:0]  outputs_mio_head_address;
+    wire [15:0]  outputs_mio_head_bit_vec;
+    wire [127:0] outputs_mio_head_data;
 
-    // ---------------------------------------------------------------
-    // DUT
-    // ---------------------------------------------------------------
-    Everywhere_TOP dut (
-        .clk(clk),
-        .rst(rst),
+    // ----------------------------------------------------------------
+    // WB outputs -- dep_check entries [0..15]
+    // ----------------------------------------------------------------
+    wire         outputs_dep_check_entry_0_valid;
+    wire [14:0]  outputs_dep_check_entry_0_address;
+    wire         outputs_dep_check_entry_1_valid;
+    wire [14:0]  outputs_dep_check_entry_1_address;
+    wire         outputs_dep_check_entry_2_valid;
+    wire [14:0]  outputs_dep_check_entry_2_address;
+    wire         outputs_dep_check_entry_3_valid;
+    wire [14:0]  outputs_dep_check_entry_3_address;
+    wire         outputs_dep_check_entry_4_valid;
+    wire [14:0]  outputs_dep_check_entry_4_address;
+    wire         outputs_dep_check_entry_5_valid;
+    wire [14:0]  outputs_dep_check_entry_5_address;
+    wire         outputs_dep_check_entry_6_valid;
+    wire [14:0]  outputs_dep_check_entry_6_address;
+    wire         outputs_dep_check_entry_7_valid;
+    wire [14:0]  outputs_dep_check_entry_7_address;
+    wire         outputs_dep_check_entry_8_valid;
+    wire [14:0]  outputs_dep_check_entry_8_address;
+    wire         outputs_dep_check_entry_9_valid;
+    wire [14:0]  outputs_dep_check_entry_9_address;
+    wire         outputs_dep_check_entry_10_valid;
+    wire [14:0]  outputs_dep_check_entry_10_address;
+    wire         outputs_dep_check_entry_11_valid;
+    wire [14:0]  outputs_dep_check_entry_11_address;
+    wire         outputs_dep_check_entry_12_valid;
+    wire [14:0]  outputs_dep_check_entry_12_address;
+    wire         outputs_dep_check_entry_13_valid;
+    wire [14:0]  outputs_dep_check_entry_13_address;
+    wire         outputs_dep_check_entry_14_valid;
+    wire [14:0]  outputs_dep_check_entry_14_address;
+    wire         outputs_dep_check_entry_15_valid;
+    wire [14:0]  outputs_dep_check_entry_15_address;
 
-        .icache_icache_en_i          (icache_icache_en_i),
-        .icache_p_addr_i             (icache_p_addr_i),
-        .icache_v_addr_i             (icache_v_addr_i),
-        .icache_num_valid_IDM_slots_i(icache_num_valid_IDM_slots_i),
-        .icache_hit_o                (icache_hit_o),
-        .icache_instruction_line_o   (icache_instruction_line_o),
+    // ----------------------------------------------------------------
+    // DUT instantiation
+    // ----------------------------------------------------------------
+    WB uut (
+        .clk                              ( clk                              ),
+        .rst                              ( rst                              ),
 
-        .core_ld_addr_0_V_i(core_ld_addr_0_V_i),
-        .core_ld_addr_0_i  (core_ld_addr_0_i),
-        .core_ld_addr_1_V_i(core_ld_addr_1_V_i),
-        .core_ld_addr_1_i  (core_ld_addr_1_i),
+        .wb_latches_valid                 ( wb_latches_valid                 ),
+        .wb_latches_cs_ST_OP              ( wb_latches_cs_ST_OP              ),
+        .wb_latches_cs_WB_DR              ( wb_latches_cs_WB_DR              ),
+        .wb_latches_cs_WB_SR              ( wb_latches_cs_WB_SR              ),
+        .wb_latches_cs_WB_EAX             ( wb_latches_cs_WB_EAX             ),
+        .wb_latches_ST_XCL                ( wb_latches_ST_XCL                ),
+        .wb_latches_ST_PADDR_0            ( wb_latches_ST_PADDR_0            ),
+        .wb_latches_ST_BIT_VEC_0          ( wb_latches_ST_BIT_VEC_0          ),
+        .wb_latches_ST_PADDR_1            ( wb_latches_ST_PADDR_1            ),
+        .wb_latches_ST_BIT_VEC_1          ( wb_latches_ST_BIT_VEC_1          ),
+        .wb_latches_MIO                   ( wb_latches_MIO                   ),
+        .wb_latches_EIP                   ( wb_latches_EIP                   ),
+        .wb_latches_res_buf               ( wb_latches_res_buf               ),
+        .wb_latches_sr_id                 ( wb_latches_sr_id                 ),
+        .wb_latches_sr_data               ( wb_latches_sr_data               ),
+        .wb_latches_dr_id                 ( wb_latches_dr_id                 ),
+        .wb_latches_dr_data               ( wb_latches_dr_data               ),
+        .wb_latches_EAX                   ( wb_latches_EAX                   ),
 
-        .core_stq_full_0_i  (core_stq_full_0_i),
-        .core_stq_full_1_i  (core_stq_full_1_i),
-        .core_stq_full_2_i  (core_stq_full_2_i),
-        .core_stq_full_3_i  (core_stq_full_3_i),
-        .core_stq_empty_0_i (core_stq_empty_0_i),
-        .core_stq_empty_1_i (core_stq_empty_1_i),
-        .core_stq_empty_2_i (core_stq_empty_2_i),
-        .core_stq_empty_3_i (core_stq_empty_3_i),
-        .core_stq_addr_0_i  (core_stq_addr_0_i),
-        .core_stq_addr_1_i  (core_stq_addr_1_i),
-        .core_stq_addr_2_i  (core_stq_addr_2_i),
-        .core_stq_addr_3_i  (core_stq_addr_3_i),
-        .core_stq_bitvec_0_i(core_stq_bitvec_0_i),
-        .core_stq_bitvec_1_i(core_stq_bitvec_1_i),
-        .core_stq_bitvec_2_i(core_stq_bitvec_2_i),
-        .core_stq_bitvec_3_i(core_stq_bitvec_3_i),
-        .core_stq_data_0_i  (core_stq_data_0_i),
-        .core_stq_data_1_i  (core_stq_data_1_i),
-        .core_stq_data_2_i  (core_stq_data_2_i),
-        .core_stq_data_3_i  (core_stq_data_3_i),
+        .write_success_0                  ( write_success_0                  ),
+        .write_success_1                  ( write_success_1                  ),
+        .write_success_2                  ( write_success_2                  ),
+        .write_success_3                  ( write_success_3                  ),
+        .write_success_mio                ( write_success_mio                ),
 
-        .core_ld_addr_MIO_V_i     (core_ld_addr_MIO_V_i),
-        .core_ld_addr_MIO_i       (core_ld_addr_MIO_i),
-        .core_stq_info_mio_empty_i(core_stq_info_mio_empty_i),
-        .core_stq_info_mio_addr_i (core_stq_info_mio_addr_i),
-        .core_stq_info_mio_data_i (core_stq_info_mio_data_i),
+        .outputs_valid                    ( outputs_valid                    ),
+        .outputs_wb_stall                 ( outputs_wb_stall                 ),
+        .outputs_ST_OP                    ( outputs_ST_OP                    ),
+        .outputs_ST_XCL                   ( outputs_ST_XCL                   ),
+        .outputs_ST_PADDR_0               ( outputs_ST_PADDR_0               ),
+        .outputs_ST_PADDR_1               ( outputs_ST_PADDR_1               ),
 
-        .core_memStage_CLR_REQ_0_i  (core_memStage_CLR_REQ_0_i),
-        .core_memStage_CLR_REQ_1_i  (core_memStage_CLR_REQ_1_i),
-        .core_memStage_CLR_REQ_2_i  (core_memStage_CLR_REQ_2_i),
-        .core_memStage_CLR_REQ_3_i  (core_memStage_CLR_REQ_3_i),
-        .core_memStage_CLR_REQ_MIO_i(core_memStage_CLR_REQ_MIO_i),
+        .outputs_stq_head_0_full          ( outputs_stq_head_0_full          ),
+        .outputs_stq_head_0_empty         ( outputs_stq_head_0_empty         ),
+        .outputs_stq_head_0_address       ( outputs_stq_head_0_address       ),
+        .outputs_stq_head_0_bit_vec       ( outputs_stq_head_0_bit_vec       ),
+        .outputs_stq_head_0_data          ( outputs_stq_head_0_data          ),
 
-        .out2Core_reqServed_0_o    (out2Core_reqServed_0_o),
-        .out2Core_reqServed_1_o    (out2Core_reqServed_1_o),
-        .out2Core_hit_0_o          (out2Core_hit_0_o),
-        .out2Core_hit_1_o          (out2Core_hit_1_o),
-        .out2Core_hit_2_o          (out2Core_hit_2_o),
-        .out2Core_hit_3_o          (out2Core_hit_3_o),
-        .out2Core_cacheline_0_o    (out2Core_cacheline_0_o),
-        .out2Core_cacheline_1_o    (out2Core_cacheline_1_o),
-        .out2Core_cacheline_2_o    (out2Core_cacheline_2_o),
-        .out2Core_cacheline_3_o    (out2Core_cacheline_3_o),
-        .out2Core_writeSuccess_0_o (out2Core_writeSuccess_0_o),
-        .out2Core_writeSuccess_1_o (out2Core_writeSuccess_1_o),
-        .out2Core_writeSuccess_2_o (out2Core_writeSuccess_2_o),
-        .out2Core_writeSuccess_3_o (out2Core_writeSuccess_3_o),
-        .out2Core_writeSuccess_MIO_o(out2Core_writeSuccess_MIO_o),
-        .out2Core_hit_MIO_o         (out2Core_hit_MIO_o),
-        .out2Core_reqServed_MIO_o   (out2Core_reqServed_MIO_o),
-        .out2Core_line_MIO_o        (out2Core_line_MIO_o),
+        .outputs_stq_head_1_full          ( outputs_stq_head_1_full          ),
+        .outputs_stq_head_1_empty         ( outputs_stq_head_1_empty         ),
+        .outputs_stq_head_1_address       ( outputs_stq_head_1_address       ),
+        .outputs_stq_head_1_bit_vec       ( outputs_stq_head_1_bit_vec       ),
+        .outputs_stq_head_1_data          ( outputs_stq_head_1_data          ),
 
-        .dma_intOut_o(dma_intOut_o)
+        .outputs_stq_head_2_full          ( outputs_stq_head_2_full          ),
+        .outputs_stq_head_2_empty         ( outputs_stq_head_2_empty         ),
+        .outputs_stq_head_2_address       ( outputs_stq_head_2_address       ),
+        .outputs_stq_head_2_bit_vec       ( outputs_stq_head_2_bit_vec       ),
+        .outputs_stq_head_2_data          ( outputs_stq_head_2_data          ),
+
+        .outputs_stq_head_3_full          ( outputs_stq_head_3_full          ),
+        .outputs_stq_head_3_empty         ( outputs_stq_head_3_empty         ),
+        .outputs_stq_head_3_address       ( outputs_stq_head_3_address       ),
+        .outputs_stq_head_3_bit_vec       ( outputs_stq_head_3_bit_vec       ),
+        .outputs_stq_head_3_data          ( outputs_stq_head_3_data          ),
+
+        .outputs_mio_head_full            ( outputs_mio_head_full            ),
+        .outputs_mio_head_empty           ( outputs_mio_head_empty           ),
+        .outputs_mio_head_address         ( outputs_mio_head_address         ),
+        .outputs_mio_head_bit_vec         ( outputs_mio_head_bit_vec         ),
+        .outputs_mio_head_data            ( outputs_mio_head_data            ),
+
+        .outputs_dep_check_entry_0_valid   ( outputs_dep_check_entry_0_valid   ),
+        .outputs_dep_check_entry_0_address ( outputs_dep_check_entry_0_address ),
+        .outputs_dep_check_entry_1_valid   ( outputs_dep_check_entry_1_valid   ),
+        .outputs_dep_check_entry_1_address ( outputs_dep_check_entry_1_address ),
+        .outputs_dep_check_entry_2_valid   ( outputs_dep_check_entry_2_valid   ),
+        .outputs_dep_check_entry_2_address ( outputs_dep_check_entry_2_address ),
+        .outputs_dep_check_entry_3_valid   ( outputs_dep_check_entry_3_valid   ),
+        .outputs_dep_check_entry_3_address ( outputs_dep_check_entry_3_address ),
+        .outputs_dep_check_entry_4_valid   ( outputs_dep_check_entry_4_valid   ),
+        .outputs_dep_check_entry_4_address ( outputs_dep_check_entry_4_address ),
+        .outputs_dep_check_entry_5_valid   ( outputs_dep_check_entry_5_valid   ),
+        .outputs_dep_check_entry_5_address ( outputs_dep_check_entry_5_address ),
+        .outputs_dep_check_entry_6_valid   ( outputs_dep_check_entry_6_valid   ),
+        .outputs_dep_check_entry_6_address ( outputs_dep_check_entry_6_address ),
+        .outputs_dep_check_entry_7_valid   ( outputs_dep_check_entry_7_valid   ),
+        .outputs_dep_check_entry_7_address ( outputs_dep_check_entry_7_address ),
+        .outputs_dep_check_entry_8_valid   ( outputs_dep_check_entry_8_valid   ),
+        .outputs_dep_check_entry_8_address ( outputs_dep_check_entry_8_address ),
+        .outputs_dep_check_entry_9_valid   ( outputs_dep_check_entry_9_valid   ),
+        .outputs_dep_check_entry_9_address ( outputs_dep_check_entry_9_address ),
+        .outputs_dep_check_entry_10_valid  ( outputs_dep_check_entry_10_valid  ),
+        .outputs_dep_check_entry_10_address( outputs_dep_check_entry_10_address),
+        .outputs_dep_check_entry_11_valid  ( outputs_dep_check_entry_11_valid  ),
+        .outputs_dep_check_entry_11_address( outputs_dep_check_entry_11_address),
+        .outputs_dep_check_entry_12_valid  ( outputs_dep_check_entry_12_valid  ),
+        .outputs_dep_check_entry_12_address( outputs_dep_check_entry_12_address),
+        .outputs_dep_check_entry_13_valid  ( outputs_dep_check_entry_13_valid  ),
+        .outputs_dep_check_entry_13_address( outputs_dep_check_entry_13_address),
+        .outputs_dep_check_entry_14_valid  ( outputs_dep_check_entry_14_valid  ),
+        .outputs_dep_check_entry_14_address( outputs_dep_check_entry_14_address),
+        .outputs_dep_check_entry_15_valid  ( outputs_dep_check_entry_15_valid  ),
+        .outputs_dep_check_entry_15_address( outputs_dep_check_entry_15_address)
     );
 
-    // ---------------------------------------------------------------
-    // Stimulus: drive all inputs to 0, assert reset, then release
-    // ---------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // Stimulus
+    // ----------------------------------------------------------------
     initial begin
-        rst = 1;
-        icache_icache_en_i           = 0;
-        icache_p_addr_i              = 0;
-        icache_v_addr_i              = 0;
-        icache_num_valid_IDM_slots_i = 0;
-        core_ld_addr_0_V_i           = 0;
-        core_ld_addr_0_i             = 0;
-        core_ld_addr_1_V_i           = 0;
-        core_ld_addr_1_i             = 0;
-        core_stq_full_0_i            = 0;
-        core_stq_full_1_i            = 0;
-        core_stq_full_2_i            = 0;
-        core_stq_full_3_i            = 0;
-        core_stq_empty_0_i           = 1;
-        core_stq_empty_1_i           = 1;
-        core_stq_empty_2_i           = 1;
-        core_stq_empty_3_i           = 1;
-        core_stq_addr_0_i            = 0;
-        core_stq_addr_1_i            = 0;
-        core_stq_addr_2_i            = 0;
-        core_stq_addr_3_i            = 0;
-        core_stq_bitvec_0_i          = 0;
-        core_stq_bitvec_1_i          = 0;
-        core_stq_bitvec_2_i          = 0;
-        core_stq_bitvec_3_i          = 0;
-        core_stq_data_0_i            = 0;
-        core_stq_data_1_i            = 0;
-        core_stq_data_2_i            = 0;
-        core_stq_data_3_i            = 0;
-        core_ld_addr_MIO_V_i         = 0;
-        core_ld_addr_MIO_i           = 0;
-        core_stq_info_mio_empty_i    = 1;
-        core_stq_info_mio_addr_i     = 0;
-        core_stq_info_mio_data_i     = 0;
-        core_memStage_CLR_REQ_0_i    = 0;
-        core_memStage_CLR_REQ_1_i    = 0;
-        core_memStage_CLR_REQ_2_i    = 0;
-        core_memStage_CLR_REQ_3_i    = 0;
-        core_memStage_CLR_REQ_MIO_i  = 0;
-
-        repeat(4) @(posedge clk);
         rst = 0;
+        wb_latches_valid      = 0;
+        wb_latches_cs_ST_OP   = 0;
+        wb_latches_cs_WB_DR   = 0;
+        wb_latches_cs_WB_SR   = 0;
+        wb_latches_cs_WB_EAX  = 0;
+        wb_latches_ST_XCL     = 0;
+        wb_latches_ST_PADDR_0 = 0;
+        wb_latches_ST_BIT_VEC_0 = 0;
+        wb_latches_ST_PADDR_1 = 0;
+        wb_latches_ST_BIT_VEC_1 = 0;
+        wb_latches_MIO        = 0;
+        wb_latches_EIP        = 0;
+        wb_latches_res_buf    = 0;
+        wb_latches_sr_id      = 0;
+        wb_latches_sr_data    = 0;
+        wb_latches_dr_id      = 0;
+        wb_latches_dr_data    = 0;
+        wb_latches_EAX        = 0;
+        write_success_0       = 0;
+        write_success_1       = 0;
+        write_success_2       = 0;
+        write_success_3       = 0;
+        write_success_mio     = 0;
 
-        repeat(20) @(posedge clk);
-        $finish;
+        #10 rst = 1;
+        #200 $finish;
     end
 
 endmodule

@@ -23,7 +23,11 @@ module xchg_op (
     wire id_eq;
     `CMP_N(u_cmp_id, 5, id_eq, srA_id, srB_id)
     wire same_id;
-    assign same_id = ~st_op & id_eq;
+    wire same_id_raw;
+    assign same_id_raw = ~st_op & id_eq;
+    // same_id feeds 64 mux2$ select pins across u_mux_dr/sr and other paths
+    // (fanout 64). bufferH64$ rated 64 — exact fit, 0.30 ns typ.
+    bufferH64$ u_buf_same_id (.out(same_id), .in(same_id_raw));
 
     // ---- Per-lane source selectors (intra-byte mux on AL/AH ↔ BL/BH) ----
     wire [7:0] new_rm_low_sel;
