@@ -6,5 +6,5 @@ clean:
 	rm -rf WORK/
 	rm -f *.svf
 
-parse:
+parse: check
 	python3 scripts/parse_jacob.py check.log | tee parse.log

@@ -85,11 +85,15 @@ module kogge_stone_adder #(
     //  is unchanged. Without this, sum[i>0] is wrong whenever
     //  cin=1 and bits 0..i-1 form a propagate chain past bit 0.
     // ----------------------------------------------------------
-    wire p0_raw, g0_raw, p0_and_cin;
+    wire p0_raw, g0_raw, p0_and_cin, g_arr0_raw;
     `XOR_2(u_p0_xor, 1, p0_raw,     a[0], b[0])
     `AND_2(u_g0_and, 1, g0_raw,     a[0], b[0])
     `AND_2(u_p0_cin, 1, p0_and_cin, p0_raw, cin)
-    `OR_2 (u_g0_or,  1, g_arr[0],   g0_raw, p0_and_cin)
+    `OR_2 (u_g0_or,  1, g_arr0_raw, g0_raw, p0_and_cin)
+    // g_arr[0] is read by every stage's prefix-tree boundary bit (via the
+    // passthrough chain) plus the bit-1 sum cell, fanout ~ STAGES+1.
+    // Drive the high-fanout net with bufferH16$ per the structural rule.
+    bufferH16$ u_buf_g0 (.out(g_arr[0]), .in(g_arr0_raw));
     assign p_arr[0] = p0_raw;
 
     generate
@@ -164,20 +168,27 @@ module kogge_stone_adder #(
     //  The original propagate used here is always from stage 0
     //  (p_arr[i]), which equals a[i] ^ b[i].
     // ----------------------------------------------------------
-    generate
-        // Bit 0 — driven by external carry-in
-        sum_cell u_sum_lsb (
-            .p   (p_arr[0]),
-            .c_in(cin),
-            .sum (sum[0])
-        );
+    // ----------------------------------------------------------
+    //  Post-processing — Sum bits (flattened, no sum_cell wrapper)
+    //
+    //  xor2$.out drives sum[i] directly inside this module, so the
+    //  fanout tool sees the parent's load cells as real loads on that
+    //  net — no buffer needed, saves 0.24 ns on the sum path.
+    // ----------------------------------------------------------
+    // Bit 0 — carry-in is cin
+    xor2$ u_sum_lsb (
+        .out(sum[0]),
+        .in0(p_arr[0]),
+        .in1(cin)
+    );
 
-        // Bits 1 .. WIDTH-1 — driven by prefix-tree carry
+    generate
+        // Bits 1 .. WIDTH-1 — carry-in is prefix-tree group-generate
         for (i = 1; i < WIDTH; i = i + 1) begin : gen_sum
-            sum_cell u_sum (
-                .p   (p_arr[i]),
-                .c_in(g_arr[STAGES*WIDTH+i-1]),
-                .sum (sum[i])
+            xor2$ u_sum (
+                .out(sum[i]),
+                .in0(p_arr[i]),
+                .in1(g_arr[STAGES*WIDTH+i-1])
             );
         end
     endgenerate
@@ -295,7 +306,7 @@ module gray_cell (
     input  wire g_lo,
     output wire g_out
 );
-    wire p_and_g;
+    wire p_and_g, g_out_raw;
     // and2$ u_and (
     //     p_and_g,
     //     p_hi,
@@ -307,16 +318,20 @@ module gray_cell (
     //     p_and_g
     // );  // G_hi | (P_hi & G_lo)
 
-    `AND_2(u_and, 1, 
-        p_and_g, 
-        p_hi, 
+    `AND_2(u_and, 1,
+        p_and_g,
+        p_hi,
         g_lo
     )
-    `OR_2(u_or, 1, 
-        g_out, 
-        g_hi, 
+    `OR_2(u_or, 1,
+        g_out_raw,
+        g_hi,
         p_and_g
     )
+    // Gray cells sit at the prefix-tree boundary bit, so g_out feeds every
+    // higher stage's boundary cell via the passthrough chain plus the next
+    // sum bit — fanout ~ (STAGES - s + 1). Buffer per the structural rule.
+    bufferH16$ u_buf_g_out (.out(g_out), .in(g_out_raw));
 endmodule
 
 
@@ -332,9 +347,12 @@ module sum_cell (
     input  wire c_in,
     output wire sum
 );
-    `XOR_2   (u_xor, 1,
-        sum,
-        p,
-        c_in
-    );
+    // xor2$ cannot drive the output port directly: the fanout tool stops
+    // tracing at the port boundary and records fanout=0 on xor2$.out.
+    // bufferH16$ is the expected driver type at module outputs per the
+    // fanout checker rules (bufferH16$ or bufferHInv16$ only).
+    // It also adds 0.24 ns min-path delay on every sum bit.
+    wire sum_raw;
+    `XOR_2(u_xor, 1, sum_raw, p, c_in);
+    bufferH16$ u_buf_sum (.out(sum), .in(sum_raw));
 endmodule
