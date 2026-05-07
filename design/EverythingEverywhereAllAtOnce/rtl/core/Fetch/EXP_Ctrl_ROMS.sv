@@ -23,9 +23,12 @@ module EXP_Ctrl_ROMS (
 
     output byte_t rom_data_out[CACHE_LINES_SIZE_B]
 );
+    
 
     logic [4:0] rom_sel;
     uint32_t IDTR;
+    logic dc_gp_exp;
+    assign dc_gp_exp = DC_exp & !DC_pf;
 
     // IDT (Interrupt Descriptor Table) entry indices
     localparam logic [4:0] GP_IDT = 5'd13;  // General Protection Fault
@@ -44,7 +47,7 @@ module EXP_Ctrl_ROMS (
     // DC exception mux
     // =====================
     logic [4:0] DC_exp_out;
-    assign DC_exp_out = !DC_pf ? GP_IDT : PF_IDT;
+    assign DC_exp_out = dc_gp_exp ? GP_IDT : PF_IDT;
 
     // =====================
     // Exception select mux (DC priority)
