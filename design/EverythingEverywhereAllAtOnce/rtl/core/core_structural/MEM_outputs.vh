@@ -54,10 +54,10 @@ wire [14:0] mem_outputs_ST_PADDR_0;
 wire [14:0] mem_outputs_ST_PADDR_1;
 wire mem_outputs_ST_OP;
 
-wire mem_outputs_clr_dcache_arb_latches_0;
-wire mem_outputs_clr_dcache_arb_latches_1;
-wire mem_outputs_clr_dcache_arb_latches_2;
-wire mem_outputs_clr_dcache_arb_latches_3;
-
-wire mem_outputs_clr_dcache_mio_latch;
-wire mem_outputs_exe_stage_latch_we;
+//wire mem_outputs_clr_dcache_arb_latches_0;
+//wire mem_outputs_clr_dcache_arb_latches_1;
+//wire mem_outputs_clr_dcache_arb_latches_2;
+//wire mem_outputs_clr_dcache_arb_latches_3;
+//
+//wire mem_outputs_clr_dcache_mio_latch;
+//wire mem_outputs_exe_stage_latch_we;
