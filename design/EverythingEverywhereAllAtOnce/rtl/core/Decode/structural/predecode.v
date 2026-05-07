@@ -2,7 +2,6 @@
 module predecode(
     input clk, rst,
     input [63:0][7:0] queue,
-    input [3:0] queue_valid,
     input reg [31:0] EIP,
     output reg [31:0] NEIP,
     output [3:0] inst_length,
