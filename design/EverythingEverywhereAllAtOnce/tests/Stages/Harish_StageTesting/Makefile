@@ -13,7 +13,7 @@ DISTRO := $(shell . /etc/os-release && echo $$ID)
 
 TARGET = system_testing
 
-STRUCTRURAL := false
+STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
 CLK_PERIOD := 12
@@ -138,13 +138,14 @@ runSoft:
 	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
 	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
             +RTL_STOREDUMP_FILE_NAME=$(RTL_STOREDUMP_FILE) \
-	@$(PYTHON) $(MASTER_STARTUP_SCRIPT) -s cleaned_scripts.json $(GEN_CONF)
-	@rm -f cleaned_scripts.json
+
 
 see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'
 	@echo -e "\n"
 	
+view: run
+	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd &
 
 makeLogDir:
 	@mkdir -p $(LOG_DIR)

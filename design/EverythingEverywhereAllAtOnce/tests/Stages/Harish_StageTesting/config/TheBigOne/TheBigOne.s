@@ -24,7 +24,9 @@ main:
     # SECTION 1: BASIC STORE / LOAD — WIDE STRIDE
     # Test dcache across large address spans.
     # ================================================================
-
+    movl $0xe0000000, %eax
+    movl $0x10000400, %ebx
+    cmpxchg %ah, %bh
     movl $0xA0A0A0A0, (%esi)
     movl $0xB1B1B1B1, 0x200(%esi)
     movl $0xC2C2C2C2, 0x400(%esi)

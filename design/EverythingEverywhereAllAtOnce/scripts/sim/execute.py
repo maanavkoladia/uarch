@@ -74,8 +74,17 @@ class CPU:
         return 4
 
     def _resolve_seg_name(self, op, default='ds'):
-        """Return the segment register name for a memory operand."""
-        return op.seg_prefix if op.seg_prefix else default
+        """Return the segment register name for a memory operand.
+
+        x86 rule: if no explicit segment prefix is present, ESP or EBP as the
+        base register implicitly selects SS.  All other bases use DS (or the
+        caller-supplied default).
+        """
+        if op.seg_prefix:
+            return op.seg_prefix
+        if op.base_reg and op.base_reg.upper() in ('ESP', 'EBP', 'SP', 'BP'):
+            return 'ss'
+        return default
 
     def _resolve_seg(self, op, default='ds'):
         """Return the 16-bit segment register value for a memory operand."""
