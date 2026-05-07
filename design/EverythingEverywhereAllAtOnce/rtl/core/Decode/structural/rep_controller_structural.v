@@ -150,9 +150,14 @@ module rep_controller (
     `NOR_3(u_fsm_reset, 1, fsm_reset, rst_n, exp_pipe_clear, flush)
 
     // assign fsm_stall = stall || wait_cmp || wait_mov;
-    wire fsm_stall, fsm_stall_pre, fsm_stall0, fsm_stall1;
+    wire fsm_stall, fsm_stall0, fsm_stall1;
+    wire fsm_stall_pre, fsm_stall0_pre, fsm_stall1_pre;
     `OR_3(u_fsm_stall, 1, fsm_stall_pre, stall, wait_cmp, wait_mov)
     bufferH16$ fsm_stall_buf (.out(fsm_stall), .in(fsm_stall_pre));
+    `OR_3(u_fsm_stall0, 1, fsm_stall0_pre, stall, wait_cmp, wait_mov)
+    bufferH16$ fsm_stall_buf0 (.out(fsm_stall0), .in(fsm_stall0_pre));
+    `OR_3(u_fsm_stall1, 1, fsm_stall1_pre, stall, wait_cmp, wait_mov)
+    bufferH16$ fsm_stall_buf1 (.out(fsm_stall1), .in(fsm_stall1_pre));
 
     rep_fsm fsm_rep (
         .clk           (clk),
