@@ -97,10 +97,10 @@ module MEM_Latches (
 
     // exe_cs_t exe_cs
     input wire        nextLatches_exe_cs_ST_OP_i,
-    input wire [31:0] nextLatches_exe_cs_OP_TYPE_i,
-    input wire [31:0] nextLatches_exe_cs_alu_inputA_sel_i,
-    input wire [31:0] nextLatches_exe_cs_alu_inputB_sel_i,
-    input wire [31:0] nextLatches_exe_cs_branch_target_sel_i,
+    input wire [5:0]  nextLatches_exe_cs_OP_TYPE_i,
+    input wire [4:0]  nextLatches_exe_cs_alu_inputA_sel_i,
+    input wire [4:0]  nextLatches_exe_cs_alu_inputB_sel_i,
+    input wire [4:0]  nextLatches_exe_cs_branch_target_sel_i,
     input wire        nextLatches_exe_cs_shift_by_one_i,
     input wire        nextLatches_exe_cs_br_ucond_i,
     input wire        nextLatches_exe_cs_relative_branch_i,
@@ -156,10 +156,10 @@ module MEM_Latches (
     output wire        latches_cs_LD_OP_o,
 
     output wire        latches_exe_cs_ST_OP_o,
-    output wire [31:0] latches_exe_cs_OP_TYPE_o,
-    output wire [31:0] latches_exe_cs_alu_inputA_sel_o,
-    output wire [31:0] latches_exe_cs_alu_inputB_sel_o,
-    output wire [31:0] latches_exe_cs_branch_target_sel_o,
+    output wire [5:0]  latches_exe_cs_OP_TYPE_o,
+    output wire [4:0]  latches_exe_cs_alu_inputA_sel_o,
+    output wire [4:0]  latches_exe_cs_alu_inputB_sel_o,
+    output wire [4:0]  latches_exe_cs_branch_target_sel_o,
     output wire        latches_exe_cs_shift_by_one_o,
     output wire        latches_exe_cs_br_ucond_o,
     output wire        latches_exe_cs_relative_branch_o,
@@ -230,10 +230,10 @@ module MEM_Latches (
     wire        cs_LD_OP_d;
 
     wire        exe_cs_ST_OP_d;
-    wire [31:0] exe_cs_OP_TYPE_d;
-    wire [31:0] exe_cs_alu_inputA_sel_d;
-    wire [31:0] exe_cs_alu_inputB_sel_d;
-    wire [31:0] exe_cs_branch_target_sel_d;
+    wire [5:0]  exe_cs_OP_TYPE_d;
+    wire [4:0]  exe_cs_alu_inputA_sel_d;
+    wire [4:0]  exe_cs_alu_inputB_sel_d;
+    wire [4:0]  exe_cs_branch_target_sel_d;
     wire        exe_cs_shift_by_one_d;
     wire        exe_cs_br_ucond_d;
     wire        exe_cs_relative_branch_d;
@@ -288,10 +288,10 @@ module MEM_Latches (
     `MUX_2(u_mem_mux_cs_LD_OP,                       1,   cs_LD_OP_d,                       nextLatches_cs_LD_OP_i,                       1'b0,    combined_flush);
 
     `MUX_2(u_mem_mux_exe_cs_ST_OP,                   1,   exe_cs_ST_OP_d,                   nextLatches_exe_cs_ST_OP_i,                   1'b0,    combined_flush);
-    `MUX_2(u_mem_mux_exe_cs_OP_TYPE,                 32,  exe_cs_OP_TYPE_d,                 nextLatches_exe_cs_OP_TYPE_i,                 32'b0,   combined_flush);
-    `MUX_2(u_mem_mux_exe_cs_alu_inputA_sel,          32,  exe_cs_alu_inputA_sel_d,          nextLatches_exe_cs_alu_inputA_sel_i,          32'b0,   combined_flush);
-    `MUX_2(u_mem_mux_exe_cs_alu_inputB_sel,          32,  exe_cs_alu_inputB_sel_d,          nextLatches_exe_cs_alu_inputB_sel_i,          32'b0,   combined_flush);
-    `MUX_2(u_mem_mux_exe_cs_branch_target_sel,       32,  exe_cs_branch_target_sel_d,       nextLatches_exe_cs_branch_target_sel_i,       32'b0,   combined_flush);
+    `MUX_2(u_mem_mux_exe_cs_OP_TYPE,                 6,   exe_cs_OP_TYPE_d,                 nextLatches_exe_cs_OP_TYPE_i,                 6'b0,    combined_flush);
+    `MUX_2(u_mem_mux_exe_cs_alu_inputA_sel,          5,   exe_cs_alu_inputA_sel_d,          nextLatches_exe_cs_alu_inputA_sel_i,          5'b0,    combined_flush);
+    `MUX_2(u_mem_mux_exe_cs_alu_inputB_sel,          5,   exe_cs_alu_inputB_sel_d,          nextLatches_exe_cs_alu_inputB_sel_i,          5'b0,    combined_flush);
+    `MUX_2(u_mem_mux_exe_cs_branch_target_sel,       5,   exe_cs_branch_target_sel_d,       nextLatches_exe_cs_branch_target_sel_i,       5'b0,    combined_flush);
     `MUX_2(u_mem_mux_exe_cs_shift_by_one,            1,   exe_cs_shift_by_one_d,            nextLatches_exe_cs_shift_by_one_i,            1'b0,    combined_flush);
     `MUX_2(u_mem_mux_exe_cs_br_ucond,                1,   exe_cs_br_ucond_d,                nextLatches_exe_cs_br_ucond_i,                1'b0,    combined_flush);
     `MUX_2(u_mem_mux_exe_cs_relative_branch,         1,   exe_cs_relative_branch_d,         nextLatches_exe_cs_relative_branch_i,         1'b0,    combined_flush);
@@ -350,10 +350,10 @@ module MEM_Latches (
     `REG_RST_WE(mem_latches_cs_LD_OP,                       1,   clk, rst, effective_we, cs_LD_OP_d,                       latches_cs_LD_OP_o);
 
     `REG_RST_WE(mem_latches_exe_cs_ST_OP,                   1,   clk, rst, effective_we, exe_cs_ST_OP_d,                   latches_exe_cs_ST_OP_o);
-    `REG_RST_WE(mem_latches_exe_cs_OP_TYPE,                 32,  clk, rst, effective_we, exe_cs_OP_TYPE_d,                 latches_exe_cs_OP_TYPE_o);
-    `REG_RST_WE(mem_latches_exe_cs_alu_inputA_sel,          32,  clk, rst, effective_we, exe_cs_alu_inputA_sel_d,          latches_exe_cs_alu_inputA_sel_o);
-    `REG_RST_WE(mem_latches_exe_cs_alu_inputB_sel,          32,  clk, rst, effective_we, exe_cs_alu_inputB_sel_d,          latches_exe_cs_alu_inputB_sel_o);
-    `REG_RST_WE(mem_latches_exe_cs_branch_target_sel,       32,  clk, rst, effective_we, exe_cs_branch_target_sel_d,       latches_exe_cs_branch_target_sel_o);
+    `REG_RST_WE(mem_latches_exe_cs_OP_TYPE,                 6,   clk, rst, effective_we, exe_cs_OP_TYPE_d,                 latches_exe_cs_OP_TYPE_o);
+    `REG_RST_WE(mem_latches_exe_cs_alu_inputA_sel,          5,   clk, rst, effective_we, exe_cs_alu_inputA_sel_d,          latches_exe_cs_alu_inputA_sel_o);
+    `REG_RST_WE(mem_latches_exe_cs_alu_inputB_sel,          5,   clk, rst, effective_we, exe_cs_alu_inputB_sel_d,          latches_exe_cs_alu_inputB_sel_o);
+    `REG_RST_WE(mem_latches_exe_cs_branch_target_sel,       5,   clk, rst, effective_we, exe_cs_branch_target_sel_d,       latches_exe_cs_branch_target_sel_o);
     `REG_RST_WE(mem_latches_exe_cs_shift_by_one,            1,   clk, rst, effective_we, exe_cs_shift_by_one_d,            latches_exe_cs_shift_by_one_o);
     `REG_RST_WE(mem_latches_exe_cs_br_ucond,                1,   clk, rst, effective_we, exe_cs_br_ucond_d,                latches_exe_cs_br_ucond_o);
     `REG_RST_WE(mem_latches_exe_cs_relative_branch,         1,   clk, rst, effective_we, exe_cs_relative_branch_d,         latches_exe_cs_relative_branch_o);

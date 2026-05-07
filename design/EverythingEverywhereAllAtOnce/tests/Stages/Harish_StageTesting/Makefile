@@ -16,7 +16,7 @@ TARGET = system_testing
 STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 8.5
+CLK_PERIOD := 15
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 	p	DCACHE_DUMP_END=100
@@ -73,11 +73,12 @@ TB_FILES = \
 		   $(STARTUP_FILES) \
 		   debugUtils/debug_pkg.sv \
 		   tb_stages.sv
+ifeq()
 
 SRC_FILES :=
 
 ifeq ($(STRUCTRURAL), true)
-	SRC_FILES += $(RTL_PKGS) $(RTL_STRUCTURAL_HEADERS) $(RTL_STRUCTURAL_SRC_FILES) $(TB_FILES)	
+	SRC_FILES += $(RTL_STRUCTURAL_HEADERS) $(RTL_STRUCTURAL_SRC_FILES) $(TB_FILES)	
 else
 	SRC_FILES += $(RTL_PKGS) $(RTL_SRC_FILES) $(TB_FILES)	
 endif

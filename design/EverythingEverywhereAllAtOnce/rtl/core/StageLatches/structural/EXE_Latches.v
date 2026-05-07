@@ -88,10 +88,10 @@ module EXE_Latches (
 
     // exe_cs_t cs
     input wire        nextLatches_cs_ST_OP_i,
-    input wire [31:0] nextLatches_cs_OP_TYPE_i,
-    input wire [31:0] nextLatches_cs_alu_inputA_sel_i,
-    input wire [31:0] nextLatches_cs_alu_inputB_sel_i,
-    input wire [31:0] nextLatches_cs_branch_target_sel_i,
+    input wire [5:0]  nextLatches_cs_OP_TYPE_i,
+    input wire [4:0]  nextLatches_cs_alu_inputA_sel_i,
+    input wire [4:0]  nextLatches_cs_alu_inputB_sel_i,
+    input wire [4:0]  nextLatches_cs_branch_target_sel_i,
     input wire        nextLatches_cs_shift_by_one_i,
     input wire        nextLatches_cs_br_ucond_i,
     input wire        nextLatches_cs_relative_branch_i,
@@ -145,10 +145,10 @@ module EXE_Latches (
     output wire        latches_valid_o,
 
     output wire        latches_cs_ST_OP_o,
-    output wire [31:0] latches_cs_OP_TYPE_o,
-    output wire [31:0] latches_cs_alu_inputA_sel_o,
-    output wire [31:0] latches_cs_alu_inputB_sel_o,
-    output wire [31:0] latches_cs_branch_target_sel_o,
+    output wire [5:0]  latches_cs_OP_TYPE_o,
+    output wire [4:0]  latches_cs_alu_inputA_sel_o,
+    output wire [4:0]  latches_cs_alu_inputB_sel_o,
+    output wire [4:0]  latches_cs_branch_target_sel_o,
     output wire        latches_cs_shift_by_one_o,
     output wire        latches_cs_br_ucond_o,
     output wire        latches_cs_relative_branch_o,
@@ -206,10 +206,10 @@ module EXE_Latches (
     wire        valid_d;
 
     wire        cs_ST_OP_d;
-    wire [31:0] cs_OP_TYPE_d;
-    wire [31:0] cs_alu_inputA_sel_d;
-    wire [31:0] cs_alu_inputB_sel_d;
-    wire [31:0] cs_branch_target_sel_d;
+    wire [5:0]  cs_OP_TYPE_d;
+    wire [4:0]  cs_alu_inputA_sel_d;
+    wire [4:0]  cs_alu_inputB_sel_d;
+    wire [4:0]  cs_branch_target_sel_d;
     wire        cs_shift_by_one_d;
     wire        cs_br_ucond_d;
     wire        cs_relative_branch_d;
@@ -262,10 +262,10 @@ module EXE_Latches (
     `MUX_2(u_exe_mux_valid,                    1,   valid_d,                    nextLatches_valid_i,                    1'b0,         flush);
 
     `MUX_2(u_exe_mux_cs_ST_OP,                 1,   cs_ST_OP_d,                 nextLatches_cs_ST_OP_i,                 1'b0,         flush);
-    `MUX_2(u_exe_mux_cs_OP_TYPE,               32,  cs_OP_TYPE_d,               nextLatches_cs_OP_TYPE_i,               32'b0,        flush);
-    `MUX_2(u_exe_mux_cs_alu_inputA_sel,        32,  cs_alu_inputA_sel_d,        nextLatches_cs_alu_inputA_sel_i,        32'b0,        flush);
-    `MUX_2(u_exe_mux_cs_alu_inputB_sel,        32,  cs_alu_inputB_sel_d,        nextLatches_cs_alu_inputB_sel_i,        32'b0,        flush);
-    `MUX_2(u_exe_mux_cs_branch_target_sel,     32,  cs_branch_target_sel_d,     nextLatches_cs_branch_target_sel_i,     32'b0,        flush);
+    `MUX_2(u_exe_mux_cs_OP_TYPE,               6,   cs_OP_TYPE_d,               nextLatches_cs_OP_TYPE_i,               6'b0,         flush);
+    `MUX_2(u_exe_mux_cs_alu_inputA_sel,        5,   cs_alu_inputA_sel_d,        nextLatches_cs_alu_inputA_sel_i,        5'b0,         flush);
+    `MUX_2(u_exe_mux_cs_alu_inputB_sel,        5,   cs_alu_inputB_sel_d,        nextLatches_cs_alu_inputB_sel_i,        5'b0,         flush);
+    `MUX_2(u_exe_mux_cs_branch_target_sel,     5,   cs_branch_target_sel_d,     nextLatches_cs_branch_target_sel_i,     5'b0,         flush);
     `MUX_2(u_exe_mux_cs_shift_by_one,          1,   cs_shift_by_one_d,          nextLatches_cs_shift_by_one_i,          1'b0,         flush);
     `MUX_2(u_exe_mux_cs_br_ucond,              1,   cs_br_ucond_d,              nextLatches_cs_br_ucond_i,              1'b0,         flush);
     `MUX_2(u_exe_mux_cs_relative_branch,       1,   cs_relative_branch_d,       nextLatches_cs_relative_branch_i,       1'b0,         flush);
@@ -322,10 +322,10 @@ module EXE_Latches (
     `REG_RST_WE(exe_latches_valid,                    1,   clk, rst, write_enable_i, valid_d,                    latches_valid_o);
 
     `REG_RST_WE(exe_latches_cs_ST_OP,                 1,   clk, rst, write_enable_i, cs_ST_OP_d,                 latches_cs_ST_OP_o);
-    `REG_RST_WE(exe_latches_cs_OP_TYPE,               32,  clk, rst, write_enable_i, cs_OP_TYPE_d,               latches_cs_OP_TYPE_o);
-    `REG_RST_WE(exe_latches_cs_alu_inputA_sel,        32,  clk, rst, write_enable_i, cs_alu_inputA_sel_d,        latches_cs_alu_inputA_sel_o);
-    `REG_RST_WE(exe_latches_cs_alu_inputB_sel,        32,  clk, rst, write_enable_i, cs_alu_inputB_sel_d,        latches_cs_alu_inputB_sel_o);
-    `REG_RST_WE(exe_latches_cs_branch_target_sel,     32,  clk, rst, write_enable_i, cs_branch_target_sel_d,     latches_cs_branch_target_sel_o);
+    `REG_RST_WE(exe_latches_cs_OP_TYPE,               6,   clk, rst, write_enable_i, cs_OP_TYPE_d,               latches_cs_OP_TYPE_o);
+    `REG_RST_WE(exe_latches_cs_alu_inputA_sel,        5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        latches_cs_alu_inputA_sel_o);
+    `REG_RST_WE(exe_latches_cs_alu_inputB_sel,        5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        latches_cs_alu_inputB_sel_o);
+    `REG_RST_WE(exe_latches_cs_branch_target_sel,     5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     latches_cs_branch_target_sel_o);
     `REG_RST_WE(exe_latches_cs_shift_by_one,          1,   clk, rst, write_enable_i, cs_shift_by_one_d,          latches_cs_shift_by_one_o);
     `REG_RST_WE(exe_latches_cs_br_ucond,              1,   clk, rst, write_enable_i, cs_br_ucond_d,              latches_cs_br_ucond_o);
     `REG_RST_WE(exe_latches_cs_relative_branch,       1,   clk, rst, write_enable_i, cs_relative_branch_d,       latches_cs_relative_branch_o);

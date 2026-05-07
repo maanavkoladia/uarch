@@ -110,6 +110,7 @@ module IDM (
     // Pack flat per-slot inputs into the unpacked arrays consumed by the
     // internal logic (assigns are pure aliasing / slicing -- no operators).
     // ----------------------------------------------------------------
+    localparam  NUM_IDM_SLOTS = 4;
     wire        ld_meta_w  [0:NUM_IDM_SLOTS-1];
     wire        ld_data_w  [0:NUM_IDM_SLOTS-1];
     wire        in_valid_w [0:NUM_IDM_SLOTS-1];

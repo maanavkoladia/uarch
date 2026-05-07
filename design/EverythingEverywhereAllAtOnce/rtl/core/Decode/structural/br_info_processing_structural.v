@@ -8,7 +8,7 @@ module br_info_processing (
     output wire [31:0] branch_info_br_eip,
     output wire branch_info_br_xcl,
     output wire branch_info_br_pred_taken,
-    output wire branch_info_speculative_target
+    output wire [31:0] branch_info_speculative_target
 );
     wire [31:0] branch_end;
     wire [3:0] decremented_br_length;
