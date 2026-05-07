@@ -1,3 +1,31 @@
+// 5-bit equality comparator against a compile-time constant K, using
+// caller-supplied pre-inverted bits (in_n) for the K[i]=0 positions.
+// This avoids the DC-introduced GTECH_NOT shared inverters that would
+// otherwise appear when CMP_N's xnor2$(a, 1'b0) is constant-folded — by
+// providing an explicit bufferHInv16$-driven inverted bus, every per-iter
+// comparator selects from the same pre-buffered net rather than having
+// DC create one anonymous inverter per ID bit.
+module eq5_with_inv #(
+    parameter [4:0] K = 5'd0
+) (
+    input  wire [4:0] in,
+    input  wire [4:0] in_n,
+    output wire       eq
+);
+    wire [4:0] b;
+    assign b[0] = K[0] ? in[0] : in_n[0];
+    assign b[1] = K[1] ? in[1] : in_n[1];
+    assign b[2] = K[2] ? in[2] : in_n[2];
+    assign b[3] = K[3] ? in[3] : in_n[3];
+    assign b[4] = K[4] ? in[4] : in_n[4];
+
+    // Same NAND3/NAND2/NOR2 reduction tree that MPS_COMP_EQ uses for WIDTH=5.
+    wire l0, l1;
+    nand3$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]));
+    nand2$ u1 (.out(l1), .in0(b[3]), .in1(b[4]));
+    nor2$  u2 (.out(eq), .in0(l0), .in1(l1));
+endmodule
+
 module RegSB (
     input  wire        clk,
     input  wire        rst,
@@ -48,14 +76,59 @@ module RegSB (
 
     // bool updateSB;
     // assign updateSB = !depStall_Internal && instructionforward;
-    wire updateSB;
     wire depStall_Internal;
     wire depStall_Internal_n;
     `INV_N(u_depStall_Internal_inv, 1, depStall_Internal, depStall_Internal_n)
-    `AND_2(u_updateSB_and, 1, updateSB, depStall_Internal_n, instructionforward)
+
+    // Pre-inverted ID buses for use by eq5_with_inv comparators below.
+    // Each bit of *_id_n drives ~26-32 per-iter selectors (one per generate
+    // iteration whose constant K[i]=0), so we use bufferHInv64$ per bit
+    // (rated drive 64 fanout, delay 0.39ns) instead of INV_N's bufferHInv16$.
+    wire [`REG_ID_W-1:0] dr_id_n;
+    wire [`REG_ID_W-1:0] sr_id_n;
+    wire [`REG_ID_W-1:0] wb_dr0_id_n;
+    wire [`REG_ID_W-1:0] wb_dr1_id_n;
+    bufferHInv64$ u_inv_dr_id_0 (.out(dr_id_n[0]), .in(dr_id[0]));
+    bufferHInv64$ u_inv_dr_id_1 (.out(dr_id_n[1]), .in(dr_id[1]));
+    bufferHInv64$ u_inv_dr_id_2 (.out(dr_id_n[2]), .in(dr_id[2]));
+    bufferHInv64$ u_inv_dr_id_3 (.out(dr_id_n[3]), .in(dr_id[3]));
+    bufferHInv64$ u_inv_dr_id_4 (.out(dr_id_n[4]), .in(dr_id[4]));
+    bufferHInv64$ u_inv_sr_id_0 (.out(sr_id_n[0]), .in(sr_id[0]));
+    bufferHInv64$ u_inv_sr_id_1 (.out(sr_id_n[1]), .in(sr_id[1]));
+    bufferHInv64$ u_inv_sr_id_2 (.out(sr_id_n[2]), .in(sr_id[2]));
+    bufferHInv64$ u_inv_sr_id_3 (.out(sr_id_n[3]), .in(sr_id[3]));
+    bufferHInv64$ u_inv_sr_id_4 (.out(sr_id_n[4]), .in(sr_id[4]));
+    bufferHInv64$ u_inv_wb_dr0_id_0 (.out(wb_dr0_id_n[0]), .in(wb_dr0_id[0]));
+    bufferHInv64$ u_inv_wb_dr0_id_1 (.out(wb_dr0_id_n[1]), .in(wb_dr0_id[1]));
+    bufferHInv64$ u_inv_wb_dr0_id_2 (.out(wb_dr0_id_n[2]), .in(wb_dr0_id[2]));
+    bufferHInv64$ u_inv_wb_dr0_id_3 (.out(wb_dr0_id_n[3]), .in(wb_dr0_id[3]));
+    bufferHInv64$ u_inv_wb_dr0_id_4 (.out(wb_dr0_id_n[4]), .in(wb_dr0_id[4]));
+    bufferHInv64$ u_inv_wb_dr1_id_0 (.out(wb_dr1_id_n[0]), .in(wb_dr1_id[0]));
+    bufferHInv64$ u_inv_wb_dr1_id_1 (.out(wb_dr1_id_n[1]), .in(wb_dr1_id[1]));
+    bufferHInv64$ u_inv_wb_dr1_id_2 (.out(wb_dr1_id_n[2]), .in(wb_dr1_id[2]));
+    bufferHInv64$ u_inv_wb_dr1_id_3 (.out(wb_dr1_id_n[3]), .in(wb_dr1_id[3]));
+    bufferHInv64$ u_inv_wb_dr1_id_4 (.out(wb_dr1_id_n[4]), .in(wb_dr1_id[4]));
+
+    // updateSB replicated: one AND drives the 26 we_SB_mux selects; another drives
+    // the 4-bit din_SB_mux selects (104 loads). Splitting lets the lighter we copy
+    // sit on a faster bufferH64$ instead of the bufferH256$ needed for din.
+    wire updateSB_we;
+    wire updateSB_din;
+    `AND_2(u_updateSB_and_we,  1, updateSB_we,  depStall_Internal_n, instructionforward)
+    `AND_2(u_updateSB_and_din, 1, updateSB_din, depStall_Internal_n, instructionforward)
+
+    wire updateSB_we_buf, updateSB_din_buf;
+    bufferH64$  u_buf_updateSB_we  (.out(updateSB_we_buf),  .in(updateSB_we));
+    bufferH256$ u_buf_updateSB_din (.out(updateSB_din_buf), .in(updateSB_din));
 
     // 2D arrays indexed by reg id (see reg_ids_define.vh: CS=0 ... NO_REG=25)
-    wire [3:0] SB_o   [0:`NUM_REGS-1];
+    // SB regs duplicated: SB_o_a drives local inc/dec consumers + ECX/CS outputs;
+    // SB_o_b drives the 6 wide stall-mux comparators. Both clocked identically.
+    // Each Q output is then buffered (per bit) to drop the fanout-6-7 violation.
+    wire [3:0] SB_o_a_pre [0:`NUM_REGS-1];
+    wire [3:0] SB_o_b_pre [0:`NUM_REGS-1];
+    wire [3:0] SB_o_a     [0:`NUM_REGS-1];
+    wire [3:0] SB_o_b     [0:`NUM_REGS-1];
 
     wire       we_SB_0  [0:`NUM_REGS-1];
     wire [3:0] din_SB_0 [0:`NUM_REGS-1];
@@ -71,9 +144,18 @@ module RegSB (
     genvar gi_sb_reg;
     generate
         for (gi_sb_reg = 0; gi_sb_reg < `NUM_REGS; gi_sb_reg = gi_sb_reg + 1) begin : g_sb_reg
-            `REG_RST_WE(u_sb_reg, 4, clk, rst, we_SB[gi_sb_reg], din_SB[gi_sb_reg], SB_o[gi_sb_reg])
-            `MUX_2(u_sb_we_mux, 1, we_SB[gi_sb_reg], we_SB_0[gi_sb_reg], we_SB_1[gi_sb_reg], updateSB)
-            `MUX_2(u_sb_din_mux, 4, din_SB[gi_sb_reg], din_SB_gated_0[gi_sb_reg], din_SB_gated_1[gi_sb_reg], updateSB)
+            `REG_RST_WE(u_sb_reg_a, 4, clk, rst, we_SB[gi_sb_reg], din_SB[gi_sb_reg], SB_o_a_pre[gi_sb_reg])
+            `REG_RST_WE(u_sb_reg_b, 4, clk, rst, we_SB[gi_sb_reg], din_SB[gi_sb_reg], SB_o_b_pre[gi_sb_reg])
+            bufferH16$ u_buf_SB_o_a_0 (.out(SB_o_a[gi_sb_reg][0]), .in(SB_o_a_pre[gi_sb_reg][0]));
+            bufferH16$ u_buf_SB_o_a_1 (.out(SB_o_a[gi_sb_reg][1]), .in(SB_o_a_pre[gi_sb_reg][1]));
+            bufferH16$ u_buf_SB_o_a_2 (.out(SB_o_a[gi_sb_reg][2]), .in(SB_o_a_pre[gi_sb_reg][2]));
+            bufferH16$ u_buf_SB_o_a_3 (.out(SB_o_a[gi_sb_reg][3]), .in(SB_o_a_pre[gi_sb_reg][3]));
+            bufferH16$ u_buf_SB_o_b_0 (.out(SB_o_b[gi_sb_reg][0]), .in(SB_o_b_pre[gi_sb_reg][0]));
+            bufferH16$ u_buf_SB_o_b_1 (.out(SB_o_b[gi_sb_reg][1]), .in(SB_o_b_pre[gi_sb_reg][1]));
+            bufferH16$ u_buf_SB_o_b_2 (.out(SB_o_b[gi_sb_reg][2]), .in(SB_o_b_pre[gi_sb_reg][2]));
+            bufferH16$ u_buf_SB_o_b_3 (.out(SB_o_b[gi_sb_reg][3]), .in(SB_o_b_pre[gi_sb_reg][3]));
+            `MUX_2(u_sb_we_mux,  1, we_SB[gi_sb_reg],  we_SB_0[gi_sb_reg],  we_SB_1[gi_sb_reg],  updateSB_we_buf)
+            `MUX_2(u_sb_din_mux, 4, din_SB[gi_sb_reg], din_SB_gated_0[gi_sb_reg], din_SB_gated_1[gi_sb_reg], updateSB_din_buf)
         end
     endgenerate
 
@@ -86,7 +168,10 @@ module RegSB (
     wire cs_wr_dr_sr;
     wire cs_wr_dr_eax;
     `CMP_N(u_cs_dr_eq_sr_cmp,  `REG_ID_W, cs_dr_eq_sr,  dr_id[`REG_ID_W-1:0], sr_id[`REG_ID_W-1:0])
-    `CMP_N(u_cs_dr_eq_eax_cmp, `REG_ID_W, cs_dr_eq_eax, dr_id[`REG_ID_W-1:0], `EAX)
+    // (dr_id == EAX) — use eq5_with_inv with K=7 so DC consumes the dr_id_n
+    // bits (bufferHInv64$) we already pre-buffered, instead of inserting its own
+    // GTECH_NOT inverter for the K[3]=K[4]=0 bit positions.
+    eq5_with_inv #(.K(`EAX)) u_cs_dr_eq_eax_cmp (.in(dr_id), .in_n(dr_id_n), .eq(cs_dr_eq_eax));
     `AND_3(u_cs_wr_dr_sr_and,  1, cs_wr_dr_sr,  cs_dr_wr, cs_sr_wr,  cs_dr_eq_sr)
     `AND_3(u_cs_wr_dr_eax_and, 1, cs_wr_dr_eax, cs_dr_wr, cs_eax_wr, cs_dr_eq_eax)
     `OR_2 (u_cs_wr_to_both_or, 1, cs_wr_to_both, cs_wr_dr_sr, cs_wr_dr_eax)
@@ -101,12 +186,11 @@ module RegSB (
 
 
     assign dep_stall = depStall_Internal;
-    wire ecx_sb_inv;
-    `CMP_N(u_ecx_sb_cmp, 4, ecx_sb_inv, SB_o[`ECX], 4'b0)
-    `INV_N(u_ecx_sb_inv, 1, ecx_sb_inv, ecx_sb)
-    wire codeseg_sb_inv;
-    `CMP_N(u_codeseg_sb_cmp, 4, codeseg_sb_inv, SB_o[`CS], 4'b0)
-    `INV_N(u_codeseg_sb_inv, 1, codeseg_sb_inv, codeSeg_sb)
+    // ecx_sb / codeSeg_sb are "is the SB nibble non-zero?" — equivalent to a 4-bit
+    // OR. Computing the OR directly avoids `CMP_N(X, 4'b0)` whose internal
+    // xnor2$(X[i], 1'b0) DC constant-folds into a shared GTECH_NOT inverter.
+    `OR_4(u_ecx_sb_or,     1, ecx_sb,     SB_o_a[`ECX][0], SB_o_a[`ECX][1], SB_o_a[`ECX][2], SB_o_a[`ECX][3])
+    `OR_4(u_codeseg_sb_or, 1, codeSeg_sb, SB_o_a[`CS][0],  SB_o_a[`CS][1],  SB_o_a[`CS][2],  SB_o_a[`CS][3])
 
 
     wire [`REG_ID_W-1:0] sb_id_wire [0:`NUM_REGS-1];
@@ -138,32 +222,61 @@ module RegSB (
     assign sb_id_wire[25] = `NO_REG;
 
     // ---------------- shared precomputed signals (driven once) ----------------
-    wire cs_wr_to_both_n;
-    `INV_N(u_cs_wr_to_both_inv, 1, cs_wr_to_both, cs_wr_to_both_n)
+    // cs_wr_to_both_n / wb_wr_to_both_n replicated to feed each path-term twin
+    // independently and avoid a fanout pinch on the shared inverter.
+    wire cs_wr_to_both_n_a, cs_wr_to_both_n_b;
+    `INV_N(u_cs_wr_to_both_inv_a, 1, cs_wr_to_both, cs_wr_to_both_n_a)
+    `INV_N(u_cs_wr_to_both_inv_b, 1, cs_wr_to_both, cs_wr_to_both_n_b)
 
-    // dr_path_term = (cs_dr_wr && updateSB && !cs_wr_to_both) || (cs_wr_to_both && updateSB)
-    wire dr_path_t1, dr_path_term;
-    `AND_2(u_dr_path_t1_and,  1, dr_path_t1,   cs_dr_wr,  cs_wr_to_both_n)
-    `OR_2 (u_dr_path_term_or, 1, dr_path_term, dr_path_t1,    cs_wr_to_both)
+    wire wb_wr_to_both_n_a, wb_wr_to_both_n_b;
+    `INV_N(u_wb_wr_to_both_inv_a, 1, wb_wr_to_both, wb_wr_to_both_n_a)
+    `INV_N(u_wb_wr_to_both_inv_b, 1, wb_wr_to_both, wb_wr_to_both_n_b)
 
-    // sr_path_term = cs_sr_wr && updateSB && !cs_wr_to_both
-    wire sr_path_term;
-    `AND_2(u_sr_path_term_and, 1, sr_path_term, cs_sr_wr, cs_wr_to_both_n)
+    // path_term signals replicated _a (g_sel_inc_0 / g_sel_dec_0) and
+    // _b (g_sel_inc_1 / g_sel_dec_1) so each copy fans out to only 26 loads.
+    // Each copy is wrapped in bufferH64$ to drive the 26-wide generate.
 
-    // eax_path_term = cs_eax_wr && updateSB && !cs_wr_to_both
-    wire eax_path_term;
-    `AND_2(u_eax_path_term_and, 1, eax_path_term, cs_eax_wr, cs_wr_to_both_n)
+    // dr_path_term_{a,b} = (cs_dr_wr && !cs_wr_to_both) || cs_wr_to_both
+    wire dr_path_t1_a, dr_path_term_a, dr_path_term_a_buf;
+    wire dr_path_t1_b, dr_path_term_b, dr_path_term_b_buf;
+    `AND_2(u_dr_path_t1_a_and,  1, dr_path_t1_a,   cs_dr_wr,  cs_wr_to_both_n_a)
+    `OR_2 (u_dr_path_term_a_or, 1, dr_path_term_a, dr_path_t1_a, cs_wr_to_both)
+    bufferH64$ u_buf_dr_path_term_a (.out(dr_path_term_a_buf), .in(dr_path_term_a));
+    `AND_2(u_dr_path_t1_b_and,  1, dr_path_t1_b,   cs_dr_wr,  cs_wr_to_both_n_b)
+    `OR_2 (u_dr_path_term_b_or, 1, dr_path_term_b, dr_path_t1_b, cs_wr_to_both)
+    bufferH64$ u_buf_dr_path_term_b (.out(dr_path_term_b_buf), .in(dr_path_term_b));
 
-    wire wb_wr_to_both_n;
-    `INV_N(u_wb_wr_to_both_inv, 1, wb_wr_to_both, wb_wr_to_both_n)
+    // sr_path_term_{a,b} = cs_sr_wr && !cs_wr_to_both
+    wire sr_path_term_a, sr_path_term_a_buf;
+    wire sr_path_term_b, sr_path_term_b_buf;
+    `AND_2(u_sr_path_term_a_and, 1, sr_path_term_a, cs_sr_wr, cs_wr_to_both_n_a)
+    bufferH64$ u_buf_sr_path_term_a (.out(sr_path_term_a_buf), .in(sr_path_term_a));
+    `AND_2(u_sr_path_term_b_and, 1, sr_path_term_b, cs_sr_wr, cs_wr_to_both_n_b)
+    bufferH64$ u_buf_sr_path_term_b (.out(sr_path_term_b_buf), .in(sr_path_term_b));
 
-    // wb_dr0_or_both = wb_dr0_we || wb_wr_to_both
-    wire wb_dr0_or_both;
-    `OR_2(u_wb_dr0_or_both_or, 1, wb_dr0_or_both, wb_dr0_we, wb_wr_to_both)
+    // eax_path_term_{a,b} = cs_eax_wr && !cs_wr_to_both
+    wire eax_path_term_a, eax_path_term_a_buf;
+    wire eax_path_term_b, eax_path_term_b_buf;
+    `AND_2(u_eax_path_term_a_and, 1, eax_path_term_a, cs_eax_wr, cs_wr_to_both_n_a)
+    bufferH64$ u_buf_eax_path_term_a (.out(eax_path_term_a_buf), .in(eax_path_term_a));
+    `AND_2(u_eax_path_term_b_and, 1, eax_path_term_b, cs_eax_wr, cs_wr_to_both_n_b)
+    bufferH64$ u_buf_eax_path_term_b (.out(eax_path_term_b_buf), .in(eax_path_term_b));
 
-    // wb_dr1_we_n_both = wb_dr1_we && !wb_wr_to_both
-    wire wb_dr1_we_n_both;
-    `AND_2(u_wb_dr1_we_n_both_and, 1, wb_dr1_we_n_both, wb_dr1_we, wb_wr_to_both_n)
+    // wb_dr0_or_both_{a,b} = wb_dr0_we || wb_wr_to_both
+    wire wb_dr0_or_both_a, wb_dr0_or_both_a_buf;
+    wire wb_dr0_or_both_b, wb_dr0_or_both_b_buf;
+    `OR_2(u_wb_dr0_or_both_a_or, 1, wb_dr0_or_both_a, wb_dr0_we, wb_wr_to_both)
+    bufferH64$ u_buf_wb_dr0_or_both_a (.out(wb_dr0_or_both_a_buf), .in(wb_dr0_or_both_a));
+    `OR_2(u_wb_dr0_or_both_b_or, 1, wb_dr0_or_both_b, wb_dr0_we, wb_wr_to_both)
+    bufferH64$ u_buf_wb_dr0_or_both_b (.out(wb_dr0_or_both_b_buf), .in(wb_dr0_or_both_b));
+
+    // wb_dr1_we_n_both_{a,b} = wb_dr1_we && !wb_wr_to_both
+    wire wb_dr1_we_n_both_a, wb_dr1_we_n_both_a_buf;
+    wire wb_dr1_we_n_both_b, wb_dr1_we_n_both_b_buf;
+    `AND_2(u_wb_dr1_we_n_both_a_and, 1, wb_dr1_we_n_both_a, wb_dr1_we, wb_wr_to_both_n_a)
+    bufferH64$ u_buf_wb_dr1_we_n_both_a (.out(wb_dr1_we_n_both_a_buf), .in(wb_dr1_we_n_both_a));
+    `AND_2(u_wb_dr1_we_n_both_b_and, 1, wb_dr1_we_n_both_b, wb_dr1_we, wb_wr_to_both_n_b)
+    bufferH64$ u_buf_wb_dr1_we_n_both_b (.out(wb_dr1_we_n_both_b_buf), .in(wb_dr1_we_n_both_b));
 
     // ld_st_rep_op = LD_OP || ST_OP || REP_OP
     wire ld_st_rep_op;
@@ -180,30 +293,32 @@ module RegSB (
     genvar gi_sb_inc_0;
     generate
         for (gi_sb_inc_0 = 0; gi_sb_inc_0 < `NUM_REGS; gi_sb_inc_0 = gi_sb_inc_0 + 1) begin : g_sb_inc_0
-            `ADD_N(u_sb_inc, 4, SB_incd0_o[gi_sb_inc_0], inc_cout_0[gi_sb_inc_0], SB_o[gi_sb_inc_0], 4'b1, 1'b0)
+            `ADD_N(u_sb_inc, 4, SB_incd0_o[gi_sb_inc_0], inc_cout_0[gi_sb_inc_0], SB_o_a[gi_sb_inc_0], 4'b1, 1'b0)
         end
     endgenerate
 
     // ---------------- sel_inc_0 ----------------
+    wire [`NUM_REGS-1:0] sel_inc_0_pre;
     wire [`NUM_REGS-1:0] sel_inc_0;
 
     genvar gi_sel_inc_0;
     generate
         for (gi_sel_inc_0 = 0; gi_sel_inc_0 < `NUM_REGS; gi_sel_inc_0 = gi_sel_inc_0 + 1) begin : g_sel_inc_0
             wire dr_eq_id, sr_eq_id, eax_eq_id;
-            `CMP_N(u_dr_eq_id_cmp,  `REG_ID_W, dr_eq_id,  dr_id, sb_id_wire[gi_sel_inc_0])
-            `CMP_N(u_sr_eq_id_cmp,  `REG_ID_W, sr_eq_id,  sr_id, sb_id_wire[gi_sel_inc_0])
+            eq5_with_inv #(.K(gi_sel_inc_0)) u_dr_eq_id_cmp (.in(dr_id), .in_n(dr_id_n), .eq(dr_eq_id));
+            eq5_with_inv #(.K(gi_sel_inc_0)) u_sr_eq_id_cmp (.in(sr_id), .in_n(sr_id_n), .eq(sr_eq_id));
             `CMP_N(u_eax_eq_id_cmp, `REG_ID_W, eax_eq_id, `EAX,  sb_id_wire[gi_sel_inc_0])
 
             wire dr_term, sr_term, eax_term;
-            `AND_2(u_dr_term_and,  1, dr_term,  dr_path_term,  dr_eq_id)
-            `AND_2(u_sr_term_and,  1, sr_term,  sr_path_term,  sr_eq_id)
-            `AND_2(u_eax_term_and, 1, eax_term, eax_path_term, eax_eq_id)
+            `AND_2(u_dr_term_and,  1, dr_term,  dr_path_term_a_buf,  dr_eq_id)
+            `AND_2(u_sr_term_and,  1, sr_term,  sr_path_term_a_buf,  sr_eq_id)
+            `AND_2(u_eax_term_and, 1, eax_term, eax_path_term_a_buf, eax_eq_id)
 
             wire sel_inc_ungated;
             `OR_3 (u_sel_inc_or,    1, sel_inc_ungated, dr_term, sr_term, eax_term)
-            `AND_2 (u_sel_updatesb, 1, sel_inc_0[gi_sel_inc_0], sel_inc_ungated, 1'b0)          //updateSB = 0
-            `MUX_2(u_post_inc_mux,  4, SB_post_inc0_o[gi_sel_inc_0], SB_o[gi_sel_inc_0], SB_incd0_o[gi_sel_inc_0], sel_inc_0[gi_sel_inc_0])
+            `AND_2 (u_sel_updatesb, 1, sel_inc_0_pre[gi_sel_inc_0], sel_inc_ungated, 1'b0)          //updateSB = 0
+            bufferH16$ u_buf_sel_inc_0 (.out(sel_inc_0[gi_sel_inc_0]), .in(sel_inc_0_pre[gi_sel_inc_0]));
+            `MUX_2(u_post_inc_mux,  4, SB_post_inc0_o[gi_sel_inc_0], SB_o_a[gi_sel_inc_0], SB_incd0_o[gi_sel_inc_0], sel_inc_0[gi_sel_inc_0])
         end
     endgenerate
 
@@ -221,20 +336,22 @@ module RegSB (
         end
     endgenerate
 
+    wire [`NUM_REGS-1:0] sel_dec_0_pre;
     wire [`NUM_REGS-1:0] sel_dec_0;
 
     genvar gi_sel_dec_0;
     generate
         for (gi_sel_dec_0 = 0; gi_sel_dec_0 < `NUM_REGS; gi_sel_dec_0 = gi_sel_dec_0 + 1) begin : g_sel_dec_0
             wire wb_dr0_eq_id, wb_dr1_eq_id;
-            `CMP_N(u_wb_dr0_eq_id_cmp, `REG_ID_W, wb_dr0_eq_id, wb_dr0_id, sb_id_wire[gi_sel_dec_0])
-            `CMP_N(u_wb_dr1_eq_id_cmp, `REG_ID_W, wb_dr1_eq_id, wb_dr1_id, sb_id_wire[gi_sel_dec_0])
+            eq5_with_inv #(.K(gi_sel_dec_0)) u_wb_dr0_eq_id_cmp (.in(wb_dr0_id), .in_n(wb_dr0_id_n), .eq(wb_dr0_eq_id));
+            eq5_with_inv #(.K(gi_sel_dec_0)) u_wb_dr1_eq_id_cmp (.in(wb_dr1_id), .in_n(wb_dr1_id_n), .eq(wb_dr1_eq_id));
 
             wire dec_term0, dec_term1;
-            `AND_2(u_dec_term0_and, 1, dec_term0, wb_dr0_or_both,   wb_dr0_eq_id)
-            `AND_2(u_dec_term1_and, 1, dec_term1, wb_dr1_we_n_both, wb_dr1_eq_id)
+            `AND_2(u_dec_term0_and, 1, dec_term0, wb_dr0_or_both_a_buf,    wb_dr0_eq_id)
+            `AND_2(u_dec_term1_and, 1, dec_term1, wb_dr1_we_n_both_a_buf,  wb_dr1_eq_id)
 
-            `OR_2 (u_sel_dec_or,   1, sel_dec_0[gi_sel_dec_0], dec_term0, dec_term1)
+            `OR_2 (u_sel_dec_or,   1, sel_dec_0_pre[gi_sel_dec_0], dec_term0, dec_term1)
+            bufferH16$ u_buf_sel_dec_0 (.out(sel_dec_0[gi_sel_dec_0]), .in(sel_dec_0_pre[gi_sel_dec_0]));
             `MUX_2(u_din_sb_mux,   4, din_SB_0[gi_sel_dec_0],  SB_post_inc0_o[gi_sel_dec_0], SB_decd0_o[gi_sel_dec_0], sel_dec_0[gi_sel_dec_0])
         end
     endgenerate
@@ -257,30 +374,32 @@ module RegSB (
     genvar gi_sb_inc_1;
     generate
         for (gi_sb_inc_1 = 0; gi_sb_inc_1 < `NUM_REGS; gi_sb_inc_1 = gi_sb_inc_1 + 1) begin : g_sb_inc_1
-            `ADD_N(u_sb_inc, 4, SB_incd1_o[gi_sb_inc_1], inc_cout_1[gi_sb_inc_1], SB_o[gi_sb_inc_1], 4'b1, 1'b0)
+            `ADD_N(u_sb_inc, 4, SB_incd1_o[gi_sb_inc_1], inc_cout_1[gi_sb_inc_1], SB_o_a[gi_sb_inc_1], 4'b1, 1'b0)
         end
     endgenerate
 
     // ---------------- sel_inc_1 ----------------
+    wire [`NUM_REGS-1:0] sel_inc_1_pre;
     wire [`NUM_REGS-1:0] sel_inc_1;
 
     genvar gi_sel_inc_1;
     generate
         for (gi_sel_inc_1 = 0; gi_sel_inc_1 < `NUM_REGS; gi_sel_inc_1 = gi_sel_inc_1 + 1) begin : g_sel_inc_1
             wire dr_eq_id, sr_eq_id, eax_eq_id;
-            `CMP_N(u_dr_eq_id_cmp,  `REG_ID_W, dr_eq_id,  dr_id, sb_id_wire[gi_sel_inc_1])
-            `CMP_N(u_sr_eq_id_cmp,  `REG_ID_W, sr_eq_id,  sr_id, sb_id_wire[gi_sel_inc_1])
+            eq5_with_inv #(.K(gi_sel_inc_1)) u_dr_eq_id_cmp (.in(dr_id), .in_n(dr_id_n), .eq(dr_eq_id));
+            eq5_with_inv #(.K(gi_sel_inc_1)) u_sr_eq_id_cmp (.in(sr_id), .in_n(sr_id_n), .eq(sr_eq_id));
             `CMP_N(u_eax_eq_id_cmp, `REG_ID_W, eax_eq_id, `EAX,  sb_id_wire[gi_sel_inc_1])
 
             wire dr_term, sr_term, eax_term;
-            `AND_2(u_dr_term_and,  1, dr_term,  dr_path_term,  dr_eq_id)
-            `AND_2(u_sr_term_and,  1, sr_term,  sr_path_term,  sr_eq_id)
-            `AND_2(u_eax_term_and, 1, eax_term, eax_path_term, eax_eq_id)
+            `AND_2(u_dr_term_and,  1, dr_term,  dr_path_term_b_buf,  dr_eq_id)
+            `AND_2(u_sr_term_and,  1, sr_term,  sr_path_term_b_buf,  sr_eq_id)
+            `AND_2(u_eax_term_and, 1, eax_term, eax_path_term_b_buf, eax_eq_id)
 
             wire sel_inc_ungated;
             `OR_3 (u_sel_inc_or,    1, sel_inc_ungated, dr_term, sr_term, eax_term)
-            `AND_2 (u_sel_updatesb, 1, sel_inc_1[gi_sel_inc_1], sel_inc_ungated, 1'b1)          //updateSB = 1
-            `MUX_2(u_post_inc_mux,  4, SB_post_inc1_o[gi_sel_inc_1], SB_o[gi_sel_inc_1], SB_incd1_o[gi_sel_inc_1], sel_inc_1[gi_sel_inc_1])
+            `AND_2 (u_sel_updatesb, 1, sel_inc_1_pre[gi_sel_inc_1], sel_inc_ungated, 1'b1)          //updateSB = 1
+            bufferH16$ u_buf_sel_inc_1 (.out(sel_inc_1[gi_sel_inc_1]), .in(sel_inc_1_pre[gi_sel_inc_1]));
+            `MUX_2(u_post_inc_mux,  4, SB_post_inc1_o[gi_sel_inc_1], SB_o_a[gi_sel_inc_1], SB_incd1_o[gi_sel_inc_1], sel_inc_1[gi_sel_inc_1])
         end
     endgenerate
 
@@ -298,20 +417,22 @@ module RegSB (
         end
     endgenerate
 
+    wire [`NUM_REGS-1:0] sel_dec_1_pre;
     wire [`NUM_REGS-1:0] sel_dec_1;
 
     genvar gi_sel_dec_1;
     generate
         for (gi_sel_dec_1 = 0; gi_sel_dec_1 < `NUM_REGS; gi_sel_dec_1 = gi_sel_dec_1 + 1) begin : g_sel_dec_1
             wire wb_dr0_eq_id, wb_dr1_eq_id;
-            `CMP_N(u_wb_dr0_eq_id_cmp, `REG_ID_W, wb_dr0_eq_id, wb_dr0_id, sb_id_wire[gi_sel_dec_1])
-            `CMP_N(u_wb_dr1_eq_id_cmp, `REG_ID_W, wb_dr1_eq_id, wb_dr1_id, sb_id_wire[gi_sel_dec_1])
+            eq5_with_inv #(.K(gi_sel_dec_1)) u_wb_dr0_eq_id_cmp (.in(wb_dr0_id), .in_n(wb_dr0_id_n), .eq(wb_dr0_eq_id));
+            eq5_with_inv #(.K(gi_sel_dec_1)) u_wb_dr1_eq_id_cmp (.in(wb_dr1_id), .in_n(wb_dr1_id_n), .eq(wb_dr1_eq_id));
 
             wire dec_term0, dec_term1;
-            `AND_2(u_dec_term0_and, 1, dec_term0, wb_dr0_or_both,   wb_dr0_eq_id)
-            `AND_2(u_dec_term1_and, 1, dec_term1, wb_dr1_we_n_both, wb_dr1_eq_id)
+            `AND_2(u_dec_term0_and, 1, dec_term0, wb_dr0_or_both_b_buf,   wb_dr0_eq_id)
+            `AND_2(u_dec_term1_and, 1, dec_term1, wb_dr1_we_n_both_b_buf, wb_dr1_eq_id)
 
-            `OR_2 (u_sel_dec_or,   1, sel_dec_1[gi_sel_dec_1], dec_term0, dec_term1)
+            `OR_2 (u_sel_dec_or,   1, sel_dec_1_pre[gi_sel_dec_1], dec_term0, dec_term1)
+            bufferH16$ u_buf_sel_dec_1 (.out(sel_dec_1[gi_sel_dec_1]), .in(sel_dec_1_pre[gi_sel_dec_1]));
             `MUX_2(u_din_sb_mux,   4, din_SB_1[gi_sel_dec_1],  SB_post_inc1_o[gi_sel_dec_1], SB_decd1_o[gi_sel_dec_1], sel_dec_1[gi_sel_dec_1])
         end
     endgenerate
@@ -330,42 +451,75 @@ module RegSB (
     // ---------------- stall logic ----------------
     wire dr_stall, sr_stall, seg0_stall, seg1_stall, sib_base_stall, sib_idx_stall, eax_stall;
 
-    // dr_stall = cs_dr_rd && (LD||ST||REP) && (SB_o[dr_id] != 0)
-    wire dr_sb_eq_zero, dr_sb_nz;
-    `CMP_N(u_dr_sb_eq_zero_cmp, 4, dr_sb_eq_zero, SB_o[dr_id], 4'b0)
-    `INV_N(u_dr_sb_nz_inv,      1, dr_sb_eq_zero, dr_sb_nz)
-    `AND_3(u_dr_stall_and,      1, dr_stall, cs_dr_rd, ld_st_rep_op, dr_sb_nz)
+    // Each stall check is "(SB_o_b[X] != 0)" — compute as a 4-bit OR directly,
+    // skipping the CMP_N(X, 4'b0)+INV_N pattern whose xnor2$(X[i], 1'b0) DC
+    // would constant-fold into shared GTECH_NOT inverters.
 
-    // sr_stall = cs_sr_rd && (LD||ST||REP) && (SB_o[sr_id] != 0)
-    wire sr_sb_eq_zero, sr_sb_nz;
-    `CMP_N(u_sr_sb_eq_zero_cmp, 4, sr_sb_eq_zero, SB_o[sr_id], 4'b0)
-    `INV_N(u_sr_sb_nz_inv,      1, sr_sb_eq_zero, sr_sb_nz)
-    `AND_3(u_sr_stall_and,      1, sr_stall, cs_sr_rd, ld_st_rep_op, sr_sb_nz)
+    // dr_stall / sr_stall: explicit MUX_32 instead of `assign w = SB_o_b[X]`
+    // — DC's auto-decoder for the array index was emitting GTECH_NOT inverters
+    // on bits 3 and 4 of dr_id / sr_id (fanouts 8 and 16). MUX_32 elaborates to
+    // an MPS_MUX_IN32 tree of mux4$ cells whose select bits are consumed directly,
+    // no GTECH_NOT inserted.
+
+    // dr_stall = cs_dr_rd && (LD||ST||REP) && (SB_o_b[dr_id] != 0)
+    wire dr_sb_nz;
+    wire [3:0] dr_sb_w;
+    `MUX_32(u_dr_sb_mux, 4, dr_sb_w,
+        SB_o_b[ 0], SB_o_b[ 1], SB_o_b[ 2], SB_o_b[ 3],
+        SB_o_b[ 4], SB_o_b[ 5], SB_o_b[ 6], SB_o_b[ 7],
+        SB_o_b[ 8], SB_o_b[ 9], SB_o_b[10], SB_o_b[11],
+        SB_o_b[12], SB_o_b[13], SB_o_b[14], SB_o_b[15],
+        SB_o_b[16], SB_o_b[17], SB_o_b[18], SB_o_b[19],
+        SB_o_b[20], SB_o_b[21], SB_o_b[22], SB_o_b[23],
+        SB_o_b[24], SB_o_b[25],       4'b0,       4'b0,
+              4'b0,       4'b0,       4'b0,       4'b0,
+        dr_id)
+    `OR_4 (u_dr_sb_or,     1, dr_sb_nz, dr_sb_w[0], dr_sb_w[1], dr_sb_w[2], dr_sb_w[3])
+    `AND_3(u_dr_stall_and, 1, dr_stall, cs_dr_rd, ld_st_rep_op, dr_sb_nz)
+
+    // sr_stall = cs_sr_rd && (LD||ST||REP) && (SB_o_b[sr_id] != 0)
+    wire sr_sb_nz;
+    wire [3:0] sr_sb_w;
+    `MUX_32(u_sr_sb_mux, 4, sr_sb_w,
+        SB_o_b[ 0], SB_o_b[ 1], SB_o_b[ 2], SB_o_b[ 3],
+        SB_o_b[ 4], SB_o_b[ 5], SB_o_b[ 6], SB_o_b[ 7],
+        SB_o_b[ 8], SB_o_b[ 9], SB_o_b[10], SB_o_b[11],
+        SB_o_b[12], SB_o_b[13], SB_o_b[14], SB_o_b[15],
+        SB_o_b[16], SB_o_b[17], SB_o_b[18], SB_o_b[19],
+        SB_o_b[20], SB_o_b[21], SB_o_b[22], SB_o_b[23],
+        SB_o_b[24], SB_o_b[25],       4'b0,       4'b0,
+              4'b0,       4'b0,       4'b0,       4'b0,
+        sr_id)
+    `OR_4 (u_sr_sb_or,     1, sr_sb_nz, sr_sb_w[0], sr_sb_w[1], sr_sb_w[2], sr_sb_w[3])
+    `AND_3(u_sr_stall_and, 1, sr_stall, cs_sr_rd, ld_st_rep_op, sr_sb_nz)
 
     assign eax_stall = 1'b0;
 
     // seg0_stall = (SB_o[Segment0_ID] != 0)
-    wire seg0_sb_eq_zero;
-    `CMP_N(u_seg0_sb_eq_zero_cmp, 4, seg0_sb_eq_zero, SB_o[Segment0_ID], 4'b0)
-    `INV_N(u_seg0_stall_inv,      1, seg0_sb_eq_zero, seg0_stall)
+    wire [3:0] seg0_sb_w;
+    assign seg0_sb_w = SB_o_b[Segment0_ID];
+    `OR_4(u_seg0_sb_or, 1, seg0_stall, seg0_sb_w[0], seg0_sb_w[1], seg0_sb_w[2], seg0_sb_w[3])
 
     // seg1_stall = Segment1_valid && (SB_o[Segment1_ID] != 0)
-    wire seg1_sb_eq_zero, seg1_sb_nz;
-    `CMP_N(u_seg1_sb_eq_zero_cmp, 4, seg1_sb_eq_zero, SB_o[Segment1_ID], 4'b0)
-    `INV_N(u_seg1_sb_nz_inv,      1, seg1_sb_eq_zero, seg1_sb_nz)
-    `AND_2(u_seg1_stall_and,      1, seg1_stall, Segment1_valid, seg1_sb_nz)
+    wire seg1_sb_nz;
+    wire [3:0] seg1_sb_w;
+    assign seg1_sb_w = SB_o_b[Segment1_ID];
+    `OR_4 (u_seg1_sb_or,     1, seg1_sb_nz, seg1_sb_w[0], seg1_sb_w[1], seg1_sb_w[2], seg1_sb_w[3])
+    `AND_2(u_seg1_stall_and, 1, seg1_stall, Segment1_valid, seg1_sb_nz)
 
-    // sib_base_stall = cs_sib_size && (SB_o[sib_base_id] != 0)   (cs_sib_size is 1-bit)
-    wire sib_base_sb_eq_zero, sib_base_sb_nz;
-    `CMP_N(u_sib_base_sb_eq_zero_cmp, 4, sib_base_sb_eq_zero, SB_o[sib_base_id], 4'b0)
-    `INV_N(u_sib_base_sb_nz_inv,      1, sib_base_sb_eq_zero, sib_base_sb_nz)
-    `AND_2(u_sib_base_stall_and,      1, sib_base_stall, cs_sib_size, sib_base_sb_nz)
+    // sib_base_stall = cs_sib_size && (SB_o[sib_base_id] != 0)
+    wire sib_base_sb_nz;
+    wire [3:0] sib_base_sb_w;
+    assign sib_base_sb_w = SB_o_b[sib_base_id];
+    `OR_4 (u_sib_base_sb_or,     1, sib_base_sb_nz, sib_base_sb_w[0], sib_base_sb_w[1], sib_base_sb_w[2], sib_base_sb_w[3])
+    `AND_2(u_sib_base_stall_and, 1, sib_base_stall, cs_sib_size, sib_base_sb_nz)
 
     // sib_idx_stall = cs_sib_size && (SB_o[sib_idx_id] != 0)
-    wire sib_idx_sb_eq_zero, sib_idx_sb_nz;
-    `CMP_N(u_sib_idx_sb_eq_zero_cmp, 4, sib_idx_sb_eq_zero, SB_o[sib_idx_id], 4'b0)
-    `INV_N(u_sib_idx_sb_nz_inv,      1, sib_idx_sb_eq_zero, sib_idx_sb_nz)
-    `AND_2(u_sib_idx_stall_and,      1, sib_idx_stall, cs_sib_size, sib_idx_sb_nz)
+    wire sib_idx_sb_nz;
+    wire [3:0] sib_idx_sb_w;
+    assign sib_idx_sb_w = SB_o_b[sib_idx_id];
+    `OR_4 (u_sib_idx_sb_or,     1, sib_idx_sb_nz, sib_idx_sb_w[0], sib_idx_sb_w[1], sib_idx_sb_w[2], sib_idx_sb_w[3])
+    `AND_2(u_sib_idx_stall_and, 1, sib_idx_stall, cs_sib_size, sib_idx_sb_nz)
 
     `OR_7(u_dep_stall_or, 1, depStall_Internal,
           dr_stall, sr_stall, seg0_stall, seg1_stall,
