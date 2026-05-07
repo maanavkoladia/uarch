@@ -197,6 +197,17 @@
         .dc_latches_next_sr_data                     (dc_latches_next_sr_data), \
         .dc_latches_next_dr_id                       (dc_latches_next_dr_id), \
         .dc_latches_next_dr_data                     (dc_latches_next_dr_data), \
+        .dc_latches_next_cs_datasize_0               (dc_latches_next_cs_datasize_0), \
+        .dc_latches_next_cs_datasize_1               (dc_latches_next_cs_datasize_1), \
+        .dc_latches_next_cs_datasize_2               (dc_latches_next_cs_datasize_2), \
+        .dc_latches_next_cs_LD_OP_0                  (dc_latches_next_cs_LD_OP_0), \
+        .dc_latches_next_cs_LD_OP_1                  (dc_latches_next_cs_LD_OP_1), \
+        .dc_latches_next_cs_LD_OP_2                  (dc_latches_next_cs_LD_OP_2), \
+        .dc_latches_next_cs_LD_OP_3                  (dc_latches_next_cs_LD_OP_3), \
+        .dc_latches_next_cs_ST_OP_0                  (dc_latches_next_cs_ST_OP_0), \
+        .dc_latches_next_valid_0                     (dc_latches_next_valid_0), \
+        .dc_latches_next_valid_1                     (dc_latches_next_valid_1), \
+        .dc_latches_next_valid_2                     (dc_latches_next_valid_2), \
         .outs_valid             (rr_outputs_valid), \
         .outs_stall             (rr_outputs_stall), \
         .outs_ecx_sb            (rr_outputs_ecx_sb), \

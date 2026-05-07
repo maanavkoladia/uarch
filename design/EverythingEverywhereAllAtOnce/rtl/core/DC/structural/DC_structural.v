@@ -38,6 +38,27 @@ module DC (
     input  wire        latches_cs_sr_upper8,
     input  wire [1:0]  latches_cs_datasize,
 
+    // ----- Duplicated copies for fanout reduction (CP control signals) ----
+    // Same flop value as their non-suffixed sibling above, but each comes
+    // from an independent REG_RST_WE Q in DC_Latches.  Routed below to
+    // disjoint consumer subsets so per-copy fanout stays low without any
+    // added CP delay.
+    input  wire [1:0]  latches_cs_datasize_0,   // -> ld_neuralnet_part2 (CP)
+    input  wire [1:0]  latches_cs_datasize_1,   // -> st_neuralnet_part2 (CP)
+    input  wire [1:0]  latches_cs_datasize_2,   // -> push+data_vec via buf (off-CP)
+
+    input  wire        latches_cs_LD_OP_0,      // -> in_flight + stq dep (CP)
+    input  wire        latches_cs_LD_OP_1,      // -> req_gen (CP)
+    input  wire        latches_cs_LD_OP_2,      // -> ld_npu mem_op (CP)
+    input  wire        latches_cs_LD_OP_3,      // -> data_vec + ld_excep via buf (off-CP)
+
+    // -> st_npu write_intent + mem_op (off-CP, dedicated to isolate ~17 internal loads)
+    input  wire        latches_cs_ST_OP_0,
+
+    input  wire        latches_valid_0,         // -> in_flight + stq dep (CP)
+    input  wire        latches_valid_1,         // -> req_gen (CP)
+    input  wire        latches_valid_2,         // -> exp_stall + dc_outs_valid (off-CP)
+
     // mem_cs_t (latches_i.mem_cs) -- forwarded to mem_latches_next.cs
     input  wire        latches_mem_cs_ST_OP,
     input  wire        latches_mem_cs_LD_OP,
@@ -297,6 +318,33 @@ module DC (
     assign wb_ST_OP  = wb_outs_ST_OP;
 
     // ----------------------------------------------------------------
+    // Off-CP buffered fanout copies (Fixes E, F, G).
+    //
+    // Off-CP consumers (push_addr_gen, data_vec_uint, exception ANDs)
+    // are fed via bufferH16$ trees instead of dedicated latch copies.
+    // The few hundred picoseconds of buffer delay are absorbed by the
+    // off-CP timing margin (those signals do not feed the dep-check ->
+    // TLB -> req_gen path).
+    //
+    //   cs_ST_OP_buf: 2-stage bufferH16$ (parser STAGES=2 for fanout 19)
+    //   cs_LD_OP_3_buf: 1-stage bufferH16$ (off-CP shared copy)
+    //   cs_datasize_2_buf[1:0]: 1-stage bufferH16$ per bit
+    // ----------------------------------------------------------------
+    wire        latches_cs_ST_OP_s1;
+    wire        latches_cs_ST_OP_buf;
+    bufferH16$ u_buf_cs_ST_OP_s1  (.out(latches_cs_ST_OP_s1),  .in(latches_cs_ST_OP));
+    bufferH16$ u_buf_cs_ST_OP_buf (.out(latches_cs_ST_OP_buf), .in(latches_cs_ST_OP_s1));
+
+    wire        latches_cs_LD_OP_3_buf;
+    bufferH16$ u_buf_cs_LD_OP_3 (.out(latches_cs_LD_OP_3_buf), .in(latches_cs_LD_OP_3));
+
+    wire [1:0]  latches_cs_datasize_2_buf;
+    bufferH16$ u_buf_cs_datasize_2_b0 (
+        .out(latches_cs_datasize_2_buf[0]), .in(latches_cs_datasize_2[0]));
+    bufferH16$ u_buf_cs_datasize_2_b1 (
+        .out(latches_cs_datasize_2_buf[1]), .in(latches_cs_datasize_2[1]));
+
+    // ----------------------------------------------------------------
     // npu_node2 flat outputs (replace SV `npu_node2_outputs_t` struct).
     // Naming follows `ld_neuralnet_out.<field>` -> `ld_neuralnet_out_<field>`
     // ----------------------------------------------------------------
@@ -329,7 +377,7 @@ module DC (
     wire ld_exp_or;
     `OR_3 (u_ld_exp_or,    1, ld_exp_or,
            ld_neuralnet_out_DC_PF, ld_neuralnet_out_DC_GP, ld_segx_gp)
-    `AND_2(u_ld_exception, 1, ld_exception, ld_exp_or, latches_cs_LD_OP)
+    `AND_2(u_ld_exception, 1, ld_exception, ld_exp_or, latches_cs_LD_OP_3_buf)
 
     // ----------------------------------------------------------------
     // st_exception = (st.DC_PF | st.DC_GP | st_segx_gp) & ST_OP
@@ -337,7 +385,7 @@ module DC (
     wire st_exp_or;
     `OR_3 (u_st_exp_or,    1, st_exp_or,
            st_neuralnet_out_DC_PF, st_neuralnet_out_DC_GP, st_segx_gp)
-    `AND_2(u_st_exception, 1, st_exception, st_exp_or, latches_cs_ST_OP)
+    `AND_2(u_st_exception, 1, st_exception, st_exp_or, latches_cs_ST_OP_buf)
 
     // rr_exception = latches_i.rr_gp  (wire alias)
     assign rr_exception = latches_rr_gp;
@@ -350,7 +398,7 @@ module DC (
     `OR_3 (u_exp_or,    1, exp_or,
            ld_exception, st_exception, rr_exception)
     `INV_N(u_not_flush, 1, exe_outs_br_res_flush, not_flush)
-    `AND_3(u_exp_stall, 1, exp_stall, exp_or, latches_valid, not_flush)
+    `AND_3(u_exp_stall, 1, exp_stall, exp_or, latches_valid_2, not_flush)
 
     // ----------------------------------------------------------------
     // dc_stall = dep_stall | arb_stall | exp_stall
@@ -365,8 +413,8 @@ module DC (
         .ld_paddr_0    (ld_neuralnet_out_PADDR0),
         .ld_paddr_1    (ld_neuralnet_out_PADDR1),
         .LD_XCL        (ld_neuralnet_out_xcl),
-        .LD_OP         (latches_cs_LD_OP),
-        .valid         (latches_valid),
+        .LD_OP         (latches_cs_LD_OP_0),
+        .valid         (latches_valid_0),
 
         .mem_st_paddr0 (mem_outs_ST_PADDR_0),
         .mem_st_paddr1 (mem_outs_ST_PADDR_1),
@@ -393,10 +441,10 @@ module DC (
     // Store-queue dependency check (16 entries flattened)
     // ----------------------------------------------------------------
     wb_stq_sb_logic stq_dep_check (
-        .valid       (latches_valid),
+        .valid       (latches_valid_0),
         .ld_paddr_0  (ld_neuralnet_out_PADDR0),
         .ld_paddr_1  (ld_neuralnet_out_PADDR1),
-        .LD_OP       (latches_cs_LD_OP),
+        .LD_OP       (latches_cs_LD_OP_0),
         .LD_XCL      (ld_neuralnet_out_xcl),
 
         .stq_addr_0  (wb_outs_dep_check_entry_0_address),
@@ -443,8 +491,8 @@ module DC (
         .clk       (clk),
         .rst       (rst),
         .flush     (exe_outs_br_res_flush),
-        .valid     (latches_valid),
-        .LD_OP     (latches_cs_LD_OP),
+        .valid     (latches_valid_1),
+        .LD_OP     (latches_cs_LD_OP_1),
         .XCL       (ld_neuralnet_out_xcl),
         .dep_stall (dep_stall),
         .MIO       (ld_neuralnet_out_mio),
@@ -476,7 +524,7 @@ module DC (
         .MEM_we_o    (mem_stage_we_valid_unit_o),
         .N_MEM_V_o   (mem_stage_next_vaild_o),
         .DC_stall_i  (dc_stall),
-        .DC_V_i      (latches_valid),
+        .DC_V_i      (latches_valid_2),
         .MEM_V_i     (mem_outs_valid),
         .MEM_stall_i (mem_outs_stall),
         .EXE_V_i     (exe_outs_valid),
@@ -487,11 +535,11 @@ module DC (
     // data_size_vec_logic
     // ----------------------------------------------------------------
     data_size_vec_logic data_vec_uint (
-        .data_size          (latches_cs_datasize),
+        .data_size          (latches_cs_datasize_2_buf),
         .dr_upper8          (latches_cs_dr_upper8),
         .sr_upper8          (latches_cs_sr_upper8),
-        .ST_OP              (latches_cs_ST_OP),
-        .LD_OP              (latches_cs_LD_OP),
+        .ST_OP              (latches_cs_ST_OP_buf),
+        .LD_OP              (latches_cs_LD_OP_3_buf),
         .wb_sr              (latches_wb_cs_WB_SR),
         .wb_eax             (latches_wb_cs_WB_EAX),
         .shift_sr_up        (shift_sr_up),
@@ -506,9 +554,9 @@ module DC (
     npu_node2 ld_neuralnet_part2 (
         .vaddy_start    (latches_ld_vaddy),
         .next_page_vaddy(latches_next_ld_vaddy),
-        .datasize       (latches_cs_datasize),
+        .datasize       (latches_cs_datasize_0),
         .write_intent   (1'b0),
-        .mem_op         (latches_cs_LD_OP),
+        .mem_op         (latches_cs_LD_OP_2),
         .stack_access   (latches_ld_stack_access),
         .DC_PF          (ld_neuralnet_out_DC_PF),
         .DC_GP          (ld_neuralnet_out_DC_GP),
@@ -523,9 +571,9 @@ module DC (
     npu_node2 st_neuralnet_part2 (
         .vaddy_start    (latches_st_vaddy),
         .next_page_vaddy(latches_next_st_vaddy),
-        .datasize       (latches_cs_datasize),
-        .write_intent   (latches_cs_ST_OP),
-        .mem_op         (latches_cs_ST_OP),
+        .datasize       (latches_cs_datasize_1),
+        .write_intent   (latches_cs_ST_OP_0),
+        .mem_op         (latches_cs_ST_OP_0),
         .stack_access   (latches_st_stack_access),
         .DC_PF          (st_neuralnet_out_DC_PF),
         .DC_GP          (st_neuralnet_out_DC_GP),
@@ -564,7 +612,7 @@ module DC (
         .ST_PADDR_0   (st_neuralnet_out_PADDR0),
         .ST_PADDR_1   (st_neuralnet_out_PADDR1),
         .ST_XCL       (st_neuralnet_out_xcl),
-        .data_size    (latches_cs_datasize),
+        .data_size    (latches_cs_datasize_2_buf),
         .OP_TYPE      ({26'b0, latches_exe_cs_OP_TYPE}),
         .ST_PADDR_0_o (next_st_addr_0),
         .ST_PADDR_1_o (next_st_addr_1),
@@ -582,7 +630,7 @@ module DC (
     // ----------------------------------------------------------------
     // dc_outs_o assignments (flat)
     // ----------------------------------------------------------------
-    assign dc_outs_valid              = latches_valid;
+    assign dc_outs_valid              = latches_valid_2;
     assign dc_outs_dc_eip             = latches_EIP;
     assign dc_outs_stall              = dc_stall;
     assign dc_outs_exp_pf             = dc_outs_exp_pf_w;

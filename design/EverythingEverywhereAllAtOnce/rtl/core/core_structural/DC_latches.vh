@@ -50,6 +50,17 @@ wire [4:0]  dc_latches_sr_id; \
 wire [63:0] dc_latches_sr_data; \
 wire [4:0]  dc_latches_dr_id; \
 wire [63:0] dc_latches_dr_data; \
+wire [1:0]  dc_latches_cs_datasize_0; \
+wire [1:0]  dc_latches_cs_datasize_1; \
+wire [1:0]  dc_latches_cs_datasize_2; \
+wire        dc_latches_cs_LD_OP_0; \
+wire        dc_latches_cs_LD_OP_1; \
+wire        dc_latches_cs_LD_OP_2; \
+wire        dc_latches_cs_LD_OP_3; \
+wire        dc_latches_cs_ST_OP_0; \
+wire        dc_latches_valid_0; \
+wire        dc_latches_valid_1; \
+wire        dc_latches_valid_2; \
 DC_Latches dc_latches_unit ( \
     .clk            (clk), \
     .rst            (rst), \
@@ -108,6 +119,17 @@ DC_Latches dc_latches_unit ( \
     .nextLatches_sr_data_i                     (dc_latches_next_sr_data), \
     .nextLatches_dr_id_i                       (dc_latches_next_dr_id), \
     .nextLatches_dr_data_i                     (dc_latches_next_dr_data), \
+    .nextLatches_cs_datasize_0_i               (dc_latches_next_cs_datasize_0), \
+    .nextLatches_cs_datasize_1_i               (dc_latches_next_cs_datasize_1), \
+    .nextLatches_cs_datasize_2_i               (dc_latches_next_cs_datasize_2), \
+    .nextLatches_cs_LD_OP_0_i                  (dc_latches_next_cs_LD_OP_0), \
+    .nextLatches_cs_LD_OP_1_i                  (dc_latches_next_cs_LD_OP_1), \
+    .nextLatches_cs_LD_OP_2_i                  (dc_latches_next_cs_LD_OP_2), \
+    .nextLatches_cs_LD_OP_3_i                  (dc_latches_next_cs_LD_OP_3), \
+    .nextLatches_cs_ST_OP_0_i                  (dc_latches_next_cs_ST_OP_0), \
+    .nextLatches_valid_0_i                     (dc_latches_next_valid_0), \
+    .nextLatches_valid_1_i                     (dc_latches_next_valid_1), \
+    .nextLatches_valid_2_i                     (dc_latches_next_valid_2), \
     .latches_valid_o                      (dc_latches_valid), \
     .latches_cs_LD_OP_o                   (dc_latches_cs_LD_OP), \
     .latches_cs_ST_OP_o                   (dc_latches_cs_ST_OP), \
@@ -158,5 +180,16 @@ DC_Latches dc_latches_unit ( \
     .latches_sr_id_o                      (dc_latches_sr_id), \
     .latches_sr_data_o                    (dc_latches_sr_data), \
     .latches_dr_id_o                      (dc_latches_dr_id), \
-    .latches_dr_data_o                    (dc_latches_dr_data) \
+    .latches_dr_data_o                    (dc_latches_dr_data), \
+    .latches_cs_datasize_0_o              (dc_latches_cs_datasize_0), \
+    .latches_cs_datasize_1_o              (dc_latches_cs_datasize_1), \
+    .latches_cs_datasize_2_o              (dc_latches_cs_datasize_2), \
+    .latches_cs_LD_OP_0_o                 (dc_latches_cs_LD_OP_0), \
+    .latches_cs_LD_OP_1_o                 (dc_latches_cs_LD_OP_1), \
+    .latches_cs_LD_OP_2_o                 (dc_latches_cs_LD_OP_2), \
+    .latches_cs_LD_OP_3_o                 (dc_latches_cs_LD_OP_3), \
+    .latches_cs_ST_OP_0_o                 (dc_latches_cs_ST_OP_0), \
+    .latches_valid_0_o                    (dc_latches_valid_0), \
+    .latches_valid_1_o                    (dc_latches_valid_1), \
+    .latches_valid_2_o                    (dc_latches_valid_2) \
 );

@@ -318,6 +318,26 @@ module RR (
     output wire [4:0]  dc_latches_next_dr_id,
     output wire [63:0] dc_latches_next_dr_data,
 
+    // ----- Duplicated outputs for DC fanout reduction --------------------
+    // Each is driven from the same internal source as its non-suffixed
+    // sibling above (cs_datasize / cs_LD_OP / valid).  They feed
+    // independent REG_RST_WE flops in DC_Latches so DC can route disjoint
+    // consumer subsets per copy without any added CP delay.
+    output wire [1:0]  dc_latches_next_cs_datasize_0,
+    output wire [1:0]  dc_latches_next_cs_datasize_1,
+    output wire [1:0]  dc_latches_next_cs_datasize_2,
+
+    output wire        dc_latches_next_cs_LD_OP_0,
+    output wire        dc_latches_next_cs_LD_OP_1,
+    output wire        dc_latches_next_cs_LD_OP_2,
+    output wire        dc_latches_next_cs_LD_OP_3,
+
+    output wire        dc_latches_next_cs_ST_OP_0,
+
+    output wire        dc_latches_next_valid_0,
+    output wire        dc_latches_next_valid_1,
+    output wire        dc_latches_next_valid_2,
+
     // ====================================================================
     // rr_outputs_t (outs_o)
     // ====================================================================
@@ -872,13 +892,26 @@ module RR (
 
     // ---- dc_latches_next ----
     assign dc_latches_next_valid                       = dc_latches_next_valid_w;
+    // Duplicated valid outputs: same source as dc_latches_next_valid.
+    // Each feeds an independent REG_RST_WE flop in DC_Latches.
+    assign dc_latches_next_valid_0                     = dc_latches_next_valid_w;
+    assign dc_latches_next_valid_1                     = dc_latches_next_valid_w;
+    assign dc_latches_next_valid_2                     = dc_latches_next_valid_w;
 
     // dc_cs_t pass-through
     assign dc_latches_next_cs_LD_OP                    = latchesInUse_dc_cs_LD_OP;
+    assign dc_latches_next_cs_LD_OP_0                  = latchesInUse_dc_cs_LD_OP;
+    assign dc_latches_next_cs_LD_OP_1                  = latchesInUse_dc_cs_LD_OP;
+    assign dc_latches_next_cs_LD_OP_2                  = latchesInUse_dc_cs_LD_OP;
+    assign dc_latches_next_cs_LD_OP_3                  = latchesInUse_dc_cs_LD_OP;
     assign dc_latches_next_cs_ST_OP                    = latchesInUse_dc_cs_ST_OP;
+    assign dc_latches_next_cs_ST_OP_0                  = latchesInUse_dc_cs_ST_OP;
     assign dc_latches_next_cs_dr_upper8                = latchesInUse_dc_cs_dr_upper8;
     assign dc_latches_next_cs_sr_upper8                = latchesInUse_dc_cs_sr_upper8;
     assign dc_latches_next_cs_datasize                 = latchesInUse_dc_cs_datasize;
+    assign dc_latches_next_cs_datasize_0               = latchesInUse_dc_cs_datasize;
+    assign dc_latches_next_cs_datasize_1               = latchesInUse_dc_cs_datasize;
+    assign dc_latches_next_cs_datasize_2               = latchesInUse_dc_cs_datasize;
 
     // mem_cs_t pass-through
     assign dc_latches_next_mem_cs_ST_OP                = latchesInUse_mem_cs_ST_OP;

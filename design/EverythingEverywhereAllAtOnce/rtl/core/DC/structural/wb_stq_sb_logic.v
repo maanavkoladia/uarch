@@ -199,11 +199,20 @@ module wb_stq_sb_logic (
     // valid_dep0 = bank_hit_0 & LD_OP
     // valid_dep1 = bank_hit_1 & LD_OP & LD_XCL
     // stall      = valid_dep0 | valid_dep1
+    //
+    // CP back-end uses NAND-NAND DeMorgan (and2$+or2$ chain = 0.70 ns
+    // vs nand2$+nand2$ chain = 0.40 ns).  ld1_gate = LD_OP & LD_XCL is
+    // computed off the bank_hit CP since LD_OP/LD_XCL are flop outputs
+    // ready at clock edge.  The CP path is bank_hit -> nand2$ -> nand2$
+    // -> stall (2 levels of nand2$ instead of and2$/and3$ + or2$).
     // ----------------------------------------------------------------
-    wire valid_dep0;
-    wire valid_dep1;
-    `AND_2(u_valid_dep0, 1, valid_dep0, ld0_bank_hit, LD_OP)
-    `AND_3(u_valid_dep1, 1, valid_dep1, ld1_bank_hit, LD_OP, LD_XCL)
-    `OR_2 (u_stall,      1, stall,      valid_dep0, valid_dep1)
+    wire ld1_gate;
+    `AND_2(u_ld1_gate, 1, ld1_gate, LD_OP, LD_XCL)
+
+    wire valid_dep0_n;
+    wire valid_dep1_n;
+    nand2$ u_valid_dep0_n (.out(valid_dep0_n), .in0(ld0_bank_hit), .in1(LD_OP));
+    nand2$ u_valid_dep1_n (.out(valid_dep1_n), .in0(ld1_bank_hit), .in1(ld1_gate));
+    nand2$ u_stall        (.out(stall),        .in0(valid_dep0_n), .in1(valid_dep1_n));
 
 endmodule
