@@ -26,7 +26,6 @@ STD_CELLS_LIB = \
 			$(ROOT)/lib/STDCells/STDCell_Macros.vh	\
 			$(ROOT)/lib/STDCells/triple_adder.v \
 			$(ROOT)/lib/STDCells/KoggeStone.v \
-			$(ROOT)/lib/STDCells/KoggeStone_r4.v \
 
 			#$(ROOT)/lib/STDCells/4_2_pendcoder.v 
 
