@@ -1,82 +1,45 @@
 ================================================================================
-FANOUT CHECK REPORT — check.log
+VIOLATIONS BY GROUP  (deduplicated — duplicate log lines removed, sorted by count)
 ================================================================================
-Top design : MEM
-Summary    : fanout_check: analyzed 24 high-fanout nets — 6 violations, 11 warnings, 2 infos, 5 ok
+  Unique VIOLATION paths : 0  (0 duplicate lines removed from log)
+  Unique WARNING paths   : 11  (0 duplicate lines removed from log)
+  Unique violation groups: 0
 
-================================================================================
-COMPILE MESSAGES (7)
-================================================================================
-Warning: /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/decoder_N.v:15: Invalid escape sequence '\0' in call to '$fatal'. (VER-941)
-Warning: /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/decoder_N.v:14: The statements in initial blocks are ignored. (VER-281)
-Warning: /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/decoder_N.v:15: The 'continuous severity report' construct is not supported.  It will be ignored. (VER-104)
-Warning: /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/UniqueLib.v:652: Invalid escape sequence '\0' in call to '$fatal'. (VER-941)
-Warning: /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/UniqueLib.v:650: The statements in initial blocks are ignored. (VER-281)
-Warning: /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/UniqueLib.v:652: The 'continuous severity report' construct is not supported.  It will be ignored. (VER-104)
-Error: ./tbs/mem/tb_mem_fanout.v:3: Syntax error at or near token 'MEM'. (VER-294)
 
 ================================================================================
-INFOS (2)
+FIX RECIPE  (VIOLATIONS only, deduplicated)
 ================================================================================
-[fanout=15]  clk  is a clock signal — buffer rule not applied (typically handled by clock-tree synthesis)
-    driver: input port 'clk'
-[fanout=15]  rst  is a reset signal — buffer rule not applied (typically handled by reset distribution network)
-    driver: input port 'rst'
+  EDIT MODULE : Verilog module whose source needs changing
+  WIRE        : overloaded net name inside that module
+  LEAF DRIVER : inst(cell).port — the gate driving WIRE
+  STAGES      : cascaded bufferH16$ needed  (1→fanout≤16, 2→≤256, 3→≤4096)
+  FIX         : wire WIRE_buf;
+                bufferH16$ u_buf_INST (.out(WIRE_buf), .in(WIRE));
+                replace all downstream uses of WIRE with WIRE_buf
+  EXAMPLE     : one concrete (non-collapsed) driver path from the log
 
-================================================================================
-VIOLATIONS (6) — grouped, highest fanout first
-================================================================================
-[fanout=262] driven by mux2$, expected bufferH1024$ or bufferHInv1024$  (1 occurrence)
-    (MEM) -> and_forward_valid(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
-
-[fanout=130] driven by reg64e$, expected bufferH256$ or bufferHInv256$  (1 occurrence)
-    (MEM) -> reg_hbv_mio(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
-
-[fanout=128] driven by mux4$, expected bufferH256$ or bufferHInv256$  (2 occurrences)
-    (MEM) -> mux_hbv_sel0(mux4_N_WIDTH1) -> gen_mux[0].u_mux(MPS_MUX_IN4) -> u0(mux4$).outb
-    (MEM) -> mux_hbv_sel1(mux4_N_WIDTH1) -> gen_mux[0].u_mux(MPS_MUX_IN4) -> u0(mux4$).outb
-
-[fanout=32] driven by mux2$, expected bufferH64$ or bufferHInv64$  (2 occurrences)
-    (MEM) -> or_bts_sel_hi(or2_N$_WIDTH1) -> g_or2[0].u0(MPS_OR_IN2$) -> g0(mux2$).outb
-    (MEM) -> or_bts_sel_lo(or2_N$_WIDTH1) -> g_or2[0].u0(MPS_OR_IN2$) -> g0(mux2$).outb
 
 ================================================================================
-WARNINGS (11) — grouped, highest fanout first
+INPUT PORT BUFFERING  (WARNING input ports — add bufferH16$ tree at EXE top-level)
 ================================================================================
-[fanout=266 : 265 internal + 1 output ports] — driver is external and some loads are external; verify buffering at parent  (2 occurrences)
-    exe_latches_next_ld_addy[4]
-    exe_latches_next_ld_addy[5]
+  Each row = one bus/port at the EXE module boundary with too many internal loads.
+  Fix: in EXE_structural.v, buffer the input through a bufferH16$ and use the
+  buffered copy internally.  If STAGES=2, cascade two bufferH16$ in a fan-out tree.
 
-[fanout=265 : 265 internal + 0 output ports] — driver is external; verify buffering at parent  (2 occurrences)
-    latches_LD_PADDR_1[4]
-    latches_LD_PADDR_1[5]
-
-[fanout=147 : 147 internal + 0 output ports] — driver is external; verify buffering at parent  (1 occurrence)
-    latches_cs_LD_OP
-
-[fanout=136 : 136 internal + 0 output ports] — driver is external; verify buffering at parent  (1 occurrence)
-    latches_LD_XCL
-
-[fanout=133 : 132 internal + 1 output ports] — driver is external and some loads are external; verify buffering at parent  (1 occurrence)
-    exe_latches_next_MIO
-
-[fanout=28 : 27 internal + 1 output ports] — driver is external and some loads are external; verify buffering at parent  (1 occurrence)
-    exe_latches_next_imm64[7]
-
-[fanout=19 : 18 internal + 1 output ports] — driver is external and some loads are external; verify buffering at parent  (1 occurrence)
-    exe_latches_next_imm64[15]
-
-[fanout=18 : 17 internal + 1 output ports] — driver is external and some loads are external; verify buffering at parent  (1 occurrence)
-    outs_valid
-
-[fanout=5 : 5 internal + 0 output ports] — driver is external; verify buffering at parent  (1 occurrence)
-    exe_outs_br_res_flush
+  PORT (collapsed)                                 MAX_FAN  INTERNAL  EXT_PORTS  STAGES  BITS
+  -------------------------------------------------------------------------------------------
+  exe_latches_next_ld_addy[*]                          266       265          1       3     2
+  latches_LD_PADDR_1[*]                                265       265          0       3     2
+  latches_cs_LD_OP                                     147       147          0       2     1
+  latches_LD_XCL                                       136       136          0       2     1
+  exe_latches_next_MIO                                 133       132          1       2     1
+  exe_latches_next_imm64[*]                             28        27          1       2     2
+  outs_valid                                            18        17          1       2     1
+  exe_outs_br_res_flush                                  5         5          0       1     1
 
 ================================================================================
-VIOLATIONS BY PARENT INSTANCE (top 20)
+MODULE SUMMARY  (deduplicated violation count by RTL module, highest first)
 ================================================================================
-      2  u0(MPS_OR_IN2$)
-      2  u_mux(MPS_MUX_IN4)
-      1  u0(MPS_AND_IN2)
-      1  u_reg(reg64e$)
 
+================================================================================
+DONE

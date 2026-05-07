@@ -2,6 +2,9 @@ set target_library ""
 set link_library "*"
 
 
+#set __top_module__  "uut_aaot"
+#set __masterfile__  "./tbs/allAtOnce/master.txt"
+
 set __top_module__  "MEM"
 set __masterfile__  "./tbs/mem/master.txt"
 
@@ -23,3 +26,4 @@ link
 source fanout.tcl
 fanout_check
 
+exit
