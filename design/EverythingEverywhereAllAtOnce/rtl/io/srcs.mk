@@ -16,5 +16,5 @@ IO_PKGS = \
 IO_STRUCTURAL_SRC_FILES = \
 			   $(IO_GEN_SRC_FILES)	\
 			   $(IO_PATH_INTERNAL)/DMA_Controller/structural/DiskWrapper_Behav.v \
-			   $(IO_PATH_INTERNAL)/DMA_Controller/structural/DMA_Controller_structural.v \
+			   $(IO_PATH_INTERNAL)/DMA_Controller/structural/fanout/*.v \
 			   $(IO_PATH_INTERNAL)/ddr5/structural/ddr5_structural.v \

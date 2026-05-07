@@ -97,18 +97,24 @@ bufferH16$ u_S_3_buf (.out(S_3), .in(S_3_pre));
 // ----------------------------------------------------------------
 // Inverters for negated literals
 // ----------------------------------------------------------------
-wire S_0_inv;
-wire S_1_inv;
+// State-bit inverters: split S_0_inv (fanout 17), S_1_inv (19), S_3_inv (26)
+// across 2 INV_N copies each so each bufferHInv16$ stays under 16. S_2_inv
+// (fanout 15) is left as a single inverter.
+wire S_0_inv_a, S_0_inv_b;
+wire S_1_inv_a, S_1_inv_b;
 wire S_2_inv;
-wire S_3_inv;
+wire S_3_inv_a, S_3_inv_b;
 wire hit_i_inv;
 wire ld_req_i_inv;
 wire write_req_i_inv;
 
-`INV_N(inv_S_0, 1, S_0, S_0_inv)
-`INV_N(inv_S_1, 1, S_1, S_1_inv)
-`INV_N(inv_S_2, 1, S_2, S_2_inv)
-`INV_N(inv_S_3, 1, S_3, S_3_inv)
+`INV_N(inv_S_0_a, 1, S_0, S_0_inv_a)
+`INV_N(inv_S_0_b, 1, S_0, S_0_inv_b)
+`INV_N(inv_S_1_a, 1, S_1, S_1_inv_a)
+`INV_N(inv_S_1_b, 1, S_1, S_1_inv_b)
+`INV_N(inv_S_2,   1, S_2, S_2_inv)
+`INV_N(inv_S_3_a, 1, S_3, S_3_inv_a)
+`INV_N(inv_S_3_b, 1, S_3, S_3_inv_b)
 `INV_N(inv_hit_i, 1, hit_i, hit_i_inv)
 `INV_N(inv_ld_req_i, 1, ld_req_i, ld_req_i_inv)
 `INV_N(inv_write_req_i, 1, write_req_i, write_req_i_inv)
@@ -119,57 +125,57 @@ wire write_req_i_inv;
 
 // NS_0 = (!S_0 & S_2 & !S_3) | (!S_0 & S_1 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_1 & S_2 & !S_3 & !hit_i) | (!S_0 & !S_3 & ld_req_i & !hit_i) | (!S_0 & !S_3 & ld_req_i & write_req_i)
 wire NS_0_t0;
-`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_2, S_3_inv)
+`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv_a, S_2, S_3_inv_a)
 wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_0_inv, S_1, S_3_inv)
+`AND_3(NS_0_and1, 1, NS_0_t1, S_0_inv_a, S_1, S_3_inv_a)
 wire NS_0_t2;
-`AND_4(NS_0_and2, 1, NS_0_t2, S_0, S_1_inv, S_2_inv, S_3)
+`AND_4(NS_0_and2, 1, NS_0_t2, S_0, S_1_inv_a, S_2_inv, S_3)
 wire NS_0_t3;
-`AND_4(NS_0_and3, 1, NS_0_t3, S_1_inv, S_2, S_3_inv, hit_i_inv)
+`AND_4(NS_0_and3, 1, NS_0_t3, S_1_inv_a, S_2, S_3_inv_a, hit_i_inv)
 wire NS_0_t4;
-`AND_4(NS_0_and4, 1, NS_0_t4, S_0_inv, S_3_inv, ld_req_i, hit_i_inv)
+`AND_4(NS_0_and4, 1, NS_0_t4, S_0_inv_a, S_3_inv_a, ld_req_i, hit_i_inv)
 wire NS_0_t5;
-`AND_4(NS_0_and5, 1, NS_0_t5, S_0_inv, S_3_inv, ld_req_i, write_req_i)
+`AND_4(NS_0_and5, 1, NS_0_t5, S_0_inv_a, S_3_inv_a, ld_req_i, write_req_i)
 
 `OR_6(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5)
 
 // NS_1 = (!S_0 & S_1 & !S_3) | (S_0 & !S_1 & !S_2 & !S_3) | (!S_1 & !S_2 & !S_3 & !ld_req_i & write_req_i)
 wire NS_1_t0;
-`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv, S_1, S_3_inv)
+`AND_3(NS_1_and0, 1, NS_1_t0, S_0_inv_a, S_1, S_3_inv_a)
 wire NS_1_t1;
-`AND_4(NS_1_and1, 1, NS_1_t1, S_0, S_1_inv, S_2_inv, S_3_inv)
+`AND_4(NS_1_and1, 1, NS_1_t1, S_0, S_1_inv_a, S_2_inv, S_3_inv_a)
 wire NS_1_t2;
-`AND_5(NS_1_and2, 1, NS_1_t2, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i)
+`AND_5(NS_1_and2, 1, NS_1_t2, S_1_inv_a, S_2_inv, S_3_inv_a, ld_req_i_inv, write_req_i)
 
 `OR_3(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2)
 
 // NS_2 = (S_0 & !S_1 & S_2 & !S_3) | (!S_0 & S_1 & S_2 & !S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & !write_req_i) | (!S_0 & !S_1 & !S_2 & !S_3 & !ld_req_i & write_req_i)
 wire NS_2_t0;
-`AND_4(NS_2_and0, 1, NS_2_t0, S_0, S_1_inv, S_2, S_3_inv)
+`AND_4(NS_2_and0, 1, NS_2_t0, S_0, S_1_inv_a, S_2, S_3_inv_a)
 wire NS_2_t1;
-`AND_4(NS_2_and1, 1, NS_2_t1, S_0_inv, S_1, S_2, S_3_inv)
+`AND_4(NS_2_and1, 1, NS_2_t1, S_0_inv_a, S_1, S_2, S_3_inv_a)
 wire NS_2_t2;
-`AND_6(NS_2_and2, 1, NS_2_t2, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv)
+`AND_6(NS_2_and2, 1, NS_2_t2, S_0_inv_a, S_1_inv_a, S_2_inv, S_3_inv_a, ld_req_i, write_req_i_inv)
 wire NS_2_t3;
-`AND_6(NS_2_and3, 1, NS_2_t3, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i)
+`AND_6(NS_2_and3, 1, NS_2_t3, S_0_inv_a, S_1_inv_a, S_2_inv, S_3_inv_a, ld_req_i_inv, write_req_i)
 
 `OR_4(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3)
 
 // NS_3 = (S_0 & S_1 & S_2 & !S_3) | (S_0 & !S_1 & !S_2 & S_3) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & write_req_i)
 wire NS_3_t0;
-`AND_4(NS_3_and0, 1, NS_3_t0, S_0, S_1, S_2, S_3_inv)
+`AND_4(NS_3_and0, 1, NS_3_t0, S_0, S_1, S_2, S_3_inv_a)
 wire NS_3_t1;
-`AND_4(NS_3_and1, 1, NS_3_t1, S_0, S_1_inv, S_2_inv, S_3)
+`AND_4(NS_3_and1, 1, NS_3_t1, S_0, S_1_inv_a, S_2_inv, S_3)
 wire NS_3_t2;
-`AND_6(NS_3_and2, 1, NS_3_t2, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i)
+`AND_6(NS_3_and2, 1, NS_3_t2, S_0_inv_a, S_1_inv_a, S_2_inv, S_3_inv_b, ld_req_i, write_req_i)
 
 `OR_3(NS_3_or, 1, NS_3, NS_3_t0, NS_3_t1, NS_3_t2)
 
 // mem_ready_o = (S_0 & !S_1 & S_2 & !S_3 & hit_i) | (!S_0 & !S_1 & !S_2 & !S_3 & ld_req_i & !write_req_i & hit_i)
 wire mem_ready_o_t0;
-`AND_5(mem_ready_o_and0, 1, mem_ready_o_t0, S_0, S_1_inv, S_2, S_3_inv, hit_i)
+`AND_5(mem_ready_o_and0, 1, mem_ready_o_t0, S_0, S_1_inv_a, S_2, S_3_inv_b, hit_i)
 wire mem_ready_o_t1;
-`AND_7(mem_ready_o_and1, 1, mem_ready_o_t1, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i)
+`AND_7(mem_ready_o_and1, 1, mem_ready_o_t1, S_0_inv_b, S_1_inv_b, S_2_inv, S_3_inv_b, ld_req_i, write_req_i_inv, hit_i)
 
 wire mem_ready_o_pre;
 `OR_2(mem_ready_o_or, 1, mem_ready_o_pre, mem_ready_o_t0, mem_ready_o_t1)
@@ -177,15 +183,15 @@ bufferH16$ u_mem_ready_o_buf (.out(mem_ready_o), .in(mem_ready_o_pre));
 
 // set_ld_tristate_o = (S_1 & !S_2 & !S_3) | (S_0 & !S_2 & !S_3) | (!S_0 & !S_1 & S_2 & !S_3) | (!S_1 & S_2 & !S_3 & hit_i) | (!S_1 & !S_3 & ld_req_i & !write_req_i & hit_i)
 wire set_ld_tristate_o_t0;
-`AND_3(set_ld_tristate_o_and0, 1, set_ld_tristate_o_t0, S_1, S_2_inv, S_3_inv)
+`AND_3(set_ld_tristate_o_and0, 1, set_ld_tristate_o_t0, S_1, S_2_inv, S_3_inv_b)
 wire set_ld_tristate_o_t1;
-`AND_3(set_ld_tristate_o_and1, 1, set_ld_tristate_o_t1, S_0, S_2_inv, S_3_inv)
+`AND_3(set_ld_tristate_o_and1, 1, set_ld_tristate_o_t1, S_0, S_2_inv, S_3_inv_b)
 wire set_ld_tristate_o_t2;
-`AND_4(set_ld_tristate_o_and2, 1, set_ld_tristate_o_t2, S_0_inv, S_1_inv, S_2, S_3_inv)
+`AND_4(set_ld_tristate_o_and2, 1, set_ld_tristate_o_t2, S_0_inv_b, S_1_inv_b, S_2, S_3_inv_b)
 wire set_ld_tristate_o_t3;
-`AND_4(set_ld_tristate_o_and3, 1, set_ld_tristate_o_t3, S_1_inv, S_2, S_3_inv, hit_i)
+`AND_4(set_ld_tristate_o_and3, 1, set_ld_tristate_o_t3, S_1_inv_b, S_2, S_3_inv_b, hit_i)
 wire set_ld_tristate_o_t4;
-`AND_5(set_ld_tristate_o_and4, 1, set_ld_tristate_o_t4, S_1_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i)
+`AND_5(set_ld_tristate_o_and4, 1, set_ld_tristate_o_t4, S_1_inv_b, S_3_inv_b, ld_req_i, write_req_i_inv, hit_i)
 
 // set_ld_tristate_o (fanout=64 -> bufferH64$)
 wire set_ld_tristate_o_pre;
@@ -194,37 +200,37 @@ bufferH64$ u_set_ld_tristate_o_buf (.out(set_ld_tristate_o), .in(set_ld_tristate
 
 // start_store_o = (!S_0 & !S_1 & !S_2 & S_3) -- fanout=64 -> bufferH64$
 wire start_store_o_pre;
-`AND_4(start_store_o_and, 1, start_store_o_pre, S_0_inv, S_1_inv, S_2_inv, S_3)
+`AND_4(start_store_o_and, 1, start_store_o_pre, S_0_inv_b, S_1_inv_b, S_2_inv, S_3)
 bufferH64$ u_start_store_o_buf (.out(start_store_o), .in(start_store_o_pre));
 
 // ld_address_changed_o (fanout=80 -> bufferH256$)
 wire ld_address_changed_o_pre;
-`AND_7(ld_address_changed_o_and, 1, ld_address_changed_o_pre, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i, write_req_i_inv, hit_i_inv)
+`AND_7(ld_address_changed_o_and, 1, ld_address_changed_o_pre, S_0_inv_b, S_1_inv_b, S_2_inv, S_3_inv_b, ld_req_i, write_req_i_inv, hit_i_inv)
 bufferH256$ u_ld_address_changed_o_buf (.out(ld_address_changed_o), .in(ld_address_changed_o_pre));
 
 // set_WriteBuf_V_o (fanout=16 -> bufferH16$)
 wire set_WriteBuf_V_o_pre;
-`AND_6(set_WriteBuf_V_o_and, 1, set_WriteBuf_V_o_pre, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i)
+`AND_6(set_WriteBuf_V_o_and, 1, set_WriteBuf_V_o_pre, S_0_inv_b, S_1_inv_b, S_2_inv, S_3_inv_b, ld_req_i_inv, write_req_i)
 bufferH16$ u_set_WriteBuf_V_o_buf (.out(set_WriteBuf_V_o), .in(set_WriteBuf_V_o_pre));
 
 // fill0_o (fanout=8 -> bufferH16$)
 wire fill0_o_pre;
-`AND_6(fill0_o_and, 1, fill0_o_pre, S_0_inv, S_1_inv, S_2_inv, S_3_inv, ld_req_i_inv, write_req_i)
+`AND_6(fill0_o_and, 1, fill0_o_pre, S_0_inv_b, S_1_inv_b, S_2_inv, S_3_inv_b, ld_req_i_inv, write_req_i)
 bufferH16$ u_fill0_o_buf (.out(fill0_o), .in(fill0_o_pre));
 
 // fill1_o (fanout=8 -> bufferH16$)
 wire fill1_o_pre;
-`AND_4(fill1_o_and, 1, fill1_o_pre, S_0_inv, S_1, S_2, S_3_inv)
+`AND_4(fill1_o_and, 1, fill1_o_pre, S_0_inv_b, S_1, S_2, S_3_inv_b)
 bufferH16$ u_fill1_o_buf (.out(fill1_o), .in(fill1_o_pre));
 
 // fill2_o (fanout=8 -> bufferH16$)
 wire fill2_o_pre;
-`AND_4(fill2_o_and, 1, fill2_o_pre, S_0, S_1, S_2, S_3_inv)
+`AND_4(fill2_o_and, 1, fill2_o_pre, S_0, S_1, S_2, S_3_inv_b)
 bufferH16$ u_fill2_o_buf (.out(fill2_o), .in(fill2_o_pre));
 
 // fill3_o (fanout=8 -> bufferH16$)
 wire fill3_o_pre;
-`AND_4(fill3_o_and, 1, fill3_o_pre, S_0_inv, S_1_inv, S_2_inv, S_3)
+`AND_4(fill3_o_and, 1, fill3_o_pre, S_0_inv_b, S_1_inv_b, S_2_inv, S_3)
 bufferH16$ u_fill3_o_buf (.out(fill3_o), .in(fill3_o_pre));
 
 endmodule

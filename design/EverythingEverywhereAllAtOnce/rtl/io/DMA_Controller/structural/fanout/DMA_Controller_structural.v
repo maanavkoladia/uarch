@@ -200,15 +200,16 @@ module DMA_Controller (
     wire we_counter;
     `OR_2(u_or_we_cnt, 1, we_counter, ld_counter, inc_counter)
 
-    // u_counter_reg q[31] had fanout 7 (>4) -> buffer the whole counter bus
-    // through bufferH16$ per bit to keep all bits time-aligned downstream.
-    // +0.24 ns on counter path (used by 4 adders + counter_inv + chunk_sel).
+    // counter[11:4] feeds chunk_sel which drives the 256:1 disk-buffer mux
+    // selects (4x MUX_64 + MUX_4); reported per-bit fanouts up to 2055.
+    // Use bufferH4096$ on every counter bit to handle the worst-case tree
+    // and keep all 32 bits time-aligned for downstream adders / counter_inv.
     wire [31:0] counter_pre;
     `REG_RST_WE(u_counter_reg, 32, clk, rst, we_counter, counter_d, counter_pre)
     genvar cnt_i;
     generate
         for (cnt_i = 0; cnt_i < 32; cnt_i = cnt_i + 1) begin : g_counter_buf
-            bufferH16$ u_buf (.out(counter[cnt_i]), .in(counter_pre[cnt_i]));
+            bufferH4096$ u_buf (.out(counter[cnt_i]), .in(counter_pre[cnt_i]));
         end
     endgenerate
 
@@ -474,8 +475,10 @@ module DMA_Controller (
     wire        addr_add_cout_unused;
     `ADD_N(u_addr_add, 32, addrBus_drv, addr_add_cout_unused, destAddr, counter, 1'b0)
 
-    wire perm_addr_inv;
-    `INV_N(u_inv_perm_addr, 1, dte_permission2DriveADDRBus, perm_addr_inv)
+    // u_inv_perm_addr external fanout 32 -> bufferH64$.
+    wire perm_addr_inv, perm_addr_inv_pre;
+    `INV_N(u_inv_perm_addr, 1, dte_permission2DriveADDRBus, perm_addr_inv_pre)
+    bufferH64$ u_inv_perm_addr_buf (.out(perm_addr_inv), .in(perm_addr_inv_pre));
     `BUS_TRISTATE(u_addr_drv, `ADDRESS_BUS_WIDTH_BITS, perm_addr_inv, addrBus_drv, addrBus)
 
     // ============================================================
@@ -530,8 +533,10 @@ module DMA_Controller (
           dte_permission2DriveDataBus[0], dte_permission2DriveDataBus[1],
           dte_permission2DriveDataBus[2], dte_permission2DriveDataBus[3])
 
-    wire drive_data_inv;
-    `INV_N(u_inv_drv_data, 1, driveDataBus, drive_data_inv)
+    // u_inv_drv_data external fanout 32 -> bufferH64$.
+    wire drive_data_inv, drive_data_inv_pre;
+    `INV_N(u_inv_drv_data, 1, driveDataBus, drive_data_inv_pre)
+    bufferH64$ u_inv_drv_data_buf (.out(drive_data_inv), .in(drive_data_inv_pre));
     `BUS_TRISTATE(u_dat_drv, `DATA_BUS_WIDTH_BITS, drive_data_inv, dataBus_drv, dataBus)
 
     // ============================================================

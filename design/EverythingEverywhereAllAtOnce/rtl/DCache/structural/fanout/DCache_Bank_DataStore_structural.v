@@ -41,7 +41,10 @@ module DCache_Bank_DataStore (
     `OR_5 (u_any_high_pri, 1, any_high_pri,
            ld_From_V_Swap_i, fill0_i, fill1_i, fill2_i, fill3_i)
     `INV_N(u_no_high_pri,  1, any_high_pri, no_high_pri)
-    `INV_N(u_not_busy,     1, bankControllerBusy_i, not_busy)
+    // u_not_busy fanout 17 -> bufferH64$ on the inverter output (2-stage).
+    wire not_busy_pre;
+    `INV_N(u_not_busy,     1, bankControllerBusy_i, not_busy_pre)
+    bufferH64$ u_not_busy_buf (.out(not_busy), .in(not_busy_pre));
 
     wire clk_duty_mask;
     wire delay_rise;
@@ -50,13 +53,6 @@ module DCache_Bank_DataStore (
 
     `BUFFER_DELAY(u_phase_rise, 25, 1, clk, delay_rise);
     `BUFFER_DELAY(u_phase_fall, 15, 1, clk, delay_fall);
-
-
-    wire clk_latch_inv;
-    wire inv_clk;
-    wire clk_duty_latch_out;
-    wire clk_duty_pre_buf;
-
 
     `AND_2(u_clk_duty_mask, 1, clk_duty_mask, delay_rise, delay_fall);
 
@@ -71,7 +67,10 @@ module DCache_Bank_DataStore (
     wire oe_and_not_busy;
     wire OE_2_DataStore;
     `AND_2(u_oe_and_nb, 1, oe_and_not_busy, oe, not_busy)
-    nor2$ u_oe_actual (.out(OE_2_DataStore), .in0(write2_Dwap_i), .in1(oe_and_not_busy));
+    // OE_2_DataStore fanout 16 -> bufferH16$ on the nor2$ output.
+    wire OE_2_DataStore_pre;
+    nor2$ u_oe_actual (.out(OE_2_DataStore_pre), .in0(write2_Dwap_i), .in1(oe_and_not_busy));
+    bufferH16$ u_OE_2_DataStore_buf (.out(OE_2_DataStore), .in(OE_2_DataStore_pre));
 
     wire [127:0] DOUT_flat;
     wire [15:0]  WR_2_DataStore_actual;

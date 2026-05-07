@@ -71,13 +71,24 @@ module DCache_Bank(
 
     wire        reqInUse_oe;
     wire        reqInUse_we;
+    //pass this through a buf, should be fine
     wire [14:0] reqInUse_paddr;
     wire [127:0] reqInUse_stq_data;
     wire [15:0] reqInUse_vec;
 
     `MUX_2(u_reqInUse_oe,    1,   reqInUse_oe,       blockReq_oe_i,       savedReq_oe_q,       useSavedReq)
-    `MUX_2(u_reqInUse_we,    1,   reqInUse_we,       blockReq_we_i,       savedReq_we_q,       useSavedReq)
-    `MUX_2(u_reqInUse_paddr, 15,  reqInUse_paddr,    blockReq_paddr_i,    savedReq_paddr_q,    useSavedReq)
+    // u_reqInUse_we external fanout 21 -> bufferH64$. u_reqInUse_paddr fanout 23/bit -> bufferH64$ per bit.
+    wire        reqInUse_we_pre;
+    wire [14:0] reqInUse_paddr_pre;
+    `MUX_2(u_reqInUse_we,    1,   reqInUse_we_pre,    blockReq_we_i,       savedReq_we_q,       useSavedReq)
+    `MUX_2(u_reqInUse_paddr, 15,  reqInUse_paddr_pre, blockReq_paddr_i,    savedReq_paddr_q,    useSavedReq)
+    bufferH64$ u_reqInUse_we_buf (.out(reqInUse_we), .in(reqInUse_we_pre));
+    genvar bp_i;
+    generate
+        for (bp_i = 0; bp_i < 15; bp_i = bp_i + 1) begin : g_buf_reqInUse_paddr
+            bufferH64$ u_buf (.out(reqInUse_paddr[bp_i]), .in(reqInUse_paddr_pre[bp_i]));
+        end
+    endgenerate
     `MUX_2(u_reqInUse_stq,   128, reqInUse_stq_data, blockReq_stq_data_i, savedReq_stq_data_q, useSavedReq)
     `MUX_2(u_reqInUse_vec,   16,  reqInUse_vec,      blockReq_vec_i,      savedReq_vec_q,      useSavedReq)
 
@@ -108,10 +119,17 @@ module DCache_Bank(
     `AND_2(u_doAccess,      1, doAccess,       not_block_busy, oe_or_we)
     `CMP_N(u_tag_eq,        6, tag_eq,         currTag, paddr_tag)
     `AND_2(u_tag_eq_and_v,  1, tag_eq_and_v,   tag_eq, currLineValid)
-    `AND_2(u_hit,           1, hit,            tag_eq_and_v, doAccess)
+    // u_hit external fanout 147 -> bufferH256$.  miss (13) -> bufferH16$.  writeSuccess2TagStore (8) -> bufferH16$.
+    wire hit_pre;
+    wire miss_pre;
+    wire writeSuccess2TagStore_pre;
+    `AND_2(u_hit,           1, hit_pre,        tag_eq_and_v, doAccess)
+    bufferH256$ u_hit_buf (.out(hit), .in(hit_pre));
     `INV_N(u_not_hit,       1, hit,            not_hit)
-    `AND_2(u_miss,          1, miss,           doAccess, not_hit)
-    `AND_2(u_wr_success,    1, writeSuccess2TagStore, hit, reqInUse_we)
+    `AND_2(u_miss,          1, miss_pre,       doAccess, not_hit)
+    bufferH16$  u_miss_buf (.out(miss), .in(miss_pre));
+    `AND_2(u_wr_success,    1, writeSuccess2TagStore_pre, hit, reqInUse_we)
+    bufferH16$  u_wr_success_buf (.out(writeSuccess2TagStore), .in(writeSuccess2TagStore_pre));
 
     wire        swapBuf_valid_we;
     wire        swapBuf_valid_d;

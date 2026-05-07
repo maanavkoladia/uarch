@@ -32,9 +32,11 @@ module ddr5 (
     `REG_RST_WE(ff_temp, 32, clk, temp_rst, 1'b1, 32'd3000, tempValue)
 
     // BUS_TRISTATE uses active-low enbar.
-    wire drive_bar;
+    // inv_drv external fanout 32 -> bufferH64$.
+    wire drive_bar, drive_bar_pre;
 
-    `INV_N(inv_drv, 1, driveDataBus_i, drive_bar)
+    `INV_N(inv_drv, 1, driveDataBus_i, drive_bar_pre)
+    bufferH64$ u_inv_drv_buf (.out(drive_bar), .in(drive_bar_pre));
     `BUS_TRISTATE(u_drv, `DATA_BUS_WIDTH_BITS, drive_bar, tempValue, dataBus)
 
 endmodule

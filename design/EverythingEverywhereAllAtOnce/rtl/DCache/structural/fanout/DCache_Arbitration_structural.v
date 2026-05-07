@@ -198,12 +198,19 @@ module DCache_Arbitration (
 
             // ---------- valids (decide which new req fires this cycle)
             // These do NOT depend on block_hit_i / core_memClrReq_i.
-            wire not_ld0_at_bank, store_valid_w;
+            // u_store_valid external fanout 162 (15+16+128 replications + uses)
+            // -> bufferH256$.
+            wire not_ld0_at_bank, store_valid_w, store_valid_w_pre;
             `INV_N(u_not_ld0,     1, ld0_at_bank,    not_ld0_at_bank)
-            `AND_2(u_store_valid, 1, store_valid_w,  block_idleness, st_sel)
-            `AND_3(u_ld0_valid,   1, ld0_valid[g_i], block_idleness, not_st_sel, ld0_at_bank)
-            `AND_4(u_ld1_valid, 1, ld1_valid[g_i],
+            `AND_2(u_store_valid, 1, store_valid_w_pre,  block_idleness, st_sel)
+            bufferH256$ u_store_valid_buf (.out(store_valid_w), .in(store_valid_w_pre));
+            // ld0/ld1_valid external fanout 18 each -> bufferH64$.
+            wire ld0_valid_pre, ld1_valid_pre;
+            `AND_3(u_ld0_valid, 1, ld0_valid_pre, block_idleness, not_st_sel, ld0_at_bank)
+            `AND_4(u_ld1_valid, 1, ld1_valid_pre,
                    block_idleness, not_st_sel, not_ld0_at_bank, ld1_at_bank)
+            bufferH64$ u_ld0_valid_buf (.out(ld0_valid[g_i]), .in(ld0_valid_pre));
+            bufferH64$ u_ld1_valid_buf (.out(ld1_valid[g_i]), .in(ld1_valid_pre));
 
             // ---------- clear-latch (memClr/hit kill an active req) ----
             // Only one AND-gate from the late hit/memClr signals.
@@ -219,9 +226,11 @@ module DCache_Arbitration (
             // So the WE pulse cleanly distinguishes the two cases by
             // which input data evaluates to non-zero -- no need to gate
             // the data path with clear_latch.
-            wire any_new_req, latch_we;
+            // latch_we fanout 6 -> bufferH16$.
+            wire any_new_req, latch_we, latch_we_pre;
             `OR_3(u_any_new, 1, any_new_req, store_valid_w, ld0_valid[g_i], ld1_valid[g_i])
-            `OR_2(u_latch_we, 1, latch_we, clear_latch, any_new_req)
+            `OR_2(u_latch_we, 1, latch_we_pre, clear_latch, any_new_req)
+            bufferH16$ u_latch_we_buf (.out(latch_we), .in(latch_we_pre));
 
             // ---------- next-state data into the req latches ----------
             // oe: high only on a new ld; clear case yields 0 naturally.
@@ -253,9 +262,30 @@ module DCache_Arbitration (
             `AND_2(u_next_dat, 128, nextReqs_data, core_stq_data_i[g_i],   store_valid_128)
 
             // ---------- registers: WE-gated REG_RST_WE ----------
-            `REG_RST_WE(u_reg_oe,  1,   clk_i, rst, latch_we, nextReqs_oe,    reqs_oe_q[g_i])
-            `REG_RST_WE(u_reg_we,  1,   clk_i, rst, latch_we, nextReqs_we,    reqs_we_q[g_i])
-            `REG_RST_WE(u_reg_pa,  15,  clk_i, rst, latch_we, nextReqs_paddr, reqs_paddr_q[g_i])
+            // reqs_oe_q/reqs_we_q FF Q fanout 15 each -> bufferH16$.
+            // reqs_paddr_q FF Q fanout 6/bit -> bufferH16$ per bit (15 bits).
+            wire        reqs_oe_q_pre, reqs_we_q_pre;
+            wire [14:0] reqs_paddr_q_pre;
+            `REG_RST_WE(u_reg_oe,  1,   clk_i, rst, latch_we, nextReqs_oe,    reqs_oe_q_pre)
+            `REG_RST_WE(u_reg_we,  1,   clk_i, rst, latch_we, nextReqs_we,    reqs_we_q_pre)
+            `REG_RST_WE(u_reg_pa,  15,  clk_i, rst, latch_we, nextReqs_paddr, reqs_paddr_q_pre)
+            bufferH16$ u_reqs_oe_q_buf (.out(reqs_oe_q[g_i]), .in(reqs_oe_q_pre));
+            bufferH16$ u_reqs_we_q_buf (.out(reqs_we_q[g_i]), .in(reqs_we_q_pre));
+            bufferH16$ u_reqs_paddr_q_buf_0  (.out(reqs_paddr_q[g_i][0]),  .in(reqs_paddr_q_pre[0]));
+            bufferH16$ u_reqs_paddr_q_buf_1  (.out(reqs_paddr_q[g_i][1]),  .in(reqs_paddr_q_pre[1]));
+            bufferH16$ u_reqs_paddr_q_buf_2  (.out(reqs_paddr_q[g_i][2]),  .in(reqs_paddr_q_pre[2]));
+            bufferH16$ u_reqs_paddr_q_buf_3  (.out(reqs_paddr_q[g_i][3]),  .in(reqs_paddr_q_pre[3]));
+            bufferH16$ u_reqs_paddr_q_buf_4  (.out(reqs_paddr_q[g_i][4]),  .in(reqs_paddr_q_pre[4]));
+            bufferH16$ u_reqs_paddr_q_buf_5  (.out(reqs_paddr_q[g_i][5]),  .in(reqs_paddr_q_pre[5]));
+            bufferH16$ u_reqs_paddr_q_buf_6  (.out(reqs_paddr_q[g_i][6]),  .in(reqs_paddr_q_pre[6]));
+            bufferH16$ u_reqs_paddr_q_buf_7  (.out(reqs_paddr_q[g_i][7]),  .in(reqs_paddr_q_pre[7]));
+            bufferH16$ u_reqs_paddr_q_buf_8  (.out(reqs_paddr_q[g_i][8]),  .in(reqs_paddr_q_pre[8]));
+            bufferH16$ u_reqs_paddr_q_buf_9  (.out(reqs_paddr_q[g_i][9]),  .in(reqs_paddr_q_pre[9]));
+            bufferH16$ u_reqs_paddr_q_buf_10 (.out(reqs_paddr_q[g_i][10]), .in(reqs_paddr_q_pre[10]));
+            bufferH16$ u_reqs_paddr_q_buf_11 (.out(reqs_paddr_q[g_i][11]), .in(reqs_paddr_q_pre[11]));
+            bufferH16$ u_reqs_paddr_q_buf_12 (.out(reqs_paddr_q[g_i][12]), .in(reqs_paddr_q_pre[12]));
+            bufferH16$ u_reqs_paddr_q_buf_13 (.out(reqs_paddr_q[g_i][13]), .in(reqs_paddr_q_pre[13]));
+            bufferH16$ u_reqs_paddr_q_buf_14 (.out(reqs_paddr_q[g_i][14]), .in(reqs_paddr_q_pre[14]));
             `REG_RST_WE(u_reg_vec, 16,  clk_i, rst, latch_we, nextReqs_vec,   reqs_vec_q[g_i])
             `REG_RST_WE(u_reg_dat, 128, clk_i, rst, latch_we, nextReqs_data,  reqs_data_q[g_i])
 
@@ -279,7 +309,10 @@ module DCache_Arbitration (
             wire keep_ov, st_override_d;
             `AND_2(u_keep_ov, 1, keep_ov,       not_stq_empty[g_st], st_override_q[g_st])
             `OR_2(u_ov_d,     1, st_override_d, core_stq_full_i[g_st], keep_ov)
-            `REG_RST(u_ov_reg, 1, clk_i, rst, st_override_d, st_override_q[g_st])
+            // st_override_q FF Q fanout 10 -> bufferH16$.
+            wire st_override_q_pre;
+            `REG_RST(u_ov_reg, 1, clk_i, rst, st_override_d, st_override_q_pre)
+            bufferH16$ u_st_override_q_buf (.out(st_override_q[g_st]), .in(st_override_q_pre));
             assign st_override_o[g_st] = st_override_q[g_st];
         end
     endgenerate
