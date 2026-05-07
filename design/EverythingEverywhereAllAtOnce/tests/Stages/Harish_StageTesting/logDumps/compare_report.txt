@@ -1,8 +1,8 @@
 ================================================================================
   SIM vs RTL DUMP COMPARISON  (registers + flags per instruction)
 ================================================================================
-  REG  — SIM: 11  RTL: 17
-  FLAG — SIM: 11  RTL: 17
+  REG  — SIM: 11  RTL: 52
+  FLAG — SIM: 11  RTL: 52
 
 [OK ] #0000  EIP=0x00000000  jmp           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0001  EIP=0x00000100  jmp           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
@@ -13,27 +13,50 @@
 [OK ] #0006  EIP=0x00000200  ret           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0007  EIP=0x00000015  call          CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0008  EIP=0x00000300  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[ERR] #0009  EIP=0x00000305  add         
-       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
-       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  PF: SIM=1  RTL=0
-       *** FLAG  AF: SIM=1  RTL=0
-       *** FLAG  SF: SIM=1  RTL=0
-       *** REG   ESP: SIM=0x000000FC  RTL=0x000000F8
-[ERR] #0010  EIP=0x0000030C  ret           !! EIP MISMATCH SIM=0x0000030C RTL=0x00000305
-       FLAGS  SIM: CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
-       FLAGS  RTL: CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-       *** FLAG  PF: SIM=1  RTL=0
-       *** FLAG  AF: SIM=1  RTL=0
-       *** FLAG  SF: SIM=1  RTL=0
-       *** REG   ESP: SIM=0x00000100  RTL=0x000000F8
-[ONLY_RTL] #0011  EIP=0x00000305  ???
-[ONLY_RTL] #0012  EIP=0x00000320  ???
-[ONLY_RTL] #0013  EIP=0x00000320  ???
+[OK ] #0009  EIP=0x00000305  add           CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0010  EIP=0x0000030C  ret           CF=0  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[ONLY_RTL] #0011  EIP=0xF2233469  ???
+[ONLY_RTL] #0012  EIP=0xF2233469  ???
+[ONLY_RTL] #0013  EIP=0xF2233469  ???
 [ONLY_RTL] #0014  EIP=0x00000320  ???
-[ONLY_RTL] #0015  EIP=0x00000320  ???
-[ONLY_RTL] #0016  EIP=0x00000320  ???
+[ONLY_RTL] #0015  EIP=0x00000327  ???
+[ONLY_RTL] #0016  EIP=0x0000001A  ???
+[ONLY_RTL] #0017  EIP=0x0000001F  ???
+[ONLY_RTL] #0018  EIP=0x00000021  ???
+[ONLY_RTL] #0019  EIP=0x00000026  ???
+[ONLY_RTL] #0020  EIP=0x00000028  ???
+[ONLY_RTL] #0021  EIP=0x0000002E  ???
+[ONLY_RTL] #0022  EIP=0x00000030  ???
+[ONLY_RTL] #0023  EIP=0x0000003A  ???
+[ONLY_RTL] #0024  EIP=0x00000040  ???
+[ONLY_RTL] #0025  EIP=0x0000004A  ???
+[ONLY_RTL] #0026  EIP=0x00000050  ???
+[ONLY_RTL] #0027  EIP=0x0000005A  ???
+[ONLY_RTL] #0028  EIP=0x00000060  ???
+[ONLY_RTL] #0029  EIP=0x00000062  ???
+[ONLY_RTL] #0030  EIP=0x00000068  ???
+[ONLY_RTL] #0031  EIP=0x0000006A  ???
+[ONLY_RTL] #0032  EIP=0x0000006B  ???
+[ONLY_RTL] #0033  EIP=0x0000006C  ???
+[ONLY_RTL] #0034  EIP=0x0000006D  ???
+[ONLY_RTL] #0035  EIP=0x0000006E  ???
+[ONLY_RTL] #0036  EIP=0x0000006F  ???
+[ONLY_RTL] #0037  EIP=0x00000070  ???
+[ONLY_RTL] #0038  EIP=0x00000077  ???
+[ONLY_RTL] #0039  EIP=0x0000007A  ???
+[ONLY_RTL] #0040  EIP=0x0000007F  ???
+[ONLY_RTL] #0041  EIP=0x00000081  ???
+[ONLY_RTL] #0042  EIP=0x00000086  ???
+[ONLY_RTL] #0043  EIP=0x0000008D  ???
+[ONLY_RTL] #0044  EIP=0x00000092  ???
+[ONLY_RTL] #0045  EIP=0x00000094  ???
+[ONLY_RTL] #0046  EIP=0x00000099  ???
+[ONLY_RTL] #0047  EIP=0x0000009B  ???
+[ONLY_RTL] #0048  EIP=0x000000A0  ???
+[ONLY_RTL] #0049  EIP=0x000000A6  ???
+[ONLY_RTL] #0050  EIP=0x000000A9  ???
+[ONLY_RTL] #0051  EIP=0x00000010  ???
 
 ================================================================================
-  SUMMARY: 9/17 matched  |  2 mismatched  |  0 sim-only  |  6 rtl-only
+  SUMMARY: 11/52 matched  |  0 mismatched  |  0 sim-only  |  41 rtl-only
 ================================================================================
