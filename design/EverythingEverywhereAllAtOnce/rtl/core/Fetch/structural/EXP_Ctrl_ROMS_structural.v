@@ -47,7 +47,7 @@ module EXP_Ctrl_ROMS (
 
     input  wire        exp_mode,        // present in SV port; unused (kept for parity)
 
-    output wire [7:0]  rom_data_out [0:15]
+    output wire [127:0]  rom_data_out_0
 );
 
     // ----------------------------------------------------------------

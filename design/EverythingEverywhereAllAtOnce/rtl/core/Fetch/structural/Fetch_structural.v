@@ -28,10 +28,6 @@
 //     EXP_Set_logic, EXP_Ctrl_ROMS, ICache_En_Logic, TLB, SegmentTranslation.
 // =============================================================================
 
-import reg_ids_pkg::*;
-import common_pkg::*;
-import interconnect_pkg::*;
-
 module Fetch (
     input  wire        clk,
     input  wire        rst,
@@ -194,7 +190,7 @@ module Fetch (
     wire        outs_exp_pipe_clear_w;
 
     wire [31:0] seg_xlation_out;
-    wire [7:0]  rom_data_out      [0:15];
+    wire [127:0]  rom_data_out;
     wire [7:0]  idm_ctrl_data_in  [0:15];
     wire [31:0] next_spc;
     wire [31:0] spc_16;

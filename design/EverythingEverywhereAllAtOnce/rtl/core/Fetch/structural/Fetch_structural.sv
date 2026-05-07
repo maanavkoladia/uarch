@@ -1,9 +1,3 @@
-import common_pkg::*;
-import interconnect_pkg::*;
-import core_common_pkg::*;
-import core_stage_latches_pkg::*;
-import Fetch_pkg::*;
-import reg_ids_pkg::*;
 // ----------------------------------------------------------------
 // Fetch — top-level structural port.
 //

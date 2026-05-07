@@ -26,9 +26,6 @@
 //                          pfn_winner[b] = OR(hit_i & pfn_i[b])
 // ----------------------------------------------------------------
 
-import common_pkg::*;
-import TLB_pkg::*;
-
 module TLB (
     // --- inputs (tlb_inputs_t unrolled) ---
     input  wire [31:0] virtual_addr,
@@ -41,7 +38,9 @@ module TLB (
     output wire        pageFault,
     output wire        MIO
 );
-
+    localparam entries = 8;
+    localparam OFFSET_BITS = $clog2(PAGE_SIZE);
+    localparam VPN_BITS = ADDRESS_BITS - OFFSET_BITS;
     // ----------------------------------------------------------------
     // Per-entry storage.  Externally written by the tlb_loader.
     // Flat names so the loader sees `valid_0`, `vpn_0`, etc., rather
