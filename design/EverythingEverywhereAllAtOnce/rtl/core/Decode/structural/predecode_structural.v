@@ -315,7 +315,7 @@ module predecode(
                 .WIDTH(32)
             ) IR_index_adder (
                 .a   (EIP),
-                .b   ({28'b0, i}),       // cast loop index to 6-bit
+                .b   ({28'b0, i[3:0]}),       // cast loop index to 6-bit
                 .cin (1'b0),
                 .sum (possible_neips[i]),
                 .cout(adder_cout[i])             // unused

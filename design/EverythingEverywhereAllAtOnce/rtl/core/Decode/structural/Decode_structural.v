@@ -845,7 +845,7 @@ module Decode (
         .zf_flag                                (exe_outs_ZF),
         .stall                                  (not_decode_forward),
         .flush                                  (flush),
-        .exp_pipe_clear                         (fetch_outs_exp_mode_jk),
+        .exp_pipe_clear                         (fetch_outs_exp_pipe_clear),
         .saved_segment0                         (SAVED_SEGMENT0),
         .saved_segment_override                 (SAVED_SEGMENT_OVERRIDE),
         .saved_rep_eip                          (SAVED_REP_EIP),
