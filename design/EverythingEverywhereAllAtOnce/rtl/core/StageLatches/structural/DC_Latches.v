@@ -320,66 +320,56 @@ module DC_Latches (
 
     `MUX_2(u_dc_mux_valid,                          1,   valid_d,                          nextLatches_valid_i,                          1'b0,    combined_flush);
 
-    `MUX_2(u_dc_mux_cs_LD_OP,                       1,   cs_LD_OP_d,                       nextLatches_cs_LD_OP_i,                       1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_cs_ST_OP,                       1,   cs_ST_OP_d,                       nextLatches_cs_ST_OP_i,                       1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_cs_dr_upper8,                   1,   cs_dr_upper8_d,                   nextLatches_cs_dr_upper8_i,                   1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_cs_sr_upper8,                   1,   cs_sr_upper8_d,                   nextLatches_cs_sr_upper8_i,                   1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_cs_datasize,                    2,   cs_datasize_d,                    nextLatches_cs_datasize_i,                    2'b0,    combined_flush);
-
-    `MUX_2(u_dc_mux_mem_cs_ST_OP,                   1,   mem_cs_ST_OP_d,                   nextLatches_mem_cs_ST_OP_i,                   1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_mem_cs_LD_OP,                   1,   mem_cs_LD_OP_d,                   nextLatches_mem_cs_LD_OP_i,                   1'b0,    combined_flush);
-
-    `MUX_2(u_dc_mux_exe_cs_ST_OP,                   1,   exe_cs_ST_OP_d,                   nextLatches_exe_cs_ST_OP_i,                   1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_OP_TYPE,                 6,   exe_cs_OP_TYPE_d,                 nextLatches_exe_cs_OP_TYPE_i,                 6'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_alu_inputA_sel,          5,   exe_cs_alu_inputA_sel_d,          nextLatches_exe_cs_alu_inputA_sel_i,          5'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_alu_inputB_sel,          5,   exe_cs_alu_inputB_sel_d,          nextLatches_exe_cs_alu_inputB_sel_i,          5'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_branch_target_sel,       5,   exe_cs_branch_target_sel_d,       nextLatches_exe_cs_branch_target_sel_i,       5'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_shift_by_one,            1,   exe_cs_shift_by_one_d,            nextLatches_exe_cs_shift_by_one_i,            1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_br_ucond,                1,   exe_cs_br_ucond_d,                nextLatches_exe_cs_br_ucond_i,                1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_relative_branch,         1,   exe_cs_relative_branch_d,         nextLatches_exe_cs_relative_branch_i,         1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_special_br,              1,   exe_cs_special_br_d,              nextLatches_exe_cs_special_br_i,              1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_is_far,                  1,   exe_cs_is_far_d,                  nextLatches_exe_cs_is_far_i,                  1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_is_call,                 1,   exe_cs_is_call_d,                 nextLatches_exe_cs_is_call_i,                 1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_second_flag_needed,      1,   exe_cs_second_flag_needed_d,      nextLatches_exe_cs_second_flag_needed_i,      1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_exe_cs_rep_no_zf_update,        1,   exe_cs_rep_no_zf_update_d,        nextLatches_exe_cs_rep_no_zf_update_i,        1'b0,    combined_flush);
-
-    `MUX_2(u_dc_mux_wb_cs_ST_OP,                    1,   wb_cs_ST_OP_d,                    nextLatches_wb_cs_ST_OP_i,                    1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_wb_cs_WB_DR,                    1,   wb_cs_WB_DR_d,                    nextLatches_wb_cs_WB_DR_i,                    1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_wb_cs_WB_SR,                    1,   wb_cs_WB_SR_d,                    nextLatches_wb_cs_WB_SR_i,                    1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_wb_cs_WB_EAX,                   1,   wb_cs_WB_EAX_d,                   nextLatches_wb_cs_WB_EAX_i,                   1'b0,    combined_flush);
-
-    `MUX_2(u_dc_mux_br_info_valid,                  1,   br_info_valid_d,                  nextLatches_br_info_valid_i,                  1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_br_info_br_eip,                 32,  br_info_br_eip_d,                 nextLatches_br_info_br_eip_i,                 32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_br_info_br_xcl,                 1,   br_info_br_xcl_d,                 nextLatches_br_info_br_xcl_i,                 1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_br_info_br_pred_taken,          1,   br_info_br_pred_taken_d,          nextLatches_br_info_br_pred_taken_i,          1'b0,    combined_flush);
-    `MUX_2(u_dc_mux_br_info_speculative_target,     32,  br_info_speculative_target_d,     nextLatches_br_info_speculative_target_i,     32'b0,   combined_flush);
-
-    `MUX_2(u_dc_mux_rr_gp,                          1,   rr_gp_d,                          nextLatches_rr_gp_i,                          1'b0,    combined_flush);
-
-    `MUX_2(u_dc_mux_ld_vaddy,                       32,  ld_vaddy_d,                       nextLatches_ld_vaddy_i,                       32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_seg0_limit_w_datasize,          32,  seg0_limit_w_datasize_d,          nextLatches_seg0_limit_w_datasize_i,          32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_seg0_limit_wo_datasize,         32,  seg0_limit_wo_datasize_d,         nextLatches_seg0_limit_wo_datasize_i,         32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_next_ld_vaddy,                  32,  next_ld_vaddy_d,                  nextLatches_next_ld_vaddy_i,                  32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_ld_laddy,                       32,  ld_laddy_d,                       nextLatches_ld_laddy_i,                       32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_ld_stack_access,                1,   ld_stack_access_d,                nextLatches_ld_stack_access_i,                1'b0,    combined_flush);
-
-    `MUX_2(u_dc_mux_st_vaddy,                       32,  st_vaddy_d,                       nextLatches_st_vaddy_i,                       32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_seg1_limit_w_datasize,          32,  seg1_limit_w_datasize_d,          nextLatches_seg1_limit_w_datasize_i,          32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_seg1_limit_wo_datasize,         32,  seg1_limit_wo_datasize_d,         nextLatches_seg1_limit_wo_datasize_i,         32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_next_st_vaddy,                  32,  next_st_vaddy_d,                  nextLatches_next_st_vaddy_i,                  32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_st_laddy,                       32,  st_laddy_d,                       nextLatches_st_laddy_i,                       32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_st_stack_access,                1,   st_stack_access_d,                nextLatches_st_stack_access_i,                1'b0,    combined_flush);
-
-    `MUX_2(u_dc_mux_NEIP,                           32,  NEIP_d,                           nextLatches_NEIP_i,                           32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_EIP,                            32,  EIP_d,                            nextLatches_EIP_i,                            32'b0,   combined_flush);
-    `MUX_2(u_dc_mux_EAX,                            32,  EAX_d,                            nextLatches_EAX_i,                            32'b0,   combined_flush);
-
-    `MUX_2(u_dc_mux_imm64,                          64,  imm64_d,                          nextLatches_imm64_i,                          64'b0,   combined_flush);
-
-    `MUX_2(u_dc_mux_sr_id,                          5,   sr_id_d,                          nextLatches_sr_id_i,                          5'b0,    combined_flush);
-    `MUX_2(u_dc_mux_sr_data,                        64,  sr_data_d,                        nextLatches_sr_data_i,                        64'b0,   combined_flush);
-    `MUX_2(u_dc_mux_dr_id,                          5,   dr_id_d,                          nextLatches_dr_id_i,                          5'b0,    combined_flush);
-    `MUX_2(u_dc_mux_dr_data,                        64,  dr_data_d,                        nextLatches_dr_data_i,                        64'b0,   combined_flush);
+    assign cs_LD_OP_d = nextLatches_cs_LD_OP_i;
+    assign cs_ST_OP_d = nextLatches_cs_ST_OP_i;
+    assign cs_dr_upper8_d = nextLatches_cs_dr_upper8_i;
+    assign cs_sr_upper8_d = nextLatches_cs_sr_upper8_i;
+    assign cs_datasize_d = nextLatches_cs_datasize_i;
+    assign mem_cs_ST_OP_d = nextLatches_mem_cs_ST_OP_i;
+    assign mem_cs_LD_OP_d = nextLatches_mem_cs_LD_OP_i;
+    assign exe_cs_ST_OP_d = nextLatches_exe_cs_ST_OP_i;
+    assign exe_cs_OP_TYPE_d = nextLatches_exe_cs_OP_TYPE_i;
+    assign exe_cs_alu_inputA_sel_d = nextLatches_exe_cs_alu_inputA_sel_i;
+    assign exe_cs_alu_inputB_sel_d = nextLatches_exe_cs_alu_inputB_sel_i;
+    assign exe_cs_branch_target_sel_d = nextLatches_exe_cs_branch_target_sel_i;
+    assign exe_cs_shift_by_one_d = nextLatches_exe_cs_shift_by_one_i;
+    assign exe_cs_br_ucond_d = nextLatches_exe_cs_br_ucond_i;
+    assign exe_cs_relative_branch_d = nextLatches_exe_cs_relative_branch_i;
+    assign exe_cs_special_br_d = nextLatches_exe_cs_special_br_i;
+    assign exe_cs_is_far_d = nextLatches_exe_cs_is_far_i;
+    assign exe_cs_is_call_d = nextLatches_exe_cs_is_call_i;
+    assign exe_cs_second_flag_needed_d = nextLatches_exe_cs_second_flag_needed_i;
+    assign exe_cs_rep_no_zf_update_d = nextLatches_exe_cs_rep_no_zf_update_i;
+    assign wb_cs_ST_OP_d = nextLatches_wb_cs_ST_OP_i;
+    assign wb_cs_WB_DR_d = nextLatches_wb_cs_WB_DR_i;
+    assign wb_cs_WB_SR_d = nextLatches_wb_cs_WB_SR_i;
+    assign wb_cs_WB_EAX_d = nextLatches_wb_cs_WB_EAX_i;
+    assign br_info_valid_d = nextLatches_br_info_valid_i;
+    assign br_info_br_eip_d = nextLatches_br_info_br_eip_i;
+    assign br_info_br_xcl_d = nextLatches_br_info_br_xcl_i;
+    assign br_info_br_pred_taken_d = nextLatches_br_info_br_pred_taken_i;
+    assign br_info_speculative_target_d = nextLatches_br_info_speculative_target_i;
+    assign rr_gp_d = nextLatches_rr_gp_i;
+    assign ld_vaddy_d = nextLatches_ld_vaddy_i;
+    assign seg0_limit_w_datasize_d = nextLatches_seg0_limit_w_datasize_i;
+    assign seg0_limit_wo_datasize_d = nextLatches_seg0_limit_wo_datasize_i;
+    assign next_ld_vaddy_d = nextLatches_next_ld_vaddy_i;
+    assign ld_laddy_d = nextLatches_ld_laddy_i;
+    assign ld_stack_access_d = nextLatches_ld_stack_access_i;
+    assign st_vaddy_d = nextLatches_st_vaddy_i;
+    assign seg1_limit_w_datasize_d = nextLatches_seg1_limit_w_datasize_i;
+    assign seg1_limit_wo_datasize_d = nextLatches_seg1_limit_wo_datasize_i;
+    assign next_st_vaddy_d = nextLatches_next_st_vaddy_i;
+    assign st_laddy_d = nextLatches_st_laddy_i;
+    assign st_stack_access_d = nextLatches_st_stack_access_i;
+    assign NEIP_d = nextLatches_NEIP_i;
+    assign EIP_d = nextLatches_EIP_i;
+    assign EAX_d = nextLatches_EAX_i;
+    assign imm64_d = nextLatches_imm64_i;
+    assign sr_id_d = nextLatches_sr_id_i;
+    assign sr_data_d = nextLatches_sr_data_i;
+    assign dr_id_d = nextLatches_dr_id_i;
+    assign dr_data_d = nextLatches_dr_data_i;
 
     // ============================================================
     // REG_RST_WE per field (we = effective_we)

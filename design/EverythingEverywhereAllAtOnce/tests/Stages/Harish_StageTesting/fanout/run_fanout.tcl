@@ -5,8 +5,8 @@ set link_library "*"
 #set __top_module__  "uut_aaot"
 #set __masterfile__  "./tbs/allAtOnce/master.txt"
 
-set __top_module__  "DCache_TOP"
-set __masterfile__  "./tbs/dcache/master.txt"
+set __top_module__  "Everywhere_TOP"
+set __masterfile__  "./tbs/everywhere/master.txt"
 
 define_design_lib WORK -path ./WORK
 

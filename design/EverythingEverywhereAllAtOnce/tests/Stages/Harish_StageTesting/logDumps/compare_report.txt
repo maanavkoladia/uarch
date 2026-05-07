@@ -346,8 +346,10 @@
 [OK ] #0339  EIP=0x0000062B  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0340  EIP=0x00000630  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0341  EIP=0x00000635  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0342  EIP=0x0000063A  cmpxchg       CF=0  PF=1  AF=0  ZF=1  SF=0  DF=0  OF=0
-[OK ] #0343  EIP=0x0000063D  add           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+[ERR] #0342  EIP=0x0000063A  cmpxchg     
+       *** REG   EDX: SIM=0x0F0F0F0F  RTL=0xAAAA5555
+[ERR] #0343  EIP=0x0000063D  add         
+       *** REG   EDX: SIM=0x0F0F0F0F  RTL=0xAAAA5555
 [OK ] #0344  EIP=0x0000063F  mov           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0345  EIP=0x00000644  mov           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0346  EIP=0x00000649  mov           CF=0  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
@@ -1021,5 +1023,5 @@
 [ONLY_SIM] #1014  EIP=0x00000B54  hlt
 
 ================================================================================
-  SUMMARY: 1014/1015 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
+  SUMMARY: 1012/1015 matched  |  2 mismatched  |  1 sim-only  |  0 rtl-only
 ================================================================================

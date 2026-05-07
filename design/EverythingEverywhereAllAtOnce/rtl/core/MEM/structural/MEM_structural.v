@@ -290,8 +290,8 @@ module MEM (
     `OR_2(or_bts_sel_lo, 1, bts_sel_lo, eq_zext8,  eq_imm32)
     `OR_2(or_bts_sel_hi, 1, bts_sel_hi, eq_zext16, eq_imm32)
 
-    buffer64$(bts_sel_lo_buffered, bts_sel_lo);
-    buffer64$(bts_sel_hi_buffered, bts_sel_hi);
+    bufferH64$ u_bts_sel_lo_buffer(bts_sel_lo_buffered, bts_sel_lo);
+    bufferH64$ u_bts_sel_hi_buffer(bts_sel_hi_buffered, bts_sel_hi);
 
     assign bts_sel = {bts_sel_hi_buffered, bts_sel_lo_buffered};
 
@@ -363,7 +363,7 @@ module MEM (
     wire we_v_mio;
     
     wire forward_valid_w_for_we_v_0__;
-    buffer16$(forward_valid_w_for_we_v_0__, forward_valid_w);
+    bufferH16$ u_forward_valid_w_for_we_v_0 (forward_valid_w_for_we_v_0__, forward_valid_w);
     `OR_2(or_wev_0,   1, we_v_0,   forward_valid_w_for_we_v_0__, vcap_0)
     `OR_2(or_wev_1,   1, we_v_1,   forward_valid_w_for_we_v_0__, vcap_1)
     `OR_2(or_wev_2,   1, we_v_2,   forward_valid_w_for_we_v_0__, vcap_2)
@@ -461,7 +461,7 @@ module MEM (
            bank_num_0)
 
     wire hit_buf_v_sel0_buffered;
-    buffer256$(hit_buf_v_sel0_buffered, hit_buf_v_sel0);
+    bufferH256$ u_hit_buf_v_sel0_buffer (hit_buf_v_sel0_buffered, hit_buf_v_sel0);
     `MUX_2(mux_line_in_0, CL_BITS, line_in_0,
            cacheline_sel0, hit_buf_sel0, hit_buf_v_sel0_buffered)
 
@@ -484,14 +484,14 @@ module MEM (
            bank_num_1)
     
     wire hit_buf_v_sel1_buffered;
-    buffer256$(hit_buf_v_sel1_buffered, hit_buf_v_sel1);
+    bufferH256$ u_hit_buf_v_sel1_buffer (hit_buf_v_sel1_buffered, hit_buf_v_sel1);
     `MUX_2(mux_line_in_1, CL_BITS, line_in_1,
            cacheline_sel1, hit_buf_sel1, hit_buf_v_sel1_buffered)
 
     // ---- MIO path ----
     wire [CL_BITS-1:0] line_in_mio;
     wire hit_buf_mio_v_buffered;
-    bufferH1024$(hit_buf_mio_v_buffered, line_in_mio);
+    bufferH1024$ u_hit_buf_mio_v_buffer(hit_buf_mio_v_buffered, hit_buf_mio_v);
     `MUX_2(mux_line_in_mio, CL_BITS, line_in_mio,
            line_MIO, hit_buf_mio_packed, hit_buf_mio_v_buffered)
 

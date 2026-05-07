@@ -1,8 +1,14 @@
-module tb_fanout
+module tb_fanout;
 
- DCache_TOP uut (
+ Everywhere_TOP uut(
     .clk(clk_i),
-    .rst(rst_i),                                              // active-low
+    .rst(rst_i),
+    .icache_icache_en_i(icache_icache_en_i_i),
+    .icache_p_addr_i(icache_p_addr_i_i),                // p_address_t
+    .icache_v_addr_i(icache_v_addr_i_i),                // v_address_t = address_t
+    .icache_num_valid_IDM_slots_i(icache_num_valid_IDM_slots_i_i),   // [$clog2(NUM_IDM_SLOTS):0]
+    .icache_hit_o(icache_hit_o_i),
+    .icache_instruction_line_o(icache_instruction_line_o_i),    // 16-byte cache line, LSB-first
     .core_ld_addr_0_V_i(core_ld_addr_0_V_i_i),
     .core_ld_addr_0_i(core_ld_addr_0_i_i),
     .core_ld_addr_1_V_i(core_ld_addr_1_V_i_i),
@@ -37,35 +43,6 @@ module tb_fanout
     .core_memStage_CLR_REQ_2_i(core_memStage_CLR_REQ_2_i_i),
     .core_memStage_CLR_REQ_3_i(core_memStage_CLR_REQ_3_i_i),
     .core_memStage_CLR_REQ_MIO_i(core_memStage_CLR_REQ_MIO_i_i),
-    .dte_mem_valid_0_i(dte_mem_valid_0_i_i),
-    .dte_mem_valid_1_i(dte_mem_valid_1_i_i),
-    .dte_mem_valid_2_i(dte_mem_valid_2_i_i),
-    .dte_mem_valid_3_i(dte_mem_valid_3_i_i),
-    .dte_permissionToDriveDataBus_evictionBuf_0_i(dte_permissionToDriveDataBus_evictionBuf_0_i_i),
-    .dte_permissionToDriveDataBus_evictionBuf_1_i(dte_permissionToDriveDataBus_evictionBuf_1_i_i),
-    .dte_permissionToDriveDataBus_evictionBuf_2_i(dte_permissionToDriveDataBus_evictionBuf_2_i_i),
-    .dte_permissionToDriveDataBus_evictionBuf_3_i(dte_permissionToDriveDataBus_evictionBuf_3_i_i),
-    .dte_permissionToDriveAddrBus_Ld_0_i(dte_permissionToDriveAddrBus_Ld_0_i_i),
-    .dte_permissionToDriveAddrBus_Ld_1_i(dte_permissionToDriveAddrBus_Ld_1_i_i),
-    .dte_permissionToDriveAddrBus_Ld_2_i(dte_permissionToDriveAddrBus_Ld_2_i_i),
-    .dte_permissionToDriveAddrBus_Ld_3_i(dte_permissionToDriveAddrBus_Ld_3_i_i),
-    .dte_permissionToDriveAddrBus_eb_0_i(dte_permissionToDriveAddrBus_eb_0_i_i),
-    .dte_permissionToDriveAddrBus_eb_1_i(dte_permissionToDriveAddrBus_eb_1_i_i),
-    .dte_permissionToDriveAddrBus_eb_2_i(dte_permissionToDriveAddrBus_eb_2_i_i),
-    .dte_permissionToDriveAddrBus_eb_3_i(dte_permissionToDriveAddrBus_eb_3_i_i),
-    .dte_evictionBuf_clr_0_i(dte_evictionBuf_clr_0_i_i),
-    .dte_evictionBuf_clr_1_i(dte_evictionBuf_clr_1_i_i),
-    .dte_evictionBuf_clr_2_i(dte_evictionBuf_clr_2_i_i),
-    .dte_evictionBuf_clr_3_i(dte_evictionBuf_clr_3_i_i),
-    .dte_evictionBuf_setCommiting_0_i(dte_evictionBuf_setCommiting_0_i_i),
-    .dte_evictionBuf_setCommiting_1_i(dte_evictionBuf_setCommiting_1_i_i),
-    .dte_evictionBuf_setCommiting_2_i(dte_evictionBuf_setCommiting_2_i_i),
-    .dte_evictionBuf_setCommiting_3_i(dte_evictionBuf_setCommiting_3_i_i),
-    .dte_reqServed_mio_i(dte_reqServed_mio_i_i),
-    .dte_permissionToDriveAddrBus_mio_i(dte_permissionToDriveAddrBus_mio_i_i),
-    .dte_permission2DriveDataBus_mio_i(dte_permission2DriveDataBus_mio_i_i),
-    .dataBus(dataBus_i),
-    .address_bus(address_bus_i),
     .out2Core_reqServed_0_o(out2Core_reqServed_0_o_i),
     .out2Core_reqServed_1_o(out2Core_reqServed_1_o_i),
     .out2Core_hit_0_o(out2Core_hit_0_o_i),
@@ -84,15 +61,7 @@ module tb_fanout
     .out2Core_hit_MIO_o(out2Core_hit_MIO_o_i),
     .out2Core_reqServed_MIO_o(out2Core_reqServed_MIO_o_i),
     .out2Core_line_MIO_o(out2Core_line_MIO_o_i),
-    .out2Sch_req_0_o(out2Sch_req_0_o_i),
-    .out2Sch_req_1_o(out2Sch_req_1_o_i),
-    .out2Sch_req_2_o(out2Sch_req_2_o_i),
-    .out2Sch_req_3_o(out2Sch_req_3_o_i),
-    .out2Sch_evictionBufAddr_0_o(out2Sch_evictionBufAddr_0_o_i),
-    .out2Sch_evictionBufAddr_1_o(out2Sch_evictionBufAddr_1_o_i),
-    .out2Sch_evictionBufAddr_2_o(out2Sch_evictionBufAddr_2_o_i),
-    .out2Sch_evictionBufAddr_3_o(out2Sch_evictionBufAddr_3_o_i),
-    .out2Sch_req_mio_o(out2Sch_req_mio_o_i)
+    .dma_intOut_o(dma_intOut_o_i)
 );
 
 endmodule
