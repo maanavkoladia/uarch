@@ -171,6 +171,7 @@
 // Full snapshot of GPRs and segment registers.
 // Call after posedge+#1 so flip-flop writes from that posedge are visible.
 task automatic print_regfile_dump();
+    begin
     $fdisplay(`LOG_FD, "[REGFILE DUMP]");
 `ifdef REGFILE_PATH
 `ifdef REGFILE_OUTPUT_STRUCTURAL
@@ -236,13 +237,15 @@ task automatic print_regfile_dump();
 `endif
 
 `endif
+    end
 endtask
 
 
 // --- REGFILE DUMP TO SEPARATE FILE ---
 // Writes a full GPR + segment snapshot to regdump.log.
 // Pass the EIP of the committing instruction as the label.
-task automatic dump_regs(input logic [31:0] eip);
+task automatic dump_regs(input reg [31:0] eip);
+    begin
     $fdisplay(`REGDUMP_FD, "[REGFILE DUMP] EIP=0x%08h", eip);
 `ifdef REGFILE_PATH
 `ifdef REGFILE_OUTPUT_STRUCTURAL
@@ -307,6 +310,7 @@ task automatic dump_regs(input logic [31:0] eip);
 `endif
 
 `endif
+    end
 endtask
 
 

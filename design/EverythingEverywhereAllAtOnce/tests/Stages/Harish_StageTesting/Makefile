@@ -72,7 +72,7 @@ STARTUP_FILES = \
 TB_FILES =
 
 ifeq ($(STRUCTRURAL), true)
-	   TB_FILES += $(STARTUP_FILES) debugUtils/debug_pkg.sv tb_stages_structural.v
+	   TB_FILES += $(STARTUP_FILES) tb_stages_structural.v
 else
 	   TB_FILES += $(STARTUP_FILES) debugUtils/debug_pkg.sv tb_stages.sv
 endif

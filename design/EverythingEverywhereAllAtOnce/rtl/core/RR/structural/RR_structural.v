@@ -600,7 +600,7 @@ module RR (
     // ties them to (typically 0 in synthesis, X in simulation if `reg`).
     // Indexed by reg_ids_e: CS=0, DS=1, SS=2, ES=3, FS=4, GS=5, EXPS=6.
     // =========================================================================
-    reg [31:0] SEGMENT_LIMITS [7];
+    reg [31:0] SEGMENT_LIMITS [0:6];
     
     wire [31:0] SEGMENT_LIMIT_CS;
     wire [31:0] SEGMENT_LIMIT_DS;

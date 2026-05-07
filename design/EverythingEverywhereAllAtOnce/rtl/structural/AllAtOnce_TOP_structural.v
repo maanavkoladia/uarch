@@ -53,11 +53,11 @@ module AllAtOnce_TOP (
     wire        core2dcache_memStage_CLR_REQ_MIO;
 
     // ---- core -> dcache : 128-bit packed stq data buses ----
-    wire [127:0] core_stq_data_flat [4];
+    wire [127:0] core_stq_data_flat [0:3];
     wire [127:0] core_stq_info_mio_data_flat;
 
     // ---- dcache -> core : 128-bit packed cacheline / MIO line ----
-    wire [127:0] dcache_out2Core_cacheline_w [4];
+    wire [127:0] dcache_out2Core_cacheline_w [0:3];
     wire [127:0] dcache_out2Core_line_MIO_w;
 
     // ---- icache -> core : 128-bit packed instruction line ----
@@ -66,8 +66,8 @@ module AllAtOnce_TOP (
     // ---- dcache -> core : flat scalar/array outputs ----
     wire        dcache_out2Core_reqServed_0_w;
     wire        dcache_out2Core_reqServed_1_w;
-    wire        dcache_out2Core_hit_w           [4];
-    wire        dcache_out2Core_writeSuccess_w  [4];
+    wire        dcache_out2Core_hit_w           [0:3];
+    wire        dcache_out2Core_writeSuccess_w  [0:3];
     wire        dcache_out2Core_writeSuccess_MIO_w;
     wire        dcache_out2Core_hit_MIO_w;
     wire        dcache_out2Core_reqServed_MIO_w;

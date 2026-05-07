@@ -1,85 +1,51 @@
 // Structural Verilog 2005 port of IDM_Ctrl_Logic.
-// Reference SV: rtl/core/Fetch/IDM_Ctrl_Logic.sv
+// All ports are packed buses (no unpacked-array ports).
 //
-// Builds per-slot IDM write requests. Behavior matches the SV after the
-// invalidate-priority change: Block A unconditionally drives ld_meta_data=1
-// and forces valid=0 / br_valid=0 when invalidate[i]=1; Block B (when
-// ~slot_valid[i]) may then overwrite valid/br_valid/data through the usual
-// sel/br_cond path. Case analysis collapses to:
-//
-//   ld_meta_data[i] = invalidate[i] | ~slot_valid[i]
-//   wr_en[i]        = ~slot_valid[i]
-//                   & (i == slot_num)
-//                   & (icache_hit | exp_mode | int_mode)
-//                   & ~no_writes
-//   valid[i]        = wr_en[i]
-//   ld_data[i]      = wr_en[i]
-//   data[i]         = wr_en[i]      ? data_in        : 0
-//   br_active[i]    = wr_en[i] & btb_hit & pred_taken & ~spc_sel_flush_reg
-//   br_valid[i]     = br_active[i]
-//   br_eip[i]       = br_active[i]  ? btb_br_eip     : 0
-//   br_target[i]    = br_active[i]  ? btb_br_target  : 0
-//   br_xcl[i]       = br_active[i] & btb_XCL
-//   push_success    = OR over slots of wr_en[i]
-//
-// Critical: wr_en[i] does NOT depend on invalidate[i]. invalidate is a
-// late-arriving signal (it falls out of the invalidate logic AND-OR
-// network), so removing it from the wr_en cone shaves the worst path on
-// the wide data MUX selector and the br_eip/br_target MUX selectors.
-// invalidate[i] now only feeds ld_meta_data[i] (a single NAND_2).
-//
-// Gate-level optimizations:
-//   - wr_en_n[i] is one NAND_4. The active-low form is consumed twice
-//     without an extra inverter:
-//       (a) push_success = NAND_4(wr_en_n[0..3])      -- NAND of NANDs = OR
-//       (b) br_active[i] = NOR_2(wr_en_n[i], br_cond_n) -- NOR of actv-low = AND
-//     wr_en[i] (active-high) is only needed by the data-MUX selector and
-//     the scalar valid/ld_data outputs, so we pay just one INV per slot.
-//   - br_cond_n = NAND_3(btb_hit, pred_taken, ~spc_sel_flush_reg) -- a
-//     single stage, no INV before the NOR_2 above.
-//   - ld_meta_data[i] = NAND_2(~invalidate[i], slot_valid[i]) -- the only
-//     consumer of invalidate[i] in this module.
+// Multi-element layouts:
+//   idm_slot_valid       : bit i        = slot i valid                       (4 bits)
+//   invalidate           : bit i        = invalidate request for slot i      (4 bits)
+//   data_in              : [i*8 +: 8]   = byte i of incoming cacheline       (128 bits)
+//   idm_req_ld_meta_data : bit i        = request bit for slot i             (4 bits)
+//   idm_req_ld_data      : bit i        = request bit for slot i             (4 bits)
+//   idm_req_valid        : bit i        = valid bit for slot i               (4 bits)
+//   idm_req_br_valid     : bit i        = br_valid bit for slot i            (4 bits)
+//   idm_req_br_eip       : [i*32 +: 32] = br_eip for slot i                  (128 bits)
+//   idm_req_br_target    : [i*32 +: 32] = br_target for slot i               (128 bits)
+//   idm_req_br_xcl       : bit i        = br_xcl for slot i                  (4 bits)
+//   idm_req_data         : [i*128 +: 128] = 16-byte slot data; byte k of slot
+//                                           i at [i*128 + k*8 +: 8]          (512 bits)
 
 module IDM_Ctrl_Logic (
     input  wire        exp_mode,
     input  wire        int_mode,
     input  wire [31:0] spc,
 
-    // idm_outputs_t -- only per-slot valid bits used here
-    input  wire        idm_slot_valid    [0:3],
+    input  wire [3:0]   idm_slot_valid,
 
-    // idm_invalidate_logic_output_t fields
-    input  wire        invalidate        [0:3],
+    input  wire [3:0]   invalidate,
     input  wire        no_writes,
 
-    // btb_output_t fields (br_ucond unused)
     input  wire        btb_hit,
     input  wire [31:0] btb_br_target,
     input  wire [31:0] btb_br_eip,
     input  wire        btb_XCL,
 
-    // predictor_output_t
     input  wire        pred_taken,
 
-    // icache_2_core_t -- only hit used (cacheline data arrives via data_in,
-    // selected by the parent between icache and the EXP ROM)
     input  wire        icache_hit,
 
-    // spc_sel_logic_output_t -- only flush_reg consumed
     input  wire        spc_sel_flush_reg,
 
-    // Cacheline data going into the IDM
-    input  wire [7:0]  data_in           [0:15],
+    input  wire [127:0] data_in,
 
-    // idm_ctrl_logic_output_t -- flat per-slot fields
-    output wire        idm_req_ld_meta_data [0:3],
-    output wire        idm_req_ld_data      [0:3],
-    output wire        idm_req_valid        [0:3],
-    output wire        idm_req_br_valid     [0:3],
-    output wire [31:0] idm_req_br_eip       [0:3],
-    output wire [31:0] idm_req_br_target    [0:3],
-    output wire        idm_req_br_xcl       [0:3],
-    output wire [7:0]  idm_req_data         [0:3] [0:15],
+    output wire [3:0]   idm_req_ld_meta_data,
+    output wire [3:0]   idm_req_ld_data,
+    output wire [3:0]   idm_req_valid,
+    output wire [3:0]   idm_req_br_valid,
+    output wire [127:0] idm_req_br_eip,
+    output wire [127:0] idm_req_br_target,
+    output wire [3:0]   idm_req_br_xcl,
+    output wire [511:0] idm_req_data,
 
     output wire        push_success
 );
@@ -99,11 +65,6 @@ module IDM_Ctrl_Logic (
 
     // ----------------------------------------------------------------
     // Shared combinational signals
-    //   activation  = icache_hit | exp_mode | int_mode
-    //   no_writes_n = ~no_writes
-    //   flush_reg_n = ~spc_sel_flush_reg
-    //   br_cond_n   = ~(btb_hit & pred_taken & flush_reg_n)
-    //               -- single NAND_3, kept active-low for the per-slot NOR_2
     // ----------------------------------------------------------------
     wire activation;
     wire no_writes_n;
@@ -116,13 +77,13 @@ module IDM_Ctrl_Logic (
     `NAND_3(u_brcn, 1, br_cond_n,         btb_hit, pred_taken, flush_reg_n)
 
     // ----------------------------------------------------------------
-    // Per-slot core signals
+    // Per-slot core signals (internal unpacked-style packed buses)
     // ----------------------------------------------------------------
-    wire invalidate_n [0:3];
-    wire slot_valid_n [0:3];
-    wire wr_en_n      [0:3];   // active-low write enable (NAND_4 output)
-    wire wr_en        [0:3];   // active-high write enable (after one INV)
-    wire br_active    [0:3];
+    wire [3:0] invalidate_n;
+    wire [3:0] slot_valid_n;
+    wire [3:0] wr_en_n;       // active-low write enable (NAND_4 output)
+    wire [3:0] wr_en;          // active-high write enable (after one INV)
+    wire [3:0] br_active;
 
     genvar i;
     generate
@@ -149,10 +110,6 @@ module IDM_Ctrl_Logic (
 
     // ----------------------------------------------------------------
     // Per-slot scalar outputs
-    //   valid[i]    = wr_en[i]
-    //   ld_data[i]  = wr_en[i]
-    //   br_valid[i] = br_active[i]
-    //   br_xcl[i]   = br_active[i] & btb_XCL
     // ----------------------------------------------------------------
     generate
         for (i = 0; i < 4; i = i + 1) begin : g_slot_scalar_out
@@ -169,40 +126,29 @@ module IDM_Ctrl_Logic (
     //   br_eip[i]    = br_active[i] ? btb_br_eip    : 0
     //   br_target[i] = br_active[i] ? btb_br_target : 0
     //   data[i]      = wr_en[i]     ? data_in       : 0
-    //
-    // The cacheline data is an unpacked 16-byte array. Pack it into a
-    // 128-bit wire for one wide MUX_2 per slot, then unpack back into
-    // the unpacked output array.
     // ----------------------------------------------------------------
-    wire [127:0] data_in_packed;
-    generate
-        for (i = 0; i < 16; i = i + 1) begin : g_pack_data_in
-            assign data_in_packed[i*8 +: 8] = data_in[i];
-        end
-    endgenerate
-
     generate
         for (i = 0; i < 4; i = i + 1) begin : g_slot_wide_out
-            wire [127:0] slot_data_packed;
+            wire [31:0]  slot_br_eip;
+            wire [31:0]  slot_br_target;
+            wire [127:0] slot_data;
 
-            `MUX_2(u_be, 32,  idm_req_br_eip[i],
+            `MUX_2(u_be, 32,  slot_br_eip,
                    32'h0,  btb_br_eip,    br_active[i])
-            `MUX_2(u_bt, 32,  idm_req_br_target[i],
+            `MUX_2(u_bt, 32,  slot_br_target,
                    32'h0,  btb_br_target, br_active[i])
-            `MUX_2(u_dm, 128, slot_data_packed,
-                   128'h0, data_in_packed, wr_en[i])
+            `MUX_2(u_dm, 128, slot_data,
+                   128'h0, data_in,       wr_en[i])
 
-            genvar k;
-            for (k = 0; k < 16; k = k + 1) begin : g_unpack_data
-                assign idm_req_data[i][k] = slot_data_packed[k*8 +: 8];
-            end
+            assign idm_req_br_eip   [i*32  +: 32 ] = slot_br_eip;
+            assign idm_req_br_target[i*32  +: 32 ] = slot_br_target;
+            assign idm_req_data     [i*128 +: 128] = slot_data;
         end
     endgenerate
 
     // ----------------------------------------------------------------
     // push_success = OR over slots of wr_en[i]
     //              = NAND_4 of wr_en_n[i]   (NAND-of-NANDs = OR)
-    // One NAND level from the per-slot NAND_4s; no INVs in this cone.
     // ----------------------------------------------------------------
     `NAND_4(u_psucc, 1, push_success,
             wr_en_n[0], wr_en_n[1], wr_en_n[2], wr_en_n[3])
