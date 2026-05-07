@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/test0/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/AluTest/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -52,6 +52,7 @@ SIM_FLAGDUMP_FILE = $(LOG_DIR)/sim_flagdump.log
 RTL_REGDUMP_FILE   = $(LOG_DIR)/regdump.log
 RTL_FLAGDUMP_FILE  = $(LOG_DIR)/flagdump.log
 RTL_STOREDUMP_FILE = $(LOG_DIR)/storedump.log
+MERGED_DUMP_FILE   = $(LOG_DIR)/merged_dump.log
 DUMP_REPORT_FILE   = $(LOG_DIR)/compare_report.txt
 
 include $(PROJECT_ROOT)/Make.vars
@@ -99,7 +100,7 @@ ifeq ($(STRUCTRURAL), true)
 		+define+REGFILE_OUTPUT_STRUCTURAL
 endif
 
-.PHONY: all run clean see gen full half genSoft runSoft
+.PHONY: all run clean see gen full half genSoft runSoft merge
 
 all: $(TARGET) 
 	
@@ -115,6 +116,13 @@ run: all
 
 sim-run: makeLogDir
 	$(MAKE) -C $(SIM_DIR) run
+
+merge: makeLogDir
+	python3 $(TEST_DIR)/scripts/merge_dumps.py \
+	    --reg   $(RTL_REGDUMP_FILE) \
+	    --flags $(RTL_FLAGDUMP_FILE) \
+	    --store $(RTL_STOREDUMP_FILE) \
+	    --out   $(MERGED_DUMP_FILE)
 
 compare: makeLogDir
 	$(MAKE) -C $(SIM_DIR) compare 2>&1 | tee $(LOG_DIR)/make_compare.log
