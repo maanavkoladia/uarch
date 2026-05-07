@@ -58,10 +58,18 @@ module EXE (
 
     input  wire [3:0]   latches_data_size_vec,
     input  wire [3:0]   latches_sr_data_size_vec,
+    // 3-way replicated shift selects (one per alu_input_sel cluster)
     input  wire         latches_shift_sr_up,
+    input  wire         latches_shift_sr_up_b,
+    input  wire         latches_shift_sr_up_c,
     input  wire         latches_shift_sr_down,
+    input  wire         latches_shift_sr_down_b,
+    input  wire         latches_shift_sr_down_c,
     input  wire         latches_ST_XCL,
+    // 3-way replicated ST_PADDR_0 (a -> bit_vec, b -> res_buf, c -> outputs)
     input  wire [14:0]  latches_ST_PADDR_0,
+    input  wire [14:0]  latches_ST_PADDR_0_b,
+    input  wire [14:0]  latches_ST_PADDR_0_c,
     input  wire [14:0]  latches_ST_PADDR_1,
     input  wire         latches_MIO,
 
@@ -78,11 +86,20 @@ module EXE (
     input  wire [31:0]  latches_EAX,
     input  wire [63:0]  latches_imm64,
     input  wire [255:0] latches_ld_buf,         // EXE_BUFFER_SIZE = 32 bytes
+    // 3-way replicated sr_id (a -> sr_data MUX, b -> xchg, c -> reg_wb)
     input  wire [4:0]   latches_sr_id,
+    input  wire [4:0]   latches_sr_id_b,
+    input  wire [4:0]   latches_sr_id_c,
     input  wire [63:0]  latches_sr_data,
+    // 3-way replicated dr_id (a -> dr_data MUX, b -> xchg, c -> reg_wb)
     input  wire [4:0]   latches_dr_id,
+    input  wire [4:0]   latches_dr_id_b,
+    input  wire [4:0]   latches_dr_id_c,
     input  wire [63:0]  latches_dr_data,
+    // 3-way replicated ld_addy (a/b/c -> alu_input_sel_crit/arith/ctrl)
     input  wire [14:0]  latches_ld_addy,
+    input  wire [14:0]  latches_ld_addy_b,
+    input  wire [14:0]  latches_ld_addy_c,
 
     // ====================================================================
     // wb_outputs_t (wb_outs_i) -- only wb_stall is consumed
@@ -388,7 +405,7 @@ module EXE (
     );
 
     alu_input_sel u_alu_input_sel_arith (
-        .ld_addr_0      (latches_ld_addy),
+        .ld_addr_0      (latches_ld_addy_b),
         .res_buf_in     (latches_ld_buf),
         .imm64          (latches_imm64),
         .sr_data        (sr_data),
@@ -399,8 +416,8 @@ module EXE (
         .flags          (flags_reg),
         .alu_inputA_sel (latches_cs_alu_inputA_sel_b),
         .alu_inputB_sel (latches_cs_alu_inputB_sel_b),
-        .shift_sr_down  (latches_shift_sr_down),
-        .shift_sr_up    (latches_shift_sr_up),
+        .shift_sr_down  (latches_shift_sr_down_b),
+        .shift_sr_up    (latches_shift_sr_up_b),
         .br_input_sel   (latches_cs_branch_target_sel_b),
         .exp_ld_buf_o   (exp_ld_buf_arith_unused),
         .srA_64         (srA_arith),
@@ -409,7 +426,7 @@ module EXE (
     );
 
     alu_input_sel u_alu_input_sel_ctrl (
-        .ld_addr_0      (latches_ld_addy),
+        .ld_addr_0      (latches_ld_addy_c),
         .res_buf_in     (latches_ld_buf),
         .imm64          (latches_imm64),
         .sr_data        (sr_data),
@@ -420,8 +437,8 @@ module EXE (
         .flags          (flags_reg),
         .alu_inputA_sel (latches_cs_alu_inputA_sel_c),
         .alu_inputB_sel (latches_cs_alu_inputB_sel_c),
-        .shift_sr_down  (latches_shift_sr_down),
-        .shift_sr_up    (latches_shift_sr_up),
+        .shift_sr_down  (latches_shift_sr_down_c),
+        .shift_sr_up    (latches_shift_sr_up_c),
         .br_input_sel   (latches_cs_branch_target_sel_c),
         .exp_ld_buf_o   (), // unused: exp_call_op uses ctrl srA but exp_ld_buf from crit
         .srA_64         (srA_ctrl),
@@ -504,12 +521,14 @@ module EXE (
         .res_buf_o          (res_buf_selected)
     );
 
+    // res_buf_logic uses ST_PADDR_0 replica _b (dedicated)
     res_buf_logic u_res_buf_logic (
         .res_info_i (res_buf_selected),
-        .st_addr_0  (latches_ST_PADDR_0),
+        .st_addr_0  (latches_ST_PADDR_0_b),
         .res_buf    (wb_latches_next_res_buf)
     );
 
+    // bit_vec_logic uses ST_PADDR_0 replica _a (default port)
     wire [15:0] bit_vec_0_next;
     wire [15:0] bit_vec_1_next;
     bit_vec_logic u_bit_vec_logic (
@@ -592,14 +611,15 @@ module EXE (
     wire [63:0] next_EAX;
     assign next_EAX = latches_wb_cs_WB_EAX ? cmpxchg_EAX_o : {32'd0, eax_data};
 
+    // reg_wb uses sr_id / dr_id replica _c (dedicated)
     reg_wb_logic u_reg_wb (
         .op_type      (op_type_datasel),
         .next_dr_data (dr_next),
-        .dr_id        (latches_dr_id),
+        .dr_id        (latches_dr_id_c),
         .WB_DR        (latches_wb_cs_WB_DR),
         .next_EAX     (next_EAX),
         .next_sr_data (sr_next),
-        .sr_id        (latches_sr_id),
+        .sr_id        (latches_sr_id_c),
         .WB_EAX       (latches_wb_cs_WB_EAX),
         .WB_SR        (latches_wb_cs_WB_SR),
         .valid        (latches_valid),
@@ -858,7 +878,7 @@ module EXE (
     assign wb_latches_next_cs_WB_SR     = latches_wb_cs_WB_SR;
     assign wb_latches_next_cs_WB_EAX    = latches_wb_cs_WB_EAX;
     assign wb_latches_next_ST_XCL       = latches_ST_XCL;
-    assign wb_latches_next_ST_PADDR_0   = latches_ST_PADDR_0;
+    assign wb_latches_next_ST_PADDR_0   = latches_ST_PADDR_0_c;
     assign wb_latches_next_ST_BIT_VEC_0 = bit_vec_0_next;
     assign wb_latches_next_ST_PADDR_1   = latches_ST_PADDR_1;
     assign wb_latches_next_ST_BIT_VEC_1 = bit_vec_1_next;
@@ -895,7 +915,7 @@ module EXE (
     assign outs_clr_ZF_sb           = clr_ZF_sb && latches_valid;
     assign outs_ST_OP               = latches_cs_ST_OP;
     assign outs_ST_XCL              = latches_ST_XCL;
-    assign outs_ST_PADDR_0          = latches_ST_PADDR_0;
+    assign outs_ST_PADDR_0          = latches_ST_PADDR_0_c;
     assign outs_ST_PADDR_1          = latches_ST_PADDR_1;
     assign outs_wb_stage_latch_we   = wb_stage_we_valid_unit_o;
 
@@ -1041,11 +1061,12 @@ module EXE (
     );
 
     // ---- CRIT cluster: xchg uses dedicated data_size_mem_xchg (~149 fanout) ----
+    // xchg_op uses sr_id / dr_id replica _b (dedicated)
     xchg_op u_xchg_op(
         .srA(srA),
         .srB(srB),
-        .srA_id(latches_dr_id),
-        .srB_id(latches_sr_id),
+        .srA_id(latches_dr_id_b),
+        .srB_id(latches_sr_id_b),
         .st_op(latches_cs_ST_OP),
         .data_size(data_size_mem_xchg),
         .sr_data_size_vec(latches_sr_data_size_vec),

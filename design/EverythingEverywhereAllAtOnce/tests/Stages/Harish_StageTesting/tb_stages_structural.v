@@ -105,6 +105,8 @@ module tb_stages ();
 
         if (needToDumpRegFile) dump_regs(saved_reg_dump_EIP);
         if (needToDumpFlags) dump_flags(saved_flag_dump_EIP, savedFlags);
+        if (exeforwards && `EXE_UNIT_PATH.wb_latches_next_cs_ST_OP)
+            dump_store(`EXE_UNIT_PATH.wb_latches_next_EIP);
         // if(program_halted && !haltcommited) begin
         //     dump_regs(`DECODE_UNIT_PATH.EIP);
         //     dump_flags(`DECODE_UNIT_PATH.EIP, savedFlags);

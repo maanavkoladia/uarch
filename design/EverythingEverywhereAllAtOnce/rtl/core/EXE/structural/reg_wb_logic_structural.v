@@ -33,9 +33,17 @@ module reg_wb_logic (
     bufferH16$ u_buf_is_exp_call (.out(is_exp_call), .in(is_exp_call_raw));
 
     // dr0_id_o = is_exp_call ? CS : dr_id
+    // mux2$ output drives 48-54 cells -- buffer with bufferH64$ per bit.
     wire [`EXE_STRUCT_REG_ID_W-1:0] cs_id;
+    wire [`EXE_STRUCT_REG_ID_W-1:0] dr0_id_raw;
     assign cs_id = `EXE_REG_CS;
-    `MUX_2(u_mux_dr0_id, `EXE_STRUCT_REG_ID_W, dr0_id_o, dr_id, cs_id, is_exp_call)
+    `MUX_2(u_mux_dr0_id, `EXE_STRUCT_REG_ID_W, dr0_id_raw, dr_id, cs_id, is_exp_call)
+    genvar gi_dr0;
+    generate
+        for (gi_dr0 = 0; gi_dr0 < `EXE_STRUCT_REG_ID_W; gi_dr0 = gi_dr0 + 1) begin : g_dr0_buf
+            bufferH64$ u_buf_dr0 (.out(dr0_id_o[gi_dr0]), .in(dr0_id_raw[gi_dr0]));
+        end
+    endgenerate
 
     // nstall = ~stall_flop
     wire nstall;
@@ -45,12 +53,28 @@ module reg_wb_logic (
     `AND_3(u_and_dr0_we, 1, dr0_we_o, WB_DR, nstall, valid)
 
     // dr1_data_o = WB_EAX ? next_EAX : next_sr_data
-    `MUX_2(u_mux_dr1_data, 64, dr1_data_o, next_sr_data, next_EAX, WB_EAX)
+    // mux2$ output (64-bit) drives 26 cells/bit -- bufferH64$ per bit.
+    wire [63:0] dr1_data_raw;
+    `MUX_2(u_mux_dr1_data, 64, dr1_data_raw, next_sr_data, next_EAX, WB_EAX)
+    genvar gi_dr1d;
+    generate
+        for (gi_dr1d = 0; gi_dr1d < 64; gi_dr1d = gi_dr1d + 1) begin : g_dr1d_buf
+            bufferH64$ u_buf_dr1d (.out(dr1_data_o[gi_dr1d]), .in(dr1_data_raw[gi_dr1d]));
+        end
+    endgenerate
 
     // dr1_id_o = WB_EAX ? EAX : sr_id
+    // mux2$ output drives 48-54 cells -- bufferH64$ per bit.
     wire [`EXE_STRUCT_REG_ID_W-1:0] eax_id;
+    wire [`EXE_STRUCT_REG_ID_W-1:0] dr1_id_raw;
     assign eax_id = `EXE_REG_EAX;
-    `MUX_2(u_mux_dr1_id, `EXE_STRUCT_REG_ID_W, dr1_id_o, sr_id, eax_id, WB_EAX)
+    `MUX_2(u_mux_dr1_id, `EXE_STRUCT_REG_ID_W, dr1_id_raw, sr_id, eax_id, WB_EAX)
+    genvar gi_dr1i;
+    generate
+        for (gi_dr1i = 0; gi_dr1i < `EXE_STRUCT_REG_ID_W; gi_dr1i = gi_dr1i + 1) begin : g_dr1i_buf
+            bufferH64$ u_buf_dr1i (.out(dr1_id_o[gi_dr1i]), .in(dr1_id_raw[gi_dr1i]));
+        end
+    endgenerate
 
     // wb_sr_or_eax = WB_SR | WB_EAX  (one-hot from CS, never both, but OR is correct)
     wire wb_sr_or_eax;

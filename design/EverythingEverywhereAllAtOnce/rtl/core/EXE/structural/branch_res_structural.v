@@ -68,10 +68,15 @@ module branch_res (
     `AND_2(u_and_cond_br, 1, cond_br_res, nZF, second_flag_result)
 
     // taken = (br_ucond_i | cond_br_res) & valid
+    // taken fans out to ~70 cells (used in many flush/select paths) -- buffer
+    // with bufferH256$ (0.54 ns).  Single consumer paths means replication
+    // doesn't help; smallest single-cell that fits 70 is bufferH256$.
     wire br_ucond_or_cond;
     `OR_2(u_or_ucond_cond, 1, br_ucond_or_cond, br_ucond_i, cond_br_res)
     wire taken;
-    `AND_2(u_and_taken, 1, taken, br_ucond_or_cond, valid)
+    wire taken_raw;
+    `AND_2(u_and_taken, 1, taken_raw, br_ucond_or_cond, valid)
+    bufferH256$ u_buf_taken (.out(taken), .in(taken_raw));
 
     // farFlush = is_far_i & valid;  callFlush = is_call_i & valid
     wire farFlush, callFlush;
@@ -122,7 +127,17 @@ module branch_res (
     `AND_3(u_and_outs_flush, 1, outs_flush_o, miss_prediction, n_flush_mask, valid)
 
     // outs.br_target = taken ? real_br_target : NEIP_i
-    `MUX_2(u_mux_br_target, `ADDRESS_BITS, outs_br_target_o, NEIP_i, real_br_target, taken)
+    // mux2$ output (32-bit) drives 66 cells/bit -- bufferH256$ per bit.
+    wire [`ADDRESS_BITS-1:0] outs_br_target_raw;
+    `MUX_2(u_mux_br_target, `ADDRESS_BITS, outs_br_target_raw, NEIP_i, real_br_target, taken)
+    genvar gi_brt;
+    generate
+        for (gi_brt = 0; gi_brt < `ADDRESS_BITS; gi_brt = gi_brt + 1) begin : g_brt_buf
+            bufferH256$ u_buf_brt (
+                .out(outs_br_target_o[gi_brt]),
+                .in (outs_br_target_raw[gi_brt]));
+        end
+    endgenerate
 
     // Pure-passthrough outputs
     assign outs_farFlush_o        = farFlush;

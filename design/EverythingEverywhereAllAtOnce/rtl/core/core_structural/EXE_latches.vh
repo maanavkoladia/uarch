@@ -11,6 +11,18 @@ wire [4:0]  exe_latches_cs_alu_inputB_sel_c; \
 wire [4:0]  exe_latches_cs_branch_target_sel; \
 wire [4:0]  exe_latches_cs_branch_target_sel_b; \
 wire [4:0]  exe_latches_cs_branch_target_sel_c; \
+wire        exe_latches_shift_sr_up_b; \
+wire        exe_latches_shift_sr_up_c; \
+wire        exe_latches_shift_sr_down_b; \
+wire        exe_latches_shift_sr_down_c; \
+wire [14:0] exe_latches_ST_PADDR_0_b; \
+wire [14:0] exe_latches_ST_PADDR_0_c; \
+wire [4:0]  exe_latches_sr_id_b; \
+wire [4:0]  exe_latches_sr_id_c; \
+wire [4:0]  exe_latches_dr_id_b; \
+wire [4:0]  exe_latches_dr_id_c; \
+wire [14:0] exe_latches_ld_addy_b; \
+wire [14:0] exe_latches_ld_addy_c; \
 wire        exe_latches_cs_shift_by_one; \
 wire        exe_latches_cs_br_ucond; \
 wire        exe_latches_cs_relative_branch; \
@@ -121,9 +133,15 @@ EXE_Latches exe_latches_unit ( \
     .latches_data_size_vec_o                   (exe_latches_data_size_vec), \
     .latches_sr_data_size_vec_o                (exe_latches_sr_data_size_vec), \
     .latches_shift_sr_up_o                     (exe_latches_shift_sr_up), \
+    .latches_shift_sr_up_b_o                   (exe_latches_shift_sr_up_b), \
+    .latches_shift_sr_up_c_o                   (exe_latches_shift_sr_up_c), \
     .latches_shift_sr_down_o                   (exe_latches_shift_sr_down), \
+    .latches_shift_sr_down_b_o                 (exe_latches_shift_sr_down_b), \
+    .latches_shift_sr_down_c_o                 (exe_latches_shift_sr_down_c), \
     .latches_ST_XCL_o                          (exe_latches_ST_XCL), \
     .latches_ST_PADDR_0_o                      (exe_latches_ST_PADDR_0), \
+    .latches_ST_PADDR_0_b_o                    (exe_latches_ST_PADDR_0_b), \
+    .latches_ST_PADDR_0_c_o                    (exe_latches_ST_PADDR_0_c), \
     .latches_ST_PADDR_1_o                      (exe_latches_ST_PADDR_1), \
     .latches_MIO_o                             (exe_latches_MIO), \
     .latches_br_info_valid_o                   (exe_latches_br_info_valid), \
@@ -138,8 +156,14 @@ EXE_Latches exe_latches_unit ( \
     .latches_imm64_o                           (exe_latches_imm64), \
     .latches_ld_buf_o                          (exe_latches_ld_buf), \
     .latches_sr_id_o                           (exe_latches_sr_id), \
+    .latches_sr_id_b_o                         (exe_latches_sr_id_b), \
+    .latches_sr_id_c_o                         (exe_latches_sr_id_c), \
     .latches_sr_data_o                         (exe_latches_sr_data), \
     .latches_dr_id_o                           (exe_latches_dr_id), \
+    .latches_dr_id_b_o                         (exe_latches_dr_id_b), \
+    .latches_dr_id_c_o                         (exe_latches_dr_id_c), \
     .latches_dr_data_o                         (exe_latches_dr_data), \
-    .latches_ld_addy_o                         (exe_latches_ld_addy) \
+    .latches_ld_addy_o                         (exe_latches_ld_addy), \
+    .latches_ld_addy_b_o                       (exe_latches_ld_addy_b), \
+    .latches_ld_addy_c_o                       (exe_latches_ld_addy_c) \
 );

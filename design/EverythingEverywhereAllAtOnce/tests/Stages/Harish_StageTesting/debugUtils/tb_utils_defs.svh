@@ -20,6 +20,10 @@
     `define RTL_FLAGDUMP_FILE_NAME "rtl_flagdump_default.log"
 `endif
 
+`ifndef RTL_STOREDUMP_FILE_NAME 
+    `define RTL_STOREDUMP_FILE_NAME "rtl_storedump_default.log"
+`endif
+
 
 
 // ===================== DUT PATHS =====================
@@ -41,6 +45,7 @@
 // ===================== DUMP FILE DESCRIPTORS =====================
 `define REGDUMP_FD regdumpfd
 `define FLAGDUMP_FD flagdumpfd
+`define STOREDUMP_FD storedumpfd
 
 
 // ===================== INIT BLOCK =====================
@@ -72,9 +77,11 @@
     reg [8*256-1:0] log_file_name; \
     reg [8*256-1:0] regdump_file_name; \
     reg [8*256-1:0] flagdump_file_name; \
+    reg [8*256-1:0] storedump_file_name; \
     integer `LOG_FD; \
     integer `REGDUMP_FD; \
     integer `FLAGDUMP_FD; \
+    integer `STOREDUMP_FD; \
     integer cycle_count = 0; \
     `COMMON_UTILS_INIT \
     `PRINT_CYCLE_HEADER \
@@ -86,6 +93,8 @@
             regdump_file_name = `RTL_REGDUMP_FILE_NAME; \
         if (!$value$plusargs("RTL_FLAGDUMP_FILE_NAME=%s", flagdump_file_name)) \
             flagdump_file_name = `RTL_FLAGDUMP_FILE_NAME; \
+        if (!$value$plusargs("RTL_STOREDUMP_FILE_NAME=%s", storedump_file_name)) \
+            storedump_file_name = `RTL_STOREDUMP_FILE_NAME; \
         \
         /* ---------------- Open files ---------------- */ \
         logfd = $fopen(log_file_name, "w"); \
@@ -101,6 +110,11 @@
         flagdumpfd = $fopen(flagdump_file_name, "w"); \
         if (flagdumpfd == 0) begin \
             $display("ERROR: cannot open flagdump file %s", flagdump_file_name); \
+            $finish; \
+        end \
+        storedumpfd = $fopen(storedump_file_name, "w"); \
+        if (storedumpfd == 0) begin \
+            $display("ERROR: cannot open storedump file %s", storedump_file_name); \
             $finish; \
         end \
     end \

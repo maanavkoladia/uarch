@@ -60,11 +60,15 @@ wire MEM_stall_i_inv;
 //   (!S2 uses primaries directly; no inverters needed for EXE_V_i / WB_stall_i.)
 
 // EXE_we_o
+// EXE_we_o drives ~52 cells (all latch-flop write_enable inputs in EXE_Latches).
+// Wrap the NOR output with bufferH64$ (0.30 ns) to clear the fanout violation.
 wire EXE_we_o_nS1;
 wire EXE_we_o_nS2;
+wire EXE_we_o_raw;
 `NOR_2(EXE_we_o_nor_s1, 1, EXE_we_o_nS1, MEM_V_i, MEM_stall_i_inv)
 `AND_2(EXE_we_o_and_s2, 1, EXE_we_o_nS2, EXE_V_i, WB_stall_i)
-`NOR_2(EXE_we_o_nor_top, 1, EXE_we_o, EXE_we_o_nS1, EXE_we_o_nS2)
+`NOR_2(EXE_we_o_nor_top, 1, EXE_we_o_raw, EXE_we_o_nS1, EXE_we_o_nS2)
+bufferH64$ u_buf_EXE_we_o (.out(EXE_we_o), .in(EXE_we_o_raw));
 
 // N_EXE_V_o = (MEM_V_i & !MEM_stall_i) = NOR2(MEM_V_i_inv, MEM_stall_i)
 // Path: INV(0.15) -> NOR2(0.20) = 0.35 ns

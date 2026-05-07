@@ -8,7 +8,7 @@ VIOLATIONS BY GROUP  (deduplicated — duplicate log lines removed, sorted by co
 [VIOLATION]  unique_paths=512   driver_cell=buffer$   fanout(s)=16   (1-stage buffer)
   path : (AllAtOnce_TOP) -> core_unit(EveryThing_TOP) -> decode_unit(Decode) -> inst_processing(predecode) -> sel_log1(selection_logic) -> queue_buf[*].buf_inst(MPS_buffer_delay$_STAGES1_WIDTH8) -> GEN_STAGE[*].GEN_BIT[*].u_buf(buffer$).out
   
-  ][VIOLATION]  unique_paths=64   driver_cell=mux2$   fanout(s)=27   (2-stage buffer)
+[VIOLATION]  unique_paths=64   driver_cell=mux2$   fanout(s)=27   (2-stage buffer)
   path : (AllAtOnce_TOP) -> core_unit(EveryThing_TOP) -> execute_unit(EXE) -> u_dr_sel(dr_sel) -> u_mux_dr_o(mux2_N_WIDTH64) -> gen_mux[*].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
 
 [VIOLATION]  unique_paths=64   driver_cell=mux2$   fanout(s)=26   (2-stage buffer)

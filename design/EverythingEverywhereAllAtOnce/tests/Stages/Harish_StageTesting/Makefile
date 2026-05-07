@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/MMIO/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/AluTest/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -49,9 +49,10 @@ NORM_SIM_LOG = $(LOG_DIR)/norm_sim.log
 
 SIM_REGDUMP_FILE  = $(LOG_DIR)/sim_regdump.log
 SIM_FLAGDUMP_FILE = $(LOG_DIR)/sim_flagdump.log
-RTL_REGDUMP_FILE  = $(LOG_DIR)/regdump.log
-RTL_FLAGDUMP_FILE = $(LOG_DIR)/flagdump.log
-DUMP_REPORT_FILE  = $(LOG_DIR)/compare_report.txt
+RTL_REGDUMP_FILE   = $(LOG_DIR)/regdump.log
+RTL_FLAGDUMP_FILE  = $(LOG_DIR)/flagdump.log
+RTL_STOREDUMP_FILE = $(LOG_DIR)/storedump.log
+DUMP_REPORT_FILE   = $(LOG_DIR)/compare_report.txt
 
 include $(PROJECT_ROOT)/Make.vars
 include $(PROJECT_ROOT)/Make.build
@@ -110,11 +111,7 @@ run: all
 	    +LOG_FILE_NAME=$(RTL_RUN_LOG_FILE) \
 	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
 	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
-	    2>&1 | tee $(SIM_REPORT_LOG_FILE)
-
-view: run
-	#./$(TARGET) -gui &
-	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd & 
+            +RTL_STOREDUMP_FILE_NAME=$(RTL_STOREDUMP_FILE) \
 
 sim-run: makeLogDir
 	$(MAKE) -C $(SIM_DIR) run
@@ -132,11 +129,7 @@ runSoft:
 	    +LOG_FILE_NAME=$(RTL_RUN_LOG_FILE) \
 	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
 	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
-	    2>&1 | tee $(SIM_REPORT_LOG_FILE)
-	
-
-genSoft:
-	@echo $(MASTER_SCRIPT_GEN_SCRIPTS_PATH_JSON) | $(JSON_CLEAN_SCRIPT) > cleaned_scripts.json
+            +RTL_STOREDUMP_FILE_NAME=$(RTL_STOREDUMP_FILE) \
 	@$(PYTHON) $(MASTER_STARTUP_SCRIPT) -s cleaned_scripts.json $(GEN_CONF)
 	@rm -f cleaned_scripts.json
 

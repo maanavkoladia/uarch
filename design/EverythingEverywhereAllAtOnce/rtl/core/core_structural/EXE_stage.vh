@@ -14,6 +14,18 @@ EXE execute_unit ( \
     .latches_cs_branch_target_sel      (exe_latches_cs_branch_target_sel), \
     .latches_cs_branch_target_sel_b    (exe_latches_cs_branch_target_sel_b), \
     .latches_cs_branch_target_sel_c    (exe_latches_cs_branch_target_sel_c), \
+    .latches_shift_sr_up_b             (exe_latches_shift_sr_up_b), \
+    .latches_shift_sr_up_c             (exe_latches_shift_sr_up_c), \
+    .latches_shift_sr_down_b           (exe_latches_shift_sr_down_b), \
+    .latches_shift_sr_down_c           (exe_latches_shift_sr_down_c), \
+    .latches_ST_PADDR_0_b              (exe_latches_ST_PADDR_0_b), \
+    .latches_ST_PADDR_0_c              (exe_latches_ST_PADDR_0_c), \
+    .latches_sr_id_b                   (exe_latches_sr_id_b), \
+    .latches_sr_id_c                   (exe_latches_sr_id_c), \
+    .latches_dr_id_b                   (exe_latches_dr_id_b), \
+    .latches_dr_id_c                   (exe_latches_dr_id_c), \
+    .latches_ld_addy_b                 (exe_latches_ld_addy_b), \
+    .latches_ld_addy_c                 (exe_latches_ld_addy_c), \
     .latches_cs_shift_by_one           (exe_latches_cs_shift_by_one), \
     .latches_cs_br_ucond               (exe_latches_cs_br_ucond), \
     .latches_cs_relative_branch        (exe_latches_cs_relative_branch), \

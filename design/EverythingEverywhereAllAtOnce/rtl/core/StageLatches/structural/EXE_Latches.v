@@ -176,11 +176,20 @@ module EXE_Latches (
 
     output wire [3:0]  latches_data_size_vec_o,
     output wire [3:0]  latches_sr_data_size_vec_o,
+    // 3-way replicated shift selects (one per alu_input_sel replica)
     output wire        latches_shift_sr_up_o,
+    output wire        latches_shift_sr_up_b_o,
+    output wire        latches_shift_sr_up_c_o,
     output wire        latches_shift_sr_down_o,
+    output wire        latches_shift_sr_down_b_o,
+    output wire        latches_shift_sr_down_c_o,
 
     output wire        latches_ST_XCL_o,
+    // 3-way replicated ST_PADDR_0 (a -> bit_vec_logic, b -> res_buf_logic,
+    // c -> output ports)
     output wire [14:0] latches_ST_PADDR_0_o,
+    output wire [14:0] latches_ST_PADDR_0_b_o,
+    output wire [14:0] latches_ST_PADDR_0_c_o,
     output wire [14:0] latches_ST_PADDR_1_o,
     output wire        latches_MIO_o,
 
@@ -200,12 +209,21 @@ module EXE_Latches (
 
     output wire [255:0] latches_ld_buf_o,
 
+    // 3-way replicated sr_id (a -> u_mux_sr_data, b -> xchg_op, c -> reg_wb)
     output wire [4:0]  latches_sr_id_o,
+    output wire [4:0]  latches_sr_id_b_o,
+    output wire [4:0]  latches_sr_id_c_o,
     output wire [63:0] latches_sr_data_o,
+    // 3-way replicated dr_id (a -> u_mux_dr_data, b -> xchg_op, c -> reg_wb)
     output wire [4:0]  latches_dr_id_o,
+    output wire [4:0]  latches_dr_id_b_o,
+    output wire [4:0]  latches_dr_id_c_o,
     output wire [63:0] latches_dr_data_o,
 
-    output wire [14:0] latches_ld_addy_o
+    // 3-way replicated ld_addy (a/b/c -> alu_input_sel_crit/arith/ctrl)
+    output wire [14:0] latches_ld_addy_o,
+    output wire [14:0] latches_ld_addy_b_o,
+    output wire [14:0] latches_ld_addy_c_o
 );
 
     // ============================================================
@@ -315,70 +333,235 @@ module EXE_Latches (
     assign ld_addy_d = nextLatches_ld_addy_i;
 
     // ============================================================
-    // REG_RST_WE per field
-    // `REG_RST_WE(__unitName__, __width__, __clk__, __rst__, __we__, __din__, __dout__)
-    //   active async low rst
+    // REG_RST_WE per field + per-flop output buffer
+    //
+    // Each violating flop's Q is now driven into a `_q_raw` intermediate wire,
+    // and a buffer cell (sized per the load) drives the actual `_o` output
+    // port.  reg64e$ Q has weak natural drive; without explicit buffers any
+    // fanout > ~16 is flagged.
+    //
+    // Buffer sizing (rated load):
+    //   bufferH16$ : ≤16, 0.24 ns
+    //   bufferH64$ : ≤64, 0.30 ns
+    //   bufferH256$: ≤256, 0.54 ns  (used only where replication doesn't help)
+    //
+    // Replication strategy:
+    //   shift_sr_up/down: 3-way (one per alu_input_sel replica)
+    //   sr_id, dr_id    : 3-way (a -> sr_data MUX, b -> xchg, c -> reg_wb)
+    //   ST_PADDR_0      : 3-way (a -> bit_vec_logic, b -> res_buf_logic,
+    //                            c -> output ports)
+    //   ld_addy         : 3-way (a/b/c -> alu_input_sel_crit/arith/ctrl)
     // ============================================================
 
+    // ---- Q-raw wires for buffered outputs ----
+    wire [4:0]   alu_inputA_sel_a_q,  alu_inputA_sel_b_q,  alu_inputA_sel_c_q;
+    wire [4:0]   alu_inputB_sel_a_q,  alu_inputB_sel_b_q,  alu_inputB_sel_c_q;
+    wire [4:0]   branch_target_a_q,   branch_target_b_q,   branch_target_c_q;
+    wire         shift_by_one_q;
+    wire         br_ucond_q;
+    wire         relative_branch_q;
+    wire         special_br_q;
+    wire         wb_cs_WB_DR_q, wb_cs_WB_SR_q, wb_cs_WB_EAX_q;
+    wire [3:0]   data_size_vec_q;
+    wire [3:0]   sr_data_size_vec_q;
+    wire         shift_sr_up_a_q, shift_sr_up_b_q, shift_sr_up_c_q;
+    wire         shift_sr_down_a_q, shift_sr_down_b_q, shift_sr_down_c_q;
+    wire         ST_XCL_q;
+    wire [14:0]  ST_PADDR_0_a_q, ST_PADDR_0_b_q, ST_PADDR_0_c_q;
+    wire [31:0]  br_info_br_eip_q;
+    wire         br_info_br_xcl_q;
+    wire [31:0]  NEIP_q, EIP_q;
+    wire [63:0]  imm64_q;
+    wire [4:0]   sr_id_a_q, sr_id_b_q, sr_id_c_q;
+    wire [4:0]   dr_id_a_q, dr_id_b_q, dr_id_c_q;
+    wire [14:0]  ld_addy_a_q, ld_addy_b_q, ld_addy_c_q;
+
+    // ---- Flops (Q -> _q wires; non-violating flops still write directly to _o) ----
+
     `REG_RST_WE(exe_latches_valid,                    1,   clk, rst, write_enable_i, valid_d,                    latches_valid_o);
-`REG_RST_WE(exe_latches_cs_ST_OP,                 1,   clk, rst, write_enable_i, cs_ST_OP_d,                 latches_cs_ST_OP_o);
+    `REG_RST_WE(exe_latches_cs_ST_OP,                 1,   clk, rst, write_enable_i, cs_ST_OP_d,                 latches_cs_ST_OP_o);
     `REG_RST_WE(exe_latches_cs_OP_TYPE,               6,   clk, rst, write_enable_i, cs_OP_TYPE_d,               latches_cs_OP_TYPE_o);
-    // 3-way replicated flops -- bit-identical, fed from the same D bus,
-    // each Q drives a separate EXE input port so per-port fanout drops 3x.
-    `REG_RST_WE(exe_latches_cs_alu_inputA_sel,        5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        latches_cs_alu_inputA_sel_o);
-    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_b,      5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        latches_cs_alu_inputA_sel_b_o);
-    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_c,      5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        latches_cs_alu_inputA_sel_c_o);
-    `REG_RST_WE(exe_latches_cs_alu_inputB_sel,        5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        latches_cs_alu_inputB_sel_o);
-    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_b,      5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        latches_cs_alu_inputB_sel_b_o);
-    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_c,      5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        latches_cs_alu_inputB_sel_c_o);
-    `REG_RST_WE(exe_latches_cs_branch_target_sel,     5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     latches_cs_branch_target_sel_o);
-    `REG_RST_WE(exe_latches_cs_branch_target_sel_b,   5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     latches_cs_branch_target_sel_b_o);
-    `REG_RST_WE(exe_latches_cs_branch_target_sel_c,   5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     latches_cs_branch_target_sel_c_o);
-    `REG_RST_WE(exe_latches_cs_shift_by_one,          1,   clk, rst, write_enable_i, cs_shift_by_one_d,          latches_cs_shift_by_one_o);
-    `REG_RST_WE(exe_latches_cs_br_ucond,              1,   clk, rst, write_enable_i, cs_br_ucond_d,              latches_cs_br_ucond_o);
-    `REG_RST_WE(exe_latches_cs_relative_branch,       1,   clk, rst, write_enable_i, cs_relative_branch_d,       latches_cs_relative_branch_o);
-    `REG_RST_WE(exe_latches_cs_special_br,            1,   clk, rst, write_enable_i, cs_special_br_d,            latches_cs_special_br_o);
+
+    // 3-way replicated alu_inputA/B_sel + branch_target_sel (Q's via `_q`):
+    `REG_RST_WE(exe_latches_cs_alu_inputA_sel,        5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        alu_inputA_sel_a_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_b,      5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        alu_inputA_sel_b_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_c,      5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        alu_inputA_sel_c_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputB_sel,        5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        alu_inputB_sel_a_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_b,      5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        alu_inputB_sel_b_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_c,      5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        alu_inputB_sel_c_q);
+    `REG_RST_WE(exe_latches_cs_branch_target_sel,     5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     branch_target_a_q);
+    `REG_RST_WE(exe_latches_cs_branch_target_sel_b,   5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     branch_target_b_q);
+    `REG_RST_WE(exe_latches_cs_branch_target_sel_c,   5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     branch_target_c_q);
+
+    `REG_RST_WE(exe_latches_cs_shift_by_one,          1,   clk, rst, write_enable_i, cs_shift_by_one_d,          shift_by_one_q);
+    `REG_RST_WE(exe_latches_cs_br_ucond,              1,   clk, rst, write_enable_i, cs_br_ucond_d,              br_ucond_q);
+    `REG_RST_WE(exe_latches_cs_relative_branch,       1,   clk, rst, write_enable_i, cs_relative_branch_d,       relative_branch_q);
+    `REG_RST_WE(exe_latches_cs_special_br,            1,   clk, rst, write_enable_i, cs_special_br_d,            special_br_q);
     `REG_RST_WE(exe_latches_cs_is_far,                1,   clk, rst, write_enable_i, cs_is_far_d,                latches_cs_is_far_o);
     `REG_RST_WE(exe_latches_cs_is_call,               1,   clk, rst, write_enable_i, cs_is_call_d,               latches_cs_is_call_o);
     `REG_RST_WE(exe_latches_cs_second_flag_needed,    1,   clk, rst, write_enable_i, cs_second_flag_needed_d,    latches_cs_second_flag_needed_o);
     `REG_RST_WE(exe_latches_cs_rep_no_zf_update,      1,   clk, rst, write_enable_i, cs_rep_no_zf_update_d,      latches_cs_rep_no_zf_update_o);
 
     `REG_RST_WE(exe_latches_wb_cs_ST_OP,              1,   clk, rst, write_enable_i, wb_cs_ST_OP_d,              latches_wb_cs_ST_OP_o);
-    `REG_RST_WE(exe_latches_wb_cs_WB_DR,              1,   clk, rst, write_enable_i, wb_cs_WB_DR_d,              latches_wb_cs_WB_DR_o);
-    `REG_RST_WE(exe_latches_wb_cs_WB_SR,              1,   clk, rst, write_enable_i, wb_cs_WB_SR_d,              latches_wb_cs_WB_SR_o);
-    `REG_RST_WE(exe_latches_wb_cs_WB_EAX,             1,   clk, rst, write_enable_i, wb_cs_WB_EAX_d,             latches_wb_cs_WB_EAX_o);
+    `REG_RST_WE(exe_latches_wb_cs_WB_DR,              1,   clk, rst, write_enable_i, wb_cs_WB_DR_d,              wb_cs_WB_DR_q);
+    `REG_RST_WE(exe_latches_wb_cs_WB_SR,              1,   clk, rst, write_enable_i, wb_cs_WB_SR_d,              wb_cs_WB_SR_q);
+    `REG_RST_WE(exe_latches_wb_cs_WB_EAX,             1,   clk, rst, write_enable_i, wb_cs_WB_EAX_d,             wb_cs_WB_EAX_q);
 
-    `REG_RST_WE(exe_latches_data_size_vec,            4,   clk, rst, write_enable_i, data_size_vec_d,            latches_data_size_vec_o);
-    `REG_RST_WE(exe_latches_sr_data_size_vec,         4,   clk, rst, write_enable_i, sr_data_size_vec_d,         latches_sr_data_size_vec_o);
-    `REG_RST_WE(exe_latches_shift_sr_up,              1,   clk, rst, write_enable_i, shift_sr_up_d,              latches_shift_sr_up_o);
-    `REG_RST_WE(exe_latches_shift_sr_down,            1,   clk, rst, write_enable_i, shift_sr_down_d,            latches_shift_sr_down_o);
+    `REG_RST_WE(exe_latches_data_size_vec,            4,   clk, rst, write_enable_i, data_size_vec_d,            data_size_vec_q);
+    `REG_RST_WE(exe_latches_sr_data_size_vec,         4,   clk, rst, write_enable_i, sr_data_size_vec_d,         sr_data_size_vec_q);
 
-    `REG_RST_WE(exe_latches_ST_XCL,                   1,   clk, rst, write_enable_i, ST_XCL_d,                   latches_ST_XCL_o);
-    `REG_RST_WE(exe_latches_ST_PADDR_0,               15,  clk, rst, write_enable_i, ST_PADDR_0_d,               latches_ST_PADDR_0_o);
+    // 3-way replicated shift_sr_up/down
+    `REG_RST_WE(exe_latches_shift_sr_up_a,            1,   clk, rst, write_enable_i, shift_sr_up_d,              shift_sr_up_a_q);
+    `REG_RST_WE(exe_latches_shift_sr_up_b,            1,   clk, rst, write_enable_i, shift_sr_up_d,              shift_sr_up_b_q);
+    `REG_RST_WE(exe_latches_shift_sr_up_c,            1,   clk, rst, write_enable_i, shift_sr_up_d,              shift_sr_up_c_q);
+    `REG_RST_WE(exe_latches_shift_sr_down_a,          1,   clk, rst, write_enable_i, shift_sr_down_d,            shift_sr_down_a_q);
+    `REG_RST_WE(exe_latches_shift_sr_down_b,          1,   clk, rst, write_enable_i, shift_sr_down_d,            shift_sr_down_b_q);
+    `REG_RST_WE(exe_latches_shift_sr_down_c,          1,   clk, rst, write_enable_i, shift_sr_down_d,            shift_sr_down_c_q);
+
+    `REG_RST_WE(exe_latches_ST_XCL,                   1,   clk, rst, write_enable_i, ST_XCL_d,                   ST_XCL_q);
+
+    // 3-way replicated ST_PADDR_0
+    `REG_RST_WE(exe_latches_ST_PADDR_0_a,             15,  clk, rst, write_enable_i, ST_PADDR_0_d,               ST_PADDR_0_a_q);
+    `REG_RST_WE(exe_latches_ST_PADDR_0_b,             15,  clk, rst, write_enable_i, ST_PADDR_0_d,               ST_PADDR_0_b_q);
+    `REG_RST_WE(exe_latches_ST_PADDR_0_c,             15,  clk, rst, write_enable_i, ST_PADDR_0_d,               ST_PADDR_0_c_q);
+
     `REG_RST_WE(exe_latches_ST_PADDR_1,               15,  clk, rst, write_enable_i, ST_PADDR_1_d,               latches_ST_PADDR_1_o);
     `REG_RST_WE(exe_latches_MIO,                      1,   clk, rst, write_enable_i, MIO_d,                      latches_MIO_o);
 
     `REG_RST_WE(exe_latches_br_info_valid,            1,   clk, rst, write_enable_i, br_info_valid_d,            latches_br_info_valid_o);
-    `REG_RST_WE(exe_latches_br_info_br_eip,           32,  clk, rst, write_enable_i, br_info_br_eip_d,           latches_br_info_br_eip_o);
-    `REG_RST_WE(exe_latches_br_info_br_xcl,           1,   clk, rst, write_enable_i, br_info_br_xcl_d,           latches_br_info_br_xcl_o);
+    `REG_RST_WE(exe_latches_br_info_br_eip,           32,  clk, rst, write_enable_i, br_info_br_eip_d,           br_info_br_eip_q);
+    `REG_RST_WE(exe_latches_br_info_br_xcl,           1,   clk, rst, write_enable_i, br_info_br_xcl_d,           br_info_br_xcl_q);
     `REG_RST_WE(exe_latches_br_info_br_pred_taken,    1,   clk, rst, write_enable_i, br_info_br_pred_taken_d,    latches_br_info_br_pred_taken_o);
     `REG_RST_WE(exe_latches_br_info_speculative_target, 32, clk, rst, write_enable_i, br_info_speculative_target_d, latches_br_info_speculative_target_o);
 
     `REG_RST_WE(exe_latches_br_rel_target,            32,  clk, rst, write_enable_i, br_rel_target_d,            latches_br_rel_target_o);
 
-    `REG_RST_WE(exe_latches_NEIP,                     32,  clk, rst, write_enable_i, NEIP_d,                     latches_NEIP_o);
-    `REG_RST_WE(exe_latches_EIP,                      32,  clk, rst, write_enable_i, EIP_d,                      latches_EIP_o);
+    `REG_RST_WE(exe_latches_NEIP,                     32,  clk, rst, write_enable_i, NEIP_d,                     NEIP_q);
+    `REG_RST_WE(exe_latches_EIP,                      32,  clk, rst, write_enable_i, EIP_d,                      EIP_q);
     `REG_RST_WE(exe_latches_EAX,                      32,  clk, rst, write_enable_i, EAX_d,                      latches_EAX_o);
 
-    `REG_RST_WE(exe_latches_imm64,                    64,  clk, rst, write_enable_i, imm64_d,                    latches_imm64_o);
+    `REG_RST_WE(exe_latches_imm64,                    64,  clk, rst, write_enable_i, imm64_d,                    imm64_q);
 
     `REG_RST_WE(exe_latches_ld_buf,                   256, clk, rst, write_enable_i, ld_buf_d,                   latches_ld_buf_o);
 
-    `REG_RST_WE(exe_latches_sr_id,                    5,   clk, rst, write_enable_i, sr_id_d,                    latches_sr_id_o);
+    // 3-way replicated sr_id, dr_id
+    `REG_RST_WE(exe_latches_sr_id_a,                  5,   clk, rst, write_enable_i, sr_id_d,                    sr_id_a_q);
+    `REG_RST_WE(exe_latches_sr_id_b,                  5,   clk, rst, write_enable_i, sr_id_d,                    sr_id_b_q);
+    `REG_RST_WE(exe_latches_sr_id_c,                  5,   clk, rst, write_enable_i, sr_id_d,                    sr_id_c_q);
     `REG_RST_WE(exe_latches_sr_data,                  64,  clk, rst, write_enable_i, sr_data_d,                  latches_sr_data_o);
-    `REG_RST_WE(exe_latches_dr_id,                    5,   clk, rst, write_enable_i, dr_id_d,                    latches_dr_id_o);
+    `REG_RST_WE(exe_latches_dr_id_a,                  5,   clk, rst, write_enable_i, dr_id_d,                    dr_id_a_q);
+    `REG_RST_WE(exe_latches_dr_id_b,                  5,   clk, rst, write_enable_i, dr_id_d,                    dr_id_b_q);
+    `REG_RST_WE(exe_latches_dr_id_c,                  5,   clk, rst, write_enable_i, dr_id_d,                    dr_id_c_q);
     `REG_RST_WE(exe_latches_dr_data,                  64,  clk, rst, write_enable_i, dr_data_d,                  latches_dr_data_o);
 
-    `REG_RST_WE(exe_latches_ld_addy,                  15,  clk, rst, write_enable_i, ld_addy_d,                  latches_ld_addy_o);
+    // 3-way replicated ld_addy
+    `REG_RST_WE(exe_latches_ld_addy_a,                15,  clk, rst, write_enable_i, ld_addy_d,                  ld_addy_a_q);
+    `REG_RST_WE(exe_latches_ld_addy_b,                15,  clk, rst, write_enable_i, ld_addy_d,                  ld_addy_b_q);
+    `REG_RST_WE(exe_latches_ld_addy_c,                15,  clk, rst, write_enable_i, ld_addy_d,                  ld_addy_c_q);
+
+    // ============================================================
+    // Output buffers (Q -> port)
+    // ============================================================
+
+    // alu_inputA/B_sel: per-replica fanout 64 -> bufferH64$
+    genvar gi_a5;
+    generate
+        for (gi_a5 = 0; gi_a5 < 5; gi_a5 = gi_a5 + 1) begin : g_a5_buf
+            bufferH64$ u_buf_inA_a (.out(latches_cs_alu_inputA_sel_o[gi_a5]),   .in(alu_inputA_sel_a_q[gi_a5]));
+            bufferH64$ u_buf_inA_b (.out(latches_cs_alu_inputA_sel_b_o[gi_a5]), .in(alu_inputA_sel_b_q[gi_a5]));
+            bufferH64$ u_buf_inA_c (.out(latches_cs_alu_inputA_sel_c_o[gi_a5]), .in(alu_inputA_sel_c_q[gi_a5]));
+            bufferH64$ u_buf_inB_a (.out(latches_cs_alu_inputB_sel_o[gi_a5]),   .in(alu_inputB_sel_a_q[gi_a5]));
+            bufferH64$ u_buf_inB_b (.out(latches_cs_alu_inputB_sel_b_o[gi_a5]), .in(alu_inputB_sel_b_q[gi_a5]));
+            bufferH64$ u_buf_inB_c (.out(latches_cs_alu_inputB_sel_c_o[gi_a5]), .in(alu_inputB_sel_c_q[gi_a5]));
+            bufferH64$ u_buf_brT_a (.out(latches_cs_branch_target_sel_o[gi_a5]),   .in(branch_target_a_q[gi_a5]));
+            bufferH64$ u_buf_brT_b (.out(latches_cs_branch_target_sel_b_o[gi_a5]), .in(branch_target_b_q[gi_a5]));
+            bufferH64$ u_buf_brT_c (.out(latches_cs_branch_target_sel_c_o[gi_a5]), .in(branch_target_c_q[gi_a5]));
+        end
+    endgenerate
+
+    // 1-bit signals (sized per fanout)
+    bufferH16$  u_buf_shift_by_one  (.out(latches_cs_shift_by_one_o),     .in(shift_by_one_q));
+    bufferH256$ u_buf_br_ucond      (.out(latches_cs_br_ucond_o),         .in(br_ucond_q));      // fanout 65
+    bufferH64$  u_buf_relative_br   (.out(latches_cs_relative_branch_o),  .in(relative_branch_q));
+    bufferH64$  u_buf_special_br    (.out(latches_cs_special_br_o),       .in(special_br_q));
+    bufferH256$ u_buf_wb_dr         (.out(latches_wb_cs_WB_DR_o),         .in(wb_cs_WB_DR_q));    // fanout 66
+    bufferH256$ u_buf_wb_sr         (.out(latches_wb_cs_WB_SR_o),         .in(wb_cs_WB_SR_q));    // fanout 66
+    bufferH256$ u_buf_wb_eax        (.out(latches_wb_cs_WB_EAX_o),        .in(wb_cs_WB_EAX_q));   // fanout 75
+    bufferH64$  u_buf_ST_XCL        (.out(latches_ST_XCL_o),              .in(ST_XCL_q));
+    bufferH64$  u_buf_br_xcl        (.out(latches_br_info_br_xcl_o),      .in(br_info_br_xcl_q));
+
+    // shift_sr_up/down 3 replicas, each fanout 64 -> bufferH64$
+    bufferH64$  u_buf_ssup_a   (.out(latches_shift_sr_up_o),     .in(shift_sr_up_a_q));
+    bufferH64$  u_buf_ssup_b   (.out(latches_shift_sr_up_b_o),   .in(shift_sr_up_b_q));
+    bufferH64$  u_buf_ssup_c   (.out(latches_shift_sr_up_c_o),   .in(shift_sr_up_c_q));
+    bufferH64$  u_buf_ssdn_a   (.out(latches_shift_sr_down_o),   .in(shift_sr_down_a_q));
+    bufferH64$  u_buf_ssdn_b   (.out(latches_shift_sr_down_b_o), .in(shift_sr_down_b_q));
+    bufferH64$  u_buf_ssdn_c   (.out(latches_shift_sr_down_c_o), .in(shift_sr_down_c_q));
+
+    // data_size_vec (fanout 6) bufferH16$ per bit; sr_data_size_vec (fanout 32) bufferH64$ per bit
+    genvar gi_dsz4;
+    generate
+        for (gi_dsz4 = 0; gi_dsz4 < 4; gi_dsz4 = gi_dsz4 + 1) begin : g_dsz4_buf
+            bufferH16$  u_buf_dsv  (.out(latches_data_size_vec_o[gi_dsz4]),    .in(data_size_vec_q[gi_dsz4]));
+            bufferH64$  u_buf_srdsv(.out(latches_sr_data_size_vec_o[gi_dsz4]), .in(sr_data_size_vec_q[gi_dsz4]));
+        end
+    endgenerate
+
+    // ST_PADDR_0 3 replicas, per port ~92-137 -> bufferH256$ per bit
+    genvar gi_paddr;
+    generate
+        for (gi_paddr = 0; gi_paddr < 15; gi_paddr = gi_paddr + 1) begin : g_paddr_buf
+            bufferH256$ u_buf_paddr_a (.out(latches_ST_PADDR_0_o[gi_paddr]),   .in(ST_PADDR_0_a_q[gi_paddr]));
+            bufferH256$ u_buf_paddr_b (.out(latches_ST_PADDR_0_b_o[gi_paddr]), .in(ST_PADDR_0_b_q[gi_paddr]));
+            bufferH256$ u_buf_paddr_c (.out(latches_ST_PADDR_0_c_o[gi_paddr]), .in(ST_PADDR_0_c_q[gi_paddr]));
+        end
+    endgenerate
+
+    // br_info_br_eip (32-bit, fanout 128) -> bufferH256$ per bit
+    genvar gi_br_eip;
+    generate
+        for (gi_br_eip = 0; gi_br_eip < 32; gi_br_eip = gi_br_eip + 1) begin : g_breip_buf
+            bufferH256$ u_buf_breip (.out(latches_br_info_br_eip_o[gi_br_eip]), .in(br_info_br_eip_q[gi_br_eip]));
+        end
+    endgenerate
+
+    // NEIP (fanout 11), EIP (fanout 7) -> bufferH16$ per bit (small fanout)
+    genvar gi_neip;
+    generate
+        for (gi_neip = 0; gi_neip < 32; gi_neip = gi_neip + 1) begin : g_neip_buf
+            bufferH16$ u_buf_neip (.out(latches_NEIP_o[gi_neip]), .in(NEIP_q[gi_neip]));
+            bufferH16$ u_buf_eip  (.out(latches_EIP_o[gi_neip]),  .in(EIP_q[gi_neip]));
+        end
+    endgenerate
+
+    // imm64 (fanout 6) -> bufferH16$ per bit
+    genvar gi_imm;
+    generate
+        for (gi_imm = 0; gi_imm < 64; gi_imm = gi_imm + 1) begin : g_imm_buf
+            bufferH16$ u_buf_imm (.out(latches_imm64_o[gi_imm]), .in(imm64_q[gi_imm]));
+        end
+    endgenerate
+
+    // sr_id, dr_id 3 replicas, each ~22 fanout -> bufferH64$ per bit
+    generate
+        for (gi_a5 = 0; gi_a5 < 5; gi_a5 = gi_a5 + 1) begin : g_id_buf
+            bufferH64$ u_buf_sr_a (.out(latches_sr_id_o[gi_a5]),   .in(sr_id_a_q[gi_a5]));
+            bufferH64$ u_buf_sr_b (.out(latches_sr_id_b_o[gi_a5]), .in(sr_id_b_q[gi_a5]));
+            bufferH64$ u_buf_sr_c (.out(latches_sr_id_c_o[gi_a5]), .in(sr_id_c_q[gi_a5]));
+            bufferH64$ u_buf_dr_a (.out(latches_dr_id_o[gi_a5]),   .in(dr_id_a_q[gi_a5]));
+            bufferH64$ u_buf_dr_b (.out(latches_dr_id_b_o[gi_a5]), .in(dr_id_b_q[gi_a5]));
+            bufferH64$ u_buf_dr_c (.out(latches_dr_id_c_o[gi_a5]), .in(dr_id_c_q[gi_a5]));
+        end
+    endgenerate
+
+    // ld_addy 3 replicas, each ~128 fanout -> bufferH256$ per bit
+    genvar gi_ldy;
+    generate
+        for (gi_ldy = 0; gi_ldy < 15; gi_ldy = gi_ldy + 1) begin : g_ldy_buf
+            bufferH256$ u_buf_ldy_a (.out(latches_ld_addy_o[gi_ldy]),   .in(ld_addy_a_q[gi_ldy]));
+            bufferH256$ u_buf_ldy_b (.out(latches_ld_addy_b_o[gi_ldy]), .in(ld_addy_b_q[gi_ldy]));
+            bufferH256$ u_buf_ldy_c (.out(latches_ld_addy_c_o[gi_ldy]), .in(ld_addy_c_q[gi_ldy]));
+        end
+    endgenerate
 
 endmodule

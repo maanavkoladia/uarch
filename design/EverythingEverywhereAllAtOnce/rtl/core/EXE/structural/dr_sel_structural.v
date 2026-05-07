@@ -162,6 +162,16 @@ module dr_sel (
     `TRISTATE_L(u_tri_iretd,       64, enbar_iretd,       iretd_cs_dr_i,    tristated_bus)
 
     // ---- Final 2:1 mux: WB_DR ? tristated_bus : dr_data ----
-    `MUX_2(u_mux_dr_o, 64, dr_o, dr_data, tristated_bus, WB_DR)
+    // The mux2$ output drives 27 cells/bit downstream (dr_data fwd to 3
+    // alu_input_sel + reg_wb).  Wrap each output bit in bufferH64$ (0.30 ns).
+    wire [63:0] dr_o_raw;
+    `MUX_2(u_mux_dr_o, 64, dr_o_raw, dr_data, tristated_bus, WB_DR)
+
+    genvar gi_dr_o;
+    generate
+        for (gi_dr_o = 0; gi_dr_o < 64; gi_dr_o = gi_dr_o + 1) begin : g_dr_o_buf
+            bufferH64$ u_buf_dr_o (.out(dr_o[gi_dr_o]), .in(dr_o_raw[gi_dr_o]));
+        end
+    endgenerate
 
 endmodule

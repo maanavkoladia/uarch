@@ -211,4 +211,55 @@ task automatic dump_flags(input reg [31:0] eip, input reg [31:0] flags);
 endtask
 
 
+// --- STORE DUMP TO SEPARATE FILE ---
+// Called at posedge when exeforwards && wb_latches_next_cs_ST_OP.
+// Reads live WB-next latches: paddr (15-bit), bit vector, and res_buf.
+// PORT0 maps to the first 16 bytes of res_buf; PORT1 to the last 16.
+// Only bytes whose bit in the vector is set are printed.
+task automatic dump_store(input reg [31:0] eip);
+    integer i;
+    reg [14:0] paddr0, paddr1;
+    reg [15:0] bvec0,  bvec1;
+    begin
+`ifdef EXE_UNIT_PATH
+    paddr0 = `EXE_UNIT_PATH.wb_latches_next_ST_PADDR_0;
+    paddr1 = `EXE_UNIT_PATH.wb_latches_next_ST_PADDR_1;
+    bvec0  = `EXE_UNIT_PATH.wb_latches_next_ST_BIT_VEC_0;
+    bvec1  = `EXE_UNIT_PATH.wb_latches_next_ST_BIT_VEC_1;
+
+    $fdisplay(`STOREDUMP_FD, "[STORE DUMP] EIP=0x%08h  xcl=%0b  MIO=%0b",
+              eip,
+              `EXE_UNIT_PATH.wb_latches_next_ST_XCL,
+              `EXE_UNIT_PATH.wb_latches_next_MIO);
+
+    // --- Port 0 (res_buf bytes 0-15) ---
+    if (|bvec0) begin
+        $fdisplay(`STOREDUMP_FD, "  PORT0: paddr=0x%04h  bvec=0x%04h", paddr0, bvec0);
+        $fwrite(`STOREDUMP_FD, "  DATA:");
+        for (i = 0; i < 16; i = i + 1) begin
+            if (bvec0[i])
+                $fwrite(`STOREDUMP_FD, "  [0x%04h]=0x%02h",
+                        ({1'b0, paddr0[14:4], 4'b0} + i),
+                        `EXE_UNIT_PATH.wb_latches_next_res_buf[i*8 +: 8]);
+        end
+        $fdisplay(`STOREDUMP_FD, "");
+    end
+
+    // --- Port 1 (res_buf bytes 16-31) ---
+    if (|bvec1) begin
+        $fdisplay(`STOREDUMP_FD, "  PORT1: paddr=0x%04h  bvec=0x%04h", paddr1, bvec1);
+        $fwrite(`STOREDUMP_FD, "  DATA:");
+        for (i = 0; i < 16; i = i + 1) begin
+            if (bvec1[i])
+                $fwrite(`STOREDUMP_FD, "  [0x%04h]=0x%02h",
+                        ({1'b0, paddr1[14:4], 4'b0} + i),
+                        `EXE_UNIT_PATH.wb_latches_next_res_buf[(16+i)*8 +: 8]);
+        end
+        $fdisplay(`STOREDUMP_FD, "");
+    end
+`endif
+    end
+endtask
+
+
 `endif
