@@ -13,7 +13,7 @@ module SegmentTranslation (
     output bool gp_fault_o
 );
     assign v_addr_o = (segValue << 16) + l_addr_i;
-    assign gp_fault_o = v_addr_o > segLimit;
+    assign gp_fault_o = l_addr_i >= segLimit;
 
 endmodule
 

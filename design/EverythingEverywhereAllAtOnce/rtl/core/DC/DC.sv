@@ -62,7 +62,6 @@ module DC (
     assign exe_ST_OP = exe_outs_i.ST_OP;
     assign wb_ST_OP = wb_outs_i.ST_OP;
 
-
     p_address_t next_st_addr_0;
     p_address_t next_st_addr_1;
     bool next_st_xcl;

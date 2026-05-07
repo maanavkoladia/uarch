@@ -15,3 +15,4 @@ parse: check.log
 
 clean:
 	rm -f *.log
+	rm -f *.svf
