@@ -90,14 +90,8 @@ module Decode (
                     idm_outs_i.idm_slots[1].valid, idm_outs_i.idm_slots[0].valid}),
         .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_byte(sib_byte), .sib_size(sib_size),
         .opcode_byte(opcode_byte), .modrm_byte(modrm_byte), .disp(displacement), .disp_size(disp_size),
-        .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector(total_pf_vector), .invalid_inst(invalid_inst)
-    );
+        .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector(total_pf_vector), .invalid_inst(invalid_inst),
 
-    control_store cs (
-        .invalid_inst(invalid_inst),
-        .total_pf_vector(total_pf_vector),
-        .opcode(opcode_byte),
-        .modrm(modrm_byte),
         .seg_override(seg_override),
         .seg0(segment0),
 
@@ -188,7 +182,7 @@ module Decode (
     wire [31:0] branch_info_br_eip;
     wire branch_info_br_xcl;
     wire branch_info_br_pred_taken;
-    wire branch_info_speculative_target;
+    wire [31:0] branch_info_speculative_target;
     wire br_eip_eq_EIP;
     wire branch_present;
 
@@ -207,7 +201,7 @@ module Decode (
     `OR_3(branch_present_gate,    1, branch_present,   temp_exe_cs.br_ucond, temp_exe_cs.relative_branch, temp_exe_cs.special_br)
 
     br_info_processing br_info_gen(
-        .cs_branch(branch_present), .eip(EIP), .br_length(inst_length),
+        .cs_branch(branch_present), .eip(EIP), .neip(NEIP),//.br_length(inst_length),
         .pred_taken(predicted_taken), .pred_target(predicted_target), 
         .branch_info_valid(branch_info_valid),
         .branch_info_br_eip(branch_info_br_eip),

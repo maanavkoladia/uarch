@@ -2,7 +2,7 @@
   SIM vs RTL COMPARISON REPORT
 ================================================================================
   Sim instructions: 1015
-  RTL commits:      812
+  RTL commits:      1014
 
 [OK ] #0000  0x00000000  mov           writes=EAX=0x00004002  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
 [OK ] #0001  0x00000005  mov           writes=DS=0x00004002  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
@@ -822,211 +822,211 @@
 [OK ] #0809  0x000009B5  jne           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
 [OK ] #0810  0x000009B7  mov           writes=EAX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
 [OK ] #0811  0x000009BC  or            writes=EAX=0x00000010  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
-[ONLY_SIM] #0812  EIP=0x000009BF  or            SIM writes=EAX=0x00001010  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0813  EIP=0x000009C4  bsf           SIM writes=ECX=0x00000004  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0814  EIP=0x000009C7  add           SIM writes=EBX=0xF9A9929A  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0815  EIP=0x000009C9  mov           SIM writes=EAX=0xFFFFF800  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0816  EIP=0x000009CE  bsf           SIM writes=ECX=0x0000000B  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0817  EIP=0x000009D1  add           SIM writes=EBX=0xF9A992A5  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0818  EIP=0x000009D3  mov           SIM writes=EAX=0xFFFFFFFF  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0819  EIP=0x000009D8  add           SIM writes=EAX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0820  EIP=0x000009DB  mov           SIM writes=EDX=0x0000CAFE  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0821  EIP=0x000009E0  mov           SIM writes=ECX=0x0000DEAD  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0822  EIP=0x000009E5  cmovb         SIM writes=EDX=0x0000DEAD  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0823  EIP=0x000009E8  add           SIM writes=EBX=0xF9AA7152  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=1
-[ONLY_SIM] #0824  EIP=0x000009EA  mov           SIM writes=EAX=0x00000001  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=1
-[ONLY_SIM] #0825  EIP=0x000009EF  add           SIM writes=EAX=0x00000002  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0826  EIP=0x000009F2  mov           SIM writes=EDX=0xABCD0000  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0827  EIP=0x000009F7  mov           SIM writes=ECX=0x00001234  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0828  EIP=0x000009FC  cmovb         SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0829  EIP=0x000009FF  add           SIM writes=EBX=0xA5777152  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
-[ONLY_SIM] #0830  EIP=0x00000A01  mov           SIM writes=EAX=0xFFFFFFFF  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
-[ONLY_SIM] #0831  EIP=0x00000A06  add           SIM writes=EAX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0832  EIP=0x00000A09  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0833  EIP=0x00000A13  mov           SIM writes=ECX=0x00000000  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0834  EIP=0x00000A18  cmovb         SIM writes=ECX=0x0AAAAAAA  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0835  EIP=0x00000A1F  add           SIM writes=EBX=0xB0221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0836  EIP=0x00000A21  mov           SIM writes=EAX=0x08000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0837  EIP=0x00000A26  mov           SIM writes=EDX=0x01000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0838  EIP=0x00000A2B  mov           SIM writes=ECX=0x00000008  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0839  EIP=0x00000A30  add           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0840  EIP=0x00000A33  sbb           SIM writes=EAX=0x07000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0841  EIP=0x00000A35  add           SIM writes=EBX=0xB7221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0842  EIP=0x00000A37  add           SIM writes=ECX=0x00000007  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0843  EIP=0x00000A3A  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0844  EIP=0x00000A30  add           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0845  EIP=0x00000A33  sbb           SIM writes=EAX=0x06000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0846  EIP=0x00000A35  add           SIM writes=EBX=0xBD221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0847  EIP=0x00000A37  add           SIM writes=ECX=0x00000006  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0848  EIP=0x00000A3A  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0849  EIP=0x00000A30  add           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0850  EIP=0x00000A33  sbb           SIM writes=EAX=0x05000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0851  EIP=0x00000A35  add           SIM writes=EBX=0xC2221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0852  EIP=0x00000A37  add           SIM writes=ECX=0x00000005  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0853  EIP=0x00000A3A  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0854  EIP=0x00000A30  add           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0855  EIP=0x00000A33  sbb           SIM writes=EAX=0x04000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0856  EIP=0x00000A35  add           SIM writes=EBX=0xC6221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0857  EIP=0x00000A37  add           SIM writes=ECX=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0858  EIP=0x00000A3A  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0859  EIP=0x00000A30  add           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0860  EIP=0x00000A33  sbb           SIM writes=EAX=0x03000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0861  EIP=0x00000A35  add           SIM writes=EBX=0xC9221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0862  EIP=0x00000A37  add           SIM writes=ECX=0x00000003  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0863  EIP=0x00000A3A  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0864  EIP=0x00000A30  add           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0865  EIP=0x00000A33  sbb           SIM writes=EAX=0x02000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0866  EIP=0x00000A35  add           SIM writes=EBX=0xCB221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0867  EIP=0x00000A37  add           SIM writes=ECX=0x00000002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0868  EIP=0x00000A3A  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0869  EIP=0x00000A30  add           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0870  EIP=0x00000A33  sbb           SIM writes=EAX=0x01000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0871  EIP=0x00000A35  add           SIM writes=EBX=0xCC221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0872  EIP=0x00000A37  add           SIM writes=ECX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0873  EIP=0x00000A3A  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0874  EIP=0x00000A30  add           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0875  EIP=0x00000A33  sbb           SIM writes=EAX=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0876  EIP=0x00000A35  add           SIM writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0877  EIP=0x00000A37  add           SIM writes=ECX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0878  EIP=0x00000A3A  jne           SIM writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0879  EIP=0x00000A3C  jmp           SIM writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0880  EIP=0x00000A3E  mov           SIM writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0881  EIP=0x00000A44  mov           SIM writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0882  EIP=0x00000A4E  add           SIM writes=EBX=0xE2383212  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0883  EIP=0x00000A50  and           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0884  EIP=0x00000A5A  mov           SIM writes=EAX=0x00FF0000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0885  EIP=0x00000A60  add           SIM writes=EBX=0xE3373212  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0886  EIP=0x00000A62  jmp           SIM writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0887  EIP=0x00000A64  mov           SIM writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0888  EIP=0x00000A6B  mov           SIM writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0889  EIP=0x00000A75  add           SIM writes=EBX=0xFA4E4929  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
-[ONLY_SIM] #0890  EIP=0x00000A78  add           SIM writes=EBX=0x11656040  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0891  EIP=0x00000A7E  and           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0892  EIP=0x00000A84  jmp           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0893  EIP=0x00000A86  mov           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0894  EIP=0x00000A8D  mov           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0895  EIP=0x00000A97  add           SIM writes=EBX=0x297D7858  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0896  EIP=0x00000A9A  mov           SIM writes=EAX=0x18181818  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0897  EIP=0x00000AA0  and           SIM writes=EBX=0x08181818  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0898  EIP=0x00000AA2  mov           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0899  EIP=0x00000AA9  add           SIM writes=EBX=0x20303030  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0900  EIP=0x00000AAC  jmp           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0901  EIP=0x00000AAE  mov           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0902  EIP=0x00000AB8  add           SIM writes=EBX=0x39494949  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0903  EIP=0x00000ABE  mov           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0904  EIP=0x00000AC8  and           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0905  EIP=0x00000AD2  mov           SIM writes=EAX=0x1F1F1F1F  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0906  EIP=0x00000AD8  add           SIM writes=EBX=0x58686868  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0907  EIP=0x00000ADA  jmp           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0908  EIP=0x00000ADC  mov           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0909  EIP=0x00000AE2  add           SIM writes=EBX=0x72828282  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0910  EIP=0x00000AE4  mov           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0911  EIP=0x00000AEE  add           SIM writes=EBX=0x8C9C9C9C  flags=CF=0 ZF=0 SF=1 OF=1 PF=1 AF=0
-[ONLY_SIM] #0912  EIP=0x00000AF4  and           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0913  EIP=0x00000AFE  mov           SIM writes=ECX=0x00000010  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0914  EIP=0x00000B03  jmp           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0915  EIP=0x00000B05  mov           SIM writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_SIM] #0916  EIP=0x00000B0B  add           SIM writes=EBX=0x48585857  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=1
-[ONLY_SIM] #0917  EIP=0x00000B0D  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=1
-[ONLY_SIM] #0918  EIP=0x00000B14  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0919  EIP=0x00000B1E  add           SIM writes=ECX=0x0000000F  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0920  EIP=0x00000B21  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0921  EIP=0x00000B25  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0922  EIP=0x00000B2F  add           SIM writes=EBX=0x15252523  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0923  EIP=0x00000B35  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0924  EIP=0x00000B3F  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0925  EIP=0x00000B49  add           SIM writes=ECX=0x0000000E  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0926  EIP=0x00000B4C  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0927  EIP=0x00000B05  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0928  EIP=0x00000B0B  add           SIM writes=EBX=0xD0E0E0DE  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0929  EIP=0x00000B0D  mov           SIM writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
-[ONLY_SIM] #0930  EIP=0x00000B14  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0931  EIP=0x00000B1E  add           SIM writes=ECX=0x0000000D  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0932  EIP=0x00000B21  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0933  EIP=0x00000B25  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0934  EIP=0x00000B2F  add           SIM writes=EBX=0x9DADADAA  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0935  EIP=0x00000B35  mov           SIM writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0936  EIP=0x00000B3F  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0937  EIP=0x00000B49  add           SIM writes=ECX=0x0000000C  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0938  EIP=0x00000B4C  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0939  EIP=0x00000B05  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0940  EIP=0x00000B0B  add           SIM writes=EBX=0x59696965  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
-[ONLY_SIM] #0941  EIP=0x00000B0D  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
-[ONLY_SIM] #0942  EIP=0x00000B14  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0943  EIP=0x00000B1E  add           SIM writes=ECX=0x0000000B  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0944  EIP=0x00000B21  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0945  EIP=0x00000B25  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0946  EIP=0x00000B2F  add           SIM writes=EBX=0x26363631  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0947  EIP=0x00000B35  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0948  EIP=0x00000B3F  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0949  EIP=0x00000B49  add           SIM writes=ECX=0x0000000A  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0950  EIP=0x00000B4C  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0951  EIP=0x00000B05  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0952  EIP=0x00000B0B  add           SIM writes=EBX=0xE1F1F1EC  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
-[ONLY_SIM] #0953  EIP=0x00000B0D  mov           SIM writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
-[ONLY_SIM] #0954  EIP=0x00000B14  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0955  EIP=0x00000B1E  add           SIM writes=ECX=0x00000009  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0956  EIP=0x00000B21  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0957  EIP=0x00000B25  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0958  EIP=0x00000B2F  add           SIM writes=EBX=0xAEBEBEB8  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0959  EIP=0x00000B35  mov           SIM writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0960  EIP=0x00000B3F  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0961  EIP=0x00000B49  add           SIM writes=ECX=0x00000008  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0962  EIP=0x00000B4C  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0963  EIP=0x00000B05  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0964  EIP=0x00000B0B  add           SIM writes=EBX=0x6A7A7A73  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=1
-[ONLY_SIM] #0965  EIP=0x00000B0D  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=1
-[ONLY_SIM] #0966  EIP=0x00000B14  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0967  EIP=0x00000B1E  add           SIM writes=ECX=0x00000007  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0968  EIP=0x00000B21  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0969  EIP=0x00000B25  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0970  EIP=0x00000B2F  add           SIM writes=EBX=0x3747473F  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0971  EIP=0x00000B35  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0972  EIP=0x00000B3F  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0973  EIP=0x00000B49  add           SIM writes=ECX=0x00000006  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0974  EIP=0x00000B4C  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0975  EIP=0x00000B05  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0976  EIP=0x00000B0B  add           SIM writes=EBX=0xF30302FA  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0977  EIP=0x00000B0D  mov           SIM writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0978  EIP=0x00000B14  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0979  EIP=0x00000B1E  add           SIM writes=ECX=0x00000005  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0980  EIP=0x00000B21  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0981  EIP=0x00000B25  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0982  EIP=0x00000B2F  add           SIM writes=EBX=0xBFCFCFC6  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0983  EIP=0x00000B35  mov           SIM writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #0984  EIP=0x00000B3F  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0985  EIP=0x00000B49  add           SIM writes=ECX=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0986  EIP=0x00000B4C  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0987  EIP=0x00000B05  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0988  EIP=0x00000B0B  add           SIM writes=EBX=0x7B8B8B81  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
-[ONLY_SIM] #0989  EIP=0x00000B0D  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
-[ONLY_SIM] #0990  EIP=0x00000B14  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0991  EIP=0x00000B1E  add           SIM writes=ECX=0x00000003  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0992  EIP=0x00000B21  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0993  EIP=0x00000B25  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #0994  EIP=0x00000B2F  add           SIM writes=EBX=0x4858584D  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0995  EIP=0x00000B35  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0996  EIP=0x00000B3F  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #0997  EIP=0x00000B49  add           SIM writes=ECX=0x00000002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0998  EIP=0x00000B4C  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #0999  EIP=0x00000B05  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #1000  EIP=0x00000B0B  add           SIM writes=EBX=0x04141408  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #1001  EIP=0x00000B0D  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #1002  EIP=0x00000B14  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #1003  EIP=0x00000B1E  add           SIM writes=ECX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #1004  EIP=0x00000B21  jne           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #1005  EIP=0x00000B25  mov           SIM writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
-[ONLY_SIM] #1006  EIP=0x00000B2F  add           SIM writes=EBX=0xD0E0E0D4  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #1007  EIP=0x00000B35  mov           SIM writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_SIM] #1008  EIP=0x00000B3F  and           SIM writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
-[ONLY_SIM] #1009  EIP=0x00000B49  add           SIM writes=ECX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #1010  EIP=0x00000B4C  jne           SIM writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #1011  EIP=0x00000B4E  mov           SIM writes=EAX=0x1F1F001F  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #1012  EIP=0x00000B50  mov           SIM writes=EAX=0x1F1F0000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
-[ONLY_SIM] #1013  EIP=0x00000B52  mov           SIM writes=SS=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0812  0x000009BF  or            writes=EAX=0x00001010  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0813  0x000009C4  bsf           writes=ECX=0x00000004  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0814  0x000009C7  add           writes=EBX=0xF9A9929A  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0815  0x000009C9  mov           writes=EAX=0xFFFFF800  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0816  0x000009CE  bsf           writes=ECX=0x0000000B  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0817  0x000009D1  add           writes=EBX=0xF9A992A5  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0818  0x000009D3  mov           writes=EAX=0xFFFFFFFF  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0819  0x000009D8  add           writes=EAX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0820  0x000009DB  mov           writes=EDX=0x0000CAFE  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0821  0x000009E0  mov           writes=ECX=0x0000DEAD  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0822  0x000009E5  cmovb         writes=EDX=0x0000DEAD  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0823  0x000009E8  add           writes=EBX=0xF9AA7152  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=1
+[OK ] #0824  0x000009EA  mov           writes=EAX=0x00000001  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=1
+[OK ] #0825  0x000009EF  add           writes=EAX=0x00000002  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0826  0x000009F2  mov           writes=EDX=0xABCD0000  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0827  0x000009F7  mov           writes=ECX=0x00001234  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0828  0x000009FC  cmovb         writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (RTL no-op: EDX)
+[OK ] #0829  0x000009FF  add           writes=EBX=0xA5777152  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0830  0x00000A01  mov           writes=EAX=0xFFFFFFFF  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0831  0x00000A06  add           writes=EAX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0832  0x00000A09  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0833  0x00000A13  mov           writes=ECX=0x00000000  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0834  0x00000A18  cmovb         writes=ECX=0x0AAAAAAA  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0835  0x00000A1F  add           writes=EBX=0xB0221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0836  0x00000A21  mov           writes=EAX=0x08000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0837  0x00000A26  mov           writes=EDX=0x01000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0838  0x00000A2B  mov           writes=ECX=0x00000008  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0839  0x00000A30  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX)
+[OK ] #0840  0x00000A33  sbb           writes=EAX=0x07000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0841  0x00000A35  add           writes=EBX=0xB7221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0842  0x00000A37  add           writes=ECX=0x00000007  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0843  0x00000A3A  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0844  0x00000A30  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX)
+[OK ] #0845  0x00000A33  sbb           writes=EAX=0x06000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0846  0x00000A35  add           writes=EBX=0xBD221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0847  0x00000A37  add           writes=ECX=0x00000006  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0848  0x00000A3A  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0849  0x00000A30  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX)
+[OK ] #0850  0x00000A33  sbb           writes=EAX=0x05000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0851  0x00000A35  add           writes=EBX=0xC2221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0852  0x00000A37  add           writes=ECX=0x00000005  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0853  0x00000A3A  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0854  0x00000A30  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX)
+[OK ] #0855  0x00000A33  sbb           writes=EAX=0x04000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0856  0x00000A35  add           writes=EBX=0xC6221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0857  0x00000A37  add           writes=ECX=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0858  0x00000A3A  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0859  0x00000A30  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX)
+[OK ] #0860  0x00000A33  sbb           writes=EAX=0x03000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0861  0x00000A35  add           writes=EBX=0xC9221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0862  0x00000A37  add           writes=ECX=0x00000003  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0863  0x00000A3A  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0864  0x00000A30  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX)
+[OK ] #0865  0x00000A33  sbb           writes=EAX=0x02000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0866  0x00000A35  add           writes=EBX=0xCB221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0867  0x00000A37  add           writes=ECX=0x00000002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0868  0x00000A3A  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0869  0x00000A30  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX)
+[OK ] #0870  0x00000A33  sbb           writes=EAX=0x01000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0871  0x00000A35  add           writes=EBX=0xCC221BFC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0872  0x00000A37  add           writes=ECX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0873  0x00000A3A  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0874  0x00000A30  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (RTL no-op: EAX)
+[OK ] #0875  0x00000A33  sbb           writes=EAX=0x00000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+[OK ] #0876  0x00000A35  add           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0  (RTL no-op: EBX)
+[OK ] #0877  0x00000A37  add           writes=ECX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0878  0x00000A3A  jne           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0879  0x00000A3C  jmp           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0880  0x00000A3E  mov           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0881  0x00000A44  mov           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #0882  0x00000A4E  add           writes=EBX=0xE2383212  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0883  0x00000A50  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0884  0x00000A5A  mov           writes=EAX=0x00FF0000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0885  0x00000A60  add           writes=EBX=0xE3373212  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0886  0x00000A62  jmp           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0887  0x00000A64  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0888  0x00000A6B  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0889  0x00000A75  add           writes=EBX=0xFA4E4929  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0890  0x00000A78  add           writes=EBX=0x11656040  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0891  0x00000A7E  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0892  0x00000A84  jmp           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0893  0x00000A86  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0894  0x00000A8D  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0895  0x00000A97  add           writes=EBX=0x297D7858  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0896  0x00000A9A  mov           writes=EAX=0x18181818  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0897  0x00000AA0  and           writes=EBX=0x08181818  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0898  0x00000AA2  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0899  0x00000AA9  add           writes=EBX=0x20303030  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0900  0x00000AAC  jmp           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0901  0x00000AAE  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0902  0x00000AB8  add           writes=EBX=0x39494949  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0903  0x00000ABE  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0904  0x00000AC8  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0905  0x00000AD2  mov           writes=EAX=0x1F1F1F1F  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0906  0x00000AD8  add           writes=EBX=0x58686868  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0907  0x00000ADA  jmp           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0908  0x00000ADC  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0909  0x00000AE2  add           writes=EBX=0x72828282  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0910  0x00000AE4  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0911  0x00000AEE  add           writes=EBX=0x8C9C9C9C  flags=CF=0 ZF=0 SF=1 OF=1 PF=1 AF=0
+[OK ] #0912  0x00000AF4  and           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0913  0x00000AFE  mov           writes=ECX=0x00000010  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0914  0x00000B03  jmp           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0915  0x00000B05  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0916  0x00000B0B  add           writes=EBX=0x48585857  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=1
+[OK ] #0917  0x00000B0D  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=1
+[OK ] #0918  0x00000B14  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0919  0x00000B1E  add           writes=ECX=0x0000000F  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0920  0x00000B21  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0921  0x00000B25  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0922  0x00000B2F  add           writes=EBX=0x15252523  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0923  0x00000B35  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0924  0x00000B3F  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0925  0x00000B49  add           writes=ECX=0x0000000E  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0926  0x00000B4C  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0927  0x00000B05  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0928  0x00000B0B  add           writes=EBX=0xD0E0E0DE  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0929  0x00000B0D  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[OK ] #0930  0x00000B14  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0931  0x00000B1E  add           writes=ECX=0x0000000D  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0932  0x00000B21  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0933  0x00000B25  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0934  0x00000B2F  add           writes=EBX=0x9DADADAA  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0935  0x00000B35  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0936  0x00000B3F  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0937  0x00000B49  add           writes=ECX=0x0000000C  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0938  0x00000B4C  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0939  0x00000B05  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0940  0x00000B0B  add           writes=EBX=0x59696965  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
+[OK ] #0941  0x00000B0D  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
+[OK ] #0942  0x00000B14  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0943  0x00000B1E  add           writes=ECX=0x0000000B  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0944  0x00000B21  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0945  0x00000B25  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0946  0x00000B2F  add           writes=EBX=0x26363631  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0947  0x00000B35  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0948  0x00000B3F  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0949  0x00000B49  add           writes=ECX=0x0000000A  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0950  0x00000B4C  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0951  0x00000B05  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0952  0x00000B0B  add           writes=EBX=0xE1F1F1EC  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0953  0x00000B0D  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[OK ] #0954  0x00000B14  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0955  0x00000B1E  add           writes=ECX=0x00000009  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0956  0x00000B21  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0957  0x00000B25  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0958  0x00000B2F  add           writes=EBX=0xAEBEBEB8  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0959  0x00000B35  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0960  0x00000B3F  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0961  0x00000B49  add           writes=ECX=0x00000008  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0962  0x00000B4C  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0963  0x00000B05  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0964  0x00000B0B  add           writes=EBX=0x6A7A7A73  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=1
+[OK ] #0965  0x00000B0D  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=0 AF=1
+[OK ] #0966  0x00000B14  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0967  0x00000B1E  add           writes=ECX=0x00000007  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0968  0x00000B21  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0969  0x00000B25  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0970  0x00000B2F  add           writes=EBX=0x3747473F  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0971  0x00000B35  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0972  0x00000B3F  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0973  0x00000B49  add           writes=ECX=0x00000006  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0974  0x00000B4C  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0975  0x00000B05  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0976  0x00000B0B  add           writes=EBX=0xF30302FA  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0977  0x00000B0D  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0978  0x00000B14  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0979  0x00000B1E  add           writes=ECX=0x00000005  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0980  0x00000B21  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0981  0x00000B25  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0982  0x00000B2F  add           writes=EBX=0xBFCFCFC6  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0983  0x00000B35  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #0984  0x00000B3F  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0985  0x00000B49  add           writes=ECX=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0986  0x00000B4C  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0987  0x00000B05  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0988  0x00000B0B  add           writes=EBX=0x7B8B8B81  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
+[OK ] #0989  0x00000B0D  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=1
+[OK ] #0990  0x00000B14  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0991  0x00000B1E  add           writes=ECX=0x00000003  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0992  0x00000B21  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0993  0x00000B25  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+[OK ] #0994  0x00000B2F  add           writes=EBX=0x4858584D  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0995  0x00000B35  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=0
+[OK ] #0996  0x00000B3F  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0997  0x00000B49  add           writes=ECX=0x00000002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0998  0x00000B4C  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #0999  0x00000B05  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #1000  0x00000B0B  add           writes=EBX=0x04141408  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #1001  0x00000B0D  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #1002  0x00000B14  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #1003  0x00000B1E  add           writes=ECX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #1004  0x00000B21  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #1005  0x00000B25  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[OK ] #1006  0x00000B2F  add           writes=EBX=0xD0E0E0D4  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #1007  0x00000B35  mov           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
+[OK ] #1008  0x00000B3F  and           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #1009  0x00000B49  add           writes=ECX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #1010  0x00000B4C  jne           writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #1011  0x00000B4E  mov           writes=EAX=0x1F1F001F  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #1012  0x00000B50  mov           writes=EAX=0x1F1F0000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[OK ] #1013  0x00000B52  mov           writes=SS=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
 [ONLY_SIM] #1014  EIP=0x00000B54  hlt           SIM writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
 
 ================================================================================
-  SUMMARY: 810/1015 matched  |  2 mismatched  |  203 sim-only  |  0 rtl-only
-  (66 RTL no-op write-backs suppressed)
+  SUMMARY: 1012/1015 matched  |  2 mismatched  |  1 sim-only  |  0 rtl-only
+  (76 RTL no-op write-backs suppressed)
 ================================================================================

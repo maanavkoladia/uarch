@@ -39,7 +39,7 @@ module predecode(
 
     assign sext_inst_length = {28'b0, inst_length};
 
-    selection_logic sel_log1(.queue(queue), .queue_valid(queue_valid), .EIP(EIP), .IR(IR), .IR_valid_vect(IR_valid_vect));
+    selection_logic sel_log1(.queue(queue), .EIP(EIP), .IR(IR), .IR_valid_vect(IR_valid_vect));
 
     ppu pfs0(.opcode_index(4'd0), .modrm_index(4'd1), .IR(IR), .IR_valid_vect(IR_valid_vect),
         .total_pf_vector(total_pf_vector), .num_pfs_plusone(3'd1),

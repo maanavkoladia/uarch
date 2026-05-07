@@ -54,6 +54,18 @@
             "run Combinational LUT GEN": "true"
         },
 
+        "PreDecode length adder" : {
+            "csv" : "rtl/core/Decode/structural/gen/length_adder.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/length_adder.v",
+            "run Combinational LUT Gen": "true"
+        },
+
+        "sel_log IR" : {
+            "csv" : "rtl/core/Decode/structural/gen/ir_vector_roms.csv",
+            "outputFilePath": "rtl/core/Decode/structural/gen/ir_vector_roms.v",
+            "run Combinational LUT Gen": "true"
+        },
+
         "Predecode pf LUT" : {
             "csv" : "rtl/core/Decode/structural/gen/pf_gen.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/PF_LUT.v",
@@ -69,19 +81,19 @@
         "REP_FSM": {
             "csv": "rtl/core/Decode/structural/gen/rep_fsm.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rep_fsm.sv",
-            "run FSM SOP gen": "true"
+            "run FSM SOP gen": "false"
         },
 
         "REP_MOVS_FSM": {
             "csv": "rtl/core/Decode/structural/gen/rep_movs_fsm.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rep_movs_fsm.sv",
-            "run FSM SOP gen": "true"
+            "run FSM SOP gen": "false"
         },
 
         "REP_CMP_FSM": {
             "csv": "rtl/core/Decode/structural/gen/rep_cmp_fsm.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rep_cmp_fsm.sv",
-            "run FSM SOP gen": "true"
+            "run FSM SOP gen": "false"
         },
 
         "CONTROL_STORE": {

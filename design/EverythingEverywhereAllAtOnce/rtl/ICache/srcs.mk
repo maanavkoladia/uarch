@@ -16,7 +16,8 @@ ICACHE_PKGS = \
 
 #dont forget to add gen files when removing the icache sv files from the strucral build
 ICACHE_STRUCTURAL_SRC_FILES = \
-					$(ICACHE_PATH_INTERNAL)/structural/fanout/*.*v
+					$(ICACHE_GEN_SRC_FILES)	\
+					$(ICACHE_PATH_INTERNAL)/structural/*.*v
 
 							  
 							  

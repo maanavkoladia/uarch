@@ -103,49 +103,63 @@ wire stall_i_inv;
 // ----------------------------------------------------------------
 
 // NS_0 = (S_0 & !S_1 & !cmp_clear_i) | (S_0 & !S_2 & stall_i) | (S_0 & !S_1 & S_2) | (S_0 & S_1 & !S_2 & !mov_clear_i) | (!S_1 & S_2 & cs_mov_i & !cs_cmp_i & !stall_i) | (!S_1 & S_2 & !cs_mov_i & cs_cmp_i & !stall_i)
-wire NS_0_t0;
-`AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_1_inv, cmp_clear_i_inv)
-wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_0, S_2_inv, stall_i)
-wire NS_0_t2;
-`AND_3(NS_0_and2, 1, NS_0_t2, S_0, S_1_inv, S_2)
-wire NS_0_t3;
-`AND_4(NS_0_and3, 1, NS_0_t3, S_0, S_1, S_2_inv, mov_clear_i_inv)
-wire NS_0_t4;
-`AND_5(NS_0_and4, 1, NS_0_t4, S_1_inv, S_2, cs_mov_i, cs_cmp_i_inv, stall_i_inv)
-wire NS_0_t5;
-`AND_5(NS_0_and5, 1, NS_0_t5, S_1_inv, S_2, cs_mov_i_inv, cs_cmp_i, stall_i_inv)
+// Wide products (t4, t5) absorb two negated literals each via NOR_2.
+wire NS_0_nt0, NS_0_nt1, NS_0_nt2, NS_0_nt3, NS_0_nt4, NS_0_nt5;
+`NAND_3(NS_0_nand0, 1, NS_0_nt0, S_0, S_1_inv, cmp_clear_i_inv)
+`NAND_3(NS_0_nand1, 1, NS_0_nt1, S_0, S_2_inv, stall_i)
+`NAND_3(NS_0_nand2, 1, NS_0_nt2, S_0, S_1_inv, S_2)
+`NAND_4(NS_0_nand3, 1, NS_0_nt3, S_0, S_1, S_2_inv, mov_clear_i_inv)
+wire NS_0_t4_nor, NS_0_t5_nor;
+`NOR_2(NS_0_t4_nor2, 1, NS_0_t4_nor, cs_cmp_i, stall_i)
+`NAND_4(NS_0_nand4, 1, NS_0_nt4, NS_0_t4_nor, S_1_inv, S_2, cs_mov_i)
+`NOR_2(NS_0_t5_nor2, 1, NS_0_t5_nor, cs_mov_i, stall_i)
+`NAND_4(NS_0_nand5, 1, NS_0_nt5, NS_0_t5_nor, S_1_inv, S_2, cs_cmp_i)
 
-`OR_6(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5)
+wire NS_0_g0, NS_0_g1;
+`NAND_3(NS_0_g0_nand, 1, NS_0_g0, NS_0_nt0, NS_0_nt1, NS_0_nt2)
+`NAND_3(NS_0_g1_nand, 1, NS_0_g1, NS_0_nt3, NS_0_nt4, NS_0_nt5)
+`OR_2(NS_0_or, 1, NS_0, NS_0_g0, NS_0_g1)
 
-// NS_1 = (S_1 & !S_2 & !mov_clear_i) | (S_1 & !S_2 & stall_i) | (!S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2 & cs_mov_i & !stall_i) | (!S_0 & !S_1 & S_2 & !cs_cmp_i & !stall_i)
-wire NS_1_t0;
-`AND_3(NS_1_and0, 1, NS_1_t0, S_1, S_2_inv, mov_clear_i_inv)
-wire NS_1_t1;
-`AND_3(NS_1_and1, 1, NS_1_t1, S_1, S_2_inv, stall_i)
-wire NS_1_t2;
-`AND_3(NS_1_and2, 1, NS_1_t2, S_0_inv, S_1, S_2_inv)
-wire NS_1_t3;
-`AND_5(NS_1_and3, 1, NS_1_t3, S_0_inv, S_1_inv, S_2, cs_mov_i, stall_i_inv)
-wire NS_1_t4;
-`AND_5(NS_1_and4, 1, NS_1_t4, S_0_inv, S_1_inv, S_2, cs_cmp_i_inv, stall_i_inv)
+// NS_1 = (!S_0 & S_1 & !S_2) | (S_1 & !S_2 & !mov_clear_i) | (S_1 & !S_2 & stall_i) | (!S_0 & !S_1 & S_2 & !cs_cmp_i & !stall_i) | (!S_0 & !S_1 & S_2 & cs_mov_i & !stall_i)
+// Wide products (t3, t4) absorb two negated literals each via NOR_2 of {S_0, S_1}.
+wire NS_1_nt0, NS_1_nt1, NS_1_nt2, NS_1_nt3, NS_1_nt4;
+`NAND_3(NS_1_nand0, 1, NS_1_nt0, S_0_inv, S_1, S_2_inv)
+`NAND_3(NS_1_nand1, 1, NS_1_nt1, S_1, S_2_inv, mov_clear_i_inv)
+`NAND_3(NS_1_nand2, 1, NS_1_nt2, S_1, S_2_inv, stall_i)
+wire NS_1_t3_nor, NS_1_t4_nor;
+`NOR_2(NS_1_t3_nor2, 1, NS_1_t3_nor, cs_cmp_i, stall_i)
+`NAND_4(NS_1_nand3, 1, NS_1_nt3, NS_1_t3_nor, S_0_inv, S_1_inv, S_2)
+`NOR_2(NS_1_t4_nor2, 1, NS_1_t4_nor, S_0, S_1)
+`NAND_4(NS_1_nand4, 1, NS_1_nt4, NS_1_t4_nor, S_2, cs_mov_i, stall_i_inv)
 
-`OR_5(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4)
+wire NS_1_g0, NS_1_g1;
+`NAND_3(NS_1_g0_nand, 1, NS_1_g0, NS_1_nt0, NS_1_nt1, NS_1_nt2)
+`NAND_2(NS_1_g1_nand, 1, NS_1_g1, NS_1_nt3, NS_1_nt4)
+`OR_2(NS_1_or, 1, NS_1, NS_1_g0, NS_1_g1)
 
 // NS_2 = (S_0 & !S_1 & S_2) | (!S_1 & S_2 & stall_i) | (!S_0 & !S_1 & !S_2 & rep_prefix_i & !stall_i)
-wire NS_2_t0;
-`AND_3(NS_2_and0, 1, NS_2_t0, S_0, S_1_inv, S_2)
-wire NS_2_t1;
-`AND_3(NS_2_and1, 1, NS_2_t1, S_1_inv, S_2, stall_i)
-wire NS_2_t2;
-`AND_5(NS_2_and2, 1, NS_2_t2, S_0_inv, S_1_inv, S_2_inv, rep_prefix_i, stall_i_inv)
+// 3 product terms collapse into a single NAND_3 collector (no final OR needed).
+// Wide product (t2) absorbs three negated state literals via NOR_3.
+wire NS_2_nt0, NS_2_nt1, NS_2_nt2;
+`NAND_3(NS_2_nand0, 1, NS_2_nt0, S_0, S_1_inv, S_2)
+`NAND_3(NS_2_nand1, 1, NS_2_nt1, S_1_inv, S_2, stall_i)
+wire NS_2_t2_nor;
+`NOR_3(NS_2_t2_nor3, 1, NS_2_t2_nor, S_0, S_1, S_2)
+`NAND_3(NS_2_nand2, 1, NS_2_nt2, NS_2_t2_nor, rep_prefix_i, stall_i_inv)
 
-`OR_3(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2)
+`NAND_3(NS_2_or, 1, NS_2, NS_2_nt0, NS_2_nt1, NS_2_nt2)
 
 // movs_start_o = (!S_0 & !S_1 & S_2 & cs_mov_i & !cs_cmp_i & !stall_i)
-`AND_6(movs_start_o_and, 1, movs_start_o, S_0_inv, S_1_inv, S_2, cs_mov_i, cs_cmp_i_inv, stall_i_inv)
+// Single 6-input AND collapsed via two parallel NOR_2's feeding an AND_4.
+wire movs_start_nor_a, movs_start_nor_b;
+`NOR_2(movs_start_nor2_a, 1, movs_start_nor_a, S_0, S_1)
+`NOR_2(movs_start_nor2_b, 1, movs_start_nor_b, cs_cmp_i, stall_i)
+`AND_4(movs_start_o_and, 1, movs_start_o, movs_start_nor_a, movs_start_nor_b, S_2, cs_mov_i)
 
 // cmp_start_o = (!S_0 & !S_1 & S_2 & !cs_mov_i & cs_cmp_i & !stall_i)
-`AND_6(cmp_start_o_and, 1, cmp_start_o, S_0_inv, S_1_inv, S_2, cs_mov_i_inv, cs_cmp_i, stall_i_inv)
+wire cmp_start_nor_a, cmp_start_nor_b;
+`NOR_2(cmp_start_nor2_a, 1, cmp_start_nor_a, S_0, S_1)
+`NOR_2(cmp_start_nor2_b, 1, cmp_start_nor_b, cs_mov_i, stall_i)
+`AND_4(cmp_start_o_and, 1, cmp_start_o, cmp_start_nor_a, cmp_start_nor_b, S_2, cs_cmp_i)
 
 endmodule

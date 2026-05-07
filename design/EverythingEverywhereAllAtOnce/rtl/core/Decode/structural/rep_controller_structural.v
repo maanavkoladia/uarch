@@ -216,18 +216,62 @@ module rep_controller (
     `ADD_N(u_cnt_inc, 8, counter_inc, cnt_inc_cout, zf_sb_counter, 8'b0,   1'b1)  // counter + 1
     `ADD_N(u_cnt_dec, 8, counter_dec, cnt_dec_cout, zf_sb_counter, 8'hFF,  1'b0)  // counter - 1
 
-    wire e_or_m_n;
-    wire A;
-    wire any_change;
-    wire inc_en, counter_we;
-    `NOR_2(u_e_or_m_n,    1, e_or_m_n,   external_set_zf, rep_latches_cs_will_mod_zf)
-    `NOR_2(u_A,           1, A,          e_or_m_n,        stall)
-    `NOR_3(u_inc_en,      1, inc_en,     e_or_m_n,        stall,    clear_zf)
-    `XOR_2(u_any_change,  1, any_change, A,               clear_zf)
-    `OR_2 (u_counter_we,  1, counter_we, flush,           any_change)
+    // ---------- ORIGINAL (commented out for late-stall reorg; uncomment & delete the NEW block to revert) ----------
+    // wire e_or_m_n;
+    // wire A;
+    // wire any_change;
+    // wire inc_en, counter_we;
+    // `NOR_2(u_e_or_m_n,    1, e_or_m_n,   external_set_zf, rep_latches_cs_will_mod_zf)
+    // `NOR_2(u_A,           1, A,          e_or_m_n,        stall)
+    // `NOR_3(u_inc_en,      1, inc_en,     e_or_m_n,        stall,    clear_zf)
+    // `XOR_2(u_any_change,  1, any_change, A,               clear_zf)
+    // `OR_2 (u_counter_we,  1, counter_we, flush,           any_change)
+    //
+    // wire [7:0] counter_din;
+    // `MUX_4(u_counter_din, 8, counter_din, counter_dec, counter_inc, 8'b0, 8'b0, {flush, inc_en})
+    // -----------------------------------------------------------------------------------------------------------
 
+    // ---------- NEW: late-stall, NAND-NAND F_or_Z ----------
+    // stall now enters only one final MUX_2 for counter_we, and is removed
+    // entirely from the counter_din 8-bit datapath.
+    //
+    // With X = E|M:
+    //   F_or_Z = F + X*!C + !X*C   (NAND-NAND 3-term SOP, replaces INV->XOR->OR)
+    //   F_or_C = F + C
+    //   counter_we = S ? F_or_C : F_or_Z
+    //   Q          = X & !C   (replaces inc_en in counter_din mux select;
+    //                          equivalent because counter_we=0 in every case
+    //                          where Q != inc_en, so the flop never latches
+    //                          the differing counter_din value).
+
+    // stall-independent precompute
+    wire e_or_m_n;                  // = !X = !(E|M)
+    `NOR_2(u_e_or_m_n, 1, e_or_m_n, external_set_zf, rep_latches_cs_will_mod_zf)
+
+    wire Q;                         // Q = X & !C
+    `NOR_2(u_Q, 1, Q, e_or_m_n, clear_zf)
+
+    // F_or_Z built as 3-term NAND-NAND: F + X*!C + !X*C
+    wire flush_inv;
+    `INV_N(u_flush_inv, 1, flush, flush_inv)             // = !F
+    wire xnc_n;                     // = !(X*!C) = !X + C
+    `OR_2(u_xnc_n, 1, xnc_n, e_or_m_n, clear_zf)
+    wire nxc_n;                     // = !(!X*C) = X + !C
+    `NAND_2(u_nxc_n, 1, nxc_n, e_or_m_n, clear_zf)
+    wire F_or_Z;
+    `NAND_3(u_F_or_Z, 1, F_or_Z, flush_inv, xnc_n, nxc_n)
+
+    wire F_or_C;                    // = F + C
+    `OR_2(u_F_or_C, 1, F_or_C, flush, clear_zf)
+
+    // stall enters only here
+    wire counter_we;
+    `MUX_2(u_counter_we, 1, counter_we, F_or_Z, F_or_C, stall)
+
+    // counter_din: stall-independent; Q replaces inc_en in the mux select
     wire [7:0] counter_din;
-    `MUX_4(u_counter_din, 8, counter_din, counter_dec, counter_inc, 8'b0, 8'b0, {flush, inc_en})
+    `MUX_4(u_counter_din, 8, counter_din, counter_dec, counter_inc, 8'b0, 8'b0, {flush, Q})
+    // -------------------------------------------------------
 
     `REG_RST_WE(u_zf_sb_counter, 8, clk, rst, counter_we, counter_din, zf_sb_counter)
 

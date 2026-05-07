@@ -13,6 +13,8 @@ GEN_DECODE_SRC_FILES = \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/rep_movs_fsm.sv \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/rep_cmp_fsm.sv \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/ir_logic.v \
+						  $(DECODE_PATH_INTERNAL)/structural/gen/length_adder.v \
+						  $(DECODE_PATH_INTERNAL)/structural/gen/ir_vector_roms.v \
 						  $(DECODE_PATH_INTERNAL)/structural/gen/rr_valid_logic.v \
 
 DECODE_SRC_FILES_STRUCTURAL__INTERNAL = \
@@ -44,6 +46,7 @@ DECODE_SRC_FILES = \
 
 
 DECODE_SRC_FILES_STRUCTURAL__INTERNAL_STRUCTURAL = \
+								$(DECODE_PATH_INTERNAL)/decode_define.vh \
 								$(DECODE_PATH_INTERNAL)/structural/disp_finder_structural.v \
 								$(DECODE_PATH_INTERNAL)/structural/imm_finder_structural.v \
 								$(DECODE_PATH_INTERNAL)/structural/modrm_size.v \
@@ -62,6 +65,7 @@ DECODE_STRUCTURAL_SRC_FILES = \
 						$(GEN_DECODE_SRC_FILES) \
 						$(DECODE_SRC_FILES_STRUCTURAL__INTERNAL_STRUCTURAL) \
 						$(DECODE_PATH_INTERNAL)/structural/br_info_processing_structural.v \
+						$(DECODE_PATH_INTERNAL)/structural/control_store_top_structural.v \
 						$(DECODE_PATH_INTERNAL)/control_store_genned.sv \
 						$(DECODE_PATH_INTERNAL)/structural/control_store_structural.v \
 						$(DECODE_PATH_INTERNAL)/structural/cs_post_processor_structural.v \

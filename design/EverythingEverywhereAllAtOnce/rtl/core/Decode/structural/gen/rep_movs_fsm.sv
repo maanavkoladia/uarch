@@ -103,47 +103,53 @@ wire wait_mov_i_inv;
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (S_0 & !S_2 & stall_i) | (S_0 & !S_1 & S_2) | (S_0 & S_1 & !S_2) | (!S_1 & S_2 & cont_mov_i & !stall_i) | (!S_1 & S_2 & !wait_mov_i & !exit_mov_i & !stall_i)
-wire NS_0_t0;
-`AND_3(NS_0_and0, 1, NS_0_t0, S_0, S_2_inv, stall_i)
-wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_0, S_1_inv, S_2)
-wire NS_0_t2;
-`AND_3(NS_0_and2, 1, NS_0_t2, S_0, S_1, S_2_inv)
-wire NS_0_t3;
-`AND_4(NS_0_and3, 1, NS_0_t3, S_1_inv, S_2, cont_mov_i, stall_i_inv)
-wire NS_0_t4;
-`AND_5(NS_0_and4, 1, NS_0_t4, S_1_inv, S_2, wait_mov_i_inv, exit_mov_i_inv, stall_i_inv)
+// NS_0 = (S_0 & !S_1 & stall_i) | (S_0 & S_1 & !S_2) | (S_0 & !S_1 & S_2) | (!S_1 & S_2 & cont_mov_i & !stall_i) | (!S_1 & S_2 & !wait_mov_i & !exit_mov_i & !stall_i)
+// NAND-NAND form: sum = NAND( NAND(p0..p2), NAND(p3,p4) ) collapsed to OR_2 of two 3/2-input NANDs
+// Wide 5-input product (t4) uses NOR_3 of {wait,exit,stall} to absorb three negated literals.
+wire NS_0_nt0, NS_0_nt1, NS_0_nt2, NS_0_nt3, NS_0_nt4;
+`NAND_3(NS_0_nand0, 1, NS_0_nt0, S_0, S_1_inv, stall_i)
+`NAND_3(NS_0_nand1, 1, NS_0_nt1, S_0, S_1, S_2_inv)
+`NAND_3(NS_0_nand2, 1, NS_0_nt2, S_0, S_1_inv, S_2)
+`NAND_4(NS_0_nand3, 1, NS_0_nt3, S_1_inv, S_2, cont_mov_i, stall_i_inv)
+wire NS_0_t4_nor;
+`NOR_3(NS_0_t4_nor3, 1, NS_0_t4_nor, wait_mov_i, exit_mov_i, stall_i)
+`NAND_3(NS_0_nand4, 1, NS_0_nt4, NS_0_t4_nor, S_1_inv, S_2)
 
-`OR_5(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4)
+wire NS_0_g0, NS_0_g1;
+`NAND_3(NS_0_g0_nand, 1, NS_0_g0, NS_0_nt0, NS_0_nt1, NS_0_nt2)
+`NAND_2(NS_0_g1_nand, 1, NS_0_g1, NS_0_nt3, NS_0_nt4)
+`OR_2(NS_0_or, 1, NS_0, NS_0_g0, NS_0_g1)
 
-// NS_1 = (S_1 & !S_2 & stall_i) | (!S_0 & S_1 & S_2) | (S_0 & !S_2 & !stall_i) | (!S_0 & S_2 & !cont_mov_i & !wait_mov_i & !exit_mov_i & !stall_i)
-wire NS_1_t0;
-`AND_3(NS_1_and0, 1, NS_1_t0, S_1, S_2_inv, stall_i)
-wire NS_1_t1;
-`AND_3(NS_1_and1, 1, NS_1_t1, S_0_inv, S_1, S_2)
-wire NS_1_t2;
-`AND_3(NS_1_and2, 1, NS_1_t2, S_0, S_2_inv, stall_i_inv)
-wire NS_1_t3;
-`AND_6(NS_1_and3, 1, NS_1_t3, S_0_inv, S_2, cont_mov_i_inv, wait_mov_i_inv, exit_mov_i_inv, stall_i_inv)
+// NS_1 = (S_0 & !S_2 & !stall_i) | (!S_0 & S_1 & stall_i) | (!S_0 & S_1 & S_2) | (S_1 & !S_2 & stall_i) | (!S_0 & S_2 & !cont_mov_i & !wait_mov_i & !exit_mov_i & !stall_i)
+// Wide 6-input product (t4) uses NOR_4 of {cont,wait,exit,stall} to absorb four negated literals.
+wire NS_1_nt0, NS_1_nt1, NS_1_nt2, NS_1_nt3, NS_1_nt4;
+`NAND_3(NS_1_nand0, 1, NS_1_nt0, S_0, S_2_inv, stall_i_inv)
+`NAND_3(NS_1_nand1, 1, NS_1_nt1, S_0_inv, S_1, stall_i)
+`NAND_3(NS_1_nand2, 1, NS_1_nt2, S_0_inv, S_1, S_2)
+`NAND_3(NS_1_nand3, 1, NS_1_nt3, S_1, S_2_inv, stall_i)
+wire NS_1_t4_nor;
+`NOR_4(NS_1_t4_nor4, 1, NS_1_t4_nor, cont_mov_i, wait_mov_i, exit_mov_i, stall_i)
+`NAND_3(NS_1_nand4, 1, NS_1_nt4, NS_1_t4_nor, S_0_inv, S_2)
 
-`OR_4(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3)
+wire NS_1_g0, NS_1_g1;
+`NAND_3(NS_1_g0_nand, 1, NS_1_g0, NS_1_nt0, NS_1_nt1, NS_1_nt2)
+`NAND_2(NS_1_g1_nand, 1, NS_1_g1, NS_1_nt3, NS_1_nt4)
+`OR_2(NS_1_or, 1, NS_1, NS_1_g0, NS_1_g1)
 
-// NS_2 = (!S_0 & S_2 & wait_mov_i) | (!S_1 & S_2 & stall_i) | (!S_0 & S_1 & !stall_i) | (!S_0 & S_1 & S_2) | (!S_0 & !S_2 & start_i & !stall_i) | (!S_0 & S_2 & cont_mov_i)
-wire NS_2_t0;
-`AND_3(NS_2_and0, 1, NS_2_t0, S_0_inv, S_2, wait_mov_i)
-wire NS_2_t1;
-`AND_3(NS_2_and1, 1, NS_2_t1, S_1_inv, S_2, stall_i)
-wire NS_2_t2;
-`AND_3(NS_2_and2, 1, NS_2_t2, S_0_inv, S_1, stall_i_inv)
-wire NS_2_t3;
-`AND_3(NS_2_and3, 1, NS_2_t3, S_0_inv, S_1, S_2)
-wire NS_2_t4;
-`AND_4(NS_2_and4, 1, NS_2_t4, S_0_inv, S_2_inv, start_i, stall_i_inv)
-wire NS_2_t5;
-`AND_3(NS_2_and5, 1, NS_2_t5, S_0_inv, S_2, cont_mov_i)
+// NS_2 = (!S_0 & S_2 & stall_i) | (!S_0 & S_1 & !stall_i) | (!S_1 & S_2 & stall_i) | (!S_0 & S_2 & wait_mov_i) | (!S_0 & !S_2 & start_i & !stall_i) | (!S_0 & S_2 & cont_mov_i)
+// 6 product terms split as 3+3 into two NAND_3 collectors, OR_2 at top.
+wire NS_2_nt0, NS_2_nt1, NS_2_nt2, NS_2_nt3, NS_2_nt4, NS_2_nt5;
+`NAND_3(NS_2_nand0, 1, NS_2_nt0, S_0_inv, S_2, stall_i)
+`NAND_3(NS_2_nand1, 1, NS_2_nt1, S_0_inv, S_1, stall_i_inv)
+`NAND_3(NS_2_nand2, 1, NS_2_nt2, S_1_inv, S_2, stall_i)
+`NAND_3(NS_2_nand3, 1, NS_2_nt3, S_0_inv, S_2, wait_mov_i)
+`NAND_4(NS_2_nand4, 1, NS_2_nt4, S_0_inv, S_2_inv, start_i, stall_i_inv)
+`NAND_3(NS_2_nand5, 1, NS_2_nt5, S_0_inv, S_2, cont_mov_i)
 
-`OR_6(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3, NS_2_t4, NS_2_t5)
+wire NS_2_g0, NS_2_g1;
+`NAND_3(NS_2_g0_nand, 1, NS_2_g0, NS_2_nt0, NS_2_nt1, NS_2_nt2)
+`NAND_3(NS_2_g1_nand, 1, NS_2_g1, NS_2_nt3, NS_2_nt4, NS_2_nt5)
+`OR_2(NS_2_or, 1, NS_2, NS_2_g0, NS_2_g1)
 
 // clear_rep_o = (!S_0 & !S_1 & S_2 & !cont_mov_i & !wait_mov_i & exit_mov_i & !stall_i)
 `AND_7(clear_rep_o_and, 1, clear_rep_o, S_0_inv, S_1_inv, S_2, cont_mov_i_inv, wait_mov_i_inv, exit_mov_i, stall_i_inv)

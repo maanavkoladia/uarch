@@ -17,6 +17,8 @@ allTestCasePaths=(
     "config/simpleFarTest"
     "config/TheBigOne"
     "config/AluTest"
+    "config/MMIO"
+    "config/RepTesting"
 )
 
 
