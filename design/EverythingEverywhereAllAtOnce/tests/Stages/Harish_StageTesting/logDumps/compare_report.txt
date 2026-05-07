@@ -340,7 +340,7 @@
 [OK ] #0333  EIP=0x00000608  mov           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0334  EIP=0x00000612  mov           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0335  EIP=0x00000617  mov           CF=0  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0336  EIP=0x0000061C  cmpxchg       CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0   
+[OK ] #0336  EIP=0x0000061C  cmpxchg       CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0337  EIP=0x00000623  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0338  EIP=0x00000625  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0339  EIP=0x0000062B  mov           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0

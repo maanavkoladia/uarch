@@ -81,13 +81,24 @@ module EXP_Set_logic (
 
     // ----------------------------------------------------------------
     // exp_pipe_clear = dc_exp ? dc_pipe_clear : f_pipe_clear
+    //
+    // exp_pipe_clear has 10 consumers across Fetch + downstream stages
+    // (mux2$ rated < 10).  1-stage bufferH16$ (rated 16) clears the
+    // violation; +0.24 ns added on the EXP set path -- accepted.
     // ----------------------------------------------------------------
-    `MUX_2(u_exp_mux, 1, exp_pipe_clear, f_pipe_clear, dc_pipe_clear, dc_exp)
+    wire exp_pipe_clear_raw;
+    `MUX_2(u_exp_mux, 1, exp_pipe_clear_raw, f_pipe_clear, dc_pipe_clear, dc_exp)
+    bufferH16$ u_exp_pipe_clear_buf (.out(exp_pipe_clear), .in(exp_pipe_clear_raw));
 
     // ----------------------------------------------------------------
     // int_pipe_clear (8-input AND)
+    //
+    // The internal and3$ inside MPS_AND_IN8$ has fanout 5 (and3$ rated
+    // < 5).  1-stage bufferH16$ on int_pipe_clear absorbs the load
+    // there as well as on the external consumers.
     // ----------------------------------------------------------------
-    `AND_8(u_int_pc, 1, int_pipe_clear,
+    wire int_pipe_clear_raw;
+    `AND_8(u_int_pc, 1, int_pipe_clear_raw,
            invalid_instruction,
            not_rr_valid,
            not_dc_valid,
@@ -96,6 +107,7 @@ module EXP_Set_logic (
            not_wb_valid,
            int_set,
            not_int_mode_jk)
+    bufferH16$ u_int_pipe_clear_buf (.out(int_pipe_clear), .in(int_pipe_clear_raw));
 
     // ----------------------------------------------------------------
     // dc_exp_set is just dc_pipe_clear republished

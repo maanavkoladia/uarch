@@ -226,8 +226,18 @@ module Fetch (
     wire        btb_br_ucond;
 
     // SPC_Sel_Logic outputs (spc_sel_logic_output_t)
-    wire [1:0]  spc_sel_w;
-    wire        spc_sel_br_target_sel;
+    // SPC_Sel_Logic exposes sel as TWO 2-bit ports (sel_lo, sel_hi)
+    // each fed by its own bufferH16$ inside SPC_Sel_Logic. Each feeds
+    // one half of the split parent u_next_spc_mux (16-bit each).
+    wire [1:0]  spc_sel_w_lo;
+    wire [1:0]  spc_sel_w_hi;
+    // SPC_Sel_Logic now exposes br_target_sel as TWO output ports (each
+    // bufferH16$-driven inside SPC_Sel_Logic from a separate XCL_stall
+    // duplicate flop). Each port drives one half of the split parent
+    // u_br_target_mux below. Functionally identical to the old single
+    // br_target_sel (both ports always hold the same value).
+    wire        spc_sel_br_target_sel_lo;
+    wire        spc_sel_br_target_sel_hi;
     wire [31:0] spc_sel_br_target;
     wire        spc_sel_flush_reg;
 
@@ -237,6 +247,14 @@ module Fetch (
     // IDM_Invalidate_Logic outputs
     wire [3:0]  idm_invalidate_w;
     wire        idm_invalidate_no_writes;
+
+    // Phase-1B: pre-computed activation+no_writes gate fed into
+    // IDM_Ctrl_Logic.  idm_loadable = (icache_hit | exp_mode_jk_0 |
+    // int_mode_jk) & ~no_writes -- one AND chain shared by all 4 IDM
+    // slots (vs the per-slot OR_3+INV+NAND_4 the module used to do).
+    wire        idm_active_w;
+    wire        idm_no_writes_n;
+    wire        idm_loadable;
 
     // TLB outputs (tlb_outputs_t)
     wire [14:0] tlb_physical_addr;
@@ -365,19 +383,59 @@ module Fetch (
     `AND_2(u_f_exp,              1, f_exp,             tlb_or_exp, not_exp_mode_jk_0)
 
     // ----------------------------------------------------------------
-    // exp_or_int = exp_mode_jk[0] | exp_mode_jk[1] | int_mode_jk
+    // exp_or_int = exp_mode_jk_0 | int_mode_jk
+    //
+    // (exp_mode_jk_1 is a subset of exp_mode_jk_0 -- DC-specific
+    // exception, exp_mode_jk_0 also fires for any general exception --
+    // so OR_2 captures the same set of exception/interrupt cycles as
+    // the original OR_3.)
+    //
+    // Logic-duplicated 10x to clear the 160-fanout violation:
+    //   8 buffers x 16 data sel pins  = 128  (data IDM mux)
+    //   2 buffers x 16 PC   sel pins  =  32  (PC mux split into 2x16)
+    //   ----                         -----
+    //   10 buffers                    160 sel pins (each within rated 16)
+    //
+    // Path: jk_dup.Q -> or2$ -> bufferH16$ -> mux2$.sel
+    //       (one buffer stage on data-mux sel CP, ~0.24 ns added)
     // ----------------------------------------------------------------
-    `OR_3(u_exp_or_int, 1, exp_or_int, exp_mode_jk_0, exp_mode_jk_1, int_mode_jk)
+    // Forward declarations for the JK dup flops -- the actual REG_RST_WE
+    // instances are below near the JK flop block. Declared here so the
+    // OR_2 generate immediately following (g_exp_or_int) does not create
+    // implicit local wires inside its generate scope.
+    wire [9:0] exp_mode_jk_0_dup;
+    wire [9:0] int_mode_jk_dup;
+
+    wire [9:0] exp_or_int_dup;     // OR_2 outputs (raw)
+    wire [9:0] exp_or_int_buf;     // bufferH16$ outputs -> mux selects
+
+    genvar gor;
+    generate
+        for (gor = 0; gor < 10; gor = gor + 1) begin : g_exp_or_int
+            `OR_2(u_or, 1, exp_or_int_dup[gor],
+                  exp_mode_jk_0_dup[gor], int_mode_jk_dup[gor])
+            bufferH16$ u_buf (.out(exp_or_int_buf[gor]),
+                              .in (exp_or_int_dup[gor]));
+        end
+    endgenerate
+
+    // exp_or_int alias kept for any external reference (currently none).
+    assign exp_or_int = exp_or_int_buf[0];
 
     // ----------------------------------------------------------------
     // idm_ctrl_data_in[i] = exp_or_int ? rom_data_out[i]
     //                                  : icache_info_i.instruction_line[i]
+    //
+    // 16 generate iterations packed into 8 buffers (2 iterations per
+    // buffer = 16 mux2$.sel pins per buffer, exactly bufferH16$ rated).
     // ----------------------------------------------------------------
     genvar gd;
     generate
         for (gd = 0; gd < 16; gd = gd + 1) begin : g_idm_data_mux
             `MUX_2(u_idm_data_mux, 8, idm_ctrl_data_in[gd*8 +: 8],
-                    icache_info_instruction_line[gd*8 +: 8], rom_data_out[gd*8 +: 8], exp_or_int)
+                    icache_info_instruction_line[gd*8 +: 8],
+                    rom_data_out[gd*8 +: 8],
+                    exp_or_int_buf[gd / 2])
         end
     endgenerate
 
@@ -390,16 +448,30 @@ module Fetch (
 
     // ----------------------------------------------------------------
     // br_target = br_target_sel ? spc_sel.br_target : btb.br_target
+    //
+    // Split into two 16-bit halves, each gated by a separate buffered
+    // br_target_sel port from SPC_Sel_Logic.  Functionally identical to
+    // the old single-mux (both ports hold the same XCL_stall value).
+    // Each parent mux selector drives 16 mux2$.sel pins (within rated).
     // ----------------------------------------------------------------
-    `MUX_2(u_br_target_mux, 32, br_target,
-            btb_br_target, spc_sel_br_target,
-            spc_sel_br_target_sel)
+    `MUX_2(u_br_target_mux_lo, 16, br_target[15:0],
+            btb_br_target[15:0],  spc_sel_br_target[15:0],
+            spc_sel_br_target_sel_lo)
+    `MUX_2(u_br_target_mux_hi, 16, br_target[31:16],
+            btb_br_target[31:16], spc_sel_br_target[31:16],
+            spc_sel_br_target_sel_hi)
 
     // ----------------------------------------------------------------
     // spc_2_IDM_CTRL = exp_or_int ? 32'h0 : SPC
+    //
+    // Split the 32-bit MUX_2 into two 16-bit halves, each gated by its
+    // own buffered exp_or_int (buffers 8 and 9), so each buffer drives
+    // exactly 16 mux2$.sel pins (within rated 16).
     // ----------------------------------------------------------------
-    `MUX_2(u_spc_2_idm_ctrl_mux, 32, spc_2_IDM_CTRL,
-            SPC, 32'h00000000, exp_or_int)
+    `MUX_2(u_spc_2_idm_ctrl_mux_lo, 16, spc_2_IDM_CTRL[15:0],
+            SPC[15:0],  16'h0000, exp_or_int_buf[8])
+    `MUX_2(u_spc_2_idm_ctrl_mux_hi, 16, spc_2_IDM_CTRL[31:16],
+            SPC[31:16], 16'h0000, exp_or_int_buf[9])
 
     // ----------------------------------------------------------------
     // spc_16 = SPC + 16
@@ -413,14 +485,35 @@ module Fetch (
     assign br_restore_spc_aligned = {br_restore_spc[31:4], 4'b0000};
     assign br_target_aligned      = {br_target[31:4],      4'b0000};
 
-    `MUX_4(u_next_spc_mux, 32, next_spc,
-            SPC, spc_16, br_restore_spc_aligned, br_target_aligned,
-            spc_sel_w)
+    // u_next_spc_mux split 32->16+16 so each sel bit only drives 16 mux2$.sel
+    // pins per half (within bufferH16$ rated 16). Each half consumes the
+    // matching sel_lo/sel_hi buffered output from SPC_Sel_Logic.
+    `MUX_4(u_next_spc_mux_lo, 16, next_spc[15:0],
+            SPC[15:0], spc_16[15:0],
+            br_restore_spc_aligned[15:0], br_target_aligned[15:0],
+            spc_sel_w_lo)
+    `MUX_4(u_next_spc_mux_hi, 16, next_spc[31:16],
+            SPC[31:16], spc_16[31:16],
+            br_restore_spc_aligned[31:16], br_target_aligned[31:16],
+            spc_sel_w_hi)
 
     // ----------------------------------------------------------------
     // SPC register
+    //
+    // u_spc_reg.Q[*] fanout 9 per bit (BTB index/tag, GShare PC bits,
+    // spc_2_IDM_CTRL mux, spc_16 adder, seg xlation, IDM ctrl decode,
+    // SPC_Sel_Logic).  reg64e$ rated < 5 so 9 violates per bit.
+    // 1-stage bufferH16$ per bit (32 buffers) clears the violation;
+    // +0.24 ns added to SPC distribution.
     // ----------------------------------------------------------------
-    `REG_RST(u_spc_reg, 32, clk, rst, next_spc, SPC)
+    wire [31:0] SPC_raw;
+    `REG_RST(u_spc_reg, 32, clk, rst, next_spc, SPC_raw)
+    genvar gs;
+    generate
+        for (gs = 0; gs < 32; gs = gs + 1) begin : g_spc_buf
+            bufferH16$ u_spc_buf (.out(SPC[gs]), .in(SPC_raw[gs]));
+        end
+    endgenerate
 
     // ----------------------------------------------------------------
     // Mode latches (clear-dominates):
@@ -459,10 +552,49 @@ module Fetch (
             exp_set_int_pipe_clear, not_clr_exp_mode)
     `REG_RST_WE(u_int_mode_jk_reg, 1, clk, rst, int_we, int_d, int_mode_jk)
 
-    // DMA_int_jk
+    // ----------------------------------------------------------------
+    // exp_or_int duplicate JK flops
+    //
+    // exp_mode_jk_0 fires for any general exception (including the
+    // DC-specific case which also sets exp_mode_jk_1), so the data-mux
+    // gate simplifies to (exp_mode_jk_0 | int_mode_jk). Only those two
+    // signals need duplication.
+    //
+    // 10 dup copies each of exp_mode_jk_0 and int_mode_jk drive 10 OR_2
+    // copies, each followed by a single bufferH16$ that fans out to 16
+    // mux2$.sel pins.  WE/D for the dup flops is buffered (one
+    // bufferH16$ per WE/D net) so the OR_2/AND_2 setup-path drivers see
+    // fanout 2 (original flop + buffer), not 11.
+    // ----------------------------------------------------------------
+    wire exp0_we_buf, exp0_d_buf;
+    wire int_we_buf,  int_d_buf;
+    bufferH16$ u_buf_exp0_we_dup (.out(exp0_we_buf), .in(exp0_we));
+    bufferH16$ u_buf_exp0_d_dup  (.out(exp0_d_buf),  .in(exp0_d));
+    bufferH16$ u_buf_int_we_dup  (.out(int_we_buf),  .in(int_we));
+    bufferH16$ u_buf_int_d_dup   (.out(int_d_buf),   .in(int_d));
+
+    // Declarations moved up to top of module (near other dup-flop wire
+    // declarations) so the OR_2 generate at the exp_or_int section can
+    // reference them without the synth tool creating implicit wires.
+    genvar dk;
+    generate
+        for (dk = 0; dk < 10; dk = dk + 1) begin : g_jk_dup
+            `REG_RST_WE(u_e0, 1, clk, rst, exp0_we_buf, exp0_d_buf,
+                        exp_mode_jk_0_dup[dk])
+            `REG_RST_WE(u_in, 1, clk, rst, int_we_buf,  int_d_buf,
+                        int_mode_jk_dup[dk])
+        end
+    endgenerate
+
+    // DMA_int_jk -- 1-stage bufferH16$ on the flop Q output to clear
+    // the fanout-7 violation (3 module-port consumers expanding to 7
+    // gate-level pins).  Buffer rated 16; +0.24 ns on the DMA-int
+    // distribution, off the Fetch CP.
+    wire DMA_int_jk_raw;
     `OR_2 (u_dma_we, 1, dma_we, dma_int, int_mode_jk)
     `AND_2(u_dma_d,  1, dma_d,  dma_int, not_int_mode_jk)
-    `REG_RST_WE(u_dma_int_jk_reg, 1, clk, rst, dma_we, dma_d, DMA_int_jk)
+    `REG_RST_WE(u_dma_int_jk_reg, 1, clk, rst, dma_we, dma_d, DMA_int_jk_raw)
+    bufferH16$ u_dma_int_jk_buf (.out(DMA_int_jk), .in(DMA_int_jk_raw));
 
     // ----------------------------------------------------------------
     // Sub-modules
@@ -515,21 +647,31 @@ module Fetch (
         .pred_taken            (predictor_taken),
         .idm_ctrl_push_success (idmc_push_success_w),
 
-        .sel           (spc_sel_w),
-        .br_target_sel (spc_sel_br_target_sel),
-        .br_target     (spc_sel_br_target),
-        .flush_reg     (spc_sel_flush_reg)
+        .sel_lo           (spc_sel_w_lo),
+        .sel_hi           (spc_sel_w_hi),
+        .br_target_sel_lo (spc_sel_br_target_sel_lo),
+        .br_target_sel_hi (spc_sel_br_target_sel_hi),
+        .br_target        (spc_sel_br_target),
+        .flush_reg        (spc_sel_flush_reg)
     );
 
+    // Phase-1B: pre-compute idm_loadable for IDM_Ctrl_Logic so the per-slot
+    // wr_en chain shrinks from NAND_4 to NAND_3.
+    //   idm_active   = icache_hit | exp_mode_jk_0 | int_mode_jk
+    //   idm_loadable = idm_active & ~no_writes
+    `OR_3 (u_idm_active,    1, idm_active_w,
+           icache_info_hit, exp_mode_jk_0, int_mode_jk)
+    `INV_N(u_idm_no_writes, 1, idm_invalidate_no_writes, idm_no_writes_n)
+    `AND_2(u_idm_loadable,  1, idm_loadable, idm_active_w, idm_no_writes_n)
+
     IDM_Ctrl_Logic idm_ctrl_logic (
-        .exp_mode (exp_mode_jk_0),
-        .int_mode (int_mode_jk),
         .spc      (spc_2_IDM_CTRL),
 
         .idm_slot_valid (idm_slot_valid_w),
 
-        .invalidate (idm_invalidate_w),
-        .no_writes  (idm_invalidate_no_writes),
+        .invalidate    (idm_invalidate_w),
+
+        .idm_loadable  (idm_loadable),
 
         .btb_hit       (btb_hit),
         .btb_br_target (btb_br_target),
@@ -537,7 +679,6 @@ module Fetch (
         .btb_XCL       (btb_XCL),
 
         .pred_taken    (predictor_taken),
-        .icache_hit    (icache_info_hit),
 
         .spc_sel_flush_reg (spc_sel_flush_reg),
 

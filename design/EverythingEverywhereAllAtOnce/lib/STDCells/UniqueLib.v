@@ -647,10 +647,12 @@ module MPS_COMP_EQ #(
             );
 
         end else begin : EQ_UNSUPPORTED
+            // synopsys translate_off
             initial begin
                 $fatal(1, "MPS_COMP_EQ: WIDTH=%0d not supported. Aldulowed: 2,3,4,5,6,8,9,24,28.",
                        WIDTH);
             end
+            // synopsys translate_on
         end
 
     endgenerate

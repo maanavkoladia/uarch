@@ -3,8 +3,14 @@ wire        exe_latches_valid; \
 wire        exe_latches_cs_ST_OP; \
 wire [5:0]  exe_latches_cs_OP_TYPE; \
 wire [4:0]  exe_latches_cs_alu_inputA_sel; \
+wire [4:0]  exe_latches_cs_alu_inputA_sel_b; \
+wire [4:0]  exe_latches_cs_alu_inputA_sel_c; \
 wire [4:0]  exe_latches_cs_alu_inputB_sel; \
+wire [4:0]  exe_latches_cs_alu_inputB_sel_b; \
+wire [4:0]  exe_latches_cs_alu_inputB_sel_c; \
 wire [4:0]  exe_latches_cs_branch_target_sel; \
+wire [4:0]  exe_latches_cs_branch_target_sel_b; \
+wire [4:0]  exe_latches_cs_branch_target_sel_c; \
 wire        exe_latches_cs_shift_by_one; \
 wire        exe_latches_cs_br_ucond; \
 wire        exe_latches_cs_relative_branch; \
@@ -92,8 +98,14 @@ EXE_Latches exe_latches_unit ( \
     .latches_cs_ST_OP_o                        (exe_latches_cs_ST_OP), \
     .latches_cs_OP_TYPE_o                      (exe_latches_cs_OP_TYPE), \
     .latches_cs_alu_inputA_sel_o               (exe_latches_cs_alu_inputA_sel), \
+    .latches_cs_alu_inputA_sel_b_o             (exe_latches_cs_alu_inputA_sel_b), \
+    .latches_cs_alu_inputA_sel_c_o             (exe_latches_cs_alu_inputA_sel_c), \
     .latches_cs_alu_inputB_sel_o               (exe_latches_cs_alu_inputB_sel), \
+    .latches_cs_alu_inputB_sel_b_o             (exe_latches_cs_alu_inputB_sel_b), \
+    .latches_cs_alu_inputB_sel_c_o             (exe_latches_cs_alu_inputB_sel_c), \
     .latches_cs_branch_target_sel_o            (exe_latches_cs_branch_target_sel), \
+    .latches_cs_branch_target_sel_b_o          (exe_latches_cs_branch_target_sel_b), \
+    .latches_cs_branch_target_sel_c_o          (exe_latches_cs_branch_target_sel_c), \
     .latches_cs_shift_by_one_o                 (exe_latches_cs_shift_by_one), \
     .latches_cs_br_ucond_o                     (exe_latches_cs_br_ucond), \
     .latches_cs_relative_branch_o              (exe_latches_cs_relative_branch), \
