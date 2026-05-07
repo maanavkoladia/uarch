@@ -104,7 +104,9 @@ module predecode(
     wire [3:0]  ppu_disp_needed_00,      ppu_disp_needed_01,      ppu_disp_needed_10,      ppu_disp_needed_11;
     wire [3:0]  ppu_sib_size_00,         ppu_sib_size_01,         ppu_sib_size_10,         ppu_sib_size_11;
     wire [1:0] num_pfs;
+    wire [1:0] num_pfs_duplicate0, num_pfs_duplicate1, num_pfs_duplicate2;
     wire [9:0] pf_vector0, pf_vector1, pf_vector2;
+    wire [9:0] total_pf_vector_duplicate0, total_pf_vector_duplicate1, total_pf_vector_duplicate2;
     wire [31:0] sext_inst_length;
     wire inst_length_cout;
     wire true_inst_valid;
@@ -272,17 +274,22 @@ module predecode(
     `MUX_4(sib_size_mux_11, 1, sib_size_11, ppu_sib_size_11[0], ppu_sib_size_11[1], ppu_sib_size_11[2],
         ppu_sib_size_11[3], {num_pfs[1], num_pfs[0]})
 
-    `MUX_4(opcode_mux, 8, opcode_byte, IR[0*8 +: 8], IR[1*8 +: 8], IR[2*8 +: 8],
-        IR[3*8 +: 8], {num_pfs[1], num_pfs[0]})
-    `MUX_4(modrm_mux, 8, modrm_byte, IR[1*8 +: 8], IR[2*8 +: 8], IR[3*8 +: 8],
-        IR[4*8 +: 8], {num_pfs[1], num_pfs[0]})
+    `MUX_4_H8(opcode_mux, 8, opcode_byte, IR[0*8 +: 8], IR[1*8 +: 8], IR[2*8 +: 8],
+        IR[3*8 +: 8], {num_pfs[1], num_pfs[0]}, {num_pfs_duplicate1[1], num_pfs_duplicate1[0]})
+    `MUX_4_H8(modrm_mux, 8, modrm_byte, IR[1*8 +: 8], IR[2*8 +: 8], IR[3*8 +: 8],
+        IR[4*8 +: 8], {num_pfs[1], num_pfs[0]}, {num_pfs_duplicate2[1], num_pfs_duplicate2[0]})
 
 
-
-    `MUX_4(length_mux, 4, inst_length, inst_length_00, inst_length_01, inst_length_10,
+    wire [3:0] inst_length_temp;
+    `MUX_4(length_mux, 4, inst_length_temp, inst_length_00, inst_length_01, inst_length_10,
         inst_length_11, {total_pf_vector[1], total_pf_vector[3]})
-    `MUX_4(sib_mux, 8, sib_byte, sib_byte_00, sib_byte_01, sib_byte_10,
-        sib_byte_11, {total_pf_vector[1], total_pf_vector[3]})
+    bufferH256$ buf_length0(.out(inst_length[0]), .in(inst_length_temp[0]));
+    bufferH256$ buf_length1(.out(inst_length[1]), .in(inst_length_temp[1]));
+    bufferH256$ buf_length2(.out(inst_length[2]), .in(inst_length_temp[2]));
+    bufferH256$ buf_length3(.out(inst_length[3]), .in(inst_length_temp[3]));
+
+    `MUX_4_H8(sib_mux, 8, sib_byte, sib_byte_00, sib_byte_01, sib_byte_10,
+        sib_byte_11, {total_pf_vector[1], total_pf_vector[3]}, {total_pf_vector_duplicate0[1], total_pf_vector_duplicate0[3]})
     `MUX_4(disp_mux, 32, disp, disp_00, disp_01, disp_10,
         disp_11, {total_pf_vector[1], total_pf_vector[3]})
     `MUX_4(disp_size_mux, 1, disp_size, disp_size_00, disp_size_01, disp_size_10,
@@ -301,9 +308,18 @@ module predecode(
     pf_checker checker2(.IRbyte(IR[2*8 +: 8]), .pf(pf2), .pf_vector(pf_vector2));
 
     num_pf_gen num_pf_gen0(pf0, pf1 ,pf2, num_pfs);
+    num_pf_gen num_pf_gen0_dup0(pf0, pf1, pf2, num_pfs_duplicate0);
+    num_pf_gen num_pf_gen0_dup1(pf0, pf1, pf2, num_pfs_duplicate1);
+    num_pf_gen num_pf_gen0_dup2(pf0, pf1, pf2, num_pfs_duplicate2);
 
-    pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2), 
+    pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2),
         .total_pf_vector(total_pf_vector));
+    pf_vector_gen vec_gen_dup0(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2),
+        .total_pf_vector(total_pf_vector_duplicate0));
+    pf_vector_gen vec_gen_dup1(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2),
+        .total_pf_vector(total_pf_vector_duplicate1));
+    pf_vector_gen vec_gen_dup2(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2),
+        .total_pf_vector(total_pf_vector_duplicate2));
 
 
     wire possible_invalid_inst [0:15];
@@ -324,12 +340,13 @@ module predecode(
     endgenerate 
 
     //mux16_32 neip_picker_mux(.in(possible_eips), .sel0(inst_length[0]), .sel1(inst_length[1]), .sel2(inst_length[2]), .sel3(inst_length[3]), .out(NEIP));
-    `MUX_16(neip_picker_mux, 32, NEIP, 
-        possible_neips[0], possible_neips[1], possible_neips[2], possible_neips[3], 
-        possible_neips[4], possible_neips[5], possible_neips[6], possible_neips[7], 
-        possible_neips[8], possible_neips[9], possible_neips[10], possible_neips[11], 
-        possible_neips[12], possible_neips[13], possible_neips[14], possible_neips[15], 
-        inst_length)
+    `MUX_16_H32(neip_picker_mux, 32, NEIP,
+        possible_neips[0], possible_neips[1], possible_neips[2], possible_neips[3],
+        possible_neips[4], possible_neips[5], possible_neips[6], possible_neips[7],
+        possible_neips[8], possible_neips[9], possible_neips[10], possible_neips[11],
+        possible_neips[12], possible_neips[13], possible_neips[14], possible_neips[15],
+        inst_length, inst_length, inst_length, inst_length,
+        inst_length, inst_length, inst_length, inst_length)
 
     // generate
     //     for (i = 1; i < 16; i++) begin : possible_invalid_inst_g
@@ -347,12 +364,13 @@ module predecode(
         end
     endgenerate
 
-    `MUX_16(invalid_inst_picker_mux, 1, invalid_inst,
+    `MUX_16_H32(invalid_inst_picker_mux, 1, invalid_inst,
         possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
         possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
         possible_invalid_inst[8], possible_invalid_inst[9], possible_invalid_inst[10], possible_invalid_inst[11],
         possible_invalid_inst[12], possible_invalid_inst[13], possible_invalid_inst[14], possible_invalid_inst[15],
-        inst_length)
+        inst_length, inst_length, inst_length, inst_length,
+        inst_length, inst_length, inst_length, inst_length)
 
 
 

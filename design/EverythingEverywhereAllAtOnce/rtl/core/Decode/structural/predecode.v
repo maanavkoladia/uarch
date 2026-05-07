@@ -30,6 +30,7 @@ module predecode(
     wire [3:0] ppu_disp_needed;
     wire [3:0] ppu_sib_size;
     wire [1:0] num_pfs;
+    wire [1:0] num_pfs_duplicate0, num_pfs_duplicate1, num_pfs_duplicate2;
     wire [9:0] pf_vector0, pf_vector1, pf_vector2;
     wire [31:0] sext_inst_length;
     wire inst_length_cout;
@@ -75,20 +76,20 @@ module predecode(
     // =====================
     // SIB byte (8-bit)
     // =====================
-    `MUX_4(sib_mux, 8, sib_byte, ppu_sib_byte[0], ppu_sib_byte[1], ppu_sib_byte[2], ppu_sib_byte[3],
-        {num_pfs[1], num_pfs[0]})
+    `MUX_4_H8(sib_mux, 8, sib_byte, ppu_sib_byte[0], ppu_sib_byte[1], ppu_sib_byte[2], ppu_sib_byte[3],
+        {num_pfs[1], num_pfs[0]}, {num_pfs_duplicate0[1], num_pfs_duplicate0[0]})
 
     // =====================
     // Opcode byte (8-bit)
     // =====================
-    `MUX_4(opcode_mux, 8, opcode_byte, IR[0], IR[1], IR[2],
-        IR[3], {num_pfs[1], num_pfs[0]})
+    `MUX_4_H8(opcode_mux, 8, opcode_byte, IR[0], IR[1], IR[2],
+        IR[3], {num_pfs[1], num_pfs[0]}, {num_pfs_duplicate1[1], num_pfs_duplicate1[0]})
 
     // =====================
     // ModRM byte (8-bit)
     // =====================
-    `MUX_4(modrm_mux, 8, modrm_byte, IR[1], IR[2], IR[3],
-        IR[4], {num_pfs[1], num_pfs[0]})
+    `MUX_4_H8(modrm_mux, 8, modrm_byte, IR[1], IR[2], IR[3],
+        IR[4], {num_pfs[1], num_pfs[0]}, {num_pfs_duplicate2[1], num_pfs_duplicate2[0]})
 
     // =====================
     // Displacement (32-bit)
@@ -133,6 +134,9 @@ module predecode(
     pf_checker checker1(.IRbyte(IR[1]), .pf(pf1), .pf_vector(pf_vector1));
     pf_checker checker2(.IRbyte(IR[2]), .pf(pf2), .pf_vector(pf_vector2));
     num_pf_gen num_pf_gen0(pf0, pf1 ,pf2, num_pfs);
+    num_pf_gen num_pf_gen0_dup0(pf0, pf1, pf2, num_pfs_duplicate0);
+    num_pf_gen num_pf_gen0_dup1(pf0, pf1, pf2, num_pfs_duplicate1);
+    num_pf_gen num_pf_gen0_dup2(pf0, pf1, pf2, num_pfs_duplicate2);
     pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2), 
         .total_pf_vector(total_pf_vector));
 

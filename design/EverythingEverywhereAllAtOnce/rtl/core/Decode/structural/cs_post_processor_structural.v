@@ -172,8 +172,13 @@ module cs_post_processor (
     wire [2:0] reg_field;
     assign reg_field = modrm_byte[5:3];
 
-    wire rr_cs_o_LD_OP_holder;
-    `MUX_2(ld_op_holder_mux,      1,          rr_cs_o_LD_OP_holder,  rr_cs_i_LD_OP,             1'b0,    invalid_inst)
+    // Parallel ld-op-holder muxes: independent drivers for the high-fanout
+    // net split between overriden_br_sel_mux's H8 lo/hi halves and the
+    // rr_cs_o_LD_OP output port, replacing what would otherwise be a
+    // single-source fanout-of-6 violation.
+    wire rr_cs_o_LD_OP_holder, rr_cs_o_LD_OP_holder_duplicate;
+    `MUX_2(ld_op_holder_mux,     1, rr_cs_o_LD_OP_holder,           rr_cs_i_LD_OP, 1'b0, invalid_inst)
+    `MUX_2(ld_op_holder_mux_dup, 1, rr_cs_o_LD_OP_holder_duplicate, rr_cs_i_LD_OP, 1'b0, invalid_inst)
 
     // =====================
     // op_in_modrm_subset decode
@@ -219,17 +224,20 @@ module cs_post_processor (
     wire ff_jmp_push;
     `OR_2(ff_jmp_push_or, 1, ff_jmp_push, ff_jmp, ff_push)
 
-    // overriden_br_sel
+    // overriden_br_sel — H8 split so the LD_OP_holder fanout is shared between
+    // the lo (bits [3:0]) and hi (bit [4]) halves via two parallel ld-op-holder
+    // mux instances.
     wire [`SRC_SEL_W-1:0] overriden_br_sel;
-    `MUX_4(overriden_br_sel_mux, `SRC_SEL_W, overriden_br_sel,
+    `MUX_4_H8(overriden_br_sel_mux, `SRC_SEL_W, overriden_br_sel,
             exe_cs_i_branch_target_sel,
             exe_cs_i_branch_target_sel,
             `DR_REGISTER,
             `BUF32,
-            {is_CTRL, rr_cs_o_LD_OP_holder})
+            {is_CTRL, rr_cs_o_LD_OP_holder},
+            {is_CTRL, rr_cs_o_LD_OP_holder_duplicate})
 
     //shf, ctrl, alu optype selection for each
-    wire [`EXE_OP_W-1:0] shf_overriden_op_type, ctrl_overriden_op_type, alu_overriden_op_type, alu_overriden_sub_op_type;
+    wire [`EXE_OP_W-1:0] shf_overriden_op_type, ctrl_overriden_op_type, alu_overriden_op_type, alu_overriden_sub_op_type, alu_overriden_sub_op_type0;
     wire [`EXE_OP_W-1:0] overriden_op_type;
     `MUX_2_H8(shf_overriden_op_type_mux, `EXE_OP_W, shf_overriden_op_type, `SAR, `SAL, rf_eq4, rf_eq4_duplicate)
     `MUX_4_H8(ctrl_overriden_op_type_mux, `EXE_OP_W, ctrl_overriden_op_type,
@@ -239,6 +247,7 @@ module cs_post_processor (
             `CALL,
             {rf_eq4, rf_eq2}, {rf_eq4_duplicate, rf_eq2_duplicate})
     `MUX_2_H8(alu_overriden_sub_op_type_mux, `EXE_OP_W, alu_overriden_sub_op_type, `AND, `SBB, rf_eq3, rf_eq3_duplicate)
+    `MUX_2_H8(alu_overriden_sub_op_type_mux0, `EXE_OP_W, alu_overriden_sub_op_type0, `AND, `SBB, rf_eq3, rf_eq3_duplicate)
 
     `MUX_8_H8(alu_overriden_op_type_mux, `EXE_OP_W, alu_overriden_op_type,
                 alu_overriden_sub_op_type,
@@ -246,9 +255,9 @@ module cs_post_processor (
                 `OR,
                 alu_overriden_sub_op_type,
                 `ADC,
-                alu_overriden_sub_op_type,
-                alu_overriden_sub_op_type,
-                alu_overriden_sub_op_type,
+                alu_overriden_sub_op_type0,
+                alu_overriden_sub_op_type0,
+                alu_overriden_sub_op_type0,
                 {rf_eq2, rf_eq1, rf_eq0}, {rf_eq2_duplicate, rf_eq1_duplicate, rf_eq0_duplicate})
 
     //shf, alu, ctrl, optype selction between each
@@ -296,7 +305,7 @@ module cs_post_processor (
     assign rr_cs_o_MODRM_NEEDED    = rr_cs_i_MODRM_NEEDED;
     assign rr_cs_o_RM_IS_DR        = rr_cs_i_RM_IS_DR;
     assign rr_cs_o_SWITCH_LD_ADDY  = rr_cs_i_SWITCH_LD_ADDY;
-    assign rr_cs_o_LD_OP           = rr_cs_o_LD_OP_holder;
+    assign rr_cs_o_LD_OP           = rr_cs_o_LD_OP_holder_duplicate;
     // sel={invalid_inst, ff_jmp}: 00->rr_cs_i_ST_OP, 01->0, 10->0, 11->0
     `MUX_4(rr_st_op_mux,          1,          rr_cs_o_ST_OP,          rr_cs_i_ST_OP,             1'b0, 1'b0, 1'b0, {invalid_inst, ff_jmp})
     assign rr_cs_o_MOVS_OP         = rr_cs_i_MOVS_OP;

@@ -41,10 +41,14 @@ module ppu (
 
     wire [2:0] imm_size_fake, msd_size_fake;
 
-    wire [3:0] imm_index;
+    wire [3:0] imm_index, imm_index_prebuf;
     wire imm_index_cout;
     //assign imm_index = modrm_index + msd_size;
-    `ADD_N(imm_index_adder, 4, imm_index, imm_index_cout, modrm_index, {1'b0, msd_size}, 1'b0)
+    `ADD_N(imm_index_adder, 4, imm_index_prebuf, imm_index_cout, modrm_index, {1'b0, msd_size}, 1'b0)
+    bufferH256$ imm_index_buf0 (.out(imm_index[0]), .in(imm_index_prebuf[0]));
+    bufferH256$ imm_index_buf1 (.out(imm_index[1]), .in(imm_index_prebuf[1]));
+    bufferH256$ imm_index_buf2 (.out(imm_index[2]), .in(imm_index_prebuf[2]));
+    bufferH256$ imm_index_buf3 (.out(imm_index[3]), .in(imm_index_prebuf[3]));
 
 
     op_size opcode_size(.opcode_byte(opcode_byte), .zero_f_prefix(total_pf_vector_1), .needr_m(needrm), .imm_size(imm_size_fake));
@@ -62,7 +66,11 @@ module ppu (
     `MUX_2(u_imm_size_2, 1, imm_size[2], imm_size_fake[2], imm_size_fake[1], override)
     
     //mux2_3 msdmux(.in0(3'b000), .in1(msd_size_fake), .sel(needrm), .out(msd_size));
-    `MUX_2(msdmux, 3, msd_size, 3'b000, msd_size_fake, needrm)
+    wire [2:0] msd_size_prebuf;
+    `MUX_2(msdmux, 3, msd_size_prebuf, 3'b000, msd_size_fake, needrm)
+    bufferH256$ msd_size_buf0 (.out(msd_size[0]), .in(msd_size_prebuf[0]));
+    bufferH256$ msd_size_buf1 (.out(msd_size[1]), .in(msd_size_prebuf[1]));
+    bufferH256$ msd_size_buf2 (.out(msd_size[2]), .in(msd_size_prebuf[2]));
 
     wire [8:0] length_adder_in;
     assign length_adder_in = {num_pfs_plusone, msd_size, imm_size};

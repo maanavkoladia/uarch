@@ -275,6 +275,64 @@ module mux16_N #(parameter WIDTH = 1)(
 endmodule
 
 ////////////////////////////////////////////////////////////////////////////////
+// 16-input wrapper, fanout-of-4 split (WIDTH up to 32, > 16 expected)
+// bits [3:0]   -> sel0   bits [19:16] -> sel4
+// bits [7:4]   -> sel1   bits [23:20] -> sel5
+// bits [11:8]  -> sel2   bits [27:24] -> sel6
+// bits [15:12] -> sel3   bits [31:28] -> sel7
+////////////////////////////////////////////////////////////////////////////////
+module mux16_N_H32 #(parameter WIDTH = 1)(
+    output [WIDTH-1:0] out,
+    input  [WIDTH-1:0] in0,  input [WIDTH-1:0] in1,
+    input  [WIDTH-1:0] in2,  input [WIDTH-1:0] in3,
+    input  [WIDTH-1:0] in4,  input [WIDTH-1:0] in5,
+    input  [WIDTH-1:0] in6,  input [WIDTH-1:0] in7,
+    input  [WIDTH-1:0] in8,  input [WIDTH-1:0] in9,
+    input  [WIDTH-1:0] in10, input [WIDTH-1:0] in11,
+    input  [WIDTH-1:0] in12, input [WIDTH-1:0] in13,
+    input  [WIDTH-1:0] in14, input [WIDTH-1:0] in15,
+    input  [3:0] sel0, input [3:0] sel1,
+    input  [3:0] sel2, input [3:0] sel3,
+    input  [3:0] sel4, input [3:0] sel5,
+    input  [3:0] sel6, input [3:0] sel7
+);
+
+    genvar i;
+
+    generate
+        for (i = 0; i < WIDTH; i = i + 1) begin : mux_bits
+            wire o;
+            wire [3:0] sel_local;
+
+            assign sel_local = (i < 4)  ? sel0 :
+                               (i < 8)  ? sel1 :
+                               (i < 12) ? sel2 :
+                               (i < 16) ? sel3 :
+                               (i < 20) ? sel4 :
+                               (i < 24) ? sel5 :
+                               (i < 28) ? sel6 :
+                                          sel7;
+
+            MPS_MUX_IN16 u_mux (
+                .out(o),
+                .in0(in0[i]),  .in1(in1[i]),
+                .in2(in2[i]),  .in3(in3[i]),
+                .in4(in4[i]),  .in5(in5[i]),
+                .in6(in6[i]),  .in7(in7[i]),
+                .in8(in8[i]),  .in9(in9[i]),
+                .in10(in10[i]), .in11(in11[i]),
+                .in12(in12[i]), .in13(in13[i]),
+                .in14(in14[i]), .in15(in15[i]),
+                .sel(sel_local)
+            );
+
+            assign out[i] = o;
+        end
+    endgenerate
+
+endmodule
+
+////////////////////////////////////////////////////////////////////////////////
 // 32-input wrapper (Verilog-2005 safe)
 ////////////////////////////////////////////////////////////////////////////////
 module mux32_N #(parameter WIDTH = 1)(

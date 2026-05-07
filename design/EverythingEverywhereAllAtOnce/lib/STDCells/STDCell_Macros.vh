@@ -124,7 +124,7 @@
         .sel(__sel__) \
     );
 
-`define MUX_4_H8(__unitName__, __width__, __out__, __in0__, __in1__, __sel0__, __sel1__) \
+`define MUX_4_H8(__unitName__, __width__, __out__, __in0__, __in1__, __in2__, __in3__, __sel0__, __sel1__) \
     mux4_N_H8 #(.WIDTH(__width__)) __unitName__ ( \
         .out(__out__), \
         .in0(__in0__), \
@@ -132,7 +132,7 @@
         .in2(__in2__), \
         .in3(__in3__), \
         .sel0(__sel0__), \
-        .sel1(__sel1__), \
+        .sel1(__sel1__) \
     );
 
 `define MUX_8(__unitName__, __width__, __out__, __in0__, __in1__, __in2__, __in3__, __in4__, __in5__, __in6__, __in7__, __sel__) \
@@ -161,7 +161,7 @@
         .in6(__in6__), \
         .in7(__in7__), \
         .sel0(__sel0__), \
-        .sel1(__sel1__), \
+        .sel1(__sel1__) \
     );
 
 `define MUX_16(__unitName__, __width__, __out__, __in0__, __in1__, __in2__, __in3__, __in4__, __in5__, __in6__, __in7__, __in8__, __in9__, __in10__, __in11__, __in12__, __in13__, __in14__, __in15__, __sel__) \
@@ -172,6 +172,19 @@
         .in8(__in8__), .in9(__in9__), .in10(__in10__), .in11(__in11__), \
         .in12(__in12__), .in13(__in13__), .in14(__in14__), .in15(__in15__), \
         .sel(__sel__) \
+    );
+
+`define MUX_16_H32(__unitName__, __width__, __out__, __in0__, __in1__, __in2__, __in3__, __in4__, __in5__, __in6__, __in7__, __in8__, __in9__, __in10__, __in11__, __in12__, __in13__, __in14__, __in15__, __sel0__, __sel1__, __sel2__, __sel3__, __sel4__, __sel5__, __sel6__, __sel7__) \
+    mux16_N_H32 #(.WIDTH(__width__)) __unitName__ ( \
+        .out(__out__), \
+        .in0(__in0__), .in1(__in1__), .in2(__in2__), .in3(__in3__), \
+        .in4(__in4__), .in5(__in5__), .in6(__in6__), .in7(__in7__), \
+        .in8(__in8__), .in9(__in9__), .in10(__in10__), .in11(__in11__), \
+        .in12(__in12__), .in13(__in13__), .in14(__in14__), .in15(__in15__), \
+        .sel0(__sel0__), .sel1(__sel1__), \
+        .sel2(__sel2__), .sel3(__sel3__), \
+        .sel4(__sel4__), .sel5(__sel5__), \
+        .sel6(__sel6__), .sel7(__sel7__) \
     );
 
 `define MUX_32(__unitName__, __width__, __out__, __in0__, __in1__, __in2__, __in3__, __in4__, __in5__, __in6__, __in7__, __in8__, __in9__, __in10__, __in11__, __in12__, __in13__, __in14__, __in15__, __in16__, __in17__, __in18__, __in19__, __in20__, __in21__, __in22__, __in23__, __in24__, __in25__, __in26__, __in27__, __in28__, __in29__, __in30__, __in31__, __sel__) \

@@ -123,9 +123,10 @@ module rep_controller (
 
     wire [2:0] cmp_inst_select;
     wire [2:0] movs_inst_select;
-    wire [2:0] inst_select;
+    wire [2:0] inst_select, inst_select1, inst_select2, inst_select3, inst_select_pre;
     // assign inst_select = cmp_inst ? cmp_inst_select : movs_inst_select;
     `MUX_2(u_inst_select, 3, inst_select, movs_inst_select, cmp_inst_select, cmp_inst)
+    //bufferH1024$ br_length(.out(inst_select), .in(inst_select_pre))
 
     wire movs_clear, cmp_clear;
     wire movs_start, cmp_start;
@@ -139,8 +140,10 @@ module rep_controller (
     `NOR_3(u_fsm_reset, 1, fsm_reset, rst_n, exp_pipe_clear, flush)
 
     // assign fsm_stall = stall || wait_cmp || wait_mov;
-    wire fsm_stall;
+    wire fsm_stall, fsm_stall0, fsm_stall1;
     `OR_3(u_fsm_stall, 1, fsm_stall, stall, wait_cmp, wait_mov)
+    `OR_3(u_fsm_stall0, 1, fsm_stall0, stall, wait_cmp, wait_mov)
+    `OR_3(u_fsm_stall1, 1, fsm_stall1, stall, wait_cmp, wait_mov)
 
     rep_fsm fsm_rep (
         .clk           (clk),
@@ -164,7 +167,7 @@ module rep_controller (
         .exit_mov_i    (exit_mov),
         .cont_cmp_i    (continue_cmp),
         .exit_cmp_i    (exit_cmp),
-        .wait_i        (fsm_stall),
+        .wait_i        (fsm_stall0),
         .S_0           (rep_cmp_fsm_state_bits[0]),
         .S_1           (rep_cmp_fsm_state_bits[1]),
         .S_2           (rep_cmp_fsm_state_bits[2]),
@@ -180,7 +183,7 @@ module rep_controller (
         .cont_mov_i    (continue_mov),
         .wait_mov_i    (wait_mov),
         .exit_mov_i    (exit_mov),
-        .stall_i       (fsm_stall),
+        .stall_i       (fsm_stall1),
         .S_0           (rep_movs_fsm_state_bits[0]),
         .S_1           (rep_movs_fsm_state_bits[1]),
         .S_2           (rep_movs_fsm_state_bits[2]),
