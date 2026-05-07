@@ -3,3 +3,4 @@ check:
 
 clean:
 	rm -f *.log*
+	rm -rf WORK/
