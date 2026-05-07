@@ -27,14 +27,21 @@ module sbb_op (
     // AL (8-bit slice → 9-bit sum)
     wire [7:0] srB_al_inv;
     `INV_N(u_inv_al_b, 8, srB[7:0], srB_al_inv)
-    wire [8:0] al_sum; wire al_cout;
-    `ADD_N(u_sub_al, 9, al_sum, al_cout, {1'b0, srA[7:0]}, {1'b0, srB_al_inv}, CF_in_inv)
+    wire [8:0] al_sum_raw; wire al_cout;
+    wire [8:0] al_sum;     wire al_sum_b7_buf;
+    `ADD_N(u_sub_al, 9, al_sum_raw, al_cout, {1'b0, srA[7:0]}, {1'b0, srB_al_inv}, CF_in_inv)
+    // Only al_sum[7] (sign bit) has fanout 5 — buffer just that bit.
+    bufferH16$ u_buf_al_sum_b7 (.out(al_sum_b7_buf), .in(al_sum_raw[7]));
+    assign al_sum = {al_sum_raw[8], al_sum_b7_buf, al_sum_raw[6:0]};
 
     // AH (8-bit slice → 9-bit sum)
     wire [7:0] srB_ah_inv;
     `INV_N(u_inv_ah_b, 8, srB[15:8], srB_ah_inv)
-    wire [8:0] ah_sum; wire ah_cout;
-    `ADD_N(u_sub_ah, 9, ah_sum, ah_cout, {1'b0, srA[15:8]}, {1'b0, srB_ah_inv}, CF_in_inv)
+    wire [8:0] ah_sum_raw; wire ah_cout;
+    wire [8:0] ah_sum;     wire ah_sum_b7_buf;
+    `ADD_N(u_sub_ah, 9, ah_sum_raw, ah_cout, {1'b0, srA[15:8]}, {1'b0, srB_ah_inv}, CF_in_inv)
+    bufferH16$ u_buf_ah_sum_b7 (.out(ah_sum_b7_buf), .in(ah_sum_raw[7]));
+    assign ah_sum = {ah_sum_raw[8], ah_sum_b7_buf, ah_sum_raw[6:0]};
 
     // AX (16-bit slice → 17-bit sum)
     wire [15:0] srB_ax_inv;
@@ -50,10 +57,19 @@ module sbb_op (
 
     // ---- data_size selectors ----
     wire is_al, is_ah, is_ax, is_eax;
-    `CMP_N(u_cmp_al,  4, is_al,  data_size, 4'b0001)
-    `CMP_N(u_cmp_ah,  4, is_ah,  data_size, 4'b0010)
-    `CMP_N(u_cmp_ax,  4, is_ax,  data_size, 4'b0011)
-    `CMP_N(u_cmp_eax, 4, is_eax, data_size, 4'b0111)
+    wire is_al_raw, is_ah_raw, is_ax_raw;
+    `CMP_N(u_cmp_al,  4, is_al_raw,  data_size, 4'b0001)
+    `CMP_N(u_cmp_ah,  4, is_ah_raw,  data_size, 4'b0010)
+    `CMP_N(u_cmp_ax,  4, is_ax_raw,  data_size, 4'b0011)
+    // Per-fanout sizing: al/ah=14 → H16; ax=22 → H64.
+    bufferH16$ u_buf_is_al (.out(is_al), .in(is_al_raw));
+    bufferH16$ u_buf_is_ah (.out(is_ah), .in(is_ah_raw));
+    bufferH64$ u_buf_is_ax (.out(is_ax), .in(is_ax_raw));
+    wire is_eax_raw;
+    `CMP_N(u_cmp_eax, 4, is_eax_raw, data_size, 4'b0111)
+    // is_eax fans out to 38 mux selects across the EAX result paths.
+    // bufferH64$ (rated 64, 0.30 ns) is the smallest fit; bufferH16$ rated 16.
+    bufferH64$ u_buf_is_eax (.out(is_eax), .in(is_eax_raw));
 
     // ---- merged_result lanes (default = srA[31:0]) ----
     // Lane 0: AL/AX/EAX update from sum; AH/default = srA[7:0]

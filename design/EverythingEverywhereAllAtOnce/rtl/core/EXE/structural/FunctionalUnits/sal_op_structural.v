@@ -40,27 +40,54 @@ module sal_op (
     wire [5:0] count_pre;
     assign count_pre = {1'b0, cnt_amt};
     wire [5:0] count;
-    `MUX_2(u_mux_count, 6, count, count_pre, 6'd1, shift_by_one)
+    wire [5:0] count_raw;
+    `MUX_2(u_mux_count, 6, count_raw, count_pre, 6'd1, shift_by_one)
+
+    // count fans out to both the sh64 (64) and sh16 (16) cascade selects plus
+    // the count comparators — ~82 leaves per bit. bufferH256$ (rated 256, 0.54
+    // ns typ) is the smallest H-buffer that covers; bufferH64$ is rated 64.
+    genvar gi_buf_cnt;
+    generate
+        for (gi_buf_cnt = 0; gi_buf_cnt < 6; gi_buf_cnt = gi_buf_cnt + 1) begin : g_count_buf
+            bufferH256$ u_buf_cnt (.out(count[gi_buf_cnt]), .in(count_raw[gi_buf_cnt]));
+        end
+    endgenerate
 
     // ---- 64-bit barrel left shift of value_i ----
     wire [63:0] sh64_s0, sh64_s1, sh64_s2, sh64_s3, sh64_s4, sh64;
-    `MUX_2(u_sh64_0, 64, sh64_s0, value_i, {value_i[62:0],  1'b0}, count[0])
-    `MUX_2(u_sh64_1, 64, sh64_s1, sh64_s0, {sh64_s0[61:0],  2'b0}, count[1])
-    `MUX_2(u_sh64_2, 64, sh64_s2, sh64_s1, {sh64_s1[59:0],  4'b0}, count[2])
-    `MUX_2(u_sh64_3, 64, sh64_s3, sh64_s2, {sh64_s2[55:0],  8'b0}, count[3])
-    `MUX_2(u_sh64_4, 64, sh64_s4, sh64_s3, {sh64_s3[47:0], 16'b0}, count[4])
-    `MUX_2(u_sh64_5, 64, sh64,    sh64_s4, {sh64_s4[31:0], 32'b0}, count[5])
+    wire [63:0] sh64_raw;
+    `MUX_2(u_sh64_0, 64, sh64_s0,  value_i, {value_i[62:0],  1'b0}, count[0])
+    `MUX_2(u_sh64_1, 64, sh64_s1,  sh64_s0, {sh64_s0[61:0],  2'b0}, count[1])
+    `MUX_2(u_sh64_2, 64, sh64_s2,  sh64_s1, {sh64_s1[59:0],  4'b0}, count[2])
+    `MUX_2(u_sh64_3, 64, sh64_s3,  sh64_s2, {sh64_s2[55:0],  8'b0}, count[3])
+    `MUX_2(u_sh64_4, 64, sh64_s4,  sh64_s3, {sh64_s3[47:0], 16'b0}, count[4])
+    `MUX_2(u_sh64_5, 64, sh64_raw, sh64_s4, {sh64_s4[31:0], 32'b0}, count[5])
+
+    // sh64 bits feed flag reductions, byte-lane muxes, and individual flag
+    // bits — worst per-bit fanout ~11. bufferH16$ (0.24 ns) is the right size.
+    genvar gi_buf_sh;
+    generate
+        for (gi_buf_sh = 0; gi_buf_sh < 64; gi_buf_sh = gi_buf_sh + 1) begin : g_sh64_buf
+            bufferH16$ u_buf_sh (.out(sh64[gi_buf_sh]), .in(sh64_raw[gi_buf_sh]));
+        end
+    endgenerate
 
     // ---- 16-bit barrel left shift of {8'd0, value_i[15:8]} (for AH) ----
     wire [15:0] ah_in;
     assign ah_in = {8'd0, value_i[15:8]};
-    wire [15:0] sh16_s0, sh16_s1, sh16_s2, sh16_s3, sh16_s4, sh16;
-    `MUX_2(u_sh16_0, 16, sh16_s0, ah_in,    {ah_in[14:0],   1'b0}, count[0])
-    `MUX_2(u_sh16_1, 16, sh16_s1, sh16_s0,  {sh16_s0[13:0], 2'b0}, count[1])
-    `MUX_2(u_sh16_2, 16, sh16_s2, sh16_s1,  {sh16_s1[11:0], 4'b0}, count[2])
-    `MUX_2(u_sh16_3, 16, sh16_s3, sh16_s2,  {sh16_s2[7:0],  8'b0}, count[3])
-    `MUX_2(u_sh16_4, 16, sh16_s4, sh16_s3,  16'b0,                count[4])
-    `MUX_2(u_sh16_5, 16, sh16,    sh16_s4,  16'b0,                count[5])
+    wire [15:0] sh16_s0, sh16_s1, sh16_s2, sh16_s3, sh16_s4, sh16_raw, sh16;
+    wire        sh16_b7_buf;
+    `MUX_2(u_sh16_0, 16, sh16_s0,  ah_in,    {ah_in[14:0],   1'b0}, count[0])
+    `MUX_2(u_sh16_1, 16, sh16_s1,  sh16_s0,  {sh16_s0[13:0], 2'b0}, count[1])
+    `MUX_2(u_sh16_2, 16, sh16_s2,  sh16_s1,  {sh16_s1[11:0], 4'b0}, count[2])
+    `MUX_2(u_sh16_3, 16, sh16_s3,  sh16_s2,  {sh16_s2[7:0],  8'b0}, count[3])
+    `MUX_2(u_sh16_4, 16, sh16_s4,  sh16_s3,  16'b0,                count[4])
+    `MUX_2(u_sh16_5, 16, sh16_raw, sh16_s4,  16'b0,                count[5])
+
+    // Only sh16[7] (sign bit) has fanout 5 — buffer just that bit so other
+    // bits don't pay buffer delay.
+    bufferH16$ u_buf_sh16_b7 (.out(sh16_b7_buf), .in(sh16_raw[7]));
+    assign sh16 = {sh16_raw[15:8], sh16_b7_buf, sh16_raw[6:0]};
 
     // ---- Per-width raw flags / result candidates ----
     // CF: bit shifted out (= bit at position N of the extended-width shift).
@@ -104,11 +131,25 @@ module sal_op (
     `MUX_2(u_mux_eax_of, 1, eax_of, 1'b0, eax_of_x, is_count_one)
 
     // ---- data_size selectors ----
-    wire is_al, is_ah, is_ax, is_eax;
-    `CMP_N(u_cmp_al,  4, is_al,  data_size, 4'b0001)
-    `CMP_N(u_cmp_ah,  4, is_ah,  data_size, 4'b0010)
-    `CMP_N(u_cmp_ax,  4, is_ax,  data_size, 4'b0011)
-    `CMP_N(u_cmp_eax, 4, is_eax, data_size, 4'b0111)
+    wire is_al, is_ah, is_ax, is_eax, is_eax_big;
+    wire is_al_raw, is_ah_raw, is_ax_raw, is_eax_raw;
+    `CMP_N(u_cmp_al,  4, is_al_raw,  data_size, 4'b0001)
+    `CMP_N(u_cmp_ah,  4, is_ah_raw,  data_size, 4'b0010)
+    `CMP_N(u_cmp_ax,  4, is_ax_raw,  data_size, 4'b0011)
+    `CMP_N(u_cmp_eax, 4, is_eax_raw, data_size, 4'b0111)
+    // Per-fanout sizing.
+    // is_al/ah=13 → H16. is_ax=21 fits H64 single-cell (0.30 ns).
+    // is_eax fanout 69 = u_mux_rtop(32) + rb23(16) + rb0_1(8) + rb1_1(8) + 5
+    // flag muxes. Single bufferH256$ would be 0.54 ns. Split:
+    //   - is_eax_big drives u_mux_rtop  (32 loads) — bufferH64$ (0.30 ns)
+    //   - is_eax     drives 37 others   (rb23+rb0_1+rb1_1+flag muxes)
+    //                                    — bufferH64$ (0.30 ns)
+    // Saves 0.24 ns on rtop path (which is the longest data path here).
+    bufferH16$ u_buf_is_al      (.out(is_al),      .in(is_al_raw));
+    bufferH16$ u_buf_is_ah      (.out(is_ah),      .in(is_ah_raw));
+    bufferH64$ u_buf_is_ax      (.out(is_ax),      .in(is_ax_raw));
+    bufferH64$ u_buf_is_eax_sm  (.out(is_eax),     .in(is_eax_raw));
+    bufferH64$ u_buf_is_eax_lg  (.out(is_eax_big), .in(is_eax_raw));
 
     // ---- Per-flag width mux (count > 0; default 0 if no width matches) ----
     wire zf_w_s1, zf_w_s2, zf_w_s3, zf_w;
@@ -143,7 +184,16 @@ module sal_op (
 
     // ---- count-zero override ----
     wire is_count_zero;
-    `CMP_N(u_cmp_czero, 6, is_count_zero, count, 6'd0)
+    wire is_count_zero_big;
+    wire is_count_zero_raw;
+    `CMP_N(u_cmp_czero, 6, is_count_zero_raw, count, 6'd0)
+    // is_count_zero has 70 leaf consumers split cleanly into two groups:
+    //   - 6  flag muxes (1-bit each) below — fanout 6  → bufferH16$ (0.24 ns)
+    //   - 1× 64-bit result mux           → fanout 64 → bufferH64$ (0.30 ns)
+    // Splitting saves 0.30/0.24 ns vs a single bufferH256$ (0.54 ns) at the
+    // cost of 1 extra cell. is_count_zero_raw has fanout 2 (the two buffers).
+    bufferH16$ u_buf_iczero_sm (.out(is_count_zero),     .in(is_count_zero_raw));
+    bufferH64$ u_buf_iczero_lg (.out(is_count_zero_big), .in(is_count_zero_raw));
 
     // count==0 → curr_*; else width-muxed value (AF is 0 when count > 0).
     `MUX_2(u_mux_zf_final, 1, ZF, zf_w, curr_zf_flag, is_count_zero)
@@ -168,14 +218,14 @@ module sal_op (
     `MUX_2(u_mux_rb23, 16, r_b23, value_i[31:16], sh64[31:16], is_eax)
 
     wire [31:0] r_top;
-    `MUX_2(u_mux_rtop, 32, r_top, value_i[63:32], 32'd0, is_eax)
+    `MUX_2(u_mux_rtop, 32, r_top, value_i[63:32], 32'd0, is_eax_big)
 
     wire [63:0] result_pre;
     assign result_pre = {r_top, r_b23, r_b1, r_b0};
 
     // count == 0 → result = value_i (overrides any EAX zero-extension).
     wire [63:0] result;
-    `MUX_2(u_mux_result, 64, result, result_pre, value_i, is_count_zero)
+    `MUX_2(u_mux_result, 64, result, result_pre, value_i, is_count_zero_big)
 
     assign dr_o      = result;
     assign res_buf_o = result;

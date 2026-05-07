@@ -44,8 +44,11 @@ module packsswb_sat_lane (
 
     wire sign_inv;
     `INV_N(u_inv_sign, 1, x[15], sign_inv)
-    wire pos_ov;
-    `AND_2(u_and_pos, 1, pos_ov, sign_inv, any_high_set)
+    wire pos_ov, pos_ov_raw;
+    `AND_2(u_and_pos, 1, pos_ov_raw, sign_inv, any_high_set)
+    // pos_ov drives 8 mux2$ select pins inside u_mux_p (fanout 8, fits
+    // bufferH16$ at 0.24 ns typ — smallest H-buffer available).
+    bufferH16$ u_buf_pos_ov (.out(pos_ov), .in(pos_ov_raw));
 
     // NAND(high8) = OR over inverted high8.
     wire [7:0] high8_inv;
@@ -56,8 +59,10 @@ module packsswb_sat_lane (
     wire any_high_clear;
     `NAND_2(u_nandn, 1, any_high_clear, nor_n0, nor_n1)
 
-    wire neg_ov;
-    `AND_2(u_and_neg, 1, neg_ov, x[15], any_high_clear)
+    wire neg_ov, neg_ov_raw;
+    `AND_2(u_and_neg, 1, neg_ov_raw, x[15], any_high_clear)
+    // neg_ov drives 8 mux2$ select pins inside u_mux_n (fanout 8).
+    bufferH16$ u_buf_neg_ov (.out(neg_ov), .in(neg_ov_raw));
 
     // Output mux
     wire [7:0] sat_pos;

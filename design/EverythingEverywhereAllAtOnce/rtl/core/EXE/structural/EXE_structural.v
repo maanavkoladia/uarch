@@ -191,7 +191,12 @@ module EXE (
     wire [63:0] sr_data;
     wire [31:0] eax_data;
 
-    `MUX_32(u_mux_dr_data, 64, dr_data,
+    // Pre-buffer wires; dr_data / sr_data are driven by bufferH16$ below
+    // to absorb their fanout (~9 / ~6) into a single H-buffer driver.
+    wire [63:0] dr_data_raw;
+    wire [63:0] sr_data_raw;
+
+    `MUX_32(u_mux_dr_data, 64, dr_data_raw,
         rr_outs_regFileValues_0,  rr_outs_regFileValues_1,
         rr_outs_regFileValues_2,  rr_outs_regFileValues_3,
         rr_outs_regFileValues_4,  rr_outs_regFileValues_5,
@@ -208,7 +213,7 @@ module EXE (
         64'h0, 64'h0, 64'h0, 64'h0, 64'h0, 64'h0,
         latches_dr_id)
 
-    `MUX_32(u_mux_sr_data, 64, sr_data,
+    `MUX_32(u_mux_sr_data, 64, sr_data_raw,
         rr_outs_regFileValues_0,  rr_outs_regFileValues_1,
         rr_outs_regFileValues_2,  rr_outs_regFileValues_3,
         rr_outs_regFileValues_4,  rr_outs_regFileValues_5,
@@ -224,6 +229,16 @@ module EXE (
         rr_outs_regFileValues_24, rr_outs_regFileValues_25,
         64'h0, 64'h0, 64'h0, 64'h0, 64'h0, 64'h0,
         latches_sr_id)
+
+    // Buffer dr_data / sr_data with bufferH16$ (0.24 ns typ, rated 16 loads)
+    // — smallest H-buffer covering both signals' worst fanouts (9 and 6).
+    genvar gi_buf_rf;
+    generate
+        for (gi_buf_rf = 0; gi_buf_rf < 64; gi_buf_rf = gi_buf_rf + 1) begin : g_rf_buf
+            bufferH16$ u_buf_dr (.out(dr_data[gi_buf_rf]), .in(dr_data_raw[gi_buf_rf]));
+            bufferH16$ u_buf_sr (.out(sr_data[gi_buf_rf]), .in(sr_data_raw[gi_buf_rf]));
+        end
+    endgenerate
 
     assign eax_data = rr_outs_regFileValues_7[31:0];   // EAX register id = 7
 
@@ -518,7 +533,23 @@ module EXE (
                         1'b0,
                         cf_flag_o};
 
-    `REG_RST_WE(u_flags_reg, 32, clk, rst, latches_valid, flags_din, flags_reg)
+    wire [31:0] flags_reg_raw;
+    `REG_RST_WE(u_flags_reg, 32, clk, rst, latches_valid, flags_din, flags_reg_raw)
+
+    // flags_reg has one bit (likely CF or ZF) with fanout 195 — feeds many
+    // conditional ops across EXE. bufferH256$ (rated 256, 0.54 ns typ) is the
+    // smallest H-buffer that covers 195. Other flag bits have lower fanout
+    // but are buffered uniformly here for code simplicity; if that 0.30 ns
+    // delta vs bufferH16$ shows up on the critical path, individual bits can
+    // be downsized later (the dead bits at flags_reg[1,3,5,8,9,11..31] could
+    // also be left unbuffered, but flag-register output is non-critical
+    // versus the read-side fanout cost).
+    genvar gi_fl;
+    generate
+        for (gi_fl = 0; gi_fl < 32; gi_fl = gi_fl + 1) begin : g_flags_buf
+            bufferH256$ u_buf_fl (.out(flags_reg[gi_fl]), .in(flags_reg_raw[gi_fl]));
+        end
+    endgenerate
 
 
     //==========================================================================

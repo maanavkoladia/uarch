@@ -88,10 +88,16 @@ module bsf_op (
     // -------------------------------------------------------------
     wire [2:0] Y0, Y1, Y2, Y3;
     wire       v0, v1, v2, v3;
-    pencoder8_3v$ u_pen0 (.enbar(1'b0), .X(X0), .Y(Y0), .valid(v0));
-    pencoder8_3v$ u_pen1 (.enbar(1'b0), .X(X1), .Y(Y1), .valid(v1));
-    pencoder8_3v$ u_pen2 (.enbar(1'b0), .X(X2), .Y(Y2), .valid(v2));
-    pencoder8_3v$ u_pen3 (.enbar(1'b0), .X(X3), .Y(Y3), .valid(v3));
+    wire       v0_raw, v1_raw, v2_raw, v3_raw;
+    pencoder8_3v$ u_pen0 (.enbar(1'b0), .X(X0), .Y(Y0), .valid(v0_raw));
+    pencoder8_3v$ u_pen1 (.enbar(1'b0), .X(X1), .Y(Y1), .valid(v1_raw));
+    pencoder8_3v$ u_pen2 (.enbar(1'b0), .X(X2), .Y(Y2), .valid(v2_raw));
+    pencoder8_3v$ u_pen3 (.enbar(1'b0), .X(X3), .Y(Y3), .valid(v3_raw));
+    // v0..v3 fanouts 6/8/6/5 — all fit bufferH16$ (smallest H-buffer).
+    bufferH16$ u_buf_v0 (.out(v0), .in(v0_raw));
+    bufferH16$ u_buf_v1 (.out(v1), .in(v1_raw));
+    bufferH16$ u_buf_v2 (.out(v2), .in(v2_raw));
+    bufferH16$ u_buf_v3 (.out(v3), .in(v3_raw));
 
     // -------------------------------------------------------------
     // 3. Per-byte BSF position, gated by valid.

@@ -37,15 +37,21 @@ module alu_input_sel (
 
     wire [127:0] res_buf_out;
 
+    // Pre-buffer wires for the 4 MUX_16 byte outputs whose bits are read by
+    // 5 leaf consumers each. Bytes 0/1: BUFFER+srA, BUFFER+srB, exp_ld_buf_o,
+    // br_buf32, br_zext_buf16. Bytes 6/7: BUFFER+srA, IRETD+srA, BUFFER+srB,
+    // IRETD+srB, exp_ld_buf_o (iretd_sel_val = res_buf_out[95:32]).
+    wire [7:0] res_buf_b0_raw, res_buf_b1_raw, res_buf_b6_raw, res_buf_b7_raw;
+
     // 16 output bytes, each a MUX_16 over 16 candidate input bytes.
     // For output byte j, input byte at sel=o is res_buf_in byte (j+o).
-    `MUX_16(u_rb_b0, 8, res_buf_out[7:0],
+    `MUX_16(u_rb_b0, 8, res_buf_b0_raw,
         res_buf_in[ 0*8 +: 8], res_buf_in[ 1*8 +: 8], res_buf_in[ 2*8 +: 8], res_buf_in[ 3*8 +: 8],
         res_buf_in[ 4*8 +: 8], res_buf_in[ 5*8 +: 8], res_buf_in[ 6*8 +: 8], res_buf_in[ 7*8 +: 8],
         res_buf_in[ 8*8 +: 8], res_buf_in[ 9*8 +: 8], res_buf_in[10*8 +: 8], res_buf_in[11*8 +: 8],
         res_buf_in[12*8 +: 8], res_buf_in[13*8 +: 8], res_buf_in[14*8 +: 8], res_buf_in[15*8 +: 8],
         res_buf_offset)
-    `MUX_16(u_rb_b1, 8, res_buf_out[15:8],
+    `MUX_16(u_rb_b1, 8, res_buf_b1_raw,
         res_buf_in[ 1*8 +: 8], res_buf_in[ 2*8 +: 8], res_buf_in[ 3*8 +: 8], res_buf_in[ 4*8 +: 8],
         res_buf_in[ 5*8 +: 8], res_buf_in[ 6*8 +: 8], res_buf_in[ 7*8 +: 8], res_buf_in[ 8*8 +: 8],
         res_buf_in[ 9*8 +: 8], res_buf_in[10*8 +: 8], res_buf_in[11*8 +: 8], res_buf_in[12*8 +: 8],
@@ -75,13 +81,13 @@ module alu_input_sel (
         res_buf_in[13*8 +: 8], res_buf_in[14*8 +: 8], res_buf_in[15*8 +: 8], res_buf_in[16*8 +: 8],
         res_buf_in[17*8 +: 8], res_buf_in[18*8 +: 8], res_buf_in[19*8 +: 8], res_buf_in[20*8 +: 8],
         res_buf_offset)
-    `MUX_16(u_rb_b6, 8, res_buf_out[55:48],
+    `MUX_16(u_rb_b6, 8, res_buf_b6_raw,
         res_buf_in[ 6*8 +: 8], res_buf_in[ 7*8 +: 8], res_buf_in[ 8*8 +: 8], res_buf_in[ 9*8 +: 8],
         res_buf_in[10*8 +: 8], res_buf_in[11*8 +: 8], res_buf_in[12*8 +: 8], res_buf_in[13*8 +: 8],
         res_buf_in[14*8 +: 8], res_buf_in[15*8 +: 8], res_buf_in[16*8 +: 8], res_buf_in[17*8 +: 8],
         res_buf_in[18*8 +: 8], res_buf_in[19*8 +: 8], res_buf_in[20*8 +: 8], res_buf_in[21*8 +: 8],
         res_buf_offset)
-    `MUX_16(u_rb_b7, 8, res_buf_out[63:56],
+    `MUX_16(u_rb_b7, 8, res_buf_b7_raw,
         res_buf_in[ 7*8 +: 8], res_buf_in[ 8*8 +: 8], res_buf_in[ 9*8 +: 8], res_buf_in[10*8 +: 8],
         res_buf_in[11*8 +: 8], res_buf_in[12*8 +: 8], res_buf_in[13*8 +: 8], res_buf_in[14*8 +: 8],
         res_buf_in[15*8 +: 8], res_buf_in[16*8 +: 8], res_buf_in[17*8 +: 8], res_buf_in[18*8 +: 8],
@@ -136,6 +142,19 @@ module alu_input_sel (
         res_buf_in[27*8 +: 8], res_buf_in[28*8 +: 8], res_buf_in[29*8 +: 8], res_buf_in[30*8 +: 8],
         res_buf_offset)
 
+    // Buffer the 4 high-fanout byte slices with bufferH16$ (0.24 ns typ,
+    // rated 16 loads). Fanout=5 per bit fits comfortably; smaller H-buffers
+    // don't exist, larger ones add delay without benefit.
+    genvar gi_buf_rb;
+    generate
+        for (gi_buf_rb = 0; gi_buf_rb < 8; gi_buf_rb = gi_buf_rb + 1) begin : g_rb_byte_buf
+            bufferH16$ u_buf_b0 (.out(res_buf_out[     gi_buf_rb]), .in(res_buf_b0_raw[gi_buf_rb]));
+            bufferH16$ u_buf_b1 (.out(res_buf_out[ 8 + gi_buf_rb]), .in(res_buf_b1_raw[gi_buf_rb]));
+            bufferH16$ u_buf_b6 (.out(res_buf_out[48 + gi_buf_rb]), .in(res_buf_b6_raw[gi_buf_rb]));
+            bufferH16$ u_buf_b7 (.out(res_buf_out[56 + gi_buf_rb]), .in(res_buf_b7_raw[gi_buf_rb]));
+        end
+    endgenerate
+
     // exp_ld_buf_o = res_buf_out[63:0]
     assign exp_ld_buf_o = res_buf_out[63:0];
 
@@ -159,11 +178,17 @@ module alu_input_sel (
     wire [63:0] cmpxchg_pair;  assign cmpxchg_pair  = {sr_data[31:0], EAX};       // {sr_data, EAX}[63:0]
     wire [63:0] iretd_sel_val; assign iretd_sel_val = res_buf_out[95:32];
 
+    // Pre-buffer wires; the actual output ports srA_64 / srB_64 are driven
+    // by bufferH256$ at the bottom of the module to handle their high fanout
+    // across EXE's functional units.
+    wire [63:0] srA_64_raw;
+    wire [63:0] srB_64_raw;
+
     // -------------------------------------------------------------------------
     // srA_64 selection (MUX_32 over 14 used + 18 unused-zero entries)
     //   index encoding follows source_selector_e
     // -------------------------------------------------------------------------
-    `MUX_32(u_mux_srA, 64, srA_64,
+    `MUX_32(u_mux_srA, 64, srA_64_raw,
         zero64,           // 0  NO_EXE
         sr_data,          // 1  SR_REGISTER
         dr_data,          // 2  DR_REGISTER
@@ -236,7 +261,7 @@ module alu_input_sel (
 
     wire [63:0] srB_after_down;
     `MUX_2(u_mux_srB_down, 64, srB_after_down, srB_pre, srB_shift_down, shift_sr_down)
-    `MUX_2(u_mux_srB_up,   64, srB_64,         srB_after_down, srB_shift_up, shift_sr_up)
+    `MUX_2(u_mux_srB_up,   64, srB_64_raw,     srB_after_down, srB_shift_up, shift_sr_up)
 
     // -------------------------------------------------------------------------
     // br_sel (32-bit) selection
@@ -277,5 +302,24 @@ module alu_input_sel (
         zero32, zero32, zero32, zero32,
         zero32, zero32, zero32, zero32,
         br_input_sel)
+
+    // -------------------------------------------------------------------------
+    // Output buffering for high-fanout operand ports.
+    //   srA_64 worst-case fanout ~178 across all 64 bits
+    //   srB_64 worst-case fanout ~74  across all 64 bits
+    // bufferH256$ is the smallest H-buffer covering 178 loads (rated <=256,
+    // 0.54 ns typ). bufferH64$ would be faster (0.30 ns) but tops out at 64
+    // loads, so it can't safely cover srA_64 (or the 65+ bits of srB_64).
+    // bufferH1024$ / bufferH4096$ work but cost extra delay (0.60 / 0.80 ns).
+    // Using the same cell for both signals keeps the operand-arrival skew
+    // matched at the FU inputs.
+    // -------------------------------------------------------------------------
+    genvar gi_buf;
+    generate
+        for (gi_buf = 0; gi_buf < 64; gi_buf = gi_buf + 1) begin : g_out_buf
+            bufferH256$ u_buf_srA (.out(srA_64[gi_buf]), .in(srA_64_raw[gi_buf]));
+            bufferH256$ u_buf_srB (.out(srB_64[gi_buf]), .in(srB_64_raw[gi_buf]));
+        end
+    endgenerate
 
 endmodule

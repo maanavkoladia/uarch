@@ -25,10 +25,20 @@ module or_op (
 
     // Per-byte data_size mask
     wire [7:0]  m_b0, m_b1;
+    wire [7:0]  m_b0_raw, m_b1_raw;
     wire [15:0] m_hi;
-    `MUX_2(u_mux_b0, 8,  m_b0, srA[7:0],   or_result[7:0],   data_size[0])
-    `MUX_2(u_mux_b1, 8,  m_b1, srA[15:8],  or_result[15:8],  data_size[1])
-    `MUX_2(u_mux_hi, 16, m_hi, srA[31:16], or_result[31:16], data_size[2])
+    `MUX_2(u_mux_b0, 8,  m_b0_raw, srA[7:0],   or_result[7:0],   data_size[0])
+    `MUX_2(u_mux_b1, 8,  m_b1_raw, srA[15:8],  or_result[15:8],  data_size[1])
+    `MUX_2(u_mux_hi, 16, m_hi,     srA[31:16], or_result[31:16], data_size[2])
+
+    // Buffer m_b0/m_b1 with bufferH16$ (worst-bit fanout 6, single-stage).
+    genvar gi_mb;
+    generate
+        for (gi_mb = 0; gi_mb < 8; gi_mb = gi_mb + 1) begin : g_mb_buf
+            bufferH16$ u_buf_b0 (.out(m_b0[gi_mb]), .in(m_b0_raw[gi_mb]));
+            bufferH16$ u_buf_b1 (.out(m_b1[gi_mb]), .in(m_b1_raw[gi_mb]));
+        end
+    endgenerate
 
     wire [31:0] merged;
     assign merged = {m_hi, m_b1, m_b0};

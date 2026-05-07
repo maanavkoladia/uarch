@@ -48,19 +48,22 @@ module sr_sel (
     wire enbar_add_df, enbar_pop, enbar_push, enbar_ret_far, enbar_ret_far_imm;
     wire enbar_ret_imm, enbar_ret, enbar_xchg, enbar_call, enbar_far_call;
     wire enbar_movs, enbar_exp_call, enbar_iretd;
-    `INV_N(u_inv_add_df,      1, is_add_df,      enbar_add_df)
-    `INV_N(u_inv_pop,         1, is_pop,         enbar_pop)
-    `INV_N(u_inv_push,        1, is_push,        enbar_push)
-    `INV_N(u_inv_ret_far,     1, is_ret_far,     enbar_ret_far)
-    `INV_N(u_inv_ret_far_imm, 1, is_ret_far_imm, enbar_ret_far_imm)
-    `INV_N(u_inv_ret_imm,     1, is_ret_imm,     enbar_ret_imm)
-    `INV_N(u_inv_ret,         1, is_ret,         enbar_ret)
-    `INV_N(u_inv_xchg,        1, is_xchg,        enbar_xchg)
-    `INV_N(u_inv_call,        1, is_call,        enbar_call)
-    `INV_N(u_inv_far_call,    1, is_far_call,    enbar_far_call)
-    `INV_N(u_inv_movs,        1, is_movs,        enbar_movs)
-    `INV_N(u_inv_exp_call,    1, is_exp_call,    enbar_exp_call)
-    `INV_N(u_inv_iretd,       1, is_iretd,       enbar_iretd)
+    // enbar_* feed 64-bit TRISTATE_L enables (fanout=64). bufferHInv64$ is
+    // rated 64 — exact-fit single-cell replacement for the INV_N (HInv16)
+    // chain. Logic preserved: same inversion semantics as INV_N.
+    bufferHInv64$ u_inv_add_df      (.out(enbar_add_df),      .in(is_add_df));
+    bufferHInv64$ u_inv_pop         (.out(enbar_pop),         .in(is_pop));
+    bufferHInv64$ u_inv_push        (.out(enbar_push),        .in(is_push));
+    bufferHInv64$ u_inv_ret_far     (.out(enbar_ret_far),     .in(is_ret_far));
+    bufferHInv64$ u_inv_ret_far_imm (.out(enbar_ret_far_imm), .in(is_ret_far_imm));
+    bufferHInv64$ u_inv_ret_imm     (.out(enbar_ret_imm),     .in(is_ret_imm));
+    bufferHInv64$ u_inv_ret         (.out(enbar_ret),         .in(is_ret));
+    bufferHInv64$ u_inv_xchg        (.out(enbar_xchg),        .in(is_xchg));
+    bufferHInv64$ u_inv_call        (.out(enbar_call),        .in(is_call));
+    bufferHInv64$ u_inv_far_call    (.out(enbar_far_call),    .in(is_far_call));
+    bufferHInv64$ u_inv_movs        (.out(enbar_movs),        .in(is_movs));
+    bufferHInv64$ u_inv_exp_call    (.out(enbar_exp_call),    .in(is_exp_call));
+    bufferHInv64$ u_inv_iretd       (.out(enbar_iretd),       .in(is_iretd));
 
     // ---- Shared tristated bus, driven by exactly one of 13 tristateL$ when WB_SR=1 ----
     wire [63:0] tristated_bus;

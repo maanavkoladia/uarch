@@ -17,9 +17,14 @@ module movs_op (
     wire is_0001, is_0010, is_0011, is_0111, is_size1;
     `CMP_N(u_cmp_01, 4, is_0001, data_size, 4'b0001)
     `CMP_N(u_cmp_02, 4, is_0010, data_size, 4'b0010)
-    `CMP_N(u_cmp_03, 4, is_0011, data_size, 4'b0011)
-    `CMP_N(u_cmp_07, 4, is_0111, data_size, 4'b0111)
-    `OR_2(u_or_size1, 1, is_size1, is_0001, is_0010)
+    wire is_0011_raw, is_0111_raw, is_size1_raw;
+    `CMP_N(u_cmp_03, 4, is_0011_raw, data_size, 4'b0011)
+    `CMP_N(u_cmp_07, 4, is_0111_raw, data_size, 4'b0111)
+    `OR_2(u_or_size1, 1, is_size1_raw, is_0001, is_0010)
+    // All three signals have fanout 5; bufferH16$ is the smallest H-buffer.
+    bufferH16$ u_buf_is_0011  (.out(is_0011),  .in(is_0011_raw));
+    bufferH16$ u_buf_is_0111  (.out(is_0111),  .in(is_0111_raw));
+    bufferH16$ u_buf_is_size1 (.out(is_size1), .in(is_size1_raw));
 
     wire [31:0] size_32;
     assign size_32 = {29'd0, is_0111, is_0011, is_size1};
