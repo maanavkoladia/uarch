@@ -84,6 +84,8 @@ module Decode (
         end
     endgenerate
 
+    wire modrm_seg_override;
+
     predecode inst_processing(
         .clk(clk), .rst(rst), .queue(flattened_queue),
         .queue_valid({idm_outs_i.idm_slots[3].valid, idm_outs_i.idm_slots[2].valid,
@@ -168,7 +170,9 @@ module Decode (
         .wb_cs_ST_OP(temp_wb_cs.ST_OP),
         .wb_cs_WB_DR(temp_wb_cs.WB_DR),
         .wb_cs_WB_SR(temp_wb_cs.WB_SR),
-        .wb_cs_WB_EAX(temp_wb_cs.WB_EAX)
+        .wb_cs_WB_EAX(temp_wb_cs.WB_EAX),
+
+        .modrm_seg_override(modrm_seg_override)
     );
 
     decode_gp_gen gp_gen_decode(
@@ -212,8 +216,9 @@ module Decode (
 
     wire [`REG_ID_W-1:0] sibbase, sibidx;
     wire [7:0] sibscale;
+    wire sib_segment_override;
     sib_processor sib_processing(.sib_byte(sib_byte), .sib_idx_id(sibidx), 
-        .sib_base_id(sibbase), .sib_scale(sibscale)
+        .sib_base_id(sibbase), .sib_scale(sibscale), .sib_segment_override(sib_segment_override)
     );
 
     rr_latches_general_t rep_latch_holder;
