@@ -1,14 +1,20 @@
 ================================================================================
   SIM vs RTL DUMP COMPARISON  (registers + flags per instruction)
 ================================================================================
+<<<<<<< HEAD
   REG  — SIM: 1127  RTL: 1126
   FLAG — SIM: 1127  RTL: 1126
+=======
+  REG  — SIM: 40  RTL: 39
+  FLAG — SIM: 40  RTL: 39
+>>>>>>> 98a480e38202ba166c893c777363869d7f37f431
 
-[OK ] #0000  EIP=0x00000000  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
-[OK ] #0001  EIP=0x00000005  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0000  EIP=0x00000000  jmp           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0001  EIP=0x00000002  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0002  EIP=0x00000007  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0003  EIP=0x00000009  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0004  EIP=0x0000000E  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+<<<<<<< HEAD
 [OK ] #0005  EIP=0x00000010  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0006  EIP=0x00000015  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
 [OK ] #0007  EIP=0x0000001A  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
@@ -1134,4 +1140,44 @@
 
 ================================================================================
   SUMMARY: 1126/1127 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
+=======
+[OK ] #0005  EIP=0x00000013  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0006  EIP=0x00000018  add           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0007  EIP=0x0000001A  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0008  EIP=0x0000001D  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0009  EIP=0x00000020  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0010  EIP=0x00000018  add           CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0011  EIP=0x0000001A  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0012  EIP=0x0000001D  add           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0013  EIP=0x00000020  jne           CF=1  PF=1  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0014  EIP=0x00000018  add           CF=1  PF=0  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0015  EIP=0x0000001A  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0016  EIP=0x0000001D  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0017  EIP=0x00000020  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0018  EIP=0x00000018  add           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0019  EIP=0x0000001A  add           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0020  EIP=0x0000001D  add           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0021  EIP=0x00000020  jne           CF=1  PF=0  AF=1  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0022  EIP=0x00000018  add           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0023  EIP=0x0000001A  add           CF=0  PF=1  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0024  EIP=0x0000001D  add           CF=1  PF=1  AF=1  ZF=1  SF=0  DF=0  OF=0
+[OK ] #0025  EIP=0x00000020  jne           CF=1  PF=1  AF=1  ZF=1  SF=0  DF=0  OF=0
+[OK ] #0026  EIP=0x00000022  add           CF=0  PF=1  AF=0  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0027  EIP=0x00000024  aaa           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0028  EIP=0x00000025  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0029  EIP=0x00000027  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0030  EIP=0x0000002A  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0031  EIP=0x0000002D  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0032  EIP=0x00000032  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0033  EIP=0x00000034  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0034  EIP=0x00000039  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0035  EIP=0x0000003E  mov           CF=1  PF=1  AF=1  ZF=0  SF=1  DF=0  OF=0
+[OK ] #0036  EIP=0x00000043  and           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0037  EIP=0x00000048  and           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[OK ] #0038  EIP=0x0000004E  mov           CF=0  PF=0  AF=0  ZF=0  SF=0  DF=0  OF=0
+[ONLY_SIM] #0039  EIP=0x00000054  hlt
+
+================================================================================
+  SUMMARY: 39/40 matched  |  0 mismatched  |  1 sim-only  |  0 rtl-only
+>>>>>>> 98a480e38202ba166c893c777363869d7f37f431
 ================================================================================

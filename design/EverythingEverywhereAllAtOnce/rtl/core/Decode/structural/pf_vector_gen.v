@@ -6,6 +6,7 @@ module pf_vector_gen (
 
     wire [9:0] real_vector0, real_vector1, real_vector2;
     wire sel0, sel2;
+    wire sel0_pre, sel2_pre;
 
     //mux2_10 mux0(.in0(10'b0), .in1(pf_vector0), .sel(sel0), .out(real_vector0));
     `MUX_2(mux0, 10, real_vector0, 10'b0, pf_vector0, sel0)
@@ -18,10 +19,12 @@ module pf_vector_gen (
 
 
     //or2$ or0(sel0, pfs[0], pfs[1]);
-    `OR_2(or0, 1, sel0, pfs[0], pfs[1])
+    `OR_2(or0, 1, sel0_pre, pfs[0], pfs[1])
+    bufferH16$ buf_sel0 (.out(sel0), .in(sel0_pre));
 
     //and2$ and0(sel2, pfs[0], pfs[1]);
-    `AND_2(and0, 1, sel2, pfs[0], pfs[1])
+    `AND_2(and0, 1, sel2_pre, pfs[0], pfs[1])
+    bufferH16$ buf_sel2 (.out(sel2), .in(sel2_pre));
 
     genvar i;
     generate

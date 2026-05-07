@@ -79,9 +79,14 @@ wire NS_2;
 // `REG_RST samples D on every rising clk edge.
 // Active-high rst drives all state bits to 0 (= IDLE encoding).
 // ----------------------------------------------------------------
-`REG_RST(ff_0, 1, clk, rst, NS_0, S_0)
-`REG_RST(ff_1, 1, clk, rst, NS_1, S_1)
-`REG_RST(ff_2, 1, clk, rst, NS_2, S_2)
+wire S_0_pre, S_1_pre, S_2_pre;
+`REG_RST(ff_0, 1, clk, rst, NS_0, S_0_pre)
+`REG_RST(ff_1, 1, clk, rst, NS_1, S_1_pre)
+`REG_RST(ff_2, 1, clk, rst, NS_2, S_2_pre)
+
+bufferH16$ S_0_buf (.out(S_0), .in(S_0_pre));
+bufferH16$ S_1_buf (.out(S_1), .in(S_1_pre));
+bufferH16$ S_2_buf (.out(S_2), .in(S_2_pre));
 
 // ----------------------------------------------------------------
 // Inverters for negated literals

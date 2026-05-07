@@ -2,11 +2,11 @@ set target_library ""
 set link_library "*"
 
 
-#set __top_module__  "uut_aao"
-#set __masterfile__  "./tbs/allAtOnce/master.txt"
+set __top_module__  "Decode"
+set __masterfile__  "./tbs/decode/master.txt"
 
-set __top_module__  "AllAtOnce_TOP"
-set __masterfile__  "./tbs/allAtOnce/master.txt"
+# set __top_module__  "AllAtOnce_TOP"
+# set __masterfile__  "./tbs/allAtOnce/master.txt"
 
 define_design_lib WORK -path ./WORK
 
