@@ -31,4 +31,4 @@ module coreRegLoader ();
 
     end  // initial
 
-endmodule : coreRegLoader
+endmodule

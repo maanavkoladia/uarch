@@ -1,7 +1,7 @@
 `ifndef TB_UTILS_DEFS_H
 `define TB_UTILS_DEFS_H
 
-import tb_debug_pkg::*;
+
 
 // ===================== LOG FILE =====================
 
@@ -36,7 +36,7 @@ import tb_debug_pkg::*;
 // EXE port style. Define when EXE is the pure-Verilog-2005 EXE_structural.v
 // (flat ports). Comment out / undef to fall back to SV struct ports
 // (EXE_structural.sv / EXE.sv).
-//`define EXE_PURE_STRUCTURAL
+`define EXE_PURE_STRUCTURAL
 
 // ===================== DUMP FILE DESCRIPTORS =====================
 `define REGDUMP_FD regdumpfd
@@ -50,8 +50,8 @@ import tb_debug_pkg::*;
 // ===================== CYCLE HEADER =====================
 
 `define COMMON_UTILS_INIT \
-    logic clk = 0;\
-    task automatic DelayClks(input int cycles);\
+    reg clk = 1'b0;\
+    task automatic DelayClks(input integer cycles);\
         #(`CLK_PERIOD  * cycles);\
     endtask\
     always begin\
@@ -62,18 +62,20 @@ import tb_debug_pkg::*;
 
 `define PRINT_CYCLE_HEADER \
     task automatic print_cycle_header(); \
-        $fdisplay(logfd, ""); \
-        $fdisplay(logfd, "==================== CYCLE %0d (t=%0t) ====================", cycle_count, $time); \
+        begin \
+            $fdisplay(logfd, ""); \
+            $fdisplay(logfd, "==================== CYCLE %0d (t=%0t) ====================", cycle_count, $time); \
+        end \
     endtask \
 
 `define DEBUG_UTILS_INIT \
-    string log_file_name; \
-    string regdump_file_name; \
-    string flagdump_file_name; \
+    reg [8*256-1:0] log_file_name; \
+    reg [8*256-1:0] regdump_file_name; \
+    reg [8*256-1:0] flagdump_file_name; \
     integer `LOG_FD; \
     integer `REGDUMP_FD; \
     integer `FLAGDUMP_FD; \
-    int cycle_count = 0; \
+    integer cycle_count = 0; \
     `COMMON_UTILS_INIT \
     `PRINT_CYCLE_HEADER \
     initial begin \
@@ -102,7 +104,7 @@ import tb_debug_pkg::*;
             $finish; \
         end \
     end \
-    always @(posedge clk) cycle_count++; \
+    always @(posedge clk) cycle_count <= cycle_count + 1; \
 
         // ===================== SUB-HEADERS =====================
 //

@@ -195,7 +195,7 @@ def generate_verilog(cfg: dict) -> str:
     # ------------------------------------------------------------------ #
     lines.append(f"{I2}end  // initial")
     lines.append("")
-    lines.append(f"endmodule : {module_name}")
+    lines.append(f"endmodule")
     lines.append("")
 
     return "\n".join(lines)

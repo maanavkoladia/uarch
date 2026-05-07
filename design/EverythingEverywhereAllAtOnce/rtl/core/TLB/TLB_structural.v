@@ -39,8 +39,8 @@ module TLB (
     output wire        MIO
 );
     localparam entries = 8;
-    localparam OFFSET_BITS = $clog2(PAGE_SIZE);
-    localparam VPN_BITS = ADDRESS_BITS - OFFSET_BITS;
+    localparam OFFSET_BITS = $clog2(`PAGE_SIZE);
+    localparam VPN_BITS = `ADDRESS_BITS - OFFSET_BITS;
     // ----------------------------------------------------------------
     // Per-entry storage.  Externally written by the tlb_loader.
     // Flat names so the loader sees `valid_0`, `vpn_0`, etc., rather
@@ -65,7 +65,7 @@ module TLB (
     // ----------------------------------------------------------------
     wire [VPN_BITS-1:0]     vaddy_vpn;
     wire [OFFSET_BITS-1:0]  vaddy_offset;
-    assign vaddy_vpn    = virtual_addr[ADDRESS_BITS-1 : OFFSET_BITS];
+    assign vaddy_vpn    = virtual_addr[`ADDRESS_BITS-1 : OFFSET_BITS];
     assign vaddy_offset = virtual_addr[OFFSET_BITS-1 : 0];
 
     // CMP_N supports widths 2,3,4,5,6,8,9,11,22,24,28,32.  Pad VPN

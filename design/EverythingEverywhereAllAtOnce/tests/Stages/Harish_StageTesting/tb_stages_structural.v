@@ -1,4 +1,3 @@
-`define CLK_PERIOD
 module tb_stages ();
 
     //localparam int Clk_PERIOD = 8;
@@ -11,14 +10,16 @@ module tb_stages ();
     reg [31:0]  i_vcache_hits;
     reg [31:0]  icache_hits;
 
-    int logfd_spc;
-    int logdf_eip;
+    integer logfd_spc;
+    integer logdf_eip;
     initial logfd_spc = $fopen("info.log", "w");
 
     
     task automatic sample_spc();
+     begin
         #6
         $fdisplay(logfd_spc, "time %0t, cycle_count: %0d, SPC: 0x%0h, EIP: 0x%0h ", $time, cycle_count, `FETCH_UNIT_PATH.SPC, `DECODE_UNIT_PATH.EIP);
+    end
     endtask
 
 
@@ -48,11 +49,11 @@ module tb_stages ();
     // ===================== REP CONTROLLER LOG =====================
     `define REP_PATH `DECODE_UNIT_PATH.piece_of_shit_rep_controller
     integer repdumpfd;
-    string  rep_log_file_name;
+    reg [8*256-1:0] rep_log_file_name;
 
     reg instruction_commit;
     reg exeforwards;
-    reg program_halted;
+    wire program_halted;
 
     reg needToDumpRegFile, needToDumpFlags;
 
@@ -64,7 +65,7 @@ module tb_stages ();
 
     assign program_halted = `DECODE_UNIT_PATH.HALT_REG;
 
-    always(*) begin
+    always @(*) begin
 `ifdef EXE_PURE_STRUCTURAL
         instruction_commit = !`EXE_UNIT_PATH.stall_flop && `EXE_UNIT_PATH.outs_valid;
 `else
@@ -93,13 +94,13 @@ module tb_stages ();
 `else
             saved_flag_dump_EIP <= `EXE_UNIT_PATH.latches_i.EIP;
 `endif
-            savedFlags[CF_IDX] <= `EXE_UNIT_PATH.cf_flag_o;
-            savedFlags[PF_IDX] <= `EXE_UNIT_PATH.pf_flag_o;
-            savedFlags[AF_IDX] <= `EXE_UNIT_PATH.af_flag_o;
-            savedFlags[ZF_IDX] <= `EXE_UNIT_PATH.zf_flag_o;
-            savedFlags[SF_IDX] <= `EXE_UNIT_PATH.sf_flag_o;
-            savedFlags[DF_IDX] <= `EXE_UNIT_PATH.df_flag_o;
-            savedFlags[OF_IDX] <= `EXE_UNIT_PATH.of_flag_o;
+            savedFlags[`CF_IDX] <= `EXE_UNIT_PATH.cf_flag_o;
+            savedFlags[`PF_IDX] <= `EXE_UNIT_PATH.pf_flag_o;
+            savedFlags[`AF_IDX] <= `EXE_UNIT_PATH.af_flag_o;
+            savedFlags[`ZF_IDX] <= `EXE_UNIT_PATH.zf_flag_o;
+            savedFlags[`SF_IDX] <= `EXE_UNIT_PATH.sf_flag_o;
+            savedFlags[`DF_IDX] <= `EXE_UNIT_PATH.df_flag_o;
+            savedFlags[`OF_IDX] <= `EXE_UNIT_PATH.of_flag_o;
         end else needToDumpFlags <= 0;
 
         if (needToDumpRegFile) dump_regs(saved_reg_dump_EIP);
@@ -122,10 +123,10 @@ module tb_stages ();
     // wire                   [   ADDRESS_BUS_WIDTH_BITS -1 : 0] address_bus;
     // wire                   [     DATA_BUS_WIDTH_BITS - 1 : 0] data_bus;
 
-    uint32_t finish_time;
+    reg [31:0] finish_time;
     always @(posedge clk) begin
         if (!rst) finish_time <= 0;
-        else if (!program_halted) finish_time++;
+        else if (!program_halted) finish_time <= finish_time + 1;
     end
 
 
@@ -134,7 +135,7 @@ module tb_stages ();
         .rst(rst)
     );
 
-    task automatic print_info(input string test_name);
+    task automatic print_info(input reg [8*256-1:0] test_name);
         begin
             $fdisplay(`LOG_FD, "test name: %s", test_name);
             print_cycle_header();

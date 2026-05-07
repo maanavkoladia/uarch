@@ -82,9 +82,11 @@ module wb_stq_sb_logic (
     // ----------------------------------------------------------------
     // Gather the 16 scalar ports into internal arrays so the generate
     // loop can index them.  These are local wires, not port arrays.
+    // V2005 unpacked-array form: [0:N-1] (the SV-only single-value
+    // form [N] is not accepted).
     // ----------------------------------------------------------------
-    wire [14:0] stq_addr  [`NUM_WB_ST_QS*`ST_Q_DEPTH];
-    wire        stq_valid [`NUM_WB_ST_QS*`ST_Q_DEPTH];
+    wire [14:0] stq_addr  [0:`NUM_WB_ST_QS*`ST_Q_DEPTH-1];
+    wire        stq_valid [0:`NUM_WB_ST_QS*`ST_Q_DEPTH-1];
 
     assign stq_addr[0]  = stq_addr_0;
     assign stq_addr[1]  = stq_addr_1;
@@ -136,14 +138,14 @@ module wb_stq_sb_logic (
     //            from the 4 banks via MUX_4 selected by ld_bank_num.
     // Then compare and AND with valid.
     // ----------------------------------------------------------------
-    wire [10:0] muxed_addr_0  [`ST_Q_DEPTH];
-    wire [10:0] muxed_addr_1  [`ST_Q_DEPTH];
-    wire        muxed_valid_0 [`ST_Q_DEPTH];
-    wire        muxed_valid_1 [`ST_Q_DEPTH];
-    wire        cmp_0         [`ST_Q_DEPTH];
-    wire        cmp_1         [`ST_Q_DEPTH];
-    wire        match_0       [`ST_Q_DEPTH];
-    wire        match_1       [`ST_Q_DEPTH];
+    wire [10:0] muxed_addr_0  [0:`ST_Q_DEPTH-1];
+    wire [10:0] muxed_addr_1  [0:`ST_Q_DEPTH-1];
+    wire        muxed_valid_0 [0:`ST_Q_DEPTH-1];
+    wire        muxed_valid_1 [0:`ST_Q_DEPTH-1];
+    wire        cmp_0         [0:`ST_Q_DEPTH-1];
+    wire        cmp_1         [0:`ST_Q_DEPTH-1];
+    wire        match_0       [0:`ST_Q_DEPTH-1];
+    wire        match_1       [0:`ST_Q_DEPTH-1];
 
     genvar i;
     generate

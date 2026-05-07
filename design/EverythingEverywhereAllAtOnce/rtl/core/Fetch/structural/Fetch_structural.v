@@ -191,7 +191,7 @@ module Fetch (
 
     wire [31:0] seg_xlation_out;
     wire [127:0]  rom_data_out;
-    wire [7:0]  idm_ctrl_data_in  [0:15];
+    wire [127:0] idm_ctrl_data_in;
     wire [31:0] next_spc;
     wire [31:0] spc_16;
     wire        spc_16_cout;        // unused
@@ -235,7 +235,7 @@ module Fetch (
     wire        predictor_taken;
 
     // IDM_Invalidate_Logic outputs
-    wire        idm_invalidate_w  [0:3];
+    wire [3:0]  idm_invalidate_w;
     wire        idm_invalidate_no_writes;
 
     // TLB outputs (tlb_outputs_t)
@@ -256,54 +256,48 @@ module Fetch (
     // ----------------------------------------------------------------
     // Per-slot adapter wires for sub-modules that take unpacked arrays.
     // ----------------------------------------------------------------
-    wire        idm_slot_valid_w          [0:3];
-    wire        idm_slot_br_valid_w       [0:3];
-    wire [31:0] idm_slot_br_eip_w         [0:3];
-    wire [31:0] idm_slot_br_btb_target_w  [0:3];
-    wire        idm_slot_br_xcl_w         [0:3];
+    wire [3:0]   idm_slot_valid_w;
+    wire [3:0]   idm_slot_br_valid_w;
+    wire [127:0] idm_slot_br_eip_w;
+    wire [127:0] idm_slot_br_btb_target_w;
+    wire [3:0]   idm_slot_br_xcl_w;
 
-    wire        idmc_ld_meta_data_w [0:3];
-    wire        idmc_ld_data_w      [0:3];
-    wire        idmc_valid_w        [0:3];
-    wire        idmc_br_valid_w     [0:3];
-    wire [31:0] idmc_br_eip_w       [0:3];
-    wire [31:0] idmc_br_target_w    [0:3];
-    wire        idmc_br_xcl_w       [0:3];
-    wire [7:0]  idmc_data_w         [0:3] [0:15];
-    wire        idmc_push_success_w;
+    wire [3:0]   idmc_ld_meta_data_w;
+    wire [3:0]   idmc_ld_data_w;
+    wire [3:0]   idmc_valid_w;
+    wire [3:0]   idmc_br_valid_w;
+    wire [127:0] idmc_br_eip_w;
+    wire [127:0] idmc_br_target_w;
+    wire [3:0]   idmc_br_xcl_w;
+    wire [511:0] idmc_data_w;
+    wire         idmc_push_success_w;
 
     // Pack flat per-slot inputs into the unpacked arrays the sub-modules
     // consume.
-    assign idm_slot_valid_w[0]         = idm_info_idm_slots_0_valid;
-    assign idm_slot_br_valid_w[0]      = idm_info_idm_slots_0_br_valid;
-    assign idm_slot_br_eip_w[0]        = idm_info_idm_slots_0_br_eip;
-    assign idm_slot_br_btb_target_w[0] = idm_info_idm_slots_0_br_btb_target;
-    assign idm_slot_br_xcl_w[0]        = idm_info_idm_slots_0_br_xcl;
-    assign idm_slot_valid_w[1]         = idm_info_idm_slots_1_valid;
-    assign idm_slot_br_valid_w[1]      = idm_info_idm_slots_1_br_valid;
-    assign idm_slot_br_eip_w[1]        = idm_info_idm_slots_1_br_eip;
-    assign idm_slot_br_btb_target_w[1] = idm_info_idm_slots_1_br_btb_target;
-    assign idm_slot_br_xcl_w[1]        = idm_info_idm_slots_1_br_xcl;
-    assign idm_slot_valid_w[2]         = idm_info_idm_slots_2_valid;
-    assign idm_slot_br_valid_w[2]      = idm_info_idm_slots_2_br_valid;
-    assign idm_slot_br_eip_w[2]        = idm_info_idm_slots_2_br_eip;
-    assign idm_slot_br_btb_target_w[2] = idm_info_idm_slots_2_br_btb_target;
-    assign idm_slot_br_xcl_w[2]        = idm_info_idm_slots_2_br_xcl;
-    assign idm_slot_valid_w[3]         = idm_info_idm_slots_3_valid;
-    assign idm_slot_br_valid_w[3]      = idm_info_idm_slots_3_br_valid;
-    assign idm_slot_br_eip_w[3]        = idm_info_idm_slots_3_br_eip;
-    assign idm_slot_br_btb_target_w[3] = idm_info_idm_slots_3_br_btb_target;
-    assign idm_slot_br_xcl_w[3]        = idm_info_idm_slots_3_br_xcl;
+    assign idm_slot_valid_w[0]                = idm_info_idm_slots_0_valid;
+    assign idm_slot_br_valid_w[0]             = idm_info_idm_slots_0_br_valid;
+    assign idm_slot_br_eip_w[0*32 +: 32]      = idm_info_idm_slots_0_br_eip;
+    assign idm_slot_br_btb_target_w[0*32 +: 32] = idm_info_idm_slots_0_br_btb_target;
+    assign idm_slot_br_xcl_w[0]               = idm_info_idm_slots_0_br_xcl;
+    assign idm_slot_valid_w[1]                = idm_info_idm_slots_1_valid;
+    assign idm_slot_br_valid_w[1]             = idm_info_idm_slots_1_br_valid;
+    assign idm_slot_br_eip_w[1*32 +: 32]      = idm_info_idm_slots_1_br_eip;
+    assign idm_slot_br_btb_target_w[1*32 +: 32] = idm_info_idm_slots_1_br_btb_target;
+    assign idm_slot_br_xcl_w[1]               = idm_info_idm_slots_1_br_xcl;
+    assign idm_slot_valid_w[2]                = idm_info_idm_slots_2_valid;
+    assign idm_slot_br_valid_w[2]             = idm_info_idm_slots_2_br_valid;
+    assign idm_slot_br_eip_w[2*32 +: 32]      = idm_info_idm_slots_2_br_eip;
+    assign idm_slot_br_btb_target_w[2*32 +: 32] = idm_info_idm_slots_2_br_btb_target;
+    assign idm_slot_br_xcl_w[2]               = idm_info_idm_slots_2_br_xcl;
+    assign idm_slot_valid_w[3]                = idm_info_idm_slots_3_valid;
+    assign idm_slot_br_valid_w[3]             = idm_info_idm_slots_3_br_valid;
+    assign idm_slot_br_eip_w[3*32 +: 32]      = idm_info_idm_slots_3_br_eip;
+    assign idm_slot_br_btb_target_w[3*32 +: 32] = idm_info_idm_slots_3_br_btb_target;
+    assign idm_slot_br_xcl_w[3]               = idm_info_idm_slots_3_br_xcl;
 
-    // Pack the icache instruction_line (128-bit packed bus) into the
-    // unpacked byte array for the per-byte rom/icache mux.
-    wire [7:0] icache_instruction_line_unpacked [0:15];
-    genvar gi_il;
-    generate
-        for (gi_il = 0; gi_il < 16; gi_il = gi_il + 1) begin : g_unpack_icache_line
-            assign icache_instruction_line_unpacked[gi_il] = icache_info_instruction_line[gi_il*8 +: 8];
-        end
-    endgenerate
+    // icache_info_instruction_line is already a packed 128-bit bus; no
+    // separate unpack needed -- the per-byte rom/icache mux slices it
+    // directly below.
 
     // ----------------------------------------------------------------
     // outs_o.idm_reqs : drive flat output ports from per-slot adapter.
@@ -313,43 +307,37 @@ module Fetch (
     assign outs_idm_reqs_req_0_ld_data      = idmc_ld_data_w[0];
     assign outs_idm_reqs_req_0_valid        = idmc_valid_w[0];
     assign outs_idm_reqs_req_0_br_valid     = idmc_br_valid_w[0];
-    assign outs_idm_reqs_req_0_br_eip       = idmc_br_eip_w[0];
-    assign outs_idm_reqs_req_0_br_target    = idmc_br_target_w[0];
+    assign outs_idm_reqs_req_0_br_eip       = idmc_br_eip_w[0*32 +: 32];
+    assign outs_idm_reqs_req_0_br_target    = idmc_br_target_w[0*32 +: 32];
     assign outs_idm_reqs_req_0_br_xcl       = idmc_br_xcl_w[0];
+    assign outs_idm_reqs_req_0_data         = idmc_data_w[0*128 +: 128];
 
     assign outs_idm_reqs_req_1_ld_meta_data = idmc_ld_meta_data_w[1];
     assign outs_idm_reqs_req_1_ld_data      = idmc_ld_data_w[1];
     assign outs_idm_reqs_req_1_valid        = idmc_valid_w[1];
     assign outs_idm_reqs_req_1_br_valid     = idmc_br_valid_w[1];
-    assign outs_idm_reqs_req_1_br_eip       = idmc_br_eip_w[1];
-    assign outs_idm_reqs_req_1_br_target    = idmc_br_target_w[1];
+    assign outs_idm_reqs_req_1_br_eip       = idmc_br_eip_w[1*32 +: 32];
+    assign outs_idm_reqs_req_1_br_target    = idmc_br_target_w[1*32 +: 32];
     assign outs_idm_reqs_req_1_br_xcl       = idmc_br_xcl_w[1];
+    assign outs_idm_reqs_req_1_data         = idmc_data_w[1*128 +: 128];
 
     assign outs_idm_reqs_req_2_ld_meta_data = idmc_ld_meta_data_w[2];
     assign outs_idm_reqs_req_2_ld_data      = idmc_ld_data_w[2];
     assign outs_idm_reqs_req_2_valid        = idmc_valid_w[2];
     assign outs_idm_reqs_req_2_br_valid     = idmc_br_valid_w[2];
-    assign outs_idm_reqs_req_2_br_eip       = idmc_br_eip_w[2];
-    assign outs_idm_reqs_req_2_br_target    = idmc_br_target_w[2];
+    assign outs_idm_reqs_req_2_br_eip       = idmc_br_eip_w[2*32 +: 32];
+    assign outs_idm_reqs_req_2_br_target    = idmc_br_target_w[2*32 +: 32];
     assign outs_idm_reqs_req_2_br_xcl       = idmc_br_xcl_w[2];
+    assign outs_idm_reqs_req_2_data         = idmc_data_w[2*128 +: 128];
 
     assign outs_idm_reqs_req_3_ld_meta_data = idmc_ld_meta_data_w[3];
     assign outs_idm_reqs_req_3_ld_data      = idmc_ld_data_w[3];
     assign outs_idm_reqs_req_3_valid        = idmc_valid_w[3];
     assign outs_idm_reqs_req_3_br_valid     = idmc_br_valid_w[3];
-    assign outs_idm_reqs_req_3_br_eip       = idmc_br_eip_w[3];
-    assign outs_idm_reqs_req_3_br_target    = idmc_br_target_w[3];
+    assign outs_idm_reqs_req_3_br_eip       = idmc_br_eip_w[3*32 +: 32];
+    assign outs_idm_reqs_req_3_br_target    = idmc_br_target_w[3*32 +: 32];
     assign outs_idm_reqs_req_3_br_xcl       = idmc_br_xcl_w[3];
-
-    genvar gi_dp;
-    generate
-        for (gi_dp = 0; gi_dp < 16; gi_dp = gi_dp + 1) begin : g_pack_idmc_data
-            assign outs_idm_reqs_req_0_data[gi_dp*8 +: 8] = idmc_data_w[0][gi_dp];
-            assign outs_idm_reqs_req_1_data[gi_dp*8 +: 8] = idmc_data_w[1][gi_dp];
-            assign outs_idm_reqs_req_2_data[gi_dp*8 +: 8] = idmc_data_w[2][gi_dp];
-            assign outs_idm_reqs_req_3_data[gi_dp*8 +: 8] = idmc_data_w[3][gi_dp];
-        end
-    endgenerate
+    assign outs_idm_reqs_req_3_data         = idmc_data_w[3*128 +: 128];
 
     // ----------------------------------------------------------------
     // exp_mode_jk vector + flat output assignments
@@ -388,8 +376,8 @@ module Fetch (
     genvar gd;
     generate
         for (gd = 0; gd < 16; gd = gd + 1) begin : g_idm_data_mux
-            `MUX_2(u_idm_data_mux, 8, idm_ctrl_data_in[gd],
-                    icache_instruction_line_unpacked[gd], rom_data_out[gd], exp_or_int)
+            `MUX_2(u_idm_data_mux, 8, idm_ctrl_data_in[gd*8 +: 8],
+                    icache_info_instruction_line[gd*8 +: 8], rom_data_out[gd*8 +: 8], exp_or_int)
         end
     endgenerate
 

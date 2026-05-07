@@ -47,7 +47,7 @@ module EXP_Ctrl_ROMS (
 
     input  wire        exp_mode,        // present in SV port; unused (kept for parity)
 
-    output wire [127:0]  rom_data_out_0
+    output wire [127:0]  rom_data_out
 );
 
     // ----------------------------------------------------------------
@@ -100,21 +100,21 @@ module EXP_Ctrl_ROMS (
     // ----------------------------------------------------------------
     // 16-byte cache line fan-out (pure assigns)
     // ----------------------------------------------------------------
-    assign rom_data_out[ 0] = 8'h31;
-    assign rom_data_out[ 1] = 8'h32;
-    assign rom_data_out[ 2] = idtEntryAddy[ 7: 0];
-    assign rom_data_out[ 3] = idtEntryAddy[15: 8];
-    assign rom_data_out[ 4] = idtEntryAddy[23:16];
-    assign rom_data_out[ 5] = idtEntryAddy[31:24];
-    assign rom_data_out[ 6] = 8'h30;
-    assign rom_data_out[ 7] = 8'h00;
-    assign rom_data_out[ 8] = 8'h00;
-    assign rom_data_out[ 9] = 8'h00;
-    assign rom_data_out[10] = 8'h00;
-    assign rom_data_out[11] = 8'h00;
-    assign rom_data_out[12] = 8'h00;
-    assign rom_data_out[13] = 8'h00;
-    assign rom_data_out[14] = 8'h00;
-    assign rom_data_out[15] = 8'h00;
+    assign rom_data_out[ 0*8 +: 8] = 8'h31;
+    assign rom_data_out[ 1*8 +: 8] = 8'h32;
+    assign rom_data_out[ 2*8 +: 8] = idtEntryAddy[ 7: 0];
+    assign rom_data_out[ 3*8 +: 8] = idtEntryAddy[15: 8];
+    assign rom_data_out[ 4*8 +: 8] = idtEntryAddy[23:16];
+    assign rom_data_out[ 5*8 +: 8] = idtEntryAddy[31:24];
+    assign rom_data_out[ 6*8 +: 8] = 8'h30;
+    assign rom_data_out[ 7*8 +: 8] = 8'h00;
+    assign rom_data_out[ 8*8 +: 8] = 8'h00;
+    assign rom_data_out[ 9*8 +: 8] = 8'h00;
+    assign rom_data_out[10*8 +: 8] = 8'h00;
+    assign rom_data_out[11*8 +: 8] = 8'h00;
+    assign rom_data_out[12*8 +: 8] = 8'h00;
+    assign rom_data_out[13*8 +: 8] = 8'h00;
+    assign rom_data_out[14*8 +: 8] = 8'h00;
+    assign rom_data_out[15*8 +: 8] = 8'h00;
 
 endmodule
