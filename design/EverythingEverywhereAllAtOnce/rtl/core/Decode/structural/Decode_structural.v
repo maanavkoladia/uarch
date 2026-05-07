@@ -347,22 +347,35 @@ module Decode (
     wire decode_gp;
     wire flush; //cpaddyx , i did not put ts here, whats this for
     wire REP_LATCH, REP_CMP_LATCH, REP_MOV_LATCH, HALT_REG;
+    wire REP_CMP_LATCH_pre, REP_MOV_LATCH_pre;
     wire rr_latch_we_o;
 
     wire [31:0] DC_SAVED_EIP;
     wire [31:0] DECODE_SAVED_EIP;
 
     wire [`REG_ID_W-1:0] SAVED_SEGMENT0;
-    wire SAVED_SEGMENT_OVERRIDE;
-    wire [31:0] SAVED_REP_EIP;
-    wire [1:0] SAVED_DATASIZE;
+    wire SAVED_SEGMENT_OVERRIDE, SAVED_SEGMENT_OVERRIDE_pre;
+    wire [31:0] SAVED_REP_EIP, SAVED_REP_EIP_pre;
+    wire [1:0] SAVED_DATASIZE, SAVED_DATASIZE_pre;
 
 
     wire [`REG_ID_W-1:0] segment0, segment0_pre;
-    wire seg_override;
+    wire seg_override, seg_override_pre;
     wire next_rr_valid;
 
-    assign flush = exe_outs_br_res_flush;
+    bufferH16$ buf_flush (.out(flush), .in(exe_outs_br_res_flush));
+
+    // Input port fanout buffers
+    wire idm_outs_idm_slots_0_valid_buf, idm_outs_idm_slots_1_valid_buf;
+    wire idm_outs_idm_slots_2_valid_buf, idm_outs_idm_slots_3_valid_buf;
+    wire fetch_outs_exp_pipe_clear_buf;
+    wire rr_outs_ecx_sb_buf;
+    bufferH16$ buf_idm0_valid (.out(idm_outs_idm_slots_0_valid_buf), .in(idm_outs_idm_slots_0_valid));
+    bufferH16$ buf_idm1_valid (.out(idm_outs_idm_slots_1_valid_buf), .in(idm_outs_idm_slots_1_valid));
+    bufferH16$ buf_idm2_valid (.out(idm_outs_idm_slots_2_valid_buf), .in(idm_outs_idm_slots_2_valid));
+    bufferH16$ buf_idm3_valid (.out(idm_outs_idm_slots_3_valid_buf), .in(idm_outs_idm_slots_3_valid));
+    bufferH64$ buf_exp_pipe_clear (.out(fetch_outs_exp_pipe_clear_buf), .in(fetch_outs_exp_pipe_clear));
+    bufferH16$ buf_ecx_sb (.out(rr_outs_ecx_sb_buf), .in(rr_outs_ecx_sb));
 
     wire decode_forward;
     `AND_2 (decode_forward_u, 1, decode_forward, rr_latch_we_o, next_rr_valid)
@@ -372,8 +385,8 @@ module Decode (
 
     predecode inst_processing(
         .clk(clk), .rst(rst), .queue(flattened_queue),
-        .queue_valid({idm_outs_idm_slots_3_valid, idm_outs_idm_slots_2_valid,
-                    idm_outs_idm_slots_1_valid, idm_outs_idm_slots_0_valid}),
+        .queue_valid({idm_outs_idm_slots_3_valid_buf, idm_outs_idm_slots_2_valid_buf,
+                    idm_outs_idm_slots_1_valid_buf, idm_outs_idm_slots_0_valid_buf}),
         .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_byte(sib_byte), .sib_size(sib_size),
         .opcode_byte(opcode_byte), .modrm_byte(modrm_byte), .disp(displacement), .disp_size(disp_size),
         .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector_o(total_pf_vector), .invalid_inst(invalid_inst),
@@ -462,7 +475,7 @@ module Decode (
         .segLimit(rr_outs_codeSeg_limit), .gp_fault_o(decode_gp)
     );
 
-    wire predicted_taken;
+    wire predicted_taken, predicted_taken_pre;
     wire [31:0] predicted_target;    
     wire branch_info_valid;
     wire [31:0] branch_info_br_eip;
@@ -476,14 +489,15 @@ module Decode (
     wire        current_idm_slots_br_valid;
     wire [31:0] current_idm_slots_br_eip;
     wire [31:0] current_idm_slots_br_btb_target;
-    `MUX_4 (u_current_idm_valid, 1, current_idm_slots_valid, idm_outs_idm_slots_0_valid, idm_outs_idm_slots_1_valid, idm_outs_idm_slots_2_valid, idm_outs_idm_slots_3_valid, EIP[5:4])
+    `MUX_4 (u_current_idm_valid, 1, current_idm_slots_valid, idm_outs_idm_slots_0_valid_buf, idm_outs_idm_slots_1_valid_buf, idm_outs_idm_slots_2_valid_buf, idm_outs_idm_slots_3_valid_buf, EIP[5:4])
     `MUX_4 (u_current_idm_br_valid, 1, current_idm_slots_br_valid, idm_outs_idm_slots_0_br_valid, idm_outs_idm_slots_1_br_valid, idm_outs_idm_slots_2_br_valid, idm_outs_idm_slots_3_br_valid, EIP[5:4])
     `MUX_4 (u_current_idm_br_eip, 32, current_idm_slots_br_eip, idm_outs_idm_slots_0_br_eip, idm_outs_idm_slots_1_br_eip, idm_outs_idm_slots_2_br_eip, idm_outs_idm_slots_3_br_eip, EIP[5:4])
     `MUX_4 (u_current_idm_br_btb_targ, 32, current_idm_slots_br_btb_target, idm_outs_idm_slots_0_br_btb_target, idm_outs_idm_slots_1_br_btb_target, idm_outs_idm_slots_2_br_btb_target, idm_outs_idm_slots_3_br_btb_target, EIP[5:4])
 
 
     `CMP_N(br_eip_cmp, 32, br_eip_eq_EIP, current_idm_slots_br_eip, EIP)
-    `AND_3(predicted_taken_gate, 1, predicted_taken, current_idm_slots_br_valid, current_idm_slots_br_valid, br_eip_eq_EIP)
+    `AND_3(predicted_taken_gate, 1, predicted_taken_pre, current_idm_slots_br_valid, current_idm_slots_br_valid, br_eip_eq_EIP)
+    bufferH64$ buf_predicted_taken (.out(predicted_taken), .in(predicted_taken_pre));
     `MUX_2(predicted_target_mux, 32, predicted_target, 32'b0, current_idm_slots_br_btb_target, predicted_taken)
     `OR_3(branch_present_gate,    1, branch_present,   exe_cs_br_ucond, exe_cs_relative_branch, exe_cs_special_br)
 
@@ -529,19 +543,24 @@ module Decode (
     );
 
     // seg_override: any segment prefix bit [9:4] is active
-    `OR_6(seg_override_gate, 1, seg_override,
+    `OR_6(seg_override_gate, 1, seg_override_pre,
         total_pf_vector[9], total_pf_vector[8], total_pf_vector[7],
         total_pf_vector[6], total_pf_vector[5], total_pf_vector[4])
+    bufferH256$ buf_seg_override (.out(seg_override), .in(seg_override_pre));
 
     // segment0: bits [9:4] are one-hot, so encode directly to 3-bit binary select
     // sel[2]=[9]|[8]  sel[1]=[9]|[6]|[5]  sel[0]=[8]|[6]|[4]
     // [7] encodes to 000 (same as default DS), so no special case needed
     // sel: 000->DS  001->GS  010->FS  011->ES  101->SS  110->CS
     wire seg_sel_2, seg_sel_1, seg_sel_0;
+    wire seg_sel_2_pre, seg_sel_1_pre, seg_sel_0_pre;
     wire seg_sel_2_, seg_sel_1_, seg_sel_0_;
-    `OR_2(seg_sel_2_gate, 1, seg_sel_2, total_pf_vector[9], total_pf_vector[8])
-    `OR_3(seg_sel_1_gate, 1, seg_sel_1, total_pf_vector[9], total_pf_vector[6], total_pf_vector[5])
-    `OR_3(seg_sel_0_gate, 1, seg_sel_0, total_pf_vector[8], total_pf_vector[6], total_pf_vector[4])
+    `OR_2(seg_sel_2_gate, 1, seg_sel_2_pre, total_pf_vector[9], total_pf_vector[8])
+    `OR_3(seg_sel_1_gate, 1, seg_sel_1_pre, total_pf_vector[9], total_pf_vector[6], total_pf_vector[5])
+    `OR_3(seg_sel_0_gate, 1, seg_sel_0_pre, total_pf_vector[8], total_pf_vector[6], total_pf_vector[4])
+    bufferH16$ buf_seg_sel_2 (.out(seg_sel_2), .in(seg_sel_2_pre));
+    bufferH16$ buf_seg_sel_1 (.out(seg_sel_1), .in(seg_sel_1_pre));
+    bufferH16$ buf_seg_sel_0 (.out(seg_sel_0), .in(seg_sel_0_pre));
 
     `OR_2(seg_sel_2_gate_, 1, seg_sel_2_, total_pf_vector[9], total_pf_vector[8])
     `OR_3(seg_sel_1_gate_, 1, seg_sel_1_, total_pf_vector[9], total_pf_vector[6], total_pf_vector[5])
@@ -565,8 +584,9 @@ module Decode (
     // feeds the rst port. exp_pipe_clear and flush are applied synchronously
     // via we/din overrides: when sync_clear_* is asserted we force we=1 and
     // mux din to 0, which matches the synchronous clears in Decode.sv.
-    wire sync_clear_flush;
-    `OR_2(u_sync_clear_flush, 1, sync_clear_flush, fetch_outs_exp_pipe_clear, flush)
+    wire sync_clear_flush, sync_clear_flush_pre;
+    `OR_2(u_sync_clear_flush, 1, sync_clear_flush_pre, fetch_outs_exp_pipe_clear_buf, flush)
+    bufferH64$ buf_sync_clear_flush (.out(sync_clear_flush), .in(sync_clear_flush_pre));
 
     // ---- REP_LATCH and SAVED_* (gated by {REP, clear_rep}) ----
     //   00: hold; 01: 0; 10: capture; 11: 0
@@ -575,14 +595,16 @@ module Decode (
     `OR_2(u_rep_we, 1, rep_we, decode_cs_REP, clear_rep)
 
     wire rep_n;
-    wire rep_capture;
+    wire rep_capture, rep_capture_pre;
     `INV_N(u_rep_inv, 1, decode_cs_REP, rep_n)
-    `NOR_2(u_rep_capture, 1, rep_capture, rep_n, clear_rep)
+    `NOR_2(u_rep_capture, 1, rep_capture_pre, rep_n, clear_rep)
+    bufferH64$ buf_rep_capture (.out(rep_capture), .in(rep_capture_pre));
 
     // Shared sync-clear gating: rep_we_g forces a write on sync_clear_flush so
     // every {REP_LATCH, SAVED_*} register can be muxed to 0 the same cycle.
-    wire rep_we_g;
-    `OR_2(u_rep_we_g, 1, rep_we_g, rep_we, sync_clear_flush)
+    wire rep_we_g, rep_we_g_pre;
+    `OR_2(u_rep_we_g, 1, rep_we_g_pre, rep_we, sync_clear_flush)
+    bufferH16$ buf_rep_we_g (.out(rep_we_g), .in(rep_we_g_pre));
 
     wire rep_din_g;
     `MUX_2(u_rep_din_g, 1, rep_din_g, rep_capture, 1'b0, sync_clear_flush)
@@ -601,21 +623,56 @@ module Decode (
     wire saved_segov_din_g;
     `MUX_2(u_saved_segov_din_g, 1, saved_segov_din_g, saved_segov_din, 1'b0, sync_clear_flush)
     `REG_RST_WE(u_saved_segov, 1, clk, rst,
-                rep_we_g, saved_segov_din_g, SAVED_SEGMENT_OVERRIDE)
+                rep_we_g, saved_segov_din_g, SAVED_SEGMENT_OVERRIDE_pre)
+    bufferH16$ buf_saved_segov (.out(SAVED_SEGMENT_OVERRIDE), .in(SAVED_SEGMENT_OVERRIDE_pre));
 
     wire [31:0] saved_rep_eip_din;
     `MUX_2(u_saved_rep_eip_mux, 32, saved_rep_eip_din, 32'b0, EIP, rep_capture)
     wire [31:0] saved_rep_eip_din_g;
     `MUX_2(u_saved_rep_eip_din_g, 32, saved_rep_eip_din_g, saved_rep_eip_din, 32'b0, sync_clear_flush)
     `REG_RST_WE(u_saved_rep_eip, 32, clk, rst,
-                rep_we_g, saved_rep_eip_din_g, SAVED_REP_EIP)
+                rep_we_g, saved_rep_eip_din_g, SAVED_REP_EIP_pre)
+    bufferH16$ buf_saved_rep_eip00 (.out(SAVED_REP_EIP[ 0]), .in(SAVED_REP_EIP_pre[ 0]));
+    bufferH16$ buf_saved_rep_eip01 (.out(SAVED_REP_EIP[ 1]), .in(SAVED_REP_EIP_pre[ 1]));
+    bufferH16$ buf_saved_rep_eip02 (.out(SAVED_REP_EIP[ 2]), .in(SAVED_REP_EIP_pre[ 2]));
+    bufferH16$ buf_saved_rep_eip03 (.out(SAVED_REP_EIP[ 3]), .in(SAVED_REP_EIP_pre[ 3]));
+    bufferH16$ buf_saved_rep_eip04 (.out(SAVED_REP_EIP[ 4]), .in(SAVED_REP_EIP_pre[ 4]));
+    bufferH16$ buf_saved_rep_eip05 (.out(SAVED_REP_EIP[ 5]), .in(SAVED_REP_EIP_pre[ 5]));
+    bufferH16$ buf_saved_rep_eip06 (.out(SAVED_REP_EIP[ 6]), .in(SAVED_REP_EIP_pre[ 6]));
+    bufferH16$ buf_saved_rep_eip07 (.out(SAVED_REP_EIP[ 7]), .in(SAVED_REP_EIP_pre[ 7]));
+    bufferH16$ buf_saved_rep_eip08 (.out(SAVED_REP_EIP[ 8]), .in(SAVED_REP_EIP_pre[ 8]));
+    bufferH16$ buf_saved_rep_eip09 (.out(SAVED_REP_EIP[ 9]), .in(SAVED_REP_EIP_pre[ 9]));
+    bufferH16$ buf_saved_rep_eip10 (.out(SAVED_REP_EIP[10]), .in(SAVED_REP_EIP_pre[10]));
+    bufferH16$ buf_saved_rep_eip11 (.out(SAVED_REP_EIP[11]), .in(SAVED_REP_EIP_pre[11]));
+    bufferH16$ buf_saved_rep_eip12 (.out(SAVED_REP_EIP[12]), .in(SAVED_REP_EIP_pre[12]));
+    bufferH16$ buf_saved_rep_eip13 (.out(SAVED_REP_EIP[13]), .in(SAVED_REP_EIP_pre[13]));
+    bufferH16$ buf_saved_rep_eip14 (.out(SAVED_REP_EIP[14]), .in(SAVED_REP_EIP_pre[14]));
+    bufferH16$ buf_saved_rep_eip15 (.out(SAVED_REP_EIP[15]), .in(SAVED_REP_EIP_pre[15]));
+    bufferH16$ buf_saved_rep_eip16 (.out(SAVED_REP_EIP[16]), .in(SAVED_REP_EIP_pre[16]));
+    bufferH16$ buf_saved_rep_eip17 (.out(SAVED_REP_EIP[17]), .in(SAVED_REP_EIP_pre[17]));
+    bufferH16$ buf_saved_rep_eip18 (.out(SAVED_REP_EIP[18]), .in(SAVED_REP_EIP_pre[18]));
+    bufferH16$ buf_saved_rep_eip19 (.out(SAVED_REP_EIP[19]), .in(SAVED_REP_EIP_pre[19]));
+    bufferH16$ buf_saved_rep_eip20 (.out(SAVED_REP_EIP[20]), .in(SAVED_REP_EIP_pre[20]));
+    bufferH16$ buf_saved_rep_eip21 (.out(SAVED_REP_EIP[21]), .in(SAVED_REP_EIP_pre[21]));
+    bufferH16$ buf_saved_rep_eip22 (.out(SAVED_REP_EIP[22]), .in(SAVED_REP_EIP_pre[22]));
+    bufferH16$ buf_saved_rep_eip23 (.out(SAVED_REP_EIP[23]), .in(SAVED_REP_EIP_pre[23]));
+    bufferH16$ buf_saved_rep_eip24 (.out(SAVED_REP_EIP[24]), .in(SAVED_REP_EIP_pre[24]));
+    bufferH16$ buf_saved_rep_eip25 (.out(SAVED_REP_EIP[25]), .in(SAVED_REP_EIP_pre[25]));
+    bufferH16$ buf_saved_rep_eip26 (.out(SAVED_REP_EIP[26]), .in(SAVED_REP_EIP_pre[26]));
+    bufferH16$ buf_saved_rep_eip27 (.out(SAVED_REP_EIP[27]), .in(SAVED_REP_EIP_pre[27]));
+    bufferH16$ buf_saved_rep_eip28 (.out(SAVED_REP_EIP[28]), .in(SAVED_REP_EIP_pre[28]));
+    bufferH16$ buf_saved_rep_eip29 (.out(SAVED_REP_EIP[29]), .in(SAVED_REP_EIP_pre[29]));
+    bufferH16$ buf_saved_rep_eip30 (.out(SAVED_REP_EIP[30]), .in(SAVED_REP_EIP_pre[30]));
+    bufferH16$ buf_saved_rep_eip31 (.out(SAVED_REP_EIP[31]), .in(SAVED_REP_EIP_pre[31]));
 
     wire [1:0] saved_ds_din;
     `MUX_2(u_saved_ds_mux, 2, saved_ds_din, 2'b0, decode_cs_DATA_SIZE, rep_capture)
     wire [1:0] saved_ds_din_g;
     `MUX_2(u_saved_ds_din_g, 2, saved_ds_din_g, saved_ds_din, 2'b0, sync_clear_flush)
     `REG_RST_WE(u_saved_ds, 2, clk, rst,
-                rep_we_g, saved_ds_din_g, SAVED_DATASIZE)
+                rep_we_g, saved_ds_din_g, SAVED_DATASIZE_pre)
+    bufferH16$ buf_saved_ds0 (.out(SAVED_DATASIZE[0]), .in(SAVED_DATASIZE_pre[0]));
+    bufferH16$ buf_saved_ds1 (.out(SAVED_DATASIZE[1]), .in(SAVED_DATASIZE_pre[1]));
 
     // ---- EIP / PrevEIP / PrevLength ----
     //   reset on rst | exp_pipe_clear (NOT flush -- flush feeds br_target).
@@ -627,14 +684,17 @@ module Decode (
     //     else                  -> hold (self)
 
     wire cond3, cond2, cond1, cond0;
-    assign cond3 = fetch_outs_exp_pipe_clear;
+    assign cond3 = fetch_outs_exp_pipe_clear_buf;
     `AND_2(u_cond2, 1, cond2, exe_outs_br_res_valid, flush)
     assign cond1 = predicted_taken;     //minus decode forward, will have to get gated at end
     `NOR_2(u_cond0, 1, cond0, HALT_REG, REP_LATCH)
 
     wire penc_valid;
-    wire [2:0] penc_out;
-    pencoder8_3v$ eip_penc (1'b0, {4'b0, cond3, cond2, cond1, cond0}, penc_out, penc_valid);
+    wire [2:0] penc_out, penc_out_pre;
+    pencoder8_3v$ eip_penc (1'b0, {4'b0, cond3, cond2, cond1, cond0}, penc_out_pre, penc_valid);
+    bufferH64$ buf_penc_out0 (.out(penc_out[0]), .in(penc_out_pre[0]));
+    bufferH64$ buf_penc_out1 (.out(penc_out[1]), .in(penc_out_pre[1]));
+    bufferH64$ buf_penc_out2 (.out(penc_out[2]), .in(penc_out_pre[2]));
     wire [31:0] eip_next;
     `MUX_4(u_eip_next, 32, eip_next,
             NEIP, current_idm_slots_br_btb_target,
@@ -661,11 +721,11 @@ module Decode (
 
 
     wire [31:0] prev_eip_din_g;
-    `MUX_2(u_prev_eip_din_g, 32, prev_eip_din_g, EIP, 32'b0, fetch_outs_exp_pipe_clear)
+    `MUX_2(u_prev_eip_din_g, 32, prev_eip_din_g, EIP, 32'b0, fetch_outs_exp_pipe_clear_buf)
     `REG_RST_WE(u_prev_eip, 32, clk, rst, 1'b1, prev_eip_din_g, PrevEIP)
 
     wire [3:0] prev_len_din_g;
-    `MUX_2(u_prev_len_din_g, 4, prev_len_din_g, inst_length, 4'b0, fetch_outs_exp_pipe_clear)
+    `MUX_2(u_prev_len_din_g, 4, prev_len_din_g, inst_length, 4'b0, fetch_outs_exp_pipe_clear_buf)
     `REG_RST_WE(u_prev_len, 4, clk, rst, 1'b1, prev_len_din_g, PrevLength)
 
     // ---- HALT_REG ----
@@ -689,7 +749,8 @@ module Decode (
     `OR_2(u_repcmp_we_g,  1, repcmp_we_g,  repcmp_we, sync_clear_flush)
     `MUX_2(u_repcmp_din_g, 1, repcmp_din_g, repcmp_din, 1'b0, sync_clear_flush)
     `REG_RST_WE(u_rep_cmp, 1, clk, rst,
-                repcmp_we_g, repcmp_din_g, REP_CMP_LATCH)
+                repcmp_we_g, repcmp_din_g, REP_CMP_LATCH_pre)
+    bufferH16$ buf_rep_cmp_latch (.out(REP_CMP_LATCH), .in(REP_CMP_LATCH_pre));
 
     // ---- REP_MOV_LATCH ({REP & !REP_CMP, clear_rep}) ----
     // mov_cond = REP & !REP_CMP = NOR(!REP, REP_CMP) -- reuses rep_n from above
@@ -705,21 +766,23 @@ module Decode (
     `OR_2(u_repmov_we_g,   1, repmov_we_g,  repmov_we, sync_clear_flush)
     `MUX_2(u_repmov_din_g, 1, repmov_din_g, repmov_din, 1'b0, sync_clear_flush)
     `REG_RST_WE(u_rep_mov, 1, clk, rst,
-                repmov_we_g, repmov_din_g, REP_MOV_LATCH)
+                repmov_we_g, repmov_din_g, REP_MOV_LATCH_pre)
+    bufferH16$ buf_rep_mov_latch (.out(REP_MOV_LATCH), .in(REP_MOV_LATCH_pre));
 
     // ---- DC_SAVED_EIP / DECODE_SAVED_EIP ----
     //   reset on rst only; write only on exp_pipe_clear.
     `REG_RST_WE(u_dc_saved_eip,     32, clk, rst,
-                fetch_outs_exp_pipe_clear, dc_outs_dc_eip, DC_SAVED_EIP)
+                fetch_outs_exp_pipe_clear_buf, dc_outs_dc_eip, DC_SAVED_EIP)
     `REG_RST_WE(u_decode_saved_eip, 32, clk, rst,
-                fetch_outs_exp_pipe_clear, EIP,              DECODE_SAVED_EIP)
+                fetch_outs_exp_pipe_clear_buf, EIP,              DECODE_SAVED_EIP)
 
     // EXCEPTION_EIP: sel = !exp_mode_jk[1] | int_mode_jk = NAND(exp_mode_jk[1], !int_mode_jk)
     // assign EXCEPTION_EIP = (!fetch_outs_i.exp_mode_jk[1] || fetch_outs_i.int_mode_jk) ? DECODE_SAVED_EIP : DC_SAVED_EIP;
-    wire int_mode_jk_n, exc_eip_sel;
+    wire int_mode_jk_n, exc_eip_sel, exc_eip_sel_pre;
     wire [31:0] EXCEPTION_EIP;
     `INV_N(u_int_mode_jk_inv,  1, fetch_outs_int_mode_jk, int_mode_jk_n)
-    `NAND_2(u_exc_eip_sel, 1, exc_eip_sel, fetch_outs_exp_mode_jk[1], int_mode_jk_n)
+    `NAND_2(u_exc_eip_sel, 1, exc_eip_sel_pre, fetch_outs_exp_mode_jk[1], int_mode_jk_n)
+    bufferH64$ buf_exc_eip_sel (.out(exc_eip_sel), .in(exc_eip_sel_pre));
     `MUX_2(u_exception_eip, 32, EXCEPTION_EIP, DC_SAVED_EIP, DECODE_SAVED_EIP, exc_eip_sel)
 
     // bool going_to_halt; assign going_to_halt = (HALT_REG || decode_cs_HALT);
@@ -731,13 +794,14 @@ module Decode (
     // valid = next_rr_valid & !going_to_halt & !going_to_rep & !exp_pipe_clear
     //       = next_rr_valid & NOR3(going_to_halt, going_to_rep, exp_pipe_clear)
     wire valid_block, rr_latch_valid;
-    `NOR_3(u_valid_block,    1, valid_block,    going_to_halt, going_to_rep, fetch_outs_exp_pipe_clear)
+    `NOR_3(u_valid_block,    1, valid_block,    going_to_halt, going_to_rep, fetch_outs_exp_pipe_clear_buf)
     `AND_2(u_rr_latch_valid, 1, rr_latch_valid, next_rr_valid, valid_block)
 
     // latch EIP: (exp_mode_jk[0] | int_mode_jk) ? EXCEPTION_EIP : EIP
-    wire latch_eip_sel;
+    wire latch_eip_sel, latch_eip_sel_pre;
     wire [31:0] latch_eip;
-    `OR_2(u_latch_eip_sel, 1, latch_eip_sel, fetch_outs_exp_mode_jk[0], fetch_outs_int_mode_jk)
+    `OR_2(u_latch_eip_sel, 1, latch_eip_sel_pre, fetch_outs_exp_mode_jk[0], fetch_outs_int_mode_jk)
+    bufferH64$ buf_latch_eip_sel (.out(latch_eip_sel), .in(latch_eip_sel_pre));
     `MUX_2(u_latch_eip, 32, latch_eip, EIP, EXCEPTION_EIP, latch_eip_sel)
 
     // sib/disp gating: (MODRM_NEEDED) ? x : 0
@@ -853,11 +917,11 @@ module Decode (
         .clear_zf                               (exe_outs_clr_ZF_sb),
         .external_set_zf                        (external_set_zf),
         .ecx                                    (rr_outs_ecx),
-        .ecx_sb                                 (rr_outs_ecx_sb),
+        .ecx_sb                                 (rr_outs_ecx_sb_buf),
         .zf_flag                                (exe_outs_ZF),
         .stall                                  (not_decode_forward),
         .flush                                  (flush),
-        .exp_pipe_clear                         (fetch_outs_exp_pipe_clear),
+        .exp_pipe_clear                         (fetch_outs_exp_pipe_clear_buf),
         .saved_segment0                         (SAVED_SEGMENT0),
         .saved_segment_override                 (SAVED_SEGMENT_OVERRIDE),
         .saved_rep_eip                          (SAVED_REP_EIP),
