@@ -1,4 +1,4 @@
-module tb_rr_fanout;
+module tb_fanout;
 
  Fetch uut_fetch (
     .clk(clk_i),

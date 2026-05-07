@@ -1,9 +1,201 @@
 ================================================================================
 VIOLATIONS BY GROUP  (deduplicated — duplicate log lines removed, sorted by count)
 ================================================================================
-  Unique VIOLATION paths : 0  (0 duplicate lines removed from log)
-  Unique WARNING paths   : 11  (0 duplicate lines removed from log)
-  Unique violation groups: 0
+  Unique VIOLATION paths : 305  (0 duplicate lines removed from log)
+  Unique WARNING paths   : 18  (0 duplicate lines removed from log)
+  Unique violation groups: 64
+
+[VIOLATION]  unique_paths=36   driver_cell=mux2$   fanout(s)=5   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> u_reqInUse_paddr(mux2_N_WIDTH15) -> gen_mux[*].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+[VIOLATION]  unique_paths=16   driver_cell=bufferHInv16$   fanout(s)=32   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> u_perm_inv(inv_N$_WIDTH4) -> GEN_INV[*].u_inv(bufferHInv16$).out
+
+[VIOLATION]  unique_paths=12   driver_cell=mux2$   fanout(s)=21, 23   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_reqInUse_paddr(mux2_N_WIDTH15) -> gen_mux[*].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+[VIOLATION]  unique_paths=8   driver_cell=mux2$   fanout(s)=10   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_tag_eb_idx(mux2_N_WIDTH2) -> gen_mux[*].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+[VIOLATION]  unique_paths=8   driver_cell=mux2$   fanout(s)=9   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_tag_vswap_idx(mux2_N_WIDTH2) -> gen_mux[*].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+[VIOLATION]  unique_paths=8   driver_cell=mux2$   fanout(s)=16   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_datastore_unit(VCache_DataStore) -> u_addr_final(mux2_N_WIDTH2) -> gen_mux[*].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=15   (1-stage buffer)
+  path : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[*].u_reg_oe(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=15   (1-stage buffer)
+  path : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[*].u_reg_we(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=6   (1-stage buffer)
+  path : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[*].u_reg_pa(MPS_reg_rst_we$_WIDTH15) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=10   (1-stage buffer)
+  path : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_st_override[*].u_ov_reg(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=and3$   fanout(s)=18   (2-stage buffer)
+  path : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[*].u_ld0_valid(and3_N$_WIDTH1) -> g[*].u(MPS_AND_IN3) -> g0(and3$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=and4$   fanout(s)=18   (2-stage buffer)
+  path : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[*].u_ld1_valid(and4_N$_WIDTH1) -> g[*].u(MPS_AND_IN4) -> g0(and4$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=6   (1-stage buffer)
+  path : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[*].u_latch_we(or2_N$_WIDTH1) -> g_or2[*].u0(MPS_OR_IN2$) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=5   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> u_block_busy(or2_N$_WIDTH1) -> g_or2[*].u0(MPS_OR_IN2$) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=nand4$   fanout(s)=163   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> busy_o_nand(nand4_N$_WIDTH1) -> g[*].u(nand4$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nand3$   fanout(s)=173   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> busy_o_nand(nand3_N$_WIDTH1) -> g[*].u0(nand3$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=5   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_miss(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=5   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> evictionBuf_unit(EvictionBuf) -> u_reqHit(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=and3$   fanout(s)=6   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> D_will_evict_o_and(and8_N$_WIDTH1) -> g[*].u(MPS_AND_IN8$) -> g3(MPS_AND_IN3) -> g0(and3$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=6   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> evictionBuf_unit(EvictionBuf) -> u_eb_valid_reg(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=nand2$   fanout(s)=14   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> WR_2_EB_o_nand(nand2_N$_WIDTH1) -> g_nand_N[*].u0(nand2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=147   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_hit(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=nand4$   fanout(s)=151   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_hit(nand4_N$_WIDTH1) -> g[*].u(nand4$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nor2$   fanout(s)=32   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> u_addr_drive_en(nor2_N$_WIDTH1) -> g_nor_n[*].u0(nor2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=21   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_reqInUse_we(mux2_N_WIDTH1) -> gen_mux[*].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=7   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_TagStore_unit(DCache_Bank_TagStore) -> u_valid_mux(mux8_N_WIDTH1) -> gen_mux[*].u_mux(MPS_MUX_IN8) -> u2(MPS_MUX_IN2) -> u0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=13   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_miss(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=8   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_wr_success(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=8   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> write_to_dswap_o_or(or2_N$_WIDTH1) -> g_or2[*].u0(MPS_OR_IN2$) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=14   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ff_0(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=14   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ff_1(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=12   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ff_2(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=6   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ff_3(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=and4$   fanout(s)=147   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ldFrom_V_swap_o_and(and4_N$_WIDTH1) -> g[*].u(MPS_AND_IN4) -> g0(and4$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nor2$   fanout(s)=37   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> fill0_o_and(and5_N$_WIDTH1) -> g[*].u(MPS_AND_IN5$) -> g2(nor2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nor2$   fanout(s)=37   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> fill1_o_and(and5_N$_WIDTH1) -> g[*].u(MPS_AND_IN5$) -> g2(nor2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nor2$   fanout(s)=37   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> fill2_o_and(and5_N$_WIDTH1) -> g[*].u(MPS_AND_IN5$) -> g2(nor2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nor2$   fanout(s)=39   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> fill3_o_and(and5_N$_WIDTH1) -> g[*].u(MPS_AND_IN5$) -> g2(nor2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nand2$   fanout(s)=16   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> Write_VSWAP_o_nand(nand2_N$_WIDTH1) -> g_nand_N[*].u0(nand2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=9   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> ff_0(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=9   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> ff_1(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=6   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> ff_2(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=and3$   fanout(s)=9   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> Read_DSWAP_o_and(and3_N$_WIDTH1) -> g[*].u(MPS_AND_IN3) -> g0(and3$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nand2$   fanout(s)=5   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_hitIdx_1(nand2_N$_WIDTH1) -> g_nand_N[*].u0(nand2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nand2$   fanout(s)=5   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_hitIdx_0(nand2_N$_WIDTH1) -> g_nand_N[*].u0(nand2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=reg64e$   fanout(s)=9   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_savedIDX(MPS_reg_rst_we$_WIDTH2) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=6   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> evictionBuf_unit(EvictionBuf) -> u_LDEB_qual(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=bufferHInv16$   fanout(s)=21   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> inv_S_0(inv_N$_WIDTH1) -> GEN_INV[*].u_inv(bufferHInv16$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=bufferHInv16$   fanout(s)=26   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> inv_S_1(inv_N$_WIDTH1) -> GEN_INV[*].u_inv(bufferHInv16$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=bufferHInv16$   fanout(s)=28   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> inv_S_2(inv_N$_WIDTH1) -> GEN_INV[*].u_inv(bufferHInv16$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=bufferHInv16$   fanout(s)=28   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> inv_S_3(inv_N$_WIDTH1) -> GEN_INV[*].u_inv(bufferHInv16$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=17   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_TagStore_unit(DCache_Bank_TagStore) -> u_fill_or_ldswap(or2_N$_WIDTH1) -> g_or2[*].u0(MPS_OR_IN2$) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=8   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_TagStore_unit(DCache_Bank_TagStore) -> u_ldswap_dirty(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=bufferHInv16$   fanout(s)=17   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_DataStore_unit(DCache_Bank_DataStore) -> u_not_busy(inv_N$_WIDTH1) -> GEN_INV[*].u_inv(bufferHInv16$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=nor2$   fanout(s)=16   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_DataStore_unit(DCache_Bank_DataStore) -> u_oe_actual(nor2$).out
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=5   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> LRU_unit(LRU) -> u_currLRU_lo(mux2_N_WIDTH1) -> gen_mux[*].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=9   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_doAccess(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=145   (2-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_datastore_unit(VCache_DataStore) -> u_store_path(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=4   driver_cell=mux2$   fanout(s)=16   (1-stage buffer)
+  path : (DCache_TOP) -> g_dcache_block[*].block(DCache_Block) -> vcache_unit(VCache) -> vcache_datastore_unit(VCache_DataStore) -> u_swap_path(and2_N$_WIDTH1) -> g_and_N[*].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+[VIOLATION]  unique_paths=1   driver_cell=reg64e$   fanout(s)=5   (1-stage buffer)
+  path : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_reg_we(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=1   driver_cell=reg64e$   fanout(s)=6   (1-stage buffer)
+  path : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_reg_oe(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[*].u_reg(reg64e$).Q[*]
+
+[VIOLATION]  unique_paths=1   driver_cell=bufferHInv16$   fanout(s)=145   (2-stage buffer)
+  path : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_keep_sel(inv_N$_WIDTH1) -> GEN_INV[*].u_inv(bufferHInv16$).out
+
+[VIOLATION]  unique_paths=1   driver_cell=bufferHInv16$   fanout(s)=32   (2-stage buffer)
+  path : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_addr_perm_bar(inv_N$_WIDTH1) -> GEN_INV[*].u_inv(bufferHInv16$).out
+
+[VIOLATION]  unique_paths=1   driver_cell=bufferHInv16$   fanout(s)=32   (2-stage buffer)
+  path : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_data_perm_bar(inv_N$_WIDTH1) -> GEN_INV[*].u_inv(bufferHInv16$).out
 
 
 ================================================================================
@@ -18,6 +210,518 @@ FIX RECIPE  (VIOLATIONS only, deduplicated)
                 replace all downstream uses of WIRE with WIRE_buf
   EXAMPLE     : one concrete (non-collapsed) driver path from the log
 
+── #1  unique_paths=36  max_fanout=5  (1-stage buffer)
+   EDIT MODULE : MPS_MUX_IN2
+   WIRE        : out
+   LEAF DRIVER : u0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_u0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> u_reqInUse_paddr(mux2_N_WIDTH15) -> gen_mux[14].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+── #2  unique_paths=16  max_fanout=32  (2-stage buffer)
+   EDIT MODULE : inv_N$_WIDTH4
+   WIRE        : out[3]
+   LEAF DRIVER : GEN_INV[N].u_inv(bufferHInv16$).out
+   FIX         : wire out[3]_buf;
+                 bufferH16$ u_buf_GEN_INV.u_inv (.out(out[3]_buf), .in(out[3]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> u_perm_inv(inv_N$_WIDTH4) -> GEN_INV[3].u_inv(bufferHInv16$).out
+
+── #3  unique_paths=12  max_fanout=23  (2-stage buffer)
+   EDIT MODULE : MPS_MUX_IN2
+   WIRE        : out
+   LEAF DRIVER : u0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_u0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_reqInUse_paddr(mux2_N_WIDTH15) -> gen_mux[8].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+── #4  unique_paths=8  max_fanout=10  (1-stage buffer)
+   EDIT MODULE : MPS_MUX_IN2
+   WIRE        : out
+   LEAF DRIVER : u0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_u0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_tag_eb_idx(mux2_N_WIDTH2) -> gen_mux[1].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+── #5  unique_paths=8  max_fanout=9  (1-stage buffer)
+   EDIT MODULE : MPS_MUX_IN2
+   WIRE        : out
+   LEAF DRIVER : u0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_u0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_tag_vswap_idx(mux2_N_WIDTH2) -> gen_mux[1].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+── #6  unique_paths=8  max_fanout=16  (1-stage buffer)
+   EDIT MODULE : MPS_MUX_IN2
+   WIRE        : out
+   LEAF DRIVER : u0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_u0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_datastore_unit(VCache_DataStore) -> u_addr_final(mux2_N_WIDTH2) -> gen_mux[1].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+── #7  unique_paths=4  max_fanout=15  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[3].u_reg_oe(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #8  unique_paths=4  max_fanout=15  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[3].u_reg_we(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #9  unique_paths=4  max_fanout=6  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH15
+   WIRE        : q[14]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[14]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[14]_buf), .in(q[14]));
+   EXAMPLE     : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[0].u_reg_pa(MPS_reg_rst_we$_WIDTH15) -> gen_reg64[0].u_reg(reg64e$).Q[14]
+
+── #10  unique_paths=4  max_fanout=10  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_st_override[3].u_ov_reg(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #11  unique_paths=4  max_fanout=18  (2-stage buffer)
+   EDIT MODULE : MPS_AND_IN3
+   WIRE        : out
+   LEAF DRIVER : g0(and3$).out
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[0].u_ld0_valid(and3_N$_WIDTH1) -> g[0].u(MPS_AND_IN3) -> g0(and3$).out
+
+── #12  unique_paths=4  max_fanout=18  (2-stage buffer)
+   EDIT MODULE : MPS_AND_IN4
+   WIRE        : out
+   LEAF DRIVER : g0(and4$).out
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[0].u_ld1_valid(and4_N$_WIDTH1) -> g[0].u(MPS_AND_IN4) -> g0(and4$).out
+
+── #13  unique_paths=4  max_fanout=6  (1-stage buffer)
+   EDIT MODULE : MPS_OR_IN2$
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> dcache_arbitration(DCache_Arbitration) -> g_arb_block[0].u_latch_we(or2_N$_WIDTH1) -> g_or2[0].u0(MPS_OR_IN2$) -> g0(mux2$).outb
+
+── #14  unique_paths=4  max_fanout=5  (1-stage buffer)
+   EDIT MODULE : MPS_OR_IN2$
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> u_block_busy(or2_N$_WIDTH1) -> g_or2[0].u0(MPS_OR_IN2$) -> g0(mux2$).outb
+
+── #15  unique_paths=4  max_fanout=163  (2-stage buffer)
+   EDIT MODULE : nand4_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : g[N].u(nand4$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_g.u (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> busy_o_nand(nand4_N$_WIDTH1) -> g[0].u(nand4$).out
+
+── #16  unique_paths=4  max_fanout=173  (2-stage buffer)
+   EDIT MODULE : nand3_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : g[N].u0(nand3$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_g.u0 (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> busy_o_nand(nand3_N$_WIDTH1) -> g[0].u0(nand3$).out
+
+── #17  unique_paths=4  max_fanout=5  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_miss(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #18  unique_paths=4  max_fanout=5  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> evictionBuf_unit(EvictionBuf) -> u_reqHit(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #19  unique_paths=4  max_fanout=6  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN3
+   WIRE        : out
+   LEAF DRIVER : g0(and3$).out
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> D_will_evict_o_and(and8_N$_WIDTH1) -> g[0].u(MPS_AND_IN8$) -> g3(MPS_AND_IN3) -> g0(and3$).out
+
+── #20  unique_paths=4  max_fanout=6  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> evictionBuf_unit(EvictionBuf) -> u_eb_valid_reg(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #21  unique_paths=4  max_fanout=14  (1-stage buffer)
+   EDIT MODULE : nand2_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : g_nand_N[N].u0(nand2$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_g_nand_N.u0 (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> WR_2_EB_o_nand(nand2_N$_WIDTH1) -> g_nand_N[0].u0(nand2$).out
+
+── #22  unique_paths=4  max_fanout=147  (2-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_hit(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #23  unique_paths=4  max_fanout=151  (2-stage buffer)
+   EDIT MODULE : nand4_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : g[N].u(nand4$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_g.u (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_hit(nand4_N$_WIDTH1) -> g[0].u(nand4$).out
+
+── #24  unique_paths=4  max_fanout=32  (2-stage buffer)
+   EDIT MODULE : nor2_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : g_nor_n[N].u0(nor2$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_g_nor_n.u0 (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> u_addr_drive_en(nor2_N$_WIDTH1) -> g_nor_n[0].u0(nor2$).out
+
+── #25  unique_paths=4  max_fanout=21  (2-stage buffer)
+   EDIT MODULE : MPS_MUX_IN2
+   WIRE        : out
+   LEAF DRIVER : u0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_u0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_reqInUse_we(mux2_N_WIDTH1) -> gen_mux[0].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+── #26  unique_paths=4  max_fanout=7  (1-stage buffer)
+   EDIT MODULE : MPS_MUX_IN2
+   WIRE        : out
+   LEAF DRIVER : u0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_u0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_TagStore_unit(DCache_Bank_TagStore) -> u_valid_mux(mux8_N_WIDTH1) -> gen_mux[0].u_mux(MPS_MUX_IN8) -> u2(MPS_MUX_IN2) -> u0(mux2$).outb
+
+── #27  unique_paths=4  max_fanout=13  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_miss(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #28  unique_paths=4  max_fanout=8  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> u_wr_success(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #29  unique_paths=4  max_fanout=8  (1-stage buffer)
+   EDIT MODULE : MPS_OR_IN2$
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> write_to_dswap_o_or(or2_N$_WIDTH1) -> g_or2[0].u0(MPS_OR_IN2$) -> g0(mux2$).outb
+
+── #30  unique_paths=4  max_fanout=14  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ff_0(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #31  unique_paths=4  max_fanout=14  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ff_1(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #32  unique_paths=4  max_fanout=12  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ff_2(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #33  unique_paths=4  max_fanout=6  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ff_3(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #34  unique_paths=4  max_fanout=147  (2-stage buffer)
+   EDIT MODULE : MPS_AND_IN4
+   WIRE        : out
+   LEAF DRIVER : g0(and4$).out
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> ldFrom_V_swap_o_and(and4_N$_WIDTH1) -> g[0].u(MPS_AND_IN4) -> g0(and4$).out
+
+── #35  unique_paths=4  max_fanout=37  (2-stage buffer)
+   EDIT MODULE : MPS_AND_IN5$
+   WIRE        : out
+   LEAF DRIVER : g2(nor2$).out
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g2 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> fill0_o_and(and5_N$_WIDTH1) -> g[0].u(MPS_AND_IN5$) -> g2(nor2$).out
+
+── #36  unique_paths=4  max_fanout=37  (2-stage buffer)
+   EDIT MODULE : MPS_AND_IN5$
+   WIRE        : out
+   LEAF DRIVER : g2(nor2$).out
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g2 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> fill1_o_and(and5_N$_WIDTH1) -> g[0].u(MPS_AND_IN5$) -> g2(nor2$).out
+
+── #37  unique_paths=4  max_fanout=37  (2-stage buffer)
+   EDIT MODULE : MPS_AND_IN5$
+   WIRE        : out
+   LEAF DRIVER : g2(nor2$).out
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g2 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> fill2_o_and(and5_N$_WIDTH1) -> g[0].u(MPS_AND_IN5$) -> g2(nor2$).out
+
+── #38  unique_paths=4  max_fanout=39  (2-stage buffer)
+   EDIT MODULE : MPS_AND_IN5$
+   WIRE        : out
+   LEAF DRIVER : g2(nor2$).out
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g2 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> fill3_o_and(and5_N$_WIDTH1) -> g[0].u(MPS_AND_IN5$) -> g2(nor2$).out
+
+── #39  unique_paths=4  max_fanout=16  (1-stage buffer)
+   EDIT MODULE : nand2_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : g_nand_N[N].u0(nand2$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_g_nand_N.u0 (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> Write_VSWAP_o_nand(nand2_N$_WIDTH1) -> g_nand_N[0].u0(nand2$).out
+
+── #40  unique_paths=4  max_fanout=9  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> ff_0(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #41  unique_paths=4  max_fanout=9  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> ff_1(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #42  unique_paths=4  max_fanout=6  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> ff_2(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #43  unique_paths=4  max_fanout=9  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN3
+   WIRE        : out
+   LEAF DRIVER : g0(and3$).out
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_fsm_unit(VCache_FSM) -> Read_DSWAP_o_and(and3_N$_WIDTH1) -> g[0].u(MPS_AND_IN3) -> g0(and3$).out
+
+── #44  unique_paths=4  max_fanout=5  (1-stage buffer)
+   EDIT MODULE : nand2_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : g_nand_N[N].u0(nand2$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_g_nand_N.u0 (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_hitIdx_1(nand2_N$_WIDTH1) -> g_nand_N[0].u0(nand2$).out
+
+── #45  unique_paths=4  max_fanout=5  (1-stage buffer)
+   EDIT MODULE : nand2_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : g_nand_N[N].u0(nand2$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_g_nand_N.u0 (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_hitIdx_0(nand2_N$_WIDTH1) -> g_nand_N[0].u0(nand2$).out
+
+── #46  unique_paths=4  max_fanout=9  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH2
+   WIRE        : q[1]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[1]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[1]_buf), .in(q[1]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_savedIDX(MPS_reg_rst_we$_WIDTH2) -> gen_reg64[0].u_reg(reg64e$).Q[1]
+
+── #47  unique_paths=4  max_fanout=6  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> evictionBuf_unit(EvictionBuf) -> u_LDEB_qual(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #48  unique_paths=4  max_fanout=21  (2-stage buffer)
+   EDIT MODULE : inv_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : GEN_INV[N].u_inv(bufferHInv16$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_GEN_INV.u_inv (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> inv_S_0(inv_N$_WIDTH1) -> GEN_INV[0].u_inv(bufferHInv16$).out
+
+── #49  unique_paths=4  max_fanout=26  (2-stage buffer)
+   EDIT MODULE : inv_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : GEN_INV[N].u_inv(bufferHInv16$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_GEN_INV.u_inv (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> inv_S_1(inv_N$_WIDTH1) -> GEN_INV[0].u_inv(bufferHInv16$).out
+
+── #50  unique_paths=4  max_fanout=28  (2-stage buffer)
+   EDIT MODULE : inv_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : GEN_INV[N].u_inv(bufferHInv16$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_GEN_INV.u_inv (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> inv_S_2(inv_N$_WIDTH1) -> GEN_INV[0].u_inv(bufferHInv16$).out
+
+── #51  unique_paths=4  max_fanout=28  (2-stage buffer)
+   EDIT MODULE : inv_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : GEN_INV[N].u_inv(bufferHInv16$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_GEN_INV.u_inv (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> dcache_bank_fsm_unit(DCache_Bank_FSM) -> inv_S_3(inv_N$_WIDTH1) -> GEN_INV[0].u_inv(bufferHInv16$).out
+
+── #52  unique_paths=4  max_fanout=17  (2-stage buffer)
+   EDIT MODULE : MPS_OR_IN2$
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_TagStore_unit(DCache_Bank_TagStore) -> u_fill_or_ldswap(or2_N$_WIDTH1) -> g_or2[0].u0(MPS_OR_IN2$) -> g0(mux2$).outb
+
+── #53  unique_paths=4  max_fanout=8  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_TagStore_unit(DCache_Bank_TagStore) -> u_ldswap_dirty(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #54  unique_paths=4  max_fanout=17  (2-stage buffer)
+   EDIT MODULE : inv_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : GEN_INV[N].u_inv(bufferHInv16$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_GEN_INV.u_inv (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_DataStore_unit(DCache_Bank_DataStore) -> u_not_busy(inv_N$_WIDTH1) -> GEN_INV[0].u_inv(bufferHInv16$).out
+
+── #55  unique_paths=4  max_fanout=16  (1-stage buffer)
+   EDIT MODULE : DCache_Bank_DataStore
+   WIRE        : OE_2_DataStore
+   LEAF DRIVER : u_oe_actual(nor2$).out
+   FIX         : wire OE_2_DataStore_buf;
+                 bufferH16$ u_buf_u_oe_actual (.out(OE_2_DataStore_buf), .in(OE_2_DataStore));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> dcache_bank_unit(DCache_Bank) -> DCache_Bank_DataStore_unit(DCache_Bank_DataStore) -> u_oe_actual(nor2$).out
+
+── #56  unique_paths=4  max_fanout=5  (1-stage buffer)
+   EDIT MODULE : MPS_MUX_IN2
+   WIRE        : out
+   LEAF DRIVER : u0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_u0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> LRU_unit(LRU) -> u_currLRU_lo(mux2_N_WIDTH1) -> gen_mux[0].u_mux(MPS_MUX_IN2) -> u0(mux2$).outb
+
+── #57  unique_paths=4  max_fanout=9  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_tag_store_unit(VCache_TagStore) -> u_doAccess(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #58  unique_paths=4  max_fanout=145  (2-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_datastore_unit(VCache_DataStore) -> u_store_path(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #59  unique_paths=4  max_fanout=16  (1-stage buffer)
+   EDIT MODULE : MPS_AND_IN2
+   WIRE        : out
+   LEAF DRIVER : g0(mux2$).outb
+   FIX         : wire out_buf;
+                 bufferH16$ u_buf_g0 (.out(out_buf), .in(out));
+   EXAMPLE     : (DCache_TOP) -> g_dcache_block[0].block(DCache_Block) -> vcache_unit(VCache) -> vcache_datastore_unit(VCache_DataStore) -> u_swap_path(and2_N$_WIDTH1) -> g_and_N[0].u0(MPS_AND_IN2) -> g0(mux2$).outb
+
+── #60  unique_paths=1  max_fanout=5  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_reg_we(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #61  unique_paths=1  max_fanout=6  (1-stage buffer)
+   EDIT MODULE : MPS_reg_rst_we$_WIDTH1
+   WIRE        : q[0]
+   LEAF DRIVER : gen_reg64[N].u_reg(reg64e$).Q
+   FIX         : wire q[0]_buf;
+                 bufferH16$ u_buf_gen_reg64.u_reg (.out(q[0]_buf), .in(q[0]));
+   EXAMPLE     : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_reg_oe(MPS_reg_rst_we$_WIDTH1) -> gen_reg64[0].u_reg(reg64e$).Q[0]
+
+── #62  unique_paths=1  max_fanout=145  (2-stage buffer)
+   EDIT MODULE : inv_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : GEN_INV[N].u_inv(bufferHInv16$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_GEN_INV.u_inv (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_keep_sel(inv_N$_WIDTH1) -> GEN_INV[0].u_inv(bufferHInv16$).out
+
+── #63  unique_paths=1  max_fanout=32  (2-stage buffer)
+   EDIT MODULE : inv_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : GEN_INV[N].u_inv(bufferHInv16$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_GEN_INV.u_inv (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_addr_perm_bar(inv_N$_WIDTH1) -> GEN_INV[0].u_inv(bufferHInv16$).out
+
+── #64  unique_paths=1  max_fanout=32  (2-stage buffer)
+   EDIT MODULE : inv_N$_WIDTH1
+   WIRE        : out[0]
+   LEAF DRIVER : GEN_INV[N].u_inv(bufferHInv16$).out
+   FIX         : wire out[0]_buf;
+                 bufferH16$ u_buf_GEN_INV.u_inv (.out(out[0]_buf), .in(out[0]));
+   EXAMPLE     : (DCache_TOP) -> mio_block_unit(MIO_Block) -> u_data_perm_bar(inv_N$_WIDTH1) -> GEN_INV[0].u_inv(bufferHInv16$).out
+
 
 ================================================================================
 INPUT PORT BUFFERING  (WARNING input ports — add bufferH16$ tree at EXE top-level)
@@ -28,18 +732,55 @@ INPUT PORT BUFFERING  (WARNING input ports — add bufferH16$ tree at EXE top-le
 
   PORT (collapsed)                                 MAX_FAN  INTERNAL  EXT_PORTS  STAGES  BITS
   -------------------------------------------------------------------------------------------
-  exe_latches_next_ld_addy[*]                          266       265          1       3     2
-  latches_LD_PADDR_1[*]                                265       265          0       3     2
-  latches_cs_LD_OP                                     147       147          0       2     1
-  latches_LD_XCL                                       136       136          0       2     1
-  exe_latches_next_MIO                                 133       132          1       2     1
-  exe_latches_next_imm64[*]                             28        27          1       2     2
-  outs_valid                                            18        17          1       2     1
-  exe_outs_br_res_flush                                  5         5          0       1     1
+  out2Core_writeSuccess_0_o                            162       161          1       2     1
+  out2Core_writeSuccess_1_o                            162       161          1       2     1
+  out2Core_writeSuccess_2_o                            162       161          1       2     1
+  out2Core_writeSuccess_3_o                            162       161          1       2     1
+  out2Core_writeSuccess_MIO_o                          145       144          1       2     1
+  out2Core_reqServed_MIO_o                              17        16          1       2     1
+  dte_permissionToDriveAddrBus_Ld_0_i                   16        16          0       1     1
+  dte_permissionToDriveAddrBus_Ld_1_i                   16        16          0       1     1
+  dte_permissionToDriveAddrBus_Ld_2_i                   16        16          0       1     1
+  dte_permissionToDriveAddrBus_Ld_3_i                   16        16          0       1     1
+  core_ld_addr_0_i[*]                                    8         8          0       1     2
+  core_ld_addr_1_i[*]                                    8         8          0       1     2
+  dte_mem_valid_0_i                                      8         8          0       1     1
+  dte_mem_valid_1_i                                      8         8          0       1     1
+  dte_mem_valid_2_i                                      8         8          0       1     1
+  dte_mem_valid_3_i                                      8         8          0       1     1
 
 ================================================================================
 MODULE SUMMARY  (deduplicated violation count by RTL module, highest first)
 ================================================================================
+    272  DCache_Block
+    124  VCache
+    112  DCache_Bank
+     64  DCache_Bank_FSM
+     48  mux2_N_WIDTH15
+     44  VCache_TagStore
+     40  and2_N$_WIDTH1
+     28  DCache_Arbitration
+     28  VCache_FSM
+     24  mux2_N_WIDTH2
+     23  inv_N$_WIDTH1
+     16  or2_N$_WIDTH1
+     16  nand2_N$_WIDTH1
+     16  inv_N$_WIDTH4
+     16  and5_N$_WIDTH1
+     16  VCache_DataStore
+     12  EvictionBuf
+     12  DCache_Bank_TagStore
+      8  and3_N$_WIDTH1
+      8  and4_N$_WIDTH1
+      8  nand4_N$_WIDTH1
+      8  mux2_N_WIDTH1
+      8  DCache_Bank_DataStore
+      5  MIO_Block
+      4  nand3_N$_WIDTH1
+      4  and8_N$_WIDTH1
+      4  nor2_N$_WIDTH1
+      4  mux8_N_WIDTH1
+      4  LRU
 
 ================================================================================
 DONE

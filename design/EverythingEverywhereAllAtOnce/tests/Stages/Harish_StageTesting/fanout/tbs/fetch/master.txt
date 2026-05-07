@@ -40,7 +40,7 @@ lib_header
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Fetch/structural/SegmentTranslation_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Fetch/structural/SPC_Sel_Logic_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Fetch/structural/two_bit_sat_count_structural.v
-tbs/fetch/tb_fetch_fanout.v
+tbs/fetch/tb_fanout.v
 
 
 

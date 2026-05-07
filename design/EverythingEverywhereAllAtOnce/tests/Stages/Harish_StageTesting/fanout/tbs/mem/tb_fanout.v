@@ -1,4 +1,4 @@
-module tb_mem_fanout
+module tb_fanout
 
  MEM uut_mem(
     .clk(clk_i),

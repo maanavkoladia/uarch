@@ -1,4 +1,4 @@
-module tb_rr_fanout
+module tb_fanout
 
 module RR (
     .clk(clk_i),

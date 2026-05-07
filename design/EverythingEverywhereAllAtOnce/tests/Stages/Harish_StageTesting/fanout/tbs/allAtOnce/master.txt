@@ -219,6 +219,6 @@ lib_header
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/core_structural/EveryThing_TOP_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/structural/Everywhere_TOP_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/structural/AllAtOnce_TOP_structural.v
-tbs/allAtOnce/tb_allAtOnce_fanout.v
+tbs/allAtOnce/tb_fanout.v
 
 

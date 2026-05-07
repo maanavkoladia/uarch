@@ -32,6 +32,6 @@ lib_header
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/RR/structural/RegFile.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/RR/structural/RegSB.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/RR/structural/RR_structural.v
-tbs/rr/tb_rr_fanout.v
+tbs/rr/tb_fanout.v
 
 

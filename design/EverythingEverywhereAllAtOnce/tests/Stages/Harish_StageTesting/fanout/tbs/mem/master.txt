@@ -29,4 +29,4 @@ lib_header
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/gen/EXE_valid_logic.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/structural/mem_miss_stall_logic_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/MEM/structural/MEM_structural.v
-tbs/mem/tb_mem_fanout.v
+tbs/mem/tb_fanout.v

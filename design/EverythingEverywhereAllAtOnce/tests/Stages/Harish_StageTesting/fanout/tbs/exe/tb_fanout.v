@@ -1,4 +1,4 @@
-module tb_exe_fanout
+module tb_fanout
 
  EXE uut_exe(
     .clk(clk_i),
