@@ -13,10 +13,10 @@ DISTRO := $(shell . /etc/os-release && echo $$ID)
 
 TARGET = system_testing
 
-STRUCTRURAL := true
+STRUCTRURAL := false
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 11
+CLK_PERIOD := 12
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 	p	DCACHE_DUMP_END=100

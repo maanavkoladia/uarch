@@ -32,6 +32,8 @@ module Decode (
     output decode_outputs_t outs_o
 );
 
+    wire seg_0_overriden_final;
+
     wire [31:0] PrevEIP;
     wire [31:0] EIP;
     wire [31:0] NEIP;
@@ -86,6 +88,11 @@ module Decode (
 
     wire modrm_seg_override;
 
+    wire sib_segment_override;
+
+    wire [`REG_ID_W-1:0] rr_cs_seg_0_id_pre;
+    assign temp_rr_cs.seg_0_id = ((sib_size && sib_segment_override) || modrm_seg_override) ? `SS : rr_cs_seg_0_id_pre;
+
     predecode inst_processing(
         .clk(clk), .rst(rst), .queue(flattened_queue),
         .queue_valid({idm_outs_i.idm_slots[3].valid, idm_outs_i.idm_slots[2].valid,
@@ -139,7 +146,7 @@ module Decode (
         .rr_cs_datasize(temp_rr_cs.datasize),
         .rr_cs_will_mod_zf(temp_rr_cs.will_mod_zf),
         .rr_cs_seg_1_valid(temp_rr_cs.seg_1_valid),
-        .rr_cs_seg_0_id(temp_rr_cs.seg_0_id),
+        .rr_cs_seg_0_id(rr_cs_seg_0_id_pre),
         .rr_cs_seg_1_id(temp_rr_cs.seg_1_id),
         .rr_cs_special_modrm_bs(temp_rr_cs.special_modrm_bs),
         .rr_cs_special_br(temp_rr_cs.special_br),
@@ -216,7 +223,6 @@ module Decode (
 
     wire [`REG_ID_W-1:0] sibbase, sibidx;
     wire [7:0] sibscale;
-    wire sib_segment_override;
     sib_processor sib_processing(.sib_byte(sib_byte), .sib_idx_id(sibidx), 
         .sib_base_id(sibbase), .sib_scale(sibscale), .sib_segment_override(sib_segment_override)
     );
