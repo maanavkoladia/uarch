@@ -55,7 +55,8 @@ module br_info_processing (
     wire br_xcl;
 
     wire might_be_xcl;
-    wire neip_alinged, neip_not_alinged;
+    wire neip_aligned;
+    wire neip_not_aligned;
     `XOR_2 (u_br_xcl_maybe, 1, might_be_xcl, eip[4], neip[4])
     `CMP_N (u_neip_zero,    4, neip_aligned, neip[3:0], 4'b0000)
     `INV_N (u_inv_neip_aligned, 1, neip_aligned, neip_not_aligned)

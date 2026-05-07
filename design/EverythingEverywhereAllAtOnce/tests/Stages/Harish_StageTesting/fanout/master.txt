@@ -39,7 +39,6 @@ lib_header
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/length_adder.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_vector_roms.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rr_valid_logic.v
-/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/decode_define.vh
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/disp_finder_structural.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/imm_finder_structural.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/modrm_size.v
@@ -60,7 +59,6 @@ lib_header
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/modrm_processor_structural.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/sib_processor_structural.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/rep_controller_structural.v
-/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/Decode_structural.sv
-tb_stages.sv
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/Decode_structural.v
 
 

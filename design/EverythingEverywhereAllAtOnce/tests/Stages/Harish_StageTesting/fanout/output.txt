@@ -1,0 +1,164 @@
+design_vision -no_gui -f run_fanout.tcl | tee check.log
+
+                           Design Compiler Graphical 
+                                 DC Ultra (TM)
+                                  DFTMAX (TM)
+                              Power Compiler (TM)
+                                 DesignWare (R)
+                                 DC Expert (TM)
+                               Design Vision (TM)
+                               HDL Compiler (TM)
+                               VHDL Compiler (TM)
+                                  DFT Compiler
+                               Design Compiler(R)
+
+               Version T-2022.03-SP2 for linux64 - May 25, 2022 
+
+                    Copyright (c) 1988 - 2022 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+Initializing...
+Initializing gui preferences from file  /home/ecelrc/students/he3837/.synopsys_dc_gui/preferences.tcl
+set target_library ""
+set link_library "*"
+*
+set __top_module__  "Decode"
+Decode
+set __masterfile__  "./master.txt"
+./master.txt
+define_design_lib WORK -path ./WORK
+1
+set f [open "$__masterfile__" r]
+file14
+set files [split [read $f] "\n"]
+lib_header /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/interconnect_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/BusArbitration_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/core_stage_latches_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/DCache_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/DCache_req_2_sch_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/DTE_FSM_gen_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/ICache_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/io_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/mem_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/reg_ids_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/exe_structural_defines.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/TLB_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Common/LOG.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Common/utils.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/MUX_Multi.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/NAND_N_NOR_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/AND_multi.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/OR_multi.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/AND_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/OR_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/MUX_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/decoder_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/UniqueLib.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/REG_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/STDCell_Macros.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/triple_adder.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/KoggeStone.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/../../defines/reg_ids_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/../../defines/control_store_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/MOD_LUT.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/OP_LUT.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/PF_LUT.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_fsm.sv /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_movs_fsm.sv /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_cmp_fsm.sv /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_logic.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/length_adder.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_vector_roms.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rr_valid_logic.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/disp_finder_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/imm_finder_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/modrm_size.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/num_pf_gen.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/op_size.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/pf_checker.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/pf_vector_gen.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/ppu_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/selection_logic_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/sib_finder_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/br_info_processing_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/control_store_top_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/control_store_genned.sv /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/control_store_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/cs_post_processor_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/decode_gp_gen_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/modrm_processor_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/sib_processor_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/rep_controller_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/Decode_structural.v {} {} {}
+close $f
+# strip blanks/comments
+set files [lsearch -all -inline -not -regexp $files {^\s*(#.*)?$}]
+lib_header /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/interconnect_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/BusArbitration_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/core_stage_latches_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/DCache_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/DCache_req_2_sch_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/DTE_FSM_gen_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/ICache_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/io_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/mem_common_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/reg_ids_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/exe_structural_defines.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/TLB_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Common/LOG.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Common/utils.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/MUX_Multi.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/NAND_N_NOR_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/AND_multi.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/OR_multi.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/AND_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/OR_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/MUX_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/decoder_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/UniqueLib.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/REG_N.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/STDCell_Macros.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/triple_adder.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/KoggeStone.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/../../defines/reg_ids_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/../../defines/control_store_define.vh /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/MOD_LUT.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/OP_LUT.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/PF_LUT.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_fsm.sv /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_movs_fsm.sv /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_cmp_fsm.sv /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_logic.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/length_adder.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_vector_roms.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rr_valid_logic.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/disp_finder_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/imm_finder_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/modrm_size.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/num_pf_gen.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/op_size.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/pf_checker.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/pf_vector_gen.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/ppu_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/selection_logic_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/sib_finder_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/br_info_processing_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/control_store_top_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/control_store_genned.sv /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/control_store_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/cs_post_processor_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/decode_gp_gen_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/modrm_processor_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/sib_processor_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/rep_controller_structural.v /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/Decode_structural.v
+read_file -format verilog [lindex $files 0]
+Loading db file '/usr/local/packages/synopsys_2022/syn/T-2022.03-SP2/libraries/syn/gtech.db'
+Loading db file '/usr/local/packages/synopsys_2022/syn/T-2022.03-SP2/libraries/syn/standard.sldb'
+  Loading link library 'gtech'
+Loading verilog file '/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/tests/Stages/Harish_StageTesting/fanout/lib_header'
+Detecting input file type automatically (-rtl or -netlist).
+Reading with Presto HDL Compiler (equivalent to -rtl option).
+Running PRESTO HDLC
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/tests/Stages/Harish_StageTesting/fanout/lib_header
+Presto compilation completed successfully.
+Current design is now '/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/tests/Stages/Harish_StageTesting/fanout/nand2$.db:nand2$'
+Loaded 81 designs.
+Current design is 'nand2$'.
+nand2$ nand3$ nand4$ and2$ and3$ and4$ nor2$ nor3$ nor4$ or2$ or3$ or4$ xor2$ xnor2$ inv1$ dff$ dff8$ dff16$ jkff8$ jkff16$ buffer$ buffer8$ buffer16$ bufferH16$ bufferH64$ bufferH256$ bufferH1024$ bufferH4096$ bufferHInv16$ bufferHInv64$ bufferHInv256$ bufferHInv1024$ bufferHInv4096$ latch$ latch8$ latch16$ tristateL$ tristate8L$ tristate16L$ tristateH$ tristate8H$ tristate16H$ tristate_bus_driver1$ tristate_bus_driver8$ tristate_bus_driver16$ dff16b$ dff32b$ reg64e$ reg32e$ ioreg8$ ioreg16$ regfile$ regfile8x8$ ram8b8w$ ram16b8w$ ram8b4w$ rom4b32w$ rom32b32w$ rom64b32w$ mux2$ mux3$ mux4$ mux2_8$ mux2_16$ mux3_8$ mux3_16$ mux4_8$ mux4_16$ decoder2_4$ decoder3_8$ syn_cntr8$ pencoder8_3v$ pencoder8_3$ mag_comp8$ mag_comp4$ alu4$ sram128x8$ sram32x8$ sram32x16$ sram32x32$ DiskWrapper
+analyze -format verilog [lrange $files 1 end]
+Running PRESTO HDLC
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/common_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/interconnect_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/BusArbitration_common_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/core_stage_latches_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/DCache_common_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/DCache_req_2_sch_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/DTE_FSM_gen_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/ICache_common_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/io_common_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/mem_common_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/reg_ids_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/exe_structural_defines.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/TLB_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Common/LOG.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/Common/utils.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/MUX_Multi.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/NAND_N_NOR_N.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/AND_multi.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/OR_multi.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/AND_N.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/OR_N.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/MUX_N.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/decoder_N.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/UniqueLib.v
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/decoder_N.v:15: Invalid escape sequence '\0' in call to '$fatal'. (VER-941)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/decoder_N.v:14: The statements in initial blocks are ignored. (VER-281)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/decoder_N.v:15: The 'continuous severity report' construct is not supported.  It will be ignored. (VER-104)
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/REG_N.v
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/UniqueLib.v:652: Invalid escape sequence '\0' in call to '$fatal'. (VER-941)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/UniqueLib.v:650: The statements in initial blocks are ignored. (VER-281)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/UniqueLib.v:652: The 'continuous severity report' construct is not supported.  It will be ignored. (VER-104)
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/STDCell_Macros.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/triple_adder.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/lib/STDCells/KoggeStone.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/../../defines/reg_ids_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/../../defines/control_store_define.vh
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/MOD_LUT.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/OP_LUT.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/PF_LUT.v
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/OP_LUT.v:74: The statements in initial blocks are ignored. (VER-281)
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_fsm.sv
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_movs_fsm.sv
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_cmp_fsm.sv
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_logic.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/length_adder.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_vector_roms.v
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/length_adder.v:98: The statements in initial blocks are ignored. (VER-281)
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rr_valid_logic.v
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_vector_roms.v:1111: The statements in initial blocks are ignored. (VER-281)
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/disp_finder_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/imm_finder_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/modrm_size.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/num_pf_gen.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/op_size.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/pf_checker.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/pf_vector_gen.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/ppu_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/selection_logic_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/sib_finder_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/br_info_processing_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/control_store_top_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/control_store_genned.sv
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/control_store_structural.v
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/control_store_genned.sv:256: The statements in initial blocks are ignored. (VER-281)
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/cs_post_processor_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/decode_gp_gen_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/modrm_processor_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/sib_processor_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/rep_controller_structural.v
+Compiling source file /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/Decode_structural.v
+Presto compilation completed successfully.
+1
+elaborate $__top_module__
+Running PRESTO HDLC
+Presto compilation completed successfully. (Decode)
+Elaborated 1 design.
+Current design is now 'Decode'.
+Information: Building the design 'and2_N$' instantiated from design 'Decode' with
+	the parameters "WIDTH=1". (HDL-193)
+Presto compilation completed successfully. (and2_N$_WIDTH1)
+Information: Building the design 'predecode'. (HDL-193)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Warning:  /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/predecode_structural.v:316: Concatenations cannot have unsized numbers; assuming 32 bits. (ELAB-332)
+Presto compilation completed successfully. (predecode)

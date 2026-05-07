@@ -46,7 +46,6 @@ DECODE_SRC_FILES = \
 
 
 DECODE_SRC_FILES_STRUCTURAL__INTERNAL_STRUCTURAL = \
-								$(DECODE_PATH_INTERNAL)/decode_define.vh \
 								$(DECODE_PATH_INTERNAL)/structural/disp_finder_structural.v \
 								$(DECODE_PATH_INTERNAL)/structural/imm_finder_structural.v \
 								$(DECODE_PATH_INTERNAL)/structural/modrm_size.v \
@@ -73,5 +72,5 @@ DECODE_STRUCTURAL_SRC_FILES = \
 						$(DECODE_PATH_INTERNAL)/structural/modrm_processor_structural.v \
 						$(DECODE_PATH_INTERNAL)/structural/sib_processor_structural.v \
 						$(DECODE_PATH_INTERNAL)/structural/rep_controller_structural.v \
-						$(DECODE_PATH_INTERNAL)/structural/Decode_structural.sv \
+						$(DECODE_PATH_INTERNAL)/structural/Decode_structural.v \
 
