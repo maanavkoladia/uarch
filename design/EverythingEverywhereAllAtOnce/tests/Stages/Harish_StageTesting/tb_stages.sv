@@ -58,6 +58,8 @@ module tb_stages ();
         $vcdplusmemon;
     end
 
+    
+
     // ===================== REP CONTROLLER LOG =====================
     `define REP_PATH `DECODE_UNIT_PATH.piece_of_shit_rep_controller
     integer repdumpfd;
