@@ -2,8 +2,8 @@ set target_library ""
 set link_library "*"
 
 
-set __top_module__  "Everywhere_TOP"
-set __masterfile__  "./master.txt"
+set __top_module__  "WB"
+set __masterfile__  "./tbs/wb/master.txt"
 
 define_design_lib WORK -path ./WORK
 

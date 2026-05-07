@@ -1,4 +1,6 @@
 import RegisterRead_pkg::*;
+import TLB_pkg::*;
+
 module npu_node1 (
     input uint32_t register_data,   //does not need to be 64 but input since we will never pull address from mmx reg
     input uint32_t regout_sr_data,

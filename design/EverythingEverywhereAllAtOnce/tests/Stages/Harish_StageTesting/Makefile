@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/TheBigOne/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/BranchHeavy/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -92,6 +92,11 @@ CC_FLAGS += \
     +define+DCACHE_DUMP_START_DEFAULT=$(DCACHE_DUMP_START) \
     +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
 	
+ifeq ($(STRUCTRURAL), true)
+	$(CC_FLAGS) += \
+		+define+EXE_PURE_STRUCTURAL \
+		+define+REGFILE_OUTPUT_STRUCTURAL
+endif
 
 .PHONY: all run clean see gen full half genSoft runSoft
 

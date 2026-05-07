@@ -165,7 +165,7 @@
 //endtask
 //
 
-`define REGFILE_OUTPUT_STRUCTURAL
+//`define REGFILE_OUTPUT_STRUCTURAL
 
 // --- REGFILE DUMP ---
 // Full snapshot of GPRs and segment registers.
