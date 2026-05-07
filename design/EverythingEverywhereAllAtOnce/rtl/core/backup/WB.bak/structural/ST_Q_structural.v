@@ -99,20 +99,7 @@ module ST_Q (
            next_push_high_q[0], next_push_high_q[1],
            next_push_high_q[2], next_push_high_q[3])
 
-    // next_push_w[i] feeds entry update muxes outside the ST_Q control loop.
-    //   bit 0:     u_smpo0 cluster        (160 leaves)  → bufferH256$
-    //   bits 1..3: 2 clusters each         (~320 leaves) → bufferH1024$
-    //   bit 4:     u_smpp3 cluster        (160 leaves)  → bufferH256$
-    // Internal feedback (np_left/right_shift, full/empty, NOR for low_w) uses
-    // next_push_high_q / next_push_low_w directly so the buffers don't sit in
-    // the next_push state-update loop.
-    wire [4:0] next_push_w_raw;
-    assign next_push_w_raw = {next_push_high_q, next_push_low_w};
-    bufferH256$  u_buf_npw0 (.out(next_push_w[0]), .in(next_push_w_raw[0]));
-    bufferH1024$ u_buf_npw1 (.out(next_push_w[1]), .in(next_push_w_raw[1]));
-    bufferH1024$ u_buf_npw2 (.out(next_push_w[2]), .in(next_push_w_raw[2]));
-    bufferH1024$ u_buf_npw3 (.out(next_push_w[3]), .in(next_push_w_raw[3]));
-    bufferH256$  u_buf_npw4 (.out(next_push_w[4]), .in(next_push_w_raw[4]));
+    assign next_push_w = {next_push_high_q, next_push_low_w};
 
     // ===================================================================
     // full / empty / valid_push / valid_pop / push_fail
@@ -137,18 +124,9 @@ module ST_Q (
     wire or_notfull_pop_w;
     wire valid_push_w;
     wire valid_pop_w;
-    wire valid_push_raw_w;
-    wire valid_pop_raw_w;
     `OR_2 (u_or_nf_pop,   1, or_notfull_pop_w, inv_full_w, wb_in_pop)
-    `AND_2(u_valid_push,  1, valid_push_raw_w, wb_in_push, or_notfull_pop_w)
-    `AND_2(u_valid_pop,   1, valid_pop_raw_w,  wb_in_pop,  inv_empty_w)
-    // valid_push / valid_pop fan out to ~640 MUX_4 selects across all 4
-    // entries (4 entries x (1+15+16+128 bits) = 640 leaves) plus a few
-    // small consumers. bufferH1024$ (rated 1024, 0.60 ns typ) is the right
-    // single-cell fit; splitting per-entry would only save 0.06 ns at 4x
-    // the cell count.
-    bufferH1024$ u_buf_vp_push (.out(valid_push_w), .in(valid_push_raw_w));
-    bufferH1024$ u_buf_vp_pop  (.out(valid_pop_w),  .in(valid_pop_raw_w));
+    `AND_2(u_valid_push,  1, valid_push_w, wb_in_push, or_notfull_pop_w)
+    `AND_2(u_valid_pop,   1, valid_pop_w,  wb_in_pop,  inv_empty_w)
 
     wire full_and_notpop_w;
     `AND_2(u_full_notpop, 1, full_and_notpop_w, full_w, inv_pop_in_w)
@@ -197,11 +175,7 @@ module ST_Q (
     // Common slot WE and 4:1 MUX sel
     wire we_w;
     wire [1:0] sel_w;
-    wire we_w_raw;
-    `OR_2(u_slot_we, 1, we_w_raw, valid_push_w, valid_pop_w)
-    // we_w drives 16 reg-bank WE pins (4 entries x 4 widths) + a few extras
-    // = fanout 20. bufferH64$ rated 64 — exact fit at 0.30 ns typ.
-    bufferH64$ u_buf_we (.out(we_w), .in(we_w_raw));
+    `OR_2(u_slot_we, 1, we_w, valid_push_w, valid_pop_w)
     assign sel_w = {valid_push_w, valid_pop_w};
 
     // -------- Slot 0 (q[i]=q[0], q[i+1]=q[1]) --------

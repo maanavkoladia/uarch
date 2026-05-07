@@ -99,31 +99,16 @@ module ST_Q_logic (
     // -------------------------------------------------------------------
     wire entry0_to_0_w, entry0_to_1_w, entry0_to_2_w, entry0_to_3_w;
     wire entry1_to_0_w, entry1_to_1_w, entry1_to_2_w, entry1_to_3_w;
-    wire entry0_to_0_raw, entry0_to_1_raw, entry0_to_2_raw, entry0_to_3_raw;
-    wire entry1_to_0_raw, entry1_to_1_raw, entry1_to_2_raw, entry1_to_3_raw;
 
-    `AND_2(u_e0_to_0, 1, entry0_to_0_raw, entry0_valid_w, low_bank_dec_w[0])
-    `AND_2(u_e0_to_1, 1, entry0_to_1_raw, entry0_valid_w, low_bank_dec_w[1])
-    `AND_2(u_e0_to_2, 1, entry0_to_2_raw, entry0_valid_w, low_bank_dec_w[2])
-    `AND_2(u_e0_to_3, 1, entry0_to_3_raw, entry0_valid_w, low_bank_dec_w[3])
+    `AND_2(u_e0_to_0, 1, entry0_to_0_w, entry0_valid_w, low_bank_dec_w[0])
+    `AND_2(u_e0_to_1, 1, entry0_to_1_w, entry0_valid_w, low_bank_dec_w[1])
+    `AND_2(u_e0_to_2, 1, entry0_to_2_w, entry0_valid_w, low_bank_dec_w[2])
+    `AND_2(u_e0_to_3, 1, entry0_to_3_w, entry0_valid_w, low_bank_dec_w[3])
 
-    `AND_2(u_e1_to_0, 1, entry1_to_0_raw, entry1_valid_w, high_bank_dec_w[0])
-    `AND_2(u_e1_to_1, 1, entry1_to_1_raw, entry1_valid_w, high_bank_dec_w[1])
-    `AND_2(u_e1_to_2, 1, entry1_to_2_raw, entry1_valid_w, high_bank_dec_w[2])
-    `AND_2(u_e1_to_3, 1, entry1_to_3_raw, entry1_valid_w, high_bank_dec_w[3])
-
-    // Each entry_to_X_w drives 1+15+16+128 = 160 mux2$ select pins (selects
-    // for u_push_X + u_tmp_addr_X + u_tmp_bv_X + u_tmp_data_X for entry0,
-    // and u_addr_X + u_bv_X + u_data_X for entry1). bufferH256$ is the
-    // smallest H-buffer covering — single cell at 0.54 ns typ.
-    bufferH256$ u_buf_e0_0 (.out(entry0_to_0_w), .in(entry0_to_0_raw));
-    bufferH256$ u_buf_e0_1 (.out(entry0_to_1_w), .in(entry0_to_1_raw));
-    bufferH256$ u_buf_e0_2 (.out(entry0_to_2_w), .in(entry0_to_2_raw));
-    bufferH256$ u_buf_e0_3 (.out(entry0_to_3_w), .in(entry0_to_3_raw));
-    bufferH256$ u_buf_e1_0 (.out(entry1_to_0_w), .in(entry1_to_0_raw));
-    bufferH256$ u_buf_e1_1 (.out(entry1_to_1_w), .in(entry1_to_1_raw));
-    bufferH256$ u_buf_e1_2 (.out(entry1_to_2_w), .in(entry1_to_2_raw));
-    bufferH256$ u_buf_e1_3 (.out(entry1_to_3_w), .in(entry1_to_3_raw));
+    `AND_2(u_e1_to_0, 1, entry1_to_0_w, entry1_valid_w, high_bank_dec_w[0])
+    `AND_2(u_e1_to_1, 1, entry1_to_1_w, entry1_valid_w, high_bank_dec_w[1])
+    `AND_2(u_e1_to_2, 1, entry1_to_2_w, entry1_valid_w, high_bank_dec_w[2])
+    `AND_2(u_e1_to_3, 1, entry1_to_3_w, entry1_valid_w, high_bank_dec_w[3])
 
     // -------------------------------------------------------------------
     // Per-queue push = entry0_to_i | entry1_to_i
@@ -131,17 +116,10 @@ module ST_Q_logic (
     // routed here, in which case its valid bit is 1).
     // pop is always the dcache-side write_success_<i>.
     // -------------------------------------------------------------------
-    wire stq_info_0_push_raw, stq_info_1_push_raw, stq_info_2_push_raw, stq_info_3_push_raw;
-    `OR_2(u_push_0, 1, stq_info_0_push_raw, entry0_to_0_w, entry1_to_0_w)
-    `OR_2(u_push_1, 1, stq_info_1_push_raw, entry0_to_1_w, entry1_to_1_w)
-    `OR_2(u_push_2, 1, stq_info_2_push_raw, entry0_to_2_w, entry1_to_2_w)
-    `OR_2(u_push_3, 1, stq_info_3_push_raw, entry0_to_3_w, entry1_to_3_w)
-    // Each push signal feeds the ST_Q push pin + the data_valid alias = ~10
-    // leaves. bufferH16$ smallest fit (0.24 ns typ).
-    bufferH16$ u_buf_push_0 (.out(stq_info_0_push), .in(stq_info_0_push_raw));
-    bufferH16$ u_buf_push_1 (.out(stq_info_1_push), .in(stq_info_1_push_raw));
-    bufferH16$ u_buf_push_2 (.out(stq_info_2_push), .in(stq_info_2_push_raw));
-    bufferH16$ u_buf_push_3 (.out(stq_info_3_push), .in(stq_info_3_push_raw));
+    `OR_2(u_push_0, 1, stq_info_0_push, entry0_to_0_w, entry1_to_0_w)
+    `OR_2(u_push_1, 1, stq_info_1_push, entry0_to_1_w, entry1_to_1_w)
+    `OR_2(u_push_2, 1, stq_info_2_push, entry0_to_2_w, entry1_to_2_w)
+    `OR_2(u_push_3, 1, stq_info_3_push, entry0_to_3_w, entry1_to_3_w)
 
     assign stq_info_0_data_valid = stq_info_0_push;
     assign stq_info_1_data_valid = stq_info_1_push;
@@ -170,87 +148,49 @@ module ST_Q_logic (
     wire [127:0] entry0_data_w    = res_buf[127:0];
     wire [127:0] entry1_data_w    = res_buf[255:128];
 
-    // _raw outputs for the 4 queues' addr/bv/data muxes; per-bit bufferH16$
-    // generated below drives the actual output ports (each output bit fans
-    // out to ~8 leaves inside the downstream ST_Q instance).
-    wire [14:0]  stq_info_0_data_address_raw, stq_info_1_data_address_raw;
-    wire [14:0]  stq_info_2_data_address_raw, stq_info_3_data_address_raw;
-    wire [15:0]  stq_info_0_data_bit_vec_raw, stq_info_1_data_bit_vec_raw;
-    wire [15:0]  stq_info_2_data_bit_vec_raw, stq_info_3_data_bit_vec_raw;
-    wire [127:0] stq_info_0_data_data_raw,    stq_info_1_data_data_raw;
-    wire [127:0] stq_info_2_data_data_raw,    stq_info_3_data_data_raw;
-
     // ---- queue 0 ----
     wire [14:0]  tmp_addr_0_w;
     wire [15:0]  tmp_bv_0_w;
     wire [127:0] tmp_data_0_w;
     `MUX_2(u_tmp_addr_0, 15, tmp_addr_0_w, 15'd0,        entry0_address_w, entry0_to_0_w)
-    `MUX_2(u_addr_0,     15, stq_info_0_data_address_raw, tmp_addr_0_w, entry1_address_w, entry1_to_0_w)
+    `MUX_2(u_addr_0,     15, stq_info_0_data_address, tmp_addr_0_w, entry1_address_w, entry1_to_0_w)
     `MUX_2(u_tmp_bv_0,   16, tmp_bv_0_w,   16'd0,        entry0_bit_vec_w, entry0_to_0_w)
-    `MUX_2(u_bv_0,       16, stq_info_0_data_bit_vec_raw, tmp_bv_0_w,   entry1_bit_vec_w, entry1_to_0_w)
+    `MUX_2(u_bv_0,       16, stq_info_0_data_bit_vec, tmp_bv_0_w,   entry1_bit_vec_w, entry1_to_0_w)
     `MUX_2(u_tmp_data_0, 128, tmp_data_0_w, 128'd0,       entry0_data_w,    entry0_to_0_w)
-    `MUX_2(u_data_0,     128, stq_info_0_data_data_raw, tmp_data_0_w, entry1_data_w,    entry1_to_0_w)
+    `MUX_2(u_data_0,     128, stq_info_0_data_data, tmp_data_0_w, entry1_data_w,    entry1_to_0_w)
 
     // ---- queue 1 ----
     wire [14:0]  tmp_addr_1_w;
     wire [15:0]  tmp_bv_1_w;
     wire [127:0] tmp_data_1_w;
     `MUX_2(u_tmp_addr_1, 15, tmp_addr_1_w, 15'd0,        entry0_address_w, entry0_to_1_w)
-    `MUX_2(u_addr_1,     15, stq_info_1_data_address_raw, tmp_addr_1_w, entry1_address_w, entry1_to_1_w)
+    `MUX_2(u_addr_1,     15, stq_info_1_data_address, tmp_addr_1_w, entry1_address_w, entry1_to_1_w)
     `MUX_2(u_tmp_bv_1,   16, tmp_bv_1_w,   16'd0,        entry0_bit_vec_w, entry0_to_1_w)
-    `MUX_2(u_bv_1,       16, stq_info_1_data_bit_vec_raw, tmp_bv_1_w,   entry1_bit_vec_w, entry1_to_1_w)
+    `MUX_2(u_bv_1,       16, stq_info_1_data_bit_vec, tmp_bv_1_w,   entry1_bit_vec_w, entry1_to_1_w)
     `MUX_2(u_tmp_data_1, 128, tmp_data_1_w, 128'd0,       entry0_data_w,    entry0_to_1_w)
-    `MUX_2(u_data_1,     128, stq_info_1_data_data_raw, tmp_data_1_w, entry1_data_w,    entry1_to_1_w)
+    `MUX_2(u_data_1,     128, stq_info_1_data_data, tmp_data_1_w, entry1_data_w,    entry1_to_1_w)
 
     // ---- queue 2 ----
     wire [14:0]  tmp_addr_2_w;
     wire [15:0]  tmp_bv_2_w;
     wire [127:0] tmp_data_2_w;
     `MUX_2(u_tmp_addr_2, 15, tmp_addr_2_w, 15'd0,        entry0_address_w, entry0_to_2_w)
-    `MUX_2(u_addr_2,     15, stq_info_2_data_address_raw, tmp_addr_2_w, entry1_address_w, entry1_to_2_w)
+    `MUX_2(u_addr_2,     15, stq_info_2_data_address, tmp_addr_2_w, entry1_address_w, entry1_to_2_w)
     `MUX_2(u_tmp_bv_2,   16, tmp_bv_2_w,   16'd0,        entry0_bit_vec_w, entry0_to_2_w)
-    `MUX_2(u_bv_2,       16, stq_info_2_data_bit_vec_raw, tmp_bv_2_w,   entry1_bit_vec_w, entry1_to_2_w)
+    `MUX_2(u_bv_2,       16, stq_info_2_data_bit_vec, tmp_bv_2_w,   entry1_bit_vec_w, entry1_to_2_w)
     `MUX_2(u_tmp_data_2, 128, tmp_data_2_w, 128'd0,       entry0_data_w,    entry0_to_2_w)
-    `MUX_2(u_data_2,     128, stq_info_2_data_data_raw, tmp_data_2_w, entry1_data_w,    entry1_to_2_w)
+    `MUX_2(u_data_2,     128, stq_info_2_data_data, tmp_data_2_w, entry1_data_w,    entry1_to_2_w)
 
     // ---- queue 3 ----
     wire [14:0]  tmp_addr_3_w;
     wire [15:0]  tmp_bv_3_w;
     wire [127:0] tmp_data_3_w;
     `MUX_2(u_tmp_addr_3, 15, tmp_addr_3_w, 15'd0,        entry0_address_w, entry0_to_3_w)
-    `MUX_2(u_addr_3,     15, stq_info_3_data_address_raw, tmp_addr_3_w, entry1_address_w, entry1_to_3_w)
+    `MUX_2(u_addr_3,     15, stq_info_3_data_address, tmp_addr_3_w, entry1_address_w, entry1_to_3_w)
     `MUX_2(u_tmp_bv_3,   16, tmp_bv_3_w,   16'd0,        entry0_bit_vec_w, entry0_to_3_w)
-    `MUX_2(u_bv_3,       16, stq_info_3_data_bit_vec_raw, tmp_bv_3_w,   entry1_bit_vec_w, entry1_to_3_w)
+    `MUX_2(u_bv_3,       16, stq_info_3_data_bit_vec, tmp_bv_3_w,   entry1_bit_vec_w, entry1_to_3_w)
     `MUX_2(u_tmp_data_3, 128, tmp_data_3_w, 128'd0,       entry0_data_w,    entry0_to_3_w)
-    `MUX_2(u_data_3,     128, stq_info_3_data_data_raw, tmp_data_3_w, entry1_data_w,    entry1_to_3_w)
-
-    // ===================================================================
-    // Output buffering: per-bit bufferH16$ on every output mux's data wire.
-    // Each bit drives ~8 leaves inside one ST_Q instance (4 entries x 2
-    // smpo/smpp data muxes = 8 mux2$ pins). bufferH16$ at 0.24 ns is the
-    // smallest H-buffer that covers fanout 8.
-    // ===================================================================
-    genvar gi_a, gi_b, gi_d;
-    generate
-        for (gi_a = 0; gi_a < 15; gi_a = gi_a + 1) begin : g_addr_buf
-            bufferH16$ u_b0 (.out(stq_info_0_data_address[gi_a]), .in(stq_info_0_data_address_raw[gi_a]));
-            bufferH16$ u_b1 (.out(stq_info_1_data_address[gi_a]), .in(stq_info_1_data_address_raw[gi_a]));
-            bufferH16$ u_b2 (.out(stq_info_2_data_address[gi_a]), .in(stq_info_2_data_address_raw[gi_a]));
-            bufferH16$ u_b3 (.out(stq_info_3_data_address[gi_a]), .in(stq_info_3_data_address_raw[gi_a]));
-        end
-        for (gi_b = 0; gi_b < 16; gi_b = gi_b + 1) begin : g_bv_buf
-            bufferH16$ u_b0 (.out(stq_info_0_data_bit_vec[gi_b]), .in(stq_info_0_data_bit_vec_raw[gi_b]));
-            bufferH16$ u_b1 (.out(stq_info_1_data_bit_vec[gi_b]), .in(stq_info_1_data_bit_vec_raw[gi_b]));
-            bufferH16$ u_b2 (.out(stq_info_2_data_bit_vec[gi_b]), .in(stq_info_2_data_bit_vec_raw[gi_b]));
-            bufferH16$ u_b3 (.out(stq_info_3_data_bit_vec[gi_b]), .in(stq_info_3_data_bit_vec_raw[gi_b]));
-        end
-        for (gi_d = 0; gi_d < 128; gi_d = gi_d + 1) begin : g_data_buf
-            bufferH16$ u_b0 (.out(stq_info_0_data_data[gi_d]), .in(stq_info_0_data_data_raw[gi_d]));
-            bufferH16$ u_b1 (.out(stq_info_1_data_data[gi_d]), .in(stq_info_1_data_data_raw[gi_d]));
-            bufferH16$ u_b2 (.out(stq_info_2_data_data[gi_d]), .in(stq_info_2_data_data_raw[gi_d]));
-            bufferH16$ u_b3 (.out(stq_info_3_data_data[gi_d]), .in(stq_info_3_data_data_raw[gi_d]));
-        end
-    endgenerate
+    `MUX_2(u_data_3,     128, stq_info_3_data_data, tmp_data_3_w, entry1_data_w,    entry1_to_3_w)
 
 endmodule
 
