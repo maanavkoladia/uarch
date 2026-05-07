@@ -15,3 +15,5 @@ hexLoad/
 meta/
 
 __pycache__
+
+backup/

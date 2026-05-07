@@ -2,8 +2,8 @@ set target_library ""
 set link_library "*"
 
 
-set __top_module__  "WB"
-set __masterfile__  "./tbs/wb/master.txt"
+set __top_module__  "EXE"
+set __masterfile__  "./tbs/exe/master.txt"
 
 define_design_lib WORK -path ./WORK
 

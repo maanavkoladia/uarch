@@ -1,3 +1,4 @@
+lib_header
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/common_define.vh
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/interconnect_define.vh
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/defines/BusArbitration_common_define.vh
