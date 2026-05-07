@@ -69,11 +69,13 @@ STARTUP_FILES = \
 				gen/coreRegLoader.sv \
 				gen/tlb_loader.sv
 
-TB_FILES = \
-		   $(STARTUP_FILES) \
-		   debugUtils/debug_pkg.sv \
-		   tb_stages.sv
-ifeq()
+TB_FILES =
+
+ifeq ($(STRUCTRURAL), true)
+	   TB_FILES += $(STARTUP_FILES) debugUtils/debug_pkg.sv tb_stages_structural.v
+else
+	   TB_FILES += $(STARTUP_FILES) debugUtils/debug_pkg.sv tb_stages.sv
+endif
 
 SRC_FILES :=
 

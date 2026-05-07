@@ -1,5 +1,5 @@
 `define CLK_PERIOD
-module tb_stages_structural ();
+module tb_stages ();
 
     //localparam int Clk_PERIOD = 8;
     `include "debugUtils/tb_utils_defs.svh"
