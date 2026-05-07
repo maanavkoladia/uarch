@@ -84,20 +84,24 @@ module rep_controller (
 
     // --- control signals ---
     wire continue_mov, wait_mov, exit_mov;
-    wire continue_cmp, wait_cmp, exit_cmp;
+    wire continue_cmp, continue_cmp_pre, wait_cmp, exit_cmp;
 
+    wire continue_mov_pre, exit_mov_pre;
     // assign continue_mov = !ecx_sb && (ecx != 32'b0);
     // assign wait_mov     = ecx_sb;
     // assign exit_mov     = !ecx_sb && (ecx == 32'b0);
     wire ecx_eq0;
     wire ecx_sb_n;
     `CMP_N(u_ecx_eq0,     32, ecx_eq0,     ecx, 32'b0)
-    `NOR_2(u_continue_mov, 1, continue_mov, ecx_sb, ecx_eq0)  // !ecx_sb && !ecx_eq0
+    `NOR_2(u_continue_mov, 1, continue_mov_pre, ecx_sb, ecx_eq0)  // !ecx_sb && !ecx_eq0
     assign wait_mov = ecx_sb;
     `INV_N(u_ecx_sb_n,     1, ecx_sb,      ecx_sb_n)
-    `AND_2(u_exit_mov,     1, exit_mov,     ecx_sb_n, ecx_eq0)
+    `AND_2(u_exit_mov,     1, exit_mov_pre,     ecx_sb_n, ecx_eq0)
 
-    wire [7:0] zf_sb_counter;
+    bufferH16$ cont_mov_buf(.out(continue_mov), .in(continue_mov_pre));
+    bufferH16$ exit_mov_buf(.out(exit_mov), .in(exit_mov_pre));
+
+    wire [7:0] zf_sb_counter_pre, zf_sb_counter;
 
     // assign continue_cmp = (!ecx_sb && (ecx != 32'b0)) && ((zf_sb_counter == 8'b0) && zf_flag);
     // assign wait_cmp     = ecx_sb || (zf_sb_counter != 8'b0);
@@ -110,7 +114,8 @@ module rep_controller (
     `INV_N(u_zf_flag_n,    1, zf_flag,      zf_flag_n)
     `AND_2(u_zf_part_cmp,  1, zf_part_cmp,  zf_sb_eq0,   zf_flag)
 
-    `AND_2(u_continue_cmp, 1, continue_cmp, continue_mov, zf_part_cmp)
+    `AND_2(u_continue_cmp, 1, continue_cmp_pre, continue_mov, zf_part_cmp)
+    bufferH16$ continue_cmp_buf (.out(continue_cmp), .in(continue_cmp_pre));
 
     `OR_2 (u_wait_cmp,     1, wait_cmp,     ecx_sb,       zf_sb_ne0)
 
@@ -123,15 +128,20 @@ module rep_controller (
 
     wire [2:0] cmp_inst_select;
     wire [2:0] movs_inst_select;
-    wire [2:0] inst_select, inst_select1, inst_select2, inst_select3, inst_select_pre;
+    wire [2:0] inst_select_pre, inst_select;
     // assign inst_select = cmp_inst ? cmp_inst_select : movs_inst_select;
-    `MUX_2(u_inst_select, 3, inst_select, movs_inst_select, cmp_inst_select, cmp_inst)
+    `MUX_2(u_inst_select, 3, inst_select_pre, movs_inst_select, cmp_inst_select, cmp_inst)
     //bufferH1024$ br_length(.out(inst_select), .in(inst_select_pre))
+    bufferH1024$ inst_sel0(.out(inst_select[0]), .in(inst_select_pre[0]));
+    bufferH1024$ inst_sel1(.out(inst_select[1]), .in(inst_select_pre[1]));
+    bufferH1024$ inst_sel2(.out(inst_select[2]), .in(inst_select_pre[2]));
 
     wire movs_clear, cmp_clear;
     wire movs_start, cmp_start;
+    wire clear_rep_pre;
     // assign clear_rep = cmp_inst ? cmp_clear : movs_clear;
-    `MUX_2(u_clear_rep, 1, clear_rep, movs_clear, cmp_clear, cmp_inst)
+    `MUX_2(u_clear_rep, 1, clear_rep_pre, movs_clear, cmp_clear, cmp_inst)
+    bufferH16$ rep_clr(.out(clear_rep), .in(clear_rep_pre));
 
     // assign fsm_reset = rst && !exp_pipe_clear && !flush;
     wire rst_n;
@@ -140,10 +150,9 @@ module rep_controller (
     `NOR_3(u_fsm_reset, 1, fsm_reset, rst_n, exp_pipe_clear, flush)
 
     // assign fsm_stall = stall || wait_cmp || wait_mov;
-    wire fsm_stall, fsm_stall0, fsm_stall1;
-    `OR_3(u_fsm_stall, 1, fsm_stall, stall, wait_cmp, wait_mov)
-    `OR_3(u_fsm_stall0, 1, fsm_stall0, stall, wait_cmp, wait_mov)
-    `OR_3(u_fsm_stall1, 1, fsm_stall1, stall, wait_cmp, wait_mov)
+    wire fsm_stall, fsm_stall_pre, fsm_stall0, fsm_stall1;
+    `OR_3(u_fsm_stall, 1, fsm_stall_pre, stall, wait_cmp, wait_mov)
+    bufferH16$ fsm_stall_buf (.out(fsm_stall), .in(fsm_stall_pre));
 
     rep_fsm fsm_rep (
         .clk           (clk),
@@ -251,8 +260,9 @@ module rep_controller (
     wire e_or_m_n;                  // = !X = !(E|M)
     `NOR_2(u_e_or_m_n, 1, e_or_m_n, external_set_zf, rep_latches_cs_will_mod_zf)
 
-    wire Q;                         // Q = X & !C
-    `NOR_2(u_Q, 1, Q, e_or_m_n, clear_zf)
+    wire Q, Q_pre;                  // Q = X & !C
+    `NOR_2(u_Q, 1, Q_pre, e_or_m_n, clear_zf)
+    bufferH16$ Q_buf (.out(Q), .in(Q_pre));
 
     // F_or_Z built as 3-term NAND-NAND: F + X*!C + !X*C
     wire flush_inv;
@@ -276,7 +286,15 @@ module rep_controller (
     `MUX_4(u_counter_din, 8, counter_din, counter_dec, counter_inc, 8'b0, 8'b0, {flush, Q})
     // -------------------------------------------------------
 
-    `REG_RST_WE(u_zf_sb_counter, 8, clk, rst, counter_we, counter_din, zf_sb_counter)
+    `REG_RST_WE(u_zf_sb_counter, 8, clk, rst, counter_we, counter_din, zf_sb_counter_pre)
+    bufferH16$ zf_buf0 (.out(zf_sb_counter[0]), .in(zf_sb_counter_pre[0]));
+    bufferH16$ zf_buf1 (.out(zf_sb_counter[1]), .in(zf_sb_counter_pre[1]));
+    bufferH16$ zf_buf2 (.out(zf_sb_counter[2]), .in(zf_sb_counter_pre[2]));
+    bufferH16$ zf_buf3 (.out(zf_sb_counter[3]), .in(zf_sb_counter_pre[3]));
+    bufferH16$ zf_buf4 (.out(zf_sb_counter[4]), .in(zf_sb_counter_pre[4]));
+    bufferH16$ zf_buf5 (.out(zf_sb_counter[5]), .in(zf_sb_counter_pre[5]));
+    bufferH16$ zf_buf6 (.out(zf_sb_counter[6]), .in(zf_sb_counter_pre[6]));
+    bufferH16$ zf_buf7 (.out(zf_sb_counter[7]), .in(zf_sb_counter_pre[7]));
 
     // ==================== idle_output ====================
     wire        idle_valid                      = 1'b1;

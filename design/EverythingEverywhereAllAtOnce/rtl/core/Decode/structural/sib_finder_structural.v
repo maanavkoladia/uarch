@@ -4,9 +4,13 @@ module sib_finder (
     output [7:0] sib_byte
 );
 
-    wire [3:0] sib_index;  //byte index
+    wire [3:0] sib_index, sib_index_pre;  //byte index
     wire adder_cout;
-    `ADD_N(sib_index_adder, 4, sib_index, adder_cout, modrm_index, 4'd1, 1'b0)
+    `ADD_N(sib_index_adder, 4, sib_index_pre, adder_cout, modrm_index, 4'd1, 1'b0)
+    bufferH64$ sib_buf0(.out(sib_index[0]), .in(sib_index_pre[0]));
+    bufferH64$ sib_buf1(.out(sib_index[1]), .in(sib_index_pre[1]));
+    bufferH64$ sib_buf2(.out(sib_index[2]), .in(sib_index_pre[2]));
+    bufferH64$ sib_buf3(.out(sib_index[3]), .in(sib_index_pre[3]));
     
     // assign sib_byte = IR[sib_index*8 +: 32];  //bit index
     `MUX_16(sib_byte_mux, 8, sib_byte,

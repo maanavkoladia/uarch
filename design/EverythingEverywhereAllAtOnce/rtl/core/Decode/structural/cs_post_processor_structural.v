@@ -169,6 +169,10 @@ module cs_post_processor (
     output wire         wb_cs_o_WB_EAX
 );
 
+    wire [`OP_IN_MODRM_W-1:0]    op_in_modrm_subset1;
+    bufferH16$ subset_op0 (.out(op_in_modrm_subset1[0]), .in(op_in_modrm_subset[0]));
+    bufferH16$ subset_op1 (.out(op_in_modrm_subset1[1]), .in(op_in_modrm_subset[1]));
+
     wire [2:0] reg_field;
     assign reg_field = modrm_byte[5:3];
 
@@ -183,8 +187,10 @@ module cs_post_processor (
     // =====================
     // op_in_modrm_subset decode
     // =====================
-    wire is_CTRL, is_SHF, is_ALU, is_NONE;
+    wire is_CTRL, is_CTRL1, is_CTRL2, is_SHF, is_ALU, is_NONE;
     `CMP_N(op_subset_is_CTRL, `OP_IN_MODRM_W, is_CTRL, op_in_modrm_subset, `CTRL)
+    `CMP_N(op_subset_is_CTRL1, `OP_IN_MODRM_W, is_CTRL1, op_in_modrm_subset1, `CTRL)
+    `CMP_N(op_subset_is_CTRL2, `OP_IN_MODRM_W, is_CTRL2, op_in_modrm_subset1, `CTRL)
     `CMP_N(op_subset_is_SHF,  `OP_IN_MODRM_W, is_SHF,  op_in_modrm_subset, `SHF)
     `CMP_N(op_subset_is_ALU,  `OP_IN_MODRM_W, is_ALU,  op_in_modrm_subset, `ALU)
     `CMP_N(op_subset_is_NONE,  `OP_IN_MODRM_W, is_NONE,  op_in_modrm_subset, `NONE)
@@ -200,22 +206,29 @@ module cs_post_processor (
     `CMP_N(reg_field_eq7, 3, rf_eq7, reg_field, 3'd7)
 
     // fanout duplicates: parallel comparators driven independently
-    wire rf_eq0_duplicate, rf_eq1_duplicate, rf_eq2_duplicate, rf_eq3_duplicate, rf_eq4_duplicate;
-    `CMP_N(reg_field_eq0_dup, 3, rf_eq0_duplicate, reg_field, 3'd0)
-    `CMP_N(reg_field_eq1_dup, 3, rf_eq1_duplicate, reg_field, 3'd1)
-    `CMP_N(reg_field_eq2_dup, 3, rf_eq2_duplicate, reg_field, 3'd2)
-    `CMP_N(reg_field_eq3_dup, 3, rf_eq3_duplicate, reg_field, 3'd3)
-    `CMP_N(reg_field_eq4_dup, 3, rf_eq4_duplicate, reg_field, 3'd4)
+    wire rf_eq0_duplicate, rf_eq1_duplicate, rf_eq2_duplicate, rf_eq3_duplicate, rf_eq4_duplicate, rf_eq6_duplicate;
+    bufferH64$ eq0_buf(.out(rf_eq0_duplicate), .in(rf_eq0));
+    bufferH64$ eq1_buf(.out(rf_eq1_duplicate), .in(rf_eq1));
+    bufferH64$ eq2_buf(.out(rf_eq2_duplicate), .in(rf_eq2));
+    bufferH64$ eq3_buf(.out(rf_eq3_duplicate), .in(rf_eq3));
+    bufferH64$ eq4_buf(.out(rf_eq4_duplicate), .in(rf_eq4));
+    bufferH64$ eq6_buf(.out(rf_eq6_duplicate), .in(rf_eq6));
+
 
     // fanout duplicate of op_in_modrm_subset via buffer
     wire [`OP_IN_MODRM_W-1:0] op_in_modrm_subset_duplicate;
     `BUFFER_DELAY(op_in_modrm_subset_dup_buf, 1, `OP_IN_MODRM_W, op_in_modrm_subset, op_in_modrm_subset_duplicate)
 
     // ff_call / ff_jmp / ff_push: only active when CTRL and matching reg_field
-    wire ff_jmp, ff_push, ff_call;
-    `AND_2(ff_call_gate, 1, ff_call, is_CTRL, rf_eq2)
-    `AND_2(ff_jmp_gate,  1, ff_jmp,  is_CTRL, rf_eq4)
-    `AND_2(ff_push_gate, 1, ff_push, is_CTRL, rf_eq6)
+    wire ff_jmp, ff_push, ff_call, ff_jmp1, ff_push1, ff_call1;
+    `AND_2(ff_call_gate, 1, ff_call, is_CTRL, rf_eq2_duplicate)
+    `AND_2(ff_call_gate1, 1, ff_call1, is_CTRL1, rf_eq2_duplicate)
+
+    `AND_2(ff_jmp_gate,  1, ff_jmp1,  is_CTRL, rf_eq4_duplicate)
+    bufferH64$ jmp_buf(.out(ff_jmp), .in(ff_jmp1));
+
+    `AND_2(ff_push_gate, 1, ff_push, is_CTRL, rf_eq6_duplicate)
+    `AND_2(ff_push_gate1, 1, ff_push1, is_CTRL1, rf_eq6_duplicate)
 
     // combined condition wires reused across sections
     wire ff_jmp_call_push;
@@ -233,21 +246,21 @@ module cs_post_processor (
             exe_cs_i_branch_target_sel,
             `DR_REGISTER,
             `BUF32,
-            {is_CTRL, rr_cs_o_LD_OP_holder},
+            {is_CTRL2, rr_cs_o_LD_OP_holder},
             {is_CTRL, rr_cs_o_LD_OP_holder_duplicate})
 
     //shf, ctrl, alu optype selection for each
     wire [`EXE_OP_W-1:0] shf_overriden_op_type, ctrl_overriden_op_type, alu_overriden_op_type, alu_overriden_sub_op_type, alu_overriden_sub_op_type0;
     wire [`EXE_OP_W-1:0] overriden_op_type;
-    `MUX_2_H8(shf_overriden_op_type_mux, `EXE_OP_W, shf_overriden_op_type, `SAR, `SAL, rf_eq4, rf_eq4_duplicate)
+    `MUX_2_H8(shf_overriden_op_type_mux, `EXE_OP_W, shf_overriden_op_type, `SAR, `SAL, rf_eq4_duplicate, rf_eq4_duplicate)
     `MUX_4_H8(ctrl_overriden_op_type_mux, `EXE_OP_W, ctrl_overriden_op_type,
             `PUSH,
             `CALL,
             `JMP,
             `CALL,
-            {rf_eq4, rf_eq2}, {rf_eq4_duplicate, rf_eq2_duplicate})
-    `MUX_2_H8(alu_overriden_sub_op_type_mux, `EXE_OP_W, alu_overriden_sub_op_type, `AND, `SBB, rf_eq3, rf_eq3_duplicate)
-    `MUX_2_H8(alu_overriden_sub_op_type_mux0, `EXE_OP_W, alu_overriden_sub_op_type0, `AND, `SBB, rf_eq3, rf_eq3_duplicate)
+            {rf_eq4_duplicate, rf_eq2_duplicate}, {rf_eq4_duplicate, rf_eq2_duplicate})
+    `MUX_2_H8(alu_overriden_sub_op_type_mux, `EXE_OP_W, alu_overriden_sub_op_type, `AND, `SBB, rf_eq3_duplicate, rf_eq3_duplicate)
+    `MUX_2_H8(alu_overriden_sub_op_type_mux0, `EXE_OP_W, alu_overriden_sub_op_type0, `AND, `SBB, rf_eq3_duplicate, rf_eq3_duplicate)
 
     `MUX_8_H8(alu_overriden_op_type_mux, `EXE_OP_W, alu_overriden_op_type,
                 alu_overriden_sub_op_type,
@@ -258,7 +271,7 @@ module cs_post_processor (
                 alu_overriden_sub_op_type0,
                 alu_overriden_sub_op_type0,
                 alu_overriden_sub_op_type0,
-                {rf_eq2, rf_eq1, rf_eq0}, {rf_eq2_duplicate, rf_eq1_duplicate, rf_eq0_duplicate})
+                {rf_eq2_duplicate, rf_eq1_duplicate, rf_eq0_duplicate}, {rf_eq2_duplicate, rf_eq1_duplicate, rf_eq0_duplicate})
 
     //shf, alu, ctrl, optype selction between each
     `MUX_4_H8(total_overriden_op_type_mux, `EXE_OP_W, overriden_op_type,
@@ -326,7 +339,7 @@ module cs_post_processor (
     assign rr_cs_o_datasize        = rr_cs_i_datasize;
     assign rr_cs_o_will_mod_zf     = rr_cs_i_will_mod_zf;
     `MUX_2(rr_seg_1_valid_mux,    1,          rr_cs_o_seg_1_valid,    rr_cs_i_seg_1_valid,       1'b0,    ff_jmp)
-    `MUX_2(rr_seg_0_id_mux,       `REG_ID_W,  rr_cs_o_seg_0_id,       rr_cs_i_seg_0_id,          `DS,     ff_push)
+    `MUX_2_H8(rr_seg_0_id_mux,       `REG_ID_W,  rr_cs_o_seg_0_id,       rr_cs_i_seg_0_id,          `DS,     ff_push1, ff_push)
     assign rr_cs_o_seg_1_id        = rr_cs_i_seg_1_id;
     assign rr_cs_o_special_modrm_bs = rr_cs_i_special_modrm_bs;
     assign rr_cs_o_special_br      = rr_cs_i_special_br;
@@ -355,7 +368,7 @@ module cs_post_processor (
     `MUX_4(exe_st_op_mux,         1,          exe_cs_o_ST_OP,         mem_cs_i_ST_OP,            1'b0, 1'b0, 1'b0, {invalid_inst, ff_jmp})
     `MUX_2(exe_op_type_mux,       `EXE_OP_W,  exe_cs_o_OP_TYPE,       exe_cs_i_OP_TYPE,          overriden_op_type,      op_in_modrm)
     // sel={ff_jmp, ff_call}: 00->exe_cs_i_alu_inputA_sel, 01->NEIP, 10->NO_EXE, 11->NO_EXE
-    `MUX_4(exe_inputA_sel_mux,    `SRC_SEL_W, exe_cs_o_alu_inputA_sel, exe_cs_i_alu_inputA_sel, `NEIP, `NO_EXE, `NO_EXE, {ff_jmp, ff_call})
+    `MUX_4_H8(exe_inputA_sel_mux,    `SRC_SEL_W, exe_cs_o_alu_inputA_sel, exe_cs_i_alu_inputA_sel, `NEIP, `NO_EXE, `NO_EXE, {ff_jmp, ff_call1}, {ff_jmp, ff_call})
     `MUX_2(exe_inputB_sel_mux,    `SRC_SEL_W, exe_cs_o_alu_inputB_sel, exe_cs_i_alu_inputB_sel, `NO_EXE,        ff_jmp)
     `MUX_2(exe_br_target_mux,     `SRC_SEL_W, exe_cs_o_branch_target_sel, exe_cs_i_branch_target_sel, overriden_br_sel, op_in_modrm)
     assign exe_cs_o_shift_by_one       = exe_cs_i_shift_by_one;

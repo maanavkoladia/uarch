@@ -18,11 +18,11 @@ module ppu (
     output [63:0] imm64
 );
     wire [2:0] msd_size;
-    wire [2:0] imm_size;
+    wire [2:0] imm_size, imm_size_pre;
     wire disp_size;
     wire disp_needed;
     wire sib_size;
-    wire needrm;
+    wire needrm, needrm1;
 
     assign msd_size_o = msd_size;
     assign imm_size_o = imm_size;
@@ -39,7 +39,7 @@ module ppu (
     
     
 
-    wire [2:0] imm_size_fake, msd_size_fake;
+    wire [2:0] imm_size_fake, msd_size_fake, imm_size_fake1;
 
     wire [3:0] imm_index, imm_index_prebuf;
     wire imm_index_cout;
@@ -52,6 +52,7 @@ module ppu (
 
 
     op_size opcode_size(.opcode_byte(opcode_byte), .zero_f_prefix(total_pf_vector_1), .needr_m(needrm), .imm_size(imm_size_fake));
+    op_size opcode_size1(.opcode_byte(opcode_byte), .zero_f_prefix(total_pf_vector_1), .needr_m(needrm1), .imm_size(imm_size_fake1));
 
     modrm_size mod_size(.mod_byte(modrm_byte), .msd_size(msd_size_fake), .sib_needed(sib_size_unmasked), .disp_needed(disp_needed_unmasked), .disp_size(disp_size));
 
@@ -61,13 +62,18 @@ module ppu (
     wire fake0_n, override;
     `INV_N(u_fake0_n, 1, imm_size_fake[0], fake0_n)
     `AND_3(u_override, 1, override, total_pf_vector_3, imm_size_fake[2], fake0_n)
-    assign imm_size[0] = imm_size_fake[0];
-    `XOR_2(u_imm_size_1, 1, imm_size[1], imm_size_fake[1], override)
-    `MUX_2(u_imm_size_2, 1, imm_size[2], imm_size_fake[2], imm_size_fake[1], override)
+    assign imm_size_pre[0] = imm_size_fake[0];
+    `XOR_2(u_imm_size_1, 1, imm_size_pre[1], imm_size_fake[1], override)
+    `MUX_2(u_imm_size_2, 1, imm_size_pre[2], imm_size_fake[2], imm_size_fake[1], override)
+    bufferH16$ imm_size0 (.out(imm_size[0]), .in(imm_size_pre[0]));
+    bufferH16$ imm_size1 (.out(imm_size[1]), .in(imm_size_pre[1]));
+    bufferH16$ imm_size2 (.out(imm_size[2]), .in(imm_size_pre[2]));
+
+
     
     //mux2_3 msdmux(.in0(3'b000), .in1(msd_size_fake), .sel(needrm), .out(msd_size));
     wire [2:0] msd_size_prebuf;
-    `MUX_2(msdmux, 3, msd_size_prebuf, 3'b000, msd_size_fake, needrm)
+    `MUX_2(msdmux, 3, msd_size_prebuf, 3'b000, msd_size_fake, needrm1)
     bufferH256$ msd_size_buf0 (.out(msd_size[0]), .in(msd_size_prebuf[0]));
     bufferH256$ msd_size_buf1 (.out(msd_size[1]), .in(msd_size_prebuf[1]));
     bufferH256$ msd_size_buf2 (.out(msd_size[2]), .in(msd_size_prebuf[2]));

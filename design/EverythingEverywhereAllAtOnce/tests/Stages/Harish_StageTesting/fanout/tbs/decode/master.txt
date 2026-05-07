@@ -32,9 +32,9 @@ lib_header
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/MOD_LUT.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/OP_LUT.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/PF_LUT.v
-/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_fsm.sv
-/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_movs_fsm.sv
-/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_cmp_fsm.sv
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_fsm.v
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_movs_fsm.v
+/misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/rep_cmp_fsm.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_logic.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/length_adder.v
 /misc/scratch/he3837/UARCH/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/Decode/structural/gen/ir_vector_roms.v

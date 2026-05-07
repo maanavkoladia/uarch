@@ -164,8 +164,14 @@ module control_store (
     // =====================
     //MSB --> 2e, 36, 3e, 26, 64, 65, 66, 67, 0f, f3  <-- LSB vector
     wire [9:0] input_bus;
-    wire vector_ored;
-    `OR_2(vector_ored_gate, 1, vector_ored, total_pf_vector_0, total_pf_vector_1)
+    // vector_ored fans out to 17 internal loads inside control_store_genned
+    // (1 INV_N + 16 AND_5 cells consuming addr_upper[4]). A 2-stage bufferH16$
+    // chain isolates the OR_2's mux2$ output: the gate now drives one bufferH16$
+    // input, and the final bufferH16$ — the only fanout-checker-approved driver
+    // type for high-fanout nets — feeds the genned module's in_9_i port.
+    wire vector_ored, vector_ored_raw;
+    `OR_2(vector_ored_gate, 1, vector_ored_raw, total_pf_vector_0, total_pf_vector_1)
+    bufferH64$ buf_in_vect(.out(vector_ored), .in(vector_ored_raw));
     assign input_bus = {vector_ored, opcode, total_pf_vector_3};
 
     // =====================
@@ -366,10 +372,17 @@ module control_store (
     wire mod_rm_cs_outs_sr_wr;
     wire mod_rm_cs_outs_st_op;
     wire mod_rm_cs_outs_ld_op;
+    // fanout-split duplicate sources from modrm_processor; each carries the
+    // same logical value as its non-_dup counterpart but is driven by a
+    // separate parallel AND_2 gate inside modrm_processor.
+    wire mod_rm_cs_outs_st_op_dup;
+    wire mod_rm_cs_outs_ld_op_dup;
     wire mod_rm_cs_outs_dr_high8;
     wire mod_rm_cs_outs_sr_high8;
     wire mod_rm_cs_outs_alu_inputA_override;
     wire mod_rm_cs_outs_alu_inputB_override;
+    wire mod_rm_cs_outs_alu_inputA_override_dup;
+    wire mod_rm_cs_outs_alu_inputB_override_dup;
     wire [`SRC_SEL_W-1:0] mod_rm_cs_outs_alu_inputA_override_sel;
     wire [`SRC_SEL_W-1:0] mod_rm_cs_outs_alu_inputB_override_sel;
     wire mod_rm_cs_outs_special_modrm_bs;
@@ -377,11 +390,18 @@ module control_store (
     wire [`REG_ID_W-1:0] segment0;
     `MUX_2(segment0_mux, `REG_ID_W, segment0, HARDCODED_SEGMENT0_o, seg0, seg_override)
 
+    // H8-split selects: lo bits [3:0] take the original override net (4 mux2$
+    // s0 loads); hi bit [4] takes the dup (1 mux2$ s0 load) so each parallel
+    // AND_2 in modrm_processor sees ≤4 leaf loads.
     wire [`SRC_SEL_W-1:0] aluA_input;
-    `MUX_2(aluA_input_mux, `SRC_SEL_W, aluA_input, alu_inputA_sel_o, mod_rm_cs_outs_alu_inputA_override_sel, mod_rm_cs_outs_alu_inputA_override)
+    `MUX_2_H8(aluA_input_mux, `SRC_SEL_W, aluA_input, alu_inputA_sel_o, mod_rm_cs_outs_alu_inputA_override_sel,
+              mod_rm_cs_outs_alu_inputA_override,
+              mod_rm_cs_outs_alu_inputA_override_dup)
 
     wire [`SRC_SEL_W-1:0] aluB_input;
-    `MUX_2(aluB_input_mux, `SRC_SEL_W, aluB_input, alu_inputB_sel_o, mod_rm_cs_outs_alu_inputB_override_sel, mod_rm_cs_outs_alu_inputB_override)
+    `MUX_2_H8(aluB_input_mux, `SRC_SEL_W, aluB_input, alu_inputB_sel_o, mod_rm_cs_outs_alu_inputB_override_sel,
+              mod_rm_cs_outs_alu_inputB_override,
+              mod_rm_cs_outs_alu_inputB_override_dup)
 
 
 
@@ -435,19 +455,22 @@ module control_store (
     assign temp_rr_cs_special_br       = special_br_o;
 
 
-    // DC
-    assign temp_dc_cs_LD_OP = mod_rm_cs_outs_ld_op;
+    // DC — LD_OP uses _dup branch; ST_OP stays on the original (rr+dc share it).
+    assign temp_dc_cs_LD_OP = mod_rm_cs_outs_ld_op_dup;
     assign temp_dc_cs_ST_OP = mod_rm_cs_outs_st_op;
     assign temp_dc_cs_dr_upper8 = mod_rm_cs_outs_dr_high8;
     assign temp_dc_cs_sr_upper8 = mod_rm_cs_outs_sr_high8;
     assign temp_dc_cs_datasize = DATA_SIZE_o;
 
-    // MEM
-    assign temp_mem_cs_ST_OP = mod_rm_cs_outs_st_op;
-    assign temp_mem_cs_LD_OP = mod_rm_cs_outs_ld_op;
+    // MEM — both LD_OP and ST_OP use the _dup branch; mem_cs_i_ST_OP fans out
+    // to three MUX_4 in0 pins inside cs_post_processor, so this branch alone
+    // contributes 3 leaf loads.
+    assign temp_mem_cs_ST_OP = mod_rm_cs_outs_st_op_dup;
+    assign temp_mem_cs_LD_OP = mod_rm_cs_outs_ld_op_dup;
 
-    // EXE
-    assign temp_exe_cs_ST_OP               = mod_rm_cs_outs_st_op;
+    // EXE — exe_cs_i_ST_OP port is unused inside cs_post_processor (zero leaf
+    // loads); leaving it on the dup is harmless.
+    assign temp_exe_cs_ST_OP               = mod_rm_cs_outs_st_op_dup;
     assign temp_exe_cs_OP_TYPE             = OP_TYPE_o;
     assign temp_exe_cs_alu_inputA_sel      = aluA_input;
     assign temp_exe_cs_alu_inputB_sel      = aluB_input;
@@ -462,8 +485,9 @@ module control_store (
     assign temp_exe_cs_rep_no_zf_update    = 1'b0;
 
 
-    // WB
-    assign temp_wb_cs_ST_OP = mod_rm_cs_outs_st_op;
+    // WB — wb_cs_i_ST_OP port is unused inside cs_post_processor; tied to dup
+    // for symmetry with EXE.
+    assign temp_wb_cs_ST_OP = mod_rm_cs_outs_st_op_dup;
     assign temp_wb_cs_WB_DR = mod_rm_cs_outs_dr_wr;
     assign temp_wb_cs_WB_SR = mod_rm_cs_outs_sr_wr;
     assign temp_wb_cs_WB_EAX = 1'b0;               //will be overriden in cs_post_processor
@@ -501,10 +525,14 @@ module control_store (
         .sr_wr                      (mod_rm_cs_outs_sr_wr),
         .st_op                      (mod_rm_cs_outs_st_op),
         .ld_op                      (mod_rm_cs_outs_ld_op),
+        .st_op_dup                  (mod_rm_cs_outs_st_op_dup),
+        .ld_op_dup                  (mod_rm_cs_outs_ld_op_dup),
         .dr_high8                   (mod_rm_cs_outs_dr_high8),
         .sr_high8                   (mod_rm_cs_outs_sr_high8),
         .alu_inputA_override        (mod_rm_cs_outs_alu_inputA_override),
         .alu_inputB_override        (mod_rm_cs_outs_alu_inputB_override),
+        .alu_inputA_override_dup    (mod_rm_cs_outs_alu_inputA_override_dup),
+        .alu_inputB_override_dup    (mod_rm_cs_outs_alu_inputB_override_dup),
         .alu_inputA_override_sel    (mod_rm_cs_outs_alu_inputA_override_sel),
         .alu_inputB_override_sel    (mod_rm_cs_outs_alu_inputB_override_sel),
         .special_modrm_bs           (mod_rm_cs_outs_special_modrm_bs)

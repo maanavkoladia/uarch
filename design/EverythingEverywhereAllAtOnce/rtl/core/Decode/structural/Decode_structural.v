@@ -358,7 +358,7 @@ module Decode (
     wire [1:0] SAVED_DATASIZE;
 
 
-    wire [`REG_ID_W-1:0] segment0;
+    wire [`REG_ID_W-1:0] segment0, segment0_pre;
     wire seg_override;
     wire next_rr_valid;
 
@@ -376,7 +376,7 @@ module Decode (
                     idm_outs_idm_slots_1_valid, idm_outs_idm_slots_0_valid}),
         .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_byte(sib_byte), .sib_size(sib_size),
         .opcode_byte(opcode_byte), .modrm_byte(modrm_byte), .disp(displacement), .disp_size(disp_size),
-        .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector(total_pf_vector), .invalid_inst(invalid_inst),
+        .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector_o(total_pf_vector), .invalid_inst(invalid_inst),
 
         .seg_override(seg_override),
         .seg0(segment0),
@@ -538,12 +538,24 @@ module Decode (
     // [7] encodes to 000 (same as default DS), so no special case needed
     // sel: 000->DS  001->GS  010->FS  011->ES  101->SS  110->CS
     wire seg_sel_2, seg_sel_1, seg_sel_0;
+    wire seg_sel_2_, seg_sel_1_, seg_sel_0_;
     `OR_2(seg_sel_2_gate, 1, seg_sel_2, total_pf_vector[9], total_pf_vector[8])
     `OR_3(seg_sel_1_gate, 1, seg_sel_1, total_pf_vector[9], total_pf_vector[6], total_pf_vector[5])
     `OR_3(seg_sel_0_gate, 1, seg_sel_0, total_pf_vector[8], total_pf_vector[6], total_pf_vector[4])
-    `MUX_8(segment0_mux, `REG_ID_W, segment0,
+
+    `OR_2(seg_sel_2_gate_, 1, seg_sel_2_, total_pf_vector[9], total_pf_vector[8])
+    `OR_3(seg_sel_1_gate_, 1, seg_sel_1_, total_pf_vector[9], total_pf_vector[6], total_pf_vector[5])
+    `OR_3(seg_sel_0_gate_, 1, seg_sel_0_, total_pf_vector[8], total_pf_vector[6], total_pf_vector[4])
+
+    `MUX_8_H8(segment0_mux, `REG_ID_W, segment0_pre,
         `DS, `GS, `FS, `ES, `DS, `SS, `CS, `DS,
-        {seg_sel_2, seg_sel_1, seg_sel_0})
+        {seg_sel_2, seg_sel_1, seg_sel_0}, {seg_sel_2_, seg_sel_1_, seg_sel_0_})
+    bufferH64$ seg_buf0(.out(segment0[0]), .in(segment0_pre[0]));
+    bufferH64$ seg_buf1(.out(segment0[1]), .in(segment0_pre[1]));
+    bufferH64$ seg_buf2(.out(segment0[2]), .in(segment0_pre[2]));
+    bufferH64$ seg_buf3(.out(segment0[3]), .in(segment0_pre[3]));
+    bufferH64$ seg_buf4(.out(segment0[4]), .in(segment0_pre[4]));
+    
 
 
     // // -----------------------------------------------------------------

@@ -13,7 +13,7 @@ module predecode(
     output disp_size,
     output disp_needed,
     output [63:0] imm64,
-    output [9:0] total_pf_vector,
+    output [9:0] total_pf_vector_o,
     output invalid_inst,
 
     input seg_override,
@@ -91,6 +91,8 @@ module predecode(
 );
 
 
+
+
     wire [127:0] IR; //16 byte
     // per-pf-combo outputs (suffix _<pf1><pf3>) — driven by the parallel ppu instances pfs<i>_<bb>
     wire [3:0]  ppu_inst_length_00[0:3], ppu_inst_length_01[0:3], ppu_inst_length_10[0:3], ppu_inst_length_11[0:3];
@@ -106,12 +108,14 @@ module predecode(
     wire [1:0] num_pfs;
     wire [1:0] num_pfs_duplicate0, num_pfs_duplicate1, num_pfs_duplicate2;
     wire [9:0] pf_vector0, pf_vector1, pf_vector2;
-    wire [9:0] total_pf_vector_duplicate0, total_pf_vector_duplicate1, total_pf_vector_duplicate2;
+    wire [9:0] total_pf_vector_pre, total_pf_vector;
     wire [31:0] sext_inst_length;
     wire inst_length_cout;
     wire true_inst_valid;
     wire [15:0] adder_cout;
     wire [31:0] possible_neips[0:15];
+
+    assign total_pf_vector_o = total_pf_vector;
 
 
     selection_logic sel_log1(.queue(queue), .EIP(EIP), .IR(IR));
@@ -289,7 +293,7 @@ module predecode(
     bufferH256$ buf_length3(.out(inst_length[3]), .in(inst_length_temp[3]));
 
     `MUX_4_H8(sib_mux, 8, sib_byte, sib_byte_00, sib_byte_01, sib_byte_10,
-        sib_byte_11, {total_pf_vector[1], total_pf_vector[3]}, {total_pf_vector_duplicate0[1], total_pf_vector_duplicate0[3]})
+        sib_byte_11, {total_pf_vector[1], total_pf_vector[3]}, {total_pf_vector[1], total_pf_vector[3]})
     `MUX_4(disp_mux, 32, disp, disp_00, disp_01, disp_10,
         disp_11, {total_pf_vector[1], total_pf_vector[3]})
     `MUX_4(disp_size_mux, 1, disp_size, disp_size_00, disp_size_01, disp_size_10,
@@ -313,13 +317,17 @@ module predecode(
     num_pf_gen num_pf_gen0_dup2(pf0, pf1, pf2, num_pfs_duplicate2);
 
     pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2),
-        .total_pf_vector(total_pf_vector));
-    pf_vector_gen vec_gen_dup0(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2),
-        .total_pf_vector(total_pf_vector_duplicate0));
-    pf_vector_gen vec_gen_dup1(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2),
-        .total_pf_vector(total_pf_vector_duplicate1));
-    pf_vector_gen vec_gen_dup2(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2),
-        .total_pf_vector(total_pf_vector_duplicate2));
+        .total_pf_vector(total_pf_vector_pre));
+    bufferH256$ pf_vect0(.out(total_pf_vector[0]), .in(total_pf_vector_pre[0]));
+    bufferH256$ pf_vect1(.out(total_pf_vector[1]), .in(total_pf_vector_pre[1]));
+    bufferH256$ pf_vect2(.out(total_pf_vector[2]), .in(total_pf_vector_pre[2]));
+    bufferH256$ pf_vect3(.out(total_pf_vector[3]), .in(total_pf_vector_pre[3]));
+    bufferH256$ pf_vect4(.out(total_pf_vector[4]), .in(total_pf_vector_pre[4]));
+    bufferH256$ pf_vect5(.out(total_pf_vector[5]), .in(total_pf_vector_pre[5]));
+    bufferH256$ pf_vect6(.out(total_pf_vector[6]), .in(total_pf_vector_pre[6]));
+    bufferH256$ pf_vect7(.out(total_pf_vector[7]), .in(total_pf_vector_pre[7]));
+    bufferH256$ pf_vect8(.out(total_pf_vector[8]), .in(total_pf_vector_pre[8]));
+    bufferH256$ pf_vect9(.out(total_pf_vector[9]), .in(total_pf_vector_pre[9]));
 
 
     wire possible_invalid_inst [0:15];

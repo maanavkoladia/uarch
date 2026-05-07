@@ -130,7 +130,7 @@
         "DMA Controller FSM" : {
             "csv" : "rtl/io/DMA_Controller/gen/DMA_FSM.csv",
             "outputFilePath" : "rtl/io/DMA_Controller/gen/DMA_FSM.sv",
-            "run FSM SOP gen": "true"
+            "run FSM SOP gen": "false"
         },
 
         "DTE_MEM_2_ICache_FSM": {

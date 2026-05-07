@@ -34,6 +34,6 @@ lib_header
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/WB/structural/ST_Q_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/WB/structural/WB_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/StageLatches/structural/DC_Latches.v
-tbs/wb/tb_WB_fanout.v
+tbs/wb/tb_fanout.v
 
 

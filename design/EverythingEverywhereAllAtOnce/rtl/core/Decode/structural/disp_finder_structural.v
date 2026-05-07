@@ -4,9 +4,14 @@ module disp_finder (
     input [127:0] IR,
     output [31:0] disp
 );
-    wire [3:0] disp_index;  //byte index
+    wire [3:0] disp_index, disp_index_pre;  //byte index
     wire adder_cout;
-    `ADD_N(disp_index_adder, 4, disp_index, adder_cout, sib_index, {3'b0, sib_size}, 1'b0)
+    `ADD_N(disp_index_adder, 4, disp_index_pre, adder_cout, sib_index, {3'b0, sib_size}, 1'b0)
+    bufferH256$ disp_buf0(.out(disp_index[0]), .in(disp_index_pre[0]));
+    bufferH256$ disp_buf1(.out(disp_index[1]), .in(disp_index_pre[1]));
+    bufferH256$ disp_buf2(.out(disp_index[2]), .in(disp_index_pre[2]));
+    bufferH256$ disp_buf3(.out(disp_index[3]), .in(disp_index_pre[3]));
+
 
     // assign disp = IR[disp_index*8 +: 32];
     `MUX_16(disp_mux, 32, disp,
