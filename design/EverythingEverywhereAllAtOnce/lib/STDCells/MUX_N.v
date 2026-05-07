@@ -56,6 +56,32 @@ module mux2_N #(parameter WIDTH = 1)(
     endgenerate
 endmodule
 
+module mux2_N_H8 #(parameter WIDTH = 1)(
+    output wire [WIDTH-1:0] out,
+    input  wire [WIDTH-1:0] in0, in1,
+    input  wire             sel0, sel1
+);
+    genvar i;
+    generate
+        for(i = 0; i < 4; i = i + 1) begin : gen_mux_lo
+            MPS_MUX_IN2 u_mux (
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i]),
+                .sel(sel0)
+            );
+        end
+        for(i = 4; i < WIDTH; i = i + 1) begin : gen_mux_hi
+            MPS_MUX_IN2 u_mux (
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i]),
+                .sel(sel1)
+            );
+        end
+    endgenerate
+endmodule
+
 module mux3_N #(parameter WIDTH = 1)(
     output wire [WIDTH-1:0] out,
     input  wire [WIDTH-1:0] in0, in1, in2,
@@ -98,6 +124,40 @@ module mux4_N #(parameter WIDTH = 1)(
 
 endmodule
 
+module mux4_N_H8 #(parameter WIDTH = 1)(
+    output [WIDTH-1:0] out,
+    input  [WIDTH-1:0] in0, in1, in2, in3,
+    input  [1:0]       sel0,
+    input  [1:0]       sel1
+);
+
+    genvar i;
+
+    generate
+        for(i = 0; i < 4; i = i + 1) begin : gen_mux_lo
+            MPS_MUX_IN4 u_mux (
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i]),
+                .in2(in2[i]),
+                .in3(in3[i]),
+                .sel(sel0)
+            );
+        end
+        for(i = 4; i < WIDTH; i = i + 1) begin : gen_mux_hi
+            MPS_MUX_IN4 u_mux (
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i]),
+                .in2(in2[i]),
+                .in3(in3[i]),
+                .sel(sel1)
+            );
+        end
+    endgenerate
+
+endmodule
+
 module mux8_N #(parameter WIDTH = 1)(
     output [WIDTH-1:0] out,
     input  [WIDTH-1:0] in0, in1, in2, in3,
@@ -120,6 +180,49 @@ module mux8_N #(parameter WIDTH = 1)(
                 .in6(in6[i]),
                 .in7(in7[i]),
                 .sel(sel)
+            );
+        end
+    endgenerate
+
+endmodule
+
+module mux8_N_H8 #(parameter WIDTH = 1)(
+    output [WIDTH-1:0] out,
+    input  [WIDTH-1:0] in0, in1, in2, in3,
+    input  [WIDTH-1:0] in4, in5, in6, in7,
+    input  [2:0]       sel0,
+    input  [2:0]       sel1
+);
+
+    genvar i;
+
+    generate
+        for(i = 0; i < 4; i = i + 1) begin : gen_mux_lo
+            MPS_MUX_IN8 u_mux (
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i]),
+                .in2(in2[i]),
+                .in3(in3[i]),
+                .in4(in4[i]),
+                .in5(in5[i]),
+                .in6(in6[i]),
+                .in7(in7[i]),
+                .sel(sel0)
+            );
+        end
+        for(i = 4; i < WIDTH; i = i + 1) begin : gen_mux_hi
+            MPS_MUX_IN8 u_mux (
+                .out(out[i]),
+                .in0(in0[i]),
+                .in1(in1[i]),
+                .in2(in2[i]),
+                .in3(in3[i]),
+                .in4(in4[i]),
+                .in5(in5[i]),
+                .in6(in6[i]),
+                .in7(in7[i]),
+                .sel(sel1)
             );
         end
     endgenerate

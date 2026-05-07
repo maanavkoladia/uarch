@@ -3,7 +3,7 @@ set link_library "*"
 
 
 set __top_module__  "Decode"
-set __masterfile__  "./master.txt"
+set __masterfile__  "./tbs/decode/master.txt"
 
 define_design_lib WORK -path ./WORK
 

@@ -194,6 +194,18 @@ module cs_post_processor (
     `CMP_N(reg_field_eq6, 3, rf_eq6, reg_field, 3'd6)
     `CMP_N(reg_field_eq7, 3, rf_eq7, reg_field, 3'd7)
 
+    // fanout duplicates: parallel comparators driven independently
+    wire rf_eq0_duplicate, rf_eq1_duplicate, rf_eq2_duplicate, rf_eq3_duplicate, rf_eq4_duplicate;
+    `CMP_N(reg_field_eq0_dup, 3, rf_eq0_duplicate, reg_field, 3'd0)
+    `CMP_N(reg_field_eq1_dup, 3, rf_eq1_duplicate, reg_field, 3'd1)
+    `CMP_N(reg_field_eq2_dup, 3, rf_eq2_duplicate, reg_field, 3'd2)
+    `CMP_N(reg_field_eq3_dup, 3, rf_eq3_duplicate, reg_field, 3'd3)
+    `CMP_N(reg_field_eq4_dup, 3, rf_eq4_duplicate, reg_field, 3'd4)
+
+    // fanout duplicate of op_in_modrm_subset via buffer
+    wire [`OP_IN_MODRM_W-1:0] op_in_modrm_subset_duplicate;
+    `BUFFER_DELAY(op_in_modrm_subset_dup_buf, 1, `OP_IN_MODRM_W, op_in_modrm_subset, op_in_modrm_subset_duplicate)
+
     // ff_call / ff_jmp / ff_push: only active when CTRL and matching reg_field
     wire ff_jmp, ff_push, ff_call;
     `AND_2(ff_call_gate, 1, ff_call, is_CTRL, rf_eq2)
@@ -219,15 +231,16 @@ module cs_post_processor (
     //shf, ctrl, alu optype selection for each
     wire [`EXE_OP_W-1:0] shf_overriden_op_type, ctrl_overriden_op_type, alu_overriden_op_type, alu_overriden_sub_op_type;
     wire [`EXE_OP_W-1:0] overriden_op_type;
-    `MUX_2(shf_overriden_op_type_mux, `EXE_OP_W, shf_overriden_op_type, `SAR, `SAL, rf_eq4)
-    `MUX_4(ctrl_overriden_op_type_mux, `EXE_OP_W, ctrl_overriden_op_type,
+    `MUX_2_H8(shf_overriden_op_type_mux, `EXE_OP_W, shf_overriden_op_type, `SAR, `SAL, rf_eq4, rf_eq4_duplicate)
+    `MUX_4_H8(ctrl_overriden_op_type_mux, `EXE_OP_W, ctrl_overriden_op_type,
             `PUSH,
             `CALL,
             `JMP,
             `CALL,
-            {rf_eq4, rf_eq2})
-    `MUX_2(alu_overriden_sub_op_type_mux, `EXE_OP_W, alu_overriden_sub_op_type, `AND, `SBB, rf_eq3)
-    `MUX_8(alu_overriden_op_type_mux, `EXE_OP_W, alu_overriden_op_type,
+            {rf_eq4, rf_eq2}, {rf_eq4_duplicate, rf_eq2_duplicate})
+    `MUX_2_H8(alu_overriden_sub_op_type_mux, `EXE_OP_W, alu_overriden_sub_op_type, `AND, `SBB, rf_eq3, rf_eq3_duplicate)
+
+    `MUX_8_H8(alu_overriden_op_type_mux, `EXE_OP_W, alu_overriden_op_type,
                 alu_overriden_sub_op_type,
                 `ADD,
                 `OR,
@@ -236,15 +249,15 @@ module cs_post_processor (
                 alu_overriden_sub_op_type,
                 alu_overriden_sub_op_type,
                 alu_overriden_sub_op_type,
-                {rf_eq2, rf_eq1, rf_eq0})
+                {rf_eq2, rf_eq1, rf_eq0}, {rf_eq2_duplicate, rf_eq1_duplicate, rf_eq0_duplicate})
 
     //shf, alu, ctrl, optype selction between each
-    `MUX_4(total_overriden_op_type_mux, `EXE_OP_W, overriden_op_type,
+    `MUX_4_H8(total_overriden_op_type_mux, `EXE_OP_W, overriden_op_type,
             exe_cs_i_OP_TYPE,
             ctrl_overriden_op_type,
             shf_overriden_op_type,
             alu_overriden_op_type,
-            op_in_modrm_subset)
+            op_in_modrm_subset, op_in_modrm_subset_duplicate)
 
 
 

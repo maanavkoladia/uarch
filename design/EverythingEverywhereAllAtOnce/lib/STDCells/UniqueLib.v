@@ -59,7 +59,7 @@ module MPS_buffer_delay$ #(
     generate
         for (s = 0; s < STAGES; s = s + 1) begin : GEN_STAGE
             for (i = 0; i < WIDTH; i = i + 1) begin : GEN_BIT
-                buffer$ u_buf (
+                bufferH16$ u_buf (
                     .out(chain[s+1][i]),
                     .in (chain[s][i])
                 );
