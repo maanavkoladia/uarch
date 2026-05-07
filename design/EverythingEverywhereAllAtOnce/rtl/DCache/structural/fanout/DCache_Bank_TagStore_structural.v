@@ -38,11 +38,14 @@ module DCache_Bank_TagStore (
     wire [7:0] valid_q;
     wire [7:0] dirty_q;
 
-    wire fill_or_ldswap;
-    `OR_2(u_fill_or_ldswap, 1, fill_or_ldswap, fill3_i, ld_From_V_Swap_i)
+    // u_fill_or_ldswap external fanout 17 -> bufferH64$.  u_ldswap_dirty fanout 8 -> bufferH16$.
+    wire fill_or_ldswap, fill_or_ldswap_pre;
+    `OR_2(u_fill_or_ldswap, 1, fill_or_ldswap_pre, fill3_i, ld_From_V_Swap_i)
+    bufferH64$ u_fill_or_ldswap_buf (.out(fill_or_ldswap), .in(fill_or_ldswap_pre));
 
-    wire ldswap_dirty;
-    `AND_2(u_ldswap_dirty, 1, ldswap_dirty, ld_From_V_Swap_i, V_Cache_SwapBuf_DirtyBit)
+    wire ldswap_dirty, ldswap_dirty_pre;
+    `AND_2(u_ldswap_dirty, 1, ldswap_dirty_pre, ld_From_V_Swap_i, V_Cache_SwapBuf_DirtyBit)
+    bufferH16$ u_ldswap_dirty_buf (.out(ldswap_dirty), .in(ldswap_dirty_pre));
 
     wire [7:0] valid_we;
     wire [7:0] dirty_we;
@@ -64,23 +67,36 @@ module DCache_Bank_TagStore (
         end
     endgenerate
 
-    `MUX_8(u_valid_mux, 1, currLine_V_o,
+    // u_valid_mux external fanout 7 -> bufferH16$ on currLine_V_o output port.
+    wire currLine_V_o_pre;
+    `MUX_8(u_valid_mux, 1, currLine_V_o_pre,
            valid_q[0], valid_q[1], valid_q[2], valid_q[3],
            valid_q[4], valid_q[5], valid_q[6], valid_q[7],
            index)
+    bufferH16$ u_currLine_V_o_buf (.out(currLine_V_o), .in(currLine_V_o_pre));
     `MUX_8(u_dirty_mux, 1, currLine_Dirty_o,
            dirty_q[0], dirty_q[1], dirty_q[2], dirty_q[3],
            dirty_q[4], dirty_q[5], dirty_q[6], dirty_q[7],
            index)
 
-    wire clk_45_phase;
-    `BUFFER_DELAY(u_phase, 10, 1, clk, clk_45_phase)
+    //wire clk_45_phase;
+    //`BUFFER_DELAY(u_phase, 12, 1, clk, clk_45_phase)
+
+    wire clk_duty_mask;
+    wire delay_rise;
+    wire delay_fall;
+
+    `BUFFER_DELAY(u_phase_rise, 25, 1, clk, delay_rise);
+    `BUFFER_DELAY(u_phase_fall, 15, 1, clk, delay_fall);
+
+    `AND_2(u_clk_duty_mask, 1, clk_duty_mask, delay_rise, delay_fall);
 
     wire wr_event_pre;
     wire wr_event_phased;
     wire WR_2_TagStore_actual;
     `AND_2(u_wr_event,    1, wr_event_pre,    rst, fill_or_ldswap)
-    `AND_2(u_wr_phased,   1, wr_event_phased, wr_event_pre, clk_45_phase)
+    //`AND_2(u_wr_phased,   1, wr_event_phased, wr_event_pre, clk_45_phase)
+    `AND_2(u_wr_phased,   1, wr_event_phased, wr_event_pre, clk_duty_mask)
     `INV_N(u_wr_actual,   1, wr_event_phased, WR_2_TagStore_actual)
 
     wire oe_or_we;

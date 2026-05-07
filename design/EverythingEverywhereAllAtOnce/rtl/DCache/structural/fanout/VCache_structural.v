@@ -77,7 +77,15 @@ module VCache (
 
     `MUX_2(u_reqInUse_oe,    1,   reqInUse_oe,       blockReq_oe_i,       savedReq_oe_q,       useSavedReq)
     `MUX_2(u_reqInUse_we,    1,   reqInUse_we,       blockReq_we_i,       savedReq_we_q,       useSavedReq)
-    `MUX_2(u_reqInUse_paddr, 15,  reqInUse_paddr,    blockReq_paddr_i,    savedReq_paddr_q,    useSavedReq)
+    // u_reqInUse_paddr fanout 5/bit -> bufferH16$ per bit.
+    wire [14:0] reqInUse_paddr_pre;
+    `MUX_2(u_reqInUse_paddr, 15,  reqInUse_paddr_pre, blockReq_paddr_i,    savedReq_paddr_q,    useSavedReq)
+    genvar vc_bp_i;
+    generate
+        for (vc_bp_i = 0; vc_bp_i < 15; vc_bp_i = vc_bp_i + 1) begin : g_buf_reqInUse_paddr
+            bufferH16$ u_buf (.out(reqInUse_paddr[vc_bp_i]), .in(reqInUse_paddr_pre[vc_bp_i]));
+        end
+    endgenerate
     `MUX_2(u_reqInUse_stq,   128, reqInUse_stq_data, blockReq_stq_data_i, savedReq_stq_data_q, useSavedReq)
     `MUX_2(u_reqInUse_vec,   16,  reqInUse_vec,      blockReq_vec_i,      savedReq_vec_q,      useSavedReq)
 

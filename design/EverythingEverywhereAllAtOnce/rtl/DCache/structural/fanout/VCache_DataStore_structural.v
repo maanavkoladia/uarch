@@ -37,19 +37,26 @@ module VCache_DataStore (
            hitIDX_i,
            evictionIDX_i,
            WR_2_EB)
-    `MUX_2(u_addr_final, 2, ADDRESS_2_DataStore,
+    // u_addr_final fanout 16/bit -> bufferH16$ per bit.
+    wire [1:0] ADDRESS_2_DataStore_pre;
+    `MUX_2(u_addr_final, 2, ADDRESS_2_DataStore_pre,
            step1,
            savedIDX_i,
            useSavedIDX)
+    bufferH16$ u_addr_final_buf0 (.out(ADDRESS_2_DataStore[0]), .in(ADDRESS_2_DataStore_pre[0]));
+    bufferH16$ u_addr_final_buf1 (.out(ADDRESS_2_DataStore[1]), .in(ADDRESS_2_DataStore_pre[1]));
 
     wire not_busy;
-    wire store_path;
+    wire store_path, store_path_pre;
     wire not_store_path;
-    wire swap_path;
+    wire swap_path, swap_path_pre;
     `INV_N(u_not_busy,       1, busy_i,         not_busy)
-    `AND_2(u_store_path,     1, store_path,     not_busy, we_i)
+    // u_store_path fanout 145 -> bufferH256$.  u_swap_path fanout 16 -> bufferH16$.
+    `AND_2(u_store_path,     1, store_path_pre, not_busy, we_i)
+    bufferH256$ u_store_path_buf (.out(store_path), .in(store_path_pre));
     `INV_N(u_not_store_path, 1, store_path,     not_store_path)
-    `AND_2(u_swap_path,      1, swap_path,      not_store_path, read_D_SWAP_i)
+    `AND_2(u_swap_path,      1, swap_path_pre,  not_store_path, read_D_SWAP_i)
+    bufferH16$  u_swap_path_buf (.out(swap_path), .in(swap_path_pre));
 
     // wire clk_duty_mask;
     // wire clk_duty_mask_buffer;
@@ -76,8 +83,8 @@ module VCache_DataStore (
     wire delay_fall;
     wire clk_duty_mask;
  
-    `BUFFER_DELAY(u_phase_rise, 25, 1, clk_i, delay_rise);
-    `BUFFER_DELAY(u_phase_fall, 15, 1, clk_i, delay_fall);
+    `BUFFER_DELAY(u_phase_rise, 27, 1, clk_i, delay_rise);
+    `BUFFER_DELAY(u_phase_fall, 16, 1, clk_i, delay_fall);
 
 
     `AND_2(u_clk_duty_mask, 1, clk_duty_mask, delay_rise, delay_fall);

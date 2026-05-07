@@ -16,7 +16,7 @@ TARGET = system_testing
 STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 15
+CLK_PERIOD := 10.5
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 	p	DCACHE_DUMP_END=100
@@ -160,7 +160,7 @@ clean:
 	rm -rf gen/
 	rm -rf logDumps/
 	rm -rf TestResults/
-	$(MAKE) -C fanout clean
+	#$(MAKE) -C fanout clean
 
 push: clean
 	git add -A

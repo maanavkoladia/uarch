@@ -95,7 +95,10 @@ module VCache_TagStore (
     `OR_2  (u_oe_or_we,       1, oe_or_we, we_i, oe_i)
     `INV_N (u_not_busy,       1, busy_i, not_busy)
 
-    `AND_2 (u_doAccess,       1, doAccess, oe_or_we, not_busy)
+    // u_doAccess fanout 9 -> bufferH16$.
+    wire doAccess_pre;
+    `AND_2 (u_doAccess,       1, doAccess_pre, oe_or_we, not_busy)
+    bufferH16$ u_doAccess_buf (.out(doAccess), .in(doAccess_pre));
     `OR_2  (u_wr2eb_or_vswap, 1, wr2eb_or_vswap, WR_2_EB_i, Write_VSWAP_i)
 
     genvar goe;
@@ -154,15 +157,23 @@ module VCache_TagStore (
     `NAND_3(u_way_hit_2, 1, way_hit[2], doAccess, tagMetaStore_valid_q[2], tag_eq[2])
     `NAND_3(u_way_hit_3, 1, way_hit[3], doAccess, tagMetaStore_valid_q[3], tag_eq[3])
 
-    `NAND_4 (u_hit,          1, hit, way_hit[0], way_hit[1], way_hit[2], way_hit[3])
+    // u_hit fanout 151 -> bufferH256$.  miss (5), hitIdx[0]/[1] (5/5) -> bufferH16$.
+    wire hit_pre;
+    `NAND_4 (u_hit,          1, hit_pre, way_hit[0], way_hit[1], way_hit[2], way_hit[3])
+    bufferH256$ u_hit_buf (.out(hit), .in(hit_pre));
     `INV_N(u_not_hit,      1, hit, not_hit)
 
-    `AND_2(u_miss,         1, miss, doAccess, not_hit)
+    wire miss_pre;
+    `AND_2(u_miss,         1, miss_pre, doAccess, not_hit)
+    bufferH16$ u_miss_buf (.out(miss), .in(miss_pre));
     `AND_2(u_writeSuccess, 1, writeSuccess, hit, we_i)
 
     wire [1:0] hitIdx;
-    `NAND_2(u_hitIdx_1, 1, hitIdx[1], way_hit[2], way_hit[3])
-    `NAND_2(u_hitIdx_0, 1, hitIdx[0], way_hit[1], way_hit[3])
+    wire       hitIdx_1_pre, hitIdx_0_pre;
+    `NAND_2(u_hitIdx_1, 1, hitIdx_1_pre, way_hit[2], way_hit[3])
+    `NAND_2(u_hitIdx_0, 1, hitIdx_0_pre, way_hit[1], way_hit[3])
+    bufferH16$ u_hitIdx_1_buf (.out(hitIdx[1]), .in(hitIdx_1_pre));
+    bufferH16$ u_hitIdx_0_buf (.out(hitIdx[0]), .in(hitIdx_0_pre));
 
     wire [3:0] hitIdx_decoded;
     `DECODER_N(u_hitIdx_dec, 2, hitIdx, hitIdx_decoded)
@@ -193,7 +204,11 @@ module VCache_TagStore (
            hitIdx,
            currLRU_IDX,
            DCache_Will_Evict_i)
-    `REG_RST_WE(u_savedIDX, 2, clk, rst, saveIDX, savedIDX_d, savedIDX_q)
+    // u_savedIDX Q[1] fanout 9 -> bufferH16$ on each bit (Q[0] also buffered for symmetry).
+    wire [1:0] savedIDX_q_pre;
+    `REG_RST_WE(u_savedIDX, 2, clk, rst, saveIDX, savedIDX_d, savedIDX_q_pre)
+    bufferH16$ u_savedIDX_q0_buf (.out(savedIDX_q[0]), .in(savedIDX_q_pre[0]));
+    bufferH16$ u_savedIDX_q1_buf (.out(savedIDX_q[1]), .in(savedIDX_q_pre[1]));
 
     LRU LRU_unit (
         .clk        (clk),
@@ -203,17 +218,22 @@ module VCache_TagStore (
         .currLRU_IDX(currLRU_IDX)
     );
 
-    wire [1:0] tag_out_write_to_vswap_idx;
-    `MUX_2(u_tag_vswap_idx, 2, tag_out_write_to_vswap_idx,
+    // u_tag_vswap_idx fanout 9/bit, u_tag_eb_idx fanout 10/bit -> bufferH16$ per bit.
+    wire [1:0] tag_out_write_to_vswap_idx, tag_out_write_to_vswap_idx_pre;
+    `MUX_2(u_tag_vswap_idx, 2, tag_out_write_to_vswap_idx_pre,
            hitIdx,
            savedIDX_q,
            use_savedIDX)
+    bufferH16$ u_tag_vswap_idx_buf0 (.out(tag_out_write_to_vswap_idx[0]), .in(tag_out_write_to_vswap_idx_pre[0]));
+    bufferH16$ u_tag_vswap_idx_buf1 (.out(tag_out_write_to_vswap_idx[1]), .in(tag_out_write_to_vswap_idx_pre[1]));
 
-    wire [1:0] tag_out_write_to_eb_idx;
-    `MUX_2(u_tag_eb_idx, 2, tag_out_write_to_eb_idx,
+    wire [1:0] tag_out_write_to_eb_idx, tag_out_write_to_eb_idx_pre;
+    `MUX_2(u_tag_eb_idx, 2, tag_out_write_to_eb_idx_pre,
            currLRU_IDX,
            savedIDX_q,
            use_savedIDX)
+    bufferH16$ u_tag_eb_idx_buf0 (.out(tag_out_write_to_eb_idx[0]), .in(tag_out_write_to_eb_idx_pre[0]));
+    bufferH16$ u_tag_eb_idx_buf1 (.out(tag_out_write_to_eb_idx[1]), .in(tag_out_write_to_eb_idx_pre[1]));
 
     wire [1:0] currLine_Dirty_idx;
     `MUX_2(u_dirty_idx, 2, currLine_Dirty_idx,

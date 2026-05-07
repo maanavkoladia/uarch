@@ -53,12 +53,19 @@ module MIO_Block (
     `AND_2(u_clr_and_oe,    1, clr_and_oe,    memStage_CLR_REQ_MIO, block_req_oe_q)
     `OR_3(u_rfnr,           1, readyForNewReq, we_and_served, clr_and_oe, block_idle)
 
-    wire keep_select;
-    `INV_N(u_keep_sel, 1, readyForNewReq, keep_select)
+    // u_keep_sel external fanout 145 -> bufferH256$.
+    wire keep_select, keep_select_pre;
+    `INV_N(u_keep_sel, 1, readyForNewReq, keep_select_pre)
+    bufferH256$ u_keep_sel_buf (.out(keep_select), .in(keep_select_pre));
 
+    // u_ld_sel external fanout 17 -> bufferH64$.
+    // u_st_sel external fanout 145 -> bufferH256$.
     wire ld_select, st_select;
-    `AND_2(u_ld_sel, 1, ld_select, readyForNewReq, ld_addr_MIO_V)
-    `AND_3(u_st_sel, 1, st_select, readyForNewReq, not_ld_V, not_stq_empty)
+    wire ld_select_pre, st_select_pre;
+    `AND_2(u_ld_sel, 1, ld_select_pre, readyForNewReq, ld_addr_MIO_V)
+    `AND_3(u_st_sel, 1, st_select_pre, readyForNewReq, not_ld_V, not_stq_empty)
+    bufferH64$  u_ld_sel_buf (.out(ld_select), .in(ld_select_pre));
+    bufferH256$ u_st_sel_buf (.out(st_select), .in(st_select_pre));
 
     wire [14:0]  ld_sel_15, st_sel_15, keep_sel_15;
     wire [127:0] st_sel_128, keep_sel_128;
@@ -87,10 +94,15 @@ module MIO_Block (
     `AND_2(u_dat_keep, 128, data_keep_g, block_req_data_q,    keep_sel_128)
     `OR_2(u_next_dat,  128, next_data,   data_st_g, data_keep_g)
 
-    `REG_RST(u_reg_oe,  1,   clk, rst, next_oe,    block_req_oe_q)
-    `REG_RST(u_reg_we,  1,   clk, rst, next_we,    block_req_we_q)
+    // u_reg_oe external fanout 6 -> bufferH16$.
+    // u_reg_we external fanout 5 -> bufferH16$.
+    wire block_req_oe_q_pre, block_req_we_q_pre;
+    `REG_RST(u_reg_oe,  1,   clk, rst, next_oe,    block_req_oe_q_pre)
+    `REG_RST(u_reg_we,  1,   clk, rst, next_we,    block_req_we_q_pre)
     `REG_RST(u_reg_pa,  15,  clk, rst, next_paddr, block_req_paddr_q)
     `REG_RST(u_reg_dat, 128, clk, rst, next_data,  block_req_data_q)
+    bufferH16$ u_reg_oe_buf (.out(block_req_oe_q), .in(block_req_oe_q_pre));
+    bufferH16$ u_reg_we_buf (.out(block_req_we_q), .in(block_req_we_q_pre));
 
     assign writeSuccess_o = st_select;
     assign reqServed_o = ld_select;
@@ -117,14 +129,18 @@ module MIO_Block (
     `OR_2(u_bit2, 1, req_sch_bit2, ld_req_sel, wr_complex_sel)
     assign req_2_sch_o = {1'b0, req_sch_bit2, wr_simple_sel, req_sch_bit0};
 
-    wire addr_perm_bar;
-    `INV_N(u_addr_perm_bar, 1, PermissionToDriveAddrBus, addr_perm_bar)
+    // u_addr_perm_bar external fanout 32 -> bufferH64$.
+    wire addr_perm_bar, addr_perm_bar_pre;
+    `INV_N(u_addr_perm_bar, 1, PermissionToDriveAddrBus, addr_perm_bar_pre)
+    bufferH64$ u_addr_perm_bar_buf (.out(addr_perm_bar), .in(addr_perm_bar_pre));
     wire [`ADDRESS_BUS_WIDTH_BITS-1:0] addr_bus_drv;
     assign addr_bus_drv = {17'b0, block_req_paddr_q};
     `BUS_TRISTATE(u_addr_bus, `ADDRESS_BUS_WIDTH_BITS, addr_perm_bar, addr_bus_drv, address_bus)
 
-    wire data_perm_bar;
-    `INV_N(u_data_perm_bar, 1, permission2DriveDataBus, data_perm_bar)
+    // u_data_perm_bar external fanout 32 -> bufferH64$.
+    wire data_perm_bar, data_perm_bar_pre;
+    `INV_N(u_data_perm_bar, 1, permission2DriveDataBus, data_perm_bar_pre)
+    bufferH64$ u_data_perm_bar_buf (.out(data_perm_bar), .in(data_perm_bar_pre));
     wire [`DATA_BUS_WIDTH_BITS-1:0] dataBus_drv;
     assign dataBus_drv = block_req_data_q[31:0];
     `BUS_TRISTATE(u_mio_block_busTristate, `DATA_BUS_WIDTH_BITS, data_perm_bar, dataBus_drv, dataBus)

@@ -70,13 +70,46 @@ module npu_node1 (
     //   Just rewire: result[15:0] = 0, result[31:16] = x[15:0].
     //=========================================================================
     wire [31:0] seg0_data_shl16, real_seg1_data, real_seg1_data_shl16;
+    wire [31:0] real_seg1_data_pre;
     assign seg0_data_shl16[15:0]  = 16'h0000;
     assign seg0_data_shl16[31:16] = seg0_data[15:0];
 
     //=========================================================================
     // real_seg1_data = seg1_valid ? seg1_data : seg0_data
     //=========================================================================
-    `MUX_2(mux_real_seg1_data, 32, real_seg1_data, seg0_data, seg1_data, seg1_valid)
+    `MUX_2(mux_real_seg1_data, 32, real_seg1_data_pre, seg0_data, seg1_data, seg1_valid)
+    bufferH16$ u_buf_real_seg1_data_0  (.out(real_seg1_data[0]),  .in(real_seg1_data_pre[0]));
+    bufferH16$ u_buf_real_seg1_data_1  (.out(real_seg1_data[1]),  .in(real_seg1_data_pre[1]));
+    bufferH16$ u_buf_real_seg1_data_2  (.out(real_seg1_data[2]),  .in(real_seg1_data_pre[2]));
+    bufferH16$ u_buf_real_seg1_data_3  (.out(real_seg1_data[3]),  .in(real_seg1_data_pre[3]));
+    bufferH16$ u_buf_real_seg1_data_4  (.out(real_seg1_data[4]),  .in(real_seg1_data_pre[4]));
+    bufferH16$ u_buf_real_seg1_data_5  (.out(real_seg1_data[5]),  .in(real_seg1_data_pre[5]));
+    bufferH16$ u_buf_real_seg1_data_6  (.out(real_seg1_data[6]),  .in(real_seg1_data_pre[6]));
+    bufferH16$ u_buf_real_seg1_data_7  (.out(real_seg1_data[7]),  .in(real_seg1_data_pre[7]));
+    bufferH16$ u_buf_real_seg1_data_8  (.out(real_seg1_data[8]),  .in(real_seg1_data_pre[8]));
+    bufferH16$ u_buf_real_seg1_data_9  (.out(real_seg1_data[9]),  .in(real_seg1_data_pre[9]));
+    bufferH16$ u_buf_real_seg1_data_10 (.out(real_seg1_data[10]), .in(real_seg1_data_pre[10]));
+    bufferH16$ u_buf_real_seg1_data_11 (.out(real_seg1_data[11]), .in(real_seg1_data_pre[11]));
+    bufferH16$ u_buf_real_seg1_data_12 (.out(real_seg1_data[12]), .in(real_seg1_data_pre[12]));
+    bufferH16$ u_buf_real_seg1_data_13 (.out(real_seg1_data[13]), .in(real_seg1_data_pre[13]));
+    bufferH16$ u_buf_real_seg1_data_14 (.out(real_seg1_data[14]), .in(real_seg1_data_pre[14]));
+    bufferH16$ u_buf_real_seg1_data_15 (.out(real_seg1_data[15]), .in(real_seg1_data_pre[15]));
+    bufferH16$ u_buf_real_seg1_data_16 (.out(real_seg1_data[16]), .in(real_seg1_data_pre[16]));
+    bufferH16$ u_buf_real_seg1_data_17 (.out(real_seg1_data[17]), .in(real_seg1_data_pre[17]));
+    bufferH16$ u_buf_real_seg1_data_18 (.out(real_seg1_data[18]), .in(real_seg1_data_pre[18]));
+    bufferH16$ u_buf_real_seg1_data_19 (.out(real_seg1_data[19]), .in(real_seg1_data_pre[19]));
+    bufferH16$ u_buf_real_seg1_data_20 (.out(real_seg1_data[20]), .in(real_seg1_data_pre[20]));
+    bufferH16$ u_buf_real_seg1_data_21 (.out(real_seg1_data[21]), .in(real_seg1_data_pre[21]));
+    bufferH16$ u_buf_real_seg1_data_22 (.out(real_seg1_data[22]), .in(real_seg1_data_pre[22]));
+    bufferH16$ u_buf_real_seg1_data_23 (.out(real_seg1_data[23]), .in(real_seg1_data_pre[23]));
+    bufferH16$ u_buf_real_seg1_data_24 (.out(real_seg1_data[24]), .in(real_seg1_data_pre[24]));
+    bufferH16$ u_buf_real_seg1_data_25 (.out(real_seg1_data[25]), .in(real_seg1_data_pre[25]));
+    bufferH16$ u_buf_real_seg1_data_26 (.out(real_seg1_data[26]), .in(real_seg1_data_pre[26]));
+    bufferH16$ u_buf_real_seg1_data_27 (.out(real_seg1_data[27]), .in(real_seg1_data_pre[27]));
+    bufferH16$ u_buf_real_seg1_data_28 (.out(real_seg1_data[28]), .in(real_seg1_data_pre[28]));
+    bufferH16$ u_buf_real_seg1_data_29 (.out(real_seg1_data[29]), .in(real_seg1_data_pre[29]));
+    bufferH16$ u_buf_real_seg1_data_30 (.out(real_seg1_data[30]), .in(real_seg1_data_pre[30]));
+    bufferH16$ u_buf_real_seg1_data_31 (.out(real_seg1_data[31]), .in(real_seg1_data_pre[31]));
 
     assign real_seg1_data_shl16[15:0]  = 16'h0000;
     assign real_seg1_data_shl16[31:16] = real_seg1_data[15:0];
@@ -117,13 +150,45 @@ module npu_node1 (
     //   10    : sign-extend(displacement[7:0])
     //   11    : displacement (full 32b)
     //=========================================================================
-    wire [31:0] displacement_sext_8b, displacement_out;
+    wire [31:0] displacement_sext_8b, displacement_out, displacement_out_pre;
     assign displacement_sext_8b[7:0]  = displacement[7:0];
     assign displacement_sext_8b[31:8] = {24{displacement[7]}};
 
-    `MUX_4(mux_disp_out, 32, displacement_out,
+    `MUX_4(mux_disp_out, 32, displacement_out_pre,
            32'b0, 32'b0, displacement_sext_8b, displacement,
            {disp_needed, dispsize})
+    bufferH16$ u_buf_displacement_out_0  (.out(displacement_out[0]),  .in(displacement_out_pre[0]));
+    bufferH16$ u_buf_displacement_out_1  (.out(displacement_out[1]),  .in(displacement_out_pre[1]));
+    bufferH16$ u_buf_displacement_out_2  (.out(displacement_out[2]),  .in(displacement_out_pre[2]));
+    bufferH16$ u_buf_displacement_out_3  (.out(displacement_out[3]),  .in(displacement_out_pre[3]));
+    bufferH16$ u_buf_displacement_out_4  (.out(displacement_out[4]),  .in(displacement_out_pre[4]));
+    bufferH16$ u_buf_displacement_out_5  (.out(displacement_out[5]),  .in(displacement_out_pre[5]));
+    bufferH16$ u_buf_displacement_out_6  (.out(displacement_out[6]),  .in(displacement_out_pre[6]));
+    bufferH16$ u_buf_displacement_out_7  (.out(displacement_out[7]),  .in(displacement_out_pre[7]));
+    bufferH16$ u_buf_displacement_out_8  (.out(displacement_out[8]),  .in(displacement_out_pre[8]));
+    bufferH16$ u_buf_displacement_out_9  (.out(displacement_out[9]),  .in(displacement_out_pre[9]));
+    bufferH16$ u_buf_displacement_out_10 (.out(displacement_out[10]), .in(displacement_out_pre[10]));
+    bufferH16$ u_buf_displacement_out_11 (.out(displacement_out[11]), .in(displacement_out_pre[11]));
+    bufferH16$ u_buf_displacement_out_12 (.out(displacement_out[12]), .in(displacement_out_pre[12]));
+    bufferH16$ u_buf_displacement_out_13 (.out(displacement_out[13]), .in(displacement_out_pre[13]));
+    bufferH16$ u_buf_displacement_out_14 (.out(displacement_out[14]), .in(displacement_out_pre[14]));
+    bufferH16$ u_buf_displacement_out_15 (.out(displacement_out[15]), .in(displacement_out_pre[15]));
+    bufferH16$ u_buf_displacement_out_16 (.out(displacement_out[16]), .in(displacement_out_pre[16]));
+    bufferH16$ u_buf_displacement_out_17 (.out(displacement_out[17]), .in(displacement_out_pre[17]));
+    bufferH16$ u_buf_displacement_out_18 (.out(displacement_out[18]), .in(displacement_out_pre[18]));
+    bufferH16$ u_buf_displacement_out_19 (.out(displacement_out[19]), .in(displacement_out_pre[19]));
+    bufferH16$ u_buf_displacement_out_20 (.out(displacement_out[20]), .in(displacement_out_pre[20]));
+    bufferH16$ u_buf_displacement_out_21 (.out(displacement_out[21]), .in(displacement_out_pre[21]));
+    bufferH16$ u_buf_displacement_out_22 (.out(displacement_out[22]), .in(displacement_out_pre[22]));
+    bufferH16$ u_buf_displacement_out_23 (.out(displacement_out[23]), .in(displacement_out_pre[23]));
+    bufferH16$ u_buf_displacement_out_24 (.out(displacement_out[24]), .in(displacement_out_pre[24]));
+    bufferH16$ u_buf_displacement_out_25 (.out(displacement_out[25]), .in(displacement_out_pre[25]));
+    bufferH16$ u_buf_displacement_out_26 (.out(displacement_out[26]), .in(displacement_out_pre[26]));
+    bufferH16$ u_buf_displacement_out_27 (.out(displacement_out[27]), .in(displacement_out_pre[27]));
+    bufferH16$ u_buf_displacement_out_28 (.out(displacement_out[28]), .in(displacement_out_pre[28]));
+    bufferH16$ u_buf_displacement_out_29 (.out(displacement_out[29]), .in(displacement_out_pre[29]));
+    bufferH16$ u_buf_displacement_out_30 (.out(displacement_out[30]), .in(displacement_out_pre[30]));
+    bufferH16$ u_buf_displacement_out_31 (.out(displacement_out[31]), .in(displacement_out_pre[31]));
 
     //=========================================================================
     // masked_displacement_out = switch_ld_addy ? 32'b0 : displacement_out
@@ -152,10 +217,42 @@ module npu_node1 (
     //   10: sib_nonsense
     //   11: sib_nonsense
     //=========================================================================
-    wire [31:0] sib_or_reg;
-    `MUX_4(mux_sib_or_reg, 32, sib_or_reg,
+    wire [31:0] sib_or_reg, sib_or_reg_pre;
+    `MUX_4(mux_sib_or_reg, 32, sib_or_reg_pre,
            register_data, 32'b0, sib_nonsense, sib_nonsense,
            {sib_needed, special_modrm_bs})
+    bufferH16$ u_buf_sib_or_reg_0  (.out(sib_or_reg[0]),  .in(sib_or_reg_pre[0]));
+    bufferH16$ u_buf_sib_or_reg_1  (.out(sib_or_reg[1]),  .in(sib_or_reg_pre[1]));
+    bufferH16$ u_buf_sib_or_reg_2  (.out(sib_or_reg[2]),  .in(sib_or_reg_pre[2]));
+    bufferH16$ u_buf_sib_or_reg_3  (.out(sib_or_reg[3]),  .in(sib_or_reg_pre[3]));
+    bufferH16$ u_buf_sib_or_reg_4  (.out(sib_or_reg[4]),  .in(sib_or_reg_pre[4]));
+    bufferH16$ u_buf_sib_or_reg_5  (.out(sib_or_reg[5]),  .in(sib_or_reg_pre[5]));
+    bufferH16$ u_buf_sib_or_reg_6  (.out(sib_or_reg[6]),  .in(sib_or_reg_pre[6]));
+    bufferH16$ u_buf_sib_or_reg_7  (.out(sib_or_reg[7]),  .in(sib_or_reg_pre[7]));
+    bufferH16$ u_buf_sib_or_reg_8  (.out(sib_or_reg[8]),  .in(sib_or_reg_pre[8]));
+    bufferH16$ u_buf_sib_or_reg_9  (.out(sib_or_reg[9]),  .in(sib_or_reg_pre[9]));
+    bufferH16$ u_buf_sib_or_reg_10 (.out(sib_or_reg[10]), .in(sib_or_reg_pre[10]));
+    bufferH16$ u_buf_sib_or_reg_11 (.out(sib_or_reg[11]), .in(sib_or_reg_pre[11]));
+    bufferH16$ u_buf_sib_or_reg_12 (.out(sib_or_reg[12]), .in(sib_or_reg_pre[12]));
+    bufferH16$ u_buf_sib_or_reg_13 (.out(sib_or_reg[13]), .in(sib_or_reg_pre[13]));
+    bufferH16$ u_buf_sib_or_reg_14 (.out(sib_or_reg[14]), .in(sib_or_reg_pre[14]));
+    bufferH16$ u_buf_sib_or_reg_15 (.out(sib_or_reg[15]), .in(sib_or_reg_pre[15]));
+    bufferH16$ u_buf_sib_or_reg_16 (.out(sib_or_reg[16]), .in(sib_or_reg_pre[16]));
+    bufferH16$ u_buf_sib_or_reg_17 (.out(sib_or_reg[17]), .in(sib_or_reg_pre[17]));
+    bufferH16$ u_buf_sib_or_reg_18 (.out(sib_or_reg[18]), .in(sib_or_reg_pre[18]));
+    bufferH16$ u_buf_sib_or_reg_19 (.out(sib_or_reg[19]), .in(sib_or_reg_pre[19]));
+    bufferH16$ u_buf_sib_or_reg_20 (.out(sib_or_reg[20]), .in(sib_or_reg_pre[20]));
+    bufferH16$ u_buf_sib_or_reg_21 (.out(sib_or_reg[21]), .in(sib_or_reg_pre[21]));
+    bufferH16$ u_buf_sib_or_reg_22 (.out(sib_or_reg[22]), .in(sib_or_reg_pre[22]));
+    bufferH16$ u_buf_sib_or_reg_23 (.out(sib_or_reg[23]), .in(sib_or_reg_pre[23]));
+    bufferH16$ u_buf_sib_or_reg_24 (.out(sib_or_reg[24]), .in(sib_or_reg_pre[24]));
+    bufferH16$ u_buf_sib_or_reg_25 (.out(sib_or_reg[25]), .in(sib_or_reg_pre[25]));
+    bufferH16$ u_buf_sib_or_reg_26 (.out(sib_or_reg[26]), .in(sib_or_reg_pre[26]));
+    bufferH16$ u_buf_sib_or_reg_27 (.out(sib_or_reg[27]), .in(sib_or_reg_pre[27]));
+    bufferH16$ u_buf_sib_or_reg_28 (.out(sib_or_reg[28]), .in(sib_or_reg_pre[28]));
+    bufferH16$ u_buf_sib_or_reg_29 (.out(sib_or_reg[29]), .in(sib_or_reg_pre[29]));
+    bufferH16$ u_buf_sib_or_reg_30 (.out(sib_or_reg[30]), .in(sib_or_reg_pre[30]));
+    bufferH16$ u_buf_sib_or_reg_31 (.out(sib_or_reg[31]), .in(sib_or_reg_pre[31]));
 
     //=========================================================================
     // ld_addy_reg_data = switch_ld_addy ? regout_sr_data : sib_or_reg

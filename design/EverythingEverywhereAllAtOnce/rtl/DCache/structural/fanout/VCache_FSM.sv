@@ -74,9 +74,15 @@ wire NS_2;
 // `REG_RST samples D on every rising clk edge.
 // Active-high rst drives all state bits to 0 (= IDLE encoding).
 // ----------------------------------------------------------------
-`REG_RST(ff_0, 1, clk, rst, NS_0, S_0)
-`REG_RST(ff_1, 1, clk, rst, NS_1, S_1)
-`REG_RST(ff_2, 1, clk, rst, NS_2, S_2)
+// State FFs feed bufferH16$ to lift drive class above raw reg64e$ tier-4.
+// Internal SOP fanout is 5-8 per state bit; bufferH16$ comfortably covers.
+wire S_0_pre, S_1_pre, S_2_pre;
+`REG_RST(ff_0, 1, clk, rst, NS_0, S_0_pre)
+`REG_RST(ff_1, 1, clk, rst, NS_1, S_1_pre)
+`REG_RST(ff_2, 1, clk, rst, NS_2, S_2_pre)
+bufferH16$ u_S_0_buf (.out(S_0), .in(S_0_pre));
+bufferH16$ u_S_1_buf (.out(S_1), .in(S_1_pre));
+bufferH16$ u_S_2_buf (.out(S_2), .in(S_2_pre));
 
 // ----------------------------------------------------------------
 // Inverters for negated literals
@@ -145,13 +151,19 @@ wire WR_2_EB_o_n0;
 wire WR_2_EB_o_n1;
 `NAND_3(WR_2_EB_o_nand1, 1, WR_2_EB_o_n1, S_0_inv, S_1, S_2_inv)
 
-`NAND_2(WR_2_EB_o_nand, 1, WR_2_EB_o, WR_2_EB_o_n0, WR_2_EB_o_n1)
+// External fanout 14 -> bufferH16$.
+wire WR_2_EB_o_pre;
+`NAND_2(WR_2_EB_o_nand, 1, WR_2_EB_o_pre, WR_2_EB_o_n0, WR_2_EB_o_n1)
+bufferH16$ u_WR_2_EB_o_buf (.out(WR_2_EB_o), .in(WR_2_EB_o_pre));
 
 // CLR_D_SWAP_V_o = (S_0 & S_1 & !S_2)
 `AND_3(CLR_D_SWAP_V_o_and, 1, CLR_D_SWAP_V_o, S_0, S_1, S_2_inv)
 
 // Read_DSWAP_o = (S_0 & S_1 & !S_2)
-`AND_3(Read_DSWAP_o_and, 1, Read_DSWAP_o, S_0, S_1, S_2_inv)
+// External fanout 9 -> bufferH16$.
+wire Read_DSWAP_o_pre;
+`AND_3(Read_DSWAP_o_and, 1, Read_DSWAP_o_pre, S_0, S_1, S_2_inv)
+bufferH16$ u_Read_DSWAP_o_buf (.out(Read_DSWAP_o), .in(Read_DSWAP_o_pre));
 
 // Write_VSWAP_o = (S_0 & !S_1 & !S_2) | (!S_1 & !S_2 & V_Hit_i & !we_i)
 wire Write_VSWAP_o_n0;
@@ -159,7 +171,10 @@ wire Write_VSWAP_o_n0;
 wire Write_VSWAP_o_n1;
 `NAND_4(Write_VSWAP_o_nand1, 1, Write_VSWAP_o_n1, S_1_inv, S_2_inv, V_Hit_i, we_i_inv)
 
-`NAND_2(Write_VSWAP_o_nand, 1, Write_VSWAP_o, Write_VSWAP_o_n0, Write_VSWAP_o_n1)
+// External fanout 16 -> bufferH16$.
+wire Write_VSWAP_o_pre;
+`NAND_2(Write_VSWAP_o_nand, 1, Write_VSWAP_o_pre, Write_VSWAP_o_n0, Write_VSWAP_o_n1)
+bufferH16$ u_Write_VSWAP_o_buf (.out(Write_VSWAP_o), .in(Write_VSWAP_o_pre));
 
 // Update_LRU_o = (S_0 & S_1 & !S_2)
 `AND_3(Update_LRU_o_and, 1, Update_LRU_o, S_0, S_1, S_2_inv)
@@ -172,7 +187,10 @@ wire busy_o_n1;
 wire busy_o_n2;
 `NAND_3(busy_o_nand2, 1, busy_o_n2, S_0_inv, S_1_inv, S_2)
 
-`NAND_3(busy_o_nand, 1, busy_o, busy_o_n0, busy_o_n1, busy_o_n2)
+// External fanout 173 (top-of-design) -> bufferH256$.
+wire busy_o_pre;
+`NAND_3(busy_o_nand, 1, busy_o_pre, busy_o_n0, busy_o_n1, busy_o_n2)
+bufferH256$ u_busy_o_buf (.out(busy_o), .in(busy_o_pre));
 
 // blocked_o = (!S_0 & S_1 & !S_2 & EB_V_i)
 `AND_4(blocked_o_and, 1, blocked_o, S_0_inv, S_1, S_2_inv, EB_V_i)

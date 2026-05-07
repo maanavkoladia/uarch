@@ -174,7 +174,14 @@ module mem_TOP (
 
     // `BUFFER_DELAY(u_db_dly, 20, 32, dataToDrive, dataToDrive_delayed)
 
-     `INV_N(u_drv_inv, 4, inFromDte_permission2DriveBus, perm2DriveBus_bar);
+    // u_drv_inv external fanout 32 per bit (each drives a 32-bit BUS_TRISTATE
+    // enable) -> bufferH64$ per bit.
+    wire [3:0] perm2DriveBus_bar_pre;
+    `INV_N(u_drv_inv, 4, inFromDte_permission2DriveBus, perm2DriveBus_bar_pre);
+    bufferH64$ u_drv_inv_buf_0 (.out(perm2DriveBus_bar[0]), .in(perm2DriveBus_bar_pre[0]));
+    bufferH64$ u_drv_inv_buf_1 (.out(perm2DriveBus_bar[1]), .in(perm2DriveBus_bar_pre[1]));
+    bufferH64$ u_drv_inv_buf_2 (.out(perm2DriveBus_bar[2]), .in(perm2DriveBus_bar_pre[2]));
+    bufferH64$ u_drv_inv_buf_3 (.out(perm2DriveBus_bar[3]), .in(perm2DriveBus_bar_pre[3]));
     // `TRISTATE_L(u_db_tri, 32, drive_Data_Bus_bar, dataToDrive_delayed, data_bus)
 
 

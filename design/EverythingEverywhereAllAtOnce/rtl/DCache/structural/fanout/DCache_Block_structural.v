@@ -72,9 +72,11 @@ module DCache_Block (
 
     // ---------------------------------------------------------------
     // block_busy = bank.busy | vcache.busy
+    // u_block_busy external fanout 162 -> bufferH256$.
     // ---------------------------------------------------------------
-    wire block_busy;
-    `OR_2(u_block_busy, 1, block_busy, bank_busy_flat, vcache_busy_flat)
+    wire block_busy, block_busy_pre;
+    `OR_2(u_block_busy, 1, block_busy_pre, bank_busy_flat, vcache_busy_flat)
+    bufferH256$ u_block_busy_buf (.out(block_busy), .in(block_busy_pre));
 
     // ---------------------------------------------------------------
     // DCache_Bank instance
@@ -268,9 +270,11 @@ module DCache_Block (
     wire [`ADDRESS_BUS_WIDTH_BITS - 1 : 0] address_bus_fake;
     assign address_bus_fake = {17'b0, addr_bus_fake15};
 
-    wire addr_drive_enbar;
-    `NOR_2(u_addr_drive_en, 1, addr_drive_enbar,
+    // u_addr_drive_en external fanout 32 -> bufferH64$.
+    wire addr_drive_enbar, addr_drive_enbar_pre;
+    `NOR_2(u_addr_drive_en, 1, addr_drive_enbar_pre,
         permissionToDriveAddrBus_Ld_i, permissionToDriveAddrBus_eb_i)
+    bufferH64$ u_addr_drive_en_buf (.out(addr_drive_enbar), .in(addr_drive_enbar_pre));
 
     `BUS_TRISTATE(u_addr_bus_tri, `ADDRESS_BUS_WIDTH_BITS,
         addr_drive_enbar, address_bus_fake, address_bus)
@@ -278,8 +282,14 @@ module DCache_Block (
     // ---------------------------------------------------------------
     // Data bus driver: per-32-bit-word eviction-buf line slices
     // ---------------------------------------------------------------
+    // u_perm_inv external fanout 32 per bit -> bufferH64$ per bit.
     wire [3:0] perm2DriveDataBus_bar;
-    `INV_N(u_perm_inv, 4, permissionToDriveDataBus_evictionBuf_i, perm2DriveDataBus_bar)
+    wire [3:0] perm2DriveDataBus_bar_pre;
+    `INV_N(u_perm_inv, 4, permissionToDriveDataBus_evictionBuf_i, perm2DriveDataBus_bar_pre)
+    bufferH64$ u_perm_bar_buf_0 (.out(perm2DriveDataBus_bar[0]), .in(perm2DriveDataBus_bar_pre[0]));
+    bufferH64$ u_perm_bar_buf_1 (.out(perm2DriveDataBus_bar[1]), .in(perm2DriveDataBus_bar_pre[1]));
+    bufferH64$ u_perm_bar_buf_2 (.out(perm2DriveDataBus_bar[2]), .in(perm2DriveDataBus_bar_pre[2]));
+    bufferH64$ u_perm_bar_buf_3 (.out(perm2DriveDataBus_bar[3]), .in(perm2DriveDataBus_bar_pre[3]));
 
     `BUS_TRISTATE(memBus_tri_0, 32, perm2DriveDataBus_bar[0], eb_line_flat[31:0],   dataBus)
     `BUS_TRISTATE(memBus_tri_1, 32, perm2DriveDataBus_bar[1], eb_line_flat[63:32],  dataBus)
