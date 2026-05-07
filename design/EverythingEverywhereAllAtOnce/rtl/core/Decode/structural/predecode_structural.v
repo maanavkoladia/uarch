@@ -105,7 +105,7 @@ module predecode(
     wire [3:0]  ppu_disp_size_00,        ppu_disp_size_01,        ppu_disp_size_10,        ppu_disp_size_11;
     wire [3:0]  ppu_disp_needed_00,      ppu_disp_needed_01,      ppu_disp_needed_10,      ppu_disp_needed_11;
     wire [3:0]  ppu_sib_size_00,         ppu_sib_size_01,         ppu_sib_size_10,         ppu_sib_size_11;
-    wire [1:0] num_pfs;
+    wire [1:0] num_pfs, num_pfs_pre;
     wire [1:0] num_pfs_duplicate0, num_pfs_duplicate1, num_pfs_duplicate2;
     wire [9:0] pf_vector0, pf_vector1, pf_vector2;
     wire [9:0] total_pf_vector_pre, total_pf_vector;
@@ -292,8 +292,17 @@ module predecode(
     bufferH256$ buf_length2(.out(inst_length[2]), .in(inst_length_temp[2]));
     bufferH256$ buf_length3(.out(inst_length[3]), .in(inst_length_temp[3]));
 
-    `MUX_4_H8(sib_mux, 8, sib_byte, sib_byte_00, sib_byte_01, sib_byte_10,
+    wire [7:0] sib_byte_pre;
+    `MUX_4_H8(sib_mux, 8, sib_byte_pre, sib_byte_00, sib_byte_01, sib_byte_10,
         sib_byte_11, {total_pf_vector[1], total_pf_vector[3]}, {total_pf_vector[1], total_pf_vector[3]})
+    bufferH256$ buf_sib0 (.out(sib_byte[0]), .in(sib_byte_pre[0]));
+    bufferH256$ buf_sib1 (.out(sib_byte[1]), .in(sib_byte_pre[1]));
+    bufferH256$ buf_sib2 (.out(sib_byte[2]), .in(sib_byte_pre[2]));
+    bufferH256$ buf_sib3 (.out(sib_byte[3]), .in(sib_byte_pre[3]));
+    bufferH256$ buf_sib4 (.out(sib_byte[4]), .in(sib_byte_pre[4]));
+    bufferH256$ buf_sib5 (.out(sib_byte[5]), .in(sib_byte_pre[5]));
+    bufferH256$ buf_sib6 (.out(sib_byte[6]), .in(sib_byte_pre[6]));
+    bufferH256$ buf_sib7 (.out(sib_byte[7]), .in(sib_byte_pre[7]));
     `MUX_4(disp_mux, 32, disp, disp_00, disp_01, disp_10,
         disp_11, {total_pf_vector[1], total_pf_vector[3]})
     `MUX_4(disp_size_mux, 1, disp_size, disp_size_00, disp_size_01, disp_size_10,
@@ -307,11 +316,16 @@ module predecode(
 
 
     wire pf0, pf1, pf2;
-    pf_checker checker0(.IRbyte(IR[0*8 +: 8]), .pf(pf0), .pf_vector(pf_vector0));
-    pf_checker checker1(.IRbyte(IR[1*8 +: 8]), .pf(pf1), .pf_vector(pf_vector1));
-    pf_checker checker2(.IRbyte(IR[2*8 +: 8]), .pf(pf2), .pf_vector(pf_vector2));
+    wire pf0_pre, pf1_pre;
+    pf_checker checker0(.IRbyte(IR[0*8 +: 8]), .pf(pf0_pre), .pf_vector(pf_vector0));
+    pf_checker checker1(.IRbyte(IR[1*8 +: 8]), .pf(pf1_pre), .pf_vector(pf_vector1));
+    pf_checker checker2(.IRbyte(IR[2*8 +: 8]), .pf(pf2),     .pf_vector(pf_vector2));
+    bufferH16$ buf_pf0 (.out(pf0), .in(pf0_pre));
+    bufferH16$ buf_pf1 (.out(pf1), .in(pf1_pre));
 
-    num_pf_gen num_pf_gen0(pf0, pf1 ,pf2, num_pfs);
+    num_pf_gen num_pf_gen0(pf0, pf1 ,pf2, num_pfs_pre);
+    bufferH4096$ buf_num_pfs0 (.out(num_pfs[0]), .in(num_pfs_pre[0]));
+    bufferH4096$ buf_num_pfs1 (.out(num_pfs[1]), .in(num_pfs_pre[1]));
     num_pf_gen num_pf_gen0_dup0(pf0, pf1, pf2, num_pfs_duplicate0);
     num_pf_gen num_pf_gen0_dup1(pf0, pf1, pf2, num_pfs_duplicate1);
     num_pf_gen num_pf_gen0_dup2(pf0, pf1, pf2, num_pfs_duplicate2);
@@ -319,7 +333,7 @@ module predecode(
     pf_vector_gen vec_gen(.pfs(num_pfs), .pf_vector0(pf_vector0), .pf_vector1(pf_vector1), .pf_vector2(pf_vector2),
         .total_pf_vector(total_pf_vector_pre));
     bufferH256$ pf_vect0(.out(total_pf_vector[0]), .in(total_pf_vector_pre[0]));
-    bufferH256$ pf_vect1(.out(total_pf_vector[1]), .in(total_pf_vector_pre[1]));
+    bufferH1024$ pf_vect1(.out(total_pf_vector[1]), .in(total_pf_vector_pre[1]));
     bufferH256$ pf_vect2(.out(total_pf_vector[2]), .in(total_pf_vector_pre[2]));
     bufferH256$ pf_vect3(.out(total_pf_vector[3]), .in(total_pf_vector_pre[3]));
     bufferH256$ pf_vect4(.out(total_pf_vector[4]), .in(total_pf_vector_pre[4]));
