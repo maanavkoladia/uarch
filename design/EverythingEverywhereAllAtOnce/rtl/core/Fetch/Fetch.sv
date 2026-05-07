@@ -42,7 +42,7 @@ module Fetch (
     //internal reg to Fetch
     logic [1:0] exp_mode_jk;
     bool int_mode_jk;
-    bool DMA_int_jk; //corresponds to unterrupt "unit" Need to figure out how to clear int bit
+    bool DMA_int_jk;  //corresponds to unterrupt "unit" Need to figure out how to clear int bit
     l_address_t SPC;
 
 
@@ -70,12 +70,14 @@ module Fetch (
     tlb_outputs_t tlb_outs;
     exp_set_logic_output_t exp_set_logic_outs;
 
+    bool gp_fault;
+    bool seg_gp_fault;
     //gate logic
 
     always_comb begin
         outs_o.idm_reqs = idm_ctrl_logic_outs.idm_input;
         outs_o.exp_pipe_clear = exp_set_logic_outs.exp_pipe_clear | exp_set_logic_outs.int_pipe_clear;
-        outs_o.fetch_2_icache.icache_en =  en_icache;
+        outs_o.fetch_2_icache.icache_en = en_icache;
         outs_o.fetch_2_icache.p_addr = tlb_outs.physical_addr;
         outs_o.fetch_2_icache.v_addr_i = seg_xlation_out;
         outs_o.fetch_2_icache.num_valid_IDM_slots = idm_info_i.valid_slots;
@@ -85,24 +87,25 @@ module Fetch (
         outs_o.int_mode_jk = int_mode_jk;
     end
 
-    assign f_exp = (tlb_outs.gp_exp | tlb_outs.pageFault) & ~exp_mode_jk;
+    assign gp_fault = tlb_outs.gp_exp || seg_gp_fault;
 
+    assign f_exp = (gp_fault | tlb_outs.pageFault) & ~exp_mode_jk;
 
     assign tlb_inputs = '{
-        virtual_addr : seg_xlation_out, //seg_Xlation outputs
-        write_intention : '0
-    };
+            virtual_addr : seg_xlation_out,  //seg_Xlation outputs
+            write_intention : '0
+        };
 
     assign predictor_inputs = '{
-        btfn_target: btb_outs.br_target,
-        spc: SPC,
-        btb_hit: btb_outs.hit,
-        exe_br_valid: exe_outs_i.br_res_out.valid,
-        exe_br_target: exe_outs_i.br_res_out.br_target,
-        exe_br_taken: exe_outs_i.br_res_out.taken,
-        exe_br_eip: exe_outs_i.br_res_out.br_eip,
-        misprediction: exe_outs_i.br_res_out.miss_prediction
-    };
+            btfn_target: btb_outs.br_target,
+            spc: SPC,
+            btb_hit: btb_outs.hit,
+            exe_br_valid: exe_outs_i.br_res_out.valid,
+            exe_br_target: exe_outs_i.br_res_out.br_target,
+            exe_br_taken: exe_outs_i.br_res_out.taken,
+            exe_br_eip: exe_outs_i.br_res_out.br_eip,
+            misprediction: exe_outs_i.br_res_out.miss_prediction
+        };
 
     assign idm_ctrl_data_in = (exp_mode_jk ||int_mode_jk) ?
                                rom_data_out :icache_info_i.instruction_line;
@@ -116,12 +119,12 @@ module Fetch (
                         : btb_outs.br_target;
 
     assign spc_2_IDM_CTRL = (exp_mode_jk ||int_mode_jk) ? //this might be a stupid way of doing this but I force the slot number address on an exception to 0
-                            32'h00000000 : SPC;   //This wont work if we are doing this routine an interrupt comes in during the exception transition...which it shouldnt?
+        32'h00000000 : SPC;   //This wont work if we are doing this routine an interrupt comes in during the exception transition...which it shouldnt?
 
-    assign spc_16 = SPC+16;
+    assign spc_16 = SPC + 16;
 
     always_comb begin
-        case(spc_sel_logic_outs.sel)
+        case (spc_sel_logic_outs.sel)
             Fetch_pkg::SPC: next_spc = SPC;
             Fetch_pkg::SPC_P16: next_spc = spc_16;
             Fetch_pkg::BR_RESTORE: next_spc = {br_restore_spc[31:4], 4'b0};
@@ -131,45 +134,49 @@ module Fetch (
     end
 
 
-    
+
     //DMA JK
-    always_ff@(posedge clk) begin
-        if(!rst)
-            DMA_int_jk <= 0;
+    always_ff @(posedge clk) begin
+        if (!rst) DMA_int_jk <= 0;
         else begin
-            case({dma_int, exe_outs_i.br_res_out.clr_exp_mode})
-                2'b00: DMA_int_jk <= DMA_int_jk;
-                2'b01: DMA_int_jk <= 0;
-                2'b10: DMA_int_jk <= 1;
-                2'b11: DMA_int_jk <= ~DMA_int_jk;
+            case ({
+                dma_int, exe_outs_i.br_res_out.clr_exp_mode
+            })
+                2'b00:   DMA_int_jk <= DMA_int_jk;
+                2'b01:   DMA_int_jk <= 0;
+                2'b10:   DMA_int_jk <= 1;
+                2'b11:   DMA_int_jk <= ~DMA_int_jk;
                 default: DMA_int_jk <= DMA_int_jk;
             endcase
         end
     end
 
-    
-// exp_mode JK
-    always_ff@(posedge clk) begin
-        if(!rst)
-            exp_mode_jk <= 0;
+
+    // exp_mode JK
+    always_ff @(posedge clk) begin
+        if (!rst) exp_mode_jk <= 0;
         else begin
-            if(exe_outs_i.br_res_out.flush && exe_outs_i.br_res_out.valid) exp_mode_jk <= 0;
+            if (exe_outs_i.br_res_out.flush && exe_outs_i.br_res_out.valid) exp_mode_jk <= 0;
             else begin
 
                 //writing this bc its like the jk logic writen out 
-                case({exp_set_logic_outs.exp_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
-                    2'b00: exp_mode_jk[0] <= exp_mode_jk[0];
-                    2'b01: exp_mode_jk[0] <= 0;
-                    2'b10: exp_mode_jk[0] <= 1;
-                    2'b11: exp_mode_jk[0] <= ~exp_mode_jk[0];
+                case ({
+                    exp_set_logic_outs.exp_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode
+                })
+                    2'b00:   exp_mode_jk[0] <= exp_mode_jk[0];
+                    2'b01:   exp_mode_jk[0] <= 0;
+                    2'b10:   exp_mode_jk[0] <= 1;
+                    2'b11:   exp_mode_jk[0] <= ~exp_mode_jk[0];
                     default: exp_mode_jk[0] <= exp_mode_jk[0];
                 endcase
 
-                case({exp_set_logic_outs.dc_exp_set, exe_outs_i.br_res_out.clr_exp_mode})
-                    2'b00: exp_mode_jk[1] <= exp_mode_jk[1];
-                    2'b01: exp_mode_jk[1] <= 0;
-                    2'b10: exp_mode_jk[1] <= 1;
-                    2'b11: exp_mode_jk[1] <= ~exp_mode_jk[1];
+                case ({
+                    exp_set_logic_outs.dc_exp_set, exe_outs_i.br_res_out.clr_exp_mode
+                })
+                    2'b00:   exp_mode_jk[1] <= exp_mode_jk[1];
+                    2'b01:   exp_mode_jk[1] <= 0;
+                    2'b10:   exp_mode_jk[1] <= 1;
+                    2'b11:   exp_mode_jk[1] <= ~exp_mode_jk[1];
                     default: exp_mode_jk[1] <= exp_mode_jk[1];
                 endcase
 
@@ -177,24 +184,25 @@ module Fetch (
         end
     end
 
-//int JK
-    always_ff@(posedge clk) begin
-        if(!rst)
-            int_mode_jk <= 0;
+    //int JK
+    always_ff @(posedge clk) begin
+        if (!rst) int_mode_jk <= 0;
         else begin
-            case({exp_set_logic_outs.int_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode})
-                2'b00: int_mode_jk <= int_mode_jk;
-                2'b01: int_mode_jk <= 0;
-                2'b10: int_mode_jk <= 1;
-                2'b11: int_mode_jk <= ~int_mode_jk;
+            case ({
+                exp_set_logic_outs.int_pipe_clear, exe_outs_i.br_res_out.clr_exp_mode
+            })
+                2'b00:   int_mode_jk <= int_mode_jk;
+                2'b01:   int_mode_jk <= 0;
+                2'b10:   int_mode_jk <= 1;
+                2'b11:   int_mode_jk <= ~int_mode_jk;
                 default: int_mode_jk <= int_mode_jk;
             endcase
         end
     end
 
     //SPC flop
-    always_ff@(posedge clk)begin
-        if(!rst) SPC <= 0;
+    always_ff @(posedge clk) begin
+        if (!rst) SPC <= 0;
         else begin
             SPC <= next_spc;
         end
@@ -204,38 +212,38 @@ module Fetch (
     // Special branches in exception/interrupt handlers (indicated by CS)
     // do not send training signals (exe_br_valid controlled by execute stage)
     // This prevents exception handler branches from polluting user BTB entries
-    BTB btb(
+    BTB btb (
         .clk(clk),
         .rst(rst),
-        .spc(SPC), //address
+        .spc(SPC),  //address
 
-        .exe_br_valid(exe_outs_i.br_res_out.valid), //bool
-        .exe_br_target(exe_outs_i.br_res_out.br_target), //address_t
-        .exe_br_eip(exe_outs_i.br_res_out.br_eip), //address_t
+        .exe_br_valid(exe_outs_i.br_res_out.valid),  //bool
+        .exe_br_target(exe_outs_i.br_res_out.br_target),  //address_t
+        .exe_br_eip(exe_outs_i.br_res_out.br_eip),  //address_t
         .exe_br_XCL(exe_outs_i.br_res_out.br_XCL),
-        .exe_br_ucond(exe_outs_i.br_res_out.br_ucond), //bool
-        .outputs(btb_outs) //BTB_outputs_t
+        .exe_br_ucond(exe_outs_i.br_res_out.br_ucond),  //bool
+        .outputs(btb_outs)  //BTB_outputs_t
     );
 
-    Predictor predictor(
+    Predictor predictor (
         .clk(clk),
         .rst(rst),
         .inputs(predictor_inputs),
         .outputs(predictor_outs)
     );
 
-    SPC_Sel_Logic spc_sel_logic(
-        .clk(clk),
-        .rst(!rst),
-        .spc(SPC),
+    SPC_Sel_Logic spc_sel_logic (
+        .clk  (clk),
+        .rst  (!rst),
+        .spc  (SPC),
         .flush(exe_outs_i.br_res_out.flush),
 
         //probably not needed
         .decode_stall(decode_outs_i.stall),
 
-        .btb_outputs(btb_outs), //btb outs struct
-        .pred_out(predictor_outs), //predictor_outputs_t
-        .idm_ctrl_logic_out(idm_ctrl_logic_outs), //for push success
+        .btb_outputs(btb_outs),  //btb outs struct
+        .pred_out(predictor_outs),  //predictor_outputs_t
+        .idm_ctrl_logic_out(idm_ctrl_logic_outs),  //for push success
 
         .outputs(spc_sel_logic_outs)
     );
@@ -256,7 +264,7 @@ module Fetch (
     );
 
 
-    IDM_Invalidate_Logic idm_invalidate_logic(
+    IDM_Invalidate_Logic idm_invalidate_logic (
         .clk(clk),
         .rst(!rst),
         .eip(decode_outs_i.eip),
@@ -271,7 +279,7 @@ module Fetch (
     );
 
 
-    EXP_Set_logic exp_set_logic(
+    EXP_Set_logic exp_set_logic (
         .invalid_instruction(decode_outs_i.invalid_instruction),
         .rr_valid(rr_outs_i.valid),
         .dc_valid(dc_outs_i.valid),
@@ -286,13 +294,14 @@ module Fetch (
         .outputs(exp_set_logic_outs)
     );
 
-    EXP_Ctrl_ROMS exp_ctrl_roms(
+    EXP_Ctrl_ROMS exp_ctrl_roms (
         .clk(clk),
         .exp_pipe_clear(exp_set_logic_outs.exp_pipe_clear),
         .int_pipe_clear(exp_set_logic_outs.int_pipe_clear),
         .DC_pf(dc_outs_i.exp_pf),
         .DC_exp(dc_outs_i.exp_present),
         .Fetch_pf(tlb_outs.pageFault),
+        .Fetch_gp(seg_gp_fault),
         .DMA_int(DMA_int_jk),
         .exp_mode(exp_mode_jk[0]),
         .rom_data_out(rom_data_out)
@@ -300,7 +309,7 @@ module Fetch (
 
 
     //spc to icache path
-    ICache_En_Logic icache_en_logic(
+    ICache_En_Logic icache_en_logic (
         .rst(rst),
         .exp_mode(exp_mode_jk[0]),
         .cs_sb(rr_outs_i.codeSeg_sb),
@@ -310,7 +319,7 @@ module Fetch (
         .out(en_icache)
     );
 
-    TLB tlb(
+    TLB tlb (
         .virtual_addr(tlb_inputs.virtual_addr),
         .write_intention(tlb_inputs.write_intention),
         .physical_addr(tlb_outs.physical_addr),
@@ -320,21 +329,21 @@ module Fetch (
         .MIO(tlb_outs.MIO)
     );
 
-    SegmentTranslation seg_Xlation(
-        .l_addr_i(SPC),
-        .segValue(rr_outs_i.codeSeg_data),
-        .segLimit(rr_outs_i.codeSeg_limit),
-        .v_addr_o(seg_xlation_out),
-        .gp_fault_o()
+    SegmentTranslation seg_Xlation (
+        .l_addr_i  (SPC),
+        .segValue  (rr_outs_i.codeSeg_data),
+        .segLimit  (rr_outs_i.codeSeg_limit),
+        .v_addr_o  (seg_xlation_out),
+        .gp_fault_o(seg_gp_fault)
     );
 
 
-    endmodule
+endmodule
 
 
 
 
-    /*
+/*
 
     I am going to try to keep all the registers inside of this module and as structural like as possible
 

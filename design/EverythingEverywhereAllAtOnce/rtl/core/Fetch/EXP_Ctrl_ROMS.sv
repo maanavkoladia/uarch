@@ -13,8 +13,9 @@ module EXP_Ctrl_ROMS (
     input logic DC_pf,
     input logic DC_exp,
     input logic Fetch_pf,
+    input logic Fetch_gp,
 
-    //probably from the dma jk 
+    //probably from the dma jk
     input logic DMA_int,
 
     //from the expmode bit in fetch
@@ -37,13 +38,13 @@ module EXP_Ctrl_ROMS (
     // Fetch exception mux
     // =====================
     logic [4:0] fetch_exp_out;
-    assign fetch_exp_out = Fetch_pf ? PF_IDT : GP_IDT;
+    assign fetch_exp_out = Fetch_gp ? GP_IDT : PF_IDT;
 
     // =====================
     // DC exception mux
     // =====================
     logic [4:0] DC_exp_out;
-    assign DC_exp_out = DC_pf ? PF_IDT : GP_IDT;
+    assign DC_exp_out = !DC_pf ? GP_IDT : PF_IDT;
 
     // =====================
     // Exception select mux (DC priority)
@@ -91,7 +92,7 @@ module EXP_Ctrl_ROMS (
         rom_data_out[4] = idtEntryAddy[23:16];
         rom_data_out[5] = idtEntryAddy[31:24];
         rom_data_out[6] = 8'h30;
-        for(int i = 7; i < 16; i++) rom_data_out[i] = 0;
+        for (int i = 7; i < 16; i++) rom_data_out[i] = 0;
     end
 
 endmodule
