@@ -14,8 +14,82 @@ module predecode(
     output disp_needed,
     output [63:0] imm64,
     output [9:0] total_pf_vector,
-    output invalid_inst
+    output invalid_inst,
+
+    input seg_override,
+    input [`REG_ID_W-1:0] seg0,
+
+    output wire decode_cs_REP,
+    output wire decode_cs_REP_CMP,
+    output wire decode_cs_HALT,
+    output wire decode_cs_MODRM_NEEDED,
+    output wire decode_cs_RM_IS_DR,
+    output wire decode_cs_REG_IS_DR,
+    output wire decode_cs_REG_IS_SEGMENT,
+    output wire decode_cs_HARDCODED_DR_HIGH8,
+    output wire decode_cs_MODRM_BUT_NO_SR,
+    output wire decode_cs_HARDCODED_DR,
+    output wire [`REG_ID_W-1:0] decode_cs_HARDCODED_DR_ID,
+    output wire decode_cs_HARDCODED_SR,
+    output wire [`REG_ID_W-1:0] decode_cs_HARDCODED_SR_ID,
+    output wire decode_cs_HARDCODED_DR_RD,
+    output wire decode_cs_HARDCODED_DR_WR,
+    output wire decode_cs_HARDCODED_SR_RD,
+    output wire decode_cs_HARDCODED_SR_WR,
+    output wire decode_cs_HARDCODED_LD_OP,
+    output wire decode_cs_HARDCODED_ST_OP,
+    output wire decode_cs_LD_OP_CANCEL,
+    output wire decode_cs_ST_OP_CANCEL,
+    output wire decode_cs_OP_IN_MODRM,
+    output wire [1:0] decode_cs_DATA_SIZE,
+    output wire rr_cs_ST_SEL,
+    output wire rr_cs_MODRM_NEEDED,
+    output wire rr_cs_RM_IS_DR,
+    output wire rr_cs_SWITCH_LD_ADDY,
+    output wire rr_cs_LD_OP,
+    output wire rr_cs_ST_OP,
+    output wire [`REG_ID_W-1:0] rr_cs_dr_id,
+    output wire [`REG_ID_W-1:0] rr_cs_sr_id,
+    output wire rr_cs_dr_rd,
+    output wire rr_cs_sr_rd,
+    output wire rr_cs_eax_rd,
+    output wire rr_cs_dr_wr,
+    output wire rr_cs_sr_wr,
+    output wire rr_cs_eax_wr,
+    output wire rr_cs_MOVS_OP,
+    output wire [1:0] rr_cs_datasize,
+    output wire rr_cs_will_mod_zf,
+    output wire rr_cs_seg_1_valid,
+    output wire [`REG_ID_W-1:0] rr_cs_seg_0_id,
+    output wire [`REG_ID_W-1:0] rr_cs_seg_1_id,
+    output wire rr_cs_special_modrm_bs,
+    output wire rr_cs_special_br,
+    output wire dc_cs_LD_OP,
+    output wire dc_cs_ST_OP,
+    output wire dc_cs_dr_upper8,
+    output wire dc_cs_sr_upper8,
+    output wire [1:0] dc_cs_datasize,
+    output wire mem_cs_ST_OP,
+    output wire mem_cs_LD_OP,
+    output wire exe_cs_ST_OP,
+    output wire [`EXE_OP_W-1:0] exe_cs_OP_TYPE,
+    output wire [`SRC_SEL_W-1:0] exe_cs_alu_inputA_sel,
+    output wire [`SRC_SEL_W-1:0] exe_cs_alu_inputB_sel,
+    output wire [`SRC_SEL_W-1:0] exe_cs_branch_target_sel,
+    output wire exe_cs_shift_by_one,
+    output wire exe_cs_br_ucond,
+    output wire exe_cs_relative_branch,
+    output wire exe_cs_special_br,
+    output wire exe_cs_is_far,
+    output wire exe_cs_is_call,
+    output wire exe_cs_second_flag_needed,
+    output wire exe_cs_rep_no_zf_update,
+    output wire wb_cs_ST_OP,
+    output wire wb_cs_WB_DR,
+    output wire wb_cs_WB_SR,
+    output wire wb_cs_WB_EAX
 );
+
 
     wire [127:0] IR; //16 byte
     // per-pf-combo outputs (suffix _<pf1><pf3>) — driven by the parallel ppu instances pfs<i>_<bb>
@@ -38,7 +112,7 @@ module predecode(
     wire [31:0] possible_neips[0:15];
 
 
-    selection_logic sel_log1(.queue(queue), .queue_valid(queue_valid), .EIP(EIP), .IR(IR));
+    selection_logic sel_log1(.queue(queue), .EIP(EIP), .IR(IR));
 
     // 16 parallel ppu instances: pfs<i>_<b1><b3> with hardcoded {total_pf_vector_1, total_pf_vector_3} = bb
     // i is num_pfs_plusone-1 (also opcode_index)
@@ -236,12 +310,12 @@ module predecode(
     assign possible_neips[0] = EIP;
     genvar i;
     generate
-        for (i = 1; i < 16; i = i+1) begin : possible_eip_adders
+        for (i = 1; i < 16; i=i+1) begin : possible_eip_adders
             kogge_stone_adder #(
                 .WIDTH(32)
             ) IR_index_adder (
                 .a   (EIP),
-                .b   ({28'd0, i[3:0]}),       // cast loop index to 6-bit
+                .b   ({28'b0, i}),       // cast loop index to 6-bit
                 .cin (1'b0),
                 .sum (possible_neips[i]),
                 .cout(adder_cout[i])             // unused
@@ -265,7 +339,7 @@ module predecode(
 
     wire [15:0] selected_queue_valid;
     generate
-        for (i = 1; i < 16; i = i+1) begin : possible_invalid_inst_g
+        for (i = 1; i < 16; i=i+1) begin : possible_invalid_inst_g
             `MUX_4(qv_sel_mux, 1, selected_queue_valid[i],
                 queue_valid[0], queue_valid[1], queue_valid[2], queue_valid[3],
                 possible_neips[i][5:4])
@@ -282,25 +356,91 @@ module predecode(
 
 
 
-endmodule
 
-    // mux4_4 length_mux(.in0(ppu_inst_length[0]), .in1(ppu_inst_length[1]), .in2(ppu_inst_length[2]), .in3(ppu_inst_length[3]), 
-    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(inst_length));
-    // mux4_8$ sib_mux(.IN0(ppu_sib_byte[0]), .IN1(ppu_sib_byte[1]), .IN2(ppu_sib_byte[2]), .IN3(ppu_sib_byte[3]), 
-    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(sib_byte));
-    // mux4_8$ opcode_mux(.IN0(IR[0]), .IN1(IR[1]), .IN2(IR[2]), .IN3(IR[3]), 
-    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(opcode_byte));
-    // mux4_8$ modrm_mux(.IN0(IR[1]), .IN1(IR[2]), .IN2(IR[3]), .IN3(IR[4]), 
-    //     .S0(num_pfs[0]), .S1(num_pfs[1]), .Y(modrm_byte));
-    // mux4_32 disp_mux(.in0(ppu_displacement[0]), .in1(ppu_displacement[1]), .in2(ppu_displacement[2]), .in3(ppu_displacement[3]), 
-    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(disp));
-    // mux4$ disp_size_mux(.in0(ppu_disp_size[0]), .in1(ppu_disp_size[1]), .in2(ppu_disp_size[2]), .in3(ppu_disp_size[3]), 
-    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_size));
-    // mux4$ disp_needed_mux(.in0(ppu_disp_needed[0]), .in1(ppu_disp_needed[1]), .in2(ppu_disp_needed[2]), .in3(ppu_disp_needed[3]), 
-    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(disp_needed));
-    // mux4_64 imm_mux(.in0(ppu_imm[0]), .in1(ppu_imm[1]), .in2(ppu_imm[2]), .in3(ppu_imm[3]),
-    //     .sel0(num_pfs[0]), .sel1(num_pfs[1]), .out(imm64));
-    // mux4$ valid_inst_mux(.in0(inst_valid[0]), .in1(inst_valid[1]), .in2(inst_valid[2]),
-    //     .in3(inst_valid[3]), .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(true_inst_valid));
-    // mux4$ sib_size_mux(.in0(ppu_sib_size[0]), .in1(ppu_sib_size[1]), .in2(ppu_sib_size[2]), .in3(ppu_sib_size[3]), 
-    //     .s0(num_pfs[0]), .s1(num_pfs[1]), .outb(sib_size));
+
+    control_store_top cs_top(
+        .invalid_inst(invalid_inst),
+        .total_pf_vector_0(total_pf_vector[0]),
+        .total_pf_vector_1(total_pf_vector[1]),
+        .total_pf_vector_3(total_pf_vector[3]),
+        .num_pfs(num_pfs),
+        .IR(IR),
+        .seg_override(seg_override),
+        .seg0(seg0),
+
+        .decode_cs_REP(decode_cs_REP),
+        .decode_cs_REP_CMP(decode_cs_REP_CMP),
+        .decode_cs_HALT(decode_cs_HALT),
+        .decode_cs_MODRM_NEEDED(decode_cs_MODRM_NEEDED),
+        .decode_cs_RM_IS_DR(decode_cs_RM_IS_DR),
+        .decode_cs_REG_IS_DR(decode_cs_REG_IS_DR),
+        .decode_cs_REG_IS_SEGMENT(decode_cs_REG_IS_SEGMENT),
+        .decode_cs_HARDCODED_DR_HIGH8(decode_cs_HARDCODED_DR_HIGH8),
+        .decode_cs_MODRM_BUT_NO_SR(decode_cs_MODRM_BUT_NO_SR),
+        .decode_cs_HARDCODED_DR(decode_cs_HARDCODED_DR),
+        .decode_cs_HARDCODED_DR_ID(decode_cs_HARDCODED_DR_ID),
+        .decode_cs_HARDCODED_SR(decode_cs_HARDCODED_SR),
+        .decode_cs_HARDCODED_SR_ID(decode_cs_HARDCODED_SR_ID),
+        .decode_cs_HARDCODED_DR_RD(decode_cs_HARDCODED_DR_RD),
+        .decode_cs_HARDCODED_DR_WR(decode_cs_HARDCODED_DR_WR),
+        .decode_cs_HARDCODED_SR_RD(decode_cs_HARDCODED_SR_RD),
+        .decode_cs_HARDCODED_SR_WR(decode_cs_HARDCODED_SR_WR),
+        .decode_cs_HARDCODED_LD_OP(decode_cs_HARDCODED_LD_OP),
+        .decode_cs_HARDCODED_ST_OP(decode_cs_HARDCODED_ST_OP),
+        .decode_cs_LD_OP_CANCEL(decode_cs_LD_OP_CANCEL),
+        .decode_cs_ST_OP_CANCEL(decode_cs_ST_OP_CANCEL),
+        .decode_cs_OP_IN_MODRM(decode_cs_OP_IN_MODRM),
+        .decode_cs_DATA_SIZE(decode_cs_DATA_SIZE),
+        .rr_cs_ST_SEL(rr_cs_ST_SEL),
+        .rr_cs_MODRM_NEEDED(rr_cs_MODRM_NEEDED),
+        .rr_cs_RM_IS_DR(rr_cs_RM_IS_DR),
+        .rr_cs_SWITCH_LD_ADDY(rr_cs_SWITCH_LD_ADDY),
+        .rr_cs_LD_OP(rr_cs_LD_OP),
+        .rr_cs_ST_OP(rr_cs_ST_OP),
+        .rr_cs_dr_id(rr_cs_dr_id),
+        .rr_cs_sr_id(rr_cs_sr_id),
+        .rr_cs_dr_rd(rr_cs_dr_rd),
+        .rr_cs_sr_rd(rr_cs_sr_rd),
+        .rr_cs_eax_rd(rr_cs_eax_rd),
+        .rr_cs_dr_wr(rr_cs_dr_wr),
+        .rr_cs_sr_wr(rr_cs_sr_wr),
+        .rr_cs_eax_wr(rr_cs_eax_wr),
+        .rr_cs_MOVS_OP(rr_cs_MOVS_OP),
+        .rr_cs_datasize(rr_cs_datasize),
+        .rr_cs_will_mod_zf(rr_cs_will_mod_zf),
+        .rr_cs_seg_1_valid(rr_cs_seg_1_valid),
+        .rr_cs_seg_0_id(rr_cs_seg_0_id),
+        .rr_cs_seg_1_id(rr_cs_seg_1_id),
+        .rr_cs_special_modrm_bs(rr_cs_special_modrm_bs),
+        .rr_cs_special_br(rr_cs_special_br),
+        .dc_cs_LD_OP(dc_cs_LD_OP),
+        .dc_cs_ST_OP(dc_cs_ST_OP),
+        .dc_cs_dr_upper8(dc_cs_dr_upper8),
+        .dc_cs_sr_upper8(dc_cs_sr_upper8),
+        .dc_cs_datasize(dc_cs_datasize),
+        .mem_cs_ST_OP(mem_cs_ST_OP),
+        .mem_cs_LD_OP(mem_cs_LD_OP),
+        .exe_cs_ST_OP(exe_cs_ST_OP),
+        .exe_cs_OP_TYPE(exe_cs_OP_TYPE),
+        .exe_cs_alu_inputA_sel(exe_cs_alu_inputA_sel),
+        .exe_cs_alu_inputB_sel(exe_cs_alu_inputB_sel),
+        .exe_cs_branch_target_sel(exe_cs_branch_target_sel),
+        .exe_cs_shift_by_one(exe_cs_shift_by_one),
+        .exe_cs_br_ucond(exe_cs_br_ucond),
+        .exe_cs_relative_branch(exe_cs_relative_branch),
+        .exe_cs_special_br(exe_cs_special_br),
+        .exe_cs_is_far(exe_cs_is_far),
+        .exe_cs_is_call(exe_cs_is_call),
+        .exe_cs_second_flag_needed(exe_cs_second_flag_needed),
+        .exe_cs_rep_no_zf_update(exe_cs_rep_no_zf_update),
+        .wb_cs_ST_OP(wb_cs_ST_OP),
+        .wb_cs_WB_DR(wb_cs_WB_DR),
+        .wb_cs_WB_SR(wb_cs_WB_SR),
+        .wb_cs_WB_EAX(wb_cs_WB_EAX)
+    );
+
+    
+
+
+
+endmodule

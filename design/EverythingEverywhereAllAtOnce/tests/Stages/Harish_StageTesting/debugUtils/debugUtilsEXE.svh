@@ -9,12 +9,8 @@
 // are printed numerically. Same trade-off as WB's debug helpers.
 //====================================================
 
-<<<<<<< HEAD
-//`define EXE_PURE_STRUCTURAL
-=======
+`define EXE_PURE_STRUCTURAL
 
->>>>>>> 7fc61e7c24e1462580b778f5229d4da3ae7577d2
-// --- EXE LATCHES ---
 task automatic print_exe_latches();
     integer i;
     begin

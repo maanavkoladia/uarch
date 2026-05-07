@@ -1,6 +1,8 @@
 module control_store (
     input wire invalid_inst,
-    input wire [9:0] total_pf_vector,
+    input wire total_pf_vector_0,
+    input wire total_pf_vector_1,
+    input wire total_pf_vector_3,
     input wire [7:0] opcode,
     input wire [7:0] modrm,
     input wire seg_override,
@@ -163,8 +165,8 @@ module control_store (
     //MSB --> 2e, 36, 3e, 26, 64, 65, 66, 67, 0f, f3  <-- LSB vector
     wire [9:0] input_bus;
     wire vector_ored;
-    `OR_2(vector_ored_gate, 1, vector_ored, total_pf_vector[0], total_pf_vector[1])
-    assign input_bus = {vector_ored, opcode, total_pf_vector[3]};
+    `OR_2(vector_ored_gate, 1, vector_ored, total_pf_vector_0, total_pf_vector_1)
+    assign input_bus = {vector_ored, opcode, total_pf_vector_3};
 
     // =====================
     // Single-bit outputs

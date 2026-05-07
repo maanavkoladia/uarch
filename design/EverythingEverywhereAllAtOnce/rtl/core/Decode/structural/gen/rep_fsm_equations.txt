@@ -4,7 +4,7 @@
 
 NS_0 = (S_0 & !S_1 & !cmp_clear_i) | (S_0 & !S_2 & stall_i) | (S_0 & !S_1 & S_2) | (S_0 & S_1 & !S_2 & !mov_clear_i) | (!S_1 & S_2 & cs_mov_i & !cs_cmp_i & !stall_i) | (!S_1 & S_2 & !cs_mov_i & cs_cmp_i & !stall_i)
 
-NS_1 = (S_1 & !S_2 & !mov_clear_i) | (S_1 & !S_2 & stall_i) | (!S_0 & S_1 & !S_2) | (!S_0 & !S_1 & S_2 & cs_mov_i & !stall_i) | (!S_0 & !S_1 & S_2 & !cs_cmp_i & !stall_i)
+NS_1 = (!S_0 & S_1 & !S_2) | (S_1 & !S_2 & !mov_clear_i) | (S_1 & !S_2 & stall_i) | (!S_0 & !S_1 & S_2 & !cs_cmp_i & !stall_i) | (!S_0 & !S_1 & S_2 & cs_mov_i & !stall_i)
 
 NS_2 = (S_0 & !S_1 & S_2) | (!S_1 & S_2 & stall_i) | (!S_0 & !S_1 & !S_2 & rep_prefix_i & !stall_i)
 

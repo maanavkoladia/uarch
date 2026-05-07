@@ -64,7 +64,18 @@ module ppu (
     //mux2_3 msdmux(.in0(3'b000), .in1(msd_size_fake), .sel(needrm), .out(msd_size));
     `MUX_2(msdmux, 3, msd_size, 3'b000, msd_size_fake, needrm)
 
-    triple_adder adder0 (.pfs_plus_one(num_pfs_plusone), .msd_size(msd_size), .imm_size(imm_size), .result(inst_length));
+    wire [8:0] length_adder_in;
+    assign length_adder_in = {num_pfs_plusone, msd_size, imm_size};
+    wire [4:0] length_adder_sum;
+    //triple_adder adder0 (.pfs_plus_one(num_pfs_plusone), .msd_size(msd_size), .imm_size(imm_size), .result(inst_length));
+    length_adder ladder (
+        length_adder_in[8], length_adder_in[7], length_adder_in[6],
+        length_adder_in[5], length_adder_in[4], length_adder_in[3],
+        length_adder_in[2], length_adder_in[1], length_adder_in[0],
+        length_adder_sum[4], length_adder_sum[3], length_adder_sum[2],
+        length_adder_sum[1], length_adder_sum[0]
+    );
+    assign inst_length = length_adder_sum[3:0];
 
     sib_finder sibfinder0 (.modrm_index(modrm_index), .IR(IR), .sib_byte(sib_byte));
 

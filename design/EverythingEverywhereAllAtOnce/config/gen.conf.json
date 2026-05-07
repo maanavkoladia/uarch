@@ -69,19 +69,19 @@
         "REP_FSM": {
             "csv": "rtl/core/Decode/structural/gen/rep_fsm.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rep_fsm.sv",
-            "run FSM SOP gen": "true"
+            "run FSM SOP gen": "false"
         },
 
         "REP_MOVS_FSM": {
             "csv": "rtl/core/Decode/structural/gen/rep_movs_fsm.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rep_movs_fsm.sv",
-            "run FSM SOP gen": "true"
+            "run FSM SOP gen": "false"
         },
 
         "REP_CMP_FSM": {
             "csv": "rtl/core/Decode/structural/gen/rep_cmp_fsm.csv",
             "outputFilePath": "rtl/core/Decode/structural/gen/rep_cmp_fsm.sv",
-            "run FSM SOP gen": "true"
+            "run FSM SOP gen": "false"
         },
 
         "CONTROL_STORE": {
