@@ -1,0 +1,33 @@
+Script started on 2026-05-07 04:01:36-05:00
+	This module loads environment variables for 64bit 2022 Synopsys software
+
+	Example: design_vision   or
+
+	Example: vcs
+
+	Example: dve
+
+	2022 Cadence
+
+	virtuoso is a good starting cmd
+
+	This module loads environment variables for 64bit 2022 Synopsys software
+
+	Example: design_vision   or
+
+	Example: vcs
+
+	Example: dve
+
+l	A possible start cmd: calibre -gui
+
+[32mmak4738@mario:[34mfanout[0m $ l
+check.log  check.log.parsed  command.log  default.svf  FANOUT_README.md  fanout.tcl  lib_header  Makefile  [0m[01;34mreports[0m  run_fanout.tcl  [01;34mscripts[0m  [01;34mtbs[0m  typescript  [01;34mWORK[0m
+[32mmak4738@mario:[34mfanout[0m $ cd scripts/
+[32mmak4738@mario:[34mscripts[0m $ l
+fanout_optimize.py  parse_check_log.py  [0m[01;34m__pycache__[0m
+[32mmak4738@mario:[34mscripts[0m $ clear
+[3J[H[2J[32mmak4738@mario:[34mscripts[0m $ exit
+exit
+
+Script done on 2026-05-07 04:01:43-05:00

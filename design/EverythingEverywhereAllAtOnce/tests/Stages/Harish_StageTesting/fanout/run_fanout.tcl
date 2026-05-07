@@ -23,3 +23,4 @@ link
 source fanout.tcl
 fanout_check
 
+exit

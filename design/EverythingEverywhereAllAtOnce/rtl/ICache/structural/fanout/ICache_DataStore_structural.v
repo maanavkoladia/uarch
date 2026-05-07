@@ -135,13 +135,13 @@ module ICache_DataStore (
     // OE (active-low to RAM)
     //   OE_2_DataStore = !((!busy | LD_IC_SWAP_BUF) & rst & en)
     // ------------------------------------------------------------------
-    wire busy_bar, nb_or_ld, oe_hi, OE_2_DataStore;
+    wire busy_bar, nb_or_ld, oe_hi, OE_2_DataStore, OE_2_DataStore_buffered;
 
     `INV_N(u_busy_bar, 1, busy, busy_bar)
     `OR_2 (u_nb_or_ld, 1, nb_or_ld, busy_bar, LD_IC_SWAP_BUF)
     `AND_3(u_oe_hi,    1, oe_hi, nb_or_ld, rst, en)
     `INV_N(u_oe,       1, oe_hi, OE_2_DataStore)
-
+    bufferH64$ u_OE_2_DataStore_buffer (OE_2_DataStore_buffered, OE_2_DataStore);
     // ------------------------------------------------------------------
     // RAM cells: 2 layers x 16 byte-cells.
     // Instance hierarchy (required by external XMRs in icache_loader):
@@ -158,7 +158,7 @@ module ICache_DataStore (
                     .A   (addr_2_store),
                     .WR  (WR_actual[mL*16 + mB]),
                     .DIN (DIN_pack[mB*8 +: 8]),
-                    .OE  (OE_2_DataStore),
+                    .OE  (OE_2_DataStore_buffered),
                     .DOUT(dout_pack[mL*128 + mB*8 +: 8])
                 );
             end

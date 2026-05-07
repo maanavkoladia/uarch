@@ -219,9 +219,10 @@ module ICache (
     // ------------------------------------------------------------------
     assign addrBus_drv = {17'b0, saved_pAddr};
 
-    wire driveAddrBus_bar;
+    wire driveAddrBus_bar, driveAddrBus_bar_buffered;
     `INV_N(u_dab_bar, 1, driveAddrBus, driveAddrBus_bar)
-    `BUS_TRISTATE(u_addrBus_drv, 32, driveAddrBus_bar, addrBus_drv, addrBus)
+    bufferH64$ u_driveAddrBus_bar_buffered (driveAddrBus_bar_buffered, driveAddrBus_bar);
+    `BUS_TRISTATE(u_addrBus_drv, 32, driveAddrBus_bar_buffered, addrBus_drv, addrBus)
 
     // ------------------------------------------------------------------
     // Evicted-ICache-line swap buffer registers

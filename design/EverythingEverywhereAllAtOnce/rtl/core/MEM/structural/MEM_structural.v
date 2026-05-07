@@ -282,13 +282,18 @@ module MEM (
     //   sel = 01 -> ZEXT_IMM8
     //   sel = 10 -> ZEXT_IMM16
     //   sel = 11 -> IMM32
-    wire bts_sel_lo;
-    wire bts_sel_hi;
+    wire bts_sel_lo, bts_sel_lo_buffered;
+    wire bts_sel_hi, bts_sel_hi_buffered;
     wire [1:0] bts_sel;
+
 
     `OR_2(or_bts_sel_lo, 1, bts_sel_lo, eq_zext8,  eq_imm32)
     `OR_2(or_bts_sel_hi, 1, bts_sel_hi, eq_zext16, eq_imm32)
-    assign bts_sel = {bts_sel_hi, bts_sel_lo};
+
+    bufferH64$ u_bts_sel_lo_buffer(bts_sel_lo_buffered, bts_sel_lo);
+    bufferH64$ u_bts_sel_hi_buffer(bts_sel_hi_buffered, bts_sel_hi);
+
+    assign bts_sel = {bts_sel_hi_buffered, bts_sel_lo_buffered};
 
     wire [31:0] rel_offset;
     `MUX_4(mux_rel_offset, 32, rel_offset,
@@ -356,11 +361,14 @@ module MEM (
     wire we_v_2;
     wire we_v_3;
     wire we_v_mio;
-    `OR_2(or_wev_0,   1, we_v_0,   forward_valid_w, vcap_0)
-    `OR_2(or_wev_1,   1, we_v_1,   forward_valid_w, vcap_1)
-    `OR_2(or_wev_2,   1, we_v_2,   forward_valid_w, vcap_2)
-    `OR_2(or_wev_3,   1, we_v_3,   forward_valid_w, vcap_3)
-    `OR_2(or_wev_mio, 1, we_v_mio, forward_valid_w, vcap_mio)
+    
+    wire forward_valid_w_for_we_v_0__;
+    bufferH16$ u_forward_valid_w_for_we_v_0 (forward_valid_w_for_we_v_0__, forward_valid_w);
+    `OR_2(or_wev_0,   1, we_v_0,   forward_valid_w_for_we_v_0__, vcap_0)
+    `OR_2(or_wev_1,   1, we_v_1,   forward_valid_w_for_we_v_0__, vcap_1)
+    `OR_2(or_wev_2,   1, we_v_2,   forward_valid_w_for_we_v_0__, vcap_2)
+    `OR_2(or_wev_3,   1, we_v_3,   forward_valid_w_for_we_v_0__, vcap_3)
+    `OR_2(or_wev_mio, 1, we_v_mio, forward_valid_w_for_we_v_0__, vcap_mio)
 
     // ---------- WE for data registers : vcap & ~forward_valid ----------
     wire we_d_0;
@@ -379,8 +387,10 @@ module MEM (
     wire hit_buf_v_1;
     wire hit_buf_v_2;
     wire hit_buf_v_3;
-    wire hit_buf_mio_v;
 
+
+    wire hit_buf_mio_v;
+    
     `REG_RST_WE(reg_hbv_0,   1, clk, rst, we_v_0,   forward_valid_inv, hit_buf_v_0)
     `REG_RST_WE(reg_hbv_1,   1, clk, rst, we_v_1,   forward_valid_inv, hit_buf_v_1)
     `REG_RST_WE(reg_hbv_2,   1, clk, rst, we_v_2,   forward_valid_inv, hit_buf_v_2)
@@ -450,8 +460,10 @@ module MEM (
            hit_buf_v_0, hit_buf_v_1, hit_buf_v_2, hit_buf_v_3,
            bank_num_0)
 
+    wire hit_buf_v_sel0_buffered;
+    bufferH256$ u_hit_buf_v_sel0_buffer (hit_buf_v_sel0_buffered, hit_buf_v_sel0);
     `MUX_2(mux_line_in_0, CL_BITS, line_in_0,
-           cacheline_sel0, hit_buf_sel0, hit_buf_v_sel0)
+           cacheline_sel0, hit_buf_sel0, hit_buf_v_sel0_buffered)
 
     // ---- bank-1 path ----
     wire [CL_BITS-1:0] hit_buf_sel1;
@@ -470,14 +482,18 @@ module MEM (
     `MUX_4(mux_hbv_sel1, 1, hit_buf_v_sel1,
            hit_buf_v_0, hit_buf_v_1, hit_buf_v_2, hit_buf_v_3,
            bank_num_1)
-
+    
+    wire hit_buf_v_sel1_buffered;
+    bufferH256$ u_hit_buf_v_sel1_buffer (hit_buf_v_sel1_buffered, hit_buf_v_sel1);
     `MUX_2(mux_line_in_1, CL_BITS, line_in_1,
-           cacheline_sel1, hit_buf_sel1, hit_buf_v_sel1)
+           cacheline_sel1, hit_buf_sel1, hit_buf_v_sel1_buffered)
 
     // ---- MIO path ----
     wire [CL_BITS-1:0] line_in_mio;
+    wire hit_buf_mio_v_buffered;
+    bufferH1024$ u_hit_buf_mio_v_buffer(hit_buf_mio_v_buffered, hit_buf_mio_v);
     `MUX_2(mux_line_in_mio, CL_BITS, line_in_mio,
-           line_MIO, hit_buf_mio_packed, hit_buf_mio_v)
+           line_MIO, hit_buf_mio_packed, hit_buf_mio_v_buffered)
 
     // =========================================================================
     // MASKING + CL ASSEMBLY  (MEM.sv:119-129, 181-188)
@@ -499,9 +515,9 @@ module MEM (
     wire [LD_BITS-1:0] ld_buf_unmasked;
     assign ld_buf_unmasked = {line_in_1_masked, C0_w};
 
-    wire [LD_BITS-1:0] ld_buf_packed;
-    `MUX_2(mux_ldbuf, LD_BITS, ld_buf_packed,
-           {LD_BITS{1'b0}}, ld_buf_unmasked, forward_valid_w)
+    wire [LD_BITS-1:0] ld_buf_packed = ld_buf_unmasked;
+    //`MUX_2(mux_ldbuf, LD_BITS, ld_buf_packed,
+    //       {LD_BITS{1'b0}}, ld_buf_unmasked, forward_valid_w)
 
     // =========================================================================
     // CLR_DCACHE_ARB_LATCHES  (per port)  &  CLR_DCACHE_MIO_LATCH

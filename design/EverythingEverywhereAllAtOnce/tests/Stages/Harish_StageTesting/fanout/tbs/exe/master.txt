@@ -79,4 +79,4 @@ lib_header
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/EXE/structural/FunctionalUnits/exp_call_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/EXE/structural/FunctionalUnits/rep_cmp_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/core/EXE/structural/EXE_structural.v
-tbs/exe/tb_exe_fanout.v
+tbs/exe/tb_fanout.v

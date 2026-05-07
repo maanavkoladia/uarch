@@ -1,0 +1,53 @@
+================================================================================
+VIOLATIONS BY GROUP  (deduplicated — duplicate log lines removed, sorted by count)
+================================================================================
+  Unique VIOLATION paths : 0  (0 duplicate lines removed from log)
+  Unique WARNING paths   : 131  (0 duplicate lines removed from log)
+  Unique violation groups: 0
+
+
+================================================================================
+FIX RECIPE  (VIOLATIONS only, deduplicated)
+================================================================================
+  EDIT MODULE : Verilog module whose source needs changing
+  WIRE        : overloaded net name inside that module
+  LEAF DRIVER : inst(cell).port — the gate driving WIRE
+  STAGES      : cascaded bufferH16$ needed  (1→fanout≤16, 2→≤256, 3→≤4096)
+  FIX         : wire WIRE_buf;
+                bufferH16$ u_buf_INST (.out(WIRE_buf), .in(WIRE));
+                replace all downstream uses of WIRE with WIRE_buf
+  EXAMPLE     : one concrete (non-collapsed) driver path from the log
+
+
+================================================================================
+INPUT PORT BUFFERING  (WARNING input ports — add bufferH16$ tree at EXE top-level)
+================================================================================
+  Each row = one bus/port at the EXE module boundary with too many internal loads.
+  Fix: in EXE_structural.v, buffer the input through a bufferH16$ and use the
+  buffered copy internally.  If STAGES=2, cascade two bufferH16$ in a fan-out tree.
+
+  PORT (collapsed)                                 MAX_FAN  INTERNAL  EXT_PORTS  STAGES  BITS
+  -------------------------------------------------------------------------------------------
+  latches_ld_vaddy[*]                                   61        61          0       2    28
+  mem_latches_next_LD_PADDR_1[*]                        59        58          1       2    11
+  latches_cs_ST_OP_0                                    18        18          0       2     1
+  latches_cs_datasize_0[*]                              13        13          0       1     2
+  latches_cs_datasize_1[*]                              13        13          0       1     2
+  latches_st_vaddy[*]                                   12        12          0       1    32
+  mem_latches_next_data_size_vec[*]                     12        11          1       1     1
+  mem_latches_next_LD_PADDR_0[*]                        12        11          1       1     3
+  mem_latches_next_LD_XCL                               10         9          1       1     1
+  latches_next_ld_vaddy[*]                               8         8          0       1    20
+  latches_next_st_vaddy[*]                               8         8          0       1    20
+  latches_valid_1                                        7         7          0       1     1
+  mem_latches_next_MIO                                   7         6          1       1     1
+  latches_cs_LD_OP_0                                     5         5          0       1     1
+  exe_outs_br_res_flush                                  5         5          0       1     1
+  mem_latches_next_exe_cs_OP_TYPE[*]                     5         4          1       1     6
+
+================================================================================
+MODULE SUMMARY  (deduplicated violation count by RTL module, highest first)
+================================================================================
+
+================================================================================
+DONE

@@ -281,8 +281,11 @@ module MEM_Latches (
     wire [14:0] LD_PADDR_1_d;
 
     // -------- flush MUX per field (in1 = 0, sel = combined_flush) --------
+    
 
-    assign valid_d = nextLatches_valid_i;
+    `MUX_2(u_exe_mux_valid,                    1,   valid_d,                    nextLatches_valid_i,                    1'b0,         flush);
+
+    //assign valid_d = nextLatches_valid_i;
     assign cs_ST_OP_d = nextLatches_cs_ST_OP_i;
     assign cs_LD_OP_d = nextLatches_cs_LD_OP_i;
     assign exe_cs_ST_OP_d = nextLatches_exe_cs_ST_OP_i;
