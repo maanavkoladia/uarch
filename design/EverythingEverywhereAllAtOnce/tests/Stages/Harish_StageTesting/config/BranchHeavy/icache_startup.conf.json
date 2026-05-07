@@ -8,7 +8,7 @@
     "numDataStore_CellLayers": "2",
     "numDataStoreCells": "16",
     "dataStoreCellPath" : "uut_AllAtOnce.mem_sys_unit.icache_unit.icache_dataStore_unit.g_mem_layer[<cell layer>].g_memCells[<cellNum].dataStore_memCell.mem",
-    "startUpDelay" : "30",
+    "startUpDelay" : "1",
 
 
     "outputPath" : "gen/"

@@ -45,8 +45,12 @@ module modrm_processor (
     output wire                    alu_inputB_override_dup,
     output wire [`SRC_SEL_W-1:0]   alu_inputA_override_sel,
     output wire [`SRC_SEL_W-1:0]   alu_inputB_override_sel,
-    output wire                    special_modrm_bs
+    output wire                    special_modrm_bs,
+    output wire                    modrm_seg_override
 );
+
+    assign modrm_seg_override = ({modrm_byte[7:6], modrm_byte[2:0]} == 5'b01101 || 
+                                  {modrm_byte[7:6], modrm_byte[2:0]} == 5'b10101) && cs_MODRM_NEEDED;
 
     wire HARDCODED_DR_DUP, HARDCODED_SR_DUP;
     bufferH16$ dr_dup(.out(HARDCODED_DR_DUP), .in(cs_HARDCODED_DR));

@@ -81,7 +81,9 @@ module control_store (
     output wire wb_cs_ST_OP,
     output wire wb_cs_WB_DR,
     output wire wb_cs_WB_SR,
-    output wire wb_cs_WB_EAX
+    output wire wb_cs_WB_EAX,
+
+    output wire modrm_segment_override
 );
 
     wire temp_decode_cs_REP;
@@ -535,7 +537,8 @@ module control_store (
         .alu_inputB_override_dup    (mod_rm_cs_outs_alu_inputB_override_dup),
         .alu_inputA_override_sel    (mod_rm_cs_outs_alu_inputA_override_sel),
         .alu_inputB_override_sel    (mod_rm_cs_outs_alu_inputB_override_sel),
-        .special_modrm_bs           (mod_rm_cs_outs_special_modrm_bs)
+        .special_modrm_bs           (mod_rm_cs_outs_special_modrm_bs),
+        .modrm_seg_override     (modrm_segment_override)
     );
 
 

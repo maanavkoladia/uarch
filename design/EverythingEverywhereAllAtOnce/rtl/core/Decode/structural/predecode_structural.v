@@ -87,7 +87,8 @@ module predecode(
     output wire wb_cs_ST_OP,
     output wire wb_cs_WB_DR,
     output wire wb_cs_WB_SR,
-    output wire wb_cs_WB_EAX
+    output wire wb_cs_WB_EAX,
+    output wire modrm_seg_override
 );
 
 
@@ -476,7 +477,8 @@ module predecode(
         .wb_cs_ST_OP(wb_cs_ST_OP),
         .wb_cs_WB_DR(wb_cs_WB_DR),
         .wb_cs_WB_SR(wb_cs_WB_SR),
-        .wb_cs_WB_EAX(wb_cs_WB_EAX)
+        .wb_cs_WB_EAX(wb_cs_WB_EAX),
+        .modrm_seg_override(modrm_seg_override)
     );
 
     

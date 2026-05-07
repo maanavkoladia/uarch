@@ -14,7 +14,7 @@
     "va_image_size_bytes"     : 67108864,
     "readmemFilePath"         : "gen/memLoader.sv",
     "memCellPath"             : "uut_AllAtOnce.mem_sys_unit.mem_unit.g_mem_banks[<bankNum>].mem_bank.g_sram_cells[<cellNum>].mem_cell.mem",
-    "startUpDelay"            : "30",
+    "startUpDelay"            : "1",
     "gcc_extra_flags"         : [],
 
     "VM_Mappings" : [

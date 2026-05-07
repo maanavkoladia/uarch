@@ -35,12 +35,12 @@ module cmpxchg_op (
     uint32_t next_dr_o;
 
     byte_t rm_low;
-    assign rm_low = data_size[0] ? rm[7:0] : rm[15:8];
+    assign rm_low = data_size[0] ? rm[7:0] : rm[15:8];  //04
  
     //AH will only change on 16 never on 8 bit size
     uint32_t next_EAX;
     assign next_EAX[7:0] = rm_low;
-    assign next_EAX[15:8] = data_size[1] ? rm[15:8] : EAX[15:8];
+    assign next_EAX[15:8] = (data_size[1] && data_size[0]) ? rm[15:8] : EAX[15:8]; //04
     assign next_EAX[31:16] =  data_size[2] ? rm[31:16]: EAX[31:16];
 
 

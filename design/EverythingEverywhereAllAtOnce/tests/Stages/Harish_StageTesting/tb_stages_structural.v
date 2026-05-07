@@ -179,7 +179,7 @@ module tb_stages ();
         //set_limit_regs();
         rst = 0;
 
-        DelayClks(20);
+        DelayClks(1);
         @(posedge clk) @(posedge clk) force uut_AllAtOnce.core_unit.fetch_unit.SPC = 32'h0000;
         force uut_AllAtOnce.core_unit.decode_unit.EIP = 32'h0000;
         @(posedge clk) rst = 1;

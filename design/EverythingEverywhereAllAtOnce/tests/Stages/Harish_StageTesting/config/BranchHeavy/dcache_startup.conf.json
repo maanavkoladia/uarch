@@ -1,6 +1,6 @@
 {
     "readmemFilePath" : "dcache_loader.sv",
-    "startUpDelay" : "10",
+    "startUpDelay" : "1",
 
     "numBlocks" : "4",
     "numDataStoreCells" : "16",

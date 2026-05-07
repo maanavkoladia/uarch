@@ -359,8 +359,8 @@ module Decode (
     wire [1:0] SAVED_DATASIZE, SAVED_DATASIZE_pre;
 
 
-    wire [`REG_ID_W-1:0] segment0, segment0_pre;
-    wire seg_override, seg_override_pre;
+    wire [`REG_ID_W-1:0] segment0, segment0_pre, segment0_final;
+    wire seg_override, seg_override_pre, seg_override_final;
     wire next_rr_valid;
 
     bufferH16$ buf_flush (.out(flush), .in(exe_outs_br_res_flush));
@@ -383,6 +383,8 @@ module Decode (
     wire [511:0] flattened_queue;
     assign flattened_queue = {idm_outs_idm_slots_3_data, idm_outs_idm_slots_2_data, idm_outs_idm_slots_1_data, idm_outs_idm_slots_0_data};
 
+
+    wire modrm_seg_override;
     predecode inst_processing(
         .clk(clk), .rst(rst), .queue(flattened_queue),
         .queue_valid({idm_outs_idm_slots_3_valid_buf, idm_outs_idm_slots_2_valid_buf,
@@ -467,7 +469,8 @@ module Decode (
         .wb_cs_ST_OP(wb_cs_ST_OP),
         .wb_cs_WB_DR(wb_cs_WB_DR),
         .wb_cs_WB_SR(wb_cs_WB_SR),
-        .wb_cs_WB_EAX(wb_cs_WB_EAX)
+        .wb_cs_WB_EAX(wb_cs_WB_EAX),
+        .modrm_seg_override(modrm_seg_override)
     );
 
     decode_gp_gen gp_gen_decode(
@@ -513,8 +516,9 @@ module Decode (
 
     wire [`REG_ID_W-1:0] sibbase, sibidx;
     wire [7:0] sibscale;
+    wire sib_segment_override;
     sib_processor sib_processing(.sib_byte(sib_byte), .sib_idx_id(sibidx), 
-        .sib_base_id(sibbase), .sib_scale(sibscale)
+        .sib_base_id(sibbase), .sib_scale(sibscale), .sib_segment_override(sib_segment_override)
     );
 
     wire clear_rep;
@@ -831,7 +835,7 @@ module Decode (
     assign rr_latches_next_normal_latches_cs_datasize                = rr_cs_datasize;
     assign rr_latches_next_normal_latches_cs_will_mod_zf             = rr_cs_will_mod_zf;
     assign rr_latches_next_normal_latches_cs_seg_1_valid             = rr_cs_seg_1_valid;
-    assign rr_latches_next_normal_latches_cs_seg_0_id                = rr_cs_seg_0_id;
+    assign rr_latches_next_normal_latches_cs_seg_0_id                = ((sib_size && sib_segment_override) || (modrm_seg_override)) ? `SS : rr_cs_seg_0_id;
     assign rr_latches_next_normal_latches_cs_seg_1_id                = rr_cs_seg_1_id;
     assign rr_latches_next_normal_latches_cs_special_modrm_bs        = rr_cs_special_modrm_bs;
     assign rr_latches_next_normal_latches_cs_special_br              = rr_cs_special_br;
