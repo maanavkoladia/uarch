@@ -37,9 +37,12 @@ module LRU (
     `INV_N(u_right_bar, 1, LRU_RIGHT_LEAF_q, LRU_RIGHT_LEAF_bar)
 
     assign currLRU_IDX[1] = LRU_ROOT_bar;
-    `MUX_2(u_currLRU_lo, 1, currLRU_IDX[0],
+    // u_currLRU_lo external fanout 5 -> bufferH16$.
+    wire currLRU_IDX_0_pre;
+    `MUX_2(u_currLRU_lo, 1, currLRU_IDX_0_pre,
            LRU_RIGHT_LEAF_bar,
            LRU_LEFT_LEAF_bar,
            LRU_ROOT_q)
+    bufferH16$ u_currLRU_lo_buf (.out(currLRU_IDX[0]), .in(currLRU_IDX_0_pre));
 
 endmodule

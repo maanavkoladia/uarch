@@ -340,27 +340,32 @@ module DCache_TOP (
     // ---------------------------------------------------------------
     // out2Core / out2Sch wiring (flat outputs)
     // ---------------------------------------------------------------
-    assign out2Core_reqServed_0_o = arb_req_served_0_out;
-    assign out2Core_reqServed_1_o = arb_req_served_1_out;
+    // Timing-critical outputs to Core: reqServed/hit/writeSuccess.
+    //   - writeSuccess_0..3_o : external fanout ~162 each -> bufferH256$
+    //   - writeSuccess_MIO_o  : external fanout ~145      -> bufferH256$
+    //   - reqServed_MIO_o     : external fanout ~17       -> bufferH64$
+    //   - reqServed_0/1_o, hit_0..3_o, hit_MIO_o          -> bufferH16$
+    bufferH16$  u_buf_reqServed_0      (.out(out2Core_reqServed_0_o), .in(arb_req_served_0_out));
+    bufferH16$  u_buf_reqServed_1      (.out(out2Core_reqServed_1_o), .in(arb_req_served_1_out));
 
-    assign out2Core_hit_0_o = block_hit[0];
-    assign out2Core_hit_1_o = block_hit[1];
-    assign out2Core_hit_2_o = block_hit[2];
-    assign out2Core_hit_3_o = block_hit[3];
+    bufferH16$  u_buf_hit_0            (.out(out2Core_hit_0_o), .in(block_hit[0]));
+    bufferH16$  u_buf_hit_1            (.out(out2Core_hit_1_o), .in(block_hit[1]));
+    bufferH16$  u_buf_hit_2            (.out(out2Core_hit_2_o), .in(block_hit[2]));
+    bufferH16$  u_buf_hit_3            (.out(out2Core_hit_3_o), .in(block_hit[3]));
 
     assign out2Core_cacheline_0_o = block_dataLineOut[0];
     assign out2Core_cacheline_1_o = block_dataLineOut[1];
     assign out2Core_cacheline_2_o = block_dataLineOut[2];
     assign out2Core_cacheline_3_o = block_dataLineOut[3];
 
-    assign out2Core_writeSuccess_0_o = arb_writeSuccess_Out[0];
-    assign out2Core_writeSuccess_1_o = arb_writeSuccess_Out[1];
-    assign out2Core_writeSuccess_2_o = arb_writeSuccess_Out[2];
-    assign out2Core_writeSuccess_3_o = arb_writeSuccess_Out[3];
+    bufferH256$ u_buf_writeSuccess_0   (.out(out2Core_writeSuccess_0_o), .in(arb_writeSuccess_Out[0]));
+    bufferH256$ u_buf_writeSuccess_1   (.out(out2Core_writeSuccess_1_o), .in(arb_writeSuccess_Out[1]));
+    bufferH256$ u_buf_writeSuccess_2   (.out(out2Core_writeSuccess_2_o), .in(arb_writeSuccess_Out[2]));
+    bufferH256$ u_buf_writeSuccess_3   (.out(out2Core_writeSuccess_3_o), .in(arb_writeSuccess_Out[3]));
 
-    assign out2Core_writeSuccess_MIO_o = s_mio_writeSuccess;
-    assign out2Core_hit_MIO_o          = s_mio_hit;
-    assign out2Core_reqServed_MIO_o    = s_mio_reqServed;
+    bufferH256$ u_buf_writeSuccess_MIO (.out(out2Core_writeSuccess_MIO_o), .in(s_mio_writeSuccess));
+    bufferH16$  u_buf_hit_MIO          (.out(out2Core_hit_MIO_o),          .in(s_mio_hit));
+    bufferH64$  u_buf_reqServed_MIO    (.out(out2Core_reqServed_MIO_o),    .in(s_mio_reqServed));
     assign out2Core_line_MIO_o         = s_mio_dataLineOut;
 
     assign out2Sch_req_0_o = block_req_2_sch[0];

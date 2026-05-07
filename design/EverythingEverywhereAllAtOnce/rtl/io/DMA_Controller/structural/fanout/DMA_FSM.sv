@@ -4,8 +4,12 @@
 // Std : Verilog-2005 (IEEE 1364-2005)
 // ======================================================================
 // Fanout fixes:
-//  - ff_0 / ff_1 each split into 3 copies (a/b/c) -- 0 ns added on internal
-//    paths.  S_0 was fanout 12, S_1 was fanout 9.
+//  - ff_0 / ff_1 triplication was being merged by synthesis (still showing
+//    fanout 11 / 10).  Collapsed back to single FFs and broadcast each Q
+//    through bufferH16$ to break the merge and limit fanout. +0.13 ns on
+//    S_0 / S_1 paths (one buffer-tier).
+//  - inv_S_2 re-driven through bufferH64$ (fanout 18 external),
+//    +0.13 ns on that path.
 //  - ld_counter_o re-driven through bufferH64$ (fanout 33 external),
 //    +0.30 ns on that output.
 //  - ld_writeBuf_o re-driven through bufferH64$ (fanout 19 external),
@@ -36,17 +40,23 @@ wire NS_0;
 wire NS_1;
 wire NS_2;
 
-// ff_0 / ff_1 triplicated; ff_2 (S_2) only fanout 2, untouched.
+// ff_0 / ff_1 are single FFs with bufferH16$ broadcasts (a/b/c). The
+// previous triplication was getting merged by synthesis; the buffers
+// also break that merge by giving each fan-out group a distinct sink.
+wire S_0_q, S_1_q;
 wire S_0_a, S_0_b, S_0_c;
 wire S_1_a, S_1_b, S_1_c;
 
-`REG_RST(ff_0_a, 1, clk, rst, NS_0, S_0_a)
-`REG_RST(ff_0_b, 1, clk, rst, NS_0, S_0_b)
-`REG_RST(ff_0_c, 1, clk, rst, NS_0, S_0_c)
-`REG_RST(ff_1_a, 1, clk, rst, NS_1, S_1_a)
-`REG_RST(ff_1_b, 1, clk, rst, NS_1, S_1_b)
-`REG_RST(ff_1_c, 1, clk, rst, NS_1, S_1_c)
+`REG_RST(ff_0, 1, clk, rst, NS_0, S_0_q)
+`REG_RST(ff_1, 1, clk, rst, NS_1, S_1_q)
 `REG_RST(ff_2, 1, clk, rst, NS_2, S_2)
+
+bufferH16$ u_S_0_a_buf (.out(S_0_a), .in(S_0_q));
+bufferH16$ u_S_0_b_buf (.out(S_0_b), .in(S_0_q));
+bufferH16$ u_S_0_c_buf (.out(S_0_c), .in(S_0_q));
+bufferH16$ u_S_1_a_buf (.out(S_1_a), .in(S_1_q));
+bufferH16$ u_S_1_b_buf (.out(S_1_b), .in(S_1_q));
+bufferH16$ u_S_1_c_buf (.out(S_1_c), .in(S_1_q));
 
 assign S_0 = S_0_c;
 assign S_1 = S_1_c;
@@ -60,7 +70,10 @@ wire write_Complete_i_inv;
 
 `INV_N(inv_S_0, 1, S_0_c, S_0_inv)
 `INV_N(inv_S_1, 1, S_1_c, S_1_inv)
-`INV_N(inv_S_2, 1, S_2, S_2_inv)
+// inv_S_2 external fanout 18 -> bufferH64$.
+wire S_2_inv_pre;
+`INV_N(inv_S_2, 1, S_2, S_2_inv_pre)
+bufferH64$ u_S_2_inv_buf (.out(S_2_inv), .in(S_2_inv_pre));
 `INV_N(inv_ld_buf_data_V_i, 1, ld_buf_data_V_i, ld_buf_data_V_i_inv)
 `INV_N(inv_writeBuf_V_i, 1, writeBuf_V_i, writeBuf_V_i_inv)
 `INV_N(inv_write_Complete_i, 1, write_Complete_i, write_Complete_i_inv)

@@ -138,9 +138,9 @@ tbs/tb_fanout_ICache.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/BusArbitration/structural/fanout/DTE_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/BusArbitration/structural/fanout/Scheduler_DCachePicking_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/BusArbitration/structural/fanout/Scheduler_structural.v
-/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/io/DMA_Controller/gen/DMA_FSM.sv
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/io/DMA_Controller/structural/fanout/DMA_FSM.sv
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/io/DMA_Controller/structural/DiskWrapper_Behav.v
-/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/io/DMA_Controller/structural/DMA_Controller_structural.v
+/misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/io/DMA_Controller/structural/fanout/DMA_Controller_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/io/ddr5/structural/ddr5_structural.v
 /misc/scratch/mak4738/uarch/uarch/design/EverythingEverywhereAllAtOnce/rtl/structural/Everywhere_TOP_structural.v
 tbs/everywhere/tb_fanout.v

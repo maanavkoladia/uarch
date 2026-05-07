@@ -475,14 +475,18 @@ module RR (
         latches_normal_latches_valid,   latches_rep_latches_valid, decode_outs_rep_latch)
 
     // rr_cs_t
-    `MUX_2(u_mx_cs_ST_SEL,              1, latchesInUse_cs_ST_SEL,
+    wire latchesInUse_cs_ST_SEL_pre;
+    `MUX_2(u_mx_cs_ST_SEL,              1, latchesInUse_cs_ST_SEL_pre,
         latches_normal_latches_cs_ST_SEL,         latches_rep_latches_cs_ST_SEL,         decode_outs_rep_latch)
+    bufferH256$ u_buf_cs_ST_SEL (.out(latchesInUse_cs_ST_SEL), .in(latchesInUse_cs_ST_SEL_pre));
     `MUX_2(u_mx_cs_MODRM_NEEDED,        1, latchesInUse_cs_MODRM_NEEDED,
         latches_normal_latches_cs_MODRM_NEEDED,   latches_rep_latches_cs_MODRM_NEEDED,   decode_outs_rep_latch)
     `MUX_2(u_mx_cs_RM_IS_DR,            1, latchesInUse_cs_RM_IS_DR,
         latches_normal_latches_cs_RM_IS_DR,       latches_rep_latches_cs_RM_IS_DR,       decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_SWITCH_LD_ADDY,      1, latchesInUse_cs_SWITCH_LD_ADDY,
+    wire latchesInUse_cs_SWITCH_LD_ADDY_pre;
+    `MUX_2(u_mx_cs_SWITCH_LD_ADDY,      1, latchesInUse_cs_SWITCH_LD_ADDY_pre,
         latches_normal_latches_cs_SWITCH_LD_ADDY, latches_rep_latches_cs_SWITCH_LD_ADDY, decode_outs_rep_latch)
+    bufferH256$ u_buf_cs_SWITCH_LD_ADDY (.out(latchesInUse_cs_SWITCH_LD_ADDY), .in(latchesInUse_cs_SWITCH_LD_ADDY_pre));
     `MUX_2(u_mx_cs_LD_OP,               1, latchesInUse_cs_LD_OP,
         latches_normal_latches_cs_LD_OP,          latches_rep_latches_cs_LD_OP,          decode_outs_rep_latch)
     `MUX_2(u_mx_cs_ST_OP,               1, latchesInUse_cs_ST_OP,
@@ -503,22 +507,50 @@ module RR (
         latches_normal_latches_cs_sr_wr,          latches_rep_latches_cs_sr_wr,          decode_outs_rep_latch)
     `MUX_2(u_mx_cs_eax_wr,              1, latchesInUse_cs_eax_wr,
         latches_normal_latches_cs_eax_wr,         latches_rep_latches_cs_eax_wr,         decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_MOVS_OP,             1, latchesInUse_cs_MOVS_OP,
+    wire latchesInUse_cs_MOVS_OP_pre;
+    `MUX_2(u_mx_cs_MOVS_OP,             1, latchesInUse_cs_MOVS_OP_pre,
         latches_normal_latches_cs_MOVS_OP,        latches_rep_latches_cs_MOVS_OP,        decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_datasize,            2, latchesInUse_cs_datasize,
+    bufferH256$ u_buf_cs_MOVS_OP (.out(latchesInUse_cs_MOVS_OP), .in(latchesInUse_cs_MOVS_OP_pre));
+
+    wire [1:0] latchesInUse_cs_datasize_pre;
+    `MUX_2(u_mx_cs_datasize,            2, latchesInUse_cs_datasize_pre,
         latches_normal_latches_cs_datasize,       latches_rep_latches_cs_datasize,       decode_outs_rep_latch)
+    bufferH256$ u_buf_cs_datasize_0 (.out(latchesInUse_cs_datasize[0]), .in(latchesInUse_cs_datasize_pre[0]));
+    bufferH256$ u_buf_cs_datasize_1 (.out(latchesInUse_cs_datasize[1]), .in(latchesInUse_cs_datasize_pre[1]));
     `MUX_2(u_mx_cs_will_mod_zf,         1, latchesInUse_cs_will_mod_zf,
         latches_normal_latches_cs_will_mod_zf,    latches_rep_latches_cs_will_mod_zf,    decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_seg_1_valid,         1, latchesInUse_cs_seg_1_valid,
+    wire latchesInUse_cs_seg_1_valid_pre;
+    `MUX_2(u_mx_cs_seg_1_valid,         1, latchesInUse_cs_seg_1_valid_pre,
         latches_normal_latches_cs_seg_1_valid,    latches_rep_latches_cs_seg_1_valid,    decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_seg_0_id,            5, latchesInUse_cs_seg_0_id,
+    bufferH256$ u_buf_cs_seg_1_valid (.out(latchesInUse_cs_seg_1_valid), .in(latchesInUse_cs_seg_1_valid_pre));
+    // 5-bit ID broadcasts feed RegFile read-mux selects + RegSB equality comparators
+    // — fanout 282-347 per bit. bufferH1024$ per bit (rated 1024, delay 0.60ns).
+    wire [4:0] latchesInUse_cs_seg_0_id_pre;
+    `MUX_2(u_mx_cs_seg_0_id,            5, latchesInUse_cs_seg_0_id_pre,
         latches_normal_latches_cs_seg_0_id,       latches_rep_latches_cs_seg_0_id,       decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_seg_1_id,            5, latchesInUse_cs_seg_1_id,
+    bufferH1024$ u_buf_cs_seg_0_id_0 (.out(latchesInUse_cs_seg_0_id[0]), .in(latchesInUse_cs_seg_0_id_pre[0]));
+    bufferH1024$ u_buf_cs_seg_0_id_1 (.out(latchesInUse_cs_seg_0_id[1]), .in(latchesInUse_cs_seg_0_id_pre[1]));
+    bufferH1024$ u_buf_cs_seg_0_id_2 (.out(latchesInUse_cs_seg_0_id[2]), .in(latchesInUse_cs_seg_0_id_pre[2]));
+    bufferH1024$ u_buf_cs_seg_0_id_3 (.out(latchesInUse_cs_seg_0_id[3]), .in(latchesInUse_cs_seg_0_id_pre[3]));
+    bufferH1024$ u_buf_cs_seg_0_id_4 (.out(latchesInUse_cs_seg_0_id[4]), .in(latchesInUse_cs_seg_0_id_pre[4]));
+
+    wire [4:0] latchesInUse_cs_seg_1_id_pre;
+    `MUX_2(u_mx_cs_seg_1_id,            5, latchesInUse_cs_seg_1_id_pre,
         latches_normal_latches_cs_seg_1_id,       latches_rep_latches_cs_seg_1_id,       decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_special_modrm_bs,    1, latchesInUse_cs_special_modrm_bs,
+    bufferH1024$ u_buf_cs_seg_1_id_0 (.out(latchesInUse_cs_seg_1_id[0]), .in(latchesInUse_cs_seg_1_id_pre[0]));
+    bufferH1024$ u_buf_cs_seg_1_id_1 (.out(latchesInUse_cs_seg_1_id[1]), .in(latchesInUse_cs_seg_1_id_pre[1]));
+    bufferH1024$ u_buf_cs_seg_1_id_2 (.out(latchesInUse_cs_seg_1_id[2]), .in(latchesInUse_cs_seg_1_id_pre[2]));
+    bufferH1024$ u_buf_cs_seg_1_id_3 (.out(latchesInUse_cs_seg_1_id[3]), .in(latchesInUse_cs_seg_1_id_pre[3]));
+    bufferH1024$ u_buf_cs_seg_1_id_4 (.out(latchesInUse_cs_seg_1_id[4]), .in(latchesInUse_cs_seg_1_id_pre[4]));
+    wire latchesInUse_cs_special_modrm_bs_pre;
+    `MUX_2(u_mx_cs_special_modrm_bs,    1, latchesInUse_cs_special_modrm_bs_pre,
         latches_normal_latches_cs_special_modrm_bs, latches_rep_latches_cs_special_modrm_bs, decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_special_br,          1, latchesInUse_cs_special_br,
+    bufferH64$ u_buf_cs_special_modrm_bs (.out(latchesInUse_cs_special_modrm_bs), .in(latchesInUse_cs_special_modrm_bs_pre));
+
+    wire latchesInUse_cs_special_br_pre;
+    `MUX_2(u_mx_cs_special_br,          1, latchesInUse_cs_special_br_pre,
         latches_normal_latches_cs_special_br,     latches_rep_latches_cs_special_br,     decode_outs_rep_latch)
+    bufferH64$ u_buf_cs_special_br (.out(latchesInUse_cs_special_br), .in(latchesInUse_cs_special_br_pre));
 
     // dc_cs_t
     `MUX_2(u_mx_dc_cs_LD_OP,            1, latchesInUse_dc_cs_LD_OP,
@@ -597,20 +629,84 @@ module RR (
         latches_normal_latches_EAX,          latches_rep_latches_EAX,          decode_outs_rep_latch)
     `MUX_2(u_mx_imm64,       64, latchesInUse_imm64,
         latches_normal_latches_imm64,        latches_rep_latches_imm64,        decode_outs_rep_latch)
-    `MUX_2(u_mx_sib_idx_id,   5, latchesInUse_sib_idx_id,
+    wire [4:0] latchesInUse_sib_idx_id_pre;
+    `MUX_2(u_mx_sib_idx_id,   5, latchesInUse_sib_idx_id_pre,
         latches_normal_latches_sib_idx_id,   latches_rep_latches_sib_idx_id,   decode_outs_rep_latch)
-    `MUX_2(u_mx_sib_base_id,  5, latchesInUse_sib_base_id,
+    bufferH1024$ u_buf_sib_idx_id_0 (.out(latchesInUse_sib_idx_id[0]), .in(latchesInUse_sib_idx_id_pre[0]));
+    bufferH1024$ u_buf_sib_idx_id_1 (.out(latchesInUse_sib_idx_id[1]), .in(latchesInUse_sib_idx_id_pre[1]));
+    bufferH1024$ u_buf_sib_idx_id_2 (.out(latchesInUse_sib_idx_id[2]), .in(latchesInUse_sib_idx_id_pre[2]));
+    bufferH1024$ u_buf_sib_idx_id_3 (.out(latchesInUse_sib_idx_id[3]), .in(latchesInUse_sib_idx_id_pre[3]));
+    bufferH1024$ u_buf_sib_idx_id_4 (.out(latchesInUse_sib_idx_id[4]), .in(latchesInUse_sib_idx_id_pre[4]));
+
+    wire [4:0] latchesInUse_sib_base_id_pre;
+    `MUX_2(u_mx_sib_base_id,  5, latchesInUse_sib_base_id_pre,
         latches_normal_latches_sib_base_id,  latches_rep_latches_sib_base_id,  decode_outs_rep_latch)
-    `MUX_2(u_mx_sib_needed,   1, latchesInUse_sib_needed,
+    bufferH1024$ u_buf_sib_base_id_0 (.out(latchesInUse_sib_base_id[0]), .in(latchesInUse_sib_base_id_pre[0]));
+    bufferH1024$ u_buf_sib_base_id_1 (.out(latchesInUse_sib_base_id[1]), .in(latchesInUse_sib_base_id_pre[1]));
+    bufferH1024$ u_buf_sib_base_id_2 (.out(latchesInUse_sib_base_id[2]), .in(latchesInUse_sib_base_id_pre[2]));
+    bufferH1024$ u_buf_sib_base_id_3 (.out(latchesInUse_sib_base_id[3]), .in(latchesInUse_sib_base_id_pre[3]));
+    bufferH1024$ u_buf_sib_base_id_4 (.out(latchesInUse_sib_base_id[4]), .in(latchesInUse_sib_base_id_pre[4]));
+    wire latchesInUse_sib_needed_pre;
+    `MUX_2(u_mx_sib_needed,   1, latchesInUse_sib_needed_pre,
         latches_normal_latches_sib_needed,   latches_rep_latches_sib_needed,   decode_outs_rep_latch)
-    `MUX_2(u_mx_sib_scale,    8, latchesInUse_sib_scale,
+    bufferH64$ u_buf_sib_needed (.out(latchesInUse_sib_needed), .in(latchesInUse_sib_needed_pre));
+
+    wire [7:0] latchesInUse_sib_scale_pre;
+    `MUX_2(u_mx_sib_scale,    8, latchesInUse_sib_scale_pre,
         latches_normal_latches_sib_scale,    latches_rep_latches_sib_scale,    decode_outs_rep_latch)
-    `MUX_2(u_mx_disp_needed,  1, latchesInUse_disp_needed,
+    bufferH64$ u_buf_sib_scale_0 (.out(latchesInUse_sib_scale[0]), .in(latchesInUse_sib_scale_pre[0]));
+    bufferH64$ u_buf_sib_scale_1 (.out(latchesInUse_sib_scale[1]), .in(latchesInUse_sib_scale_pre[1]));
+    bufferH64$ u_buf_sib_scale_2 (.out(latchesInUse_sib_scale[2]), .in(latchesInUse_sib_scale_pre[2]));
+    bufferH64$ u_buf_sib_scale_3 (.out(latchesInUse_sib_scale[3]), .in(latchesInUse_sib_scale_pre[3]));
+    bufferH64$ u_buf_sib_scale_4 (.out(latchesInUse_sib_scale[4]), .in(latchesInUse_sib_scale_pre[4]));
+    bufferH64$ u_buf_sib_scale_5 (.out(latchesInUse_sib_scale[5]), .in(latchesInUse_sib_scale_pre[5]));
+    bufferH64$ u_buf_sib_scale_6 (.out(latchesInUse_sib_scale[6]), .in(latchesInUse_sib_scale_pre[6]));
+    bufferH64$ u_buf_sib_scale_7 (.out(latchesInUse_sib_scale[7]), .in(latchesInUse_sib_scale_pre[7]));
+
+    wire latchesInUse_disp_needed_pre;
+    `MUX_2(u_mx_disp_needed,  1, latchesInUse_disp_needed_pre,
         latches_normal_latches_disp_needed,  latches_rep_latches_disp_needed,  decode_outs_rep_latch)
-    `MUX_2(u_mx_disp_size,    1, latchesInUse_disp_size,
+    bufferH64$ u_buf_disp_needed (.out(latchesInUse_disp_needed), .in(latchesInUse_disp_needed_pre));
+    wire latchesInUse_disp_size_pre;
+    `MUX_2(u_mx_disp_size,    1, latchesInUse_disp_size_pre,
         latches_normal_latches_disp_size,    latches_rep_latches_disp_size,    decode_outs_rep_latch)
-    `MUX_2(u_mx_displacement,32, latchesInUse_displacement,
+    bufferH64$ u_buf_disp_size (.out(latchesInUse_disp_size), .in(latchesInUse_disp_size_pre));
+
+    wire [31:0] latchesInUse_displacement_pre;
+    `MUX_2(u_mx_displacement,32, latchesInUse_displacement_pre,
         latches_normal_latches_displacement, latches_rep_latches_displacement, decode_outs_rep_latch)
+    bufferH64$ u_buf_displacement_0  (.out(latchesInUse_displacement[0]),  .in(latchesInUse_displacement_pre[0]));
+    bufferH64$ u_buf_displacement_1  (.out(latchesInUse_displacement[1]),  .in(latchesInUse_displacement_pre[1]));
+    bufferH64$ u_buf_displacement_2  (.out(latchesInUse_displacement[2]),  .in(latchesInUse_displacement_pre[2]));
+    bufferH64$ u_buf_displacement_3  (.out(latchesInUse_displacement[3]),  .in(latchesInUse_displacement_pre[3]));
+    bufferH64$ u_buf_displacement_4  (.out(latchesInUse_displacement[4]),  .in(latchesInUse_displacement_pre[4]));
+    bufferH64$ u_buf_displacement_5  (.out(latchesInUse_displacement[5]),  .in(latchesInUse_displacement_pre[5]));
+    bufferH64$ u_buf_displacement_6  (.out(latchesInUse_displacement[6]),  .in(latchesInUse_displacement_pre[6]));
+    bufferH64$ u_buf_displacement_7  (.out(latchesInUse_displacement[7]),  .in(latchesInUse_displacement_pre[7]));
+    bufferH64$ u_buf_displacement_8  (.out(latchesInUse_displacement[8]),  .in(latchesInUse_displacement_pre[8]));
+    bufferH64$ u_buf_displacement_9  (.out(latchesInUse_displacement[9]),  .in(latchesInUse_displacement_pre[9]));
+    bufferH64$ u_buf_displacement_10 (.out(latchesInUse_displacement[10]), .in(latchesInUse_displacement_pre[10]));
+    bufferH64$ u_buf_displacement_11 (.out(latchesInUse_displacement[11]), .in(latchesInUse_displacement_pre[11]));
+    bufferH64$ u_buf_displacement_12 (.out(latchesInUse_displacement[12]), .in(latchesInUse_displacement_pre[12]));
+    bufferH64$ u_buf_displacement_13 (.out(latchesInUse_displacement[13]), .in(latchesInUse_displacement_pre[13]));
+    bufferH64$ u_buf_displacement_14 (.out(latchesInUse_displacement[14]), .in(latchesInUse_displacement_pre[14]));
+    bufferH64$ u_buf_displacement_15 (.out(latchesInUse_displacement[15]), .in(latchesInUse_displacement_pre[15]));
+    bufferH64$ u_buf_displacement_16 (.out(latchesInUse_displacement[16]), .in(latchesInUse_displacement_pre[16]));
+    bufferH64$ u_buf_displacement_17 (.out(latchesInUse_displacement[17]), .in(latchesInUse_displacement_pre[17]));
+    bufferH64$ u_buf_displacement_18 (.out(latchesInUse_displacement[18]), .in(latchesInUse_displacement_pre[18]));
+    bufferH64$ u_buf_displacement_19 (.out(latchesInUse_displacement[19]), .in(latchesInUse_displacement_pre[19]));
+    bufferH64$ u_buf_displacement_20 (.out(latchesInUse_displacement[20]), .in(latchesInUse_displacement_pre[20]));
+    bufferH64$ u_buf_displacement_21 (.out(latchesInUse_displacement[21]), .in(latchesInUse_displacement_pre[21]));
+    bufferH64$ u_buf_displacement_22 (.out(latchesInUse_displacement[22]), .in(latchesInUse_displacement_pre[22]));
+    bufferH64$ u_buf_displacement_23 (.out(latchesInUse_displacement[23]), .in(latchesInUse_displacement_pre[23]));
+    bufferH64$ u_buf_displacement_24 (.out(latchesInUse_displacement[24]), .in(latchesInUse_displacement_pre[24]));
+    bufferH64$ u_buf_displacement_25 (.out(latchesInUse_displacement[25]), .in(latchesInUse_displacement_pre[25]));
+    bufferH64$ u_buf_displacement_26 (.out(latchesInUse_displacement[26]), .in(latchesInUse_displacement_pre[26]));
+    bufferH64$ u_buf_displacement_27 (.out(latchesInUse_displacement[27]), .in(latchesInUse_displacement_pre[27]));
+    bufferH64$ u_buf_displacement_28 (.out(latchesInUse_displacement[28]), .in(latchesInUse_displacement_pre[28]));
+    bufferH64$ u_buf_displacement_29 (.out(latchesInUse_displacement[29]), .in(latchesInUse_displacement_pre[29]));
+    bufferH64$ u_buf_displacement_30 (.out(latchesInUse_displacement[30]), .in(latchesInUse_displacement_pre[30]));
+    bufferH64$ u_buf_displacement_31 (.out(latchesInUse_displacement[31]), .in(latchesInUse_displacement_pre[31]));
 
 
     // =========================================================================
@@ -727,11 +823,12 @@ module RR (
     // addygen_input_addy = (MODRM_NEEDED && RM_IS_DR) ? DR_data[31:0]
     //                                                : SR_data[31:0]
     // =========================================================================
-    wire        modrm_and_rmdr;
+    wire        modrm_and_rmdr_pre, modrm_and_rmdr;
     wire [31:0] addygen_input_addy_w;
 
-    `AND_2(u_modrm_and_rmdr, 1, modrm_and_rmdr,
+    `AND_2(u_modrm_and_rmdr, 1, modrm_and_rmdr_pre,
            latchesInUse_cs_MODRM_NEEDED, latchesInUse_cs_RM_IS_DR)
+    bufferH64$ u_buf_modrm_and_rmdr (.out(modrm_and_rmdr), .in(modrm_and_rmdr_pre));
 
     `MUX_2(u_mx_addygen_in, 32, addygen_input_addy_w,
            SR_data_w[31:0], DR_data_w[31:0], modrm_and_rmdr)
