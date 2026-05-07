@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/BranchHeavy/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/test1/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -95,9 +95,9 @@ CC_FLAGS += \
     +define+DCACHE_DUMP_END_DEFAULT=$(DCACHE_DUMP_END) \
 	
 ifeq ($(STRUCTRURAL), true)
-	$(CC_FLAGS) += \
-		+define+EXE_PURE_STRUCTURAL \
-		+define+REGFILE_OUTPUT_STRUCTURAL
+CC_FLAGS += \
+	+define+EXE_PURE_STRUCTURAL \
+	+define+REGFILE_OUTPUT_STRUCTURAL
 endif
 
 .PHONY: all run clean see gen full half genSoft runSoft merge
@@ -138,13 +138,14 @@ runSoft:
 	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
 	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
             +RTL_STOREDUMP_FILE_NAME=$(RTL_STOREDUMP_FILE) \
-	@$(PYTHON) $(MASTER_STARTUP_SCRIPT) -s cleaned_scripts.json $(GEN_CONF)
-	@rm -f cleaned_scripts.json
+
 
 see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'
 	@echo -e "\n"
 	
+view: run
+	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd &
 
 makeLogDir:
 	@mkdir -p $(LOG_DIR)

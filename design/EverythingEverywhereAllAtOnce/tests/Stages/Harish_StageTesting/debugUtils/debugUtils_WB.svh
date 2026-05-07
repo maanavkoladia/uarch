@@ -165,7 +165,7 @@
 //endtask
 //
 
-`define REGFILE_OUTPUT_STRUCTURAL
+//`define REGFILE_OUTPUT_STRUCTURAL
 
 // --- REGFILE DUMP ---
 // Full snapshot of GPRs and segment registers.
@@ -249,7 +249,6 @@ task automatic dump_regs(input reg [31:0] eip);
     $fdisplay(`REGDUMP_FD, "[REGFILE DUMP] EIP=0x%08h", eip);
 `ifdef REGFILE_PATH
 `ifdef REGFILE_OUTPUT_STRUCTURAL
-
     $fdisplay(`REGDUMP_FD, "  EAX=0x%08h  EBX=0x%08h  ECX=0x%08h  EDX=0x%08h",
               `REGFILE_PATH.REG_EAX_o[31:0],
               `REGFILE_PATH.REG_EBX_o[31:0],

@@ -37,10 +37,9 @@
 `define DCACHE_UNIT_PATH (temp)
 `define REGFILE_PATH uut_AllAtOnce.core_unit.rr_unit.RegisterFile_unit
 
-// EXE port style. Define when EXE is the pure-Verilog-2005 EXE_structural.v
-// (flat ports). Comment out / undef to fall back to SV struct ports
-// (EXE_structural.sv / EXE.sv).
-`define EXE_PURE_STRUCTURAL
+// EXE port style: defined via +define+EXE_PURE_STRUCTURAL in the Makefile
+// when STRUCTRURAL=true (EXE_structural.v flat ports).
+// Do NOT define it here -- it would break the SV tb_stages.sv compile.
 
 // ===================== DUMP FILE DESCRIPTORS =====================
 `define REGDUMP_FD regdumpfd

@@ -13,7 +13,7 @@ CORE_SRC_FILES = \
 				 $(CORE_PATH_INTERNAL)/IDM/IDM.sv	\
 				 $(CORE_PATH_INTERNAL)/TLB/TLB_structural.v \
 				 $(FETCH_SRC_FILES) \
-				 $(DECODE_SRC_FILES) \
+				 $(DECODE_STRUCTURAL_SRC_FILES) \
 				 $(RR_SRC_FILES) \
 				 $(DC_SRC_FILES) \
 				 $(MEM_STAGE_SRC_FILES) \

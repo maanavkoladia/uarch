@@ -90,7 +90,7 @@ module Decode (
                     idm_outs_i.idm_slots[1].valid, idm_outs_i.idm_slots[0].valid}),
         .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_byte(sib_byte), .sib_size(sib_size),
         .opcode_byte(opcode_byte), .modrm_byte(modrm_byte), .disp(displacement), .disp_size(disp_size),
-        .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector(total_pf_vector), .invalid_inst(invalid_inst),
+        .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector_o(total_pf_vector), .invalid_inst(invalid_inst),
 
         .seg_override(seg_override),
         .seg0(segment0),

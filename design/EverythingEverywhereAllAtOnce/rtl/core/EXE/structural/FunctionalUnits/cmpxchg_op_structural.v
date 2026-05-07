@@ -43,7 +43,9 @@ module cmpxchg_op (
 
     wire [7:0]  next_eax_b1;
     wire [15:0] next_eax_hi;
-    `MUX_2(u_mux_eax_b1, 8,  next_eax_b1, EAX[15:8],  rm[15:8],  data_size[1])
+    wire swap;
+    `AND_2(u_and_d1_d0, 1, swap, data_size[1], data_size[0])
+    `MUX_2(u_mux_eax_b1, 8,  next_eax_b1, EAX[15:8],  rm[15:8],  swap)
     `MUX_2(u_mux_eax_hi, 16, next_eax_hi, EAX[31:16], rm[31:16], data_size[2])
 
     wire [31:0] next_EAX;
