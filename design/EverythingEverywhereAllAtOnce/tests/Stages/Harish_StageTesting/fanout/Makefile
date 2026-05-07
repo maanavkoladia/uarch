@@ -10,10 +10,8 @@ check:
 checkRaw:
 	design_vision -no_gui -f run_fanout.tcl | tee $(CHECK_LOG_FILE)
 
-clean:
-	rm -f *.log*
-	rm -rf WORK/
-	rm -f *.svf
+parse: check.log
+	python3 scripts/parse_violations.py check.log | tee parse.log
 
-parse:
-	python3 scripts/parse_jacob.py check.log | tee parse.log
+clean:
+	rm -f *.log

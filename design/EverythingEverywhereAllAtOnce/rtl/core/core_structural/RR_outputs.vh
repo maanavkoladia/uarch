@@ -85,4 +85,15 @@
     wire [4:0]  dc_latches_next_sr_id; \
     wire [63:0] dc_latches_next_sr_data; \
     wire [4:0]  dc_latches_next_dr_id; \
-    wire [63:0] dc_latches_next_dr_data;
+    wire [63:0] dc_latches_next_dr_data; \
+    wire [1:0]  dc_latches_next_cs_datasize_0; \
+    wire [1:0]  dc_latches_next_cs_datasize_1; \
+    wire [1:0]  dc_latches_next_cs_datasize_2; \
+    wire        dc_latches_next_cs_LD_OP_0; \
+    wire        dc_latches_next_cs_LD_OP_1; \
+    wire        dc_latches_next_cs_LD_OP_2; \
+    wire        dc_latches_next_cs_LD_OP_3; \
+    wire        dc_latches_next_cs_ST_OP_0; \
+    wire        dc_latches_next_valid_0; \
+    wire        dc_latches_next_valid_1; \
+    wire        dc_latches_next_valid_2;

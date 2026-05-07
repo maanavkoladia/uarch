@@ -89,16 +89,35 @@ module push_address_gen (
 
     // ----------------------------------------------------------------
     // is_push_like = PUSH | FAR_CALL | CALL | EXP_CALL
+    //
+    // Drives 15 + 15 + 1 = 31 mux selects. push_address_gen sits OFF the
+    // DC critical path (its outputs feed mem_latches_next_ST_PADDR_*,
+    // clocked into MEM, not the dep-check/TLB/req_gen path), so a 2-stage
+    // bufferH16$ tree is the right call -- adds ~0.48 ns but irrelevant.
+    //
+    //   stage 1: is_push_like (raw OR_4 out, fanout 1 to s1 buffer)
+    //   stage 2: is_push_like_s1 (drives 2 stage-2 buffers, fanout 2)
+    //   leaves: is_push_like_a drives the 15-bit ST_PADDR_0_o MUX +
+    //           the 1-bit ST_XCL_o MUX (16 loads, at bufferH16$ rated);
+    //           is_push_like_b drives the 15-bit ST_PADDR_1_o MUX (15).
     // ----------------------------------------------------------------
     wire is_push_like;
     `OR_4(u_is_push_like, 1, is_push_like,
           cmp_push, cmp_far_call, cmp_call, cmp_exp_call)
 
+    wire is_push_like_s1;
+    bufferH16$ u_buf_is_push_like_s1 (.out(is_push_like_s1), .in(is_push_like));
+
+    wire is_push_like_a;
+    wire is_push_like_b;
+    bufferH16$ u_buf_is_push_like_a (.out(is_push_like_a), .in(is_push_like_s1));
+    bufferH16$ u_buf_is_push_like_b (.out(is_push_like_b), .in(is_push_like_s1));
+
     // ----------------------------------------------------------------
     // ST_PADDR_0_o = is_push_like ? start_address : ST_PADDR_0
     // ----------------------------------------------------------------
     `MUX_2(u_st_paddr_0_o, 15, ST_PADDR_0_o,
-           ST_PADDR_0, start_address, is_push_like)
+           ST_PADDR_0, start_address, is_push_like_a)
 
     // ----------------------------------------------------------------
     // ST_PADDR_1_o = is_push_like ? (end_address & 15'h7FF0) : ST_PADDR_1
@@ -108,7 +127,7 @@ module push_address_gen (
     assign end_address_aligned = {end_address[14:4], 4'b0000};
 
     `MUX_2(u_st_paddr_1_o, 15, ST_PADDR_1_o,
-           ST_PADDR_1, end_address_aligned, is_push_like)
+           ST_PADDR_1, end_address_aligned, is_push_like_b)
 
     // ----------------------------------------------------------------
     // ST_XCL_o = is_push_like ? (start_address[4] ^ end_address[4]) : ST_XCL
@@ -118,6 +137,6 @@ module push_address_gen (
            start_address[4], end_address[4])
 
     `MUX_2(u_st_xcl_o, 1, ST_XCL_o,
-           ST_XCL, xcl_push_like, is_push_like)
+           ST_XCL, xcl_push_like, is_push_like_a)
 
 endmodule

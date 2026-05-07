@@ -120,46 +120,57 @@ module cmp (
     bufferH16$ u_buf_is_011 (.out(is_011), .in(is_011_raw));
     bufferH16$ u_buf_is_111 (.out(is_111), .in(is_111_raw));
 
-    // ---- Per-flag chain of MUX_2 (default 0) ----
-    // out_step1 = is_eax ? eax : 0
-    // out_step2 = is_ax  ? ax  : out_step1
-    // out_final = is_al  ? al  : out_step2
+    // ---- Per-flag one-hot AND/OR (2 levels instead of 3-deep MUX cascade) ----
+    // is_al, is_011, is_111 are mutually exclusive (one-hot from CMP_N decoders).
+    // When none match, all AND outputs are 0 and the OR yields 0 — same default
+    // behavior as the previous MUX_2 cascade (which started from 1'b0).
+    //
+    //   was: zf_s1 = is_111 ? eax_zf : 0
+    //        zf_s2 = is_011 ? ax_zf  : zf_s1
+    //        ZF    = is_al  ? al_zf  : zf_s2          (3 levels)
+    //   now: ZF = (is_al & al_zf) | (is_011 & ax_zf) | (is_111 & eax_zf)  (2 levels)
 
-    wire zf_s1, zf_s2;
+    wire zf_t_al, zf_t_ax, zf_t_eax;
     wire ZF_raw;
-    `MUX_2(u_mux_zf_s1, 1, zf_s1,  1'b0,  eax_zf, is_111)
-    `MUX_2(u_mux_zf_s2, 1, zf_s2,  zf_s1, ax_zf,  is_011)
-    `MUX_2(u_mux_zf,    1, ZF_raw, zf_s2, al_zf,  is_al)
+    `AND_2(u_and_zf_al,  1, zf_t_al,  al_zf,  is_al)
+    `AND_2(u_and_zf_ax,  1, zf_t_ax,  ax_zf,  is_011)
+    `AND_2(u_and_zf_eax, 1, zf_t_eax, eax_zf, is_111)
+    `OR_3(u_or_zf,       1, ZF_raw,   zf_t_al, zf_t_ax, zf_t_eax)
     // Buffer ZF with bufferH256$: external fanout 97 exceeds bufferH64$'s
     // 64-load rating; bufferH256$ (rated 256, 0.54 ns typ) is the next size.
     bufferH256$ u_buf_zf (.out(ZF), .in(ZF_raw));
 
-    wire sf_s1, sf_s2;
-    `MUX_2(u_mux_sf_s1, 1, sf_s1, 1'b0,  eax_sf, is_111)
-    `MUX_2(u_mux_sf_s2, 1, sf_s2, sf_s1, ax_sf,  is_011)
-    `MUX_2(u_mux_sf,    1, SF,    sf_s2, al_sf,  is_al)
+    wire sf_t_al, sf_t_ax, sf_t_eax;
+    `AND_2(u_and_sf_al,  1, sf_t_al,  al_sf,  is_al)
+    `AND_2(u_and_sf_ax,  1, sf_t_ax,  ax_sf,  is_011)
+    `AND_2(u_and_sf_eax, 1, sf_t_eax, eax_sf, is_111)
+    `OR_3(u_or_sf,       1, SF,       sf_t_al, sf_t_ax, sf_t_eax)
 
-    wire cf_s1, cf_s2;
-    `MUX_2(u_mux_cf_s1, 1, cf_s1, 1'b0,  eax_cf, is_111)
-    `MUX_2(u_mux_cf_s2, 1, cf_s2, cf_s1, ax_cf,  is_011)
-    `MUX_2(u_mux_cf,    1, CF,    cf_s2, al_cf,  is_al)
+    wire cf_t_al, cf_t_ax, cf_t_eax;
+    `AND_2(u_and_cf_al,  1, cf_t_al,  al_cf,  is_al)
+    `AND_2(u_and_cf_ax,  1, cf_t_ax,  ax_cf,  is_011)
+    `AND_2(u_and_cf_eax, 1, cf_t_eax, eax_cf, is_111)
+    `OR_3(u_or_cf,       1, CF,       cf_t_al, cf_t_ax, cf_t_eax)
 
-    wire pf_s1, pf_s2;
-    `MUX_2(u_mux_pf_s1, 1, pf_s1, 1'b0,  eax_pf, is_111)
-    `MUX_2(u_mux_pf_s2, 1, pf_s2, pf_s1, ax_pf,  is_011)
-    `MUX_2(u_mux_pf,    1, PF,    pf_s2, al_pf,  is_al)
+    wire pf_t_al, pf_t_ax, pf_t_eax;
+    `AND_2(u_and_pf_al,  1, pf_t_al,  al_pf,  is_al)
+    `AND_2(u_and_pf_ax,  1, pf_t_ax,  ax_pf,  is_011)
+    `AND_2(u_and_pf_eax, 1, pf_t_eax, eax_pf, is_111)
+    `OR_3(u_or_pf,       1, PF,       pf_t_al, pf_t_ax, pf_t_eax)
 
-    wire of_s1, of_s2;
-    `MUX_2(u_mux_of_s1, 1, of_s1, 1'b0,  eax_of, is_111)
-    `MUX_2(u_mux_of_s2, 1, of_s2, of_s1, ax_of,  is_011)
-    `MUX_2(u_mux_of,    1, OF,    of_s2, al_of,  is_al)
+    wire of_t_al, of_t_ax, of_t_eax;
+    `AND_2(u_and_of_al,  1, of_t_al,  al_of,  is_al)
+    `AND_2(u_and_of_ax,  1, of_t_ax,  ax_of,  is_011)
+    `AND_2(u_and_of_eax, 1, of_t_eax, eax_of, is_111)
+    `OR_3(u_or_of,       1, OF,       of_t_al, of_t_ax, of_t_eax)
 
     // SV reference omits AF in its `default` branch (i.e., AF retains last value
     // and would synthesize as a latch). Structural can't do that — drive 0.
-    wire af_s1, af_s2;
-    `MUX_2(u_mux_af_s1, 1, af_s1, 1'b0,  eax_af, is_111)
-    `MUX_2(u_mux_af_s2, 1, af_s2, af_s1, ax_af,  is_011)
-    `MUX_2(u_mux_af,    1, AF,    af_s2, al_af,  is_al)
+    wire af_t_al, af_t_ax, af_t_eax;
+    `AND_2(u_and_af_al,  1, af_t_al,  al_af,  is_al)
+    `AND_2(u_and_af_ax,  1, af_t_ax,  ax_af,  is_011)
+    `AND_2(u_and_af_eax, 1, af_t_eax, eax_af, is_111)
+    `OR_3(u_or_af,       1, AF,       af_t_al, af_t_ax, af_t_eax)
 
 endmodule
 

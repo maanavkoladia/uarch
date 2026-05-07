@@ -60,16 +60,65 @@ module GShare (
     //   pht_index_spec   = bhr_spec ^ spc[CACHE_LINE_OFF +: BHR_SIZE]
     //   pht_index_update = bhr_real ^ exe_br_eip[CACHE_LINE_OFF +: BHR_SIZE]
     // ----------------------------------------------------------------
+    localparam NUM_LEAVES = 16;
+
     wire [BHR_SIZE-1:0] spc_pc_bits;
     wire [BHR_SIZE-1:0] eip_pc_bits;
-    wire [BHR_SIZE-1:0] pht_index_spec;
+    wire [BHR_SIZE-1:0] pht_index_spec [0:NUM_LEAVES-1];
     wire [BHR_SIZE-1:0] pht_index_update;
 
     assign spc_pc_bits = spc       [CACHE_LINE_OFF +: BHR_SIZE];
     assign eip_pc_bits = exe_br_eip[CACHE_LINE_OFF +: BHR_SIZE];
 
-    `XOR_2(u_xor_spec, BHR_SIZE, pht_index_spec,   bhr_spec, spc_pc_bits)
-    `XOR_2(u_xor_upd,  BHR_SIZE, pht_index_update, bhr_real, eip_pc_bits)
+    // ----------------------------------------------------------------
+    // pht_index_spec: 2-stage buffer tree with 16 stage-2 leaves per bit.
+    //
+    // The read mux tree's bottom-level bit (SEL_BIT=0) feeds 128 mux
+    // selects.  bufferH16$ is rated for 16 loads -- a single stage-2
+    // buffer cannot drive 128 (the cause of the previous violation).
+    // The proper 2-stage tree:
+    //
+    //   xor2$ -> s1 (1 buffer)  -> 16x s2 (parallel leaves)
+    //                                   each leaf drives <=16 mux selects
+    //
+    // Per-leaf, per-bit fanout in the read tree:
+    //   bit 0: 128 / 16 = 8     (well within rated 16)
+    //   bit 1: 64 / 16  = 4
+    //   bit 2: 32 / 16  = 2
+    //   bit 3: 16 / 16  = 1
+    //   bit >=4: <=1
+    //
+    // Each pred_tree mux node p uses pht_index_spec[(p-1) % 16][SEL_BIT]
+    // -- modular round-robin distributes the 255 mux nodes evenly.
+    // ----------------------------------------------------------------
+    wire [BHR_SIZE-1:0] pht_index_spec_raw;
+    wire [BHR_SIZE-1:0] pht_index_spec_s1;
+
+    `XOR_2(u_xor_spec, BHR_SIZE, pht_index_spec_raw, bhr_spec, spc_pc_bits)
+
+    genvar gb;
+    generate
+        for (gb = 0; gb < BHR_SIZE; gb = gb + 1) begin : g_buf_spec_s1
+            bufferH16$ u_s1 (.out(pht_index_spec_s1[gb]),
+                             .in(pht_index_spec_raw[gb]));
+        end
+    endgenerate
+
+    genvar lf;
+    generate
+        for (lf = 0; lf < NUM_LEAVES; lf = lf + 1) begin : g_buf_spec_s2
+            for (gb = 0; gb < BHR_SIZE; gb = gb + 1) begin : g_per_bit
+                bufferH16$ u_s2 (.out(pht_index_spec[lf][gb]),
+                                 .in(pht_index_spec_s1[gb]));
+            end
+        end
+    endgenerate
+
+    // pht_index_update has only one downstream consumer (u_upd_dec input).
+    // The decoder explodes internally to 256 outputs but that fanout is
+    // INSIDE MPS_decoder$, not on this wire -- buffering pht_index_update
+    // doesn't help the decoder's internal violations. Drive it raw.
+    `XOR_2(u_xor_upd, BHR_SIZE, pht_index_update, bhr_real, eip_pc_bits)
 
     // ----------------------------------------------------------------
     // Train one-hot decode + per-entry inc / dec
@@ -80,18 +129,36 @@ module GShare (
     `DECODER_N(u_upd_dec, BHR_SIZE, pht_index_update, update_oh)
 
     wire not_exe_br_taken;
-    wire taken_global;        // exe_br_valid &  exe_br_taken
-    wire nottaken_global;     // exe_br_valid & ~exe_br_taken
+    `INV_N(u_inv_etk, 1, exe_br_taken, not_exe_br_taken)
 
-    `INV_N(u_inv_etk, 1, exe_br_taken,    not_exe_br_taken)
-    `AND_2(u_tg,      1, taken_global,    exe_br_valid, exe_br_taken)
-    `AND_2(u_ntg,     1, nottaken_global, exe_br_valid, not_exe_br_taken)
+    // ----------------------------------------------------------------
+    // taken_global / nottaken_global: 2-stage tree with 16 stage-2 leaves.
+    // Each fans out to 256 PHT entries; 16 leaves drive 16 entries each
+    // (within bufferH16$ rated 16). g_pht uses (p / 16) to pick its leaf.
+    // ----------------------------------------------------------------
+    wire taken_global_raw,    taken_global_s1;
+    wire nottaken_global_raw, nottaken_global_s1;
+    wire [NUM_LEAVES-1:0] taken_global;
+    wire [NUM_LEAVES-1:0] nottaken_global;
+
+    `AND_2(u_tg,  1, taken_global_raw,    exe_br_valid, exe_br_taken)
+    `AND_2(u_ntg, 1, nottaken_global_raw, exe_br_valid, not_exe_br_taken)
+    bufferH16$ u_tg_s1  (.out(taken_global_s1),    .in(taken_global_raw));
+    bufferH16$ u_ntg_s1 (.out(nottaken_global_s1), .in(nottaken_global_raw));
+
+    generate
+        for (lf = 0; lf < NUM_LEAVES; lf = lf + 1) begin : g_global_s2
+            bufferH16$ u_tg_s2  (.out(taken_global[lf]),    .in(taken_global_s1));
+            bufferH16$ u_ntg_s2 (.out(nottaken_global[lf]), .in(nottaken_global_s1));
+        end
+    endgenerate
 
     genvar p;
     generate
         for (p = 0; p < PHT_SIZE; p = p + 1) begin : g_pht
-            `AND_2(u_inc, 1, pht_inc[p], update_oh[p], taken_global)
-            `AND_2(u_dec, 1, pht_dec[p], update_oh[p], nottaken_global)
+            localparam GRP = p / 16;     // 0..15, contiguous 16-entry chunks
+            `AND_2(u_inc, 1, pht_inc[p], update_oh[p], taken_global[GRP])
+            `AND_2(u_dec, 1, pht_dec[p], update_oh[p], nottaken_global[GRP])
 
             two_bit_sat_count u_cnt (
                 .clk  (clk),
@@ -118,12 +185,16 @@ module GShare (
             assign pred_tree[PHT_SIZE + p] = pht_taken[p];
         end
         for (p = 1; p < PHT_SIZE; p = p + 1) begin : g_pred_node
-            localparam DEPTH   = $clog2(p + 1) - 1;
-            localparam SEL_BIT = BHR_SIZE - 1 - DEPTH;
+            localparam DEPTH    = $clog2(p + 1) - 1;
+            localparam SEL_BIT  = BHR_SIZE - 1 - DEPTH;
+            // Distribute 255 mux nodes across 16 stage-2 buffer leaves.
+            // Round-robin by node index keeps per-leaf-per-bit fanout <=8
+            // for the worst bit (bit 0, 128 nodes / 16 leaves).
+            localparam LEAF_IDX = (p - 1) % NUM_LEAVES;
             `MUX_2(u_mux, 1,
                    pred_tree[p],
                    pred_tree[2*p], pred_tree[2*p + 1],
-                   pht_index_spec[SEL_BIT])
+                   pht_index_spec[LEAF_IDX][SEL_BIT])
         end
     endgenerate
 

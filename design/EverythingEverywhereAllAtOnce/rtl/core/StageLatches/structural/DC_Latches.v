@@ -171,6 +171,44 @@ module DC_Latches (
     input wire [4:0]  nextLatches_dr_id_i,
     input wire [63:0] nextLatches_dr_data_i,
 
+    // ----- duplicated copies for fanout reduction (CP control signals) -----
+    // Each copy is an independent REG_RST_WE driven by the same nextLatches
+    // data, but produces its own Q so DC can route disjoint subsets of
+    // consumers per copy. Zero added CP delay (flop CLK->Q unchanged).
+
+    // cs_datasize x3 (Fix E)
+    //   _0 -> ld_neuralnet_part2 (CP)
+    //   _1 -> st_neuralnet_part2 (CP)
+    //   _2 -> push_addr_gen + data_vec_uint via bufferH16$ in DC (off-CP)
+    input wire [1:0]  nextLatches_cs_datasize_0_i,
+    input wire [1:0]  nextLatches_cs_datasize_1_i,
+    input wire [1:0]  nextLatches_cs_datasize_2_i,
+
+    // cs_LD_OP x4 (Fix G)
+    //   _0 -> in_flight_dep_check + stq_dep_check (CP)
+    //   _1 -> req_gen (CP)
+    //   _2 -> ld_neuralnet_part2.mem_op (CP)
+    //   _3 -> data_vec_uint + u_ld_exception via bufferH16$ in DC (off-CP)
+    input wire        nextLatches_cs_LD_OP_0_i,
+    input wire        nextLatches_cs_LD_OP_1_i,
+    input wire        nextLatches_cs_LD_OP_2_i,
+    input wire        nextLatches_cs_LD_OP_3_i,
+
+    // cs_ST_OP x1 dedicated copy (Fix F addendum): st_neuralnet_part2's
+    // write_intent + mem_op carry ~17 flattened internal loads through the
+    // two TLBs. Even though st_npu is off the dep-check/TLB/req_gen CP, it
+    // dominates cs_ST_OP's flattened fanout, so a dedicated latch copy
+    // isolates that load from the off-CP buffered consumers.
+    input wire        nextLatches_cs_ST_OP_0_i,
+
+    // valid x3 (Fix H)
+    //   _0 -> in_flight_dep_check + stq_dep_check (CP)
+    //   _1 -> req_gen (CP)
+    //   _2 -> u_exp_stall + dc_outs_valid output assign (off-CP)
+    input wire        nextLatches_valid_0_i,
+    input wire        nextLatches_valid_1_i,
+    input wire        nextLatches_valid_2_i,
+
     // ----- latches_o (unrolled) -----
     output wire        latches_valid_o,
 
@@ -233,7 +271,23 @@ module DC_Latches (
     output wire [4:0]  latches_sr_id_o,
     output wire [63:0] latches_sr_data_o,
     output wire [4:0]  latches_dr_id_o,
-    output wire [63:0] latches_dr_data_o
+    output wire [63:0] latches_dr_data_o,
+
+    // ----- duplicated outputs (paired with the duplicated inputs above) -----
+    output wire [1:0]  latches_cs_datasize_0_o,
+    output wire [1:0]  latches_cs_datasize_1_o,
+    output wire [1:0]  latches_cs_datasize_2_o,
+
+    output wire        latches_cs_LD_OP_0_o,
+    output wire        latches_cs_LD_OP_1_o,
+    output wire        latches_cs_LD_OP_2_o,
+    output wire        latches_cs_LD_OP_3_o,
+
+    output wire        latches_cs_ST_OP_0_o,
+
+    output wire        latches_valid_0_o,
+    output wire        latches_valid_1_o,
+    output wire        latches_valid_2_o
 );
 
     // ============================================================
@@ -439,5 +493,46 @@ module DC_Latches (
     `REG_RST_WE(dc_latches_sr_data,                        64,  clk, rst, effective_we, sr_data_d,                        latches_sr_data_o);
     `REG_RST_WE(dc_latches_dr_id,                          5,   clk, rst, effective_we, dr_id_d,                          latches_dr_id_o);
     `REG_RST_WE(dc_latches_dr_data,                        64,  clk, rst, effective_we, dr_data_d,                        latches_dr_data_o);
+
+    // ============================================================
+    // Duplicated copies for fanout reduction.  Each copy has its own
+    // flush MUX_2 and REG_RST_WE so the Q outputs are physically
+    // independent wires that DC can route to disjoint consumer subsets.
+    // The shared `combined_flush` and `effective_we` are reused.
+    // ============================================================
+
+    // ---- cs_datasize x3 ----
+    wire [1:0] cs_datasize_0_d, cs_datasize_1_d, cs_datasize_2_d;
+    `MUX_2(u_dc_mux_cs_datasize_0, 2, cs_datasize_0_d, nextLatches_cs_datasize_0_i, 2'b0, combined_flush);
+    `MUX_2(u_dc_mux_cs_datasize_1, 2, cs_datasize_1_d, nextLatches_cs_datasize_1_i, 2'b0, combined_flush);
+    `MUX_2(u_dc_mux_cs_datasize_2, 2, cs_datasize_2_d, nextLatches_cs_datasize_2_i, 2'b0, combined_flush);
+    `REG_RST_WE(dc_latches_cs_datasize_0, 2, clk, rst, effective_we, cs_datasize_0_d, latches_cs_datasize_0_o);
+    `REG_RST_WE(dc_latches_cs_datasize_1, 2, clk, rst, effective_we, cs_datasize_1_d, latches_cs_datasize_1_o);
+    `REG_RST_WE(dc_latches_cs_datasize_2, 2, clk, rst, effective_we, cs_datasize_2_d, latches_cs_datasize_2_o);
+
+    // ---- cs_LD_OP x4 ----
+    wire cs_LD_OP_0_d, cs_LD_OP_1_d, cs_LD_OP_2_d, cs_LD_OP_3_d;
+    `MUX_2(u_dc_mux_cs_LD_OP_0, 1, cs_LD_OP_0_d, nextLatches_cs_LD_OP_0_i, 1'b0, combined_flush);
+    `MUX_2(u_dc_mux_cs_LD_OP_1, 1, cs_LD_OP_1_d, nextLatches_cs_LD_OP_1_i, 1'b0, combined_flush);
+    `MUX_2(u_dc_mux_cs_LD_OP_2, 1, cs_LD_OP_2_d, nextLatches_cs_LD_OP_2_i, 1'b0, combined_flush);
+    `MUX_2(u_dc_mux_cs_LD_OP_3, 1, cs_LD_OP_3_d, nextLatches_cs_LD_OP_3_i, 1'b0, combined_flush);
+    `REG_RST_WE(dc_latches_cs_LD_OP_0, 1, clk, rst, effective_we, cs_LD_OP_0_d, latches_cs_LD_OP_0_o);
+    `REG_RST_WE(dc_latches_cs_LD_OP_1, 1, clk, rst, effective_we, cs_LD_OP_1_d, latches_cs_LD_OP_1_o);
+    `REG_RST_WE(dc_latches_cs_LD_OP_2, 1, clk, rst, effective_we, cs_LD_OP_2_d, latches_cs_LD_OP_2_o);
+    `REG_RST_WE(dc_latches_cs_LD_OP_3, 1, clk, rst, effective_we, cs_LD_OP_3_d, latches_cs_LD_OP_3_o);
+
+    // ---- cs_ST_OP x1 (dedicated for st_neuralnet_part2) ----
+    wire cs_ST_OP_0_d;
+    `MUX_2(u_dc_mux_cs_ST_OP_0, 1, cs_ST_OP_0_d, nextLatches_cs_ST_OP_0_i, 1'b0, combined_flush);
+    `REG_RST_WE(dc_latches_cs_ST_OP_0, 1, clk, rst, effective_we, cs_ST_OP_0_d, latches_cs_ST_OP_0_o);
+
+    // ---- valid x3 ----
+    wire valid_0_d, valid_1_d, valid_2_d;
+    `MUX_2(u_dc_mux_valid_0, 1, valid_0_d, nextLatches_valid_0_i, 1'b0, combined_flush);
+    `MUX_2(u_dc_mux_valid_1, 1, valid_1_d, nextLatches_valid_1_i, 1'b0, combined_flush);
+    `MUX_2(u_dc_mux_valid_2, 1, valid_2_d, nextLatches_valid_2_i, 1'b0, combined_flush);
+    `REG_RST_WE(dc_latches_valid_0, 1, clk, rst, effective_we, valid_0_d, latches_valid_0_o);
+    `REG_RST_WE(dc_latches_valid_1, 1, clk, rst, effective_we, valid_1_d, latches_valid_1_o);
+    `REG_RST_WE(dc_latches_valid_2, 1, clk, rst, effective_we, valid_2_d, latches_valid_2_o);
 
 endmodule

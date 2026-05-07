@@ -35,33 +35,52 @@ module sal_op (
 );
 
     // ---- Count derivation ----
+    // Per Intel SAL/SHL spec: "count is masked to 5 bits, range 0 to 31".
+    // count[5] is therefore always 0 by ISA contract -- the previous 6th
+    // barrel-shift stage (shift-by-32) was dead logic and is removed below,
+    // saving one MUX level on the entire result/flag critical path.
     wire [4:0] cnt_amt;
     `MUX_2(u_mux_cnt_amt, 5, cnt_amt, shift_amt_i[12:8], shift_amt_i[4:0], data_size[0])
     wire [5:0] count_pre;
     assign count_pre = {1'b0, cnt_amt};
-    wire [5:0] count;
+    wire [5:0] count;          // cmp/comparator path (low fanout)
+    wire [4:0] count_sh64;     // sh64 cascade selects (64 loads/bit)
+    wire [4:0] count_sh16;     // sh16 cascade selects (16 loads/bit)
     wire [5:0] count_raw;
     `MUX_2(u_mux_count, 6, count_raw, count_pre, 6'd1, shift_by_one)
 
-    // count fans out to both the sh64 (64) and sh16 (16) cascade selects plus
-    // the count comparators — ~82 leaves per bit. bufferH256$ (rated 256, 0.54
-    // ns typ) is the smallest H-buffer that covers; bufferH64$ is rated 64.
+    // Split the per-bit fanout into three buffered taps so each driver fights
+    // a smaller load instead of one 0.54 ns bufferH256$:
+    //   sh64 cascade (64 loads/bit) -> bufferH64$  (0.30 ns)
+    //   sh16 cascade (16 loads/bit) -> bufferH16$  (0.24 ns)
+    //   is_count_one + is_count_zero CMPs -> bufferH16$  (0.24 ns)
     genvar gi_buf_cnt;
     generate
-        for (gi_buf_cnt = 0; gi_buf_cnt < 6; gi_buf_cnt = gi_buf_cnt + 1) begin : g_count_buf
-            bufferH256$ u_buf_cnt (.out(count[gi_buf_cnt]), .in(count_raw[gi_buf_cnt]));
+        for (gi_buf_cnt = 0; gi_buf_cnt < 5; gi_buf_cnt = gi_buf_cnt + 1) begin : g_count_buf_sh
+            bufferH64$ u_buf_cnt_sh64 (
+                .out(count_sh64[gi_buf_cnt]),
+                .in (count_raw[gi_buf_cnt]));
+            bufferH16$ u_buf_cnt_sh16 (
+                .out(count_sh16[gi_buf_cnt]),
+                .in (count_raw[gi_buf_cnt]));
+        end
+        for (gi_buf_cnt = 0; gi_buf_cnt < 6; gi_buf_cnt = gi_buf_cnt + 1) begin : g_count_buf_cmp
+            bufferH16$ u_buf_cnt_cmp (
+                .out(count[gi_buf_cnt]),
+                .in (count_raw[gi_buf_cnt]));
         end
     endgenerate
 
     // ---- 64-bit barrel left shift of value_i ----
-    wire [63:0] sh64_s0, sh64_s1, sh64_s2, sh64_s3, sh64_s4, sh64;
+    // 5 stages cover shift amounts 0..31 (max per Intel spec for a 32-bit
+    // operand).  Stage-by-32 was always pass-through (count[5]==0) so removed.
+    wire [63:0] sh64_s0, sh64_s1, sh64_s2, sh64_s3, sh64;
     wire [63:0] sh64_raw;
-    `MUX_2(u_sh64_0, 64, sh64_s0,  value_i, {value_i[62:0],  1'b0}, count[0])
-    `MUX_2(u_sh64_1, 64, sh64_s1,  sh64_s0, {sh64_s0[61:0],  2'b0}, count[1])
-    `MUX_2(u_sh64_2, 64, sh64_s2,  sh64_s1, {sh64_s1[59:0],  4'b0}, count[2])
-    `MUX_2(u_sh64_3, 64, sh64_s3,  sh64_s2, {sh64_s2[55:0],  8'b0}, count[3])
-    `MUX_2(u_sh64_4, 64, sh64_s4,  sh64_s3, {sh64_s3[47:0], 16'b0}, count[4])
-    `MUX_2(u_sh64_5, 64, sh64_raw, sh64_s4, {sh64_s4[31:0], 32'b0}, count[5])
+    `MUX_2(u_sh64_0, 64, sh64_s0,  value_i, {value_i[62:0],  1'b0}, count_sh64[0])
+    `MUX_2(u_sh64_1, 64, sh64_s1,  sh64_s0, {sh64_s0[61:0],  2'b0}, count_sh64[1])
+    `MUX_2(u_sh64_2, 64, sh64_s2,  sh64_s1, {sh64_s1[59:0],  4'b0}, count_sh64[2])
+    `MUX_2(u_sh64_3, 64, sh64_s3,  sh64_s2, {sh64_s2[55:0],  8'b0}, count_sh64[3])
+    `MUX_2(u_sh64_4, 64, sh64_raw, sh64_s3, {sh64_s3[47:0], 16'b0}, count_sh64[4])
 
     // sh64 bits feed flag reductions, byte-lane muxes, and individual flag
     // bits — worst per-bit fanout ~11. bufferH16$ (0.24 ns) is the right size.
@@ -73,16 +92,16 @@ module sal_op (
     endgenerate
 
     // ---- 16-bit barrel left shift of {8'd0, value_i[15:8]} (for AH) ----
+    // Same: 5 stages cover shift 0..31; the dead stage 5 is removed.
     wire [15:0] ah_in;
     assign ah_in = {8'd0, value_i[15:8]};
-    wire [15:0] sh16_s0, sh16_s1, sh16_s2, sh16_s3, sh16_s4, sh16_raw, sh16;
+    wire [15:0] sh16_s0, sh16_s1, sh16_s2, sh16_s3, sh16_raw, sh16;
     wire        sh16_b7_buf;
-    `MUX_2(u_sh16_0, 16, sh16_s0,  ah_in,    {ah_in[14:0],   1'b0}, count[0])
-    `MUX_2(u_sh16_1, 16, sh16_s1,  sh16_s0,  {sh16_s0[13:0], 2'b0}, count[1])
-    `MUX_2(u_sh16_2, 16, sh16_s2,  sh16_s1,  {sh16_s1[11:0], 4'b0}, count[2])
-    `MUX_2(u_sh16_3, 16, sh16_s3,  sh16_s2,  {sh16_s2[7:0],  8'b0}, count[3])
-    `MUX_2(u_sh16_4, 16, sh16_s4,  sh16_s3,  16'b0,                count[4])
-    `MUX_2(u_sh16_5, 16, sh16_raw, sh16_s4,  16'b0,                count[5])
+    `MUX_2(u_sh16_0, 16, sh16_s0,  ah_in,    {ah_in[14:0],   1'b0}, count_sh16[0])
+    `MUX_2(u_sh16_1, 16, sh16_s1,  sh16_s0,  {sh16_s0[13:0], 2'b0}, count_sh16[1])
+    `MUX_2(u_sh16_2, 16, sh16_s2,  sh16_s1,  {sh16_s1[11:0], 4'b0}, count_sh16[2])
+    `MUX_2(u_sh16_3, 16, sh16_s3,  sh16_s2,  {sh16_s2[7:0],  8'b0}, count_sh16[3])
+    `MUX_2(u_sh16_4, 16, sh16_raw, sh16_s3,  16'b0,                count_sh16[4])
 
     // Only sh16[7] (sign bit) has fanout 5 — buffer just that bit so other
     // bits don't pay buffer delay.
@@ -151,36 +170,49 @@ module sal_op (
     bufferH64$ u_buf_is_eax_sm  (.out(is_eax),     .in(is_eax_raw));
     bufferH64$ u_buf_is_eax_lg  (.out(is_eax_big), .in(is_eax_raw));
 
-    // ---- Per-flag width mux (count > 0; default 0 if no width matches) ----
-    wire zf_w_s1, zf_w_s2, zf_w_s3, zf_w;
-    `MUX_2(u_mux_zfw_1, 1, zf_w_s1, 1'b0,    eax_zf, is_eax)
-    `MUX_2(u_mux_zfw_2, 1, zf_w_s2, zf_w_s1, ax_zf,  is_ax)
-    `MUX_2(u_mux_zfw_3, 1, zf_w_s3, zf_w_s2, ah_zf,  is_ah)
-    `MUX_2(u_mux_zfw,   1, zf_w,    zf_w_s3, al_zf,  is_al)
+    // ---- Per-flag one-hot AND/OR (2 levels instead of 4-deep MUX cascade) ----
+    // is_al, is_ah, is_ax, is_eax are mutually exclusive (one-hot from CMP_N).
+    // When none match, all AND outputs are 0 and the OR yields 0 — same default
+    // as the previous MUX_2 cascade.
+    //
+    //   was: 4-deep MUX_2 cascade per flag                  (4 levels)
+    //   now: zf_w = (is_al & al_zf) | (is_ah & ah_zf)
+    //              | (is_ax & ax_zf) | (is_eax & eax_zf)   (2 levels)
 
-    wire sf_w_s1, sf_w_s2, sf_w_s3, sf_w;
-    `MUX_2(u_mux_sfw_1, 1, sf_w_s1, 1'b0,    eax_sf, is_eax)
-    `MUX_2(u_mux_sfw_2, 1, sf_w_s2, sf_w_s1, ax_sf,  is_ax)
-    `MUX_2(u_mux_sfw_3, 1, sf_w_s3, sf_w_s2, ah_sf,  is_ah)
-    `MUX_2(u_mux_sfw,   1, sf_w,    sf_w_s3, al_sf,  is_al)
+    wire zf_w_t_al, zf_w_t_ah, zf_w_t_ax, zf_w_t_eax, zf_w;
+    `AND_2(u_and_zfw_al,  1, zf_w_t_al,  al_zf,  is_al)
+    `AND_2(u_and_zfw_ah,  1, zf_w_t_ah,  ah_zf,  is_ah)
+    `AND_2(u_and_zfw_ax,  1, zf_w_t_ax,  ax_zf,  is_ax)
+    `AND_2(u_and_zfw_eax, 1, zf_w_t_eax, eax_zf, is_eax)
+    `OR_4(u_or_zfw,       1, zf_w, zf_w_t_al, zf_w_t_ah, zf_w_t_ax, zf_w_t_eax)
 
-    wire cf_w_s1, cf_w_s2, cf_w_s3, cf_w;
-    `MUX_2(u_mux_cfw_1, 1, cf_w_s1, 1'b0,    eax_cf, is_eax)
-    `MUX_2(u_mux_cfw_2, 1, cf_w_s2, cf_w_s1, ax_cf,  is_ax)
-    `MUX_2(u_mux_cfw_3, 1, cf_w_s3, cf_w_s2, ah_cf,  is_ah)
-    `MUX_2(u_mux_cfw,   1, cf_w,    cf_w_s3, al_cf,  is_al)
+    wire sf_w_t_al, sf_w_t_ah, sf_w_t_ax, sf_w_t_eax, sf_w;
+    `AND_2(u_and_sfw_al,  1, sf_w_t_al,  al_sf,  is_al)
+    `AND_2(u_and_sfw_ah,  1, sf_w_t_ah,  ah_sf,  is_ah)
+    `AND_2(u_and_sfw_ax,  1, sf_w_t_ax,  ax_sf,  is_ax)
+    `AND_2(u_and_sfw_eax, 1, sf_w_t_eax, eax_sf, is_eax)
+    `OR_4(u_or_sfw,       1, sf_w, sf_w_t_al, sf_w_t_ah, sf_w_t_ax, sf_w_t_eax)
 
-    wire pf_w_s1, pf_w_s2, pf_w_s3, pf_w;
-    `MUX_2(u_mux_pfw_1, 1, pf_w_s1, 1'b0,    eax_pf, is_eax)
-    `MUX_2(u_mux_pfw_2, 1, pf_w_s2, pf_w_s1, ax_pf,  is_ax)
-    `MUX_2(u_mux_pfw_3, 1, pf_w_s3, pf_w_s2, ah_pf,  is_ah)
-    `MUX_2(u_mux_pfw,   1, pf_w,    pf_w_s3, al_pf,  is_al)
+    wire cf_w_t_al, cf_w_t_ah, cf_w_t_ax, cf_w_t_eax, cf_w;
+    `AND_2(u_and_cfw_al,  1, cf_w_t_al,  al_cf,  is_al)
+    `AND_2(u_and_cfw_ah,  1, cf_w_t_ah,  ah_cf,  is_ah)
+    `AND_2(u_and_cfw_ax,  1, cf_w_t_ax,  ax_cf,  is_ax)
+    `AND_2(u_and_cfw_eax, 1, cf_w_t_eax, eax_cf, is_eax)
+    `OR_4(u_or_cfw,       1, cf_w, cf_w_t_al, cf_w_t_ah, cf_w_t_ax, cf_w_t_eax)
 
-    wire of_w_s1, of_w_s2, of_w_s3, of_w;
-    `MUX_2(u_mux_ofw_1, 1, of_w_s1, 1'b0,    eax_of, is_eax)
-    `MUX_2(u_mux_ofw_2, 1, of_w_s2, of_w_s1, ax_of,  is_ax)
-    `MUX_2(u_mux_ofw_3, 1, of_w_s3, of_w_s2, ah_of,  is_ah)
-    `MUX_2(u_mux_ofw,   1, of_w,    of_w_s3, al_of,  is_al)
+    wire pf_w_t_al, pf_w_t_ah, pf_w_t_ax, pf_w_t_eax, pf_w;
+    `AND_2(u_and_pfw_al,  1, pf_w_t_al,  al_pf,  is_al)
+    `AND_2(u_and_pfw_ah,  1, pf_w_t_ah,  ah_pf,  is_ah)
+    `AND_2(u_and_pfw_ax,  1, pf_w_t_ax,  ax_pf,  is_ax)
+    `AND_2(u_and_pfw_eax, 1, pf_w_t_eax, eax_pf, is_eax)
+    `OR_4(u_or_pfw,       1, pf_w, pf_w_t_al, pf_w_t_ah, pf_w_t_ax, pf_w_t_eax)
+
+    wire of_w_t_al, of_w_t_ah, of_w_t_ax, of_w_t_eax, of_w;
+    `AND_2(u_and_ofw_al,  1, of_w_t_al,  al_of,  is_al)
+    `AND_2(u_and_ofw_ah,  1, of_w_t_ah,  ah_of,  is_ah)
+    `AND_2(u_and_ofw_ax,  1, of_w_t_ax,  ax_of,  is_ax)
+    `AND_2(u_and_ofw_eax, 1, of_w_t_eax, eax_of, is_eax)
+    `OR_4(u_or_ofw,       1, of_w, of_w_t_al, of_w_t_ah, of_w_t_ax, of_w_t_eax)
 
     // ---- count-zero override ----
     wire is_count_zero;

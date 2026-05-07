@@ -8,6 +8,17 @@
         .latches_cs_dr_upper8(dc_latches_cs_dr_upper8), \
         .latches_cs_sr_upper8(dc_latches_cs_sr_upper8), \
         .latches_cs_datasize(dc_latches_cs_datasize), \
+        .latches_cs_datasize_0(dc_latches_cs_datasize_0), \
+        .latches_cs_datasize_1(dc_latches_cs_datasize_1), \
+        .latches_cs_datasize_2(dc_latches_cs_datasize_2), \
+        .latches_cs_LD_OP_0(dc_latches_cs_LD_OP_0), \
+        .latches_cs_LD_OP_1(dc_latches_cs_LD_OP_1), \
+        .latches_cs_LD_OP_2(dc_latches_cs_LD_OP_2), \
+        .latches_cs_LD_OP_3(dc_latches_cs_LD_OP_3), \
+        .latches_cs_ST_OP_0(dc_latches_cs_ST_OP_0), \
+        .latches_valid_0(dc_latches_valid_0), \
+        .latches_valid_1(dc_latches_valid_1), \
+        .latches_valid_2(dc_latches_valid_2), \
         .latches_mem_cs_ST_OP(dc_latches_mem_cs_ST_OP), \
         .latches_mem_cs_LD_OP(dc_latches_mem_cs_LD_OP), \
         .latches_exe_cs_ST_OP(dc_latches_exe_cs_ST_OP), \

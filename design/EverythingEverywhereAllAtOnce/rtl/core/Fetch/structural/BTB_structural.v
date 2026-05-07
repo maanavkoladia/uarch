@@ -139,12 +139,25 @@ module BTB (
 
     // ----------------------------------------------------------------
     // Unpack the selected entry
+    //
+    // Each per-bit mux2$.outb at the read-tree root sees fanout 6-8 from
+    // downstream consumers (CMP_N internals on the tag bits, output port
+    // fanout to Fetch on the data bits). bufferH16$ (rated 16) on each bit
+    // of sel_entry clears the violation; ~0.24 ns added to BTB read path.
     // ----------------------------------------------------------------
+    wire [ENTRY_W-1:0]  sel_entry_raw;
     wire [ENTRY_W-1:0]  sel_entry;
     wire [TAG_BITS-1:0] sel_tag;
     wire                sel_valid;
 
-    assign sel_entry = read_tree[1];
+    assign sel_entry_raw = read_tree[1];
+
+    genvar sb;
+    generate
+        for (sb = 0; sb < ENTRY_W; sb = sb + 1) begin : g_buf_sel_entry
+            bufferH16$ u_buf (.out(sel_entry[sb]), .in(sel_entry_raw[sb]));
+        end
+    endgenerate
 
     assign sel_tag   = sel_entry[TAG_BITS-1            : 0];
     assign br_target = sel_entry[OFF_EIP-1             : OFF_TGT];

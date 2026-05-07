@@ -606,9 +606,23 @@ module MEM (
     // exe_cs_t pass-through
     assign exe_latches_next_cs_ST_OP                    = latches_exe_cs_ST_OP;
     assign exe_latches_next_cs_OP_TYPE                  = latches_exe_cs_OP_TYPE;
-    assign exe_latches_next_cs_alu_inputA_sel           = latches_exe_cs_alu_inputA_sel;
-    assign exe_latches_next_cs_alu_inputB_sel           = latches_exe_cs_alu_inputB_sel;
-    assign exe_latches_next_cs_branch_target_sel        = latches_exe_cs_branch_target_sel;
+    // bufferH64$ on the 3 high-fanout selects -- they fan out to 3 replicated
+    // EXE_Latches flops apiece, plus internal MEM wiring; H64 gives clean
+    // edges into the latch D-pins at 0.30 ns.
+    genvar gi_buf_sel;
+    generate
+        for (gi_buf_sel = 0; gi_buf_sel < 5; gi_buf_sel = gi_buf_sel + 1) begin : g_mem_sel_buf
+            bufferH64$ u_buf_inA (
+                .out(exe_latches_next_cs_alu_inputA_sel[gi_buf_sel]),
+                .in (latches_exe_cs_alu_inputA_sel[gi_buf_sel]));
+            bufferH64$ u_buf_inB (
+                .out(exe_latches_next_cs_alu_inputB_sel[gi_buf_sel]),
+                .in (latches_exe_cs_alu_inputB_sel[gi_buf_sel]));
+            bufferH64$ u_buf_brT (
+                .out(exe_latches_next_cs_branch_target_sel[gi_buf_sel]),
+                .in (latches_exe_cs_branch_target_sel[gi_buf_sel]));
+        end
+    endgenerate
     assign exe_latches_next_cs_shift_by_one             = latches_exe_cs_shift_by_one;
     assign exe_latches_next_cs_br_ucond                 = latches_exe_cs_br_ucond;
     assign exe_latches_next_cs_relative_branch          = latches_exe_cs_relative_branch;

@@ -16,14 +16,18 @@
 //                                           i at [i*128 + k*8 +: 8]          (512 bits)
 
 module IDM_Ctrl_Logic (
-    input  wire        exp_mode,
-    input  wire        int_mode,
     input  wire [31:0] spc,
 
     input  wire [3:0]   idm_slot_valid,
 
     input  wire [3:0]   invalidate,
-    input  wire        no_writes,
+
+    // idm_loadable = (icache_hit | exp_mode | int_mode) & ~no_writes
+    // Pre-computed in Fetch_structural (Phase-1B optimization): the
+    // activation OR and no_writes gating used to be done here per slot;
+    // moving it upstream collapses the per-slot wr_en NAND_4 into a
+    // NAND_3 (one fewer fanin, ~0.05 ns faster per slot).
+    input  wire        idm_loadable,
 
     input  wire        btb_hit,
     input  wire [31:0] btb_br_target,
@@ -31,8 +35,6 @@ module IDM_Ctrl_Logic (
     input  wire        btb_XCL,
 
     input  wire        pred_taken,
-
-    input  wire        icache_hit,
 
     input  wire        spc_sel_flush_reg,
 
@@ -65,14 +67,15 @@ module IDM_Ctrl_Logic (
 
     // ----------------------------------------------------------------
     // Shared combinational signals
+    //
+    // The activation OR and no_writes gating used to live here as
+    // OR_3(icache_hit, exp_mode, int_mode) + INV(no_writes) inputs to a
+    // per-slot NAND_4. Phase-1B moves those upstream into a single
+    // `idm_loadable` input, leaving us with a NAND_3 per slot.
     // ----------------------------------------------------------------
-    wire activation;
-    wire no_writes_n;
     wire flush_reg_n;
     wire br_cond_n;
 
-    `OR_3  (u_act,  1, activation,        icache_hit, exp_mode, int_mode)
-    `INV_N (u_nnw,  1, no_writes,         no_writes_n)
     `INV_N (u_nfr,  1, spc_sel_flush_reg, flush_reg_n)
     `NAND_3(u_brcn, 1, br_cond_n,         btb_hit, pred_taken, flush_reg_n)
 
@@ -81,7 +84,7 @@ module IDM_Ctrl_Logic (
     // ----------------------------------------------------------------
     wire [3:0] invalidate_n;
     wire [3:0] slot_valid_n;
-    wire [3:0] wr_en_n;       // active-low write enable (NAND_4 output)
+    wire [3:0] wr_en_n;       // active-low write enable (NAND_3 output)
     wire [3:0] wr_en;          // active-high write enable (after one INV)
     wire [3:0] br_active;
 
@@ -94,11 +97,11 @@ module IDM_Ctrl_Logic (
             `NAND_2(u_ldm,  1, idm_req_ld_meta_data[i],
                     invalidate_n[i], idm_slot_valid[i])
 
-            // wr_en_n[i] = ~(~slot_valid[i] & slot_oh[i] & activation & ~no_writes)
+            // wr_en_n[i] = ~(~slot_valid[i] & slot_oh[i] & idm_loadable)
             // wr_en[i]   = INV(wr_en_n[i])
             `INV_N (u_svn,  1, idm_slot_valid[i], slot_valid_n[i])
-            `NAND_4(u_wen,  1, wr_en_n[i],
-                    slot_valid_n[i], slot_oh[i], activation, no_writes_n)
+            `NAND_3(u_wen,  1, wr_en_n[i],
+                    slot_valid_n[i], slot_oh[i], idm_loadable)
             `INV_N (u_we,   1, wr_en_n[i],        wr_en[i])
 
             // br_active[i] = wr_en[i] & btb_hit & pred_taken & flush_reg_n
@@ -149,8 +152,16 @@ module IDM_Ctrl_Logic (
     // ----------------------------------------------------------------
     // push_success = OR over slots of wr_en[i]
     //              = NAND_4 of wr_en_n[i]   (NAND-of-NANDs = OR)
+    //
+    // push_success has 6 external consumers in Fetch (mem-stage WE,
+    // dc_outs.push_success, IDM clock-enable, etc.). nand4$ rated load
+    // is < 5, so we add a 1-stage bufferH16$ -- pushes the load off
+    // the NAND_4 onto the buffer (rated 16). +0.24 ns; this signal
+    // sits on the IDM acceptance side, not the dep_check / TLB CP.
     // ----------------------------------------------------------------
-    `NAND_4(u_psucc, 1, push_success,
+    wire push_success_raw;
+    `NAND_4(u_psucc, 1, push_success_raw,
             wr_en_n[0], wr_en_n[1], wr_en_n[2], wr_en_n[3])
+    bufferH16$ u_psucc_buf (.out(push_success), .in(push_success_raw));
 
 endmodule

@@ -6,8 +6,14 @@ EXE execute_unit ( \
     .latches_cs_ST_OP                  (exe_latches_cs_ST_OP), \
     .latches_cs_OP_TYPE                (exe_latches_cs_OP_TYPE), \
     .latches_cs_alu_inputA_sel         (exe_latches_cs_alu_inputA_sel), \
+    .latches_cs_alu_inputA_sel_b       (exe_latches_cs_alu_inputA_sel_b), \
+    .latches_cs_alu_inputA_sel_c       (exe_latches_cs_alu_inputA_sel_c), \
     .latches_cs_alu_inputB_sel         (exe_latches_cs_alu_inputB_sel), \
+    .latches_cs_alu_inputB_sel_b       (exe_latches_cs_alu_inputB_sel_b), \
+    .latches_cs_alu_inputB_sel_c       (exe_latches_cs_alu_inputB_sel_c), \
     .latches_cs_branch_target_sel      (exe_latches_cs_branch_target_sel), \
+    .latches_cs_branch_target_sel_b    (exe_latches_cs_branch_target_sel_b), \
+    .latches_cs_branch_target_sel_c    (exe_latches_cs_branch_target_sel_c), \
     .latches_cs_shift_by_one           (exe_latches_cs_shift_by_one), \
     .latches_cs_br_ucond               (exe_latches_cs_br_ucond), \
     .latches_cs_relative_branch        (exe_latches_cs_relative_branch), \

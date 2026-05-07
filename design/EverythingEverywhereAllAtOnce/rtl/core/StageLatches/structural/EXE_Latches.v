@@ -146,9 +146,20 @@ module EXE_Latches (
 
     output wire        latches_cs_ST_OP_o,
     output wire [5:0]  latches_cs_OP_TYPE_o,
-    output wire [4:0]  latches_cs_alu_inputA_sel_o,
+    // 3-way replicated outputs for high-fanout selects.  Each replica is a
+    // bit-identical flop driven by the same D / WE / clk / rst, but its Q
+    // drives a distinct EXE input port so per-port fanout (1536/3 = 512)
+    // stays below STAGES=2 territory and lets each port use a single
+    // bufferH1024$ (0.60 ns) instead of a deeper cascade.
+    output wire [4:0]  latches_cs_alu_inputA_sel_o,    // -> alu_input_sel_crit
+    output wire [4:0]  latches_cs_alu_inputA_sel_b_o,  // -> alu_input_sel_arith
+    output wire [4:0]  latches_cs_alu_inputA_sel_c_o,  // -> alu_input_sel_ctrl
     output wire [4:0]  latches_cs_alu_inputB_sel_o,
+    output wire [4:0]  latches_cs_alu_inputB_sel_b_o,
+    output wire [4:0]  latches_cs_alu_inputB_sel_c_o,
     output wire [4:0]  latches_cs_branch_target_sel_o,
+    output wire [4:0]  latches_cs_branch_target_sel_b_o,
+    output wire [4:0]  latches_cs_branch_target_sel_c_o,
     output wire        latches_cs_shift_by_one_o,
     output wire        latches_cs_br_ucond_o,
     output wire        latches_cs_relative_branch_o,
@@ -312,9 +323,17 @@ module EXE_Latches (
     `REG_RST_WE(exe_latches_valid,                    1,   clk, rst, write_enable_i, valid_d,                    latches_valid_o);
 `REG_RST_WE(exe_latches_cs_ST_OP,                 1,   clk, rst, write_enable_i, cs_ST_OP_d,                 latches_cs_ST_OP_o);
     `REG_RST_WE(exe_latches_cs_OP_TYPE,               6,   clk, rst, write_enable_i, cs_OP_TYPE_d,               latches_cs_OP_TYPE_o);
+    // 3-way replicated flops -- bit-identical, fed from the same D bus,
+    // each Q drives a separate EXE input port so per-port fanout drops 3x.
     `REG_RST_WE(exe_latches_cs_alu_inputA_sel,        5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        latches_cs_alu_inputA_sel_o);
+    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_b,      5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        latches_cs_alu_inputA_sel_b_o);
+    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_c,      5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        latches_cs_alu_inputA_sel_c_o);
     `REG_RST_WE(exe_latches_cs_alu_inputB_sel,        5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        latches_cs_alu_inputB_sel_o);
+    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_b,      5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        latches_cs_alu_inputB_sel_b_o);
+    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_c,      5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        latches_cs_alu_inputB_sel_c_o);
     `REG_RST_WE(exe_latches_cs_branch_target_sel,     5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     latches_cs_branch_target_sel_o);
+    `REG_RST_WE(exe_latches_cs_branch_target_sel_b,   5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     latches_cs_branch_target_sel_b_o);
+    `REG_RST_WE(exe_latches_cs_branch_target_sel_c,   5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     latches_cs_branch_target_sel_c_o);
     `REG_RST_WE(exe_latches_cs_shift_by_one,          1,   clk, rst, write_enable_i, cs_shift_by_one_d,          latches_cs_shift_by_one_o);
     `REG_RST_WE(exe_latches_cs_br_ucond,              1,   clk, rst, write_enable_i, cs_br_ucond_d,              latches_cs_br_ucond_o);
     `REG_RST_WE(exe_latches_cs_relative_branch,       1,   clk, rst, write_enable_i, cs_relative_branch_d,       latches_cs_relative_branch_o);

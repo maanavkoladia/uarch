@@ -89,6 +89,18 @@ module in_flight_sb_logic (
     `AND_2(u_exe_active, 1, exe_active, exe_valid, exe_ST_OP)
     `AND_2(u_wb_active,  1, wb_active,  wb_valid,  wb_ST_OP)
 
+    // Pre-fold LD_OP and valid into per-stage positive-logic gates.
+    // These AND_3 cells are entirely off the address-compare CP -- their
+    // inputs are flop outputs available at clock edge, so they finish in
+    // ~0.35 ns, well before the *_any_match wires arrive (~0.6+ ns after
+    // CMP_N + match-AND + OR_4).  This lets the CP back-end be a single
+    // NAND_2 -> NAND_3 chain (DeMorgan AND-OR) instead of the original
+    // AND_2 -> OR_3 -> AND_3 chain, saving ~0.6 ns.
+    wire mem_gate, exe_gate, wb_gate;
+    `AND_3(u_mem_gate, 1, mem_gate, mem_active, LD_OP, valid)
+    `AND_3(u_exe_gate, 1, exe_gate, exe_active, LD_OP, valid)
+    `AND_3(u_wb_gate,  1, wb_gate,  wb_active,  LD_OP, valid)
+
     wire mem_xcl_both, exe_xcl_both, wb_xcl_both;
     `AND_2(u_mem_xcl_both, 1, mem_xcl_both, LD_XCL, mem_ST_XCL)
     `AND_2(u_exe_xcl_both, 1, exe_xcl_both, LD_XCL, exe_ST_XCL)
@@ -117,8 +129,10 @@ module in_flight_sb_logic (
           mem_match_ld0_st0, mem_match_ld0_st1,
           mem_match_ld1_st0, mem_match_ld1_st1)
 
-    wire mem_dep_stall;
-    `AND_2(u_mem_dep, 1, mem_dep_stall, mem_any_match, mem_active)
+    // CP back-end uses NAND-NAND DeMorgan: dep_stall_S_n = NAND(any_match,
+    // gate). Three negated stage results then NAND_3 to give the OR.
+    wire mem_dep_stall_n;
+    nand2$ u_mem_dep_n (.out(mem_dep_stall_n), .in0(mem_any_match), .in1(mem_gate));
 
     // ----------------------------------------------------------------
     // EXE stage
@@ -143,8 +157,8 @@ module in_flight_sb_logic (
           exe_match_ld0_st0, exe_match_ld0_st1,
           exe_match_ld1_st0, exe_match_ld1_st1)
 
-    wire exe_dep_stall;
-    `AND_2(u_exe_dep, 1, exe_dep_stall, exe_any_match, exe_active)
+    wire exe_dep_stall_n;
+    nand2$ u_exe_dep_n (.out(exe_dep_stall_n), .in0(exe_any_match), .in1(exe_gate));
 
     // ----------------------------------------------------------------
     // WB stage
@@ -169,16 +183,18 @@ module in_flight_sb_logic (
           wb_match_ld0_st0, wb_match_ld0_st1,
           wb_match_ld1_st0, wb_match_ld1_st1)
 
-    wire wb_dep_stall;
-    `AND_2(u_wb_dep, 1, wb_dep_stall, wb_any_match, wb_active)
+    wire wb_dep_stall_n;
+    nand2$ u_wb_dep_n (.out(wb_dep_stall_n), .in0(wb_any_match), .in1(wb_gate));
 
     // ----------------------------------------------------------------
-    // Final reduction: any stage matched, gate by LD_OP and valid.
+    // Final reduction: NAND_3 of three NAND_2 outputs gives the OR of
+    // the three positive (any_match & gate) terms by DeMorgan:
+    //   NAND(NAND(a,b), NAND(c,d), NAND(e,f)) = ab | cd | ef
+    // The gate already folded in LD_OP and valid, so no further AND
+    // is needed.  Total CP back-end (after *_any_match): 0.20 + 0.20 =
+    // 0.40 ns vs 0.35 + 0.35 + 0.35 = 1.05 ns for the prior chain.
     // ----------------------------------------------------------------
-    wire any_dep_stall;
-    `OR_3 (u_or_stages, 1, any_dep_stall,
-           mem_dep_stall, exe_dep_stall, wb_dep_stall)
-    `AND_3(u_out,       1, in_flight_mem_stall,
-           any_dep_stall, LD_OP, valid)
+    nand3$ u_in_flight_mem_stall (.out(in_flight_mem_stall),
+        .in0(mem_dep_stall_n), .in1(exe_dep_stall_n), .in2(wb_dep_stall_n));
 
 endmodule
