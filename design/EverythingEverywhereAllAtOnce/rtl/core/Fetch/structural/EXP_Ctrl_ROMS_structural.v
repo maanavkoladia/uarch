@@ -63,9 +63,13 @@ module EXP_Ctrl_ROMS (
 
     // dc_gp_exp = DC_exp & ~DC_pf  (matches SV: assign dc_gp_exp = DC_exp & !DC_pf)
     wire        dc_pf_n;
+    wire        dc_gp_exp_pre;
     wire        dc_gp_exp;
     `INV_N     (u_dc_pf_inv, 1, DC_pf, dc_pf_n)
-    `AND_2     (u_dc_gp,     1, dc_gp_exp, DC_exp, dc_pf_n)
+    `AND_2     (u_dc_gp,     1, dc_gp_exp_pre, DC_exp, dc_pf_n)
+    // dc_gp_exp fanout 5 (sel of 5x mux2$ inside u_dcexp) -> bufferH16$ (+0.24 ns).
+    // Off the critical path; single buffer is enough.
+    bufferH16$ u_buf_dc_gp_exp (.out(dc_gp_exp), .in(dc_gp_exp_pre));
 
     // fetch_exp_out = Fetch_gp ? GP_IDT : PF_IDT  (sel=1→in1=GP, sel=0→in0=PF)
     `MUX_2(u_fexp,   5, fetch_exp_out, 5'd14, 5'd13, Fetch_gp)   // PF / GP

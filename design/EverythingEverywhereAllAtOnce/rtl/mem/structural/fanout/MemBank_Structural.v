@@ -20,6 +20,8 @@ module mem_bank (
 
 );
     localparam NUM_SRAM_CELLS = 4;
+    wire rst_inv;
+    `INV_N(u_rst_inv, 1, rst, rst_inv)
 
     wire mem_bank_controller_oe;
     wire mem_bank_controller_we;
@@ -91,7 +93,7 @@ module mem_bank (
                 .DIO(bank_bus[(i_gen+1)*(`MEM_BUS_SIZE/4)-1 : i_gen*(`MEM_BUS_SIZE/4)]),
                 .OE(mem_bank_controller_oe),
                 .WR(mem_bank_controller_we),
-                .CE(1'b0)  // always enabled
+                .CE(rst_inv)  // always enabled
             );
         end
     endgenerate

@@ -159,6 +159,30 @@ module RegSB (
         end
     endgenerate
 
+    // busy_b[i] = (SB_o_b[i] != 0). Computed once at the SB Q outputs so the
+    // OR_4 reduction runs in parallel with the per-bit Q buffers above instead
+    // of sitting on the dep_stall critical path. All six stall consumers
+    // (dr/sr/seg0/seg1/sib_base/sib_idx) read 1-bit busy flags.
+    //
+    // Duplicated into two parallel copies so the or4_N$ nand4$ drive stays in
+    // spec without inserting a buffer (which would put a gate level back on
+    // dep_stall and undo the precollapse gain):
+    //   busy_b_mux[i] -> u_dr_sb_mux + u_sr_sb_mux                 (fanout 2)
+    //   busy_b_idx[i] -> seg0 / seg1 / sib_base / sib_idx decoders (fanout 4)
+    wire busy_b_mux [0:`NUM_REGS-1];
+    wire busy_b_idx [0:`NUM_REGS-1];
+    genvar gi_busy;
+    generate
+        for (gi_busy = 0; gi_busy < `NUM_REGS; gi_busy = gi_busy + 1) begin : g_busy_b
+            `OR_4(u_busy_b_mux_or, 1, busy_b_mux[gi_busy],
+                  SB_o_b[gi_busy][0], SB_o_b[gi_busy][1],
+                  SB_o_b[gi_busy][2], SB_o_b[gi_busy][3])
+            `OR_4(u_busy_b_idx_or, 1, busy_b_idx[gi_busy],
+                  SB_o_b[gi_busy][0], SB_o_b[gi_busy][1],
+                  SB_o_b[gi_busy][2], SB_o_b[gi_busy][3])
+        end
+    endgenerate
+
     // bool cs_wr_to_both;
     // assign cs_wr_to_both = (cs_dr_wr && cs_sr_wr && (dr_id == sr_id))
     //                     || (cs_dr_wr && cs_eax_wr && (dr_id == EAX));
@@ -451,75 +475,54 @@ module RegSB (
     // ---------------- stall logic ----------------
     wire dr_stall, sr_stall, seg0_stall, seg1_stall, sib_base_stall, sib_idx_stall, eax_stall;
 
-    // Each stall check is "(SB_o_b[X] != 0)" — compute as a 4-bit OR directly,
-    // skipping the CMP_N(X, 4'b0)+INV_N pattern whose xnor2$(X[i], 1'b0) DC
-    // would constant-fold into shared GTECH_NOT inverters.
+    // Each stall check is "(SB_o_b[X] != 0)". The OR_4 reduction has been
+    // hoisted to the busy_b[] generate above (runs in parallel with the SB Q
+    // buffers), so every consumer now reads a 1-bit busy flag.
 
-    // dr_stall / sr_stall: explicit MUX_32 instead of `assign w = SB_o_b[X]`
+    // dr_stall / sr_stall: explicit MUX_32 instead of `assign w = busy_b[X]`
     // — DC's auto-decoder for the array index was emitting GTECH_NOT inverters
     // on bits 3 and 4 of dr_id / sr_id (fanouts 8 and 16). MUX_32 elaborates to
     // an MPS_MUX_IN32 tree of mux4$ cells whose select bits are consumed directly,
-    // no GTECH_NOT inserted.
+    // no GTECH_NOT inserted. Mux is now 1-bit wide; trailing OR_4 deleted.
 
-    // dr_stall = cs_dr_rd && (LD||ST||REP) && (SB_o_b[dr_id] != 0)
+    // dr_stall = cs_dr_rd && (LD||ST||REP) && busy_b_mux[dr_id]
     wire dr_sb_nz;
-    wire [3:0] dr_sb_w;
-    `MUX_32(u_dr_sb_mux, 4, dr_sb_w,
-        SB_o_b[ 0], SB_o_b[ 1], SB_o_b[ 2], SB_o_b[ 3],
-        SB_o_b[ 4], SB_o_b[ 5], SB_o_b[ 6], SB_o_b[ 7],
-        SB_o_b[ 8], SB_o_b[ 9], SB_o_b[10], SB_o_b[11],
-        SB_o_b[12], SB_o_b[13], SB_o_b[14], SB_o_b[15],
-        SB_o_b[16], SB_o_b[17], SB_o_b[18], SB_o_b[19],
-        SB_o_b[20], SB_o_b[21], SB_o_b[22], SB_o_b[23],
-        SB_o_b[24], SB_o_b[25],       4'b0,       4'b0,
-              4'b0,       4'b0,       4'b0,       4'b0,
+    `MUX_32(u_dr_sb_mux, 1, dr_sb_nz,
+        busy_b_mux[ 0], busy_b_mux[ 1], busy_b_mux[ 2], busy_b_mux[ 3],
+        busy_b_mux[ 4], busy_b_mux[ 5], busy_b_mux[ 6], busy_b_mux[ 7],
+        busy_b_mux[ 8], busy_b_mux[ 9], busy_b_mux[10], busy_b_mux[11],
+        busy_b_mux[12], busy_b_mux[13], busy_b_mux[14], busy_b_mux[15],
+        busy_b_mux[16], busy_b_mux[17], busy_b_mux[18], busy_b_mux[19],
+        busy_b_mux[20], busy_b_mux[21], busy_b_mux[22], busy_b_mux[23],
+        busy_b_mux[24], busy_b_mux[25],           1'b0,           1'b0,
+                  1'b0,           1'b0,           1'b0,           1'b0,
         dr_id)
-    `OR_4 (u_dr_sb_or,     1, dr_sb_nz, dr_sb_w[0], dr_sb_w[1], dr_sb_w[2], dr_sb_w[3])
     `AND_3(u_dr_stall_and, 1, dr_stall, cs_dr_rd, ld_st_rep_op, dr_sb_nz)
 
-    // sr_stall = cs_sr_rd && (LD||ST||REP) && (SB_o_b[sr_id] != 0)
+    // sr_stall = cs_sr_rd && (LD||ST||REP) && busy_b_mux[sr_id]
     wire sr_sb_nz;
-    wire [3:0] sr_sb_w;
-    `MUX_32(u_sr_sb_mux, 4, sr_sb_w,
-        SB_o_b[ 0], SB_o_b[ 1], SB_o_b[ 2], SB_o_b[ 3],
-        SB_o_b[ 4], SB_o_b[ 5], SB_o_b[ 6], SB_o_b[ 7],
-        SB_o_b[ 8], SB_o_b[ 9], SB_o_b[10], SB_o_b[11],
-        SB_o_b[12], SB_o_b[13], SB_o_b[14], SB_o_b[15],
-        SB_o_b[16], SB_o_b[17], SB_o_b[18], SB_o_b[19],
-        SB_o_b[20], SB_o_b[21], SB_o_b[22], SB_o_b[23],
-        SB_o_b[24], SB_o_b[25],       4'b0,       4'b0,
-              4'b0,       4'b0,       4'b0,       4'b0,
+    `MUX_32(u_sr_sb_mux, 1, sr_sb_nz,
+        busy_b_mux[ 0], busy_b_mux[ 1], busy_b_mux[ 2], busy_b_mux[ 3],
+        busy_b_mux[ 4], busy_b_mux[ 5], busy_b_mux[ 6], busy_b_mux[ 7],
+        busy_b_mux[ 8], busy_b_mux[ 9], busy_b_mux[10], busy_b_mux[11],
+        busy_b_mux[12], busy_b_mux[13], busy_b_mux[14], busy_b_mux[15],
+        busy_b_mux[16], busy_b_mux[17], busy_b_mux[18], busy_b_mux[19],
+        busy_b_mux[20], busy_b_mux[21], busy_b_mux[22], busy_b_mux[23],
+        busy_b_mux[24], busy_b_mux[25],           1'b0,           1'b0,
+                  1'b0,           1'b0,           1'b0,           1'b0,
         sr_id)
-    `OR_4 (u_sr_sb_or,     1, sr_sb_nz, sr_sb_w[0], sr_sb_w[1], sr_sb_w[2], sr_sb_w[3])
     `AND_3(u_sr_stall_and, 1, sr_stall, cs_sr_rd, ld_st_rep_op, sr_sb_nz)
 
     assign eax_stall = 1'b0;
 
-    // seg0_stall = (SB_o[Segment0_ID] != 0)
-    wire [3:0] seg0_sb_w;
-    assign seg0_sb_w = SB_o_b[Segment0_ID];
-    `OR_4(u_seg0_sb_or, 1, seg0_stall, seg0_sb_w[0], seg0_sb_w[1], seg0_sb_w[2], seg0_sb_w[3])
-
-    // seg1_stall = Segment1_valid && (SB_o[Segment1_ID] != 0)
-    wire seg1_sb_nz;
-    wire [3:0] seg1_sb_w;
-    assign seg1_sb_w = SB_o_b[Segment1_ID];
-    `OR_4 (u_seg1_sb_or,     1, seg1_sb_nz, seg1_sb_w[0], seg1_sb_w[1], seg1_sb_w[2], seg1_sb_w[3])
-    `AND_2(u_seg1_stall_and, 1, seg1_stall, Segment1_valid, seg1_sb_nz)
-
-    // sib_base_stall = cs_sib_size && (SB_o[sib_base_id] != 0)
-    wire sib_base_sb_nz;
-    wire [3:0] sib_base_sb_w;
-    assign sib_base_sb_w = SB_o_b[sib_base_id];
-    `OR_4 (u_sib_base_sb_or,     1, sib_base_sb_nz, sib_base_sb_w[0], sib_base_sb_w[1], sib_base_sb_w[2], sib_base_sb_w[3])
-    `AND_2(u_sib_base_stall_and, 1, sib_base_stall, cs_sib_size, sib_base_sb_nz)
-
-    // sib_idx_stall = cs_sib_size && (SB_o[sib_idx_id] != 0)
-    wire sib_idx_sb_nz;
-    wire [3:0] sib_idx_sb_w;
-    assign sib_idx_sb_w = SB_o_b[sib_idx_id];
-    `OR_4 (u_sib_idx_sb_or,     1, sib_idx_sb_nz, sib_idx_sb_w[0], sib_idx_sb_w[1], sib_idx_sb_w[2], sib_idx_sb_w[3])
-    `AND_2(u_sib_idx_stall_and, 1, sib_idx_stall, cs_sib_size, sib_idx_sb_nz)
+    // seg0_stall    = busy_b_idx[Segment0_ID]
+    // seg1_stall    = Segment1_valid && busy_b_idx[Segment1_ID]
+    // sib_base_stall= cs_sib_size    && busy_b_idx[sib_base_id]
+    // sib_idx_stall = cs_sib_size    && busy_b_idx[sib_idx_id]
+    assign seg0_stall = busy_b_idx[Segment0_ID];
+    `AND_2(u_seg1_stall_and,     1, seg1_stall,     Segment1_valid, busy_b_idx[Segment1_ID])
+    `AND_2(u_sib_base_stall_and, 1, sib_base_stall, cs_sib_size,    busy_b_idx[sib_base_id])
+    `AND_2(u_sib_idx_stall_and,  1, sib_idx_stall,  cs_sib_size,    busy_b_idx[sib_idx_id])
 
     `OR_7(u_dep_stall_or, 1, depStall_Internal,
           dr_stall, sr_stall, seg0_stall, seg1_stall,

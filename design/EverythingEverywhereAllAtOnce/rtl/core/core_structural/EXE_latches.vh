@@ -87,7 +87,7 @@ EXE_Latches exe_latches_unit ( \
     .nextLatches_shift_sr_up_i                 (exe_latches_next_shift_sr_up), \
     .nextLatches_shift_sr_down_i               (exe_latches_next_shift_sr_down), \
     .nextLatches_ST_XCL_i                      (exe_latches_next_ST_XCL), \
-    .nextLatches_ST_PADDR_0_i                  (exe_latches_next_ST_PADDR_0), \
+    .nextLatches_ST_PADDR_0_i                  (mem_latches_ST_PADDR_0_to_exe), \
     .nextLatches_ST_PADDR_1_i                  (exe_latches_next_ST_PADDR_1), \
     .nextLatches_MIO_i                         (exe_latches_next_MIO), \
     .nextLatches_br_info_valid_i               (exe_latches_next_br_info_valid), \
