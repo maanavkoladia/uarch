@@ -205,7 +205,7 @@ module tb_stages ();
         //Extra completion time
         /////////////////////////////////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////////////////////////
-        DelayClks(50000);
+        DelayClks(10000);
         //print_all();
         $display("\n\n\nprogram completion cycle count: %0d", finish_time);
         $display("flush count: %0d", flush_count);

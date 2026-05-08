@@ -14,5 +14,5 @@ parse: check.log
 	python3 scripts/parse_violations.py check.log | tee parse.log
 
 clean:
-	rm -f *.log
+	rm -f *.log*
 	rm -f *.svf

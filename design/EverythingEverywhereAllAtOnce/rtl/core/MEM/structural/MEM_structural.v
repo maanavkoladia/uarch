@@ -195,6 +195,10 @@ module MEM (
     output wire [14:0] outs_ST_PADDR_1,
     output wire        outs_ST_OP,
     output wire        outs_exe_stage_latch_we,
+    // active-low version of the same signal; consumed by EXE_Latches whose
+    // port-input inverting-buffer tree absorbs the inversion (faster than
+    // bufferH64$ at low per-driver fanout).
+    output wire        outs_exe_stage_latch_we_n,
 
     // clr_dcache_arb_latches[NUM_DCACHE_PORTS]  -- per-port unroll
     output wire        outs_clr_dcache_arb_latches_0,
@@ -308,12 +312,14 @@ module MEM (
     // EXE_valid_logic  (already-ported flat module from MEM/gen/)
     //   Drives forward_valid (used by hit_buf storage) and outs.
     // =========================================================================
-    wire exe_we_o_w;          // exe_stage_latch_we
+    wire exe_we_o_w;          // exe_stage_latch_we (active-high, local consumers)
+    wire exe_we_n_o_w;        // active-low; routed to EXE_Latches port (inverter absorbed there)
     wire next_exe_v_o_w;      // exe_stage_next_vaild
     wire miss_stall_w;        // produced by mem_miss_stall_logic below
 
     EXE_valid_logic exe_valid_logic_unit (
         .EXE_we_o   (exe_we_o_w),
+        .EXE_we_n_o (exe_we_n_o_w),
         .N_EXE_V_o  (next_exe_v_o_w),
         .MEM_V_i    (valid_w),
         .MEM_stall_i(miss_stall_w),
@@ -679,6 +685,7 @@ module MEM (
     assign outs_ST_PADDR_1               = latches_ST_PADDR_1;
     assign outs_ST_OP                    = ST_OP_w;
     assign outs_exe_stage_latch_we       = exe_we_o_w;
+    assign outs_exe_stage_latch_we_n     = exe_we_n_o_w;
 
     assign outs_clr_dcache_arb_latches_0 = clr_arb_0;
     assign outs_clr_dcache_arb_latches_1 = clr_arb_1;

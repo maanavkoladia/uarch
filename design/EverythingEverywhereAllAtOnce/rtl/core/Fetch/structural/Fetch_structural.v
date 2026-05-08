@@ -99,9 +99,14 @@ module Fetch (
     // exe_outputs_t (exe_outs_i)
     // ====================================================================
     input  wire        exe_outs_valid,
-    input  wire        exe_outs_br_res_valid,
+    // outs_br_res_valid replicated 3-way at EXE: each enters Fetch on its own
+    // wire and is consumed by exactly one downstream cluster (BTB / Predictor
+    // / Fetch top). This breaks the 77-load fanout net upstream of Fetch.
+    input  wire        exe_outs_br_res_valid_btb,
+    input  wire        exe_outs_br_res_valid_pred,
+    input  wire        exe_outs_br_res_valid_fetch,
     input  wire        exe_outs_br_res_flush,
-    input  wire        exe_outs_br_res_miss_prediction,
+    input  wire        exe_outs_br_res_miss_prediction_pred,
     input  wire [31:0] exe_outs_br_res_br_eip,
     input  wire [31:0] exe_outs_br_res_neip,
     input  wire [31:0] exe_outs_br_res_br_target,
@@ -558,7 +563,7 @@ module Fetch (
     //   DMA_int_jk   : set=dma_int,            clr=int_mode_jk
     // ----------------------------------------------------------------
     `AND_2(u_flush_and_valid, 1, flush_and_valid,
-            exe_outs_br_res_flush, exe_outs_br_res_valid)
+            exe_outs_br_res_flush, exe_outs_br_res_valid_fetch)
 
     `OR_2 (u_exp_clr,         1, exp_clr,
             exe_outs_br_res_clr_exp_mode, flush_and_valid)
@@ -645,7 +650,7 @@ module Fetch (
         .rst          (rst),
         .spc          (SPC),
 
-        .exe_br_valid (exe_outs_br_res_valid),
+        .exe_br_valid (exe_outs_br_res_valid_btb),
         .exe_br_target(exe_outs_br_res_br_target),
         .exe_br_eip   (exe_outs_br_res_br_eip),
         .exe_br_XCL   (exe_outs_br_res_br_XCL),
@@ -664,10 +669,10 @@ module Fetch (
 
         .spc          (SPC),
         .btb_hit      (btb_hit),
-        .exe_br_valid (exe_outs_br_res_valid),
+        .exe_br_valid (exe_outs_br_res_valid_pred),
         .exe_br_taken (exe_outs_br_res_taken),
         .exe_br_eip   (exe_outs_br_res_br_eip),
-        .misprediction(exe_outs_br_res_miss_prediction),
+        .misprediction(exe_outs_br_res_miss_prediction_pred),
 
         .taken        (predictor_taken)
     );

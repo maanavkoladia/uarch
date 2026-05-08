@@ -101,27 +101,43 @@ module WB_Latches (
 
     `REG_RST_WE(wb_latches_ST_XCL,       1,   clk, rst, write_enable_i, nextLatches_ST_XCL_i,       latches_ST_XCL_o)
     `REG_RST_WE(wb_latches_ST_PADDR_0,   15,  clk, rst, write_enable_i, nextLatches_ST_PADDR_0_i,   wb_latches_ST_PADDR_0_pre_buf)
-    // ST_PADDR_0: only bit 14 violates -> attached buffer; other bits pass through
-    assign latches_ST_PADDR_0_o[13:0] = wb_latches_ST_PADDR_0_pre_buf[13:0];
-    bufferH16$ u_attach_ST_PADDR_0_14 (.out(latches_ST_PADDR_0_o[14]), .in(wb_latches_ST_PADDR_0_pre_buf[14])); // fanout
+    // ST_PADDR_0: every bit feeds dep_check + DCache_Arb + forwarding paths
+    // and the fanout checker reports each bit as a violation when surfaced
+    // (it dedups per (reg, fanout) so one bit at a time becomes visible).
+    // Bulk-buffer all 15 bits to converge in one shot.
+    genvar gi_p0;
+    generate
+        for (gi_p0 = 0; gi_p0 <= 14; gi_p0 = gi_p0 + 1) begin : g_paddr0_buf
+            bufferH16$ u_attach_ST_PADDR_0 (.out(latches_ST_PADDR_0_o[gi_p0]), .in(wb_latches_ST_PADDR_0_pre_buf[gi_p0]));
+        end
+    endgenerate
 
     `REG_RST_WE(wb_latches_ST_BIT_VEC_0, 16,  clk, rst, write_enable_i, nextLatches_ST_BIT_VEC_0_i, latches_ST_BIT_VEC_0_o)
     `REG_RST_WE(wb_latches_ST_PADDR_1,   15,  clk, rst, write_enable_i, nextLatches_ST_PADDR_1_i,   wb_latches_ST_PADDR_1_pre_buf)
-    // ST_PADDR_1: only bit 14 violates -> attached buffer; other bits pass through
-    assign latches_ST_PADDR_1_o[13:0] = wb_latches_ST_PADDR_1_pre_buf[13:0];
-    bufferH16$ u_attach_ST_PADDR_1_14 (.out(latches_ST_PADDR_1_o[14]), .in(wb_latches_ST_PADDR_1_pre_buf[14])); // fanout
+    // ST_PADDR_1: same as ST_PADDR_0 -> bulk-buffer all 15 bits.
+    genvar gi_p1;
+    generate
+        for (gi_p1 = 0; gi_p1 <= 14; gi_p1 = gi_p1 + 1) begin : g_paddr1_buf
+            bufferH16$ u_attach_ST_PADDR_1 (.out(latches_ST_PADDR_1_o[gi_p1]), .in(wb_latches_ST_PADDR_1_pre_buf[gi_p1]));
+        end
+    endgenerate
 
     `REG_RST_WE(wb_latches_ST_BIT_VEC_1, 16,  clk, rst, write_enable_i, nextLatches_ST_BIT_VEC_1_i, latches_ST_BIT_VEC_1_o)
     `REG_RST_WE(wb_latches_MIO,          1,   clk, rst, write_enable_i, nextLatches_MIO_i,          latches_MIO_o)
     `REG_RST_WE(wb_latches_EIP,          32,  clk, rst, write_enable_i, nextLatches_EIP_i,          latches_EIP_o)
 
     `REG_RST_WE(wb_latches_res_buf,      256, clk, rst, write_enable_i, nextLatches_res_buf_i,      wb_latches_res_buf_pre_buf)
-    // res_buf: bits 63 and 127 violate -> attached buffers; other bits pass through
-    assign latches_res_buf_o[62:0]    = wb_latches_res_buf_pre_buf[62:0];
-    bufferH16$ u_attach_res_buf_63  (.out(latches_res_buf_o[63]),  .in(wb_latches_res_buf_pre_buf[63])); // fanout
-    assign latches_res_buf_o[126:64]  = wb_latches_res_buf_pre_buf[126:64];
-    bufferH16$ u_attach_res_buf_127 (.out(latches_res_buf_o[127]), .in(wb_latches_res_buf_pre_buf[127])); // fanout
-    assign latches_res_buf_o[255:128] = wb_latches_res_buf_pre_buf[255:128];
+    // res_buf: every bit feeds the data-path forwarding / byte-enable muxes
+    // with fanout >= 5 (the fanout checker dedups by representative so only
+    // a couple bits surface at a time, but the whole-bus pattern is uniform).
+    // Bulk-buffer all 256 bits through bufferH16$ -> each Q output drives a
+    // single buffer input only.
+    genvar gi_rb;
+    generate
+        for (gi_rb = 0; gi_rb <= 255; gi_rb = gi_rb + 1) begin : g_rb_buf
+            bufferH16$ u_attach_res_buf (.out(latches_res_buf_o[gi_rb]), .in(wb_latches_res_buf_pre_buf[gi_rb]));
+        end
+    endgenerate
 
     `REG_RST_WE(wb_latches_sr_id,        5,   clk, rst, write_enable_i, nextLatches_sr_id_i,        latches_sr_id_o)
     `REG_RST_WE(wb_latches_sr_data,      64,  clk, rst, write_enable_i, nextLatches_sr_data_i,      latches_sr_data_o)

@@ -57,6 +57,8 @@ EXE execute_unit ( \
     .latches_EAX                       (exe_latches_EAX), \
     .latches_imm64                     (exe_latches_imm64), \
     .latches_ld_buf                    (exe_latches_ld_buf), \
+    .latches_ld_buf_b                  (exe_latches_ld_buf_b), \
+    .latches_ld_buf_c                  (exe_latches_ld_buf_c), \
     .latches_sr_id                     (exe_latches_sr_id), \
     .latches_sr_data                   (exe_latches_sr_data), \
     .latches_dr_id                     (exe_latches_dr_id), \
@@ -109,11 +111,14 @@ EXE execute_unit ( \
     .wb_latches_next_dr_data           (wb_latches_next_dr_data), \
     .wb_latches_next_EAX               (wb_latches_next_EAX), \
     .outs_valid                        (exe_outputs_valid), \
-    .outs_br_res_valid                 (exe_outputs_br_res_valid), \
+    .outs_br_res_valid_decode          (exe_outputs_br_res_valid_decode), \
+    .outs_br_res_valid_btb             (exe_outputs_br_res_valid_btb), \
+    .outs_br_res_valid_pred            (exe_outputs_br_res_valid_pred), \
+    .outs_br_res_valid_fetch           (exe_outputs_br_res_valid_fetch), \
     .outs_br_res_flush                 (exe_outputs_br_res_flush), \
     .outs_br_res_farFlush              (exe_outputs_br_res_farFlush), \
     .outs_br_res_callFlush             (exe_outputs_br_res_callFlush), \
-    .outs_br_res_miss_prediction       (exe_outputs_br_res_miss_prediction), \
+    .outs_br_res_miss_prediction_pred  (exe_outputs_br_res_miss_prediction_pred), \
     .outs_br_res_br_eip                (exe_outputs_br_res_br_eip), \
     .outs_br_res_neip                  (exe_outputs_br_res_neip), \
     .outs_br_res_br_target             (exe_outputs_br_res_br_target), \

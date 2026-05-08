@@ -107,11 +107,19 @@ module MIO_Q (
     `OR_2 (u_next_full,      1, next_full_w, valid_push_w, full_hold_w)
 
     // outs_empty = ~full_q  (1-entry queue invariant)
-    `INV_N(u_outs_empty,     1, full_q, outs_empty)
+    // Driven from the replicated full_q_ext copy below so full_q's internal
+    // fanout stays at 4 (u_inv_full, u_valid_pop, u_full_notpop, u_full_hold).
+    wire full_q_ext;
 
     // ---------------- registers ----------------
     // full_q: always-clocked, sync active-low reset to 0.
-    `REG_RST(u_full_q, 1, clk, rst, next_full_w, full_q)
+    //   Internal copy: drives the 4 next-state / control-path gates only.
+    `REG_RST(u_full_q,     1, clk, rst, next_full_w, full_q)
+    //   External copy: drives outs_empty (via INV) + outs_full only.
+    //   Same DIN/CLK/RST as u_full_q so it stays bit-identical.
+    `REG_RST(u_full_q_ext, 1, clk, rst, next_full_w, full_q_ext)
+
+    `INV_N(u_outs_empty,     1, full_q_ext, outs_empty)
 
     // address: WE = valid_push  (only updated on a real push; else holds)
     `REG_RST_WE(u_qaddr, 15, clk, rst, valid_push_w, mio_input_data_address, outs_address)
@@ -120,7 +128,7 @@ module MIO_Q (
     `REG_RST_WE(u_qdata, 128, clk, rst, valid_push_w, mio_input_data_data, outs_data)
 
     // ---------------- direct outputs ----------------
-    assign outs_full    = full_q;
+    assign outs_full    = full_q_ext;
     assign outs_bit_vec = 16'h0000;
 
 endmodule

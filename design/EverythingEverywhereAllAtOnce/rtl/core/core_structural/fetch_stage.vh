@@ -38,9 +38,11 @@
         .dc_outs_exp_pf      (dc_outputs_exp_pf), \
         .mem_outs_valid (mem_outputs_valid), \
         .exe_outs_valid                   (exe_outputs_valid), \
-        .exe_outs_br_res_valid            (exe_outputs_br_res_valid), \
+        .exe_outs_br_res_valid_btb        (exe_outputs_br_res_valid_btb), \
+        .exe_outs_br_res_valid_pred       (exe_outputs_br_res_valid_pred), \
+        .exe_outs_br_res_valid_fetch      (exe_outputs_br_res_valid_fetch), \
         .exe_outs_br_res_flush            (exe_outputs_br_res_flush), \
-        .exe_outs_br_res_miss_prediction  (exe_outputs_br_res_miss_prediction), \
+        .exe_outs_br_res_miss_prediction_pred  (exe_outputs_br_res_miss_prediction_pred), \
         .exe_outs_br_res_br_eip           (exe_outputs_br_res_br_eip), \
         .exe_outs_br_res_neip             (exe_outputs_br_res_neip), \
         .exe_outs_br_res_br_target        (exe_outputs_br_res_br_target), \

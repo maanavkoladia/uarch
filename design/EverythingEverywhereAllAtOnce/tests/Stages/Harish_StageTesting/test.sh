@@ -7,16 +7,16 @@ regTestLog="regTest.log"
 scriptDir=$(pwd);
 
 allTestCasePaths=(
-    "config/BranchHeavy"
-    "config/dcache_public"
-    "config/DecodeStress"
-    "config/EdgeCase"
-    "config/exception_public"
-    "config/MemHeavy"
-    "config/MovHeavy"
-    "config/simpleFarTest"
-    "config/TheBigOne"
-    "config/AluTest"
+    "config/test1"
+    "config/test2"
+    "config/test3"
+    "config/test4"
+    "config/test5a"
+    "config/test5b"
+    "config/test5c"
+    "config/test5d"
+    "config/test5e"
+    "config/test5f"
     "config/MMIO"
 )
 
@@ -25,6 +25,7 @@ outDir="Test_Results/"
 
 SingleTestFull() {
     casePath="${scriptDir}/$1"
+    test_check_path = $scriptDir/fanout/check
     base=$(basename "$casePath") 
     testCaseOutDir="$scriptDir/$outDir/$base/"
 
@@ -33,6 +34,7 @@ SingleTestFull() {
     make full TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
 
     tail ${testCaseOutDir}/compare_report.txt >> $regTestLog
+
 
     #-DTEST_CASE_PATH="$casePath"
 }

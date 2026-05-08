@@ -18,11 +18,14 @@ wire [4:0] wb_latches_next_dr_id; \
 wire [63:0] wb_latches_next_dr_data; \
 wire [31:0] wb_latches_next_EAX; \
 wire exe_outputs_valid; \
-wire exe_outputs_br_res_valid; \
+wire exe_outputs_br_res_valid_decode; \
+wire exe_outputs_br_res_valid_btb; \
+wire exe_outputs_br_res_valid_pred; \
+wire exe_outputs_br_res_valid_fetch; \
 wire exe_outputs_br_res_flush; \
 wire exe_outputs_br_res_farFlush; \
 wire exe_outputs_br_res_callFlush; \
-wire exe_outputs_br_res_miss_prediction; \
+wire exe_outputs_br_res_miss_prediction_pred; \
 wire [31:0] exe_outputs_br_res_br_eip; \
 wire [31:0] exe_outputs_br_res_neip; \
 wire [31:0] exe_outputs_br_res_br_target; \

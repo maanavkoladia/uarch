@@ -80,7 +80,11 @@
 module EXE_Latches (
     input wire clk,
     input wire rst,
-    input wire write_enable_i,
+    // ACTIVE-LOW write enable. EXE_valid_logic drives the negated form
+    // directly; the inversion is absorbed in the bufferHInv16$ tree below
+    // (faster than active-high + bufferH64$ at the resulting per-driver
+    // fanout, see the analysis in EXE_valid_logic.v).
+    input wire write_enable_n_i,
     input wire flush,
 
     // ----- nextLatches_i (unrolled) -----
@@ -207,7 +211,10 @@ module EXE_Latches (
 
     output wire [63:0] latches_imm64_o,
 
+    // 3-way replicated ld_buf (primary=crit, b=arith, c=ctrl)
     output wire [255:0] latches_ld_buf_o,
+    output wire [255:0] latches_ld_buf_b_o,
+    output wire [255:0] latches_ld_buf_c_o,
 
     // 3-way replicated sr_id (a -> u_mux_sr_data, b -> xchg_op, c -> reg_wb)
     output wire [4:0]  latches_sr_id_o,
@@ -225,6 +232,23 @@ module EXE_Latches (
     output wire [14:0] latches_ld_addy_b_o,
     output wire [14:0] latches_ld_addy_c_o
 );
+
+    // ============================================================
+    // Active-low -> active-high write-enable distribution.
+    //
+    // After packing the small CS/wb/br_info/data_size_vec/etc. fields into a
+    // shared 64-bit reg, the total reg64e$ instance count inside EXE_Latches
+    // drops to ~46. We split those 46 en-pin loads across 4 bufferHInv16$
+    // replicas so each driver stays well within the 16-load rating, and
+    // because bufferHInv16$ (0.15 ns) is much faster than bufferH64$
+    // (0.30 ns). The producer (EXE_valid_logic.EXE_we_n_o) drives only 4
+    // loads (the four buffer inputs), so it doesn't need its own buffer.
+    // ============================================================
+    wire write_enable_a, write_enable_b, write_enable_c, write_enable_d;
+    bufferHInv16$ u_we_inv_a (.out(write_enable_a), .in(write_enable_n_i));
+    bufferHInv16$ u_we_inv_b (.out(write_enable_b), .in(write_enable_n_i));
+    bufferHInv16$ u_we_inv_c (.out(write_enable_c), .in(write_enable_n_i));
+    bufferHInv16$ u_we_inv_d (.out(write_enable_d), .in(write_enable_n_i));
 
     // ============================================================
     // Flush-gated data wires (input to each REG_RST_WE)
@@ -378,99 +402,172 @@ module EXE_Latches (
 
     // ---- Flops (Q -> _q wires; non-violating flops still write directly to _o) ----
 
-    wire valid_q;
-    `REG_RST_WE(exe_latches_valid,                    1,   clk, rst, write_enable_i, valid_d,                    valid_q);
-    bufferH16$ u_attach_valid_0 (.out(latches_valid_o), .in(valid_q)); // fanout
-    `REG_RST_WE(exe_latches_cs_ST_OP,                 1,   clk, rst, write_enable_i, cs_ST_OP_d,                 latches_cs_ST_OP_o);
-    `REG_RST_WE(exe_latches_cs_OP_TYPE,               6,   clk, rst, write_enable_i, cs_OP_TYPE_d,               latches_cs_OP_TYPE_o);
+    // ========================================================================
+    // Packed registers for the small / non-replicated fields.
+    //
+    // Each REG_RST_WE expands to ceil(WIDTH/64) reg64e$ instances, so 1-bit
+    // fields each consumed a full reg64e$. We collapse:
+    //   - 24+ small fields (1-bit / 4-bit / 6-bit / 15-bit) into ONE 64-bit
+    //     `exe_latches_small_pack` (48 used bits, 16 padded).
+    //   - Three pairs of 32-bit address fields into 64-bit packs:
+    //         addr_pack0 = {speculative_target[31:0], br_info_br_eip[31:0]}
+    //         addr_pack1 = {NEIP[31:0],               br_rel_target[31:0]}
+    //         addr_pack2 = {EAX[31:0],                EIP[31:0]}
+    //   This drops ~22 reg64e$ instances to 4 -> total reg64e$ count in
+    //   EXE_Latches falls from ~72 to 46, putting the write_enable load
+    //   well under the bufferH64$ rating. ld_buf stays as 4 reg64e$
+    //   per replica (256-bit, register-aligned).
+    //
+    //   Replicated control selects (alu_inputA/B_sel, branch_target_sel,
+    //   shift_sr_up/down, ST_PADDR_0, sr_id, dr_id, ld_addy) keep their
+    //   own a/b/c flops -- they're replicated for OUTPUT-side fanout, not
+    //   to share the en pin.
+    //
+    // The 46 en-pin loads are split across 4 bufferHInv16$-driven we
+    // groups (write_enable_a/_b/_c/_d) defined above:
+    //     a (11): packs (4) + imm64 + sr_data + dr_data + ld_buf_a (4)
+    //     b (14): ld_buf_b (4) + ld_buf_c (4) + ld_addy a/b/c + ST_PADDR_0 a/b/c
+    //     c (12): alu_inputA/B_sel + branch_target_sel (3 each) + shift_sr_up a/b/c
+    //     d ( 9): shift_sr_down a/b/c + sr_id a/b/c + dr_id a/b/c
+    // ========================================================================
 
-    // 3-way replicated alu_inputA/B_sel + branch_target_sel (Q's via `_q`):
-    `REG_RST_WE(exe_latches_cs_alu_inputA_sel,        5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        alu_inputA_sel_a_q);
-    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_b,      5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        alu_inputA_sel_b_q);
-    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_c,      5,   clk, rst, write_enable_i, cs_alu_inputA_sel_d,        alu_inputA_sel_c_q);
-    `REG_RST_WE(exe_latches_cs_alu_inputB_sel,        5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        alu_inputB_sel_a_q);
-    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_b,      5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        alu_inputB_sel_b_q);
-    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_c,      5,   clk, rst, write_enable_i, cs_alu_inputB_sel_d,        alu_inputB_sel_c_q);
-    `REG_RST_WE(exe_latches_cs_branch_target_sel,     5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     branch_target_a_q);
-    `REG_RST_WE(exe_latches_cs_branch_target_sel_b,   5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     branch_target_b_q);
-    `REG_RST_WE(exe_latches_cs_branch_target_sel_c,   5,   clk, rst, write_enable_i, cs_branch_target_sel_d,     branch_target_c_q);
+    // ---- small_pack (48 bits used in a 64-bit reg) ----
+    wire [63:0] small_pack_d;
+    wire [63:0] small_pack_q;
+    assign small_pack_d = {
+        16'b0,                              // [63:48] padding
+        br_info_br_pred_taken_d,            // [47]
+        br_info_br_xcl_d,                   // [46]
+        br_info_valid_d,                    // [45]
+        MIO_d,                              // [44]
+        ST_PADDR_1_d,                       // [43:29] (15 bits)
+        ST_XCL_d,                           // [28]
+        sr_data_size_vec_d,                 // [27:24]
+        data_size_vec_d,                    // [23:20]
+        wb_cs_WB_EAX_d,                     // [19]
+        wb_cs_WB_SR_d,                      // [18]
+        wb_cs_WB_DR_d,                      // [17]
+        wb_cs_ST_OP_d,                      // [16]
+        cs_rep_no_zf_update_d,              // [15]
+        cs_second_flag_needed_d,            // [14]
+        cs_is_call_d,                       // [13]
+        cs_is_far_d,                        // [12]
+        cs_special_br_d,                    // [11]
+        cs_relative_branch_d,               // [10]
+        cs_br_ucond_d,                      // [9]
+        cs_shift_by_one_d,                  // [8]
+        cs_OP_TYPE_d,                       // [7:2] (6 bits)
+        cs_ST_OP_d,                         // [1]
+        valid_d                             // [0]
+    };
+    `REG_RST_WE(exe_latches_small_pack, 64, clk, rst, write_enable_a, small_pack_d, small_pack_q);
 
-    `REG_RST_WE(exe_latches_cs_shift_by_one,          1,   clk, rst, write_enable_i, cs_shift_by_one_d,          shift_by_one_q);
-    `REG_RST_WE(exe_latches_cs_br_ucond,              1,   clk, rst, write_enable_i, cs_br_ucond_d,              br_ucond_q);
-    `REG_RST_WE(exe_latches_cs_relative_branch,       1,   clk, rst, write_enable_i, cs_relative_branch_d,       relative_branch_q);
-    `REG_RST_WE(exe_latches_cs_special_br,            1,   clk, rst, write_enable_i, cs_special_br_d,            special_br_q);
-    `REG_RST_WE(exe_latches_cs_is_far,                1,   clk, rst, write_enable_i, cs_is_far_d,                latches_cs_is_far_o);
-    `REG_RST_WE(exe_latches_cs_is_call,               1,   clk, rst, write_enable_i, cs_is_call_d,               latches_cs_is_call_o);
-    `REG_RST_WE(exe_latches_cs_second_flag_needed,    1,   clk, rst, write_enable_i, cs_second_flag_needed_d,    latches_cs_second_flag_needed_o);
-    `REG_RST_WE(exe_latches_cs_rep_no_zf_update,      1,   clk, rst, write_enable_i, cs_rep_no_zf_update_d,      latches_cs_rep_no_zf_update_o);
+    // Slice small_pack_q back into per-field _q wires / output ports.
+    // (Most _q wires are pre-declared up at the "Q-raw wires" block above;
+    //  valid_q and cs_OP_TYPE_q are new wires created for the packed slice.)
+    wire        valid_q;
+    wire [5:0]  cs_OP_TYPE_q;
+    assign valid_q                           = small_pack_q[0];
+    assign latches_cs_ST_OP_o                = small_pack_q[1];
+    assign cs_OP_TYPE_q                      = small_pack_q[7:2];
+    assign latches_cs_OP_TYPE_o              = cs_OP_TYPE_q;
+    assign shift_by_one_q                    = small_pack_q[8];
+    assign br_ucond_q                        = small_pack_q[9];
+    assign relative_branch_q                 = small_pack_q[10];
+    assign special_br_q                      = small_pack_q[11];
+    assign latches_cs_is_far_o               = small_pack_q[12];
+    assign latches_cs_is_call_o              = small_pack_q[13];
+    assign latches_cs_second_flag_needed_o   = small_pack_q[14];
+    assign latches_cs_rep_no_zf_update_o     = small_pack_q[15];
+    assign latches_wb_cs_ST_OP_o             = small_pack_q[16];
+    assign wb_cs_WB_DR_q                     = small_pack_q[17];
+    assign wb_cs_WB_SR_q                     = small_pack_q[18];
+    assign wb_cs_WB_EAX_q                    = small_pack_q[19];
+    assign data_size_vec_q                   = small_pack_q[23:20];
+    assign sr_data_size_vec_q                = small_pack_q[27:24];
+    assign ST_XCL_q                          = small_pack_q[28];
+    assign latches_ST_PADDR_1_o              = small_pack_q[43:29];
+    assign latches_MIO_o                     = small_pack_q[44];
+    assign latches_br_info_valid_o           = small_pack_q[45];
+    assign br_info_br_xcl_q                  = small_pack_q[46];
+    assign latches_br_info_br_pred_taken_o   = small_pack_q[47];
+    bufferH16$ u_attach_valid_0 (.out(latches_valid_o), .in(valid_q));
 
-    `REG_RST_WE(exe_latches_wb_cs_ST_OP,              1,   clk, rst, write_enable_i, wb_cs_ST_OP_d,              latches_wb_cs_ST_OP_o);
-    `REG_RST_WE(exe_latches_wb_cs_WB_DR,              1,   clk, rst, write_enable_i, wb_cs_WB_DR_d,              wb_cs_WB_DR_q);
-    `REG_RST_WE(exe_latches_wb_cs_WB_SR,              1,   clk, rst, write_enable_i, wb_cs_WB_SR_d,              wb_cs_WB_SR_q);
-    `REG_RST_WE(exe_latches_wb_cs_WB_EAX,             1,   clk, rst, write_enable_i, wb_cs_WB_EAX_d,             wb_cs_WB_EAX_q);
+    // ---- addr_pack 0/1/2 (paired 32-bit fields) ----
+    wire [63:0] addr_pack0_d, addr_pack0_q;
+    wire [63:0] addr_pack1_d, addr_pack1_q;
+    wire [63:0] addr_pack2_d, addr_pack2_q;
+    assign addr_pack0_d = {br_info_speculative_target_d, br_info_br_eip_d};
+    assign addr_pack1_d = {NEIP_d,                       br_rel_target_d};
+    assign addr_pack2_d = {EAX_d,                        EIP_d};
+    `REG_RST_WE(exe_latches_addr_pack0, 64, clk, rst, write_enable_a, addr_pack0_d, addr_pack0_q);
+    `REG_RST_WE(exe_latches_addr_pack1, 64, clk, rst, write_enable_a, addr_pack1_d, addr_pack1_q);
+    `REG_RST_WE(exe_latches_addr_pack2, 64, clk, rst, write_enable_a, addr_pack2_d, addr_pack2_q);
 
-    `REG_RST_WE(exe_latches_data_size_vec,            4,   clk, rst, write_enable_i, data_size_vec_d,            data_size_vec_q);
-    `REG_RST_WE(exe_latches_sr_data_size_vec,         4,   clk, rst, write_enable_i, sr_data_size_vec_d,         sr_data_size_vec_q);
+    // br_info_br_eip_q / NEIP_q / EIP_q already declared in the Q-raw wires block.
+    assign br_info_br_eip_q                       = addr_pack0_q[31:0];
+    assign latches_br_info_speculative_target_o   = addr_pack0_q[63:32];
+    assign latches_br_rel_target_o                = addr_pack1_q[31:0];
+    assign NEIP_q                                 = addr_pack1_q[63:32];
+    assign EIP_q                                  = addr_pack2_q[31:0];
+    assign latches_EAX_o                          = addr_pack2_q[63:32];
 
-    // 3-way replicated shift_sr_up/down
-    `REG_RST_WE(exe_latches_shift_sr_up_a,            1,   clk, rst, write_enable_i, shift_sr_up_d,              shift_sr_up_a_q);
-    `REG_RST_WE(exe_latches_shift_sr_up_b,            1,   clk, rst, write_enable_i, shift_sr_up_d,              shift_sr_up_b_q);
-    `REG_RST_WE(exe_latches_shift_sr_up_c,            1,   clk, rst, write_enable_i, shift_sr_up_d,              shift_sr_up_c_q);
-    `REG_RST_WE(exe_latches_shift_sr_down_a,          1,   clk, rst, write_enable_i, shift_sr_down_d,            shift_sr_down_a_q);
-    `REG_RST_WE(exe_latches_shift_sr_down_b,          1,   clk, rst, write_enable_i, shift_sr_down_d,            shift_sr_down_b_q);
-    `REG_RST_WE(exe_latches_shift_sr_down_c,          1,   clk, rst, write_enable_i, shift_sr_down_d,            shift_sr_down_c_q);
+    // ---- 3-way replicated alu_inputA/B_sel + branch_target_sel (Group C) ----
+    `REG_RST_WE(exe_latches_cs_alu_inputA_sel,        5,   clk, rst, write_enable_c, cs_alu_inputA_sel_d,        alu_inputA_sel_a_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_b,      5,   clk, rst, write_enable_c, cs_alu_inputA_sel_d,        alu_inputA_sel_b_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputA_sel_c,      5,   clk, rst, write_enable_c, cs_alu_inputA_sel_d,        alu_inputA_sel_c_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputB_sel,        5,   clk, rst, write_enable_c, cs_alu_inputB_sel_d,        alu_inputB_sel_a_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_b,      5,   clk, rst, write_enable_c, cs_alu_inputB_sel_d,        alu_inputB_sel_b_q);
+    `REG_RST_WE(exe_latches_cs_alu_inputB_sel_c,      5,   clk, rst, write_enable_c, cs_alu_inputB_sel_d,        alu_inputB_sel_c_q);
+    `REG_RST_WE(exe_latches_cs_branch_target_sel,     5,   clk, rst, write_enable_c, cs_branch_target_sel_d,     branch_target_a_q);
+    `REG_RST_WE(exe_latches_cs_branch_target_sel_b,   5,   clk, rst, write_enable_c, cs_branch_target_sel_d,     branch_target_b_q);
+    `REG_RST_WE(exe_latches_cs_branch_target_sel_c,   5,   clk, rst, write_enable_c, cs_branch_target_sel_d,     branch_target_c_q);
 
-    `REG_RST_WE(exe_latches_ST_XCL,                   1,   clk, rst, write_enable_i, ST_XCL_d,                   ST_XCL_q);
+    // ---- 3-way replicated shift_sr_up (Group C, shift_sr_down -> Group D) ----
+    `REG_RST_WE(exe_latches_shift_sr_up_a,            1,   clk, rst, write_enable_c, shift_sr_up_d,              shift_sr_up_a_q);
+    `REG_RST_WE(exe_latches_shift_sr_up_b,            1,   clk, rst, write_enable_c, shift_sr_up_d,              shift_sr_up_b_q);
+    `REG_RST_WE(exe_latches_shift_sr_up_c,            1,   clk, rst, write_enable_c, shift_sr_up_d,              shift_sr_up_c_q);
+    `REG_RST_WE(exe_latches_shift_sr_down_a,          1,   clk, rst, write_enable_d, shift_sr_down_d,            shift_sr_down_a_q);
+    `REG_RST_WE(exe_latches_shift_sr_down_b,          1,   clk, rst, write_enable_d, shift_sr_down_d,            shift_sr_down_b_q);
+    `REG_RST_WE(exe_latches_shift_sr_down_c,          1,   clk, rst, write_enable_d, shift_sr_down_d,            shift_sr_down_c_q);
 
-    // 3-way replicated ST_PADDR_0
-    `REG_RST_WE(exe_latches_ST_PADDR_0_a,             15,  clk, rst, write_enable_i, ST_PADDR_0_d,               ST_PADDR_0_a_q);
-    `REG_RST_WE(exe_latches_ST_PADDR_0_b,             15,  clk, rst, write_enable_i, ST_PADDR_0_d,               ST_PADDR_0_b_q);
-    `REG_RST_WE(exe_latches_ST_PADDR_0_c,             15,  clk, rst, write_enable_i, ST_PADDR_0_d,               ST_PADDR_0_c_q);
+    // ---- 3-way replicated ST_PADDR_0 (Group B) ----
+    `REG_RST_WE(exe_latches_ST_PADDR_0_a,             15,  clk, rst, write_enable_b, ST_PADDR_0_d,               ST_PADDR_0_a_q);
+    `REG_RST_WE(exe_latches_ST_PADDR_0_b,             15,  clk, rst, write_enable_b, ST_PADDR_0_d,               ST_PADDR_0_b_q);
+    `REG_RST_WE(exe_latches_ST_PADDR_0_c,             15,  clk, rst, write_enable_b, ST_PADDR_0_d,               ST_PADDR_0_c_q);
 
-    `REG_RST_WE(exe_latches_ST_PADDR_1,               15,  clk, rst, write_enable_i, ST_PADDR_1_d,               latches_ST_PADDR_1_o);
-    `REG_RST_WE(exe_latches_MIO,                      1,   clk, rst, write_enable_i, MIO_d,                      latches_MIO_o);
+    // ---- imm64 (Group A) ---- (imm64_q pre-declared above)
+    `REG_RST_WE(exe_latches_imm64,                    64,  clk, rst, write_enable_a, imm64_d,                    imm64_q);
 
-    `REG_RST_WE(exe_latches_br_info_valid,            1,   clk, rst, write_enable_i, br_info_valid_d,            latches_br_info_valid_o);
-    `REG_RST_WE(exe_latches_br_info_br_eip,           32,  clk, rst, write_enable_i, br_info_br_eip_d,           br_info_br_eip_q);
-    `REG_RST_WE(exe_latches_br_info_br_xcl,           1,   clk, rst, write_enable_i, br_info_br_xcl_d,           br_info_br_xcl_q);
-    `REG_RST_WE(exe_latches_br_info_br_pred_taken,    1,   clk, rst, write_enable_i, br_info_br_pred_taken_d,    latches_br_info_br_pred_taken_o);
-    `REG_RST_WE(exe_latches_br_info_speculative_target, 32, clk, rst, write_enable_i, br_info_speculative_target_d, latches_br_info_speculative_target_o);
+    // ---- 3-way replicated ld_buf -- 4 reg64e$ each, register-aligned ----
+    //   ld_buf_a -> Group A (4); ld_buf_b/c -> Group B (4 + 4)
+    wire [255:0] ld_buf_a_q, ld_buf_b_q, ld_buf_c_q;
+    `REG_RST_WE(exe_latches_ld_buf_a, 256, clk, rst, write_enable_a, ld_buf_d, ld_buf_a_q);
+    `REG_RST_WE(exe_latches_ld_buf_b, 256, clk, rst, write_enable_b, ld_buf_d, ld_buf_b_q);
+    `REG_RST_WE(exe_latches_ld_buf_c, 256, clk, rst, write_enable_b, ld_buf_d, ld_buf_c_q);
+    genvar gi_lb;
+    generate
+        for (gi_lb = 0; gi_lb < 256; gi_lb = gi_lb + 1) begin : g_ldbuf_buf
+            bufferH16$ u_buf_lba (.out(latches_ld_buf_o[gi_lb]),   .in(ld_buf_a_q[gi_lb]));
+            bufferH16$ u_buf_lbb (.out(latches_ld_buf_b_o[gi_lb]), .in(ld_buf_b_q[gi_lb]));
+            bufferH16$ u_buf_lbc (.out(latches_ld_buf_c_o[gi_lb]), .in(ld_buf_c_q[gi_lb]));
+        end
+    endgenerate
 
-    `REG_RST_WE(exe_latches_br_rel_target,            32,  clk, rst, write_enable_i, br_rel_target_d,            latches_br_rel_target_o);
+    // ---- 3-way replicated sr_id, dr_id (Group D); sr_data/dr_data (Group A) ----
+    `REG_RST_WE(exe_latches_sr_id_a,                  5,   clk, rst, write_enable_d, sr_id_d,                    sr_id_a_q);
+    `REG_RST_WE(exe_latches_sr_id_b,                  5,   clk, rst, write_enable_d, sr_id_d,                    sr_id_b_q);
+    `REG_RST_WE(exe_latches_sr_id_c,                  5,   clk, rst, write_enable_d, sr_id_d,                    sr_id_c_q);
+    `REG_RST_WE(exe_latches_sr_data,                  64,  clk, rst, write_enable_a, sr_data_d,                  latches_sr_data_o);
+    `REG_RST_WE(exe_latches_dr_id_a,                  5,   clk, rst, write_enable_d, dr_id_d,                    dr_id_a_q);
+    `REG_RST_WE(exe_latches_dr_id_b,                  5,   clk, rst, write_enable_d, dr_id_d,                    dr_id_b_q);
+    `REG_RST_WE(exe_latches_dr_id_c,                  5,   clk, rst, write_enable_d, dr_id_d,                    dr_id_c_q);
+    `REG_RST_WE(exe_latches_dr_data,                  64,  clk, rst, write_enable_a, dr_data_d,                  latches_dr_data_o);
 
-    `REG_RST_WE(exe_latches_NEIP,                     32,  clk, rst, write_enable_i, NEIP_d,                     NEIP_q);
-    `REG_RST_WE(exe_latches_EIP,                      32,  clk, rst, write_enable_i, EIP_d,                      EIP_q);
-    `REG_RST_WE(exe_latches_EAX,                      32,  clk, rst, write_enable_i, EAX_d,                      latches_EAX_o);
-
-    `REG_RST_WE(exe_latches_imm64,                    64,  clk, rst, write_enable_i, imm64_d,                    imm64_q);
-
-    wire [255:0] ld_buf_q;
-    `REG_RST_WE(exe_latches_ld_buf,                   256, clk, rst, write_enable_i, ld_buf_d,                   ld_buf_q);
-    // ld_buf q-bit attach: 63,127,191 -> bufferH64$; 239 -> bufferH16$; rest passthrough
-    bufferH64$ u_attach_ldbuf_63  (.out(latches_ld_buf_o[63]),  .in(ld_buf_q[63]));  // fanout
-    bufferH64$ u_attach_ldbuf_127 (.out(latches_ld_buf_o[127]), .in(ld_buf_q[127])); // fanout
-    bufferH64$ u_attach_ldbuf_191 (.out(latches_ld_buf_o[191]), .in(ld_buf_q[191])); // fanout
-    bufferH16$ u_attach_ldbuf_239 (.out(latches_ld_buf_o[239]), .in(ld_buf_q[239])); // fanout
-    assign latches_ld_buf_o[62:0]    = ld_buf_q[62:0];
-    assign latches_ld_buf_o[126:64]  = ld_buf_q[126:64];
-    assign latches_ld_buf_o[190:128] = ld_buf_q[190:128];
-    assign latches_ld_buf_o[238:192] = ld_buf_q[238:192];
-    assign latches_ld_buf_o[255:240] = ld_buf_q[255:240];
-
-    // 3-way replicated sr_id, dr_id
-    `REG_RST_WE(exe_latches_sr_id_a,                  5,   clk, rst, write_enable_i, sr_id_d,                    sr_id_a_q);
-    `REG_RST_WE(exe_latches_sr_id_b,                  5,   clk, rst, write_enable_i, sr_id_d,                    sr_id_b_q);
-    `REG_RST_WE(exe_latches_sr_id_c,                  5,   clk, rst, write_enable_i, sr_id_d,                    sr_id_c_q);
-    `REG_RST_WE(exe_latches_sr_data,                  64,  clk, rst, write_enable_i, sr_data_d,                  latches_sr_data_o);
-    `REG_RST_WE(exe_latches_dr_id_a,                  5,   clk, rst, write_enable_i, dr_id_d,                    dr_id_a_q);
-    `REG_RST_WE(exe_latches_dr_id_b,                  5,   clk, rst, write_enable_i, dr_id_d,                    dr_id_b_q);
-    `REG_RST_WE(exe_latches_dr_id_c,                  5,   clk, rst, write_enable_i, dr_id_d,                    dr_id_c_q);
-    `REG_RST_WE(exe_latches_dr_data,                  64,  clk, rst, write_enable_i, dr_data_d,                  latches_dr_data_o);
-
-    // 3-way replicated ld_addy
-    `REG_RST_WE(exe_latches_ld_addy_a,                15,  clk, rst, write_enable_i, ld_addy_d,                  ld_addy_a_q);
-    `REG_RST_WE(exe_latches_ld_addy_b,                15,  clk, rst, write_enable_i, ld_addy_d,                  ld_addy_b_q);
-    `REG_RST_WE(exe_latches_ld_addy_c,                15,  clk, rst, write_enable_i, ld_addy_d,                  ld_addy_c_q);
+    // ---- 3-way replicated ld_addy (Group B) ----
+    `REG_RST_WE(exe_latches_ld_addy_a,                15,  clk, rst, write_enable_b, ld_addy_d,                  ld_addy_a_q);
+    `REG_RST_WE(exe_latches_ld_addy_b,                15,  clk, rst, write_enable_b, ld_addy_d,                  ld_addy_b_q);
+    `REG_RST_WE(exe_latches_ld_addy_c,                15,  clk, rst, write_enable_b, ld_addy_d,                  ld_addy_c_q);
 
     // ============================================================
     // Output buffers (Q -> port)

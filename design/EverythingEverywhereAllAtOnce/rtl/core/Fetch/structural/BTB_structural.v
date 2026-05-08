@@ -104,10 +104,14 @@ module BTB (
     wire [ENTRIES-1:0] write_en;
     `DECODER_N(u_wr_dec, INDEX_BITS, exe_index, write_oh)
 
+    // exe_br_valid fans out to ENTRIES (=64) AND_2 cells -> bufferH64$ at port.
+    wire exe_br_valid_int;
+    bufferH64$ u_buf_exe_br_valid (.out(exe_br_valid_int), .in(exe_br_valid));
+
     genvar i;
     generate
         for (i = 0; i < ENTRIES; i = i + 1) begin : g_entry
-            `AND_2(u_we, 1, write_en[i], write_oh[i], exe_br_valid)
+            `AND_2(u_we, 1, write_en[i], write_oh[i], exe_br_valid_int)
             `REG_RST_WE(u_reg, ENTRY_W, clk, rst, write_en[i], entry_d, entry_q[i])
         end
     endgenerate

@@ -169,15 +169,20 @@ task automatic print_exe_outputs();
         `EXE_UNIT_PATH.outs_clr_ZF_sb,
         `EXE_UNIT_PATH.outs_ZF);
 
+    // outs_br_res_valid is replicated 4-way at the EXE port to break the
+    // 77-load fanout to Decode/Fetch (see branch_res_structural.v). All four
+    // replicas carry the same logical value -- pick _fetch for debug.
+    // outs_br_res_miss_prediction was renamed _miss_prediction_pred (single
+    // remaining external consumer is Predictor/GShare).
     $fdisplay(`LOG_FD,
         "  BR_RES: valid=%0b  flush=%0b  farFlush=%0b  mispredict=%0b  taken=%0b",
-        `EXE_UNIT_PATH.outs_br_res_valid,
+        `EXE_UNIT_PATH.outs_br_res_valid_fetch,
         `EXE_UNIT_PATH.outs_br_res_flush,
         `EXE_UNIT_PATH.outs_br_res_farFlush,
-        `EXE_UNIT_PATH.outs_br_res_miss_prediction,
+        `EXE_UNIT_PATH.outs_br_res_miss_prediction_pred,
         `EXE_UNIT_PATH.outs_br_res_taken);
 
-    if (`EXE_UNIT_PATH.outs_br_res_valid) begin
+    if (`EXE_UNIT_PATH.outs_br_res_valid_fetch) begin
         $fdisplay(`LOG_FD,
             "    eip=0x%08h  neip=0x%08h  tgt=0x%08h  xcl=%0b  ucond=%0b  clr_exp=%0b",
             `EXE_UNIT_PATH.outs_br_res_br_eip,

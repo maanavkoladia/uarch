@@ -85,7 +85,10 @@ module EXE (
     input  wire [31:0]  latches_EIP,
     input  wire [31:0]  latches_EAX,
     input  wire [63:0]  latches_imm64,
+    // 3-way replicated ld_buf (primary=crit, b=arith, c=ctrl)
     input  wire [255:0] latches_ld_buf,         // EXE_BUFFER_SIZE = 32 bytes
+    input  wire [255:0] latches_ld_buf_b,
+    input  wire [255:0] latches_ld_buf_c,
     // 3-way replicated sr_id (a -> sr_data MUX, b -> xchg, c -> reg_wb)
     input  wire [4:0]   latches_sr_id,
     input  wire [4:0]   latches_sr_id_b,
@@ -165,11 +168,19 @@ module EXE (
     output wire         outs_valid,
 
     // exe_br_resolution_outputs_t (outs_o.br_res_out)
-    output wire         outs_br_res_valid,
+    // outs_br_res_valid replicated 4-way to break the 77-load fanout: each
+    // copy has its own AND_2 driver in branch_res and goes to one consumer
+    // cluster.
+    output wire         outs_br_res_valid_decode,
+    output wire         outs_br_res_valid_btb,
+    output wire         outs_br_res_valid_pred,
+    output wire         outs_br_res_valid_fetch,
     output wire         outs_br_res_flush,
     output wire         outs_br_res_farFlush,
     output wire         outs_br_res_callFlush,
-    output wire         outs_br_res_miss_prediction,
+    // miss_prediction replicated: external port goes only to Predictor/GShare;
+    // the internal copy stays inside branch_res for u_and_outs_flush.
+    output wire         outs_br_res_miss_prediction_pred,
     output wire [31:0]  outs_br_res_br_eip,
     output wire [31:0]  outs_br_res_neip,
     output wire [31:0]  outs_br_res_br_target,
@@ -406,7 +417,7 @@ module EXE (
 
     alu_input_sel u_alu_input_sel_arith (
         .ld_addr_0      (latches_ld_addy_b),
-        .res_buf_in     (latches_ld_buf),
+        .res_buf_in     (latches_ld_buf_b),
         .imm64          (latches_imm64),
         .sr_data        (sr_data),
         .dr_data        (dr_data),
@@ -427,7 +438,7 @@ module EXE (
 
     alu_input_sel u_alu_input_sel_ctrl (
         .ld_addr_0      (latches_ld_addy_c),
-        .res_buf_in     (latches_ld_buf),
+        .res_buf_in     (latches_ld_buf_c),
         .imm64          (latches_imm64),
         .sr_data        (sr_data),
         .dr_data        (dr_data),
@@ -636,11 +647,15 @@ module EXE (
     //==========================================================================
     // BRANCH RESOLUTION
     //==========================================================================
-    wire        br_outs_valid_w;
+    // 4-way replicated valid + 1 external miss_prediction (see branch_res header)
+    wire        br_outs_valid_decode_w;
+    wire        br_outs_valid_btb_w;
+    wire        br_outs_valid_pred_w;
+    wire        br_outs_valid_fetch_w;
     wire        br_outs_flush_w;
     wire        br_outs_farFlush_w;
     wire        br_outs_callFlush_w;
-    wire        br_outs_miss_prediction_w;
+    wire        br_outs_miss_prediction_pred_w;
     wire [31:0] br_outs_br_eip_w;
     wire [31:0] br_outs_neip_w;
     wire [31:0] br_outs_br_target_w;
@@ -669,11 +684,14 @@ module EXE (
         .exp_target           (exp_call_eip),
         .CF                   (flags_reg[`EXE_FLAG_CF_IDX]),
         .ZF                   (flags_reg[`EXE_FLAG_ZF_IDX]),
-        .outs_valid_o            (br_outs_valid_w),
-        .outs_flush_o            (br_outs_flush_w),
-        .outs_farFlush_o         (br_outs_farFlush_w),
-        .outs_callFlush_o        (br_outs_callFlush_w),
-        .outs_miss_prediction_o  (br_outs_miss_prediction_w),
+        .outs_valid_to_decode_o          (br_outs_valid_decode_w),
+        .outs_valid_to_btb_o             (br_outs_valid_btb_w),
+        .outs_valid_to_pred_o            (br_outs_valid_pred_w),
+        .outs_valid_to_fetch_o           (br_outs_valid_fetch_w),
+        .outs_flush_o                    (br_outs_flush_w),
+        .outs_farFlush_o                 (br_outs_farFlush_w),
+        .outs_callFlush_o                (br_outs_callFlush_w),
+        .outs_miss_prediction_to_pred_o  (br_outs_miss_prediction_pred_w),
         .outs_br_eip_o           (br_outs_br_eip_w),
         .outs_neip_o             (br_outs_neip_w),
         .outs_br_target_o        (br_outs_br_target_w),
@@ -893,11 +911,14 @@ module EXE (
 
     // outs_o assembly (per-field).
     assign outs_valid               = latches_valid;
-    assign outs_br_res_valid        = br_outs_valid_w;
+    assign outs_br_res_valid_decode = br_outs_valid_decode_w;
+    assign outs_br_res_valid_btb    = br_outs_valid_btb_w;
+    assign outs_br_res_valid_pred   = br_outs_valid_pred_w;
+    assign outs_br_res_valid_fetch  = br_outs_valid_fetch_w;
     assign outs_br_res_flush        = br_outs_flush_w;
     assign outs_br_res_farFlush     = br_outs_farFlush_w;
     assign outs_br_res_callFlush    = br_outs_callFlush_w;
-    assign outs_br_res_miss_prediction = br_outs_miss_prediction_w;
+    assign outs_br_res_miss_prediction_pred = br_outs_miss_prediction_pred_w;
     assign outs_br_res_br_eip       = br_outs_br_eip_w;
     assign outs_br_res_neip         = br_outs_neip_w;
     assign outs_br_res_br_target    = br_outs_br_target_w;

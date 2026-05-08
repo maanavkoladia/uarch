@@ -50,7 +50,10 @@ module reg_wb_logic (
     `INV_N(u_inv_stall, 1, stall_flop, nstall)
 
     // dr0_we_o = WB_DR & nstall & valid
-    `AND_3(u_and_dr0_we, 1, dr0_we_o, WB_DR, nstall, valid)
+    // fanout to RegFile en pins -> bufferH64$ at port boundary
+    wire dr0_we_raw;
+    `AND_3(u_and_dr0_we, 1, dr0_we_raw, WB_DR, nstall, valid)
+    bufferH64$ u_buf_dr0_we (.out(dr0_we_o), .in(dr0_we_raw));
 
     // dr1_data_o = WB_EAX ? next_EAX : next_sr_data
     // mux2$ output (64-bit) drives 26 cells/bit -- bufferH64$ per bit.
@@ -81,6 +84,9 @@ module reg_wb_logic (
     `OR_2(u_or_wb_sr_eax, 1, wb_sr_or_eax, WB_SR, WB_EAX)
 
     // dr1_we_o = wb_sr_or_eax & nstall & valid
-    `AND_3(u_and_dr1_we, 1, dr1_we_o, wb_sr_or_eax, nstall, valid)
+    // fanout 29 to RegFile en pins -> bufferH64$ at port boundary
+    wire dr1_we_raw;
+    `AND_3(u_and_dr1_we, 1, dr1_we_raw, wb_sr_or_eax, nstall, valid)
+    bufferH64$ u_buf_dr1_we (.out(dr1_we_o), .in(dr1_we_raw));
 
 endmodule
