@@ -1002,7 +1002,7 @@ module EXE (
     assign outs_DR_1_id             = dr1_id_o;
     assign outs_DR_1_data           = dr1_data_o;
     assign outs_ZF                  = flags_reg[`EXE_FLAG_ZF_IDX];
-    assign outs_clr_ZF_sb           = clr_ZF_sb && latches_valid;
+    `AND_2(u_outs_clr_ZF_sb, 1, outs_clr_ZF_sb, clr_ZF_sb, latches_valid)
     assign outs_ST_OP               = latches_cs_ST_OP;
     assign outs_ST_XCL              = latches_ST_XCL;
     assign outs_ST_PADDR_0          = latches_ST_PADDR_0_c;
