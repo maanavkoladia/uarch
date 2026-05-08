@@ -336,7 +336,21 @@ module EXE_Latches (
     assign shift_sr_up_d = nextLatches_shift_sr_up_i;
     assign shift_sr_down_d = nextLatches_shift_sr_down_i;
     assign ST_XCL_d = nextLatches_ST_XCL_i;
-    assign ST_PADDR_0_d = nextLatches_ST_PADDR_0_i;
+    // ST_PADDR_0 from MEM_Latches drives BOTH DC's in_flight_dep_check (on the
+    // critical dep-check path -- must stay buffer-free) AND the 3 replicated
+    // ST_PADDR_0_a/b/c Din pins inside EXE_Latches. Inserting a bufferH16$ on
+    // the EXE_Latches-side path only absorbs the 3 Din loads internally, so
+    // the upstream MEM Q[*] sees only (2 DC loads + 1 buffer input) = 3 loads
+    // and the DC path stays direct.
+    wire [14:0] ST_PADDR_0_buf_to_d;
+    genvar gi_pa0_in;
+    generate
+        for (gi_pa0_in = 0; gi_pa0_in < 15; gi_pa0_in = gi_pa0_in + 1) begin : g_paddr0_in_buf
+            bufferH16$ u_buf_paddr0_in (.out(ST_PADDR_0_buf_to_d[gi_pa0_in]),
+                                        .in (nextLatches_ST_PADDR_0_i[gi_pa0_in]));
+        end
+    endgenerate
+    assign ST_PADDR_0_d = ST_PADDR_0_buf_to_d;
     assign ST_PADDR_1_d = nextLatches_ST_PADDR_1_i;
     assign MIO_d = nextLatches_MIO_i;
     assign br_info_valid_d = nextLatches_br_info_valid_i;
