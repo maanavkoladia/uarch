@@ -82,6 +82,53 @@ module rep_controller (
     output wire        clear_rep
 );
 
+    // localparam REP_FSM_NUM_STATES = 6;
+    // typedef enum logic [$clog2(REP_FSM_NUM_STATES) - 1 : 0] {
+    //     REP_IDLE                         = 0,  // IDLE (reset state)
+    //     REP_CMP                          = 1,
+    //     REP_FUCK_ME                      = 2,
+    //     REP_MOVS                         = 3,
+    //     REP_WAIT                         = 4,
+    //     REP_ERROR                        = 5  // ERROR (trap state), synthesised
+    // } rep_fsm_states_e;
+
+    // localparam REP_MOVS_FSM_NUM_STATES = 6;
+    // typedef enum logic [$clog2(REP_MOVS_FSM_NUM_STATES) - 1 : 0] {
+    //     MOVS_IDLE                          = 0,  // IDLE (reset state)
+    //     MOVS_DEC_ECX_MOV                   = 1,
+    //     MOVS_FILLER                        = 2,
+    //     MOVS_FUCK_ME                       = 3,
+    //     MOVS_MOVS                          = 4,
+    //     MOVS_MOVS_OP                       = 5,
+    //     MOVS_ERROR                         = 6  // ERROR (trap state), synthesised
+    // } rep_movs_fsm_states_e;
+
+    // localparam REP_CMP_FSM_NUM_STATES = 6;
+    // typedef enum logic [$clog2(REP_CMP_FSM_NUM_STATES) - 1 : 0] {
+    //     CMP_IDLE                           = 0,  // IDLE (reset state)
+    //     CMP_CMP                            = 1,
+    //     CMP_CMP0                           = 2,
+    //     CMP_CMP1                           = 3,
+    //     CMP_CMP2                           = 4,
+    //     CMP_CMP3                           = 5,
+    //     CMP_DEC_ECX_CMP                    = 6,
+    //     CMP_ERROR                          = 7 // ERROR (trap state), synthesised
+    // } rep_cmp_fsm_states_e;
+
+
+    // rep_fsm_states_e rep_fsm_state;
+    // logic [$clog2(REP_FSM_NUM_STATES) - 1 : 0] rep_fsm_state_bits;
+    // assign rep_fsm_state = rep_fsm_state_bits;
+
+    // rep_cmp_fsm_states_e rep_cmp_fsm_state;
+    // logic [$clog2(REP_CMP_FSM_NUM_STATES) - 1 : 0] rep_cmp_fsm_state_bits;
+    // assign rep_cmp_fsm_state = rep_cmp_fsm_state_bits;
+
+    // rep_movs_fsm_states_e rep_movs_fsm_state;
+    // logic [$clog2(REP_MOVS_FSM_NUM_STATES) - 1 : 0] rep_movs_fsm_state_bits;
+    // assign rep_movs_fsm_state = rep_movs_fsm_state_bits;
+
+    
     // --- control signals ---
     wire continue_mov, wait_mov, exit_mov;
     wire continue_cmp, continue_cmp_pre, wait_cmp, exit_cmp;

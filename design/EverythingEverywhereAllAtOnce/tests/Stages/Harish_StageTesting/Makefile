@@ -13,10 +13,10 @@ DISTRO := $(shell . /etc/os-release && echo $$ID)
 
 TARGET = system_testing
 
-STRUCTRURAL := false
+STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 12
+CLK_PERIOD := 9.25
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 	p	DCACHE_DUMP_END=100
@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/test2/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/TheBigOne/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -113,6 +113,7 @@ run: all
 	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
 	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
             +RTL_STOREDUMP_FILE_NAME=$(RTL_STOREDUMP_FILE) \
+			| tee $(LOG_DIR)/sim_report.log
 
 sim-run: makeLogDir
 	$(MAKE) -C $(SIM_DIR) run
@@ -138,6 +139,7 @@ runSoft:
 	    +RTL_REGDUMP_FILE_NAME=$(RTL_REGDUMP_FILE) \
 	    +RTL_FLAGDUMP_FILE_NAME=$(RTL_FLAGDUMP_FILE) \
             +RTL_STOREDUMP_FILE_NAME=$(RTL_STOREDUMP_FILE) \
+			| tee $(LOG_DIR)/sim_report.log
 
 
 see:

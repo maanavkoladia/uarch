@@ -228,7 +228,7 @@ module DC (
             valid: latches_i.valid,
             dc_eip: latches_i.EIP,
             stall: dc_stall,
-            exp_pf: ld_neuralnet_out.DC_PF | st_neuralnet_out.DC_PF,
+            exp_pf: (ld_neuralnet_out.DC_PF | st_neuralnet_out.DC_PF) && !(ld_segx_gp || st_segx_gp),
             exp_present: exp_stall,
             ld_addr_0_V: ld_addr_0_V,
             ld_addr_0: ld_addr_0,

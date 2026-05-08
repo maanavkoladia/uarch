@@ -33,13 +33,9 @@ wire WB_stall_i_inv;
 // ----------------------------------------------------------------
 
 // WB_we_o = !WB_stall_i
-// WB_we_o drives ~21 cells (WB_Latches flop enables).  The inv_N$ output uses
-// bufferHInv16$ (rated 16) -- wrap with bufferH64$ to cover.
 wire WB_we_o_and_buf_mid;
-wire WB_we_o_raw;
 `INV_N(WB_we_o_and_buf_i0, 1, WB_stall_i_inv, WB_we_o_and_buf_mid)
-`INV_N(WB_we_o_and_buf_i1, 1, WB_we_o_and_buf_mid, WB_we_o_raw)
-bufferH64$ u_buf_WB_we_o (.out(WB_we_o), .in(WB_we_o_raw));
+`INV_N(WB_we_o_and_buf_i1, 1, WB_we_o_and_buf_mid, WB_we_o)
 
 // N_WB_V_o = EXE_V_i
 wire N_WB_V_o_and_buf_mid;

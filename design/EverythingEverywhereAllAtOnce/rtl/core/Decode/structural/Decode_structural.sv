@@ -285,7 +285,9 @@ module Decode (
     //   00: hold; 01: 0; 10: capture; 11: 0
     //   => we = REP | clear_rep, set = REP & !clear_rep = NOR(!REP, clear_rep)
     wire rep_we;
-    `OR_2(u_rep_we, 1, rep_we, temp_decode_cs.REP, clear_rep)
+    wire rep_we_with_decode_forward;
+    assign rep_we_with_decode_forward = temp_decode_cs.REP && decode_forward;
+    `OR_2(u_rep_we, 1, rep_we, rep_we_with_decode_forward, clear_rep)
 
     wire rep_n;
     wire rep_capture;
@@ -395,7 +397,9 @@ module Decode (
     // wire repcmp_we  = temp_decode_cs.REP_CMP || clear_rep;
     // wire repcmp_din = temp_decode_cs.REP_CMP && !clear_rep;
     wire repcmp_we, rep_cmp_n, repcmp_din;
-    `OR_2(u_repcmp_we,    1, repcmp_we,  temp_decode_cs.REP_CMP, clear_rep)
+    wire rep_cmp_with_decode_forward;
+    assign rep_cmp_with_decode_forward = temp_decode_cs.REP_CMP && decode_forward;
+    `OR_2(u_repcmp_we,    1, repcmp_we,  rep_cmp_with_decode_forward, clear_rep)
     `INV_N(u_rep_cmp_inv, 1, temp_decode_cs.REP_CMP, rep_cmp_n)
     `NOR_2(u_repcmp_din,  1, repcmp_din, rep_cmp_n, clear_rep)
     wire repcmp_we_g, repcmp_din_g;
@@ -407,11 +411,13 @@ module Decode (
     // ---- REP_MOV_LATCH ({REP & !REP_CMP, clear_rep}) ----
     // mov_cond = REP & !REP_CMP = NOR(!REP, REP_CMP) -- reuses rep_n from above
     // wire mov_cond   = temp_decode_cs.REP && !temp_decode_cs.REP_CMP;
-    // wire repmov_we  = mov_cond || clear_rep;
+    // wire repmov_we  = (mov_cond && decode_forward) || clear_rep;
     // wire repmov_din = mov_cond && !clear_rep;
     wire mov_cond, repmov_we, mov_cond_n, repmov_din;
+    wire mov_cond_with_decode_forward;
     `NOR_2(u_mov_cond,     1, mov_cond,   rep_n, temp_decode_cs.REP_CMP)
-    `OR_2(u_repmov_we,     1, repmov_we,  mov_cond, clear_rep)
+    assign mov_cond_with_decode_forward = mov_cond && decode_forward;
+    `OR_2(u_repmov_we,     1, repmov_we,  mov_cond_with_decode_forward, clear_rep)
     `INV_N(u_mov_cond_inv, 1, mov_cond,   mov_cond_n)
     `NOR_2(u_repmov_din,   1, repmov_din, mov_cond_n, clear_rep)
     wire repmov_we_g, repmov_din_g;

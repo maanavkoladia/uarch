@@ -22,7 +22,6 @@ module SegmentTranslation (
     `INV_N(u_inv_laddr, 32, l_addr_i,    l_addr_inv)
     `ADD_N(u_sub_seg_l, 32, sub_seg_l_sum_unused, ge_seg_ge_l, segLimit, l_addr_inv, 1'b1)
     `INV_N(u_inv_ge,     1, ge_seg_ge_l, gp_fault_o)
-
     `ADD_N(u_upper16, 16, upper16, cout, segValue[15:0], l_addr_i[31:16], 1'b0);
 
 

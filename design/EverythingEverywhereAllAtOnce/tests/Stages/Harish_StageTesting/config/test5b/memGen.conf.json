@@ -1,0 +1,25 @@
+{
+    "useProgram"              : "false",
+    "input_Program_Path"      : "config/test5b/test5b.s",
+    "input_hex_file"          : "config/test5b/test5b.s",
+    "output_LoadableHex_Path" : "gen/memGen/hexLoad",
+    "output_metaData_Path"    : "gen/memGen/meta/",
+    "randomizeMem"            : "false",
+    "debug_bank_layouts"      : "false",
+    "mem_size_bytes"          : 32768,
+    "num_banks"               : 64,
+    "cache_line_bytes"        : 16,
+    "cells_per_bank"          : 4,
+    "page_size_bytes"         : 4096,
+    "va_image_size_bytes"     : 67108864,
+    "readmemFilePath"         : "gen/memLoader.sv",
+    "memCellPath"             : "uut_AllAtOnce.mem_sys_unit.mem_unit.g_mem_banks[<bankNum>].mem_bank.g_sram_cells[<cellNum>].mem_cell.mem",
+    "startUpDelay"            : "30",
+    "gcc_extra_flags"         : [],
+
+    "VM_Mappings" : [
+        ["0x00000000", 2],
+        ["0x40020000", 7],
+        ["0xF0000000", 4]
+    ]
+}

@@ -733,10 +733,10 @@ module Decode (
     `REG_RST_WE(u_prev_len, 4, clk, rst, 1'b1, prev_len_din_g, PrevLength)
 
     // ---- HALT_REG ----
-    //   write iff (!HALT_REG && !invalid_inst); din = HALT
+    //   write iff (!HALT_REG && !invalid_inst && !REP_LATCH); din = HALT
     //   reset on rst | exp_pipe_clear | flush
     wire halt_we;
-    `NOR_2(u_halt_we, 1, halt_we, HALT_REG, invalid_inst)
+    `NOR_3(u_halt_we, 1, halt_we, HALT_REG, invalid_inst, REP_LATCH)
     wire halt_we_g, halt_din_g;
     `OR_2(u_halt_we_g, 1, halt_we_g, halt_we, sync_clear_flush)
     `MUX_2(u_halt_din_g, 1, halt_din_g, decode_cs_HALT, 1'b0, sync_clear_flush)

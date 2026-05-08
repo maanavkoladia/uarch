@@ -12,8 +12,9 @@
 //   DDR_IDT = 5'd4    (DDR placeholder)
 //
 // Pipeline:
-//   fetch_exp_out = Fetch_pf ? PF_IDT : GP_IDT
-//   DC_exp_out    = DC_pf    ? PF_IDT : GP_IDT
+//   fetch_exp_out = Fetch_gp ? GP_IDT : PF_IDT
+//   dc_gp_exp     = DC_exp & ~DC_pf
+//   DC_exp_out    = dc_gp_exp ? GP_IDT : PF_IDT
 //   exp_idx       = DC_exp   ? DC_exp_out : fetch_exp_out
 //   int_idx       = DMA_int  ? DMA_IDT    : DDR_IDT
 //   rom_idx       = exp_pipe_clear ? exp_idx : int_idx
@@ -43,6 +44,7 @@ module EXP_Ctrl_ROMS (
     input  wire        DC_pf,
     input  wire        DC_exp,
     input  wire        Fetch_pf,
+    input wire         Fetch_gp,
     input  wire        DMA_int,
 
     input  wire        exp_mode,        // present in SV port; unused (kept for parity)
@@ -59,8 +61,16 @@ module EXP_Ctrl_ROMS (
     wire [4:0] int_idx;
     wire [4:0] rom_idx;
 
-    `MUX_2(u_fexp,   5, fetch_exp_out, 5'd13, 5'd14, Fetch_pf)   // GP / PF
-    `MUX_2(u_dcexp,  5, DC_exp_out,    5'd13, 5'd14, DC_pf)
+    // dc_gp_exp = DC_exp & ~DC_pf  (matches SV: assign dc_gp_exp = DC_exp & !DC_pf)
+    wire        dc_pf_n;
+    wire        dc_gp_exp;
+    `INV_N     (u_dc_pf_inv, 1, DC_pf, dc_pf_n)
+    `AND_2     (u_dc_gp,     1, dc_gp_exp, DC_exp, dc_pf_n)
+
+    // fetch_exp_out = Fetch_gp ? GP_IDT : PF_IDT  (sel=1→in1=GP, sel=0→in0=PF)
+    `MUX_2(u_fexp,   5, fetch_exp_out, 5'd14, 5'd13, Fetch_gp)   // PF / GP
+    // DC_exp_out   = dc_gp_exp ? GP_IDT : PF_IDT
+    `MUX_2(u_dcexp,  5, DC_exp_out,    5'd14, 5'd13, dc_gp_exp)  // PF / GP
     `MUX_2(u_eidx,   5, exp_idx,       fetch_exp_out, DC_exp_out, DC_exp)
     `MUX_2(u_iidx,   5, int_idx,       5'd4,  5'd7,  DMA_int)    // DDR / DMA
     `MUX_2(u_ridx,   5, rom_idx,       int_idx, exp_idx, exp_pipe_clear)

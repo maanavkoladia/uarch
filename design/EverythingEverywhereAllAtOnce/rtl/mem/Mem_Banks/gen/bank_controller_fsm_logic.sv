@@ -160,25 +160,27 @@ wire start_store_i_inv;
 // Next-state and output SOP logic
 // ----------------------------------------------------------------
 
-// NS_0 = (!S_0 & !S_4 & start_store_i) | (!S_3 & !S_4 & ld_address_change_i) | (!S_0 & !S_2 & !S_3) | (!S_0 & S_2 & !S_4) | (!S_3 & !S_4 & start_store_i) | (S_0 & !S_1 & S_2 & !S_3 & S_4) | (!S_0 & S_1 & !S_4) | (!S_0 & !S_4 & ld_address_change_i)
+// NS_0 = (!S_0 & !S_3 & !S_4) | (!S_0 & !S_4 & ld_address_change_i) | (!S_3 & !S_4 & start_store_i) | (!S_0 & !S_2 & !S_3) | (!S_3 & !S_4 & ld_address_change_i) | (!S_0 & S_2 & !S_4) | (S_0 & !S_1 & S_2 & !S_3 & S_4) | (!S_0 & S_1 & !S_4) | (!S_0 & !S_4 & start_store_i)
 wire NS_0_t0;
-`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_4_inv, start_store_i)
+`AND_3(NS_0_and0, 1, NS_0_t0, S_0_inv, S_3_inv, S_4_inv)
 wire NS_0_t1;
-`AND_3(NS_0_and1, 1, NS_0_t1, S_3_inv, S_4_inv, ld_address_change_i)
+`AND_3(NS_0_and1, 1, NS_0_t1, S_0_inv, S_4_inv, ld_address_change_i)
 wire NS_0_t2;
-`AND_3(NS_0_and2, 1, NS_0_t2, S_0_inv, S_2_inv, S_3_inv)
+`AND_3(NS_0_and2, 1, NS_0_t2, S_3_inv, S_4_inv, start_store_i)
 wire NS_0_t3;
-`AND_3(NS_0_and3, 1, NS_0_t3, S_0_inv, S_2, S_4_inv)
+`AND_3(NS_0_and3, 1, NS_0_t3, S_0_inv, S_2_inv, S_3_inv)
 wire NS_0_t4;
-`AND_3(NS_0_and4, 1, NS_0_t4, S_3_inv, S_4_inv, start_store_i)
+`AND_3(NS_0_and4, 1, NS_0_t4, S_3_inv, S_4_inv, ld_address_change_i)
 wire NS_0_t5;
-`AND_5(NS_0_and5, 1, NS_0_t5, S_0, S_1_inv, S_2, S_3_inv, S_4)
+`AND_3(NS_0_and5, 1, NS_0_t5, S_0_inv, S_2, S_4_inv)
 wire NS_0_t6;
-`AND_3(NS_0_and6, 1, NS_0_t6, S_0_inv, S_1, S_4_inv)
+`AND_5(NS_0_and6, 1, NS_0_t6, S_0, S_1_inv, S_2, S_3_inv, S_4)
 wire NS_0_t7;
-`AND_3(NS_0_and7, 1, NS_0_t7, S_0_inv, S_4_inv, ld_address_change_i)
+`AND_3(NS_0_and7, 1, NS_0_t7, S_0_inv, S_1, S_4_inv)
+wire NS_0_t8;
+`AND_3(NS_0_and8, 1, NS_0_t8, S_0_inv, S_4_inv, start_store_i)
 
-`OR_8(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5, NS_0_t6, NS_0_t7)
+`OR_9(NS_0_or, 1, NS_0, NS_0_t0, NS_0_t1, NS_0_t2, NS_0_t3, NS_0_t4, NS_0_t5, NS_0_t6, NS_0_t7, NS_0_t8)
 
 // NS_1 = (S_0 & !S_1 & S_3 & !S_4) | (!S_0 & S_1 & S_3 & !S_4) | (S_0 & !S_1 & !S_2 & !S_3 & S_4) | (!S_0 & S_1 & !S_2 & !S_3 & S_4) | (!S_0 & S_1 & !S_4 & !ld_address_change_i & !start_store_i) | (S_0 & !S_1 & !S_4 & !ld_address_change_i & !start_store_i)
 wire NS_1_t0;
@@ -196,43 +198,45 @@ wire NS_1_t5;
 
 `OR_6(NS_1_or, 1, NS_1, NS_1_t0, NS_1_t1, NS_1_t2, NS_1_t3, NS_1_t4, NS_1_t5)
 
-// NS_2 = (!S_1 & S_2 & S_3 & !S_4) | (!S_0 & S_2 & S_3 & !S_4) | (S_0 & S_1 & !S_2 & !S_3 & S_4) | (S_0 & !S_1 & S_2 & !S_3 & S_4) | (S_0 & S_1 & !S_2 & S_3 & !S_4) | (!S_0 & S_2 & !S_4 & !ld_address_change_i & !start_store_i) | (!S_1 & S_2 & !S_4 & !ld_address_change_i & !start_store_i) | (S_0 & S_1 & !S_2 & !S_4 & !ld_address_change_i & !start_store_i)
+// NS_2 = (!S_0 & S_2 & S_3 & !S_4) | (!S_1 & S_2 & S_3 & !S_4) | (S_0 & S_1 & !S_2 & S_3 & !S_4) | (S_0 & S_1 & !S_2 & !S_3 & S_4) | (S_0 & !S_1 & S_2 & !S_3 & S_4) | (!S_1 & S_2 & !S_4 & !ld_address_change_i & !start_store_i) | (!S_0 & S_2 & !S_4 & !ld_address_change_i & !start_store_i) | (S_0 & S_1 & !S_2 & !S_3 & !ld_address_change_i & !start_store_i)
 wire NS_2_t0;
-`AND_4(NS_2_and0, 1, NS_2_t0, S_1_inv, S_2, S_3, S_4_inv)
+`AND_4(NS_2_and0, 1, NS_2_t0, S_0_inv, S_2, S_3, S_4_inv)
 wire NS_2_t1;
-`AND_4(NS_2_and1, 1, NS_2_t1, S_0_inv, S_2, S_3, S_4_inv)
+`AND_4(NS_2_and1, 1, NS_2_t1, S_1_inv, S_2, S_3, S_4_inv)
 wire NS_2_t2;
-`AND_5(NS_2_and2, 1, NS_2_t2, S_0, S_1, S_2_inv, S_3_inv, S_4)
+`AND_5(NS_2_and2, 1, NS_2_t2, S_0, S_1, S_2_inv, S_3, S_4_inv)
 wire NS_2_t3;
-`AND_5(NS_2_and3, 1, NS_2_t3, S_0, S_1_inv, S_2, S_3_inv, S_4)
+`AND_5(NS_2_and3, 1, NS_2_t3, S_0, S_1, S_2_inv, S_3_inv, S_4)
 wire NS_2_t4;
-`AND_5(NS_2_and4, 1, NS_2_t4, S_0, S_1, S_2_inv, S_3, S_4_inv)
+`AND_5(NS_2_and4, 1, NS_2_t4, S_0, S_1_inv, S_2, S_3_inv, S_4)
 wire NS_2_t5;
-`AND_5(NS_2_and5, 1, NS_2_t5, S_0_inv, S_2, S_4_inv, ld_address_change_i_inv, start_store_i_inv)
+`AND_5(NS_2_and5, 1, NS_2_t5, S_1_inv, S_2, S_4_inv, ld_address_change_i_inv, start_store_i_inv)
 wire NS_2_t6;
-`AND_5(NS_2_and6, 1, NS_2_t6, S_1_inv, S_2, S_4_inv, ld_address_change_i_inv, start_store_i_inv)
+`AND_5(NS_2_and6, 1, NS_2_t6, S_0_inv, S_2, S_4_inv, ld_address_change_i_inv, start_store_i_inv)
 wire NS_2_t7;
-`AND_6(NS_2_and7, 1, NS_2_t7, S_0, S_1, S_2_inv, S_4_inv, ld_address_change_i_inv, start_store_i_inv)
+`AND_6(NS_2_and7, 1, NS_2_t7, S_0, S_1, S_2_inv, S_3_inv, ld_address_change_i_inv, start_store_i_inv)
 
 `OR_8(NS_2_or, 1, NS_2, NS_2_t0, NS_2_t1, NS_2_t2, NS_2_t3, NS_2_t4, NS_2_t5, NS_2_t6, NS_2_t7)
 
-// NS_3 = (!S_0 & !S_4 & start_store_i) | (!S_3 & !S_4 & start_store_i) | (S_0 & !S_1 & S_3 & !S_4) | (S_1 & !S_2 & S_3 & !S_4) | (!S_0 & S_2 & S_3 & !S_4) | (!S_0 & S_3 & !S_4 & !ld_address_change_i) | (S_0 & S_1 & S_2 & !S_3 & !S_4 & !ld_address_change_i)
+// NS_3 = (!S_1 & !S_4 & start_store_i) | (!S_2 & !S_4 & start_store_i) | (!S_0 & S_1 & S_3 & !S_4) | (!S_3 & !S_4 & start_store_i) | (S_0 & !S_2 & S_3 & !S_4) | (!S_1 & S_2 & S_3 & !S_4) | (!S_1 & S_3 & !S_4 & !ld_address_change_i) | (S_0 & S_1 & S_2 & !S_3 & !S_4 & !ld_address_change_i)
 wire NS_3_t0;
-`AND_3(NS_3_and0, 1, NS_3_t0, S_0_inv, S_4_inv, start_store_i)
+`AND_3(NS_3_and0, 1, NS_3_t0, S_1_inv, S_4_inv, start_store_i)
 wire NS_3_t1;
-`AND_3(NS_3_and1, 1, NS_3_t1, S_3_inv, S_4_inv, start_store_i)
+`AND_3(NS_3_and1, 1, NS_3_t1, S_2_inv, S_4_inv, start_store_i)
 wire NS_3_t2;
-`AND_4(NS_3_and2, 1, NS_3_t2, S_0, S_1_inv, S_3, S_4_inv)
+`AND_4(NS_3_and2, 1, NS_3_t2, S_0_inv, S_1, S_3, S_4_inv)
 wire NS_3_t3;
-`AND_4(NS_3_and3, 1, NS_3_t3, S_1, S_2_inv, S_3, S_4_inv)
+`AND_3(NS_3_and3, 1, NS_3_t3, S_3_inv, S_4_inv, start_store_i)
 wire NS_3_t4;
-`AND_4(NS_3_and4, 1, NS_3_t4, S_0_inv, S_2, S_3, S_4_inv)
+`AND_4(NS_3_and4, 1, NS_3_t4, S_0, S_2_inv, S_3, S_4_inv)
 wire NS_3_t5;
-`AND_4(NS_3_and5, 1, NS_3_t5, S_0_inv, S_3, S_4_inv, ld_address_change_i_inv)
+`AND_4(NS_3_and5, 1, NS_3_t5, S_1_inv, S_2, S_3, S_4_inv)
 wire NS_3_t6;
-`AND_6(NS_3_and6, 1, NS_3_t6, S_0, S_1, S_2, S_3_inv, S_4_inv, ld_address_change_i_inv)
+`AND_4(NS_3_and6, 1, NS_3_t6, S_1_inv, S_3, S_4_inv, ld_address_change_i_inv)
+wire NS_3_t7;
+`AND_6(NS_3_and7, 1, NS_3_t7, S_0, S_1, S_2, S_3_inv, S_4_inv, ld_address_change_i_inv)
 
-`OR_7(NS_3_or, 1, NS_3, NS_3_t0, NS_3_t1, NS_3_t2, NS_3_t3, NS_3_t4, NS_3_t5, NS_3_t6)
+`OR_8(NS_3_or, 1, NS_3, NS_3_t0, NS_3_t1, NS_3_t2, NS_3_t3, NS_3_t4, NS_3_t5, NS_3_t6, NS_3_t7)
 
 // NS_4 = (!S_2 & !S_3 & S_4) | (S_0 & !S_1 & !S_3 & S_4) | (S_0 & S_1 & S_2 & S_3 & !S_4)
 wire NS_4_t0;
@@ -244,29 +248,29 @@ wire NS_4_t2;
 
 `OR_3(NS_4_or, 1, NS_4, NS_4_t0, NS_4_t1, NS_4_t2)
 
-// st_addr_release_o = (!S_4 & start_store_i) | (!S_2 & !S_3 & S_4) | (S_0 & S_3 & !S_4) | (S_1 & S_3 & !S_4) | (S_2 & S_3 & !S_4)
+// st_addr_release_o = (!S_4 & start_store_i) | (!S_2 & !S_3 & S_4) | (S_1 & S_3 & !S_4) | (S_0 & S_3 & !S_4) | (S_2 & S_3 & !S_4)
 wire st_addr_release_o_t0;
 `AND_2(st_addr_release_o_and0, 1, st_addr_release_o_t0, S_4_inv, start_store_i)
 wire st_addr_release_o_t1;
 `AND_3(st_addr_release_o_and1, 1, st_addr_release_o_t1, S_2_inv, S_3_inv, S_4)
 wire st_addr_release_o_t2;
-`AND_3(st_addr_release_o_and2, 1, st_addr_release_o_t2, S_0, S_3, S_4_inv)
+`AND_3(st_addr_release_o_and2, 1, st_addr_release_o_t2, S_1, S_3, S_4_inv)
 wire st_addr_release_o_t3;
-`AND_3(st_addr_release_o_and3, 1, st_addr_release_o_t3, S_1, S_3, S_4_inv)
+`AND_3(st_addr_release_o_and3, 1, st_addr_release_o_t3, S_0, S_3, S_4_inv)
 wire st_addr_release_o_t4;
 `AND_3(st_addr_release_o_and4, 1, st_addr_release_o_t4, S_2, S_3, S_4_inv)
 
 `OR_5(st_addr_release_o_or, 1, st_addr_release_o, st_addr_release_o_t0, st_addr_release_o_t1, st_addr_release_o_t2, st_addr_release_o_t3, st_addr_release_o_t4)
 
-// OE_o = (!S_4 & start_store_i) | (!S_2 & !S_3 & S_4) | (S_0 & S_3 & !S_4) | (S_1 & S_3 & !S_4) | (!S_0 & !S_1 & !S_3 & S_4) | (S_2 & S_3 & !S_4) | (!S_0 & !S_1 & !S_2 & !S_3)
+// OE_o = (!S_4 & start_store_i) | (!S_2 & !S_3 & S_4) | (S_1 & S_3 & !S_4) | (S_0 & S_3 & !S_4) | (!S_0 & !S_1 & !S_3 & S_4) | (S_2 & S_3 & !S_4) | (!S_0 & !S_1 & !S_2 & !S_3)
 wire OE_o_t0;
 `AND_2(OE_o_and0, 1, OE_o_t0, S_4_inv, start_store_i)
 wire OE_o_t1;
 `AND_3(OE_o_and1, 1, OE_o_t1, S_2_inv, S_3_inv, S_4)
 wire OE_o_t2;
-`AND_3(OE_o_and2, 1, OE_o_t2, S_0, S_3, S_4_inv)
+`AND_3(OE_o_and2, 1, OE_o_t2, S_1, S_3, S_4_inv)
 wire OE_o_t3;
-`AND_3(OE_o_and3, 1, OE_o_t3, S_1, S_3, S_4_inv)
+`AND_3(OE_o_and3, 1, OE_o_t3, S_0, S_3, S_4_inv)
 wire OE_o_t4;
 `AND_4(OE_o_and4, 1, OE_o_t4, S_0_inv, S_1_inv, S_3_inv, S_4)
 wire OE_o_t5;
@@ -276,11 +280,11 @@ wire OE_o_t6;
 
 `OR_7(OE_o_or, 1, OE_o, OE_o_t0, OE_o_t1, OE_o_t2, OE_o_t3, OE_o_t4, OE_o_t5, OE_o_t6)
 
-// WE_o = (!S_2 & !S_4) | (!S_3 & !S_4) | (!S_0 & !S_1 & !S_4) | (!S_0 & !S_1 & S_2 & !S_3)
+// WE_o = (!S_3 & !S_4) | (!S_2 & !S_4) | (!S_0 & !S_1 & !S_4) | (!S_0 & !S_1 & S_2 & !S_3)
 wire WE_o_n0;
-`NAND_2(WE_o_nand0, 1, WE_o_n0, S_2_inv, S_4_inv)
+`NAND_2(WE_o_nand0, 1, WE_o_n0, S_3_inv, S_4_inv)
 wire WE_o_n1;
-`NAND_2(WE_o_nand1, 1, WE_o_n1, S_3_inv, S_4_inv)
+`NAND_2(WE_o_nand1, 1, WE_o_n1, S_2_inv, S_4_inv)
 wire WE_o_n2;
 `NAND_3(WE_o_nand2, 1, WE_o_n2, S_0_inv, S_1_inv, S_4_inv)
 wire WE_o_n3;

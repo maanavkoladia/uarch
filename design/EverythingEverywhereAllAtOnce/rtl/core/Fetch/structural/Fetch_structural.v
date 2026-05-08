@@ -204,6 +204,7 @@ module Fetch (
     // ----------------------------------------------------------------
     // Mode-latch set/clear/WE/D wires
     // ----------------------------------------------------------------
+    wire        seg_gp;
     wire        exp_clr;
     wire        not_exp_clr;
     wire        not_clr_exp_mode;
@@ -375,12 +376,17 @@ module Fetch (
     assign outs_exp_mode_jk    = {exp_mode_jk_1, exp_mode_jk_0};
     assign outs_int_mode_jk    = int_mode_jk;
 
-    // ----------------------------------------------------------------
-    // f_exp = (gp_exp | pageFault) & ~exp_mode_jk[0]
-    // ----------------------------------------------------------------
-    `OR_2 (u_tlb_or_exp,         1, tlb_or_exp,        tlb_gp_exp, tlb_pageFault)
+   //assign gp_fault = tlb_outs.gp_exp || seg_gp_fault;
+   // assign f_exp = (gp_fault | tlb_outs.pageFault) & ~exp_mode_jk;
+    wire fetch_gp;
+
+    `OR_2 (u_gp, 1, fetch_gp, tlb_gp_exp, seg_gp)
+
+    `OR_2 (u_tlb_or_exp,         1, gp_or_exp,        fetch_gp, tlb_pageFault)
+
     `INV_N(u_inv_exp_mode_jk_0,  1, exp_mode_jk_0,     not_exp_mode_jk_0)
-    `AND_2(u_f_exp,              1, f_exp,             tlb_or_exp, not_exp_mode_jk_0)
+
+    `AND_2(u_f_exp,              1, f_exp,             gp_or_exp, not_exp_mode_jk_0)
 
     // ----------------------------------------------------------------
     // exp_or_int = exp_mode_jk_0 | int_mode_jk
@@ -742,6 +748,7 @@ module Fetch (
         .DC_pf         (dc_outs_exp_pf),
         .DC_exp        (dc_outs_exp_present),
         .Fetch_pf      (tlb_pageFault),
+        .Fetch_gp      (seg_gp),
         .DMA_int       (DMA_int_jk),
         .exp_mode      (exp_mode_jk_0),
         .rom_data_out  (rom_data_out)
@@ -772,7 +779,7 @@ module Fetch (
         .segValue  (rr_outs_codeSeg_data),
         .segLimit  (rr_outs_codeSeg_limit),
         .v_addr_o  (seg_xlation_out),
-        .gp_fault_o()
+        .gp_fault_o(seg_gp)
     );
 
 endmodule

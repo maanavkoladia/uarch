@@ -1,0 +1,31 @@
+{
+    "Module Name"   : "coreRegLoader",
+    "outputPath"    : "gen/",
+    "startUpDelay"  : "30",
+
+    "EIP" : {
+        "load" : "false",
+        "path" : "uut_AllAtOnce.core_unit.decode_unit.EIP",
+        "val"  : "32'h00000000"
+    },
+    "SPC" : {
+        "load" : "false",
+        "path" : "uut_AllAtOnce.core_unit.fetch_unit.SPC",
+        "val"  : "32'h00000000"
+    },
+    "IDTR" : {
+        "load" : "true",
+        "path" : "uut_AllAtOnce.core_unit.fetch_unit.exp_ctrl_roms.IDTR",
+        "val"  : "32'h02000000"
+    },
+    "SegLimitVals" : {
+        "load" : "true",
+        "CS"   : ["20'h01FFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[0]"],
+        "DS"   : ["20'h011FF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[1]"],
+        "SS"   : ["20'h04000", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[2]"],
+        "ES"   : ["20'h003FF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[3]"],
+        "FS"   : ["20'h003ff", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[4]"],
+        "GS"   : ["20'h007ff", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[5]"],
+        "EXPS" : ["32'hFFFFFFFF", "uut_AllAtOnce.core_unit.rr_unit.SEGMENT_LIMITS[6]"]
+    }
+}

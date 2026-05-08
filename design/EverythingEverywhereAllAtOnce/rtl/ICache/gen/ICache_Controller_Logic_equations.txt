@@ -6,7 +6,7 @@ NS_0 = (S_0 & !S_2 & !mem_valid_i) | (!S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 &
 
 NS_1 = (!S_0 & S_1) | (S_1 & !S_2 & !mem_valid_i) | (S_0 & !S_1 & !S_2 & mem_valid_i)
 
-NS_2 = (!S_0 & S_1 & S_2) | (!S_0 & S_2 & !mem_valid_i) | (S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i & !I_VC_Miss_i & en_i)
+NS_2 = (!S_0 & S_2 & !mem_valid_i) | (!S_0 & S_1 & S_2) | (S_0 & S_1 & !S_2 & mem_valid_i) | (!S_0 & !S_1 & !S_2 & IC_miss_i & !I_VC_Miss_i & en_i)
 
 LD_IC_SWAP_BUF_o = (!S_0 & !S_1 & !S_2 & IC_miss_i & en_i)
 
