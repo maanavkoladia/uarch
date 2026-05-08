@@ -13,12 +13,16 @@ module eq5_with_inv #(
     output wire       eq
 );
     wire [4:0] b;
-    assign b[0] = K[0] ? in[0] : in_n[0];
-    assign b[1] = K[1] ? in[1] : in_n[1];
-    assign b[2] = K[2] ? in[2] : in_n[2];
-    assign b[3] = K[3] ? in[3] : in_n[3];
-    assign b[4] = K[4] ? in[4] : in_n[4];
-
+    //assign b[0] = K[0] ? in[0] : in_n[0];
+    //assign b[1] = K[1] ? in[1] : in_n[1];
+    //assign b[2] = K[2] ? in[2] : in_n[2];
+    //assign b[3] = K[3] ? in[3] : in_n[3];
+    //assign b[4] = K[4] ? in[4] : in_n[4];
+    `MUX_2(__another_mux__0, 1, b[0], in_n[0], in[0], K[0]);
+    `MUX_2(__another_mux__1, 1, b[1], in_n[1], in[1], K[1]);
+    `MUX_2(__another_mux__2, 1, b[2], in_n[2], in[2], K[2]);
+    `MUX_2(__another_mux__3, 1, b[3], in_n[3], in[3], K[3]);
+    `MUX_2(__another_mux__4, 1, b[4], in_n[4], in[4], K[4]);
     // Same NAND3/NAND2/NOR2 reduction tree that MPS_COMP_EQ uses for WIDTH=5.
     wire l0, l1;
     nand3$ u0 (.out(l0), .in0(b[0]), .in1(b[1]), .in2(b[2]));

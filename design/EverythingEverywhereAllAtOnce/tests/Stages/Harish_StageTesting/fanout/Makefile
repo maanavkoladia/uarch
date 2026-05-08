@@ -16,3 +16,6 @@ parse: check.log
 clean:
 	rm -f *.log*
 	rm -f *.svf
+
+behav:
+	design_vision -no_gui -x "source check_behavioral.tcl"  | tee behav.log
