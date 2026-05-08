@@ -187,6 +187,7 @@ module MEM_Latches (
 
     output wire        latches_ST_XCL_o,
     output wire [14:0] latches_ST_PADDR_0_o,
+    output wire [14:0] latches_ST_PADDR_0_to_exe_o,
     output wire [14:0] latches_ST_PADDR_1_o,
     output wire        latches_MIO_o,
 
@@ -384,11 +385,19 @@ module MEM_Latches (
     `REG_RST_WE(mem_latches_shift_sr_down,                  1,   clk, rst, effective_we, shift_sr_down_d,                  latches_shift_sr_down_o);
 
     `REG_RST_WE(mem_latches_ST_XCL,                         1,   clk, rst, effective_we, ST_XCL_d,                         latches_ST_XCL_o);
-    // fanout: redirect mem_latches_ST_PADDR_0 q to staging bus, attach bufferH16$ on bit 14 only
+    // fanout: redirect mem_latches_ST_PADDR_0 q to staging bus.
+    // _o:        DC's in_flight_dep_check comparators (timing-critical) - bit 14 buffered, others raw
+    // _to_exe_o: EXE_Latches.Din triplicated copies (setup-bound, slack-rich) - bit 13 buffered
+    // Splitting bit 13 keeps DC's compare path raw; the 3 EXE_Latches Din loads
+    // pay the bufferH16$ delay (~0.24ns) but have plenty of setup slack.
     wire [14:0] latches_ST_PADDR_0_pre_buf;
     `REG_RST_WE(mem_latches_ST_PADDR_0,                     15,  clk, rst, effective_we, ST_PADDR_0_d,                     latches_ST_PADDR_0_pre_buf);
     assign latches_ST_PADDR_0_o[13:0] = latches_ST_PADDR_0_pre_buf[13:0];
     bufferH16$ u_attach_ST_PADDR_0_b14 (.out(latches_ST_PADDR_0_o[14]), .in(latches_ST_PADDR_0_pre_buf[14]));
+    assign latches_ST_PADDR_0_to_exe_o[11:0]    = latches_ST_PADDR_0_pre_buf[11:0];
+    assign latches_ST_PADDR_0_to_exe_o[14:14]   = latches_ST_PADDR_0_pre_buf[14:14];
+    bufferH16$ u_attach_ST_PADDR_0_to_exe_b12 (.out(latches_ST_PADDR_0_to_exe_o[12]), .in(latches_ST_PADDR_0_pre_buf[12]));
+    bufferH16$ u_attach_ST_PADDR_0_to_exe_b13 (.out(latches_ST_PADDR_0_to_exe_o[13]), .in(latches_ST_PADDR_0_pre_buf[13]));
     `REG_RST_WE(mem_latches_ST_PADDR_1,                     15,  clk, rst, effective_we, ST_PADDR_1_d,                     latches_ST_PADDR_1_o);
     // fanout: redirect mem_latches_MIO q to staging wire, attach bufferH256$
     wire latches_MIO_pre_buf;
@@ -399,11 +408,13 @@ module MEM_Latches (
     `REG_RST_WE(mem_latches_EIP,                            32,  clk, rst, effective_we, EIP_d,                            latches_EIP_o);
     `REG_RST_WE(mem_latches_EAX,                            32,  clk, rst, effective_we, EAX_d,                            latches_EAX_o);
 
-    // fanout: redirect mem_latches_imm64 q to staging bus, attach bufferH64$ on bit 15 only
+    // fanout: redirect mem_latches_imm64 q to staging bus, attach bufferH64$ on bits 7 and 15
     wire [63:0] latches_imm64_pre_buf;
     `REG_RST_WE(mem_latches_imm64,                          64,  clk, rst, effective_we, imm64_d,                          latches_imm64_pre_buf);
-    assign latches_imm64_o[14:0]  = latches_imm64_pre_buf[14:0];
+    assign latches_imm64_o[6:0]   = latches_imm64_pre_buf[6:0];
+    assign latches_imm64_o[14:8]  = latches_imm64_pre_buf[14:8];
     assign latches_imm64_o[63:16] = latches_imm64_pre_buf[63:16];
+    bufferH64$ u_attach_imm64_b7  (.out(latches_imm64_o[7]),  .in(latches_imm64_pre_buf[7]));
     bufferH64$ u_attach_imm64_b15 (.out(latches_imm64_o[15]), .in(latches_imm64_pre_buf[15]));
 
     `REG_RST_WE(mem_latches_sr_id,                          5,   clk, rst, effective_we, sr_id_d,                          latches_sr_id_o);
@@ -416,17 +427,19 @@ module MEM_Latches (
     `REG_RST_WE(mem_latches_LD_XCL,                         1,   clk, rst, effective_we, LD_XCL_d,                         latches_LD_XCL_pre_buf);
     bufferH256$ u_attach_LD_XCL (.out(latches_LD_XCL_o), .in(latches_LD_XCL_pre_buf));
     `REG_RST_WE(mem_latches_swapLines,                      1,   clk, rst, effective_we, swapLines_d,                      latches_swapLines_o);
-    // fanout: redirect mem_latches_LD_PADDR_0 q to staging bus, attach bufferH1024$ on bit 5 only
+    // fanout: redirect mem_latches_LD_PADDR_0 q to staging bus, attach bufferH1024$ on bits 4 and 5
     wire [14:0] latches_LD_PADDR_0_pre_buf;
     `REG_RST_WE(mem_latches_LD_PADDR_0,                     15,  clk, rst, effective_we, LD_PADDR_0_d,                     latches_LD_PADDR_0_pre_buf);
-    assign latches_LD_PADDR_0_o[4:0]  = latches_LD_PADDR_0_pre_buf[4:0];
+    assign latches_LD_PADDR_0_o[3:0]  = latches_LD_PADDR_0_pre_buf[3:0];
     assign latches_LD_PADDR_0_o[14:6] = latches_LD_PADDR_0_pre_buf[14:6];
+    bufferH1024$ u_attach_LD_PADDR_0_b4 (.out(latches_LD_PADDR_0_o[4]), .in(latches_LD_PADDR_0_pre_buf[4]));
     bufferH1024$ u_attach_LD_PADDR_0_b5 (.out(latches_LD_PADDR_0_o[5]), .in(latches_LD_PADDR_0_pre_buf[5]));
-    // fanout: redirect mem_latches_LD_PADDR_1 q to staging bus, attach bufferH1024$ on bit 5 only
+    // fanout: redirect mem_latches_LD_PADDR_1 q to staging bus, attach bufferH1024$ on bits 4 and 5
     wire [14:0] latches_LD_PADDR_1_pre_buf;
     `REG_RST_WE(mem_latches_LD_PADDR_1,                     15,  clk, rst, effective_we, LD_PADDR_1_d,                     latches_LD_PADDR_1_pre_buf);
-    assign latches_LD_PADDR_1_o[4:0]  = latches_LD_PADDR_1_pre_buf[4:0];
+    assign latches_LD_PADDR_1_o[3:0]  = latches_LD_PADDR_1_pre_buf[3:0];
     assign latches_LD_PADDR_1_o[14:6] = latches_LD_PADDR_1_pre_buf[14:6];
+    bufferH1024$ u_attach_LD_PADDR_1_b4 (.out(latches_LD_PADDR_1_o[4]), .in(latches_LD_PADDR_1_pre_buf[4]));
     bufferH1024$ u_attach_LD_PADDR_1_b5 (.out(latches_LD_PADDR_1_o[5]), .in(latches_LD_PADDR_1_pre_buf[5]));
 
 endmodule

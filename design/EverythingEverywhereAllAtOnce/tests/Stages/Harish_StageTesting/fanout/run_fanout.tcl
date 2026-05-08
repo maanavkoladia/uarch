@@ -25,5 +25,4 @@ link
 
 source fanout.tcl
 fanout_check -print_loads -print_only violation
-
 exit

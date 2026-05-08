@@ -30,6 +30,7 @@ wire        mem_latches_shift_sr_up; \
 wire        mem_latches_shift_sr_down; \
 wire        mem_latches_ST_XCL; \
 wire [14:0] mem_latches_ST_PADDR_0; \
+wire [14:0] mem_latches_ST_PADDR_0_to_exe; \
 wire [14:0] mem_latches_ST_PADDR_1; \
 wire        mem_latches_MIO; \
 wire [31:0] mem_latches_NEIP; \
@@ -126,6 +127,7 @@ MEM_Latches mem_latches_unit ( \
     .latches_shift_sr_down_o                   (mem_latches_shift_sr_down), \
     .latches_ST_XCL_o                          (mem_latches_ST_XCL), \
     .latches_ST_PADDR_0_o                      (mem_latches_ST_PADDR_0), \
+    .latches_ST_PADDR_0_to_exe_o               (mem_latches_ST_PADDR_0_to_exe), \
     .latches_ST_PADDR_1_o                      (mem_latches_ST_PADDR_1), \
     .latches_MIO_o                             (mem_latches_MIO), \
     .latches_NEIP_o                            (mem_latches_NEIP), \
