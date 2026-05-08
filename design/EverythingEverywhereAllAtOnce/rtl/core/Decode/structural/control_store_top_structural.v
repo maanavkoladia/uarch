@@ -1,5 +1,12 @@
 module control_store_top (
-    input wire invalid_inst,
+    input wire invalid_inst_cs0_0xx,
+    input wire invalid_inst_cs0_1xx,
+    input wire invalid_inst_cs1_0xx,
+    input wire invalid_inst_cs1_1xx,
+    input wire invalid_inst_cs2_0xx,
+    input wire invalid_inst_cs2_1xx,
+    input wire invalid_inst_cs3_0xx,
+    input wire invalid_inst_cs3_1xx,
     input wire total_pf_vector_0,
     input wire total_pf_vector_1,
     input wire total_pf_vector_3,
@@ -275,7 +282,7 @@ module control_store_top (
     // === 32 parallel control_store instantiations ===
 
     control_store cs0_000 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs0_0xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
         .opcode(IR[0*8 +: 8]), .modrm(IR[1*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_000_x[0]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_000_x[0]),
@@ -349,7 +356,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_000_x[0])
     );
     control_store cs0_001 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs0_0xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
         .opcode(IR[0*8 +: 8]), .modrm(IR[1*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_001_x[0]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_001_x[0]),
@@ -423,7 +430,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_001_x[0])
     );
     control_store cs0_010 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs0_0xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
         .opcode(IR[0*8 +: 8]), .modrm(IR[1*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_010_x[0]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_010_x[0]),
@@ -497,7 +504,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_010_x[0])
     );
     control_store cs0_011 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs0_0xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
         .opcode(IR[0*8 +: 8]), .modrm(IR[1*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_011_x[0]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_011_x[0]),
@@ -571,7 +578,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_011_x[0])
     );
     control_store cs0_100 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs0_1xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
         .opcode(IR[0*8 +: 8]), .modrm(IR[1*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_100_x[0]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_100_x[0]),
@@ -645,7 +652,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_100_x[0])
     );
     control_store cs0_101 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs0_1xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
         .opcode(IR[0*8 +: 8]), .modrm(IR[1*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_101_x[0]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_101_x[0]),
@@ -719,7 +726,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_101_x[0])
     );
     control_store cs0_110 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs0_1xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
         .opcode(IR[0*8 +: 8]), .modrm(IR[1*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_110_x[0]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_110_x[0]),
@@ -793,7 +800,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_110_x[0])
     );
     control_store cs0_111 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs0_1xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
         .opcode(IR[0*8 +: 8]), .modrm(IR[1*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_111_x[0]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_111_x[0]),
@@ -867,7 +874,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_111_x[0])
     );
     control_store cs1_000 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs1_0xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
         .opcode(IR[1*8 +: 8]), .modrm(IR[2*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_000_x[1]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_000_x[1]),
@@ -941,7 +948,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_000_x[1])
     );
     control_store cs1_001 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs1_0xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
         .opcode(IR[1*8 +: 8]), .modrm(IR[2*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_001_x[1]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_001_x[1]),
@@ -1015,7 +1022,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_001_x[1])
     );
     control_store cs1_010 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs1_0xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
         .opcode(IR[1*8 +: 8]), .modrm(IR[2*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_010_x[1]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_010_x[1]),
@@ -1089,7 +1096,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_010_x[1])
     );
     control_store cs1_011 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs1_0xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
         .opcode(IR[1*8 +: 8]), .modrm(IR[2*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_011_x[1]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_011_x[1]),
@@ -1163,7 +1170,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_011_x[1])
     );
     control_store cs1_100 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs1_1xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
         .opcode(IR[1*8 +: 8]), .modrm(IR[2*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_100_x[1]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_100_x[1]),
@@ -1237,7 +1244,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_100_x[1])
     );
     control_store cs1_101 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs1_1xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
         .opcode(IR[1*8 +: 8]), .modrm(IR[2*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_101_x[1]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_101_x[1]),
@@ -1311,7 +1318,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_101_x[1])
     );
     control_store cs1_110 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs1_1xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
         .opcode(IR[1*8 +: 8]), .modrm(IR[2*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_110_x[1]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_110_x[1]),
@@ -1385,7 +1392,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_110_x[1])
     );
     control_store cs1_111 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs1_1xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
         .opcode(IR[1*8 +: 8]), .modrm(IR[2*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_111_x[1]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_111_x[1]),
@@ -1459,7 +1466,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_111_x[1])
     );
     control_store cs2_000 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs2_0xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
         .opcode(IR[2*8 +: 8]), .modrm(IR[3*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_000_x[2]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_000_x[2]),
@@ -1533,7 +1540,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_000_x[2])
     );
     control_store cs2_001 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs2_0xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
         .opcode(IR[2*8 +: 8]), .modrm(IR[3*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_001_x[2]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_001_x[2]),
@@ -1607,7 +1614,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_001_x[2])
     );
     control_store cs2_010 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs2_0xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
         .opcode(IR[2*8 +: 8]), .modrm(IR[3*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_010_x[2]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_010_x[2]),
@@ -1681,7 +1688,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_010_x[2])
     );
     control_store cs2_011 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs2_0xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
         .opcode(IR[2*8 +: 8]), .modrm(IR[3*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_011_x[2]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_011_x[2]),
@@ -1755,7 +1762,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_011_x[2])
     );
     control_store cs2_100 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs2_1xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
         .opcode(IR[2*8 +: 8]), .modrm(IR[3*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_100_x[2]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_100_x[2]),
@@ -1829,7 +1836,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_100_x[2])
     );
     control_store cs2_101 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs2_1xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
         .opcode(IR[2*8 +: 8]), .modrm(IR[3*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_101_x[2]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_101_x[2]),
@@ -1903,7 +1910,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_101_x[2])
     );
     control_store cs2_110 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs2_1xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
         .opcode(IR[2*8 +: 8]), .modrm(IR[3*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_110_x[2]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_110_x[2]),
@@ -1977,7 +1984,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_110_x[2])
     );
     control_store cs2_111 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs2_1xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
         .opcode(IR[2*8 +: 8]), .modrm(IR[3*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_111_x[2]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_111_x[2]),
@@ -2051,7 +2058,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_111_x[2])
     );
     control_store cs3_000 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs3_0xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
         .opcode(IR[3*8 +: 8]), .modrm(IR[4*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_000_x[3]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_000_x[3]),
@@ -2125,7 +2132,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_000_x[3])
     );
     control_store cs3_001 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs3_0xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b0),
         .opcode(IR[3*8 +: 8]), .modrm(IR[4*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_001_x[3]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_001_x[3]),
@@ -2199,7 +2206,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_001_x[3])
     );
     control_store cs3_010 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs3_0xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
         .opcode(IR[3*8 +: 8]), .modrm(IR[4*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_010_x[3]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_010_x[3]),
@@ -2273,7 +2280,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_010_x[3])
     );
     control_store cs3_011 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
+        .invalid_inst(invalid_inst_cs3_0xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b0),
         .opcode(IR[3*8 +: 8]), .modrm(IR[4*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_011_x[3]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_011_x[3]),
@@ -2347,7 +2354,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_011_x[3])
     );
     control_store cs3_100 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs3_1xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
         .opcode(IR[3*8 +: 8]), .modrm(IR[4*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_100_x[3]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_100_x[3]),
@@ -2421,7 +2428,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_100_x[3])
     );
     control_store cs3_101 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs3_1xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b0), .total_pf_vector_3(1'b1),
         .opcode(IR[3*8 +: 8]), .modrm(IR[4*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_101_x[3]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_101_x[3]),
@@ -2495,7 +2502,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_101_x[3])
     );
     control_store cs3_110 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs3_1xx), .total_pf_vector_0(1'b0), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
         .opcode(IR[3*8 +: 8]), .modrm(IR[4*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_110_x[3]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_110_x[3]),
@@ -2569,7 +2576,7 @@ module control_store_top (
         .modrm_segment_override(modrm_seg_override_110_x[3])
     );
     control_store cs3_111 (
-        .invalid_inst(invalid_inst), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
+        .invalid_inst(invalid_inst_cs3_1xx), .total_pf_vector_0(1'b1), .total_pf_vector_1(1'b1), .total_pf_vector_3(1'b1),
         .opcode(IR[3*8 +: 8]), .modrm(IR[4*8 +: 8]), .seg_override(seg_override), .seg0(seg0),
         .decode_cs_REP(decode_cs_REP_111_x[3]),
         .decode_cs_REP_CMP(decode_cs_REP_CMP_111_x[3]),
@@ -3276,19 +3283,19 @@ module control_store_top (
     `MUX_8(wb_cs_WB_SR_final_mux,                    1,             wb_cs_WB_SR,                    wb_cs_WB_SR_000,                    wb_cs_WB_SR_001,                    wb_cs_WB_SR_010,                    wb_cs_WB_SR_011,                    wb_cs_WB_SR_100,                    wb_cs_WB_SR_101,                    wb_cs_WB_SR_110,                    wb_cs_WB_SR_111,                    {total_pf_vector_3, total_pf_vector_1, total_pf_vector_0})
     `MUX_8(wb_cs_WB_EAX_final_mux,                   1,             wb_cs_WB_EAX,                   wb_cs_WB_EAX_000,                   wb_cs_WB_EAX_001,                   wb_cs_WB_EAX_010,                   wb_cs_WB_EAX_011,                   wb_cs_WB_EAX_100,                   wb_cs_WB_EAX_101,                   wb_cs_WB_EAX_110,                   wb_cs_WB_EAX_111,                   {total_pf_vector_3, total_pf_vector_1, total_pf_vector_0})
 
-    // === Behavioral mux for modrm_seg_override ===
-    // Stage 1: select across x ∈ {0,1,2,3} via num_pfs, per yza.
-    // Stage 2: select across yza via {total_pf_vector_3, total_pf_vector_1, total_pf_vector_0}.
-    wire [7:0] modrm_seg_override_yza = {
-        modrm_seg_override_111_x[num_pfs],
-        modrm_seg_override_110_x[num_pfs],
-        modrm_seg_override_101_x[num_pfs],
-        modrm_seg_override_100_x[num_pfs],
-        modrm_seg_override_011_x[num_pfs],
-        modrm_seg_override_010_x[num_pfs],
-        modrm_seg_override_001_x[num_pfs],
-        modrm_seg_override_000_x[num_pfs]
-    };
-    assign modrm_seg_override = modrm_seg_override_yza[{total_pf_vector_3, total_pf_vector_1, total_pf_vector_0}];
+    // === Stage-1 mux: pick across x ∈ {0,1,2,3} via num_pfs, per yza ===
+    wire modrm_seg_override_000, modrm_seg_override_001, modrm_seg_override_010, modrm_seg_override_011;
+    wire modrm_seg_override_100, modrm_seg_override_101, modrm_seg_override_110, modrm_seg_override_111;
+    `MUX_4(modrm_seg_override_000_mux,               1,             modrm_seg_override_000,             modrm_seg_override_000_x[0],             modrm_seg_override_000_x[1],             modrm_seg_override_000_x[2],             modrm_seg_override_000_x[3],             num_pfs)
+    `MUX_4(modrm_seg_override_001_mux,               1,             modrm_seg_override_001,             modrm_seg_override_001_x[0],             modrm_seg_override_001_x[1],             modrm_seg_override_001_x[2],             modrm_seg_override_001_x[3],             num_pfs)
+    `MUX_4(modrm_seg_override_010_mux,               1,             modrm_seg_override_010,             modrm_seg_override_010_x[0],             modrm_seg_override_010_x[1],             modrm_seg_override_010_x[2],             modrm_seg_override_010_x[3],             num_pfs)
+    `MUX_4(modrm_seg_override_011_mux,               1,             modrm_seg_override_011,             modrm_seg_override_011_x[0],             modrm_seg_override_011_x[1],             modrm_seg_override_011_x[2],             modrm_seg_override_011_x[3],             num_pfs)
+    `MUX_4(modrm_seg_override_100_mux,               1,             modrm_seg_override_100,             modrm_seg_override_100_x[0],             modrm_seg_override_100_x[1],             modrm_seg_override_100_x[2],             modrm_seg_override_100_x[3],             num_pfs)
+    `MUX_4(modrm_seg_override_101_mux,               1,             modrm_seg_override_101,             modrm_seg_override_101_x[0],             modrm_seg_override_101_x[1],             modrm_seg_override_101_x[2],             modrm_seg_override_101_x[3],             num_pfs)
+    `MUX_4(modrm_seg_override_110_mux,               1,             modrm_seg_override_110,             modrm_seg_override_110_x[0],             modrm_seg_override_110_x[1],             modrm_seg_override_110_x[2],             modrm_seg_override_110_x[3],             num_pfs)
+    `MUX_4(modrm_seg_override_111_mux,               1,             modrm_seg_override_111,             modrm_seg_override_111_x[0],             modrm_seg_override_111_x[1],             modrm_seg_override_111_x[2],             modrm_seg_override_111_x[3],             num_pfs)
+
+    // === Stage-2 mux: pick across yza via {total_pf_vector_3, total_pf_vector_1, total_pf_vector_0} ===
+    `MUX_8(modrm_seg_override_final_mux,             1,             modrm_seg_override,             modrm_seg_override_000,             modrm_seg_override_001,             modrm_seg_override_010,             modrm_seg_override_011,             modrm_seg_override_100,             modrm_seg_override_101,             modrm_seg_override_110,             modrm_seg_override_111,             {total_pf_vector_3, total_pf_vector_1, total_pf_vector_0})
 
 endmodule

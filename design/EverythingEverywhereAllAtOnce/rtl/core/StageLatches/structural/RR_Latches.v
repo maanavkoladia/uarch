@@ -441,7 +441,7 @@ module RR_Latches (
     `OR_2(u_rr_effective_we,   1, effective_we_pre_buf,  write_enable_i,   combined_flush);
 
     // fanout: attach buffer on u_rr_effective_we OR_2 output
-    bufferH256$ u_attach_effective_we (.out(effective_we), .in(effective_we_pre_buf));
+    bufferH16$ u_attach_effective_we (.out(effective_we), .in(effective_we_pre_buf));
 
     // ============================================================
     // Flush-gated data wires (input to each REG_RST_WE)
@@ -729,151 +729,377 @@ module RR_Latches (
     assign rep_displacement_d = nextLatches_rep_displacement_i;
 
     // ============================================================
-    // REG_RST_WE per field (we = effective_we)
+    // Grouped packed wires (greedy 64-bit packing in declaration order).
+    //   Each group is one REG_RST_WE so effective_we drives 12 cells
+    //   (6 normal + 6 rep) instead of one per field.
+    //   Wires use [0:N] direction so the first-declared field maps to
+    //   index 0 and reads top-to-bottom in declaration order.
+    //
+    //   Group widths: 60, 57, 64, 64, 64, 53.
     // ============================================================
 
-    // -------- normal_ registers --------
-    `REG_RST_WE(rr_latches_normal_valid,                          1,   clk, rst, effective_we, normal_valid_d,                          latches_normal_valid_o);
+    // -------- normal_ packed wires --------
+    wire [0:59] normal_g1_d;  wire [0:59] normal_g1_q;
+    wire [0:56] normal_g2_d;  wire [0:56] normal_g2_q;
+    wire [0:63] normal_g3_d;  wire [0:63] normal_g3_q;
+    wire [0:63] normal_g4_d;  wire [0:63] normal_g4_q;
+    wire [0:63] normal_g5_d;  wire [0:63] normal_g5_q;
+    wire [0:52] normal_g6_d;  wire [0:52] normal_g6_q;
 
-    `REG_RST_WE(rr_latches_normal_cs_ST_SEL,                      1,   clk, rst, effective_we, normal_cs_ST_SEL_d,                      latches_normal_cs_ST_SEL_o);
-    `REG_RST_WE(rr_latches_normal_cs_MODRM_NEEDED,                1,   clk, rst, effective_we, normal_cs_MODRM_NEEDED_d,                latches_normal_cs_MODRM_NEEDED_o);
-    `REG_RST_WE(rr_latches_normal_cs_RM_IS_DR,                    1,   clk, rst, effective_we, normal_cs_RM_IS_DR_d,                    latches_normal_cs_RM_IS_DR_o);
-    `REG_RST_WE(rr_latches_normal_cs_SWITCH_LD_ADDY,              1,   clk, rst, effective_we, normal_cs_SWITCH_LD_ADDY_d,              latches_normal_cs_SWITCH_LD_ADDY_o);
-    `REG_RST_WE(rr_latches_normal_cs_LD_OP,                       1,   clk, rst, effective_we, normal_cs_LD_OP_d,                       latches_normal_cs_LD_OP_o);
-    `REG_RST_WE(rr_latches_normal_cs_ST_OP,                       1,   clk, rst, effective_we, normal_cs_ST_OP_d,                       latches_normal_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_normal_cs_dr_id,                       5,   clk, rst, effective_we, normal_cs_dr_id_d,                       latches_normal_cs_dr_id_o);
-    `REG_RST_WE(rr_latches_normal_cs_sr_id,                       5,   clk, rst, effective_we, normal_cs_sr_id_d,                       latches_normal_cs_sr_id_o);
-    `REG_RST_WE(rr_latches_normal_cs_dr_rd,                       1,   clk, rst, effective_we, normal_cs_dr_rd_d,                       latches_normal_cs_dr_rd_o);
-    `REG_RST_WE(rr_latches_normal_cs_sr_rd,                       1,   clk, rst, effective_we, normal_cs_sr_rd_d,                       latches_normal_cs_sr_rd_o);
-    `REG_RST_WE(rr_latches_normal_cs_eax_rd,                      1,   clk, rst, effective_we, normal_cs_eax_rd_d,                      latches_normal_cs_eax_rd_o);
-    `REG_RST_WE(rr_latches_normal_cs_dr_wr,                       1,   clk, rst, effective_we, normal_cs_dr_wr_d,                       latches_normal_cs_dr_wr_o);
-    `REG_RST_WE(rr_latches_normal_cs_sr_wr,                       1,   clk, rst, effective_we, normal_cs_sr_wr_d,                       latches_normal_cs_sr_wr_o);
-    `REG_RST_WE(rr_latches_normal_cs_eax_wr,                      1,   clk, rst, effective_we, normal_cs_eax_wr_d,                      latches_normal_cs_eax_wr_o);
-    `REG_RST_WE(rr_latches_normal_cs_MOVS_OP,                     1,   clk, rst, effective_we, normal_cs_MOVS_OP_d,                     latches_normal_cs_MOVS_OP_o);
-    `REG_RST_WE(rr_latches_normal_cs_datasize,                    2,   clk, rst, effective_we, normal_cs_datasize_d,                    latches_normal_cs_datasize_o);
-    `REG_RST_WE(rr_latches_normal_cs_will_mod_zf,                 1,   clk, rst, effective_we, normal_cs_will_mod_zf_d,                 latches_normal_cs_will_mod_zf_o);
-    `REG_RST_WE(rr_latches_normal_cs_seg_1_valid,                 1,   clk, rst, effective_we, normal_cs_seg_1_valid_d,                 latches_normal_cs_seg_1_valid_o);
-    `REG_RST_WE(rr_latches_normal_cs_seg_0_id,                    5,   clk, rst, effective_we, normal_cs_seg_0_id_d,                    latches_normal_cs_seg_0_id_o);
-    `REG_RST_WE(rr_latches_normal_cs_seg_1_id,                    5,   clk, rst, effective_we, normal_cs_seg_1_id_d,                    latches_normal_cs_seg_1_id_o);
-    `REG_RST_WE(rr_latches_normal_cs_special_modrm_bs,            1,   clk, rst, effective_we, normal_cs_special_modrm_bs_d,            latches_normal_cs_special_modrm_bs_o);
-    `REG_RST_WE(rr_latches_normal_cs_special_br,                  1,   clk, rst, effective_we, normal_cs_special_br_d,                  latches_normal_cs_special_br_o);
+    // -------- rep_ packed wires --------
+    wire [0:59] rep_g1_d;     wire [0:59] rep_g1_q;
+    wire [0:56] rep_g2_d;     wire [0:56] rep_g2_q;
+    wire [0:63] rep_g3_d;     wire [0:63] rep_g3_q;
+    wire [0:63] rep_g4_d;     wire [0:63] rep_g4_q;
+    wire [0:63] rep_g5_d;     wire [0:63] rep_g5_q;
+    wire [0:52] rep_g6_d;     wire [0:52] rep_g6_q;
 
-    `REG_RST_WE(rr_latches_normal_dc_cs_LD_OP,                    1,   clk, rst, effective_we, normal_dc_cs_LD_OP_d,                    latches_normal_dc_cs_LD_OP_o);
-    `REG_RST_WE(rr_latches_normal_dc_cs_ST_OP,                    1,   clk, rst, effective_we, normal_dc_cs_ST_OP_d,                    latches_normal_dc_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_normal_dc_cs_dr_upper8,                1,   clk, rst, effective_we, normal_dc_cs_dr_upper8_d,                latches_normal_dc_cs_dr_upper8_o);
-    `REG_RST_WE(rr_latches_normal_dc_cs_sr_upper8,                1,   clk, rst, effective_we, normal_dc_cs_sr_upper8_d,                latches_normal_dc_cs_sr_upper8_o);
-    `REG_RST_WE(rr_latches_normal_dc_cs_datasize,                 2,   clk, rst, effective_we, normal_dc_cs_datasize_d,                 latches_normal_dc_cs_datasize_o);
+    // ------------------------------------------------------------
+    // Pack: concat fields into each group in declaration order
+    //   (first-listed item -> index 0)
+    // ------------------------------------------------------------
 
-    `REG_RST_WE(rr_latches_normal_mem_cs_ST_OP,                   1,   clk, rst, effective_we, normal_mem_cs_ST_OP_d,                   latches_normal_mem_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_normal_mem_cs_LD_OP,                   1,   clk, rst, effective_we, normal_mem_cs_LD_OP_d,                   latches_normal_mem_cs_LD_OP_o);
+    // ---- normal_g1 [0:59] : valid + cs_t + dc_cs_t + mem_cs_t + exe_cs head ----
+    assign normal_g1_d = {
+        normal_valid_d,                    // [0]
+        normal_cs_ST_SEL_d,                // [1]
+        normal_cs_MODRM_NEEDED_d,          // [2]
+        normal_cs_RM_IS_DR_d,              // [3]
+        normal_cs_SWITCH_LD_ADDY_d,        // [4]
+        normal_cs_LD_OP_d,                 // [5]
+        normal_cs_ST_OP_d,                 // [6]
+        normal_cs_dr_id_d,                 // [7:11]
+        normal_cs_sr_id_d,                 // [12:16]
+        normal_cs_dr_rd_d,                 // [17]
+        normal_cs_sr_rd_d,                 // [18]
+        normal_cs_eax_rd_d,                // [19]
+        normal_cs_dr_wr_d,                 // [20]
+        normal_cs_sr_wr_d,                 // [21]
+        normal_cs_eax_wr_d,                // [22]
+        normal_cs_MOVS_OP_d,               // [23]
+        normal_cs_datasize_d,              // [24:25]
+        normal_cs_will_mod_zf_d,           // [26]
+        normal_cs_seg_1_valid_d,           // [27]
+        normal_cs_seg_0_id_d,              // [28:32]
+        normal_cs_seg_1_id_d,              // [33:37]
+        normal_cs_special_modrm_bs_d,      // [38]
+        normal_cs_special_br_d,            // [39]
+        normal_dc_cs_LD_OP_d,              // [40]
+        normal_dc_cs_ST_OP_d,              // [41]
+        normal_dc_cs_dr_upper8_d,          // [42]
+        normal_dc_cs_sr_upper8_d,          // [43]
+        normal_dc_cs_datasize_d,           // [44:45]
+        normal_mem_cs_ST_OP_d,             // [46]
+        normal_mem_cs_LD_OP_d,             // [47]
+        normal_exe_cs_ST_OP_d,             // [48]
+        normal_exe_cs_OP_TYPE_d,           // [49:54]
+        normal_exe_cs_alu_inputA_sel_d     // [55:59]
+    };
 
-    `REG_RST_WE(rr_latches_normal_exe_cs_ST_OP,                   1,   clk, rst, effective_we, normal_exe_cs_ST_OP_d,                   latches_normal_exe_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_OP_TYPE,                 6,   clk, rst, effective_we, normal_exe_cs_OP_TYPE_d,                 latches_normal_exe_cs_OP_TYPE_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_alu_inputA_sel,          5,   clk, rst, effective_we, normal_exe_cs_alu_inputA_sel_d,          latches_normal_exe_cs_alu_inputA_sel_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_alu_inputB_sel,          5,   clk, rst, effective_we, normal_exe_cs_alu_inputB_sel_d,          latches_normal_exe_cs_alu_inputB_sel_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_branch_target_sel,       5,   clk, rst, effective_we, normal_exe_cs_branch_target_sel_d,       latches_normal_exe_cs_branch_target_sel_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_shift_by_one,            1,   clk, rst, effective_we, normal_exe_cs_shift_by_one_d,            latches_normal_exe_cs_shift_by_one_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_br_ucond,                1,   clk, rst, effective_we, normal_exe_cs_br_ucond_d,                latches_normal_exe_cs_br_ucond_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_relative_branch,         1,   clk, rst, effective_we, normal_exe_cs_relative_branch_d,         latches_normal_exe_cs_relative_branch_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_special_br,              1,   clk, rst, effective_we, normal_exe_cs_special_br_d,              latches_normal_exe_cs_special_br_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_is_far,                  1,   clk, rst, effective_we, normal_exe_cs_is_far_d,                  latches_normal_exe_cs_is_far_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_is_call,                 1,   clk, rst, effective_we, normal_exe_cs_is_call_d,                 latches_normal_exe_cs_is_call_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_second_flag_needed,      1,   clk, rst, effective_we, normal_exe_cs_second_flag_needed_d,      latches_normal_exe_cs_second_flag_needed_o);
-    `REG_RST_WE(rr_latches_normal_exe_cs_rep_no_zf_update,        1,   clk, rst, effective_we, normal_exe_cs_rep_no_zf_update_d,        latches_normal_exe_cs_rep_no_zf_update_o);
+    // ---- normal_g2 [0:56] : exe_cs tail + wb_cs_t + br_info head ----
+    assign normal_g2_d = {
+        normal_exe_cs_alu_inputB_sel_d,    // [0:4]
+        normal_exe_cs_branch_target_sel_d, // [5:9]
+        normal_exe_cs_shift_by_one_d,      // [10]
+        normal_exe_cs_br_ucond_d,          // [11]
+        normal_exe_cs_relative_branch_d,   // [12]
+        normal_exe_cs_special_br_d,        // [13]
+        normal_exe_cs_is_far_d,            // [14]
+        normal_exe_cs_is_call_d,           // [15]
+        normal_exe_cs_second_flag_needed_d,// [16]
+        normal_exe_cs_rep_no_zf_update_d,  // [17]
+        normal_wb_cs_ST_OP_d,              // [18]
+        normal_wb_cs_WB_DR_d,              // [19]
+        normal_wb_cs_WB_SR_d,              // [20]
+        normal_wb_cs_WB_EAX_d,             // [21]
+        normal_br_info_valid_d,            // [22]
+        normal_br_info_br_eip_d,           // [23:54]
+        normal_br_info_br_xcl_d,           // [55]
+        normal_br_info_br_pred_taken_d     // [56]
+    };
 
-    `REG_RST_WE(rr_latches_normal_wb_cs_ST_OP,                    1,   clk, rst, effective_we, normal_wb_cs_ST_OP_d,                    latches_normal_wb_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_normal_wb_cs_WB_DR,                    1,   clk, rst, effective_we, normal_wb_cs_WB_DR_d,                    latches_normal_wb_cs_WB_DR_o);
-    `REG_RST_WE(rr_latches_normal_wb_cs_WB_SR,                    1,   clk, rst, effective_we, normal_wb_cs_WB_SR_d,                    latches_normal_wb_cs_WB_SR_o);
-    `REG_RST_WE(rr_latches_normal_wb_cs_WB_EAX,                   1,   clk, rst, effective_we, normal_wb_cs_WB_EAX_d,                   latches_normal_wb_cs_WB_EAX_o);
+    // ---- normal_g3 [0:63] : br_info_speculative_target + NEIP ----
+    assign normal_g3_d = {
+        normal_br_info_speculative_target_d, // [0:31]
+        normal_NEIP_d                        // [32:63]
+    };
 
-    `REG_RST_WE(rr_latches_normal_br_info_valid,                  1,   clk, rst, effective_we, normal_br_info_valid_d,                  latches_normal_br_info_valid_o);
-    `REG_RST_WE(rr_latches_normal_br_info_br_eip,                 32,  clk, rst, effective_we, normal_br_info_br_eip_d,                 latches_normal_br_info_br_eip_o);
-    `REG_RST_WE(rr_latches_normal_br_info_br_xcl,                 1,   clk, rst, effective_we, normal_br_info_br_xcl_d,                 latches_normal_br_info_br_xcl_o);
-    `REG_RST_WE(rr_latches_normal_br_info_br_pred_taken,          1,   clk, rst, effective_we, normal_br_info_br_pred_taken_d,          latches_normal_br_info_br_pred_taken_o);
-    `REG_RST_WE(rr_latches_normal_br_info_speculative_target,     32,  clk, rst, effective_we, normal_br_info_speculative_target_d,     latches_normal_br_info_speculative_target_o);
+    // ---- normal_g4 [0:63] : EIP + EAX ----
+    assign normal_g4_d = {
+        normal_EIP_d,                        // [0:31]
+        normal_EAX_d                         // [32:63]
+    };
 
-    `REG_RST_WE(rr_latches_normal_NEIP,                           32,  clk, rst, effective_we, normal_NEIP_d,                           latches_normal_NEIP_o);
-    `REG_RST_WE(rr_latches_normal_EIP,                            32,  clk, rst, effective_we, normal_EIP_d,                            latches_normal_EIP_o);
-    `REG_RST_WE(rr_latches_normal_EAX,                            32,  clk, rst, effective_we, normal_EAX_d,                            latches_normal_EAX_o);
-    `REG_RST_WE(rr_latches_normal_imm64,                          64,  clk, rst, effective_we, normal_imm64_d,                          latches_normal_imm64_o);
-    `REG_RST_WE(rr_latches_normal_sib_idx_id,                     5,   clk, rst, effective_we, normal_sib_idx_id_d,                     latches_normal_sib_idx_id_o);
-    `REG_RST_WE(rr_latches_normal_sib_base_id,                    5,   clk, rst, effective_we, normal_sib_base_id_d,                    latches_normal_sib_base_id_o);
-    `REG_RST_WE(rr_latches_normal_sib_needed,                     1,   clk, rst, effective_we, normal_sib_needed_d,                     latches_normal_sib_needed_o);
-    `REG_RST_WE(rr_latches_normal_sib_scale,                      8,   clk, rst, effective_we, normal_sib_scale_d,                      latches_normal_sib_scale_o);
-    `REG_RST_WE(rr_latches_normal_disp_needed,                    1,   clk, rst, effective_we, normal_disp_needed_d,                    latches_normal_disp_needed_o);
-    `REG_RST_WE(rr_latches_normal_disp_size,                      1,   clk, rst, effective_we, normal_disp_size_d,                      latches_normal_disp_size_o);
-    `REG_RST_WE(rr_latches_normal_displacement,                   32,  clk, rst, effective_we, normal_displacement_d,                   latches_normal_displacement_o);
+    // ---- normal_g5 [0:63] : imm64 ----
+    assign normal_g5_d = normal_imm64_d;     // [0:63]
 
-    // -------- rep_ registers --------
-    `REG_RST_WE(rr_latches_rep_valid,                             1,   clk, rst, effective_we, rep_valid_d,                             latches_rep_valid_o);
+    // ---- normal_g6 [0:52] : sib_* + disp_* + displacement ----
+    assign normal_g6_d = {
+        normal_sib_idx_id_d,                 // [0:4]
+        normal_sib_base_id_d,                // [5:9]
+        normal_sib_needed_d,                 // [10]
+        normal_sib_scale_d,                  // [11:18]
+        normal_disp_needed_d,                // [19]
+        normal_disp_size_d,                  // [20]
+        normal_displacement_d                // [21:52]
+    };
 
-    `REG_RST_WE(rr_latches_rep_cs_ST_SEL,                         1,   clk, rst, effective_we, rep_cs_ST_SEL_d,                         latches_rep_cs_ST_SEL_o);
-    `REG_RST_WE(rr_latches_rep_cs_MODRM_NEEDED,                   1,   clk, rst, effective_we, rep_cs_MODRM_NEEDED_d,                   latches_rep_cs_MODRM_NEEDED_o);
-    `REG_RST_WE(rr_latches_rep_cs_RM_IS_DR,                       1,   clk, rst, effective_we, rep_cs_RM_IS_DR_d,                       latches_rep_cs_RM_IS_DR_o);
-    `REG_RST_WE(rr_latches_rep_cs_SWITCH_LD_ADDY,                 1,   clk, rst, effective_we, rep_cs_SWITCH_LD_ADDY_d,                 latches_rep_cs_SWITCH_LD_ADDY_o);
-    `REG_RST_WE(rr_latches_rep_cs_LD_OP,                          1,   clk, rst, effective_we, rep_cs_LD_OP_d,                          latches_rep_cs_LD_OP_o);
-    `REG_RST_WE(rr_latches_rep_cs_ST_OP,                          1,   clk, rst, effective_we, rep_cs_ST_OP_d,                          latches_rep_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_rep_cs_dr_id,                          5,   clk, rst, effective_we, rep_cs_dr_id_d,                          latches_rep_cs_dr_id_o);
-    `REG_RST_WE(rr_latches_rep_cs_sr_id,                          5,   clk, rst, effective_we, rep_cs_sr_id_d,                          latches_rep_cs_sr_id_o);
-    `REG_RST_WE(rr_latches_rep_cs_dr_rd,                          1,   clk, rst, effective_we, rep_cs_dr_rd_d,                          latches_rep_cs_dr_rd_o);
-    `REG_RST_WE(rr_latches_rep_cs_sr_rd,                          1,   clk, rst, effective_we, rep_cs_sr_rd_d,                          latches_rep_cs_sr_rd_o);
-    `REG_RST_WE(rr_latches_rep_cs_eax_rd,                         1,   clk, rst, effective_we, rep_cs_eax_rd_d,                         latches_rep_cs_eax_rd_o);
-    `REG_RST_WE(rr_latches_rep_cs_dr_wr,                          1,   clk, rst, effective_we, rep_cs_dr_wr_d,                          latches_rep_cs_dr_wr_o);
-    `REG_RST_WE(rr_latches_rep_cs_sr_wr,                          1,   clk, rst, effective_we, rep_cs_sr_wr_d,                          latches_rep_cs_sr_wr_o);
-    `REG_RST_WE(rr_latches_rep_cs_eax_wr,                         1,   clk, rst, effective_we, rep_cs_eax_wr_d,                         latches_rep_cs_eax_wr_o);
-    `REG_RST_WE(rr_latches_rep_cs_MOVS_OP,                        1,   clk, rst, effective_we, rep_cs_MOVS_OP_d,                        latches_rep_cs_MOVS_OP_o);
-    `REG_RST_WE(rr_latches_rep_cs_datasize,                       2,   clk, rst, effective_we, rep_cs_datasize_d,                       latches_rep_cs_datasize_o);
-    `REG_RST_WE(rr_latches_rep_cs_will_mod_zf,                    1,   clk, rst, effective_we, rep_cs_will_mod_zf_d,                    latches_rep_cs_will_mod_zf_o);
-    `REG_RST_WE(rr_latches_rep_cs_seg_1_valid,                    1,   clk, rst, effective_we, rep_cs_seg_1_valid_d,                    latches_rep_cs_seg_1_valid_o);
-    `REG_RST_WE(rr_latches_rep_cs_seg_0_id,                       5,   clk, rst, effective_we, rep_cs_seg_0_id_d,                       latches_rep_cs_seg_0_id_o);
-    `REG_RST_WE(rr_latches_rep_cs_seg_1_id,                       5,   clk, rst, effective_we, rep_cs_seg_1_id_d,                       latches_rep_cs_seg_1_id_o);
-    `REG_RST_WE(rr_latches_rep_cs_special_modrm_bs,               1,   clk, rst, effective_we, rep_cs_special_modrm_bs_d,               latches_rep_cs_special_modrm_bs_o);
-    `REG_RST_WE(rr_latches_rep_cs_special_br,                     1,   clk, rst, effective_we, rep_cs_special_br_d,                     latches_rep_cs_special_br_o);
+    // ---- rep_g1 [0:59] ----
+    assign rep_g1_d = {
+        rep_valid_d,                       // [0]
+        rep_cs_ST_SEL_d,                   // [1]
+        rep_cs_MODRM_NEEDED_d,             // [2]
+        rep_cs_RM_IS_DR_d,                 // [3]
+        rep_cs_SWITCH_LD_ADDY_d,           // [4]
+        rep_cs_LD_OP_d,                    // [5]
+        rep_cs_ST_OP_d,                    // [6]
+        rep_cs_dr_id_d,                    // [7:11]
+        rep_cs_sr_id_d,                    // [12:16]
+        rep_cs_dr_rd_d,                    // [17]
+        rep_cs_sr_rd_d,                    // [18]
+        rep_cs_eax_rd_d,                   // [19]
+        rep_cs_dr_wr_d,                    // [20]
+        rep_cs_sr_wr_d,                    // [21]
+        rep_cs_eax_wr_d,                   // [22]
+        rep_cs_MOVS_OP_d,                  // [23]
+        rep_cs_datasize_d,                 // [24:25]
+        rep_cs_will_mod_zf_d,              // [26]
+        rep_cs_seg_1_valid_d,              // [27]
+        rep_cs_seg_0_id_d,                 // [28:32]
+        rep_cs_seg_1_id_d,                 // [33:37]
+        rep_cs_special_modrm_bs_d,         // [38]
+        rep_cs_special_br_d,               // [39]
+        rep_dc_cs_LD_OP_d,                 // [40]
+        rep_dc_cs_ST_OP_d,                 // [41]
+        rep_dc_cs_dr_upper8_d,             // [42]
+        rep_dc_cs_sr_upper8_d,             // [43]
+        rep_dc_cs_datasize_d,              // [44:45]
+        rep_mem_cs_ST_OP_d,                // [46]
+        rep_mem_cs_LD_OP_d,                // [47]
+        rep_exe_cs_ST_OP_d,                // [48]
+        rep_exe_cs_OP_TYPE_d,              // [49:54]
+        rep_exe_cs_alu_inputA_sel_d        // [55:59]
+    };
 
-    `REG_RST_WE(rr_latches_rep_dc_cs_LD_OP,                       1,   clk, rst, effective_we, rep_dc_cs_LD_OP_d,                       latches_rep_dc_cs_LD_OP_o);
-    `REG_RST_WE(rr_latches_rep_dc_cs_ST_OP,                       1,   clk, rst, effective_we, rep_dc_cs_ST_OP_d,                       latches_rep_dc_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_rep_dc_cs_dr_upper8,                   1,   clk, rst, effective_we, rep_dc_cs_dr_upper8_d,                   latches_rep_dc_cs_dr_upper8_o);
-    `REG_RST_WE(rr_latches_rep_dc_cs_sr_upper8,                   1,   clk, rst, effective_we, rep_dc_cs_sr_upper8_d,                   latches_rep_dc_cs_sr_upper8_o);
-    `REG_RST_WE(rr_latches_rep_dc_cs_datasize,                    2,   clk, rst, effective_we, rep_dc_cs_datasize_d,                    latches_rep_dc_cs_datasize_o);
+    // ---- rep_g2 [0:56] ----
+    assign rep_g2_d = {
+        rep_exe_cs_alu_inputB_sel_d,       // [0:4]
+        rep_exe_cs_branch_target_sel_d,    // [5:9]
+        rep_exe_cs_shift_by_one_d,         // [10]
+        rep_exe_cs_br_ucond_d,             // [11]
+        rep_exe_cs_relative_branch_d,      // [12]
+        rep_exe_cs_special_br_d,           // [13]
+        rep_exe_cs_is_far_d,               // [14]
+        rep_exe_cs_is_call_d,              // [15]
+        rep_exe_cs_second_flag_needed_d,   // [16]
+        rep_exe_cs_rep_no_zf_update_d,     // [17]
+        rep_wb_cs_ST_OP_d,                 // [18]
+        rep_wb_cs_WB_DR_d,                 // [19]
+        rep_wb_cs_WB_SR_d,                 // [20]
+        rep_wb_cs_WB_EAX_d,                // [21]
+        rep_br_info_valid_d,               // [22]
+        rep_br_info_br_eip_d,              // [23:54]
+        rep_br_info_br_xcl_d,              // [55]
+        rep_br_info_br_pred_taken_d        // [56]
+    };
 
-    `REG_RST_WE(rr_latches_rep_mem_cs_ST_OP,                      1,   clk, rst, effective_we, rep_mem_cs_ST_OP_d,                      latches_rep_mem_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_rep_mem_cs_LD_OP,                      1,   clk, rst, effective_we, rep_mem_cs_LD_OP_d,                      latches_rep_mem_cs_LD_OP_o);
+    // ---- rep_g3 [0:63] ----
+    assign rep_g3_d = {
+        rep_br_info_speculative_target_d,  // [0:31]
+        rep_NEIP_d                         // [32:63]
+    };
 
-    `REG_RST_WE(rr_latches_rep_exe_cs_ST_OP,                      1,   clk, rst, effective_we, rep_exe_cs_ST_OP_d,                      latches_rep_exe_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_OP_TYPE,                    6,   clk, rst, effective_we, rep_exe_cs_OP_TYPE_d,                    latches_rep_exe_cs_OP_TYPE_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_alu_inputA_sel,             5,   clk, rst, effective_we, rep_exe_cs_alu_inputA_sel_d,             latches_rep_exe_cs_alu_inputA_sel_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_alu_inputB_sel,             5,   clk, rst, effective_we, rep_exe_cs_alu_inputB_sel_d,             latches_rep_exe_cs_alu_inputB_sel_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_branch_target_sel,          5,   clk, rst, effective_we, rep_exe_cs_branch_target_sel_d,          latches_rep_exe_cs_branch_target_sel_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_shift_by_one,               1,   clk, rst, effective_we, rep_exe_cs_shift_by_one_d,               latches_rep_exe_cs_shift_by_one_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_br_ucond,                   1,   clk, rst, effective_we, rep_exe_cs_br_ucond_d,                   latches_rep_exe_cs_br_ucond_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_relative_branch,            1,   clk, rst, effective_we, rep_exe_cs_relative_branch_d,            latches_rep_exe_cs_relative_branch_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_special_br,                 1,   clk, rst, effective_we, rep_exe_cs_special_br_d,                 latches_rep_exe_cs_special_br_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_is_far,                     1,   clk, rst, effective_we, rep_exe_cs_is_far_d,                     latches_rep_exe_cs_is_far_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_is_call,                    1,   clk, rst, effective_we, rep_exe_cs_is_call_d,                    latches_rep_exe_cs_is_call_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_second_flag_needed,         1,   clk, rst, effective_we, rep_exe_cs_second_flag_needed_d,         latches_rep_exe_cs_second_flag_needed_o);
-    `REG_RST_WE(rr_latches_rep_exe_cs_rep_no_zf_update,           1,   clk, rst, effective_we, rep_exe_cs_rep_no_zf_update_d,           latches_rep_exe_cs_rep_no_zf_update_o);
+    // ---- rep_g4 [0:63] ----
+    assign rep_g4_d = {
+        rep_EIP_d,                         // [0:31]
+        rep_EAX_d                          // [32:63]
+    };
 
-    `REG_RST_WE(rr_latches_rep_wb_cs_ST_OP,                       1,   clk, rst, effective_we, rep_wb_cs_ST_OP_d,                       latches_rep_wb_cs_ST_OP_o);
-    `REG_RST_WE(rr_latches_rep_wb_cs_WB_DR,                       1,   clk, rst, effective_we, rep_wb_cs_WB_DR_d,                       latches_rep_wb_cs_WB_DR_o);
-    `REG_RST_WE(rr_latches_rep_wb_cs_WB_SR,                       1,   clk, rst, effective_we, rep_wb_cs_WB_SR_d,                       latches_rep_wb_cs_WB_SR_o);
-    `REG_RST_WE(rr_latches_rep_wb_cs_WB_EAX,                      1,   clk, rst, effective_we, rep_wb_cs_WB_EAX_d,                      latches_rep_wb_cs_WB_EAX_o);
+    // ---- rep_g5 [0:63] ----
+    assign rep_g5_d = rep_imm64_d;         // [0:63]
 
-    `REG_RST_WE(rr_latches_rep_br_info_valid,                     1,   clk, rst, effective_we, rep_br_info_valid_d,                     latches_rep_br_info_valid_o);
-    `REG_RST_WE(rr_latches_rep_br_info_br_eip,                    32,  clk, rst, effective_we, rep_br_info_br_eip_d,                    latches_rep_br_info_br_eip_o);
-    `REG_RST_WE(rr_latches_rep_br_info_br_xcl,                    1,   clk, rst, effective_we, rep_br_info_br_xcl_d,                    latches_rep_br_info_br_xcl_o);
-    `REG_RST_WE(rr_latches_rep_br_info_br_pred_taken,             1,   clk, rst, effective_we, rep_br_info_br_pred_taken_d,             latches_rep_br_info_br_pred_taken_o);
-    `REG_RST_WE(rr_latches_rep_br_info_speculative_target,        32,  clk, rst, effective_we, rep_br_info_speculative_target_d,        latches_rep_br_info_speculative_target_o);
+    // ---- rep_g6 [0:52] ----
+    assign rep_g6_d = {
+        rep_sib_idx_id_d,                  // [0:4]
+        rep_sib_base_id_d,                 // [5:9]
+        rep_sib_needed_d,                  // [10]
+        rep_sib_scale_d,                   // [11:18]
+        rep_disp_needed_d,                 // [19]
+        rep_disp_size_d,                   // [20]
+        rep_displacement_d                 // [21:52]
+    };
 
-    `REG_RST_WE(rr_latches_rep_NEIP,                              32,  clk, rst, effective_we, rep_NEIP_d,                              latches_rep_NEIP_o);
-    `REG_RST_WE(rr_latches_rep_EIP,                               32,  clk, rst, effective_we, rep_EIP_d,                               latches_rep_EIP_o);
-    `REG_RST_WE(rr_latches_rep_EAX,                               32,  clk, rst, effective_we, rep_EAX_d,                               latches_rep_EAX_o);
-    `REG_RST_WE(rr_latches_rep_imm64,                             64,  clk, rst, effective_we, rep_imm64_d,                             latches_rep_imm64_o);
-    `REG_RST_WE(rr_latches_rep_sib_idx_id,                        5,   clk, rst, effective_we, rep_sib_idx_id_d,                        latches_rep_sib_idx_id_o);
-    `REG_RST_WE(rr_latches_rep_sib_base_id,                       5,   clk, rst, effective_we, rep_sib_base_id_d,                       latches_rep_sib_base_id_o);
-    `REG_RST_WE(rr_latches_rep_sib_needed,                        1,   clk, rst, effective_we, rep_sib_needed_d,                        latches_rep_sib_needed_o);
-    `REG_RST_WE(rr_latches_rep_sib_scale,                         8,   clk, rst, effective_we, rep_sib_scale_d,                         latches_rep_sib_scale_o);
-    `REG_RST_WE(rr_latches_rep_disp_needed,                       1,   clk, rst, effective_we, rep_disp_needed_d,                       latches_rep_disp_needed_o);
-    `REG_RST_WE(rr_latches_rep_disp_size,                         1,   clk, rst, effective_we, rep_disp_size_d,                         latches_rep_disp_size_o);
-    `REG_RST_WE(rr_latches_rep_displacement,                      32,  clk, rst, effective_we, rep_displacement_d,                      latches_rep_displacement_o);
+    // ------------------------------------------------------------
+    // Splay: drive each per-field output port from its slice of _q
+    //   (top-to-bottom matches original declaration order)
+    // ------------------------------------------------------------
+
+    // ---- normal_g1 outputs ----
+    assign latches_normal_valid_o                 = normal_g1_q[0];
+    assign latches_normal_cs_ST_SEL_o             = normal_g1_q[1];
+    assign latches_normal_cs_MODRM_NEEDED_o       = normal_g1_q[2];
+    assign latches_normal_cs_RM_IS_DR_o           = normal_g1_q[3];
+    assign latches_normal_cs_SWITCH_LD_ADDY_o     = normal_g1_q[4];
+    assign latches_normal_cs_LD_OP_o              = normal_g1_q[5];
+    assign latches_normal_cs_ST_OP_o              = normal_g1_q[6];
+    assign latches_normal_cs_dr_id_o              = normal_g1_q[7:11];
+    assign latches_normal_cs_sr_id_o              = normal_g1_q[12:16];
+    assign latches_normal_cs_dr_rd_o              = normal_g1_q[17];
+    assign latches_normal_cs_sr_rd_o              = normal_g1_q[18];
+    assign latches_normal_cs_eax_rd_o             = normal_g1_q[19];
+    assign latches_normal_cs_dr_wr_o              = normal_g1_q[20];
+    assign latches_normal_cs_sr_wr_o              = normal_g1_q[21];
+    assign latches_normal_cs_eax_wr_o             = normal_g1_q[22];
+    assign latches_normal_cs_MOVS_OP_o            = normal_g1_q[23];
+    assign latches_normal_cs_datasize_o           = normal_g1_q[24:25];
+    assign latches_normal_cs_will_mod_zf_o        = normal_g1_q[26];
+    assign latches_normal_cs_seg_1_valid_o        = normal_g1_q[27];
+    assign latches_normal_cs_seg_0_id_o           = normal_g1_q[28:32];
+    assign latches_normal_cs_seg_1_id_o           = normal_g1_q[33:37];
+    assign latches_normal_cs_special_modrm_bs_o   = normal_g1_q[38];
+    assign latches_normal_cs_special_br_o         = normal_g1_q[39];
+    assign latches_normal_dc_cs_LD_OP_o           = normal_g1_q[40];
+    assign latches_normal_dc_cs_ST_OP_o           = normal_g1_q[41];
+    assign latches_normal_dc_cs_dr_upper8_o       = normal_g1_q[42];
+    assign latches_normal_dc_cs_sr_upper8_o       = normal_g1_q[43];
+    assign latches_normal_dc_cs_datasize_o        = normal_g1_q[44:45];
+    assign latches_normal_mem_cs_ST_OP_o          = normal_g1_q[46];
+    assign latches_normal_mem_cs_LD_OP_o          = normal_g1_q[47];
+    assign latches_normal_exe_cs_ST_OP_o          = normal_g1_q[48];
+    assign latches_normal_exe_cs_OP_TYPE_o        = normal_g1_q[49:54];
+    assign latches_normal_exe_cs_alu_inputA_sel_o = normal_g1_q[55:59];
+
+    // ---- normal_g2 outputs ----
+    assign latches_normal_exe_cs_alu_inputB_sel_o    = normal_g2_q[0:4];
+    assign latches_normal_exe_cs_branch_target_sel_o = normal_g2_q[5:9];
+    assign latches_normal_exe_cs_shift_by_one_o      = normal_g2_q[10];
+    assign latches_normal_exe_cs_br_ucond_o          = normal_g2_q[11];
+    assign latches_normal_exe_cs_relative_branch_o   = normal_g2_q[12];
+    assign latches_normal_exe_cs_special_br_o        = normal_g2_q[13];
+    assign latches_normal_exe_cs_is_far_o            = normal_g2_q[14];
+    assign latches_normal_exe_cs_is_call_o           = normal_g2_q[15];
+    assign latches_normal_exe_cs_second_flag_needed_o= normal_g2_q[16];
+    assign latches_normal_exe_cs_rep_no_zf_update_o  = normal_g2_q[17];
+    assign latches_normal_wb_cs_ST_OP_o              = normal_g2_q[18];
+    assign latches_normal_wb_cs_WB_DR_o              = normal_g2_q[19];
+    assign latches_normal_wb_cs_WB_SR_o              = normal_g2_q[20];
+    assign latches_normal_wb_cs_WB_EAX_o             = normal_g2_q[21];
+    assign latches_normal_br_info_valid_o            = normal_g2_q[22];
+    assign latches_normal_br_info_br_eip_o           = normal_g2_q[23:54];
+    assign latches_normal_br_info_br_xcl_o           = normal_g2_q[55];
+    assign latches_normal_br_info_br_pred_taken_o    = normal_g2_q[56];
+
+    // ---- normal_g3 outputs ----
+    assign latches_normal_br_info_speculative_target_o = normal_g3_q[0:31];
+    assign latches_normal_NEIP_o                       = normal_g3_q[32:63];
+
+    // ---- normal_g4 outputs ----
+    assign latches_normal_EIP_o = normal_g4_q[0:31];
+    assign latches_normal_EAX_o = normal_g4_q[32:63];
+
+    // ---- normal_g5 outputs ----
+    assign latches_normal_imm64_o = normal_g5_q[0:63];
+
+    // ---- normal_g6 outputs ----
+    assign latches_normal_sib_idx_id_o   = normal_g6_q[0:4];
+    assign latches_normal_sib_base_id_o  = normal_g6_q[5:9];
+    assign latches_normal_sib_needed_o   = normal_g6_q[10];
+    assign latches_normal_sib_scale_o    = normal_g6_q[11:18];
+    assign latches_normal_disp_needed_o  = normal_g6_q[19];
+    assign latches_normal_disp_size_o    = normal_g6_q[20];
+    assign latches_normal_displacement_o = normal_g6_q[21:52];
+
+    // ---- rep_g1 outputs ----
+    assign latches_rep_valid_o                 = rep_g1_q[0];
+    assign latches_rep_cs_ST_SEL_o             = rep_g1_q[1];
+    assign latches_rep_cs_MODRM_NEEDED_o       = rep_g1_q[2];
+    assign latches_rep_cs_RM_IS_DR_o           = rep_g1_q[3];
+    assign latches_rep_cs_SWITCH_LD_ADDY_o     = rep_g1_q[4];
+    assign latches_rep_cs_LD_OP_o              = rep_g1_q[5];
+    assign latches_rep_cs_ST_OP_o              = rep_g1_q[6];
+    assign latches_rep_cs_dr_id_o              = rep_g1_q[7:11];
+    assign latches_rep_cs_sr_id_o              = rep_g1_q[12:16];
+    assign latches_rep_cs_dr_rd_o              = rep_g1_q[17];
+    assign latches_rep_cs_sr_rd_o              = rep_g1_q[18];
+    assign latches_rep_cs_eax_rd_o             = rep_g1_q[19];
+    assign latches_rep_cs_dr_wr_o              = rep_g1_q[20];
+    assign latches_rep_cs_sr_wr_o              = rep_g1_q[21];
+    assign latches_rep_cs_eax_wr_o             = rep_g1_q[22];
+    assign latches_rep_cs_MOVS_OP_o            = rep_g1_q[23];
+    assign latches_rep_cs_datasize_o           = rep_g1_q[24:25];
+    assign latches_rep_cs_will_mod_zf_o        = rep_g1_q[26];
+    assign latches_rep_cs_seg_1_valid_o        = rep_g1_q[27];
+    assign latches_rep_cs_seg_0_id_o           = rep_g1_q[28:32];
+    assign latches_rep_cs_seg_1_id_o           = rep_g1_q[33:37];
+    assign latches_rep_cs_special_modrm_bs_o   = rep_g1_q[38];
+    assign latches_rep_cs_special_br_o         = rep_g1_q[39];
+    assign latches_rep_dc_cs_LD_OP_o           = rep_g1_q[40];
+    assign latches_rep_dc_cs_ST_OP_o           = rep_g1_q[41];
+    assign latches_rep_dc_cs_dr_upper8_o       = rep_g1_q[42];
+    assign latches_rep_dc_cs_sr_upper8_o       = rep_g1_q[43];
+    assign latches_rep_dc_cs_datasize_o        = rep_g1_q[44:45];
+    assign latches_rep_mem_cs_ST_OP_o          = rep_g1_q[46];
+    assign latches_rep_mem_cs_LD_OP_o          = rep_g1_q[47];
+    assign latches_rep_exe_cs_ST_OP_o          = rep_g1_q[48];
+    assign latches_rep_exe_cs_OP_TYPE_o        = rep_g1_q[49:54];
+    assign latches_rep_exe_cs_alu_inputA_sel_o = rep_g1_q[55:59];
+
+    // ---- rep_g2 outputs ----
+    assign latches_rep_exe_cs_alu_inputB_sel_o    = rep_g2_q[0:4];
+    assign latches_rep_exe_cs_branch_target_sel_o = rep_g2_q[5:9];
+    assign latches_rep_exe_cs_shift_by_one_o      = rep_g2_q[10];
+    assign latches_rep_exe_cs_br_ucond_o          = rep_g2_q[11];
+    assign latches_rep_exe_cs_relative_branch_o   = rep_g2_q[12];
+    assign latches_rep_exe_cs_special_br_o        = rep_g2_q[13];
+    assign latches_rep_exe_cs_is_far_o            = rep_g2_q[14];
+    assign latches_rep_exe_cs_is_call_o           = rep_g2_q[15];
+    assign latches_rep_exe_cs_second_flag_needed_o= rep_g2_q[16];
+    assign latches_rep_exe_cs_rep_no_zf_update_o  = rep_g2_q[17];
+    assign latches_rep_wb_cs_ST_OP_o              = rep_g2_q[18];
+    assign latches_rep_wb_cs_WB_DR_o              = rep_g2_q[19];
+    assign latches_rep_wb_cs_WB_SR_o              = rep_g2_q[20];
+    assign latches_rep_wb_cs_WB_EAX_o             = rep_g2_q[21];
+    assign latches_rep_br_info_valid_o            = rep_g2_q[22];
+    assign latches_rep_br_info_br_eip_o           = rep_g2_q[23:54];
+    assign latches_rep_br_info_br_xcl_o           = rep_g2_q[55];
+    assign latches_rep_br_info_br_pred_taken_o    = rep_g2_q[56];
+
+    // ---- rep_g3 outputs ----
+    assign latches_rep_br_info_speculative_target_o = rep_g3_q[0:31];
+    assign latches_rep_NEIP_o                       = rep_g3_q[32:63];
+
+    // ---- rep_g4 outputs ----
+    assign latches_rep_EIP_o = rep_g4_q[0:31];
+    assign latches_rep_EAX_o = rep_g4_q[32:63];
+
+    // ---- rep_g5 outputs ----
+    assign latches_rep_imm64_o = rep_g5_q[0:63];
+
+    // ---- rep_g6 outputs ----
+    assign latches_rep_sib_idx_id_o   = rep_g6_q[0:4];
+    assign latches_rep_sib_base_id_o  = rep_g6_q[5:9];
+    assign latches_rep_sib_needed_o   = rep_g6_q[10];
+    assign latches_rep_sib_scale_o    = rep_g6_q[11:18];
+    assign latches_rep_disp_needed_o  = rep_g6_q[19];
+    assign latches_rep_disp_size_o    = rep_g6_q[20];
+    assign latches_rep_displacement_o = rep_g6_q[21:52];
+
+    // ============================================================
+    // Grouped REG_RST_WE instantiations (12 total: 6 normal + 6 rep)
+    // ============================================================
+
+    `REG_RST_WE(rr_latches_normal_g1, 60, clk, rst, effective_we, normal_g1_d, normal_g1_q);
+    `REG_RST_WE(rr_latches_normal_g2, 57, clk, rst, effective_we, normal_g2_d, normal_g2_q);
+    `REG_RST_WE(rr_latches_normal_g3, 64, clk, rst, effective_we, normal_g3_d, normal_g3_q);
+    `REG_RST_WE(rr_latches_normal_g4, 64, clk, rst, effective_we, normal_g4_d, normal_g4_q);
+    `REG_RST_WE(rr_latches_normal_g5, 64, clk, rst, effective_we, normal_g5_d, normal_g5_q);
+    `REG_RST_WE(rr_latches_normal_g6, 53, clk, rst, effective_we, normal_g6_d, normal_g6_q);
+
+    `REG_RST_WE(rr_latches_rep_g1,    60, clk, rst, effective_we, rep_g1_d,    rep_g1_q);
+    `REG_RST_WE(rr_latches_rep_g2,    57, clk, rst, effective_we, rep_g2_d,    rep_g2_q);
+    `REG_RST_WE(rr_latches_rep_g3,    64, clk, rst, effective_we, rep_g3_d,    rep_g3_q);
+    `REG_RST_WE(rr_latches_rep_g4,    64, clk, rst, effective_we, rep_g4_d,    rep_g4_q);
+    `REG_RST_WE(rr_latches_rep_g5,    64, clk, rst, effective_we, rep_g5_d,    rep_g5_q);
+    `REG_RST_WE(rr_latches_rep_g6,    53, clk, rst, effective_we, rep_g6_d,    rep_g6_q);
 
 endmodule

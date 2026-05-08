@@ -24,6 +24,6 @@ current_design $__top_module__
 link
 
 source fanout.tcl
-fanout_check
+fanout_check -print_only violation -print_loads
 
 exit

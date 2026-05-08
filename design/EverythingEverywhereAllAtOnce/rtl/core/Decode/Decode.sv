@@ -359,7 +359,7 @@ module Decode (
     assign outs_o = '{
         valid : !invalid_inst,
         stall : invalid_inst,
-        eip : EIP,
+        eip : EIP_heavy_buffered,
         invalid_instruction : invalid_inst,
         decode_gp : decode_gp && rr_outs_i.valid,
         rr_stage_latch_we : rr_latch_we_o,

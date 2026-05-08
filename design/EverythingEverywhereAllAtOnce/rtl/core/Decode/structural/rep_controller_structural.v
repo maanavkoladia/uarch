@@ -402,7 +402,7 @@ module rep_controller (
     wire        idle_br_info_br_pred_taken      = 1'b0;
     wire [31:0] idle_br_info_speculative_target = 32'h0;
     wire [31:0] idle_NEIP                       = 32'h0;
-    wire [31:0] idle_EIP                        = 32'h0;
+    wire [31:0] idle_EIP                        = saved_rep_eip;
     wire [31:0] idle_EAX                        = 32'h0;
     wire [63:0] idle_imm64                      = 64'h0;
     wire [`REG_ID_W-1:0] idle_sib_idx_id       = `REG_ID_W'b0;

@@ -49,8 +49,13 @@ module modrm_processor (
     output wire                    modrm_seg_override
 );
 
-    assign modrm_seg_override = ({modrm_byte[7:6], modrm_byte[2:0]} == 5'b01101 || 
-                                  {modrm_byte[7:6], modrm_byte[2:0]} == 5'b10101) && cs_MODRM_NEEDED;
+    wire modrm_case_01101;
+    wire modrm_case_10101;
+    wire modrm_seg_override_match;
+    `CMP_N(modrm_case_01101_cmp, 5, modrm_case_01101, {modrm_byte[7:6], modrm_byte[2:0]}, 5'b01101)
+    `CMP_N(modrm_case_10101_cmp, 5, modrm_case_10101, {modrm_byte[7:6], modrm_byte[2:0]}, 5'b10101)
+    `OR_2(modrm_seg_override_or_u, 1, modrm_seg_override_match, modrm_case_01101, modrm_case_10101)
+    `AND_2(modrm_seg_override_u, 1, modrm_seg_override, modrm_seg_override_match, cs_MODRM_NEEDED)
 
     wire HARDCODED_DR_DUP, HARDCODED_SR_DUP;
     bufferH16$ dr_dup(.out(HARDCODED_DR_DUP), .in(cs_HARDCODED_DR));

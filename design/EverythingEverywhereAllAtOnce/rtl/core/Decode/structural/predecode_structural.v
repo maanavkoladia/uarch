@@ -3,6 +3,7 @@ module predecode(
     input [511:0] queue,
     input [3:0] queue_valid,
     input [31:0] EIP,
+    input [31:0] EIP_copy,
     output [31:0] NEIP,
     output [3:0] inst_length,
     output [7:0] sib_byte,
@@ -15,6 +16,7 @@ module predecode(
     output [63:0] imm64,
     output [9:0] total_pf_vector_o,
     output invalid_inst,
+    output invalid_inst_buf,
 
     input seg_override,
     input [`REG_ID_W-1:0] seg0,
@@ -92,8 +94,6 @@ module predecode(
 );
 
 
-
-
     wire [127:0] IR; //16 byte
     // per-pf-combo outputs (suffix _<pf1><pf3>) — driven by the parallel ppu instances pfs<i>_<bb>
     wire [3:0]  ppu_inst_length_00[0:3], ppu_inst_length_01[0:3], ppu_inst_length_10[0:3], ppu_inst_length_11[0:3];
@@ -119,7 +119,7 @@ module predecode(
     assign total_pf_vector_o = total_pf_vector;
 
 
-    selection_logic sel_log1(.queue(queue), .EIP(EIP), .IR(IR));
+    selection_logic sel_log1(.queue(queue), .EIP(EIP_copy), .IR(IR));
 
     // 16 parallel ppu instances: pfs<i>_<b1><b3> with hardcoded {total_pf_vector_1, total_pf_vector_3} = bb
     // i is num_pfs_plusone-1 (also opcode_index)
@@ -346,14 +346,14 @@ module predecode(
 
 
     wire possible_invalid_inst [0:15];
-    assign possible_neips[0] = EIP;
+    assign possible_neips[0] = EIP_copy;
     genvar i;
     generate
         for (i = 1; i < 16; i=i+1) begin : possible_eip_adders
             kogge_stone_adder #(
                 .WIDTH(32)
             ) IR_index_adder (
-                .a   (EIP),
+                .a   (EIP_copy),
                 .b   ({28'b0, i[3:0]}),       // cast loop index to 6-bit
                 .cin (1'b0),
                 .sum (possible_neips[i]),
@@ -387,6 +387,15 @@ module predecode(
         end
     endgenerate
 
+    wire invalid_inst_copy1, invalid_inst_copy2, invalid_inst_copy3;
+    wire invalid_inst_copy4, invalid_inst_copy5, invalid_inst_copy6, invalid_inst_copy7;
+
+    wire invalid_inst_cs0_0xx, invalid_inst_cs0_1xx;
+    wire invalid_inst_cs1_0xx, invalid_inst_cs1_1xx;
+    wire invalid_inst_cs2_0xx, invalid_inst_cs2_1xx;
+    wire invalid_inst_cs3_0xx, invalid_inst_cs3_1xx;
+
+
     `MUX_16_H32(invalid_inst_picker_mux, 1, invalid_inst,
         possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
         possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
@@ -395,12 +404,85 @@ module predecode(
         inst_length, inst_length, inst_length, inst_length,
         inst_length, inst_length, inst_length, inst_length)
 
+    `MUX_16_H32(invalid_inst_picker_mux1, 1, invalid_inst_copy1,
+        possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
+        possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
+        possible_invalid_inst[8], possible_invalid_inst[9], possible_invalid_inst[10], possible_invalid_inst[11],
+        possible_invalid_inst[12], possible_invalid_inst[13], possible_invalid_inst[14], possible_invalid_inst[15],
+        inst_length, inst_length, inst_length, inst_length,
+        inst_length, inst_length, inst_length, inst_length)
 
+    `MUX_16_H32(invalid_inst_picker_mux2, 1, invalid_inst_copy2,
+        possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
+        possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
+        possible_invalid_inst[8], possible_invalid_inst[9], possible_invalid_inst[10], possible_invalid_inst[11],
+        possible_invalid_inst[12], possible_invalid_inst[13], possible_invalid_inst[14], possible_invalid_inst[15],
+        inst_length, inst_length, inst_length, inst_length,
+        inst_length, inst_length, inst_length, inst_length)
+    
+    `MUX_16_H32(invalid_inst_picker_mux3, 1, invalid_inst_copy3,
+        possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
+        possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
+        possible_invalid_inst[8], possible_invalid_inst[9], possible_invalid_inst[10], possible_invalid_inst[11],
+        possible_invalid_inst[12], possible_invalid_inst[13], possible_invalid_inst[14], possible_invalid_inst[15],
+        inst_length, inst_length, inst_length, inst_length,
+        inst_length, inst_length, inst_length, inst_length)
 
+    `MUX_16_H32(invalid_inst_picker_mux4, 1, invalid_inst_copy4,
+        possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
+        possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
+        possible_invalid_inst[8], possible_invalid_inst[9], possible_invalid_inst[10], possible_invalid_inst[11],
+        possible_invalid_inst[12], possible_invalid_inst[13], possible_invalid_inst[14], possible_invalid_inst[15],
+        inst_length, inst_length, inst_length, inst_length,
+        inst_length, inst_length, inst_length, inst_length)
+
+    `MUX_16_H32(invalid_inst_picker_mux5, 1, invalid_inst_copy5,
+        possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
+        possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
+        possible_invalid_inst[8], possible_invalid_inst[9], possible_invalid_inst[10], possible_invalid_inst[11],
+        possible_invalid_inst[12], possible_invalid_inst[13], possible_invalid_inst[14], possible_invalid_inst[15],
+        inst_length, inst_length, inst_length, inst_length,
+        inst_length, inst_length, inst_length, inst_length)
+
+    `MUX_16_H32(invalid_inst_picker_mux6, 1, invalid_inst_copy6,
+        possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
+        possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
+        possible_invalid_inst[8], possible_invalid_inst[9], possible_invalid_inst[10], possible_invalid_inst[11],
+        possible_invalid_inst[12], possible_invalid_inst[13], possible_invalid_inst[14], possible_invalid_inst[15],
+        inst_length, inst_length, inst_length, inst_length,
+        inst_length, inst_length, inst_length, inst_length)
+    
+    `MUX_16_H32(invalid_inst_picker_mux7, 1, invalid_inst_copy7,
+        possible_invalid_inst[0], possible_invalid_inst[1], possible_invalid_inst[2], possible_invalid_inst[3],
+        possible_invalid_inst[4], possible_invalid_inst[5], possible_invalid_inst[6], possible_invalid_inst[7],
+        possible_invalid_inst[8], possible_invalid_inst[9], possible_invalid_inst[10], possible_invalid_inst[11],
+        possible_invalid_inst[12], possible_invalid_inst[13], possible_invalid_inst[14], possible_invalid_inst[15],
+        inst_length, inst_length, inst_length, inst_length,
+        inst_length, inst_length, inst_length, inst_length)
+
+    // Fanout buffers: each bufferH64$ drives 4 control_store instances.
+    // Mapping (x first, then high bit of yza): one buffer per (cs<x>_<bit>xx) group.
+    bufferH64$ buf_invalid_inst_cs0_0xx (.out(invalid_inst_cs0_0xx), .in(invalid_inst));
+    bufferH64$ buf_invalid_inst_cs0_1xx (.out(invalid_inst_cs0_1xx), .in(invalid_inst_copy1));
+    bufferH64$ buf_invalid_inst_cs1_0xx (.out(invalid_inst_cs1_0xx), .in(invalid_inst_copy2));
+    bufferH64$ buf_invalid_inst_cs1_1xx (.out(invalid_inst_cs1_1xx), .in(invalid_inst_copy3));
+    bufferH64$ buf_invalid_inst_cs2_0xx (.out(invalid_inst_cs2_0xx), .in(invalid_inst_copy4));
+    bufferH64$ buf_invalid_inst_cs2_1xx (.out(invalid_inst_cs2_1xx), .in(invalid_inst_copy5));
+    bufferH64$ buf_invalid_inst_cs3_0xx (.out(invalid_inst_cs3_0xx), .in(invalid_inst_copy6));
+    bufferH64$ buf_invalid_inst_cs3_1xx (.out(invalid_inst_cs3_1xx), .in(invalid_inst_copy7));
+
+    assign invalid_inst_buf = invalid_inst_cs0_0xx;
 
 
     control_store_top cs_top(
-        .invalid_inst(invalid_inst),
+        .invalid_inst_cs0_0xx(invalid_inst_cs0_0xx),
+        .invalid_inst_cs0_1xx(invalid_inst_cs0_1xx),
+        .invalid_inst_cs1_0xx(invalid_inst_cs1_0xx),
+        .invalid_inst_cs1_1xx(invalid_inst_cs1_1xx),
+        .invalid_inst_cs2_0xx(invalid_inst_cs2_0xx),
+        .invalid_inst_cs2_1xx(invalid_inst_cs2_1xx),
+        .invalid_inst_cs3_0xx(invalid_inst_cs3_0xx),
+        .invalid_inst_cs3_1xx(invalid_inst_cs3_1xx),
         .total_pf_vector_0(total_pf_vector[0]),
         .total_pf_vector_1(total_pf_vector[1]),
         .total_pf_vector_3(total_pf_vector[3]),

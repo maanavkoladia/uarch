@@ -252,6 +252,9 @@ module Decode (
 
     wire [31:0] PrevEIP;
     wire [31:0] EIP;
+    wire [31:0] EIP_copy1;
+    wire [31:0] EIP_copy2;
+    wire [31:0] EIP_copy3;
     wire [31:0] NEIP;
     wire [3:0] inst_length;
     wire [3:0] PrevLength;
@@ -387,13 +390,14 @@ module Decode (
 
 
     wire modrm_seg_override;
+    wire invalid_inst_buf;
     predecode inst_processing(
         .clk(clk), .rst(rst), .queue(flattened_queue),
         .queue_valid({idm_outs_idm_slots_3_valid_buf, idm_outs_idm_slots_2_valid_buf,
                     idm_outs_idm_slots_1_valid_buf, idm_outs_idm_slots_0_valid_buf}),
-        .EIP(EIP), .NEIP(NEIP), .inst_length(inst_length), .sib_byte(sib_byte), .sib_size(sib_size),
+        .EIP(EIP_copy2), .EIP_copy(EIP_copy3), .NEIP(NEIP), .inst_length(inst_length), .sib_byte(sib_byte), .sib_size(sib_size),
         .opcode_byte(opcode_byte), .modrm_byte(modrm_byte), .disp(displacement), .disp_size(disp_size),
-        .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector_o(total_pf_vector), .invalid_inst(invalid_inst),
+        .disp_needed(disp_needed), .imm64(imm64), .total_pf_vector_o(total_pf_vector), .invalid_inst(invalid_inst), .invalid_inst_buf(invalid_inst_buf),
 
         .seg_override(seg_override),
         .seg0(segment0),
@@ -494,13 +498,16 @@ module Decode (
     wire        current_idm_slots_br_valid;
     wire [31:0] current_idm_slots_br_eip;
     wire [31:0] current_idm_slots_br_btb_target;
-    `MUX_4 (u_current_idm_valid, 1, current_idm_slots_valid, idm_outs_idm_slots_0_valid_buf, idm_outs_idm_slots_1_valid_buf, idm_outs_idm_slots_2_valid_buf, idm_outs_idm_slots_3_valid_buf, EIP[5:4])
-    `MUX_4 (u_current_idm_br_valid, 1, current_idm_slots_br_valid, idm_outs_idm_slots_0_br_valid, idm_outs_idm_slots_1_br_valid, idm_outs_idm_slots_2_br_valid, idm_outs_idm_slots_3_br_valid, EIP[5:4])
-    `MUX_4 (u_current_idm_br_eip, 32, current_idm_slots_br_eip, idm_outs_idm_slots_0_br_eip, idm_outs_idm_slots_1_br_eip, idm_outs_idm_slots_2_br_eip, idm_outs_idm_slots_3_br_eip, EIP[5:4])
-    `MUX_4 (u_current_idm_br_btb_targ, 32, current_idm_slots_br_btb_target, idm_outs_idm_slots_0_br_btb_target, idm_outs_idm_slots_1_br_btb_target, idm_outs_idm_slots_2_br_btb_target, idm_outs_idm_slots_3_br_btb_target, EIP[5:4])
+    wire [1:0] EIP_5_4_buf;
+    bufferH256$ buf_EIP_5 (.out(EIP_5_4_buf[1]), .in(EIP[5]));
+    bufferH256$ buf_EIP_4 (.out(EIP_5_4_buf[0]), .in(EIP[4]));
+    `MUX_4 (u_current_idm_valid, 1, current_idm_slots_valid, idm_outs_idm_slots_0_valid_buf, idm_outs_idm_slots_1_valid_buf, idm_outs_idm_slots_2_valid_buf, idm_outs_idm_slots_3_valid_buf, EIP_5_4_buf)
+    `MUX_4 (u_current_idm_br_valid, 1, current_idm_slots_br_valid, idm_outs_idm_slots_0_br_valid, idm_outs_idm_slots_1_br_valid, idm_outs_idm_slots_2_br_valid, idm_outs_idm_slots_3_br_valid, EIP_5_4_buf)
+    `MUX_4 (u_current_idm_br_eip, 32, current_idm_slots_br_eip, idm_outs_idm_slots_0_br_eip, idm_outs_idm_slots_1_br_eip, idm_outs_idm_slots_2_br_eip, idm_outs_idm_slots_3_br_eip, EIP_5_4_buf)
+    `MUX_4 (u_current_idm_br_btb_targ, 32, current_idm_slots_br_btb_target, idm_outs_idm_slots_0_br_btb_target, idm_outs_idm_slots_1_br_btb_target, idm_outs_idm_slots_2_br_btb_target, idm_outs_idm_slots_3_br_btb_target, EIP_5_4_buf)
 
 
-    `CMP_N(br_eip_cmp, 32, br_eip_eq_EIP, current_idm_slots_br_eip, EIP)
+    `CMP_N(br_eip_cmp, 32, br_eip_eq_EIP, current_idm_slots_br_eip, EIP_copy1)
     `AND_3(predicted_taken_gate, 1, predicted_taken_pre, current_idm_slots_br_valid, current_idm_slots_br_valid, br_eip_eq_EIP)
     bufferH64$ buf_predicted_taken (.out(predicted_taken), .in(predicted_taken_pre));
     `MUX_2(predicted_target_mux, 32, predicted_target, 32'b0, current_idm_slots_br_btb_target, predicted_taken)
@@ -635,7 +642,7 @@ module Decode (
     bufferH16$ buf_saved_segov (.out(SAVED_SEGMENT_OVERRIDE), .in(SAVED_SEGMENT_OVERRIDE_pre));
 
     wire [31:0] saved_rep_eip_din;
-    `MUX_2(u_saved_rep_eip_mux, 32, saved_rep_eip_din, 32'b0, EIP, rep_capture)
+    `MUX_2(u_saved_rep_eip_mux, 32, saved_rep_eip_din, 32'b0, EIP_copy2, rep_capture)
     wire [31:0] saved_rep_eip_din_g;
     `MUX_2(u_saved_rep_eip_din_g, 32, saved_rep_eip_din_g, saved_rep_eip_din, 32'b0, sync_clear_flush)
     `REG_RST_WE(u_saved_rep_eip, 32, clk, rst,
@@ -723,17 +730,49 @@ module Decode (
     wire eip_next_we;
     `MUX_2(u_eip_next_we, 1, eip_next_we, eip_next_we_df0, eip_next_we_df1, decode_forward)
 
-    // u_eip: bit 31 violates (fanout 39) -> bufferH64$ attach; others pass through
-    wire [31:0] EIP_pre_buf;
-    `REG_RST_WE(u_eip, 32, clk, rst, eip_next_we, eip_next, EIP_pre_buf)
-    assign EIP[30:0] = EIP_pre_buf[30:0];
-    bufferH64$ u_attach_eip_31 (.out(EIP[31]), .in(EIP_pre_buf[31])); // fanout
-
-
+    // 4 replicated EIP registers for fanout. Each register independently latches
+    // eip_next; outputs are EIP, EIP_copy1, EIP_copy2, EIP_copy3.
+    `REG_RST_WE(u_eip,       32, clk, rst, eip_next_we, eip_next, EIP)
+    `REG_RST_WE(u_eip_copy1, 32, clk, rst, eip_next_we, eip_next, EIP_copy1)
+    `REG_RST_WE(u_eip_copy2, 32, clk, rst, eip_next_we, eip_next, EIP_copy2)
+    wire [31:0] EIP_copy3_prebuf;
+    `REG_RST_WE(u_eip_copy3, 32, clk, rst, eip_next_we, eip_next, EIP_copy3_prebuf)
+    bufferH64$ buf_EIP_copy3_00 (.out(EIP_copy3[ 0]), .in(EIP_copy3_prebuf[ 0]));
+    bufferH64$ buf_EIP_copy3_01 (.out(EIP_copy3[ 1]), .in(EIP_copy3_prebuf[ 1]));
+    bufferH64$ buf_EIP_copy3_02 (.out(EIP_copy3[ 2]), .in(EIP_copy3_prebuf[ 2]));
+    bufferH64$ buf_EIP_copy3_03 (.out(EIP_copy3[ 3]), .in(EIP_copy3_prebuf[ 3]));
+    bufferH64$ buf_EIP_copy3_04 (.out(EIP_copy3[ 4]), .in(EIP_copy3_prebuf[ 4]));
+    bufferH64$ buf_EIP_copy3_05 (.out(EIP_copy3[ 5]), .in(EIP_copy3_prebuf[ 5]));
+    bufferH64$ buf_EIP_copy3_06 (.out(EIP_copy3[ 6]), .in(EIP_copy3_prebuf[ 6]));
+    bufferH64$ buf_EIP_copy3_07 (.out(EIP_copy3[ 7]), .in(EIP_copy3_prebuf[ 7]));
+    bufferH64$ buf_EIP_copy3_08 (.out(EIP_copy3[ 8]), .in(EIP_copy3_prebuf[ 8]));
+    bufferH64$ buf_EIP_copy3_09 (.out(EIP_copy3[ 9]), .in(EIP_copy3_prebuf[ 9]));
+    bufferH64$ buf_EIP_copy3_10 (.out(EIP_copy3[10]), .in(EIP_copy3_prebuf[10]));
+    bufferH64$ buf_EIP_copy3_11 (.out(EIP_copy3[11]), .in(EIP_copy3_prebuf[11]));
+    bufferH64$ buf_EIP_copy3_12 (.out(EIP_copy3[12]), .in(EIP_copy3_prebuf[12]));
+    bufferH64$ buf_EIP_copy3_13 (.out(EIP_copy3[13]), .in(EIP_copy3_prebuf[13]));
+    bufferH64$ buf_EIP_copy3_14 (.out(EIP_copy3[14]), .in(EIP_copy3_prebuf[14]));
+    bufferH64$ buf_EIP_copy3_15 (.out(EIP_copy3[15]), .in(EIP_copy3_prebuf[15]));
+    bufferH64$ buf_EIP_copy3_16 (.out(EIP_copy3[16]), .in(EIP_copy3_prebuf[16]));
+    bufferH64$ buf_EIP_copy3_17 (.out(EIP_copy3[17]), .in(EIP_copy3_prebuf[17]));
+    bufferH64$ buf_EIP_copy3_18 (.out(EIP_copy3[18]), .in(EIP_copy3_prebuf[18]));
+    bufferH64$ buf_EIP_copy3_19 (.out(EIP_copy3[19]), .in(EIP_copy3_prebuf[19]));
+    bufferH64$ buf_EIP_copy3_20 (.out(EIP_copy3[20]), .in(EIP_copy3_prebuf[20]));
+    bufferH64$ buf_EIP_copy3_21 (.out(EIP_copy3[21]), .in(EIP_copy3_prebuf[21]));
+    bufferH64$ buf_EIP_copy3_22 (.out(EIP_copy3[22]), .in(EIP_copy3_prebuf[22]));
+    bufferH64$ buf_EIP_copy3_23 (.out(EIP_copy3[23]), .in(EIP_copy3_prebuf[23]));
+    bufferH64$ buf_EIP_copy3_24 (.out(EIP_copy3[24]), .in(EIP_copy3_prebuf[24]));
+    bufferH64$ buf_EIP_copy3_25 (.out(EIP_copy3[25]), .in(EIP_copy3_prebuf[25]));
+    bufferH64$ buf_EIP_copy3_26 (.out(EIP_copy3[26]), .in(EIP_copy3_prebuf[26]));
+    bufferH64$ buf_EIP_copy3_27 (.out(EIP_copy3[27]), .in(EIP_copy3_prebuf[27]));
+    bufferH64$ buf_EIP_copy3_28 (.out(EIP_copy3[28]), .in(EIP_copy3_prebuf[28]));
+    bufferH64$ buf_EIP_copy3_29 (.out(EIP_copy3[29]), .in(EIP_copy3_prebuf[29]));
+    bufferH64$ buf_EIP_copy3_30 (.out(EIP_copy3[30]), .in(EIP_copy3_prebuf[30]));
+    bufferH64$ buf_EIP_copy3_31 (.out(EIP_copy3[31]), .in(EIP_copy3_prebuf[31]));
 
 
     wire [31:0] prev_eip_din_g;
-    `MUX_2(u_prev_eip_din_g, 32, prev_eip_din_g, EIP, 32'b0, fetch_outs_exp_pipe_clear_buf)
+    `MUX_2(u_prev_eip_din_g, 32, prev_eip_din_g, EIP_copy1, 32'b0, fetch_outs_exp_pipe_clear_buf)
     `REG_RST_WE(u_prev_eip, 32, clk, rst, 1'b1, prev_eip_din_g, PrevEIP)
 
     wire [3:0] prev_len_din_g;
@@ -744,7 +783,7 @@ module Decode (
     //   write iff (!HALT_REG && !invalid_inst && !REP_LATCH); din = HALT
     //   reset on rst | exp_pipe_clear | flush
     wire halt_we;
-    `NOR_3(u_halt_we, 1, halt_we, HALT_REG, invalid_inst, REP_LATCH)
+    `NOR_3(u_halt_we, 1, halt_we, HALT_REG, invalid_inst_buf, REP_LATCH)
     wire halt_we_g, halt_din_g;
     `OR_2(u_halt_we_g, 1, halt_we_g, halt_we, sync_clear_flush)
     `MUX_2(u_halt_din_g, 1, halt_din_g, decode_cs_HALT, 1'b0, sync_clear_flush)
@@ -786,7 +825,7 @@ module Decode (
     `REG_RST_WE(u_dc_saved_eip,     32, clk, rst,
                 fetch_outs_exp_pipe_clear_buf, dc_outs_dc_eip, DC_SAVED_EIP)
     `REG_RST_WE(u_decode_saved_eip, 32, clk, rst,
-                fetch_outs_exp_pipe_clear_buf, EIP,              DECODE_SAVED_EIP)
+                fetch_outs_exp_pipe_clear_buf, EIP_copy1,              DECODE_SAVED_EIP)
 
     // EXCEPTION_EIP: sel = !exp_mode_jk[1] | int_mode_jk = NAND(exp_mode_jk[1], !int_mode_jk)
     // assign EXCEPTION_EIP = (!fetch_outs_i.exp_mode_jk[1] || fetch_outs_i.int_mode_jk) ? DECODE_SAVED_EIP : DC_SAVED_EIP;
@@ -814,7 +853,7 @@ module Decode (
     wire [31:0] latch_eip;
     `OR_2(u_latch_eip_sel, 1, latch_eip_sel_pre, fetch_outs_exp_mode_jk[0], fetch_outs_int_mode_jk)
     bufferH64$ buf_latch_eip_sel (.out(latch_eip_sel), .in(latch_eip_sel_pre));
-    `MUX_2(u_latch_eip, 32, latch_eip, EIP, EXCEPTION_EIP, latch_eip_sel)
+    `MUX_2(u_latch_eip, 32, latch_eip, EIP_copy1, EXCEPTION_EIP, latch_eip_sel)
 
     // sib/disp gating: (MODRM_NEEDED) ? x : 0
     wire sib_needed_g, disp_needed_g, disp_size_g;
@@ -843,7 +882,12 @@ module Decode (
     assign rr_latches_next_normal_latches_cs_datasize                = rr_cs_datasize;
     assign rr_latches_next_normal_latches_cs_will_mod_zf             = rr_cs_will_mod_zf;
     assign rr_latches_next_normal_latches_cs_seg_1_valid             = rr_cs_seg_1_valid;
-    assign rr_latches_next_normal_latches_cs_seg_0_id                = ((sib_size && sib_segment_override) || (modrm_seg_override)) ? `SS : rr_cs_seg_0_id;
+    wire sib_size_and_seg_override;
+    wire seg_0_id_use_ss, seg_0_id_use_ss1;
+    `AND_2(sib_size_and_seg_override_u, 1, sib_size_and_seg_override, sib_size, sib_segment_override)
+    `OR_2(seg_0_id_use_ss_u,             1, seg_0_id_use_ss,             sib_size_and_seg_override, modrm_seg_override)
+    `OR_2(seg_0_id_use_ss_u1,             1, seg_0_id_use_ss1,             sib_size_and_seg_override, modrm_seg_override)
+    `MUX_2_H8(rr_latches_next_normal_latches_cs_seg_0_id_u, `REG_ID_W, rr_latches_next_normal_latches_cs_seg_0_id, rr_cs_seg_0_id, `SS, seg_0_id_use_ss, seg_0_id_use_ss1)
     assign rr_latches_next_normal_latches_cs_seg_1_id                = rr_cs_seg_1_id;
     assign rr_latches_next_normal_latches_cs_special_modrm_bs        = rr_cs_special_modrm_bs;
     assign rr_latches_next_normal_latches_cs_special_br              = rr_cs_special_br;
@@ -900,7 +944,40 @@ module Decode (
     `AND_2(decode_gp_u, 1, decode_gp_out, decode_gp, rr_outs_valid)
     assign outs_valid               = invalid_instruction_not;
     assign outs_stall               = invalid_inst;
-    assign outs_eip                 = EIP;
+    wire [31:0] EIP_heavy_buffered;
+    bufferH256$ buf_EIP_heavy_00 (.out(EIP_heavy_buffered[ 0]), .in(EIP[ 0]));
+    bufferH256$ buf_EIP_heavy_01 (.out(EIP_heavy_buffered[ 1]), .in(EIP[ 1]));
+    bufferH256$ buf_EIP_heavy_02 (.out(EIP_heavy_buffered[ 2]), .in(EIP[ 2]));
+    bufferH256$ buf_EIP_heavy_03 (.out(EIP_heavy_buffered[ 3]), .in(EIP[ 3]));
+    bufferH256$ buf_EIP_heavy_04 (.out(EIP_heavy_buffered[ 4]), .in(EIP[ 4]));
+    bufferH256$ buf_EIP_heavy_05 (.out(EIP_heavy_buffered[ 5]), .in(EIP[ 5]));
+    bufferH256$ buf_EIP_heavy_06 (.out(EIP_heavy_buffered[ 6]), .in(EIP[ 6]));
+    bufferH256$ buf_EIP_heavy_07 (.out(EIP_heavy_buffered[ 7]), .in(EIP[ 7]));
+    bufferH256$ buf_EIP_heavy_08 (.out(EIP_heavy_buffered[ 8]), .in(EIP[ 8]));
+    bufferH256$ buf_EIP_heavy_09 (.out(EIP_heavy_buffered[ 9]), .in(EIP[ 9]));
+    bufferH256$ buf_EIP_heavy_10 (.out(EIP_heavy_buffered[10]), .in(EIP[10]));
+    bufferH256$ buf_EIP_heavy_11 (.out(EIP_heavy_buffered[11]), .in(EIP[11]));
+    bufferH256$ buf_EIP_heavy_12 (.out(EIP_heavy_buffered[12]), .in(EIP[12]));
+    bufferH256$ buf_EIP_heavy_13 (.out(EIP_heavy_buffered[13]), .in(EIP[13]));
+    bufferH256$ buf_EIP_heavy_14 (.out(EIP_heavy_buffered[14]), .in(EIP[14]));
+    bufferH256$ buf_EIP_heavy_15 (.out(EIP_heavy_buffered[15]), .in(EIP[15]));
+    bufferH256$ buf_EIP_heavy_16 (.out(EIP_heavy_buffered[16]), .in(EIP[16]));
+    bufferH256$ buf_EIP_heavy_17 (.out(EIP_heavy_buffered[17]), .in(EIP[17]));
+    bufferH256$ buf_EIP_heavy_18 (.out(EIP_heavy_buffered[18]), .in(EIP[18]));
+    bufferH256$ buf_EIP_heavy_19 (.out(EIP_heavy_buffered[19]), .in(EIP[19]));
+    bufferH256$ buf_EIP_heavy_20 (.out(EIP_heavy_buffered[20]), .in(EIP[20]));
+    bufferH256$ buf_EIP_heavy_21 (.out(EIP_heavy_buffered[21]), .in(EIP[21]));
+    bufferH256$ buf_EIP_heavy_22 (.out(EIP_heavy_buffered[22]), .in(EIP[22]));
+    bufferH256$ buf_EIP_heavy_23 (.out(EIP_heavy_buffered[23]), .in(EIP[23]));
+    bufferH256$ buf_EIP_heavy_24 (.out(EIP_heavy_buffered[24]), .in(EIP[24]));
+    bufferH256$ buf_EIP_heavy_25 (.out(EIP_heavy_buffered[25]), .in(EIP[25]));
+    bufferH256$ buf_EIP_heavy_26 (.out(EIP_heavy_buffered[26]), .in(EIP[26]));
+    bufferH256$ buf_EIP_heavy_27 (.out(EIP_heavy_buffered[27]), .in(EIP[27]));
+    bufferH256$ buf_EIP_heavy_28 (.out(EIP_heavy_buffered[28]), .in(EIP[28]));
+    bufferH256$ buf_EIP_heavy_29 (.out(EIP_heavy_buffered[29]), .in(EIP[29]));
+    bufferH256$ buf_EIP_heavy_30 (.out(EIP_heavy_buffered[30]), .in(EIP[30]));
+    bufferH256$ buf_EIP_heavy_31 (.out(EIP_heavy_buffered[31]), .in(EIP[31]));
+    assign outs_eip                 = EIP_heavy_buffered;
     assign outs_invalid_instruction = invalid_inst;
     assign outs_decode_gp           = decode_gp_out;
     assign outs_rr_stage_latch_we   = rr_latch_we_o;
