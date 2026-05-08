@@ -7,6 +7,9 @@ module selection_logic (
     // Buffered queue: each byte fans out to 16 tristates.
     wire [511:0] queue_buffered;
 
+    // Pre-buffer IR (driven by tristates), then a bufferH64$ per bit drives the output port.
+    wire [127:0] IR_pre;
+
     // ROM enables (active-low enbar): rom_out[i][k] = 0 enables routing of
     // queue[i] -> IR[k].
     wire [15:0] rom_out [0:63];
@@ -89,17 +92,80 @@ module selection_logic (
         end
     endgenerate
 
-    // Stage 2: 64 sets x 16 tristates. Each set i drives queue_buffered[i]
-    // onto IR[k] when rom_out[i][k] is low. Wire-or onto IR[k*8 +: 8].
+    // Buffered copy of rom_out: every (i,k) bit is wire-OR'd inside
+    // ir_vector_roms by two rom64b32w$ drivers, so blanket-buffer all 64x16
+    // = 1024 bits with bufferH16$ to ensure no load sits on a multi-driven
+    // bus.
+    wire [15:0] rom_out_buf [0:63];
+    genvar bi, bk;
     generate
-        for (i = 0; i < 64; i = i + 1) begin : tri_set
-            for (k = 0; k < 16; k = k + 1) begin : tri_pos
-                `TRISTATE_L(tri_inst, 8, rom_out[i][k],
-                              queue_buffered[i*8 +: 8],
-                              IR[k*8 +: 8])
+        for (bi = 0; bi < 64; bi = bi + 1) begin : rb_set
+            for (bk = 0; bk < 16; bk = bk + 1) begin : rb_pos
+                bufferH16$ u_buf (.out(rom_out_buf[bi][bk]), .in(rom_out[bi][bk]));
             end
         end
     endgenerate
+
+    // Stage 2: 64 sets x 16 tristates. Each set i drives queue_buffered[i]
+    // onto IR_pre[k] when rom_out_buf[i][k] is low. Wire-or onto IR_pre[k*8 +: 8].
+    generate
+        for (i = 0; i < 64; i = i + 1) begin : tri_set
+            for (k = 0; k < 16; k = k + 1) begin : tri_pos
+                `TRISTATE_L(tri_inst, 8, rom_out_buf[i][k],
+                              queue_buffered[i*8 +: 8],
+                              IR_pre[k*8 +: 8])
+            end
+        end
+    endgenerate
+
+    // Per-bit buffer from IR_pre to IR. Strength chosen per fanout report:
+    //   bits 5-7,38-127: bufferH256$  (fanout <= 256)
+    //   bits 0-4,8-37 (mostly): bufferH1024$  (fanout 256..1024)
+    //   bits 11,19,27: bufferH4096$  (fanout > 1024)
+    generate
+        for (i = 5; i < 8; i = i + 1) begin : ir_buf_lo
+            bufferH256$ u_buf (.out(IR[i]), .in(IR_pre[i]));
+        end
+        for (i = 38; i < 128; i = i + 1) begin : ir_buf_hi
+            bufferH256$ u_buf (.out(IR[i]), .in(IR_pre[i]));
+        end
+    endgenerate
+
+    bufferH1024$ buf_IR_0  (.out(IR[ 0]), .in(IR_pre[ 0]));
+    bufferH1024$ buf_IR_1  (.out(IR[ 1]), .in(IR_pre[ 1]));
+    bufferH1024$ buf_IR_2  (.out(IR[ 2]), .in(IR_pre[ 2]));
+    bufferH1024$ buf_IR_3  (.out(IR[ 3]), .in(IR_pre[ 3]));
+    bufferH1024$ buf_IR_4  (.out(IR[ 4]), .in(IR_pre[ 4]));
+    bufferH1024$ buf_IR_8  (.out(IR[ 8]), .in(IR_pre[ 8]));
+    bufferH1024$ buf_IR_9  (.out(IR[ 9]), .in(IR_pre[ 9]));
+    bufferH1024$ buf_IR_10 (.out(IR[10]), .in(IR_pre[10]));
+    bufferH4096$ buf_IR_11 (.out(IR[11]), .in(IR_pre[11]));
+    bufferH1024$ buf_IR_12 (.out(IR[12]), .in(IR_pre[12]));
+    bufferH1024$ buf_IR_13 (.out(IR[13]), .in(IR_pre[13]));
+    bufferH1024$ buf_IR_14 (.out(IR[14]), .in(IR_pre[14]));
+    bufferH1024$ buf_IR_15 (.out(IR[15]), .in(IR_pre[15]));
+    bufferH1024$ buf_IR_16 (.out(IR[16]), .in(IR_pre[16]));
+    bufferH1024$ buf_IR_17 (.out(IR[17]), .in(IR_pre[17]));
+    bufferH1024$ buf_IR_18 (.out(IR[18]), .in(IR_pre[18]));
+    bufferH4096$ buf_IR_19 (.out(IR[19]), .in(IR_pre[19]));
+    bufferH1024$ buf_IR_20 (.out(IR[20]), .in(IR_pre[20]));
+    bufferH1024$ buf_IR_21 (.out(IR[21]), .in(IR_pre[21]));
+    bufferH1024$ buf_IR_22 (.out(IR[22]), .in(IR_pre[22]));
+    bufferH1024$ buf_IR_23 (.out(IR[23]), .in(IR_pre[23]));
+    bufferH1024$ buf_IR_24 (.out(IR[24]), .in(IR_pre[24]));
+    bufferH1024$ buf_IR_25 (.out(IR[25]), .in(IR_pre[25]));
+    bufferH1024$ buf_IR_26 (.out(IR[26]), .in(IR_pre[26]));
+    bufferH4096$ buf_IR_27 (.out(IR[27]), .in(IR_pre[27]));
+    bufferH1024$ buf_IR_28 (.out(IR[28]), .in(IR_pre[28]));
+    bufferH1024$ buf_IR_29 (.out(IR[29]), .in(IR_pre[29]));
+    bufferH1024$ buf_IR_30 (.out(IR[30]), .in(IR_pre[30]));
+    bufferH1024$ buf_IR_31 (.out(IR[31]), .in(IR_pre[31]));
+    bufferH1024$ buf_IR_32 (.out(IR[32]), .in(IR_pre[32]));
+    bufferH1024$ buf_IR_33 (.out(IR[33]), .in(IR_pre[33]));
+    bufferH1024$ buf_IR_34 (.out(IR[34]), .in(IR_pre[34]));
+    bufferH1024$ buf_IR_35 (.out(IR[35]), .in(IR_pre[35]));
+    bufferH1024$ buf_IR_36 (.out(IR[36]), .in(IR_pre[36]));
+    bufferH1024$ buf_IR_37 (.out(IR[37]), .in(IR_pre[37]));
 
 endmodule
 

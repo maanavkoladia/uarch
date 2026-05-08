@@ -179,66 +179,66 @@ module control_store (
     // =====================
     // Single-bit outputs
     // =====================
-    wire REP_o;
-    wire REP_CMP_o;
-    wire HALT_o;
-    wire MOVS_o;
-    wire XCHG_o;
-    wire CMPXCHG_o;
-    wire SHIFT_BY_ONE_o;
+    wire REP_o,             REP_o_pre;
+    wire REP_CMP_o,         REP_CMP_o_pre;
+    wire HALT_o,            HALT_o_pre;
+    wire MOVS_o,            MOVS_o_pre;
+    wire XCHG_o,            XCHG_o_pre;
+    wire CMPXCHG_o,         CMPXCHG_o_pre;
+    wire SHIFT_BY_ONE_o,    SHIFT_BY_ONE_o_pre;
 
-    wire MODRM_NEEDED_o;
-    wire RM_IS_DR_o;
-    wire REG_IS_DR_o;
-    wire REG_IS_SEGMENT_o;
-    wire MODRM_BUT_NO_SR_o;
-    wire SWITCH_LD_ADDY_o;
+    wire MODRM_NEEDED_o,    MODRM_NEEDED_o_pre;
+    wire RM_IS_DR_o,        RM_IS_DR_o_pre;
+    wire REG_IS_DR_o,       REG_IS_DR_o_pre;
+    wire REG_IS_SEGMENT_o,  REG_IS_SEGMENT_o_pre;
+    wire MODRM_BUT_NO_SR_o, MODRM_BUT_NO_SR_o_pre;
+    wire SWITCH_LD_ADDY_o,  SWITCH_LD_ADDY_o_pre;
 
-    wire HARD_CODED_DR_o;
-    wire HARD_CODED_SR_o;
-    wire HARDCODED_DR_HIGH8_o;
+    wire HARD_CODED_DR_o,      HARD_CODED_DR_o_pre;
+    wire HARD_CODED_SR_o,      HARD_CODED_SR_o_pre;
+    wire HARDCODED_DR_HIGH8_o, HARDCODED_DR_HIGH8_o_pre;
 
-    wire OP_IN_MODRM_o;
+    wire OP_IN_MODRM_o,        OP_IN_MODRM_o_pre;
 
-    wire HARDCODED_DR_RD_o;
-    wire HARDCODED_DR_WR_o;
-    wire HARDCODED_SR_RD_o;
-    wire HARDCODED_SR_WR_o;
-    wire HARDCODED_LD_OP_o;
-    wire HARDCODED_ST_OP_o;
-    wire LD_OP_CANCEL_o;
-    wire ST_OP_CANCEL_o;
-    wire ST_SEL_o;
+    wire HARDCODED_DR_RD_o,    HARDCODED_DR_RD_o_pre;
+    wire HARDCODED_DR_WR_o,    HARDCODED_DR_WR_o_pre;
+    wire HARDCODED_SR_RD_o,    HARDCODED_SR_RD_o_pre;
+    wire HARDCODED_SR_WR_o,    HARDCODED_SR_WR_o_pre;
+    wire HARDCODED_LD_OP_o,    HARDCODED_LD_OP_o_pre;
+    wire HARDCODED_ST_OP_o,    HARDCODED_ST_OP_o_pre;
+    wire LD_OP_CANCEL_o,       LD_OP_CANCEL_o_pre;
+    wire ST_OP_CANCEL_o,       ST_OP_CANCEL_o_pre;
+    wire ST_SEL_o,             ST_SEL_o_pre;
 
-    wire br_uncond_o;
-    wire relative_branch_o;
-    wire special_br_o;
-    wire is_far_o;
-    wire is_call_o;
-    wire second_flag_needed_o;
+    wire br_uncond_o,          br_uncond_o_pre;
+    wire relative_branch_o,    relative_branch_o_pre;
+    wire special_br_o,         special_br_o_pre;
+    wire is_far_o,             is_far_o_pre;
+    wire is_call_o,            is_call_o_pre;
+    wire second_flag_needed_o, second_flag_needed_o_pre;
 
-    wire will_mod_zf_o;
+    wire will_mod_zf_o,        will_mod_zf_o_pre;
 
-    wire HARDCODED_SEGMENT1_V_o;
+    wire HARDCODED_SEGMENT1_V_o, HARDCODED_SEGMENT1_V_o_pre;
 
     // =====================
     // Packed outputs
     // =====================
-    wire [4:0] HARD_CODED_DR_ID_o;
-    wire [4:0] HARD_CODED_SR_ID_o;
+    wire [4:0] HARD_CODED_DR_ID_o, HARD_CODED_DR_ID_o_pre;
+    wire [4:0] HARD_CODED_SR_ID_o, HARD_CODED_SR_ID_o_pre;
 
-    wire [1:0] DATA_SIZE_o;
+    wire [1:0] DATA_SIZE_o,         DATA_SIZE_o_pre;
 
-    wire [1:0] OP_IN_MODRM_SUBSET_o;
+    wire [1:0] OP_IN_MODRM_SUBSET_o, OP_IN_MODRM_SUBSET_o_pre;
 
-    wire [4:0] alu_inputA_sel_o;
-    wire [4:0] alu_inputB_sel_o;
-    wire [4:0] branch_target_sel_o;
+    wire [4:0] alu_inputA_sel_o,    alu_inputA_sel_o_pre;
+    wire [4:0] alu_inputB_sel_o,    alu_inputB_sel_o_pre;
+    wire [4:0] branch_target_sel_o, branch_target_sel_o_pre;
 
-    wire [5:0] OP_TYPE_o;
+    wire [5:0] OP_TYPE_o,           OP_TYPE_o_pre;
 
-    wire [4:0] HARDCODED_SEGMENT0_o;
-    wire [4:0] HARDCODED_SEGMENT1_o;
+    wire [4:0] HARDCODED_SEGMENT0_o, HARDCODED_SEGMENT0_o_pre;
+    wire [4:0] HARDCODED_SEGMENT1_o, HARDCODED_SEGMENT1_o_pre;
     // =====================
     // Module instantiation
     // =====================
@@ -257,114 +257,205 @@ module control_store (
         .in_0_i(input_bus[0]),
 
         // General Control
-        .REP_o(REP_o),
-        .REP_CMP_o(REP_CMP_o),
-        .HALT_o(HALT_o),
-        .MOVS_o(MOVS_o),
-        .XCHG_o(XCHG_o),
-        .CMPXCHG_o(CMPXCHG_o),
-        .SHIFT_BY_ONE_o(SHIFT_BY_ONE_o),
+        .REP_o(REP_o_pre),
+        .REP_CMP_o(REP_CMP_o_pre),
+        .HALT_o(HALT_o_pre),
+        .MOVS_o(MOVS_o_pre),
+        .XCHG_o(XCHG_o_pre),
+        .CMPXCHG_o(CMPXCHG_o_pre),
+        .SHIFT_BY_ONE_o(SHIFT_BY_ONE_o_pre),
 
-        .MODRM_NEEDED_o(MODRM_NEEDED_o),
-        .RM_IS_DR_o(RM_IS_DR_o),
-        .REG_IS_DR_o(REG_IS_DR_o),
-        .REG_IS_SEGMENT_o(REG_IS_SEGMENT_o),
-        .MODRM_BUT_NO_SR_o(MODRM_BUT_NO_SR_o),
-        .SWITCH_LD_ADDY_o(SWITCH_LD_ADDY_o),
-        .HARDCODED_DR_HIGH8_o(HARDCODED_DR_HIGH8_o),
+        .MODRM_NEEDED_o(MODRM_NEEDED_o_pre),
+        .RM_IS_DR_o(RM_IS_DR_o_pre),
+        .REG_IS_DR_o(REG_IS_DR_o_pre),
+        .REG_IS_SEGMENT_o(REG_IS_SEGMENT_o_pre),
+        .MODRM_BUT_NO_SR_o(MODRM_BUT_NO_SR_o_pre),
+        .SWITCH_LD_ADDY_o(SWITCH_LD_ADDY_o_pre),
+        .HARDCODED_DR_HIGH8_o(HARDCODED_DR_HIGH8_o_pre),
 
-        .OP_IN_MODRM_o(OP_IN_MODRM_o),
+        .OP_IN_MODRM_o(OP_IN_MODRM_o_pre),
 
         // Packed subset wiring
-        .OP_IN_MODRM_SUBSET_1_o(OP_IN_MODRM_SUBSET_o[1]),
-        .OP_IN_MODRM_SUBSET_0_o(OP_IN_MODRM_SUBSET_o[0]),
+        .OP_IN_MODRM_SUBSET_1_o(OP_IN_MODRM_SUBSET_o_pre[1]),
+        .OP_IN_MODRM_SUBSET_0_o(OP_IN_MODRM_SUBSET_o_pre[0]),
 
         // Op Enables / Selects
-        .HARDCODED_DR_RD_o(HARDCODED_DR_RD_o),
-        .HARDCODED_DR_WR_o(HARDCODED_DR_WR_o),
-        .HARDCODED_SR_RD_o(HARDCODED_SR_RD_o),
-        .HARDCODED_SR_WR_o(HARDCODED_SR_WR_o),
-        .HARDCODED_LD_OP_o(HARDCODED_LD_OP_o),
-        .HARDCODED_ST_OP_o(HARDCODED_ST_OP_o),
-        .LD_OP_CANCEL_o(LD_OP_CANCEL_o),
-        .ST_OP_CANCEL_o(ST_OP_CANCEL_o),
-        .ST_SEL_o(ST_SEL_o),
+        .HARDCODED_DR_RD_o(HARDCODED_DR_RD_o_pre),
+        .HARDCODED_DR_WR_o(HARDCODED_DR_WR_o_pre),
+        .HARDCODED_SR_RD_o(HARDCODED_SR_RD_o_pre),
+        .HARDCODED_SR_WR_o(HARDCODED_SR_WR_o_pre),
+        .HARDCODED_LD_OP_o(HARDCODED_LD_OP_o_pre),
+        .HARDCODED_ST_OP_o(HARDCODED_ST_OP_o_pre),
+        .LD_OP_CANCEL_o(LD_OP_CANCEL_o_pre),
+        .ST_OP_CANCEL_o(ST_OP_CANCEL_o_pre),
+        .ST_SEL_o(ST_SEL_o_pre),
 
         // Destination Register Hardcoding
-        .HARD_CODED_DR_o(HARD_CODED_DR_o),
-        .HARD_CODED_DR_ID_4_o(HARD_CODED_DR_ID_o[4]),
-        .HARD_CODED_DR_ID_3_o(HARD_CODED_DR_ID_o[3]),
-        .HARD_CODED_DR_ID_2_o(HARD_CODED_DR_ID_o[2]),
-        .HARD_CODED_DR_ID_1_o(HARD_CODED_DR_ID_o[1]),
-        .HARD_CODED_DR_ID_0_o(HARD_CODED_DR_ID_o[0]),
+        .HARD_CODED_DR_o(HARD_CODED_DR_o_pre),
+        .HARD_CODED_DR_ID_4_o(HARD_CODED_DR_ID_o_pre[4]),
+        .HARD_CODED_DR_ID_3_o(HARD_CODED_DR_ID_o_pre[3]),
+        .HARD_CODED_DR_ID_2_o(HARD_CODED_DR_ID_o_pre[2]),
+        .HARD_CODED_DR_ID_1_o(HARD_CODED_DR_ID_o_pre[1]),
+        .HARD_CODED_DR_ID_0_o(HARD_CODED_DR_ID_o_pre[0]),
 
         // Source Register Hardcoding
-        .HARD_CODED_SR_o(HARD_CODED_SR_o),
-        .HARD_CODED_SR_ID_4_o(HARD_CODED_SR_ID_o[4]),
-        .HARD_CODED_SR_ID_3_o(HARD_CODED_SR_ID_o[3]),
-        .HARD_CODED_SR_ID_2_o(HARD_CODED_SR_ID_o[2]),
-        .HARD_CODED_SR_ID_1_o(HARD_CODED_SR_ID_o[1]),
-        .HARD_CODED_SR_ID_0_o(HARD_CODED_SR_ID_o[0]),
+        .HARD_CODED_SR_o(HARD_CODED_SR_o_pre),
+        .HARD_CODED_SR_ID_4_o(HARD_CODED_SR_ID_o_pre[4]),
+        .HARD_CODED_SR_ID_3_o(HARD_CODED_SR_ID_o_pre[3]),
+        .HARD_CODED_SR_ID_2_o(HARD_CODED_SR_ID_o_pre[2]),
+        .HARD_CODED_SR_ID_1_o(HARD_CODED_SR_ID_o_pre[1]),
+        .HARD_CODED_SR_ID_0_o(HARD_CODED_SR_ID_o_pre[0]),
 
         // DATA SIZE
-        .DATA_SIZE_1_o(DATA_SIZE_o[1]),
-        .DATA_SIZE_0_o(DATA_SIZE_o[0]),
+        .DATA_SIZE_1_o(DATA_SIZE_o_pre[1]),
+        .DATA_SIZE_0_o(DATA_SIZE_o_pre[0]),
 
         // ALU A
-        .alu_inputA_sel_4_o(alu_inputA_sel_o[4]),
-        .alu_inputA_sel_3_o(alu_inputA_sel_o[3]),
-        .alu_inputA_sel_2_o(alu_inputA_sel_o[2]),
-        .alu_inputA_sel_1_o(alu_inputA_sel_o[1]),
-        .alu_inputA_sel_0_o(alu_inputA_sel_o[0]),
+        .alu_inputA_sel_4_o(alu_inputA_sel_o_pre[4]),
+        .alu_inputA_sel_3_o(alu_inputA_sel_o_pre[3]),
+        .alu_inputA_sel_2_o(alu_inputA_sel_o_pre[2]),
+        .alu_inputA_sel_1_o(alu_inputA_sel_o_pre[1]),
+        .alu_inputA_sel_0_o(alu_inputA_sel_o_pre[0]),
 
         // ALU B
-        .alu_inputB_sel_4_o(alu_inputB_sel_o[4]),
-        .alu_inputB_sel_3_o(alu_inputB_sel_o[3]),
-        .alu_inputB_sel_2_o(alu_inputB_sel_o[2]),
-        .alu_inputB_sel_1_o(alu_inputB_sel_o[1]),
-        .alu_inputB_sel_0_o(alu_inputB_sel_o[0]),
+        .alu_inputB_sel_4_o(alu_inputB_sel_o_pre[4]),
+        .alu_inputB_sel_3_o(alu_inputB_sel_o_pre[3]),
+        .alu_inputB_sel_2_o(alu_inputB_sel_o_pre[2]),
+        .alu_inputB_sel_1_o(alu_inputB_sel_o_pre[1]),
+        .alu_inputB_sel_0_o(alu_inputB_sel_o_pre[0]),
 
         // Branch target
-        .branch_target_sel_4_o(branch_target_sel_o[4]),
-        .branch_target_sel_3_o(branch_target_sel_o[3]),
-        .branch_target_sel_2_o(branch_target_sel_o[2]),
-        .branch_target_sel_1_o(branch_target_sel_o[1]),
-        .branch_target_sel_0_o(branch_target_sel_o[0]),
+        .branch_target_sel_4_o(branch_target_sel_o_pre[4]),
+        .branch_target_sel_3_o(branch_target_sel_o_pre[3]),
+        .branch_target_sel_2_o(branch_target_sel_o_pre[2]),
+        .branch_target_sel_1_o(branch_target_sel_o_pre[1]),
+        .branch_target_sel_0_o(branch_target_sel_o_pre[0]),
 
         // OP_TYPE
-        .OP_TYPE_5_o(OP_TYPE_o[5]),
-        .OP_TYPE_4_o(OP_TYPE_o[4]),
-        .OP_TYPE_3_o(OP_TYPE_o[3]),
-        .OP_TYPE_2_o(OP_TYPE_o[2]),
-        .OP_TYPE_1_o(OP_TYPE_o[1]),
-        .OP_TYPE_0_o(OP_TYPE_o[0]),
+        .OP_TYPE_5_o(OP_TYPE_o_pre[5]),
+        .OP_TYPE_4_o(OP_TYPE_o_pre[4]),
+        .OP_TYPE_3_o(OP_TYPE_o_pre[3]),
+        .OP_TYPE_2_o(OP_TYPE_o_pre[2]),
+        .OP_TYPE_1_o(OP_TYPE_o_pre[1]),
+        .OP_TYPE_0_o(OP_TYPE_o_pre[0]),
 
         // Branch / Execution Flags
-        .br_uncond_o(br_uncond_o),
-        .relative_branch_o(relative_branch_o),
-        .special_br_o(special_br_o),
-        .is_far_o(is_far_o),
-        .is_call_o(is_call_o),
-        .second_flag_needed_o(second_flag_needed_o),
+        .br_uncond_o(br_uncond_o_pre),
+        .relative_branch_o(relative_branch_o_pre),
+        .special_br_o(special_br_o_pre),
+        .is_far_o(is_far_o_pre),
+        .is_call_o(is_call_o_pre),
+        .second_flag_needed_o(second_flag_needed_o_pre),
 
         // Misc
-        .will_mod_zf_o(will_mod_zf_o),
+        .will_mod_zf_o(will_mod_zf_o_pre),
 
         // Segment 0
-        .HARDCODED_SEGMENT0_4_o(HARDCODED_SEGMENT0_o[4]),
-        .HARDCODED_SEGMENT0_3_o(HARDCODED_SEGMENT0_o[3]),
-        .HARDCODED_SEGMENT0_2_o(HARDCODED_SEGMENT0_o[2]),
-        .HARDCODED_SEGMENT0_1_o(HARDCODED_SEGMENT0_o[1]),
-        .HARDCODED_SEGMENT0_0_o(HARDCODED_SEGMENT0_o[0]),
+        .HARDCODED_SEGMENT0_4_o(HARDCODED_SEGMENT0_o_pre[4]),
+        .HARDCODED_SEGMENT0_3_o(HARDCODED_SEGMENT0_o_pre[3]),
+        .HARDCODED_SEGMENT0_2_o(HARDCODED_SEGMENT0_o_pre[2]),
+        .HARDCODED_SEGMENT0_1_o(HARDCODED_SEGMENT0_o_pre[1]),
+        .HARDCODED_SEGMENT0_0_o(HARDCODED_SEGMENT0_o_pre[0]),
 
         // Segment 1
-        .HARDCODED_SEGMENT1_V_o(HARDCODED_SEGMENT1_V_o),
-        .HARDCODED_SEGMENT1_4_o(HARDCODED_SEGMENT1_o[4]),
-        .HARDCODED_SEGMENT1_3_o(HARDCODED_SEGMENT1_o[3]),
-        .HARDCODED_SEGMENT1_2_o(HARDCODED_SEGMENT1_o[2]),
-        .HARDCODED_SEGMENT1_1_o(HARDCODED_SEGMENT1_o[1]),
-        .HARDCODED_SEGMENT1_0_o(HARDCODED_SEGMENT1_o[0])
+        .HARDCODED_SEGMENT1_V_o(HARDCODED_SEGMENT1_V_o_pre),
+        .HARDCODED_SEGMENT1_4_o(HARDCODED_SEGMENT1_o_pre[4]),
+        .HARDCODED_SEGMENT1_3_o(HARDCODED_SEGMENT1_o_pre[3]),
+        .HARDCODED_SEGMENT1_2_o(HARDCODED_SEGMENT1_o_pre[2]),
+        .HARDCODED_SEGMENT1_1_o(HARDCODED_SEGMENT1_o_pre[1]),
+        .HARDCODED_SEGMENT1_0_o(HARDCODED_SEGMENT1_o_pre[0])
     );
+
+    // bufferH16$ tree on every control_store output (per-bit for buses).
+    bufferH16$ buf_REP_o                  (.out(REP_o),                   .in(REP_o_pre));
+    bufferH16$ buf_REP_CMP_o              (.out(REP_CMP_o),               .in(REP_CMP_o_pre));
+    bufferH16$ buf_HALT_o                 (.out(HALT_o),                  .in(HALT_o_pre));
+    bufferH16$ buf_MOVS_o                 (.out(MOVS_o),                  .in(MOVS_o_pre));
+    bufferH16$ buf_XCHG_o                 (.out(XCHG_o),                  .in(XCHG_o_pre));
+    bufferH16$ buf_CMPXCHG_o              (.out(CMPXCHG_o),               .in(CMPXCHG_o_pre));
+    bufferH16$ buf_SHIFT_BY_ONE_o         (.out(SHIFT_BY_ONE_o),          .in(SHIFT_BY_ONE_o_pre));
+    bufferH16$ buf_MODRM_NEEDED_o         (.out(MODRM_NEEDED_o),          .in(MODRM_NEEDED_o_pre));
+    bufferH16$ buf_RM_IS_DR_o             (.out(RM_IS_DR_o),              .in(RM_IS_DR_o_pre));
+    bufferH16$ buf_REG_IS_DR_o            (.out(REG_IS_DR_o),             .in(REG_IS_DR_o_pre));
+    bufferH16$ buf_REG_IS_SEGMENT_o       (.out(REG_IS_SEGMENT_o),        .in(REG_IS_SEGMENT_o_pre));
+    bufferH16$ buf_MODRM_BUT_NO_SR_o      (.out(MODRM_BUT_NO_SR_o),       .in(MODRM_BUT_NO_SR_o_pre));
+    bufferH16$ buf_SWITCH_LD_ADDY_o       (.out(SWITCH_LD_ADDY_o),        .in(SWITCH_LD_ADDY_o_pre));
+    bufferH16$ buf_HARD_CODED_DR_o        (.out(HARD_CODED_DR_o),         .in(HARD_CODED_DR_o_pre));
+    bufferH16$ buf_HARD_CODED_SR_o        (.out(HARD_CODED_SR_o),         .in(HARD_CODED_SR_o_pre));
+    bufferH16$ buf_HARDCODED_DR_HIGH8_o   (.out(HARDCODED_DR_HIGH8_o),    .in(HARDCODED_DR_HIGH8_o_pre));
+    bufferH16$ buf_OP_IN_MODRM_o          (.out(OP_IN_MODRM_o),           .in(OP_IN_MODRM_o_pre));
+    bufferH16$ buf_HARDCODED_DR_RD_o      (.out(HARDCODED_DR_RD_o),       .in(HARDCODED_DR_RD_o_pre));
+    bufferH16$ buf_HARDCODED_DR_WR_o      (.out(HARDCODED_DR_WR_o),       .in(HARDCODED_DR_WR_o_pre));
+    bufferH16$ buf_HARDCODED_SR_RD_o      (.out(HARDCODED_SR_RD_o),       .in(HARDCODED_SR_RD_o_pre));
+    bufferH16$ buf_HARDCODED_SR_WR_o      (.out(HARDCODED_SR_WR_o),       .in(HARDCODED_SR_WR_o_pre));
+    bufferH16$ buf_HARDCODED_LD_OP_o      (.out(HARDCODED_LD_OP_o),       .in(HARDCODED_LD_OP_o_pre));
+    bufferH16$ buf_HARDCODED_ST_OP_o      (.out(HARDCODED_ST_OP_o),       .in(HARDCODED_ST_OP_o_pre));
+    bufferH16$ buf_LD_OP_CANCEL_o         (.out(LD_OP_CANCEL_o),          .in(LD_OP_CANCEL_o_pre));
+    bufferH16$ buf_ST_OP_CANCEL_o         (.out(ST_OP_CANCEL_o),          .in(ST_OP_CANCEL_o_pre));
+    bufferH16$ buf_ST_SEL_o               (.out(ST_SEL_o),                .in(ST_SEL_o_pre));
+    bufferH16$ buf_br_uncond_o            (.out(br_uncond_o),             .in(br_uncond_o_pre));
+    bufferH16$ buf_relative_branch_o      (.out(relative_branch_o),       .in(relative_branch_o_pre));
+    bufferH16$ buf_special_br_o           (.out(special_br_o),            .in(special_br_o_pre));
+    bufferH16$ buf_is_far_o               (.out(is_far_o),                .in(is_far_o_pre));
+    bufferH16$ buf_is_call_o              (.out(is_call_o),               .in(is_call_o_pre));
+    bufferH16$ buf_second_flag_needed_o   (.out(second_flag_needed_o),    .in(second_flag_needed_o_pre));
+    bufferH16$ buf_will_mod_zf_o          (.out(will_mod_zf_o),           .in(will_mod_zf_o_pre));
+    bufferH16$ buf_HARDCODED_SEGMENT1_V_o (.out(HARDCODED_SEGMENT1_V_o),  .in(HARDCODED_SEGMENT1_V_o_pre));
+
+    bufferH16$ buf_HARD_CODED_DR_ID_o_4   (.out(HARD_CODED_DR_ID_o[4]),   .in(HARD_CODED_DR_ID_o_pre[4]));
+    bufferH16$ buf_HARD_CODED_DR_ID_o_3   (.out(HARD_CODED_DR_ID_o[3]),   .in(HARD_CODED_DR_ID_o_pre[3]));
+    bufferH16$ buf_HARD_CODED_DR_ID_o_2   (.out(HARD_CODED_DR_ID_o[2]),   .in(HARD_CODED_DR_ID_o_pre[2]));
+    bufferH16$ buf_HARD_CODED_DR_ID_o_1   (.out(HARD_CODED_DR_ID_o[1]),   .in(HARD_CODED_DR_ID_o_pre[1]));
+    bufferH16$ buf_HARD_CODED_DR_ID_o_0   (.out(HARD_CODED_DR_ID_o[0]),   .in(HARD_CODED_DR_ID_o_pre[0]));
+
+    bufferH16$ buf_HARD_CODED_SR_ID_o_4   (.out(HARD_CODED_SR_ID_o[4]),   .in(HARD_CODED_SR_ID_o_pre[4]));
+    bufferH16$ buf_HARD_CODED_SR_ID_o_3   (.out(HARD_CODED_SR_ID_o[3]),   .in(HARD_CODED_SR_ID_o_pre[3]));
+    bufferH16$ buf_HARD_CODED_SR_ID_o_2   (.out(HARD_CODED_SR_ID_o[2]),   .in(HARD_CODED_SR_ID_o_pre[2]));
+    bufferH16$ buf_HARD_CODED_SR_ID_o_1   (.out(HARD_CODED_SR_ID_o[1]),   .in(HARD_CODED_SR_ID_o_pre[1]));
+    bufferH16$ buf_HARD_CODED_SR_ID_o_0   (.out(HARD_CODED_SR_ID_o[0]),   .in(HARD_CODED_SR_ID_o_pre[0]));
+
+    bufferH16$ buf_DATA_SIZE_o_1          (.out(DATA_SIZE_o[1]),          .in(DATA_SIZE_o_pre[1]));
+    bufferH16$ buf_DATA_SIZE_o_0          (.out(DATA_SIZE_o[0]),          .in(DATA_SIZE_o_pre[0]));
+
+    bufferH16$ buf_OP_IN_MODRM_SUBSET_o_1 (.out(OP_IN_MODRM_SUBSET_o[1]), .in(OP_IN_MODRM_SUBSET_o_pre[1]));
+    bufferH16$ buf_OP_IN_MODRM_SUBSET_o_0 (.out(OP_IN_MODRM_SUBSET_o[0]), .in(OP_IN_MODRM_SUBSET_o_pre[0]));
+
+    bufferH16$ buf_alu_inputA_sel_o_4     (.out(alu_inputA_sel_o[4]),     .in(alu_inputA_sel_o_pre[4]));
+    bufferH16$ buf_alu_inputA_sel_o_3     (.out(alu_inputA_sel_o[3]),     .in(alu_inputA_sel_o_pre[3]));
+    bufferH16$ buf_alu_inputA_sel_o_2     (.out(alu_inputA_sel_o[2]),     .in(alu_inputA_sel_o_pre[2]));
+    bufferH16$ buf_alu_inputA_sel_o_1     (.out(alu_inputA_sel_o[1]),     .in(alu_inputA_sel_o_pre[1]));
+    bufferH16$ buf_alu_inputA_sel_o_0     (.out(alu_inputA_sel_o[0]),     .in(alu_inputA_sel_o_pre[0]));
+
+    bufferH16$ buf_alu_inputB_sel_o_4     (.out(alu_inputB_sel_o[4]),     .in(alu_inputB_sel_o_pre[4]));
+    bufferH16$ buf_alu_inputB_sel_o_3     (.out(alu_inputB_sel_o[3]),     .in(alu_inputB_sel_o_pre[3]));
+    bufferH16$ buf_alu_inputB_sel_o_2     (.out(alu_inputB_sel_o[2]),     .in(alu_inputB_sel_o_pre[2]));
+    bufferH16$ buf_alu_inputB_sel_o_1     (.out(alu_inputB_sel_o[1]),     .in(alu_inputB_sel_o_pre[1]));
+    bufferH16$ buf_alu_inputB_sel_o_0     (.out(alu_inputB_sel_o[0]),     .in(alu_inputB_sel_o_pre[0]));
+
+    bufferH16$ buf_branch_target_sel_o_4  (.out(branch_target_sel_o[4]),  .in(branch_target_sel_o_pre[4]));
+    bufferH16$ buf_branch_target_sel_o_3  (.out(branch_target_sel_o[3]),  .in(branch_target_sel_o_pre[3]));
+    bufferH16$ buf_branch_target_sel_o_2  (.out(branch_target_sel_o[2]),  .in(branch_target_sel_o_pre[2]));
+    bufferH16$ buf_branch_target_sel_o_1  (.out(branch_target_sel_o[1]),  .in(branch_target_sel_o_pre[1]));
+    bufferH16$ buf_branch_target_sel_o_0  (.out(branch_target_sel_o[0]),  .in(branch_target_sel_o_pre[0]));
+
+    bufferH16$ buf_OP_TYPE_o_5            (.out(OP_TYPE_o[5]),            .in(OP_TYPE_o_pre[5]));
+    bufferH16$ buf_OP_TYPE_o_4            (.out(OP_TYPE_o[4]),            .in(OP_TYPE_o_pre[4]));
+    bufferH16$ buf_OP_TYPE_o_3            (.out(OP_TYPE_o[3]),            .in(OP_TYPE_o_pre[3]));
+    bufferH16$ buf_OP_TYPE_o_2            (.out(OP_TYPE_o[2]),            .in(OP_TYPE_o_pre[2]));
+    bufferH16$ buf_OP_TYPE_o_1            (.out(OP_TYPE_o[1]),            .in(OP_TYPE_o_pre[1]));
+    bufferH16$ buf_OP_TYPE_o_0            (.out(OP_TYPE_o[0]),            .in(OP_TYPE_o_pre[0]));
+
+    bufferH16$ buf_HARDCODED_SEGMENT0_o_4 (.out(HARDCODED_SEGMENT0_o[4]), .in(HARDCODED_SEGMENT0_o_pre[4]));
+    bufferH16$ buf_HARDCODED_SEGMENT0_o_3 (.out(HARDCODED_SEGMENT0_o[3]), .in(HARDCODED_SEGMENT0_o_pre[3]));
+    bufferH16$ buf_HARDCODED_SEGMENT0_o_2 (.out(HARDCODED_SEGMENT0_o[2]), .in(HARDCODED_SEGMENT0_o_pre[2]));
+    bufferH16$ buf_HARDCODED_SEGMENT0_o_1 (.out(HARDCODED_SEGMENT0_o[1]), .in(HARDCODED_SEGMENT0_o_pre[1]));
+    bufferH16$ buf_HARDCODED_SEGMENT0_o_0 (.out(HARDCODED_SEGMENT0_o[0]), .in(HARDCODED_SEGMENT0_o_pre[0]));
+
+    bufferH16$ buf_HARDCODED_SEGMENT1_o_4 (.out(HARDCODED_SEGMENT1_o[4]), .in(HARDCODED_SEGMENT1_o_pre[4]));
+    bufferH16$ buf_HARDCODED_SEGMENT1_o_3 (.out(HARDCODED_SEGMENT1_o[3]), .in(HARDCODED_SEGMENT1_o_pre[3]));
+    bufferH16$ buf_HARDCODED_SEGMENT1_o_2 (.out(HARDCODED_SEGMENT1_o[2]), .in(HARDCODED_SEGMENT1_o_pre[2]));
+    bufferH16$ buf_HARDCODED_SEGMENT1_o_1 (.out(HARDCODED_SEGMENT1_o[1]), .in(HARDCODED_SEGMENT1_o_pre[1]));
+    bufferH16$ buf_HARDCODED_SEGMENT1_o_0 (.out(HARDCODED_SEGMENT1_o[0]), .in(HARDCODED_SEGMENT1_o_pre[0]));
 
     wire [`REG_ID_W-1:0] mod_rm_cs_outs_dr_id;
     wire [`REG_ID_W-1:0] mod_rm_cs_outs_sr_id;
