@@ -1,0 +1,8 @@
+{
+    "mem_conf_path": "memGen.conf.json",
+    "icache_conf_path": "icache_startup.conf.json",
+    "dcache_conf_path": "dcache_startup.conf.json",
+    "TLB_conf_path": "TLB.conf.json",
+    "core_regs_conf_path": "CoreRegs.conf.json",
+    "disk_conf_path": "disk.conf.json"
+}

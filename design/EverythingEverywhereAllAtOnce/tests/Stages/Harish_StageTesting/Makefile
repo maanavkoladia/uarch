@@ -13,10 +13,10 @@ DISTRO := $(shell . /etc/os-release && echo $$ID)
 
 TARGET = system_testing
 
-STRUCTRURAL := true
+STRUCTRURAL := false
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 12
+CLK_PERIOD := 11
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 	p	DCACHE_DUMP_END=100
@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/test3/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/test5e/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
