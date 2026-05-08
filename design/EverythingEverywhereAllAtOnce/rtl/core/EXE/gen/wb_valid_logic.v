@@ -33,9 +33,11 @@ wire WB_stall_i_inv;
 // ----------------------------------------------------------------
 
 // WB_we_o = !WB_stall_i
+// HAND-EDIT: trailing INV_N (bufferHInv16$) replaced with explicit bufferHInv64$
+// to handle fanout 21 to WB_Latches en pins. Re-apply on csv2rtl.py regen.
 wire WB_we_o_and_buf_mid;
 `INV_N(WB_we_o_and_buf_i0, 1, WB_stall_i_inv, WB_we_o_and_buf_mid)
-`INV_N(WB_we_o_and_buf_i1, 1, WB_we_o_and_buf_mid, WB_we_o)
+bufferHInv64$ u_WB_we_o_buf (.out(WB_we_o), .in(WB_we_o_and_buf_mid));
 
 // N_WB_V_o = EXE_V_i
 wire N_WB_V_o_and_buf_mid;

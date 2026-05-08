@@ -32,11 +32,19 @@ module branch_res (
     input  wire        ZF,
 
     // ---- flat outputs (EXE.sv assembles these into exe_br_resolution_outputs_t) ----
-    output wire        outs_valid_o,
+    // outs_valid replicated 4-way to break up the 77-load fanout to Decode/Fetch.
+    // Each replica is a parallel AND_2 with the same inputs (valid, n_flush_mask)
+    // and is consumed by a single downstream cluster.
+    output wire        outs_valid_to_decode_o,
+    output wire        outs_valid_to_btb_o,
+    output wire        outs_valid_to_pred_o,
+    output wire        outs_valid_to_fetch_o,
     output wire        outs_flush_o,
     output wire        outs_farFlush_o,
     output wire        outs_callFlush_o,
-    output wire        outs_miss_prediction_o,
+    // miss_prediction replicated to keep the external consumer (Predictor/GShare)
+    // off the internal u_and_outs_flush load.
+    output wire        outs_miss_prediction_to_pred_o,
     output wire [`ADDRESS_BITS-1:0] outs_br_eip_o,
     output wire [`ADDRESS_BITS-1:0] outs_neip_o,
     output wire [`ADDRESS_BITS-1:0] outs_br_target_o,
@@ -110,8 +118,11 @@ module branch_res (
     wire mp_combined;
     `OR_3(u_or_mp_combined, 1, mp_combined, taken_xor_pred, and3_term, flush_or_term)
 
-    wire miss_prediction;
-    `AND_2(u_and_miss_pred, 1, miss_prediction, mp_combined, valid)
+    // miss_prediction replicated: one internal copy for u_and_outs_flush below,
+    // one external copy that drives the Predictor/GShare port.
+    wire miss_prediction_int;
+    `AND_2(u_and_miss_pred_int,  1, miss_prediction_int,            mp_combined, valid)
+    `AND_2(u_and_miss_pred_pred, 1, outs_miss_prediction_to_pred_o, mp_combined, valid)
 
     // clr_exp_mode = special_br_i & valid
     wire clr_exp_mode;
@@ -119,12 +130,20 @@ module branch_res (
 
     // ---- Output assembly ----
     // outs.valid = valid & ~flush_mask
+    // Replicated 4-way: one internal copy for u_and_outs_flush, four external
+    // copies (one per consumer cluster: Decode, Fetch BTB, Fetch Predictor,
+    // Fetch top/BTFN). Each AND_2 is parallel-driven by (valid, n_flush_mask).
     wire n_flush_mask;
     `INV_N(u_inv_flush_mask, 1, flush_mask, n_flush_mask)
-    `AND_2(u_and_outs_valid, 1, outs_valid_o, valid, n_flush_mask)
+    wire outs_valid_int;
+    `AND_2(u_and_outs_valid_int,    1, outs_valid_int,         valid, n_flush_mask)
+    `AND_2(u_and_outs_valid_decode, 1, outs_valid_to_decode_o, valid, n_flush_mask)
+    `AND_2(u_and_outs_valid_btb,    1, outs_valid_to_btb_o,    valid, n_flush_mask)
+    `AND_2(u_and_outs_valid_pred,   1, outs_valid_to_pred_o,   valid, n_flush_mask)
+    `AND_2(u_and_outs_valid_fetch,  1, outs_valid_to_fetch_o,  valid, n_flush_mask)
 
-    // outs.flush = miss_prediction & ~flush_mask & valid
-    `AND_3(u_and_outs_flush, 1, outs_flush_o, miss_prediction, n_flush_mask, valid)
+    // outs.flush = miss_prediction_int & ~flush_mask & valid (uses internal copies)
+    `AND_3(u_and_outs_flush, 1, outs_flush_o, miss_prediction_int, n_flush_mask, valid)
 
     // outs.br_target = taken ? real_br_target : NEIP_i
     // mux2$ output (32-bit) drives 66 cells/bit -- bufferH256$ per bit.
@@ -142,7 +161,6 @@ module branch_res (
     // Pure-passthrough outputs
     assign outs_farFlush_o        = farFlush;
     assign outs_callFlush_o       = callFlush;
-    assign outs_miss_prediction_o = miss_prediction;
     assign outs_br_eip_o          = br_eip_i;
     assign outs_neip_o            = NEIP_i;
     assign outs_taken_o           = taken;

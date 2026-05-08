@@ -42,6 +42,18 @@ module GShare (
     localparam CACHE_LINE_OFF = 4;       // $clog2(CACHE_LINES_SIZE_B), CACHE_LINES_SIZE_B = 16
 
     // ----------------------------------------------------------------
+    // Port-input buffers for the EXE branch-resolution control signals.
+    // exe_br_valid fans to 2 ANDs + BHR_SIZE reg en + BHR_SIZE mux sel ~= 18
+    // -> bufferH64$. misprediction fans to 1 OR + BHR_SIZE mux sel ~= 9 ->
+    // bufferH16$. Buffering at the port keeps the high-fanout net local to
+    // GShare and off the upstream EXE driver.
+    // ----------------------------------------------------------------
+    wire exe_br_valid_int;
+    wire misprediction_int;
+    bufferH64$ u_buf_exe_br_valid  (.out(exe_br_valid_int),  .in(exe_br_valid));
+    bufferH16$ u_buf_misprediction (.out(misprediction_int), .in(misprediction));
+
+    // ----------------------------------------------------------------
     // History registers
     // ----------------------------------------------------------------
     wire [BHR_SIZE-1:0] bhr_spec;
@@ -141,8 +153,8 @@ module GShare (
     wire [NUM_LEAVES-1:0] taken_global;
     wire [NUM_LEAVES-1:0] nottaken_global;
 
-    `AND_2(u_tg,  1, taken_global_raw,    exe_br_valid, exe_br_taken)
-    `AND_2(u_ntg, 1, nottaken_global_raw, exe_br_valid, not_exe_br_taken)
+    `AND_2(u_tg,  1, taken_global_raw,    exe_br_valid_int, exe_br_taken)
+    `AND_2(u_ntg, 1, nottaken_global_raw, exe_br_valid_int, not_exe_br_taken)
     bufferH16$ u_tg_s1  (.out(taken_global_s1),    .in(taken_global_raw));
     bufferH16$ u_ntg_s1 (.out(nottaken_global_s1), .in(nottaken_global_raw));
 
@@ -212,7 +224,7 @@ module GShare (
     assign shifted_real[0]            = exe_br_taken;
     assign shifted_real[BHR_SIZE-1:1] = bhr_real[BHR_SIZE-2:0];
 
-    `REG_RST_WE(u_bhr_real, BHR_SIZE, clk, rst, exe_br_valid, shifted_real, bhr_real)
+    `REG_RST_WE(u_bhr_real, BHR_SIZE, clk, rst, exe_br_valid_int, shifted_real, bhr_real)
 
     // ----------------------------------------------------------------
     // bhr_spec update (priority: misprediction > btb_hit > hold)
@@ -228,17 +240,17 @@ module GShare (
     //   next_bhr_real = exe_br_valid ? shifted_real : bhr_real
     // ----------------------------------------------------------------
     wire [BHR_SIZE-1:0] next_bhr_real;
-    `MUX_2(u_nbr, BHR_SIZE, next_bhr_real, bhr_real, shifted_real, exe_br_valid)
+    `MUX_2(u_nbr, BHR_SIZE, next_bhr_real, bhr_real, shifted_real, exe_br_valid_int)
 
     wire [BHR_SIZE-1:0] shifted_spec;
     assign shifted_spec[0]            = pht_taken_at_spec;
     assign shifted_spec[BHR_SIZE-1:1] = bhr_spec[BHR_SIZE-2:0];
 
     wire [BHR_SIZE-1:0] din_spec;
-    `MUX_2(u_dspec, BHR_SIZE, din_spec, shifted_spec, next_bhr_real, misprediction)
+    `MUX_2(u_dspec, BHR_SIZE, din_spec, shifted_spec, next_bhr_real, misprediction_int)
 
     wire spec_we;
-    `OR_2(u_swe, 1, spec_we, misprediction, btb_hit)
+    `OR_2(u_swe, 1, spec_we, misprediction_int, btb_hit)
 
     `REG_RST_WE(u_bhr_spec, BHR_SIZE, clk, rst, spec_we, din_spec, bhr_spec)
 

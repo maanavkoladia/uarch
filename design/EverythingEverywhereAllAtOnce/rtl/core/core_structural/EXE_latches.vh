@@ -54,6 +54,8 @@ wire [31:0] exe_latches_EIP; \
 wire [31:0] exe_latches_EAX; \
 wire [63:0] exe_latches_imm64; \
 wire [255:0] exe_latches_ld_buf; \
+wire [255:0] exe_latches_ld_buf_b; \
+wire [255:0] exe_latches_ld_buf_c; \
 wire [4:0]  exe_latches_sr_id; \
 wire [63:0] exe_latches_sr_data; \
 wire [4:0]  exe_latches_dr_id; \
@@ -62,7 +64,7 @@ wire [14:0] exe_latches_ld_addy; \
 EXE_Latches exe_latches_unit ( \
     .clk            (clk), \
     .rst            (rst), \
-    .write_enable_i (mem_outputs_exe_stage_latch_we), \
+    .write_enable_n_i (mem_outputs_exe_stage_latch_we_n), \
     .flush          (exe_outputs_br_res_flush), \
     .nextLatches_valid_i                       (exe_latches_next_valid), \
     .nextLatches_cs_ST_OP_i                    (exe_latches_next_cs_ST_OP), \
@@ -155,6 +157,8 @@ EXE_Latches exe_latches_unit ( \
     .latches_EAX_o                             (exe_latches_EAX), \
     .latches_imm64_o                           (exe_latches_imm64), \
     .latches_ld_buf_o                          (exe_latches_ld_buf), \
+    .latches_ld_buf_b_o                        (exe_latches_ld_buf_b), \
+    .latches_ld_buf_c_o                        (exe_latches_ld_buf_c), \
     .latches_sr_id_o                           (exe_latches_sr_id), \
     .latches_sr_id_b_o                         (exe_latches_sr_id_b), \
     .latches_sr_id_c_o                         (exe_latches_sr_id_c), \

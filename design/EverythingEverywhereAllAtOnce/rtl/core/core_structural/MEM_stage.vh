@@ -108,7 +108,8 @@ MEM mem_unit( \
     .outs_ST_PADDR_0(mem_outputs_ST_PADDR_0), \
     .outs_ST_PADDR_1(mem_outputs_ST_PADDR_1), \
     .outs_ST_OP(mem_outputs_ST_OP), \
-    .outs_exe_stage_latch_we(mem_outputs_exe_stage_latch_we), \
+    .outs_exe_stage_latch_we   (mem_outputs_exe_stage_latch_we), \
+    .outs_exe_stage_latch_we_n (mem_outputs_exe_stage_latch_we_n), \
     .outs_clr_dcache_arb_latches_0(core_memStage_CLR_REQ_0_i), \
     .outs_clr_dcache_arb_latches_1(core_memStage_CLR_REQ_1_i), \
     .outs_clr_dcache_arb_latches_2(core_memStage_CLR_REQ_2_i), \

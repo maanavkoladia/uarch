@@ -25,8 +25,16 @@
 //             1             1             1             1  |             0             0
 // ------------------------------------------------------------------------------------------
 
+// HAND-EDIT: emit BOTH active-high EXE_we_o (for the local in-MEM consumer)
+// and active-low EXE_we_n_o (for EXE_Latches, which absorbs the inversion in
+// a small bufferHInv16$ tree -- see EXE_Latches.v). Active-low + bufferHInv
+// is faster than active-high + bufferH at low fanout-per-driver, and packing
+// the small EXE_Latches fields drops total fanout below 64. The internal
+// logic is now NAND-NAND directly producing the active-low form.
+// Re-apply on csv2rtl.py regen.
 module EXE_valid_logic (
     output wire EXE_we_o,
+    output wire EXE_we_n_o,
     output wire N_EXE_V_o,
     input  wire MEM_V_i,
     input  wire MEM_stall_i,
@@ -44,31 +52,36 @@ wire MEM_stall_i_inv;
 `INV_N(inv_MEM_stall_i, 1, MEM_stall_i, MEM_stall_i_inv)
 
 // ----------------------------------------------------------------
-// Timing-optimal NOR-NOR (POS) realisation (critical path = 0.55 ns)
+// NAND-NAND (SOP of !f) realisation -- 2-level, same depth as the prior
+// NOR-NOR (POS). Critical path = INV(0.15) -> NAND2(0.20) -> NAND2(0.20)
+// = 0.55 ns to active-low EXE_we_n_o.
 // ----------------------------------------------------------------
-//   f = (MEM_V_i  & !EXE_V_i)
-//     | (!MEM_stall_i & !WB_stall_i)
-//     | (MEM_V_i  & !WB_stall_i)
-//     | (!MEM_stall_i & !EXE_V_i)
-//   factors as
-//     f = (MEM_V_i + !MEM_stall_i) * (!EXE_V_i + !WB_stall_i)
-//   which is a 2-level POS implemented as NOR-NOR:
-//     !S1 = NOR2(MEM_V_i, MEM_stall_i_inv) = !MEM_V_i & MEM_stall_i
-//     !S2 = AND2(EXE_V_i, WB_stall_i)      = EXE_V_i & WB_stall_i
-//     f   = NOR2(!S1, !S2)                 = S1 * S2
-//   Path: INV(0.15) -> NOR2(0.20) -> NOR2(0.20) = 0.55 ns
-//   (!S2 uses primaries directly; no inverters needed for EXE_V_i / WB_stall_i.)
+//   f  = (MEM_V_i + !MEM_stall_i) * (!EXE_V_i + !WB_stall_i)   [POS]
+//   !f = !MEM_V_i * MEM_stall_i  +  EXE_V_i * WB_stall_i        [SOP]
+//   2-level NAND-NAND of the SOP:
+//     !P1 = NAND2(MEM_V_i_inv, MEM_stall_i)   = !(!MV * MS)
+//     !P2 = NAND2(EXE_V_i, WB_stall_i)        = !(EV * WS)
+//     !f  = NAND2(!P1, !P2)                   = P1 + P2
+//   (!P2 uses primaries directly; only !MV needs an inverter.)
+//
+// EXE_we_n_o is consumed only by EXE_Latches' inverting-buffer tree, so
+// the producer doesn't need a sized buffer here.
+wire EXE_we_o_nP1;
+wire EXE_we_o_nP2;
+wire EXE_we_n_local;
+`NAND_2(u_nand_p1,    1, EXE_we_o_nP1,   MEM_V_i_inv,  MEM_stall_i)
+`NAND_2(u_nand_p2,    1, EXE_we_o_nP2,   EXE_V_i,      WB_stall_i)
 
-// EXE_we_o
-// EXE_we_o drives ~52 cells (all latch-flop write_enable inputs in EXE_Latches).
-// Wrap the NOR output with bufferH64$ (0.30 ns) to clear the fanout violation.
-wire EXE_we_o_nS1;
-wire EXE_we_o_nS2;
-wire EXE_we_o_raw;
-`NOR_2(EXE_we_o_nor_s1, 1, EXE_we_o_nS1, MEM_V_i, MEM_stall_i_inv)
-`AND_2(EXE_we_o_and_s2, 1, EXE_we_o_nS2, EXE_V_i, WB_stall_i)
-`NOR_2(EXE_we_o_nor_top, 1, EXE_we_o_raw, EXE_we_o_nS1, EXE_we_o_nS2)
-bufferH64$ u_buf_EXE_we_o (.out(EXE_we_o), .in(EXE_we_o_raw));
+// Replicate the top NAND2 so the active-low net going to EXE_Latches
+// (drives 4 bufferHInv16$ ports = fanout 4) and the local active-high
+// derivation (drives one INV = fanout 1) don't share a fanout. Both NANDs
+// sit on the shared t1/t2 nets at fanout 2, comfortably within rating.
+`NAND_2(u_nand_top_a, 1, EXE_we_n_o,     EXE_we_o_nP1, EXE_we_o_nP2)
+`NAND_2(u_nand_top_b, 1, EXE_we_n_local, EXE_we_o_nP1, EXE_we_o_nP2)
+
+// EXE_we_o (active-high) for the in-MEM forward_valid_w AND consumer (fanout
+// 1). Single INV off the local active-low; off the EXE_Latches critical path.
+`INV_N(u_inv_EXE_we_o, 1, EXE_we_n_local, EXE_we_o)
 
 // N_EXE_V_o = (MEM_V_i & !MEM_stall_i) = NOR2(MEM_V_i_inv, MEM_stall_i)
 // Path: INV(0.15) -> NOR2(0.20) = 0.35 ns

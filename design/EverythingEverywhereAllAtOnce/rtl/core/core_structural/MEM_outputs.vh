@@ -47,4 +47,5 @@ wire mem_outputs_ST_XCL; \
 wire [14:0] mem_outputs_ST_PADDR_0; \
 wire [14:0] mem_outputs_ST_PADDR_1; \
 wire mem_outputs_ST_OP; \
-wire mem_outputs_exe_stage_latch_we;
+wire mem_outputs_exe_stage_latch_we; \
+wire mem_outputs_exe_stage_latch_we_n;

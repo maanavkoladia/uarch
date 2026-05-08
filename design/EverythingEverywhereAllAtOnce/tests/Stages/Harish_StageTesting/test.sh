@@ -25,6 +25,7 @@ outDir="Test_Results/"
 
 SingleTestFull() {
     casePath="${scriptDir}/$1"
+    test_check_path = $scriptDir/fanout/check
     base=$(basename "$casePath") 
     testCaseOutDir="$scriptDir/$outDir/$base/"
 
@@ -33,6 +34,7 @@ SingleTestFull() {
     make full TEST_CASE_PATH="${casePath}" LOG_DIR="${testCaseOutDir}"
 
     tail ${testCaseOutDir}/compare_report.txt >> $regTestLog
+
 
     #-DTEST_CASE_PATH="$casePath"
 }

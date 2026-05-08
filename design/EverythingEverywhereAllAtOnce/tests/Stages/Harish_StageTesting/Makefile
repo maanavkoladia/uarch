@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/test5b/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/test5f/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -174,7 +174,7 @@ push: clean
 pull: 
 	git pull
 
-full: clean gen all run compare	
+full: clean gen all run compare	merge
 
 half: clean gen run
 

@@ -39,9 +39,14 @@ module tb_fanout;
     .dc_outs_exp_pf(dc_outs_exp_pf_i),
     .mem_outs_valid(mem_outs_valid_i),
     .exe_outs_valid(exe_outs_valid_i),
-    .exe_outs_br_res_valid(exe_outs_br_res_valid_i),
+    // Fetch's exe_br_res_valid input was split per-consumer (BTB / Predictor /
+    // Fetch top) at the EXE producer to break the 77-load fanout. The 3 valid
+    // ports each carry the same logical value; drive them from the same _i wire.
+    .exe_outs_br_res_valid_btb       (exe_outs_br_res_valid_i),
+    .exe_outs_br_res_valid_pred      (exe_outs_br_res_valid_i),
+    .exe_outs_br_res_valid_fetch     (exe_outs_br_res_valid_i),
     .exe_outs_br_res_flush(exe_outs_br_res_flush_i),
-    .exe_outs_br_res_miss_prediction(exe_outs_br_res_miss_prediction_i),
+    .exe_outs_br_res_miss_prediction_pred(exe_outs_br_res_miss_prediction_i),
     .exe_outs_br_res_br_eip(exe_outs_br_res_br_eip_i),
     .exe_outs_br_res_neip(exe_outs_br_res_neip_i),
     .exe_outs_br_res_br_target(exe_outs_br_res_br_target_i),
