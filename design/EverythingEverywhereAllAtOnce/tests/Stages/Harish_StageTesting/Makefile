@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/test5f/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/test5c/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -146,7 +146,7 @@ see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'
 	@echo -e "\n"
 	
-view: run
+view: 
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd &
 
 makeLogDir:

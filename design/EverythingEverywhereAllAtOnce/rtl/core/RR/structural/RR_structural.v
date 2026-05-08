@@ -1102,7 +1102,13 @@ module RR (
     assign outs_set_ZF_sb          = latchesInUse_cs_will_mod_zf;
     assign outs_codeSeg_sb         = cs_sb_w;
     assign outs_codeSeg_data       = CS_data_w;
-    assign outs_codeSeg_limit      = SEGMENT_LIMIT_CS;   // SEGMENT_LIMITS[CS_LIMIT_ID].limit
+    // outs_codeSeg_limit: bit 31 has high external fanout (Decode gp_fault_comp
+    // gen_pg[31] AND/XOR + Fetch seg_Xlation u_sub_seg_l gen_pg[31] AND/XOR +
+    // 2 internal mux8 inputs = 6). SEGMENT_LIMITS is undriven so the source is
+    // logic-0 with limited drive; buffer bit 31 explicitly. Other bits stay raw.
+    //assign outs_codeSeg_limit[30:0] = SEGMENT_LIMIT_CS[30:0];
+    //`BUFFER_DELAY$ u_attach_outs_codeSeg_limit_b31 (.out(outs_codeSeg_limit[31:0]), .in(SEGMENT_LIMIT_CS[31:0]));
+    `BUFFER_DELAY(u_attach_outs_codeSeg_limit_b31 , 1, 32, SEGMENT_LIMIT_CS[31:0], outs_codeSeg_limit[31:0]) 
     assign outs_dc_stage_latch_we  = dc_latches_we_w;
 
     assign outs_regFileValues_0    = REG_CS_w;
