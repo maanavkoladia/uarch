@@ -204,9 +204,11 @@ module RegFile (
     `REG_RST_WE(REG_EAX_b, 64, clk, rst, we_EAX, din_EAX, REG_EAX_b_o)
     `REG_RST_WE(REG_EAX_c, 64, clk, rst, we_EAX, din_EAX, REG_EAX_c_o_pre_buf)
     // fanout buf attach
+    bufferH16$ u_attach_REG_EAX_c_q_29 (.out(REG_EAX_c_o[29]), .in(REG_EAX_c_o_pre_buf[29]));
+    bufferH16$ u_attach_REG_EAX_c_q_30 (.out(REG_EAX_c_o[30]), .in(REG_EAX_c_o_pre_buf[30]));
     bufferH16$ u_attach_REG_EAX_c_q_31 (.out(REG_EAX_c_o[31]), .in(REG_EAX_c_o_pre_buf[31]));
     assign REG_EAX_c_o[63:32] = REG_EAX_c_o_pre_buf[63:32];
-    assign REG_EAX_c_o[30:0]  = REG_EAX_c_o_pre_buf[30:0];
+    assign REG_EAX_c_o[28:0]  = REG_EAX_c_o_pre_buf[28:0];
     assign REG_EAX_o = REG_EAX_c_o;
 
     // ----- EBX  (ID 8) -----
@@ -602,8 +604,9 @@ module RegFile (
     // mux pins + 3 external loads (Fetch.seg_Xlation gen_pg[14] AND/XOR + EXE
     // exp_call_op tristate) = 6, over the reg64e$ drive limit. Buffering bit 14
     // shifts the 3 external sinks onto bufferH16$, keeping _b.Q[14] at 4 loads.
+    bufferH16$ u_attach_CS_data_b13 (.out(CS_data[13]), .in(REG_CS_b_o[13]));
     bufferH16$ u_attach_CS_data_b14 (.out(CS_data[14]), .in(REG_CS_b_o[14]));
     assign CS_data[31:15] = REG_CS_b_o[31:15];
-    assign CS_data[13:0]  = REG_CS_b_o[13:0];
+    assign CS_data[12:0]  = REG_CS_b_o[12:0];
 
 endmodule

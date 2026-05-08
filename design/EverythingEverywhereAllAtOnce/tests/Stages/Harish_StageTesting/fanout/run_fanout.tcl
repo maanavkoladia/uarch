@@ -6,7 +6,7 @@ set link_library "*"
 # set __masterfile__  "./tbs/decode/master.txt"
 
 set __top_module__  "AllAtOnce_TOP"
-set __masterfile__  "./tbs/allAtOnce/master.txt"
+set __masterfile__  "./tbs/allAtOnce/master.txt.maanav"
 
 define_design_lib WORK -path ./WORK
 

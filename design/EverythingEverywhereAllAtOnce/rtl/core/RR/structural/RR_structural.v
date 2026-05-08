@@ -499,8 +499,8 @@ module RR (
     wire [4:0] latchesInUse_cs_dr_id_pre_buf;
     `MUX_2(u_mx_cs_dr_id,               5, latchesInUse_cs_dr_id_pre_buf,
         latches_normal_latches_cs_dr_id,          latches_rep_latches_cs_dr_id,          decode_outs_rep_latch)
-    bufferH256$  u_attach_cs_dr_id_b0 (.out(latchesInUse_cs_dr_id[0]), .in(latchesInUse_cs_dr_id_pre_buf[0]));
-    bufferH256$  u_attach_cs_dr_id_b1 (.out(latchesInUse_cs_dr_id[1]), .in(latchesInUse_cs_dr_id_pre_buf[1]));
+    bufferH1024$ u_attach_cs_dr_id_b0 (.out(latchesInUse_cs_dr_id[0]), .in(latchesInUse_cs_dr_id_pre_buf[0]));
+    bufferH1024$ u_attach_cs_dr_id_b1 (.out(latchesInUse_cs_dr_id[1]), .in(latchesInUse_cs_dr_id_pre_buf[1]));
     bufferH256$  u_attach_cs_dr_id_b2 (.out(latchesInUse_cs_dr_id[2]), .in(latchesInUse_cs_dr_id_pre_buf[2]));
     bufferH1024$ u_attach_cs_dr_id_b3 (.out(latchesInUse_cs_dr_id[3]), .in(latchesInUse_cs_dr_id_pre_buf[3]));
     bufferH1024$ u_attach_cs_dr_id_b4 (.out(latchesInUse_cs_dr_id[4]), .in(latchesInUse_cs_dr_id_pre_buf[4]));
@@ -509,8 +509,8 @@ module RR (
     wire [4:0] latchesInUse_cs_sr_id_pre_buf;
     `MUX_2(u_mx_cs_sr_id,               5, latchesInUse_cs_sr_id_pre_buf,
         latches_normal_latches_cs_sr_id,          latches_rep_latches_cs_sr_id,          decode_outs_rep_latch)
-    bufferH256$  u_attach_cs_sr_id_b0 (.out(latchesInUse_cs_sr_id[0]), .in(latchesInUse_cs_sr_id_pre_buf[0]));
-    bufferH256$  u_attach_cs_sr_id_b1 (.out(latchesInUse_cs_sr_id[1]), .in(latchesInUse_cs_sr_id_pre_buf[1]));
+    bufferH1024$ u_attach_cs_sr_id_b0 (.out(latchesInUse_cs_sr_id[0]), .in(latchesInUse_cs_sr_id_pre_buf[0]));
+    bufferH1024$ u_attach_cs_sr_id_b1 (.out(latchesInUse_cs_sr_id[1]), .in(latchesInUse_cs_sr_id_pre_buf[1]));
     bufferH256$  u_attach_cs_sr_id_b2 (.out(latchesInUse_cs_sr_id[2]), .in(latchesInUse_cs_sr_id_pre_buf[2]));
     bufferH1024$ u_attach_cs_sr_id_b3 (.out(latchesInUse_cs_sr_id[3]), .in(latchesInUse_cs_sr_id_pre_buf[3]));
     bufferH1024$ u_attach_cs_sr_id_b4 (.out(latchesInUse_cs_sr_id[4]), .in(latchesInUse_cs_sr_id_pre_buf[4]));
