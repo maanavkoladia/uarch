@@ -78,14 +78,18 @@
 //
 //   Flush behavior:
 //     - !rst                           -> latches <= 0  (REG_RST_WE async reset)
-//     - flush || exp_pipe_clear        -> latches <= 0  (regardless of write_enable_i)
+//     - flush || exp_pipe_clear        -> valid <= 0    (data fields HOLD; valid=0
+//                                                        is enough to invalidate
+//                                                        downstream consumers)
 //     - write_enable_i && !any_flush   -> latches <= nextLatches
 //     - !write_enable_i && !any_flush  -> hold
 //     Implementation:
 //       combined_flush = flush OR exp_pipe_clear
 //       effective_we   = write_enable_i OR combined_flush
-//       per-field MUX_2 selects (combined_flush ? 0 : nextLatches), output
-//       feeds REG_RST_WE.d, with we = effective_we.
+//       Only the valid latches use we = effective_we (paired with a MUX_2 that
+//       selects 0 on combined_flush) so they get force-cleared on flush. All
+//       data-field latches use we = write_enable_i directly and just hold their
+//       stale value on flush -- valid=0 makes the staleness invisible.
 //
 //     NOTE: farFlush is a legacy port kept for interface compatibility but
 //     is NOT used in the clear logic (matches the updated RR/MEM behavior).
@@ -433,58 +437,64 @@ module DC_Latches (
     assign dr_data_d = nextLatches_dr_data_i;
 
     // ============================================================
-    // REG_RST_WE per field (we = effective_we)
-    // `REG_RST_WE(__unitName__, __width__, __clk__, __rst__, __we__, __din__, __dout__)
+    // REG_RST_WE per field
+    //   `REG_RST_WE(__unitName__, __width__, __clk__, __rst__, __we__, __din__, __dout__)
     //   active async low rst
+    //
+    //   we = effective_we    -- only on dc_latches_valid (and the valid_0/1/2
+    //                           duplicates). Forces the valid bit to load 0
+    //                           on flush via the per-field MUX_2.
+    //   we = write_enable_i  -- all data fields. They hold on flush; valid=0
+    //                           is enough to invalidate downstream consumers.
     // ============================================================
 
-    `REG_RST_WE(dc_latches_valid,                          1,   clk, rst, effective_we, valid_d,                          latches_valid_o);
+    `REG_RST_WE(dc_latches_valid,                          1,   clk, rst, effective_we,   valid_d,                          latches_valid_o);
 
-    `REG_RST_WE(dc_latches_cs_LD_OP,                       1,   clk, rst, effective_we, cs_LD_OP_d,                       latches_cs_LD_OP_o);
-    `REG_RST_WE(dc_latches_cs_ST_OP,                       1,   clk, rst, effective_we, cs_ST_OP_d,                       latches_cs_ST_OP_o);
-    `REG_RST_WE(dc_latches_cs_dr_upper8,                   1,   clk, rst, effective_we, cs_dr_upper8_d,                   latches_cs_dr_upper8_o);
-    `REG_RST_WE(dc_latches_cs_sr_upper8,                   1,   clk, rst, effective_we, cs_sr_upper8_d,                   latches_cs_sr_upper8_o);
-    `REG_RST_WE(dc_latches_cs_datasize,                    2,   clk, rst, effective_we, cs_datasize_d,                    latches_cs_datasize_o);
+    `REG_RST_WE(dc_latches_cs_LD_OP,                       1,   clk, rst, write_enable_i, cs_LD_OP_d,                       latches_cs_LD_OP_o);
+    `REG_RST_WE(dc_latches_cs_ST_OP,                       1,   clk, rst, write_enable_i, cs_ST_OP_d,                       latches_cs_ST_OP_o);
+    `REG_RST_WE(dc_latches_cs_dr_upper8,                   1,   clk, rst, write_enable_i, cs_dr_upper8_d,                   latches_cs_dr_upper8_o);
+    `REG_RST_WE(dc_latches_cs_sr_upper8,                   1,   clk, rst, write_enable_i, cs_sr_upper8_d,                   latches_cs_sr_upper8_o);
+    `REG_RST_WE(dc_latches_cs_datasize,                    2,   clk, rst, write_enable_i, cs_datasize_d,                    latches_cs_datasize_o);
 
-    `REG_RST_WE(dc_latches_mem_cs_ST_OP,                   1,   clk, rst, effective_we, mem_cs_ST_OP_d,                   latches_mem_cs_ST_OP_o);
-    `REG_RST_WE(dc_latches_mem_cs_LD_OP,                   1,   clk, rst, effective_we, mem_cs_LD_OP_d,                   latches_mem_cs_LD_OP_o);
+    `REG_RST_WE(dc_latches_mem_cs_ST_OP,                   1,   clk, rst, write_enable_i, mem_cs_ST_OP_d,                   latches_mem_cs_ST_OP_o);
+    `REG_RST_WE(dc_latches_mem_cs_LD_OP,                   1,   clk, rst, write_enable_i, mem_cs_LD_OP_d,                   latches_mem_cs_LD_OP_o);
 
-    `REG_RST_WE(dc_latches_exe_cs_ST_OP,                   1,   clk, rst, effective_we, exe_cs_ST_OP_d,                   latches_exe_cs_ST_OP_o);
+    `REG_RST_WE(dc_latches_exe_cs_ST_OP,                   1,   clk, rst, write_enable_i, exe_cs_ST_OP_d,                   latches_exe_cs_ST_OP_o);
     // fanout: redirect dc_latches_exe_cs_OP_TYPE q to staging bus. Every bit
     // has uniform fanout (~5-8) -> bulk-buffer all 6 bits with bufferH16$ to
     // avoid per-bit whack-a-mole as the checker reveals representatives.
     wire [5:0] latches_exe_cs_OP_TYPE_pre_buf;
-    `REG_RST_WE(dc_latches_exe_cs_OP_TYPE,                 6,   clk, rst, effective_we, exe_cs_OP_TYPE_d,                 latches_exe_cs_OP_TYPE_pre_buf);
+    `REG_RST_WE(dc_latches_exe_cs_OP_TYPE,                 6,   clk, rst, write_enable_i, exe_cs_OP_TYPE_d,                 latches_exe_cs_OP_TYPE_pre_buf);
     genvar gi_op_type;
     generate
         for (gi_op_type = 0; gi_op_type <= 5; gi_op_type = gi_op_type + 1) begin : g_op_type_buf
             bufferH16$ u_attach_exe_cs_OP_TYPE (.out(latches_exe_cs_OP_TYPE_o[gi_op_type]), .in(latches_exe_cs_OP_TYPE_pre_buf[gi_op_type]));
         end
     endgenerate
-    `REG_RST_WE(dc_latches_exe_cs_alu_inputA_sel,          5,   clk, rst, effective_we, exe_cs_alu_inputA_sel_d,          latches_exe_cs_alu_inputA_sel_o);
-    `REG_RST_WE(dc_latches_exe_cs_alu_inputB_sel,          5,   clk, rst, effective_we, exe_cs_alu_inputB_sel_d,          latches_exe_cs_alu_inputB_sel_o);
-    `REG_RST_WE(dc_latches_exe_cs_branch_target_sel,       5,   clk, rst, effective_we, exe_cs_branch_target_sel_d,       latches_exe_cs_branch_target_sel_o);
-    `REG_RST_WE(dc_latches_exe_cs_shift_by_one,            1,   clk, rst, effective_we, exe_cs_shift_by_one_d,            latches_exe_cs_shift_by_one_o);
-    `REG_RST_WE(dc_latches_exe_cs_br_ucond,                1,   clk, rst, effective_we, exe_cs_br_ucond_d,                latches_exe_cs_br_ucond_o);
-    `REG_RST_WE(dc_latches_exe_cs_relative_branch,         1,   clk, rst, effective_we, exe_cs_relative_branch_d,         latches_exe_cs_relative_branch_o);
-    `REG_RST_WE(dc_latches_exe_cs_special_br,              1,   clk, rst, effective_we, exe_cs_special_br_d,              latches_exe_cs_special_br_o);
-    `REG_RST_WE(dc_latches_exe_cs_is_far,                  1,   clk, rst, effective_we, exe_cs_is_far_d,                  latches_exe_cs_is_far_o);
-    `REG_RST_WE(dc_latches_exe_cs_is_call,                 1,   clk, rst, effective_we, exe_cs_is_call_d,                 latches_exe_cs_is_call_o);
-    `REG_RST_WE(dc_latches_exe_cs_second_flag_needed,      1,   clk, rst, effective_we, exe_cs_second_flag_needed_d,      latches_exe_cs_second_flag_needed_o);
-    `REG_RST_WE(dc_latches_exe_cs_rep_no_zf_update,        1,   clk, rst, effective_we, exe_cs_rep_no_zf_update_d,        latches_exe_cs_rep_no_zf_update_o);
+    `REG_RST_WE(dc_latches_exe_cs_alu_inputA_sel,          5,   clk, rst, write_enable_i, exe_cs_alu_inputA_sel_d,          latches_exe_cs_alu_inputA_sel_o);
+    `REG_RST_WE(dc_latches_exe_cs_alu_inputB_sel,          5,   clk, rst, write_enable_i, exe_cs_alu_inputB_sel_d,          latches_exe_cs_alu_inputB_sel_o);
+    `REG_RST_WE(dc_latches_exe_cs_branch_target_sel,       5,   clk, rst, write_enable_i, exe_cs_branch_target_sel_d,       latches_exe_cs_branch_target_sel_o);
+    `REG_RST_WE(dc_latches_exe_cs_shift_by_one,            1,   clk, rst, write_enable_i, exe_cs_shift_by_one_d,            latches_exe_cs_shift_by_one_o);
+    `REG_RST_WE(dc_latches_exe_cs_br_ucond,                1,   clk, rst, write_enable_i, exe_cs_br_ucond_d,                latches_exe_cs_br_ucond_o);
+    `REG_RST_WE(dc_latches_exe_cs_relative_branch,         1,   clk, rst, write_enable_i, exe_cs_relative_branch_d,         latches_exe_cs_relative_branch_o);
+    `REG_RST_WE(dc_latches_exe_cs_special_br,              1,   clk, rst, write_enable_i, exe_cs_special_br_d,              latches_exe_cs_special_br_o);
+    `REG_RST_WE(dc_latches_exe_cs_is_far,                  1,   clk, rst, write_enable_i, exe_cs_is_far_d,                  latches_exe_cs_is_far_o);
+    `REG_RST_WE(dc_latches_exe_cs_is_call,                 1,   clk, rst, write_enable_i, exe_cs_is_call_d,                 latches_exe_cs_is_call_o);
+    `REG_RST_WE(dc_latches_exe_cs_second_flag_needed,      1,   clk, rst, write_enable_i, exe_cs_second_flag_needed_d,      latches_exe_cs_second_flag_needed_o);
+    `REG_RST_WE(dc_latches_exe_cs_rep_no_zf_update,        1,   clk, rst, write_enable_i, exe_cs_rep_no_zf_update_d,        latches_exe_cs_rep_no_zf_update_o);
 
-    `REG_RST_WE(dc_latches_wb_cs_ST_OP,                    1,   clk, rst, effective_we, wb_cs_ST_OP_d,                    latches_wb_cs_ST_OP_o);
-    `REG_RST_WE(dc_latches_wb_cs_WB_DR,                    1,   clk, rst, effective_we, wb_cs_WB_DR_d,                    latches_wb_cs_WB_DR_o);
-    `REG_RST_WE(dc_latches_wb_cs_WB_SR,                    1,   clk, rst, effective_we, wb_cs_WB_SR_d,                    latches_wb_cs_WB_SR_o);
-    `REG_RST_WE(dc_latches_wb_cs_WB_EAX,                   1,   clk, rst, effective_we, wb_cs_WB_EAX_d,                   latches_wb_cs_WB_EAX_o);
+    `REG_RST_WE(dc_latches_wb_cs_ST_OP,                    1,   clk, rst, write_enable_i, wb_cs_ST_OP_d,                    latches_wb_cs_ST_OP_o);
+    `REG_RST_WE(dc_latches_wb_cs_WB_DR,                    1,   clk, rst, write_enable_i, wb_cs_WB_DR_d,                    latches_wb_cs_WB_DR_o);
+    `REG_RST_WE(dc_latches_wb_cs_WB_SR,                    1,   clk, rst, write_enable_i, wb_cs_WB_SR_d,                    latches_wb_cs_WB_SR_o);
+    `REG_RST_WE(dc_latches_wb_cs_WB_EAX,                   1,   clk, rst, write_enable_i, wb_cs_WB_EAX_d,                   latches_wb_cs_WB_EAX_o);
 
-    `REG_RST_WE(dc_latches_br_info_valid,                  1,   clk, rst, effective_we, br_info_valid_d,                  latches_br_info_valid_o);
-    `REG_RST_WE(dc_latches_br_info_br_eip,                 32,  clk, rst, effective_we, br_info_br_eip_d,                 latches_br_info_br_eip_o);
-    `REG_RST_WE(dc_latches_br_info_br_xcl,                 1,   clk, rst, effective_we, br_info_br_xcl_d,                 latches_br_info_br_xcl_o);
-    `REG_RST_WE(dc_latches_br_info_br_pred_taken,          1,   clk, rst, effective_we, br_info_br_pred_taken_d,          latches_br_info_br_pred_taken_o);
-    `REG_RST_WE(dc_latches_br_info_speculative_target,     32,  clk, rst, effective_we, br_info_speculative_target_d,     latches_br_info_speculative_target_o);
+    `REG_RST_WE(dc_latches_br_info_valid,                  1,   clk, rst, write_enable_i, br_info_valid_d,                  latches_br_info_valid_o);
+    `REG_RST_WE(dc_latches_br_info_br_eip,                 32,  clk, rst, write_enable_i, br_info_br_eip_d,                 latches_br_info_br_eip_o);
+    `REG_RST_WE(dc_latches_br_info_br_xcl,                 1,   clk, rst, write_enable_i, br_info_br_xcl_d,                 latches_br_info_br_xcl_o);
+    `REG_RST_WE(dc_latches_br_info_br_pred_taken,          1,   clk, rst, write_enable_i, br_info_br_pred_taken_d,          latches_br_info_br_pred_taken_o);
+    `REG_RST_WE(dc_latches_br_info_speculative_target,     32,  clk, rst, write_enable_i, br_info_speculative_target_d,     latches_br_info_speculative_target_o);
 
-    `REG_RST_WE(dc_latches_rr_gp,                          1,   clk, rst, effective_we, rr_gp_d,                          latches_rr_gp_o);
+    `REG_RST_WE(dc_latches_rr_gp,                          1,   clk, rst, write_enable_i, rr_gp_d,                          latches_rr_gp_o);
 
     // fanout: redirect dc_latches_ld_vaddy q to staging bus, attach buffers on
     // the high-fanout bits. After the in_flight_sb_logic offset/pfn refactor
@@ -493,7 +503,7 @@ module DC_Latches (
     // g_arb_block, plus the npu_node2 PADDR0 buffer input via TLB).
     // bufferH16$ rated 16, fits.
     wire [31:0] latches_ld_vaddy_pre_buf;
-    `REG_RST_WE(dc_latches_ld_vaddy,                       32,  clk, rst, effective_we, ld_vaddy_d,                       latches_ld_vaddy_pre_buf);
+    `REG_RST_WE(dc_latches_ld_vaddy,                       32,  clk, rst, write_enable_i, ld_vaddy_d,                       latches_ld_vaddy_pre_buf);
     // Bits [9:0]: low cache-offset, low fanout, passthrough.
     // Bit  [10] : bufferH16$ (post-refactor fanout ~7-8).
     // Bit  [11] : bufferH64$ (high fanout from npu_node2 + adder).
@@ -508,12 +518,12 @@ module DC_Latches (
             bufferH16$ u_attach_ld_vaddy (.out(latches_ld_vaddy_o[gi_ldv]), .in(latches_ld_vaddy_pre_buf[gi_ldv]));
         end
     endgenerate
-    `REG_RST_WE(dc_latches_seg0_limit_w_datasize,          32,  clk, rst, effective_we, seg0_limit_w_datasize_d,          latches_seg0_limit_w_datasize_o);
-    `REG_RST_WE(dc_latches_seg0_limit_wo_datasize,         32,  clk, rst, effective_we, seg0_limit_wo_datasize_d,         latches_seg0_limit_wo_datasize_o);
+    `REG_RST_WE(dc_latches_seg0_limit_w_datasize,          32,  clk, rst, write_enable_i, seg0_limit_w_datasize_d,          latches_seg0_limit_w_datasize_o);
+    `REG_RST_WE(dc_latches_seg0_limit_wo_datasize,         32,  clk, rst, write_enable_i, seg0_limit_wo_datasize_d,         latches_seg0_limit_wo_datasize_o);
     // fanout: redirect dc_latches_next_ld_vaddy q to staging bus. Upper bits
     // [31:12] feed cross-page calc + seg_limit checks uniformly -> bulk buffer.
     wire [31:0] latches_next_ld_vaddy_pre_buf;
-    `REG_RST_WE(dc_latches_next_ld_vaddy,                  32,  clk, rst, effective_we, next_ld_vaddy_d,                  latches_next_ld_vaddy_pre_buf);
+    `REG_RST_WE(dc_latches_next_ld_vaddy,                  32,  clk, rst, write_enable_i, next_ld_vaddy_d,                  latches_next_ld_vaddy_pre_buf);
     assign latches_next_ld_vaddy_o[11:0] = latches_next_ld_vaddy_pre_buf[11:0];
     genvar gi_nldv;
     generate
@@ -521,26 +531,26 @@ module DC_Latches (
             bufferH16$ u_attach_next_ld_vaddy (.out(latches_next_ld_vaddy_o[gi_nldv]), .in(latches_next_ld_vaddy_pre_buf[gi_nldv]));
         end
     endgenerate
-    `REG_RST_WE(dc_latches_ld_laddy,                       32,  clk, rst, effective_we, ld_laddy_d,                       latches_ld_laddy_o);
-    `REG_RST_WE(dc_latches_ld_stack_access,                1,   clk, rst, effective_we, ld_stack_access_d,                latches_ld_stack_access_o);
+    `REG_RST_WE(dc_latches_ld_laddy,                       32,  clk, rst, write_enable_i, ld_laddy_d,                       latches_ld_laddy_o);
+    `REG_RST_WE(dc_latches_ld_stack_access,                1,   clk, rst, write_enable_i, ld_stack_access_d,                latches_ld_stack_access_o);
 
     // fanout: redirect dc_latches_st_vaddy q to staging bus. Bulk-buffer all
     // 32 bits with bufferH16$ since both upper and lower bits show fanout >4
     // (st_vaddy feeds seg_limit checks + paddr formation).
     wire [31:0] latches_st_vaddy_pre_buf;
-    `REG_RST_WE(dc_latches_st_vaddy,                       32,  clk, rst, effective_we, st_vaddy_d,                       latches_st_vaddy_pre_buf);
+    `REG_RST_WE(dc_latches_st_vaddy,                       32,  clk, rst, write_enable_i, st_vaddy_d,                       latches_st_vaddy_pre_buf);
     genvar gi_stv;
     generate
         for (gi_stv = 0; gi_stv <= 31; gi_stv = gi_stv + 1) begin : g_st_vaddy_buf
             bufferH16$ u_attach_st_vaddy (.out(latches_st_vaddy_o[gi_stv]), .in(latches_st_vaddy_pre_buf[gi_stv]));
         end
     endgenerate
-    `REG_RST_WE(dc_latches_seg1_limit_w_datasize,          32,  clk, rst, effective_we, seg1_limit_w_datasize_d,          latches_seg1_limit_w_datasize_o);
-    `REG_RST_WE(dc_latches_seg1_limit_wo_datasize,         32,  clk, rst, effective_we, seg1_limit_wo_datasize_d,         latches_seg1_limit_wo_datasize_o);
+    `REG_RST_WE(dc_latches_seg1_limit_w_datasize,          32,  clk, rst, write_enable_i, seg1_limit_w_datasize_d,          latches_seg1_limit_w_datasize_o);
+    `REG_RST_WE(dc_latches_seg1_limit_wo_datasize,         32,  clk, rst, write_enable_i, seg1_limit_wo_datasize_d,         latches_seg1_limit_wo_datasize_o);
     // fanout: redirect dc_latches_next_st_vaddy q to staging bus. Same pattern
     // as ld_vaddy -> bulk buffer upper bits [31:12].
     wire [31:0] latches_next_st_vaddy_pre_buf;
-    `REG_RST_WE(dc_latches_next_st_vaddy,                  32,  clk, rst, effective_we, next_st_vaddy_d,                  latches_next_st_vaddy_pre_buf);
+    `REG_RST_WE(dc_latches_next_st_vaddy,                  32,  clk, rst, write_enable_i, next_st_vaddy_d,                  latches_next_st_vaddy_pre_buf);
     assign latches_next_st_vaddy_o[11:0] = latches_next_st_vaddy_pre_buf[11:0];
     genvar gi_nstv;
     generate
@@ -548,19 +558,19 @@ module DC_Latches (
             bufferH16$ u_attach_next_st_vaddy (.out(latches_next_st_vaddy_o[gi_nstv]), .in(latches_next_st_vaddy_pre_buf[gi_nstv]));
         end
     endgenerate
-    `REG_RST_WE(dc_latches_st_laddy,                       32,  clk, rst, effective_we, st_laddy_d,                       latches_st_laddy_o);
-    `REG_RST_WE(dc_latches_st_stack_access,                1,   clk, rst, effective_we, st_stack_access_d,                latches_st_stack_access_o);
+    `REG_RST_WE(dc_latches_st_laddy,                       32,  clk, rst, write_enable_i, st_laddy_d,                       latches_st_laddy_o);
+    `REG_RST_WE(dc_latches_st_stack_access,                1,   clk, rst, write_enable_i, st_stack_access_d,                latches_st_stack_access_o);
 
-    `REG_RST_WE(dc_latches_NEIP,                           32,  clk, rst, effective_we, NEIP_d,                           latches_NEIP_o);
-    `REG_RST_WE(dc_latches_EIP,                            32,  clk, rst, effective_we, EIP_d,                            latches_EIP_o);
-    `REG_RST_WE(dc_latches_EAX,                            32,  clk, rst, effective_we, EAX_d,                            latches_EAX_o);
+    `REG_RST_WE(dc_latches_NEIP,                           32,  clk, rst, write_enable_i, NEIP_d,                           latches_NEIP_o);
+    `REG_RST_WE(dc_latches_EIP,                            32,  clk, rst, write_enable_i, EIP_d,                            latches_EIP_o);
+    `REG_RST_WE(dc_latches_EAX,                            32,  clk, rst, write_enable_i, EAX_d,                            latches_EAX_o);
 
-    `REG_RST_WE(dc_latches_imm64,                          64,  clk, rst, effective_we, imm64_d,                          latches_imm64_o);
+    `REG_RST_WE(dc_latches_imm64,                          64,  clk, rst, write_enable_i, imm64_d,                          latches_imm64_o);
 
-    `REG_RST_WE(dc_latches_sr_id,                          5,   clk, rst, effective_we, sr_id_d,                          latches_sr_id_o);
-    `REG_RST_WE(dc_latches_sr_data,                        64,  clk, rst, effective_we, sr_data_d,                        latches_sr_data_o);
-    `REG_RST_WE(dc_latches_dr_id,                          5,   clk, rst, effective_we, dr_id_d,                          latches_dr_id_o);
-    `REG_RST_WE(dc_latches_dr_data,                        64,  clk, rst, effective_we, dr_data_d,                        latches_dr_data_o);
+    `REG_RST_WE(dc_latches_sr_id,                          5,   clk, rst, write_enable_i, sr_id_d,                          latches_sr_id_o);
+    `REG_RST_WE(dc_latches_sr_data,                        64,  clk, rst, write_enable_i, sr_data_d,                        latches_sr_data_o);
+    `REG_RST_WE(dc_latches_dr_id,                          5,   clk, rst, write_enable_i, dr_id_d,                          latches_dr_id_o);
+    `REG_RST_WE(dc_latches_dr_data,                        64,  clk, rst, write_enable_i, dr_data_d,                        latches_dr_data_o);
 
     // ============================================================
     // Duplicated copies for fanout reduction.  Each copy has its own
@@ -576,15 +586,15 @@ module DC_Latches (
     `MUX_2(u_dc_mux_cs_datasize_2, 2, cs_datasize_2_d, nextLatches_cs_datasize_2_i, 2'b0, combined_flush);
     // fanout: redirect dc_latches_cs_datasize_0 q to staging bus, attach bufferH16$ on both bits
     wire [1:0] latches_cs_datasize_0_pre_buf;
-    `REG_RST_WE(dc_latches_cs_datasize_0, 2, clk, rst, effective_we, cs_datasize_0_d, latches_cs_datasize_0_pre_buf);
+    `REG_RST_WE(dc_latches_cs_datasize_0, 2, clk, rst, write_enable_i, cs_datasize_0_d, latches_cs_datasize_0_pre_buf);
     bufferH16$ u_attach_cs_datasize_0_b0 (.out(latches_cs_datasize_0_o[0]), .in(latches_cs_datasize_0_pre_buf[0]));
     bufferH16$ u_attach_cs_datasize_0_b1 (.out(latches_cs_datasize_0_o[1]), .in(latches_cs_datasize_0_pre_buf[1]));
     // fanout: redirect dc_latches_cs_datasize_1 q to staging bus, attach bufferH16$ on both bits
     wire [1:0] latches_cs_datasize_1_pre_buf;
-    `REG_RST_WE(dc_latches_cs_datasize_1, 2, clk, rst, effective_we, cs_datasize_1_d, latches_cs_datasize_1_pre_buf);
+    `REG_RST_WE(dc_latches_cs_datasize_1, 2, clk, rst, write_enable_i, cs_datasize_1_d, latches_cs_datasize_1_pre_buf);
     bufferH16$ u_attach_cs_datasize_1_b0 (.out(latches_cs_datasize_1_o[0]), .in(latches_cs_datasize_1_pre_buf[0]));
     bufferH16$ u_attach_cs_datasize_1_b1 (.out(latches_cs_datasize_1_o[1]), .in(latches_cs_datasize_1_pre_buf[1]));
-    `REG_RST_WE(dc_latches_cs_datasize_2, 2, clk, rst, effective_we, cs_datasize_2_d, latches_cs_datasize_2_o);
+    `REG_RST_WE(dc_latches_cs_datasize_2, 2, clk, rst, write_enable_i, cs_datasize_2_d, latches_cs_datasize_2_o);
 
     // ---- cs_LD_OP x4 ----
     wire cs_LD_OP_0_d, cs_LD_OP_1_d, cs_LD_OP_2_d, cs_LD_OP_3_d;
@@ -594,18 +604,18 @@ module DC_Latches (
     `MUX_2(u_dc_mux_cs_LD_OP_3, 1, cs_LD_OP_3_d, nextLatches_cs_LD_OP_3_i, 1'b0, combined_flush);
     // fanout: redirect dc_latches_cs_LD_OP_0 q to staging wire, attach bufferH16$
     wire latches_cs_LD_OP_0_pre_buf;
-    `REG_RST_WE(dc_latches_cs_LD_OP_0, 1, clk, rst, effective_we, cs_LD_OP_0_d, latches_cs_LD_OP_0_pre_buf);
+    `REG_RST_WE(dc_latches_cs_LD_OP_0, 1, clk, rst, write_enable_i, cs_LD_OP_0_d, latches_cs_LD_OP_0_pre_buf);
     bufferH16$ u_attach_cs_LD_OP_0 (.out(latches_cs_LD_OP_0_o), .in(latches_cs_LD_OP_0_pre_buf));
-    `REG_RST_WE(dc_latches_cs_LD_OP_1, 1, clk, rst, effective_we, cs_LD_OP_1_d, latches_cs_LD_OP_1_o);
-    `REG_RST_WE(dc_latches_cs_LD_OP_2, 1, clk, rst, effective_we, cs_LD_OP_2_d, latches_cs_LD_OP_2_o);
-    `REG_RST_WE(dc_latches_cs_LD_OP_3, 1, clk, rst, effective_we, cs_LD_OP_3_d, latches_cs_LD_OP_3_o);
+    `REG_RST_WE(dc_latches_cs_LD_OP_1, 1, clk, rst, write_enable_i, cs_LD_OP_1_d, latches_cs_LD_OP_1_o);
+    `REG_RST_WE(dc_latches_cs_LD_OP_2, 1, clk, rst, write_enable_i, cs_LD_OP_2_d, latches_cs_LD_OP_2_o);
+    `REG_RST_WE(dc_latches_cs_LD_OP_3, 1, clk, rst, write_enable_i, cs_LD_OP_3_d, latches_cs_LD_OP_3_o);
 
     // ---- cs_ST_OP x1 (dedicated for st_neuralnet_part2) ----
     wire cs_ST_OP_0_d;
     `MUX_2(u_dc_mux_cs_ST_OP_0, 1, cs_ST_OP_0_d, nextLatches_cs_ST_OP_0_i, 1'b0, combined_flush);
     // fanout: redirect dc_latches_cs_ST_OP_0 q to staging wire, attach bufferH64$
     wire latches_cs_ST_OP_0_pre_buf;
-    `REG_RST_WE(dc_latches_cs_ST_OP_0, 1, clk, rst, effective_we, cs_ST_OP_0_d, latches_cs_ST_OP_0_pre_buf);
+    `REG_RST_WE(dc_latches_cs_ST_OP_0, 1, clk, rst, write_enable_i, cs_ST_OP_0_d, latches_cs_ST_OP_0_pre_buf);
     bufferH64$ u_attach_cs_ST_OP_0 (.out(latches_cs_ST_OP_0_o), .in(latches_cs_ST_OP_0_pre_buf));
 
     // ---- valid x3 ----
@@ -613,14 +623,14 @@ module DC_Latches (
     `MUX_2(u_dc_mux_valid_0, 1, valid_0_d, nextLatches_valid_0_i, 1'b0, combined_flush);
     `MUX_2(u_dc_mux_valid_1, 1, valid_1_d, nextLatches_valid_1_i, 1'b0, combined_flush);
     `MUX_2(u_dc_mux_valid_2, 1, valid_2_d, nextLatches_valid_2_i, 1'b0, combined_flush);
-    `REG_RST_WE(dc_latches_valid_0, 1, clk, rst, effective_we, valid_0_d, latches_valid_0_o);
+    `REG_RST_WE(dc_latches_valid_0, 1, clk, rst, effective_we,   valid_0_d, latches_valid_0_o);
     // fanout: redirect dc_latches_valid_1 q to staging wire, attach bufferH16$
     wire latches_valid_1_pre_buf;
-    `REG_RST_WE(dc_latches_valid_1, 1, clk, rst, effective_we, valid_1_d, latches_valid_1_pre_buf);
+    `REG_RST_WE(dc_latches_valid_1, 1, clk, rst, effective_we,   valid_1_d, latches_valid_1_pre_buf);
     bufferH16$ u_attach_valid_1 (.out(latches_valid_1_o), .in(latches_valid_1_pre_buf));
     // fanout: redirect dc_latches_valid_2 q to staging wire, attach bufferH16$
     wire latches_valid_2_pre_buf;
-    `REG_RST_WE(dc_latches_valid_2, 1, clk, rst, effective_we, valid_2_d, latches_valid_2_pre_buf);
+    `REG_RST_WE(dc_latches_valid_2, 1, clk, rst, effective_we,   valid_2_d, latches_valid_2_pre_buf);
     bufferH16$ u_attach_valid_2 (.out(latches_valid_2_o), .in(latches_valid_2_pre_buf));
 
 endmodule

@@ -1,0 +1,696 @@
+================================================================================
+  SIM vs RTL COMPARISON REPORT
+================================================================================
+  Sim instructions: 157
+  RTL commits:      184
+
+[OK ] #0000  0x00000000  jmp           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ERR] #0001  0x00000016  mov         
+       SIM  writes=EAX=0x12345678  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EAX: SIM=0x12345678  RTL=<not written>
+[ERR] #0002  0x0000001B  add         
+       SIM  writes=EAX=0x1234567A  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EAX: SIM=0x1234567A  RTL=<not written>
+[ERR] #0003  0x0000001F  mov         
+       SIM  writes=EDX=0x1234567A  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EDX: SIM=0x1234567A  RTL=<not written>
+[OK ] #0004  0x00000021  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ERR] #0005  0x00000026  add         
+       SIM  writes=EBX=0x1234567A  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EBX: SIM=0x1234567A  RTL=<not written>
+[ERR] #0006  0x00000028  add         
+       SIM  writes=EBX=0x1234D07A  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: EBX: SIM=0x1234D07A  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0007  0x0000002A  mov         
+       SIM  writes=EDI=0x0BADDEED  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: EDI: SIM=0x0BADDEED  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0008  0x0000002F  mov         
+       SIM  writes=ECX=0x00001234  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00001234  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0009  0x00000034  xchg        
+       SIM  writes=ECX=0x1234567A,EDX=0x00001234  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x1234567A  RTL=<not written>
+       *** WRITE DIFF: EDX: SIM=0x00001234  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0010  0x00000036  xchg        
+       SIM  writes=ECX=0x12341234,EDX=0x0000567A  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x12341234  RTL=<not written>
+       *** WRITE DIFF: EDX: SIM=0x0000567A  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0011  0x00000039  xchg        
+       SIM  writes=ECX=0x12341256,EDX=0x0000347A  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x12341256  RTL=<not written>
+       *** WRITE DIFF: EDX: SIM=0x0000347A  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0012  0x0000003B  xchg        
+       SIM  writes=ECX=0x12347A56,EDX=0x00003412  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x12347A56  RTL=<not written>
+       *** WRITE DIFF: EDX: SIM=0x00003412  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0013  0x0000003D  xchg        
+       SIM  writes=ECX=0x00003412,EDX=0x12347A56  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00003412  RTL=<not written>
+       *** WRITE DIFF: EDX: SIM=0x12347A56  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0014  0x0000003F  xchg        
+       SIM  writes=EDX=0x1234567A  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: EDX: SIM=0x1234567A  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0015  0x00000041  xchg        
+       SIM  writes=ECX=0x00001234  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00001234  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0016  0x00000043  mov         
+       SIM  writes=ECX=0x00008534  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00008534  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0017  0x00000045  mov         
+       SIM  writes=ECX=0x000085F1  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=1 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x000085F1  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=1  RTL=0
+[ERR] #0018  0x00000047  shl         
+       SIM  writes=ECX=0x00000BE2  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=1 PF=1 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00000BE2  RTL=<not written>
+[ERR] #0019  0x0000004A  shl         
+       SIM  writes=ECX=0x0BE20000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ECX: SIM=0x0BE20000  RTL=<not written>
+[ERR] #0020  0x0000004D  sar         
+       SIM  writes=ECX=0x000005F1  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x000005F1  RTL=<not written>
+[OK ] #0021  0x00000050  shl           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ERR] #0022  0x00000053  or          
+       SIM  writes=ECX=0x0000FFFF  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ECX: SIM=0x0000FFFF  RTL=<not written>
+[ERR] #0023  0x00000057  mov         
+       SIM  writes=ECX=0x00000001  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00000001  RTL=<not written>
+[ERR] #0024  0x0000005B  sar         
+       SIM  writes=EDI=0x0BADEF76  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EDI: SIM=0x0BADEF76  RTL=<not written>
+[OK ] #0025  0x0000005E  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0  (AF undefined)
+[ERR] #0026  0x00000063  mov         
+       SIM  writes=ESP=0x00003000  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ESP: SIM=0x00003000  RTL=<not written>
+[OK ] #0027  0x00000068  mov           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0  (AF undefined)
+[OK ] #0028  0x0000006D  nop           writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0  (AF undefined)
+[ERR] #0029  0x0000006E  mov         
+       SIM  writes=EDX=0x1234047A  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EDX: SIM=0x1234047A  RTL=<not written>
+[OK ] #0030  0x00000070  or            writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[OK ] #0031  0x00000072  jne           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0  (AF undefined)
+[ERR] #0032  0x00000078  mov         
+       SIM  writes=EDI=0xB0000000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EDI: SIM=0xB0000000  RTL=<not written>
+[ERR] #0033  0x0000007D  not         
+       SIM  writes=EDI=0x4FFFFFFF  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EDI: SIM=0x4FFFFFFF  RTL=<not written>
+[ERR] #0034  0x0000007F  not         
+       SIM  writes=EDI=0x4FFF0000  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EDI: SIM=0x4FFF0000  RTL=<not written>
+[ERR] #0035  0x00000082  add         
+       SIM  writes=EDX=0x1234057A  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EDX: SIM=0x1234057A  RTL=<not written>
+[ERR] #0036  0x00000085  add         
+       SIM  writes=EDX=0x1234057B  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EDX: SIM=0x1234057B  RTL=<not written>
+[ERR] #0037  0x00000088  sar         
+       SIM  writes=ESP=0x00000300  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x00000300  RTL=<not written>
+[OK ] #0038  0x0000008C  jmp           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[ERR] #0039  0x000000FD  mov         
+       SIM  writes=EAX=0x12340400  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EAX: SIM=0x12340400  RTL=<not written>
+[ERR] #0040  0x00000101  mov         
+       SIM  writes=SS=0x00000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: SS: SIM=0x00000400  RTL=<not written>
+[ERR] #0041  0x00000103  push        
+       SIM  writes=ESP=0x000002FC  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002FC  RTL=<not written>
+[ERR] #0042  0x00000104  push        
+       SIM  writes=ESP=0x000002F8  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002F8  RTL=<not written>
+[ERR] #0043  0x00000105  push        
+       SIM  writes=ESP=0x000002F4  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002F4  RTL=<not written>
+[ERR] #0044  0x00000106  push        
+       SIM  writes=ESP=0x000002F0  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002F0  RTL=<not written>
+[ERR] #0045  0x00000107  push        
+       SIM  writes=ESP=0x000002EC  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002EC  RTL=<not written>
+[ERR] #0046  0x00000108  push        
+       SIM  writes=ESP=0x000002E8  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002E8  RTL=<not written>
+[ERR] #0047  0x00000109  push        
+       SIM  writes=ESP=0x000002E4  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002E4  RTL=<not written>
+[ERR] #0048  0x0000010A  push        
+       SIM  writes=ESP=0x000002E0  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002E0  RTL=<not written>
+[ERR] #0049  0x0000010B  push        
+       SIM  writes=ESP=0x000002DC  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002DC  RTL=<not written>
+[ERR] #0050  0x0000010C  push        
+       SIM  writes=ESP=0x000002D8  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002D8  RTL=<not written>
+[ERR] #0051  0x00000111  push        
+       SIM  writes=ESP=0x000002D6  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002D6  RTL=<not written>
+[ERR] #0052  0x00000115  push        
+       SIM  writes=ESP=0x000002D2  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002D2  RTL=<not written>
+[ERR] #0053  0x0000011A  push        
+       SIM  writes=ESP=0x000002D0  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002D0  RTL=<not written>
+[ERR] #0054  0x0000011E  pop         
+       SIM  writes=EAX=0x000CACCC,ESP=0x000002D4  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EAX: SIM=0x000CACCC  RTL=<not written>
+       *** WRITE DIFF: ESP: SIM=0x000002D4  RTL=<not written>
+[ERR] #0055  0x0000011F  pop         
+       SIM  writes=EAX=0xACDC0000,ESP=0x000002D8  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EAX: SIM=0xACDC0000  RTL=<not written>
+       *** WRITE DIFF: ESP: SIM=0x000002D8  RTL=<not written>
+[ERR] #0056  0x00000120  pop         
+       SIM  writes=EAX=0xACDCBAB0,ESP=0x000002DA  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EAX: SIM=0xACDCBAB0  RTL=<not written>
+       *** WRITE DIFF: ESP: SIM=0x000002DA  RTL=<not written>
+[ERR] #0057  0x00000122  pop         
+       SIM  writes=EAX=0x0000BAB0,ESP=0x000002DE  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EAX: SIM=0x0000BAB0  RTL=<not written>
+       *** WRITE DIFF: ESP: SIM=0x000002DE  RTL=<not written>
+[ERR] #0058  0x00000123  pop         
+       SIM  writes=EAX=0x02E40000,ESP=0x000002E2  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EAX: SIM=0x02E40000  RTL=<not written>
+       *** WRITE DIFF: ESP: SIM=0x000002E2  RTL=<not written>
+[ERR] #0059  0x00000124  pop         
+       SIM  writes=EAX=0x00000000,ESP=0x000002E6  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EAX: SIM=0x00000000  RTL=<not written>
+       *** WRITE DIFF: ESP: SIM=0x000002E6  RTL=<not written>
+[ERR] #0060  0x00000125  pop         
+       SIM  writes=EAX=0x00004FFF,ESP=0x000002E8  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       *** WRITE DIFF: EAX: SIM=0x00004FFF  RTL=<not written>
+       *** WRITE DIFF: ESP: SIM=0x000002E8  RTL=<not written>
+[ERR] #0061  0x00000127  add         
+       SIM  writes=ESP=0x000002F8  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ESP: SIM=0x000002F8  RTL=<not written>
+[ERR] #0062  0x0000012A  pop         
+       SIM  writes=ECX=0x1234D07A,ESP=0x000002FC  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x1234D07A  RTL=<not written>
+       *** WRITE DIFF: ESP: SIM=0x000002FC  RTL=<not written>
+[ERR] #0063  0x0000012B  pop         
+       SIM  writes=EBX=0x12340400,ESP=0x00000300  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EBX: SIM=0x12340400  RTL=<not written>
+       *** WRITE DIFF: ESP: SIM=0x00000300  RTL=<not written>
+[OK ] #0064  0x0000012C  cmovb         writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ERR] #0065  0x00000130  add         
+       SIM  writes=EAX=0x12352079  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EAX: SIM=0x12352079  RTL=<not written>
+[OK ] #0066  0x00000132  cmovb         writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[ERR] #0067  0x00000135  mov         
+       SIM  writes=ES=0x0000D07A  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: ES: SIM=0x0000D07A  RTL=<not written>
+[ERR] #0068  0x00000137  mov         
+       SIM  writes=DS=0x00002079  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: DS: SIM=0x00002079  RTL=<not written>
+[OK ] #0069  0x00000139  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[ERR] #0070  0x0000013B  mov         
+       SIM  writes=FS=0x00000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: FS: SIM=0x00000400  RTL=<not written>
+[ERR] #0071  0x0000013D  mov         
+       SIM  writes=GS=0x00000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: GS: SIM=0x00000400  RTL=<not written>
+[OK ] #0072  0x0000013F  jmp           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[ERR] #0073  0x0000008E  movq        
+       SIM  writes=MM0=0x123404001234D07A  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: MM0: SIM=0x123404001234D07A  RTL=<not written>
+[ERR] #0074  0x00000093  movq        
+       SIM  writes=MM1=0x11234057B  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: MM1: SIM=0x11234057B  RTL=<not written>
+[OK ] #0075  0x00000098  movq          writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+[ERR] #0076  0x0000009D  movq        
+       SIM  writes=MM3=0x0000004F  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: MM3: SIM=0x0000004F  RTL=<not written>
+[ERR] #0077  0x000000A2  movq        
+       SIM  writes=MM4=0x3404001234D07A00  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: MM4: SIM=0x3404001234D07A00  RTL=<not written>
+[ERR] #0078  0x000000A7  mov         
+       SIM  writes=EBP=0x00000300  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EBP: SIM=0x00000300  RTL=<not written>
+[ERR] #0079  0x000000A9  movq        
+       SIM  writes=MM5=0x11234057B000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: MM5: SIM=0x11234057B000000  RTL=<not written>
+[ERR] #0080  0x000000AD  movq        
+       SIM  writes=MM6=0xBAB0BAB0ACDC  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: MM6: SIM=0xBAB0BAB0ACDC  RTL=<not written>
+[ERR] #0081  0x000000B1  movq        
+       SIM  writes=MM7=0xACDC0000000CACCC  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: MM7: SIM=0xACDC0000000CACCC  RTL=<not written>
+[OK ] #0082  0x000000B6  add           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[ERR] #0083  0x000000BE  mov         
+       SIM  writes=ESI=0xFFFFFFE7  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: ESI: SIM=0xFFFFFFE7  RTL=<not written>
+[ERR] #0084  0x000000C3  mov         
+       SIM  writes=DS=0x00000B00  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: DS: SIM=0x00000B00  RTL=<not written>
+[ERR] #0085  0x000000C6  mov         
+       SIM  writes=EDI=0x00000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EDI: SIM=0x00000000  RTL=<not written>
+[ERR] #0086  0x000000CB  paddd       
+       SIM  writes=MM0=0xF0E1C2EF2469607A  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: MM0: SIM=0xF0E1C2EF2469607A  RTL=<not written>
+[ERR] #0087  0x000000CE  paddd       
+       SIM  writes=MM1=0xF0E1C2F0369D65F5  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: MM1: SIM=0xF0E1C2F0369D65F5  RTL=<not written>
+[ERR] #0088  0x000000D1  mov         
+       SIM  writes=EAX=0x00000028  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EAX: SIM=0x00000028  RTL=<not written>
+[ERR] #0089  0x000000D6  movq        
+       SIM  writes=MM1=0x8080F00002007FFF  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: MM1: SIM=0x8080F00002007FFF  RTL=<not written>
+[ERR] #0090  0x000000DA  packsswb    
+       SIM  writes=MM1=0x7F7F027A80807F7F  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: MM1: SIM=0x7F7F027A80807F7F  RTL=<not written>
+[OK ] #0091  0x000000DE  nop           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+[ERR] #0092  0x000000DF  mov         
+       SIM  writes=EAX=0x0000000C  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EAX: SIM=0x0000000C  RTL=<not written>
+[ERR] #0093  0x000000E4  movq        
+       SIM  writes=MM0=0x00000007  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: MM0: SIM=0x00000007  RTL=<not written>
+[ERR] #0094  0x000000E8  add         
+       SIM  writes=ESI=0x000000A7  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ESI: SIM=0x000000A7  RTL=<not written>
+[OK ] #0095  0x000000EE  ja            writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ERR] #0096  0x000000F0  cmovb       
+       SIM  writes=ESI=0x00000000  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ESI: SIM=0x00000000  RTL=<not written>
+[ERR] #0097  0x000000F6  mov         
+       SIM  writes=EBX=0x00000144  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EBX: SIM=0x00000144  RTL=<not written>
+[OK ] #0098  0x000000FB  jmp           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ERR] #0099  0x00000144  mov         
+       SIM  writes=EAX=0x00000B00  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EAX: SIM=0x00000B00  RTL=<not written>
+[OK ] #0100  0x00000149  mov           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ERR] #0101  0x0000014B  mov         
+       SIM  writes=EAX=0x00000C00  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EAX: SIM=0x00000C00  RTL=<not written>
+[ERR] #0102  0x00000150  mov         
+       SIM  writes=ES=0x00000C00  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ES: SIM=0x00000C00  RTL=<not written>
+[ERR] #0103  0x00000152  mov         
+       SIM  writes=ESI=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ESI: SIM=0x00000004  RTL=<not written>
+[ERR] #0104  0x00000157  mov         
+       SIM  writes=EDI=0x000003F9  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EDI: SIM=0x000003F9  RTL=<not written>
+[ERR] #0105  0x0000015C  mov         
+       SIM  writes=ECX=0x00000005  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00000005  RTL=<not written>
+[ERR] #0106  0x00000161  mov         
+       SIM  writes=ESP=0x00000A00  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ESP: SIM=0x00000A00  RTL=<not written>
+[ERR] #0107  0x00000166  mov         
+       SIM  writes=SS=0x00000A00  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: SS: SIM=0x00000A00  RTL=<not written>
+[ERR] #0108  0x00000168  mov         
+       SIM  writes=ESP=0x00001000  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ESP: SIM=0x00001000  RTL=<not written>
+[OK ] #0109  0x0000016D  cld           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ERR] #0110  0x0000016E  rep           !! EIP MISMATCH (SIM=0x0000016E RTL=0x00000000)
+       SIM  writes=ECX=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00000004  RTL=<not written>
+[ERR] #0111  0x0000016E  rep           !! EIP MISMATCH (SIM=0x0000016E RTL=0x00000000)
+       SIM  writes=EDI=0x000003FB,ESI=0x00000006  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EDI: SIM=0x000003FB  RTL=<not written>
+       *** WRITE DIFF: ESI: SIM=0x00000006  RTL=<not written>
+[ERR] #0112  0x0000016E  rep           !! EIP MISMATCH (SIM=0x0000016E RTL=0x00000000)
+       SIM  writes=ECX=0x00000003  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00000003  RTL=<not written>
+[ERR] #0113  0x0000016E  rep           !! EIP MISMATCH (SIM=0x0000016E RTL=0x00000000)
+       SIM  writes=EDI=0x000003FD,ESI=0x00000008  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EDI: SIM=0x000003FD  RTL=<not written>
+       *** WRITE DIFF: ESI: SIM=0x00000008  RTL=<not written>
+[ERR] #0114  0x0000016E  rep         
+       SIM  writes=ECX=0x00000002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ECX: SIM=0x00000002  RTL=<not written>
+[ERR] #0115  0x0000016E  rep         
+       SIM  writes=EDI=0x000003FF,ESI=0x0000000A  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EDI: SIM=0x000003FF  RTL=<not written>
+       *** WRITE DIFF: ESI: SIM=0x0000000A  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0116  0x0000016E  rep           !! EIP MISMATCH (SIM=0x0000016E RTL=0x00000000)
+       SIM  writes=ECX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: ECX: SIM=0x00000001  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0117  0x0000016E  rep           !! EIP MISMATCH (SIM=0x0000016E RTL=0x00000000)
+       SIM  writes=EDI=0x00000401,ESI=0x0000000C  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EDI: SIM=0x00000401  RTL=<not written>
+       *** WRITE DIFF: ESI: SIM=0x0000000C  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0118  0x0000016E  rep           !! EIP MISMATCH (SIM=0x0000016E RTL=0x00000000)
+       SIM  writes=ECX=0x00000000  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: ECX: SIM=0x00000000  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0119  0x0000016E  rep           !! EIP MISMATCH (SIM=0x0000016E RTL=0x00000000)
+       SIM  writes=EDI=0x00000403,ESI=0x0000000E  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EDI: SIM=0x00000403  RTL=<not written>
+       *** WRITE DIFF: ESI: SIM=0x0000000E  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0120  0x00000171  mov           !! EIP MISMATCH (SIM=0x00000171 RTL=0x00000000)
+       SIM  writes=EBX=0x00000401  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EBX: SIM=0x00000401  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0121  0x00000176  mov           !! EIP MISMATCH (SIM=0x00000176 RTL=0x0000016E)
+       SIM  writes=EBX=0x8765BCBC  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EBX: SIM=0x8765BCBC  RTL=<not written>
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0122  0x00000179  mov           !! EIP MISMATCH (SIM=0x00000179 RTL=0x0000016E)
+       SIM  writes=EBX=0x000003FD  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EBX: SIM=0x000003FD  RTL=<not written>
+       *** FLAG  DIFF: PF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0123  0x0000017E  mov           !! EIP MISMATCH (SIM=0x0000017E RTL=0x00000000)
+       SIM  writes=EBX=0xABCDDEEF  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EBX: SIM=0xABCDDEEF  RTL=<not written>
+       *** FLAG  DIFF: PF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0124  0x00000181  mov           !! EIP MISMATCH (SIM=0x00000181 RTL=0x00000000)
+       SIM  writes=EBX=0x000003F9  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EBX: SIM=0x000003F9  RTL=<not written>
+       *** FLAG  DIFF: PF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0125  0x00000186  mov           !! EIP MISMATCH (SIM=0x00000186 RTL=0x00000000)
+       SIM  writes=EBX=0xDEADBEEF  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EBX: SIM=0xDEADBEEF  RTL=<not written>
+       *** FLAG  DIFF: PF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0126  0x00000189  mov           !! EIP MISMATCH (SIM=0x00000189 RTL=0x00000000)
+       SIM  writes=ECX=0x00000002  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: ECX: SIM=0x00000002  RTL=<not written>
+       *** FLAG  DIFF: PF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0127  0x0000018E  add           !! EIP MISMATCH (SIM=0x0000018E RTL=0x00000000)
+       SIM  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: PF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0128  0x00000197  ja            !! EIP MISMATCH (SIM=0x00000197 RTL=0x0000016E)
+       SIM  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: PF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0129  0x0000019B  mov           !! EIP MISMATCH (SIM=0x0000019B RTL=0x0000016E)
+       SIM  writes=EBX=0xDEAD0200  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EBX: SIM=0xDEAD0200  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0130  0x0000019F  mov           !! EIP MISMATCH (SIM=0x0000019F RTL=0x00000000)
+       SIM  writes=EAX=0x7FFFFFFE  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EAX: SIM=0x7FFFFFFE  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0131  0x000001A4  mov           !! EIP MISMATCH (SIM=0x000001A4 RTL=0x00000000)
+       SIM  writes=EDX=0x00000002  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EDX: SIM=0x00000002  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0132  0x000001A9  mov           !! EIP MISMATCH (SIM=0x000001A9 RTL=0x00000000)
+       SIM  writes=SS=0x00000200  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: SS: SIM=0x00000200  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0133  0x000001AB  mov           !! EIP MISMATCH (SIM=0x000001AB RTL=0x00000000)
+       SIM  writes=ESP=0x000000FF  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: ESP: SIM=0x000000FF  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0134  0x000001B0  mov           !! EIP MISMATCH (SIM=0x000001B0 RTL=0x00000000)
+       SIM  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0135  0x000001B2  not           !! EIP MISMATCH (SIM=0x000001B2 RTL=0x0000016E)
+       SIM  writes=EAX=0x80000001  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EAX: SIM=0x80000001  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+[ERR] #0136  0x000001B4  mov           !! EIP MISMATCH (SIM=0x000001B4 RTL=0x0000016E)
+       SIM  writes=EBX=0x10000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EBX: SIM=0x10000400  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+[ERR] #0137  0x000001B9  mov           !! EIP MISMATCH (SIM=0x000001B9 RTL=0x00000000)
+       SIM  writes=DS=0x00000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: DS: SIM=0x00000400  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+[ERR] #0138  0x000001BB  call          !! EIP MISMATCH (SIM=0x000001BB RTL=0x00000000)
+       SIM  writes=ESP=0x000000FB  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: ESP: SIM=0x000000FB  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+[ERR] #0139  0x000001F1  add           !! EIP MISMATCH (SIM=0x000001F1 RTL=0x00000000)
+       SIM  writes=EAX=0x80000002  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EAX: SIM=0x80000002  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: SF: SIM=1  RTL=0
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0140  0x000001F4  add           !! EIP MISMATCH (SIM=0x000001F4 RTL=0x00000000)
+       SIM  writes=EDX=0x00000001  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EDX: SIM=0x00000001  RTL=<not written>
+[ERR] #0141  0x000001F7  jne           !! EIP MISMATCH (SIM=0x000001F7 RTL=0x00000000)
+       SIM  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[ERR] #0142  0x000001F1  add           !! EIP MISMATCH (SIM=0x000001F1 RTL=0x0000016E)
+       SIM  writes=EAX=0x80000003  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EAX: SIM=0x80000003  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: SF: SIM=1  RTL=0
+       *** FLAG  DIFF: PF: SIM=1  RTL=0
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0143  0x000001F4  add           !! EIP MISMATCH (SIM=0x000001F4 RTL=0x0000016E)
+       SIM  writes=EDX=0x00000000  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EDX: SIM=0x00000000  RTL=<not written>
+       *** FLAG  DIFF: ZF: SIM=1  RTL=0
+[ERR] #0144  0x000001F7  jne           !! EIP MISMATCH (SIM=0x000001F7 RTL=0x00000000)
+       SIM  writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** FLAG  DIFF: ZF: SIM=1  RTL=0
+[ERR] #0145  0x000001F9  ret           !! EIP MISMATCH (SIM=0x000001F9 RTL=0x00000000)
+       SIM  writes=ESP=0x000000FF  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: ESP: SIM=0x000000FF  RTL=<not written>
+       *** FLAG  DIFF: ZF: SIM=1  RTL=0
+[ERR] #0146  0x000001C1  sar           !! EIP MISMATCH (SIM=0x000001C1 RTL=0x00000000)
+       SIM  writes=EAX=0xE0000000  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EAX: SIM=0xE0000000  RTL=<not written>
+       *** FLAG  DIFF: SF: SIM=1  RTL=0
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0147  0x000001C3  cmpxchg       !! EIP MISMATCH (SIM=0x000001C3 RTL=0x00000000)
+       SIM  writes=EAX=0xE0000004  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EAX: SIM=0xE0000004  RTL=<not written>
+       *** FLAG  DIFF: SF: SIM=1  RTL=0
+[ERR] #0148  0x000001C6  mov           !! EIP MISMATCH (SIM=0x000001C6 RTL=0x00000171)
+       SIM  writes=ECX=0x00000000  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: ECX: SIM=0x00000000  RTL=<not written>
+       *** FLAG  DIFF: SF: SIM=1  RTL=0
+[ERR] #0149  0x000001CB  mov           !! EIP MISMATCH (SIM=0x000001CB RTL=0x00000176)
+       SIM  writes=EAX=0xE0004E4F  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EAX: SIM=0xE0004E4F  RTL=<not written>
+       *** FLAG  DIFF: SF: SIM=1  RTL=0
+[ERR] #0150  0x000001CE  cmpxchg       !! EIP MISMATCH (SIM=0x000001CE RTL=0x00000179)
+       SIM  writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: ZF: SIM=1  RTL=0
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0151  0x000001D6  bsf           !! EIP MISMATCH (SIM=0x000001D6 RTL=0x0000017E)
+       SIM  writes=EBX=0x0000000A  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EBX: SIM=0x0000000A  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0152  0x000001D9  mov           !! EIP MISMATCH (SIM=0x000001D9 RTL=0x00000181)
+       SIM  writes=EAX=0x00000028  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EAX: SIM=0x00000028  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0153  0x000001DE  mov           !! EIP MISMATCH (SIM=0x000001DE RTL=0x00000186)
+       SIM  writes=EBX=0x00000B00  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: EBX: SIM=0x00000B00  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0154  0x000001E3  mov           !! EIP MISMATCH (SIM=0x000001E3 RTL=0x00000189)
+       SIM  writes=DS=0x00000B00  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=1 AF=1
+       *** WRITE DIFF: DS: SIM=0x00000B00  RTL=<not written>
+       *** FLAG  DIFF: CF: SIM=0  RTL=1
+       *** FLAG  DIFF: AF: SIM=0  RTL=1
+[ERR] #0155  0x000001E5  pavgw         !! EIP MISMATCH (SIM=0x000001E5 RTL=0x0000018E)
+       SIM  writes=MM1=0x4000017D40413FFD  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: MM1: SIM=0x4000017D40413FFD  RTL=<not written>
+       *** FLAG  DIFF: PF: SIM=1  RTL=0
+[ERR] #0156  0x000001E9  hlt           !! EIP MISMATCH (SIM=0x000001E9 RTL=0x00000197)
+       SIM  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+       RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** FLAG  DIFF: PF: SIM=1  RTL=0
+[ONLY_RTL] #0157  EIP=0x0000019B  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0158  EIP=0x0000019F  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0159  EIP=0x000001A4  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0160  EIP=0x000001A9  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0161  EIP=0x000001AB  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0162  EIP=0x000001B0  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0163  EIP=0x000001B2  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0164  EIP=0x000001B4  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0165  EIP=0x000001B9  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0166  EIP=0x000001BB  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0167  EIP=0x000001F1  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=0 AF=0
+[ONLY_RTL] #0168  EIP=0x000001F4  RTL writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[ONLY_RTL] #0169  EIP=0x000001F7  RTL writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+[ONLY_RTL] #0170  EIP=0x000001F1  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=0
+[ONLY_RTL] #0171  EIP=0x000001F4  RTL writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[ONLY_RTL] #0172  EIP=0x000001F7  RTL writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[ONLY_RTL] #0173  EIP=0x000001F9  RTL writes=none  flags=CF=1 ZF=1 SF=0 OF=0 PF=1 AF=1
+[ONLY_RTL] #0174  EIP=0x000001C1  RTL writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=0
+[ONLY_RTL] #0175  EIP=0x000001C3  RTL writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[ONLY_RTL] #0176  EIP=0x000001C6  RTL writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[ONLY_RTL] #0177  EIP=0x000001CB  RTL writes=none  flags=CF=1 ZF=0 SF=1 OF=0 PF=1 AF=1
+[ONLY_RTL] #0178  EIP=0x000001CE  RTL writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+[ONLY_RTL] #0179  EIP=0x000001D6  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[ONLY_RTL] #0180  EIP=0x000001D9  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[ONLY_RTL] #0181  EIP=0x000001DE  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[ONLY_RTL] #0182  EIP=0x000001E3  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+[ONLY_RTL] #0183  EIP=0x000001E5  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=1 AF=0
+
+================================================================================
+  SUMMARY: 20/184 matched  |  137 mismatched  |  0 sim-only  |  27 rtl-only
+================================================================================
