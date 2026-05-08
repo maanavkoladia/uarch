@@ -624,8 +624,14 @@ module DC (
     // dc_outs_o.exp_pf = ld.DC_PF | st.DC_PF
     // ----------------------------------------------------------------
     wire dc_outs_exp_pf_w;
-    `OR_2(u_dc_exp_pf, 1, dc_outs_exp_pf_w,
-          ld_neuralnet_out_DC_PF, st_neuralnet_out_DC_PF)
+    wire is_dc_pf;
+    wire dc_gp;
+    wire not_gp;
+    `OR_2(u_isGp, 1, dc_gp, ld_segx_gp, st_segx_gp)
+    `INV_N(u_not_gp, 1, dc_gp, not_gp)
+    `OR_2(u_dc_exp_pf, 1, is_dc_pf, ld_neuralnet_out_DC_PF, st_neuralnet_out_DC_PF)
+    `AND_2(u_dc_exp, 1, dc_outs_exp_pf_w, is_dc_pf, not_gp)
+
 
     // ----------------------------------------------------------------
     // dc_outs_o assignments (flat)

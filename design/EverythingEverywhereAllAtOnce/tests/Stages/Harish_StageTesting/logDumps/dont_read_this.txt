@@ -1,136 +1,69 @@
 ================================================================================
   SIM vs RTL COMPARISON REPORT
 ================================================================================
-  Sim instructions: 11
-  RTL commits:      52
+  Sim instructions: 12
+  RTL commits:      35
 
-[OK ] #0000  0x00000000  jmp           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0001  0x00000100  jmp           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-<<<<<<< HEAD
-[ERR] #0002  0x00000005  mov         
-       SIM  writes=EDX=0x00000200  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ERR] #0000  0x00000000  mov         
+       SIM  writes=EBX=0x10000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
        RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-       *** WRITE DIFF: EDX: SIM=0x00000200  RTL=<not written>
-[ERR] #0003  0x00000009  mov         
-       SIM  writes=SS=0x00000200  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EBX: SIM=0x10000400  RTL=<not written>
+[ERR] #0001  0x00000005  mov         
+       SIM  writes=EAX=0x00000005  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
        RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-       *** WRITE DIFF: SS: SIM=0x00000200  RTL=<not written>
-[ERR] #0004  0x0000000B  mov         
-       SIM  writes=ESP=0x00000100  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EAX: SIM=0x00000005  RTL=<not written>
+[ERR] #0002  0x0000000A  mov         
+       SIM  writes=ESP=0x00000020  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
        RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-       *** WRITE DIFF: ESP: SIM=0x00000100  RTL=<not written>
-[ERR] #0005  0x00000010  call        
-       SIM  writes=ESP=0x000000FC  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ESP: SIM=0x00000020  RTL=<not written>
+[ERR] #0003  0x0000000F  mov         
+       SIM  writes=DS=0x00000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
        RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-       *** WRITE DIFF: ESP: SIM=0x000000FC  RTL=<not written>
-[ERR] #0006  0x00000200  ret         
-       SIM  writes=ESP=0x00000100  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: DS: SIM=0x00000400  RTL=<not written>
+[OK ] #0004  0x00000011  shl           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0005  0x00000015  jne           writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
+[OK ] #0006  0x00000011  shl           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+[OK ] #0007  0x00000015  jne           writes=none  flags=CF=0 ZF=1 SF=0 OF=0 PF=1 AF=0
+[ERR] #0008  0x00000017  add         
+       SIM  writes=EAX=0x00000004  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: EAX: SIM=0x00000004  RTL=<not written>
+[ERR] #0009  0x00000019  mov         
+       SIM  writes=SS=0x00000C00  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       RTL  writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=1
+       *** WRITE DIFF: SS: SIM=0x00000C00  RTL=<not written>
+[ERR] #0010  0x0000001C  sar         
+       SIM  writes=EBX=0x01000040  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
        RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-       *** WRITE DIFF: ESP: SIM=0x00000100  RTL=<not written>
-[ERR] #0007  0x00000015  call        
-       SIM  writes=ESP=0x000000FC  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: EBX: SIM=0x01000040  RTL=<not written>
+[ERR] #0011  0x0000001F  push        
+       SIM  writes=ESP=0x0000001C  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
        RTL  writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-       *** WRITE DIFF: ESP: SIM=0x000000FC  RTL=<not written>
-[OK ] #0008  0x00000300  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0009  0x00000305  add           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ERR] #0010  0x0000030C  ret         
-       SIM  writes=ESP=0x00000100  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-       RTL  writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-       *** WRITE DIFF: ESP: SIM=0x00000100  RTL=<not written>
-[ONLY_RTL] #0011  EIP=0xF2233469  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0012  EIP=0xF2233469  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0013  EIP=0xF2233469  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0014  EIP=0x00000320  RTL writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0015  EIP=0x00000327  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0016  EIP=0x0000001A  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0017  EIP=0x0000001F  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0018  EIP=0x00000021  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0019  EIP=0x00000026  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0020  EIP=0x00000028  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0021  EIP=0x0000002E  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0022  EIP=0x00000030  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0023  EIP=0x0000003A  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0024  EIP=0x00000040  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0025  EIP=0x0000004A  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0026  EIP=0x00000050  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0027  EIP=0x0000005A  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0028  EIP=0x00000060  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0029  EIP=0x00000062  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0030  EIP=0x00000068  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-=======
-[OK ] #0002  0x00000005  mov           writes=EDX=0x00000200  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0003  0x00000009  mov           writes=SS=0x00000200  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0004  0x0000000B  mov           writes=ESP=0x00000100  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0005  0x00000010  call          writes=ESP=0x000000FC  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0006  0x00000200  ret           writes=ESP=0x00000100  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0007  0x00000015  call          writes=ESP=0x000000FC  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[OK ] #0008  0x00000300  mov           writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0  (RTL no-op: ESI)
-[OK ] #0009  0x00000305  add           writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[OK ] #0010  0x0000030C  ret           writes=ESP=0x00000100  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0011  EIP=0xF2233469  RTL writes=ESP=0x000000FC  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0012  EIP=0xF2233469  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0013  EIP=0xF2233469  RTL writes=ESP=0x000000F4  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0014  EIP=0x00000320  RTL writes=none  flags=CF=1 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0015  EIP=0x00000327  RTL writes=CS=0x00000000,ESP=0x00000100  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0016  EIP=0x0000001A  RTL writes=EDX=0x00000A00  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0017  EIP=0x0000001F  RTL writes=DS=0x00000A00  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0018  EIP=0x00000021  RTL writes=EDX=0x00000000  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0019  EIP=0x00000026  RTL writes=EAX=0x11113333  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0020  EIP=0x00000028  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0021  EIP=0x0000002E  RTL writes=ESI=0x01020304  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0022  EIP=0x00000030  RTL writes=none  flags=CF=0 ZF=0 SF=1 OF=0 PF=1 AF=1
-[ONLY_RTL] #0023  EIP=0x0000003A  RTL writes=EAX=0x16173A3B  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0024  EIP=0x00000040  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0025  EIP=0x0000004A  RTL writes=ECX=0xCAFECABB  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0026  EIP=0x00000050  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0027  EIP=0x0000005A  RTL writes=ECX=0xFADEDCAB  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0028  EIP=0x00000060  RTL writes=EDI=0x01020304  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0029  EIP=0x00000062  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0030  EIP=0x00000068  RTL writes=EAX=0x00000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
->>>>>>> 9122c47c86c557bcd55920ea77488eb0a2aeafb7
-[ONLY_RTL] #0031  EIP=0x0000006A  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0032  EIP=0x0000006B  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0033  EIP=0x0000006C  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0034  EIP=0x0000006D  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0035  EIP=0x0000006E  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0036  EIP=0x0000006F  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0037  EIP=0x00000070  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-<<<<<<< HEAD
-[ONLY_RTL] #0038  EIP=0x00000077  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0039  EIP=0x0000007A  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0040  EIP=0x0000007F  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0041  EIP=0x00000081  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0042  EIP=0x00000086  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0043  EIP=0x0000008D  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0044  EIP=0x00000092  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0045  EIP=0x00000094  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0046  EIP=0x00000099  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0047  EIP=0x0000009B  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0048  EIP=0x000000A0  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0049  EIP=0x000000A6  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0050  EIP=0x000000A9  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0051  EIP=0x00000010  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+       *** WRITE DIFF: ESP: SIM=0x0000001C  RTL=<not written>
+[ONLY_RTL] #0012  EIP=0x00000024  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0013  EIP=0x00000024  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0014  EIP=0x00000024  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0015  EIP=0x00000001  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0016  EIP=0x00000006  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0017  EIP=0x00000024  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0018  EIP=0x00000026  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0019  EIP=0x00000028  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0020  EIP=0x00000029  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0021  EIP=0x0000002D  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0022  EIP=0x00000031  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0023  EIP=0x00000032  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0024  EIP=0x00000033  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0025  EIP=0x0000003E  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0026  EIP=0x0000003F  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0027  EIP=0x00000040  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0028  EIP=0x00000041  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0029  EIP=0x00000042  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0030  EIP=0x00000043  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0031  EIP=0x00000044  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0032  EIP=0x00000045  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0033  EIP=0x00000046  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
+[ONLY_RTL] #0034  EIP=0x00000038  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
 
 ================================================================================
-  SUMMARY: 4/52 matched  |  7 mismatched  |  0 sim-only  |  41 rtl-only
-=======
-[ONLY_RTL] #0038  EIP=0x00000077  RTL writes=ECX=0xDDFFFFFF  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0039  EIP=0x0000007A  RTL writes=EDX=0x00000B00  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0040  EIP=0x0000007F  RTL writes=DS=0x00000B00  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0041  EIP=0x00000081  RTL writes=EDX=0x00000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0042  EIP=0x00000086  RTL writes=MM3=0xBBCCDD01  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0043  EIP=0x0000008D  RTL writes=EDX=0x00000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0044  EIP=0x00000092  RTL writes=GS=0x00000400  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0045  EIP=0x00000094  RTL writes=EDX=0x00000A00  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0046  EIP=0x00000099  RTL writes=DS=0x00000A00  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0047  EIP=0x0000009B  RTL writes=EDX=0x00000000  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0048  EIP=0x000000A0  RTL writes=none  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0049  EIP=0x000000A6  RTL writes=ESI=0xCAFE2233  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0050  EIP=0x000000A9  RTL writes=CS=0x00000400,ESP=0x000000F8  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-[ONLY_RTL] #0051  EIP=0x00000010  RTL writes=CS=0x00000000,ESP=0x00000100  flags=CF=0 ZF=0 SF=0 OF=0 PF=0 AF=0
-
-================================================================================
-  SUMMARY: 11/52 matched  |  0 mismatched  |  0 sim-only  |  41 rtl-only
-  (1 RTL no-op write-backs suppressed)
->>>>>>> 9122c47c86c557bcd55920ea77488eb0a2aeafb7
+  SUMMARY: 4/35 matched  |  8 mismatched  |  0 sim-only  |  23 rtl-only
 ================================================================================
