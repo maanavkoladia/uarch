@@ -971,7 +971,6 @@ module EXE (
     assign wb_latches_next_dr_id        = latches_dr_id;
     assign wb_latches_next_dr_data      = dr_next;
     `MUX_2(u_wb_next_eax_mux, 32, wb_latches_next_EAX, eax_data, cmpxchg_EAX_o[31:0], latches_wb_cs_WB_EAX)
-    //assign wb_latches_next_EAX          = latches_wb_cs_WB_EAX ? cmpxchg_EAX_o[31:0] : eax_data;
     // wb_latches_next_res_buf is driven by res_buf_logic above.
 
     // outs_o assembly (per-field).
