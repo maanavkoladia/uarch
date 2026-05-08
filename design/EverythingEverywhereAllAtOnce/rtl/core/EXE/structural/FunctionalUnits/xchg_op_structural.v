@@ -24,7 +24,9 @@ module xchg_op (
     `CMP_N(u_cmp_id, 5, id_eq, srA_id, srB_id)
     wire same_id;
     wire same_id_raw;
-    assign same_id_raw = ~st_op & id_eq;
+    wire st_op_n;
+    inv1$ u_inv_st_op      (.out(st_op_n),      .in(st_op));
+    and2$ u_and_same_id_raw(.out(same_id_raw), .in0(st_op_n), .in1(id_eq));
     // same_id feeds 64 mux2$ select pins across u_mux_dr/sr and other paths
     // (fanout 64). bufferH64$ rated 64 — exact fit, 0.30 ns typ.
     bufferH64$ u_buf_same_id (.out(same_id), .in(same_id_raw));
