@@ -159,8 +159,42 @@ module npu_node2 (
 
     // ----------------------------------------------------------------
     // PADDR0 / PADDR1 / mio (direct or near-direct from TLB)
+    //
+    // Per-bit fanout (after the in_flight_sb_logic offset/pfn split):
+    //   PFN bits [14:12] : 6 in_flight + 4 stq_dep_check g_sel + 4 DCache_Arb
+    //                      + 1 mem_latches + 1 mio_block = 16 -> bufferH16$
+    //   Offset bits [11:6,3]: 6 in_flight + 16 stq_dep_check g_off
+    //                      + 4 DCache_Arb + 1 mem_latches + 1 mio_block = 28
+    //                      -> bufferH64$
+    //   Bank bits [5:4]    : same as offset PLUS the 16 mux-select expansions
+    //                        in stq_dep_check (each MUX_4 fans the sel bit
+    //                        across all bits of the muxed bus internally),
+    //                        empirically ~160 leaves -> bufferH256$
+    //   Bits [2:1]         : low cache-offset bits, smaller fanout (~6-8)
+    //                        -> bufferH16$
+    //   Bit [0]            : low fanout, passthrough
     // ----------------------------------------------------------------
-    assign PADDR0 = tlb0_physical_addr;
+
+    // PADDR0: same fanout shape as PADDR1 (load-0 hits the same consumers
+    // through the in_flight + dep_check + DCache_Arb tree). The original
+    // direct `assign PADDR0 = tlb0_physical_addr` left bits [11:6,3] at
+    // fanout >16 driven by the TLB cell -> install the same buffer chain.
+    wire [14:0] PADDR0_pre_buf;
+    assign PADDR0_pre_buf = tlb0_physical_addr;
+    assign PADDR0[14:12] = PADDR0_pre_buf[14:12];
+    assign PADDR0[0]     = PADDR0_pre_buf[0];
+    bufferH64$  u_attach_PADDR0_b11 (.out(PADDR0[11]), .in(PADDR0_pre_buf[11]));
+    bufferH64$  u_attach_PADDR0_b10 (.out(PADDR0[10]), .in(PADDR0_pre_buf[10]));
+    bufferH64$  u_attach_PADDR0_b9  (.out(PADDR0[9]),  .in(PADDR0_pre_buf[9]));
+    bufferH64$  u_attach_PADDR0_b8  (.out(PADDR0[8]),  .in(PADDR0_pre_buf[8]));
+    bufferH64$  u_attach_PADDR0_b7  (.out(PADDR0[7]),  .in(PADDR0_pre_buf[7]));
+    bufferH64$  u_attach_PADDR0_b6  (.out(PADDR0[6]),  .in(PADDR0_pre_buf[6]));
+    bufferH256$ u_attach_PADDR0_b5  (.out(PADDR0[5]),  .in(PADDR0_pre_buf[5]));
+    bufferH256$ u_attach_PADDR0_b4  (.out(PADDR0[4]),  .in(PADDR0_pre_buf[4]));
+    bufferH64$  u_attach_PADDR0_b3  (.out(PADDR0[3]),  .in(PADDR0_pre_buf[3]));
+    bufferH16$  u_attach_PADDR0_b2  (.out(PADDR0[2]),  .in(PADDR0_pre_buf[2]));
+    bufferH16$  u_attach_PADDR0_b1  (.out(PADDR0[1]),  .in(PADDR0_pre_buf[1]));
+
     assign mio    = tlb0_MIO;
 
     // PADDR1 mux:
@@ -170,21 +204,27 @@ module npu_node2 (
     wire [14:0] paddr1_same;
     assign paddr1_cross = {tlb1_physical_addr[14:4], 4'b0000};
     assign paddr1_same  = {tlb0_physical_addr[14:12], vaddy_end[11:0]};
-    // fanout: redirect u_paddr1 MUX_2 output to staging bus, attach per-bit buffers
-    // 9 bits via bufferH16$, 2 bits ([5:4] bank-bank) via bufferH256$, 4 bits passthrough
     wire [14:0] PADDR1_pre_buf;
     `MUX_2(u_paddr1, 15, PADDR1_pre_buf, paddr1_same, paddr1_cross, cross_page_cp)
-    assign PADDR1[14:12] = PADDR1_pre_buf[14:12];
+    // PFN bits [14:12]: post-TLB, fanout 16 (6 in_flight + 4 stq_dep_check
+    //                   g_sel + 4 DCache_Arb + 1 mem_latches + 1 mio_block).
+    //                   Driven by mux2$ at fanout 16 -> needs bufferH16$.
+    bufferH16$  u_attach_PADDR1_b14 (.out(PADDR1[14]), .in(PADDR1_pre_buf[14]));
+    bufferH16$  u_attach_PADDR1_b13 (.out(PADDR1[13]), .in(PADDR1_pre_buf[13]));
+    bufferH16$  u_attach_PADDR1_b12 (.out(PADDR1[12]), .in(PADDR1_pre_buf[12]));
     assign PADDR1[0]     = PADDR1_pre_buf[0];
-    bufferH16$  u_attach_PADDR1_b11 (.out(PADDR1[11]), .in(PADDR1_pre_buf[11]));
-    bufferH16$  u_attach_PADDR1_b10 (.out(PADDR1[10]), .in(PADDR1_pre_buf[10]));
-    bufferH16$  u_attach_PADDR1_b9  (.out(PADDR1[9]),  .in(PADDR1_pre_buf[9]));
-    bufferH16$  u_attach_PADDR1_b8  (.out(PADDR1[8]),  .in(PADDR1_pre_buf[8]));
-    bufferH16$  u_attach_PADDR1_b7  (.out(PADDR1[7]),  .in(PADDR1_pre_buf[7]));
-    bufferH16$  u_attach_PADDR1_b6  (.out(PADDR1[6]),  .in(PADDR1_pre_buf[6]));
+    // Offset bits [11:6,3]: bufferH64$ (fanout ~28)
+    // Bank bits [5:4]:      bufferH256$ (existing -- mux-select expansions)
+    // Cache-offset bits [2:1]: bufferH16$ (smaller fanout)
+    bufferH64$  u_attach_PADDR1_b11 (.out(PADDR1[11]), .in(PADDR1_pre_buf[11]));
+    bufferH64$  u_attach_PADDR1_b10 (.out(PADDR1[10]), .in(PADDR1_pre_buf[10]));
+    bufferH64$  u_attach_PADDR1_b9  (.out(PADDR1[9]),  .in(PADDR1_pre_buf[9]));
+    bufferH64$  u_attach_PADDR1_b8  (.out(PADDR1[8]),  .in(PADDR1_pre_buf[8]));
+    bufferH64$  u_attach_PADDR1_b7  (.out(PADDR1[7]),  .in(PADDR1_pre_buf[7]));
+    bufferH64$  u_attach_PADDR1_b6  (.out(PADDR1[6]),  .in(PADDR1_pre_buf[6]));
     bufferH256$ u_attach_PADDR1_b5  (.out(PADDR1[5]),  .in(PADDR1_pre_buf[5]));
     bufferH256$ u_attach_PADDR1_b4  (.out(PADDR1[4]),  .in(PADDR1_pre_buf[4]));
-    bufferH16$  u_attach_PADDR1_b3  (.out(PADDR1[3]),  .in(PADDR1_pre_buf[3]));
+    bufferH64$  u_attach_PADDR1_b3  (.out(PADDR1[3]),  .in(PADDR1_pre_buf[3]));
     bufferH16$  u_attach_PADDR1_b2  (.out(PADDR1[2]),  .in(PADDR1_pre_buf[2]));
     bufferH16$  u_attach_PADDR1_b1  (.out(PADDR1[1]),  .in(PADDR1_pre_buf[1]));
 

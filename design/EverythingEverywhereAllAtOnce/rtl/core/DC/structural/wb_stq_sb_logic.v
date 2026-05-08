@@ -3,12 +3,16 @@
 //
 // Reference: rtl/core/DC/wb_stq_sb_logic.sv
 //
+//   Physical address split:
+//     ld_paddr_X_offset[7:0]  = paddr[11:4]  (8-bit page offset, pre-TLB)
+//     ld_paddr_X_pfn[2:0]     = paddr[14:12] (3-bit PFN, post-TLB)
+//
 //   16 store-queue entries are organized as NUM_WB_ST_QS=4 banks,
 //   each ST_Q_DEPTH=4 entries deep.  For each load (0 and 1):
-//     bank_num = ld_paddr_X[5:4]
+//     bank_num = ld_paddr_X_offset[1:0]   (paddr[5:4])
 //     bank_hit_X = OR over i in 0..3 of
-//                  ( entries[bank_num*4+i].address[14:4]
-//                      == ld_paddr_X[14:4] )
+//                  ( entries[bank_num*4+i].address[11:4] == ld_paddr_X_offset
+//                    AND entries[bank_num*4+i].address[14:12] == ld_paddr_X_pfn )
 //                  & entries[bank_num*4+i].valid
 //
 //   valid_dep0 = bank_hit_0 & LD_OP
@@ -19,10 +23,19 @@
 // used in the original body and is unused here too.
 //
 // Critical-path notes:
-//   - For each load, mux 16 -> 4 entries first using the 2-bit
-//     bank_num, then 4x CMP_N on the muxed addresses.  This keeps the
-//     compare width at 11 bits and the OR fan-in at 4 (vs. comparing
-//     all 16 entries up front and OR-reducing 16 results).
+//   - Pre-TLB phase A: all 16x CMP_N(8) offset comparisons start
+//     immediately in parallel.  bank_num resolves from offset[1:0].
+//   - Pre-TLB phase B: MUX_4(1) bank-selects the 4 offset_eq results
+//     and the 4 valid bits per slot.  AND_2 pre-computes
+//     pre_hit[i] = sel_off_eq[i] & sel_valid[i] before PFN arrives.
+//     MUX_4(3) bank-selects the 3-bit PFN from STQ entries per slot
+//     so the PFN mux fanout is resolved before the TLB finishes.
+//   - Post-TLB: only 4x CMP_N(3) run (not 16), then a single
+//     nand2$(pre_hit, cmp_pfn) per slot + nand4$ across the 4 slots
+//     gives bank_hit (active-high).  NAND-only back end avoids the
+//     implicit inverter inside and2_N$/or4_N$.
+//     Post-TLB CP = CMP_N(3) -> nand2$ -> nand4$ -> nand2$ -> nand2$
+//                 (4 NAND levels, all at ~0.20-0.25 ns each).
 //   - LD_OP and LD_XCL are factored as the final ANDs after bank_hit
 //     so the bank_hit critical path sees only the per-bank reduction.
 // ----------------------------------------------------------------
@@ -30,8 +43,12 @@
 
 module wb_stq_sb_logic (
     input  wire        valid,                // unused
-    input  wire [14:0] ld_paddr_0,
-    input  wire [14:0] ld_paddr_1,
+    // Load 0: offset = paddr[11:4] (pre-TLB), pfn = paddr[14:12] (post-TLB)
+    input  wire [7:0]  ld_paddr_0_offset,
+    input  wire [2:0]  ld_paddr_0_pfn,
+    // Load 1: offset = paddr[11:4] (pre-TLB), pfn = paddr[14:12] (post-TLB)
+    input  wire [7:0]  ld_paddr_1_offset,
+    input  wire [2:0]  ld_paddr_1_pfn,
     input  wire        LD_OP,
     input  wire        LD_XCL,
 
@@ -129,71 +146,110 @@ module wb_stq_sb_logic (
     // ----------------------------------------------------------------
     wire [1:0] ld0_bank_num;
     wire [1:0] ld1_bank_num;
-    assign ld0_bank_num = ld_paddr_0[5:4];
-    assign ld1_bank_num = ld_paddr_1[5:4];
+    assign ld0_bank_num = ld_paddr_0_offset[1:0];
+    assign ld1_bank_num = ld_paddr_1_offset[1:0];
 
     // ----------------------------------------------------------------
-    // Per-slot 16->4 mux for each load.
-    //   slot i:  pick entries[bank_num*4 + i].address[14:4] and .valid
-    //            from the 4 banks via MUX_4 selected by ld_bank_num.
-    // Then compare and AND with valid.
+    // Pre-TLB phase A: 16x 8-bit offset comparisons, all in parallel.
     // ----------------------------------------------------------------
-    wire [10:0] muxed_addr_0  [0:`ST_Q_DEPTH-1];
-    wire [10:0] muxed_addr_1  [0:`ST_Q_DEPTH-1];
-    wire        muxed_valid_0 [0:`ST_Q_DEPTH-1];
-    wire        muxed_valid_1 [0:`ST_Q_DEPTH-1];
-    wire        cmp_0         [0:`ST_Q_DEPTH-1];
-    wire        cmp_1         [0:`ST_Q_DEPTH-1];
-    wire        match_0       [0:`ST_Q_DEPTH-1];
-    wire        match_1       [0:`ST_Q_DEPTH-1];
+    wire cmp_off_0 [0:`NUM_WB_ST_QS*`ST_Q_DEPTH-1];
+    wire cmp_off_1 [0:`NUM_WB_ST_QS*`ST_Q_DEPTH-1];
 
-    genvar i;
+    // Pre-TLB phase B (per slot): bank-select offset_eq, valid, and the
+    // 3-bit PFN field from STQ.  pre_hit[i] = sel_off_eq & sel_valid is
+    // fully ready before TLB completes.
+    wire [2:0] muxed_pfn_0  [0:`ST_Q_DEPTH-1];  // 3-bit PFN of selected bank
+    wire [2:0] muxed_pfn_1  [0:`ST_Q_DEPTH-1];
+    wire       sel_off_eq_0 [0:`ST_Q_DEPTH-1];  // bank-selected offset eq
+    wire       sel_off_eq_1 [0:`ST_Q_DEPTH-1];
+    wire       sel_valid_0  [0:`ST_Q_DEPTH-1];  // bank-selected entry valid
+    wire       sel_valid_1  [0:`ST_Q_DEPTH-1];
+    wire       pre_hit_0    [0:`ST_Q_DEPTH-1];  // sel_off_eq & sel_valid
+    wire       pre_hit_1    [0:`ST_Q_DEPTH-1];
+
+    // Post-TLB: only 4x 3-bit PFN comparisons (one per slot).
+    // nand_match_n_X[i] = NAND2(pre_hit, cmp_pfn) -- active-low slot match.
+    // bank_hit = NAND4(nand_match_n_0..3) -- active-high any-slot hit.
+    wire       cmp_pfn_0       [0:`ST_Q_DEPTH-1];
+    wire       cmp_pfn_1       [0:`ST_Q_DEPTH-1];
+    wire       nand_match_n_0  [0:`ST_Q_DEPTH-1];
+    wire       nand_match_n_1  [0:`ST_Q_DEPTH-1];
+
+    genvar e, i;
+
+    // ----------------------------------------------------------------
+    // Pre-TLB phase A: 16x CMP_N(8) directly on all STQ entries.
+    // ----------------------------------------------------------------
     generate
-        for (i = 0; i < `ST_Q_DEPTH; i = i + 1) begin : g_slot
-            // Address slices [14:4] for the 4 entries at slot i, one per bank
-            wire [10:0] a0_slot, a1_slot, a2_slot, a3_slot;
-            assign a0_slot = stq_addr[0*`ST_Q_DEPTH + i][14:4];
-            assign a1_slot = stq_addr[1*`ST_Q_DEPTH + i][14:4];
-            assign a2_slot = stq_addr[2*`ST_Q_DEPTH + i][14:4];
-            assign a3_slot = stq_addr[3*`ST_Q_DEPTH + i][14:4];
-
-            // Valids for the 4 entries at slot i
-            wire v0_slot, v1_slot, v2_slot, v3_slot;
-            assign v0_slot = stq_valid[0*`ST_Q_DEPTH + i];
-            assign v1_slot = stq_valid[1*`ST_Q_DEPTH + i];
-            assign v2_slot = stq_valid[2*`ST_Q_DEPTH + i];
-            assign v3_slot = stq_valid[3*`ST_Q_DEPTH + i];
-
-            // Mux to the bank selected by ld0_bank_num / ld1_bank_num
-            `MUX_4(u_mux_addr_0,  11, muxed_addr_0[i],
-                   a0_slot, a1_slot, a2_slot, a3_slot, ld0_bank_num)
-            `MUX_4(u_mux_addr_1,  11, muxed_addr_1[i],
-                   a0_slot, a1_slot, a2_slot, a3_slot, ld1_bank_num)
-
-            `MUX_4(u_mux_valid_0, 1, muxed_valid_0[i],
-                   v0_slot, v1_slot, v2_slot, v3_slot, ld0_bank_num)
-            `MUX_4(u_mux_valid_1, 1, muxed_valid_1[i],
-                   v0_slot, v1_slot, v2_slot, v3_slot, ld1_bank_num)
-
-            // Compare muxed entry address vs load address (bits [14:4])
-            `CMP_N(u_cmp_0, 11, cmp_0[i], muxed_addr_0[i], ld_paddr_0[14:4])
-            `CMP_N(u_cmp_1, 11, cmp_1[i], muxed_addr_1[i], ld_paddr_1[14:4])
-
-            // Match = address-eq AND entry-valid
-            `AND_2(u_match_0, 1, match_0[i], cmp_0[i], muxed_valid_0[i])
-            `AND_2(u_match_1, 1, match_1[i], cmp_1[i], muxed_valid_1[i])
+        for (e = 0; e < `NUM_WB_ST_QS*`ST_Q_DEPTH; e = e + 1) begin : g_off
+            `CMP_N(u_cmp_off_0, 8, cmp_off_0[e], stq_addr[e][11:4], ld_paddr_0_offset)
+            `CMP_N(u_cmp_off_1, 8, cmp_off_1[e], stq_addr[e][11:4], ld_paddr_1_offset)
         end
     endgenerate
 
     // ----------------------------------------------------------------
-    // OR_4 across the 4 slots in the selected bank
+    // Pre-TLB phase B: per slot, bank-select offset_eq, valid, and the
+    // 3-bit PFN candidate.  pre_hit[i] ready before TLB completes.
+    // ----------------------------------------------------------------
+    generate
+        for (i = 0; i < `ST_Q_DEPTH; i = i + 1) begin : g_sel
+            // 1-bit MUX_4: pick the offset_eq result from the correct bank
+            `MUX_4(u_sel_off_0, 1, sel_off_eq_0[i],
+                   cmp_off_0[0*`ST_Q_DEPTH+i], cmp_off_0[1*`ST_Q_DEPTH+i],
+                   cmp_off_0[2*`ST_Q_DEPTH+i], cmp_off_0[3*`ST_Q_DEPTH+i],
+                   ld0_bank_num)
+            `MUX_4(u_sel_off_1, 1, sel_off_eq_1[i],
+                   cmp_off_1[0*`ST_Q_DEPTH+i], cmp_off_1[1*`ST_Q_DEPTH+i],
+                   cmp_off_1[2*`ST_Q_DEPTH+i], cmp_off_1[3*`ST_Q_DEPTH+i],
+                   ld1_bank_num)
+
+            // 1-bit MUX_4: pick the entry valid from the correct bank
+            `MUX_4(u_sel_v0, 1, sel_valid_0[i],
+                   stq_valid[0*`ST_Q_DEPTH+i], stq_valid[1*`ST_Q_DEPTH+i],
+                   stq_valid[2*`ST_Q_DEPTH+i], stq_valid[3*`ST_Q_DEPTH+i],
+                   ld0_bank_num)
+            `MUX_4(u_sel_v1, 1, sel_valid_1[i],
+                   stq_valid[0*`ST_Q_DEPTH+i], stq_valid[1*`ST_Q_DEPTH+i],
+                   stq_valid[2*`ST_Q_DEPTH+i], stq_valid[3*`ST_Q_DEPTH+i],
+                   ld1_bank_num)
+
+            // 3-bit MUX_4: pick the PFN of the correct bank entry so only
+            // 4 CMP_N(3) are needed post-TLB instead of 16.
+            `MUX_4(u_sel_pfn_0, 3, muxed_pfn_0[i],
+                   stq_addr[0*`ST_Q_DEPTH+i][14:12], stq_addr[1*`ST_Q_DEPTH+i][14:12],
+                   stq_addr[2*`ST_Q_DEPTH+i][14:12], stq_addr[3*`ST_Q_DEPTH+i][14:12],
+                   ld0_bank_num)
+            `MUX_4(u_sel_pfn_1, 3, muxed_pfn_1[i],
+                   stq_addr[0*`ST_Q_DEPTH+i][14:12], stq_addr[1*`ST_Q_DEPTH+i][14:12],
+                   stq_addr[2*`ST_Q_DEPTH+i][14:12], stq_addr[3*`ST_Q_DEPTH+i][14:12],
+                   ld1_bank_num)
+
+            // Pre-combine offset_eq & valid before TLB finishes.
+            `AND_2(u_pre_hit_0, 1, pre_hit_0[i], sel_off_eq_0[i], sel_valid_0[i])
+            `AND_2(u_pre_hit_1, 1, pre_hit_1[i], sel_off_eq_1[i], sel_valid_1[i])
+
+            // Post-TLB: 3-bit PFN compare then NAND2 with pre_hit.
+            // nand_match_n = 0 when slot is a full address + valid hit.
+            `CMP_N(u_cmp_pfn_0, 3, cmp_pfn_0[i], muxed_pfn_0[i], ld_paddr_0_pfn)
+            `CMP_N(u_cmp_pfn_1, 3, cmp_pfn_1[i], muxed_pfn_1[i], ld_paddr_1_pfn)
+            nand2$ u_nand_m0 (.out(nand_match_n_0[i]), .in0(pre_hit_0[i]), .in1(cmp_pfn_0[i]));
+            nand2$ u_nand_m1 (.out(nand_match_n_1[i]), .in0(pre_hit_1[i]), .in1(cmp_pfn_1[i]));
+        end
+    endgenerate
+
+    // ----------------------------------------------------------------
+    // NAND4 across the 4 slots: bank_hit (active-high) =
+    //   NAND4(nand_match_n[0..3]) = 1 when any slot's nand_match_n is 0
+    //   = OR of all per-slot matches, implemented NAND-only.
     // ----------------------------------------------------------------
     wire ld0_bank_hit;
     wire ld1_bank_hit;
-    `OR_4(u_ld0_bank_hit, 1, ld0_bank_hit,
-          match_0[0], match_0[1], match_0[2], match_0[3])
-    `OR_4(u_ld1_bank_hit, 1, ld1_bank_hit,
-          match_1[0], match_1[1], match_1[2], match_1[3])
+    nand4$ u_ld0_bank_hit (.out(ld0_bank_hit),
+        .in0(nand_match_n_0[0]), .in1(nand_match_n_0[1]),
+        .in2(nand_match_n_0[2]), .in3(nand_match_n_0[3]));
+    nand4$ u_ld1_bank_hit (.out(ld1_bank_hit),
+        .in0(nand_match_n_1[0]), .in1(nand_match_n_1[1]),
+        .in2(nand_match_n_1[2]), .in3(nand_match_n_1[3]));
 
     // ----------------------------------------------------------------
     // valid_dep0 = bank_hit_0 & LD_OP

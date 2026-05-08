@@ -450,11 +450,17 @@ module DC_Latches (
     `REG_RST_WE(dc_latches_mem_cs_LD_OP,                   1,   clk, rst, effective_we, mem_cs_LD_OP_d,                   latches_mem_cs_LD_OP_o);
 
     `REG_RST_WE(dc_latches_exe_cs_ST_OP,                   1,   clk, rst, effective_we, exe_cs_ST_OP_d,                   latches_exe_cs_ST_OP_o);
-    // fanout: redirect dc_latches_exe_cs_OP_TYPE q to staging bus, attach bufferH16$ on bit 5 only
+    // fanout: redirect dc_latches_exe_cs_OP_TYPE q to staging bus. Every bit
+    // has uniform fanout (~5-8) -> bulk-buffer all 6 bits with bufferH16$ to
+    // avoid per-bit whack-a-mole as the checker reveals representatives.
     wire [5:0] latches_exe_cs_OP_TYPE_pre_buf;
     `REG_RST_WE(dc_latches_exe_cs_OP_TYPE,                 6,   clk, rst, effective_we, exe_cs_OP_TYPE_d,                 latches_exe_cs_OP_TYPE_pre_buf);
-    assign latches_exe_cs_OP_TYPE_o[4:0] = latches_exe_cs_OP_TYPE_pre_buf[4:0];
-    bufferH16$ u_attach_exe_cs_OP_TYPE_b5 (.out(latches_exe_cs_OP_TYPE_o[5]), .in(latches_exe_cs_OP_TYPE_pre_buf[5]));
+    genvar gi_op_type;
+    generate
+        for (gi_op_type = 0; gi_op_type <= 5; gi_op_type = gi_op_type + 1) begin : g_op_type_buf
+            bufferH16$ u_attach_exe_cs_OP_TYPE (.out(latches_exe_cs_OP_TYPE_o[gi_op_type]), .in(latches_exe_cs_OP_TYPE_pre_buf[gi_op_type]));
+        end
+    endgenerate
     `REG_RST_WE(dc_latches_exe_cs_alu_inputA_sel,          5,   clk, rst, effective_we, exe_cs_alu_inputA_sel_d,          latches_exe_cs_alu_inputA_sel_o);
     `REG_RST_WE(dc_latches_exe_cs_alu_inputB_sel,          5,   clk, rst, effective_we, exe_cs_alu_inputB_sel_d,          latches_exe_cs_alu_inputB_sel_o);
     `REG_RST_WE(dc_latches_exe_cs_branch_target_sel,       5,   clk, rst, effective_we, exe_cs_branch_target_sel_d,       latches_exe_cs_branch_target_sel_o);
@@ -480,34 +486,68 @@ module DC_Latches (
 
     `REG_RST_WE(dc_latches_rr_gp,                          1,   clk, rst, effective_we, rr_gp_d,                          latches_rr_gp_o);
 
-    // fanout: redirect dc_latches_ld_vaddy q to staging bus, attach bufferH64$ on bit 11 only
+    // fanout: redirect dc_latches_ld_vaddy q to staging bus, attach buffers on
+    // the high-fanout bits. After the in_flight_sb_logic offset/pfn refactor
+    // and the PADDR0 buffer chain in npu_node2, ld_vaddy[10] direct fanout
+    // drops to ~7 (vaddy_end adder, mem_latches LD_PADDR_0.Din, DCache_Arb
+    // g_arb_block, plus the npu_node2 PADDR0 buffer input via TLB).
+    // bufferH16$ rated 16, fits.
     wire [31:0] latches_ld_vaddy_pre_buf;
     `REG_RST_WE(dc_latches_ld_vaddy,                       32,  clk, rst, effective_we, ld_vaddy_d,                       latches_ld_vaddy_pre_buf);
-    assign latches_ld_vaddy_o[10:0]  = latches_ld_vaddy_pre_buf[10:0];
-    assign latches_ld_vaddy_o[31:12] = latches_ld_vaddy_pre_buf[31:12];
+    // Bits [9:0]: low cache-offset, low fanout, passthrough.
+    // Bit  [10] : bufferH16$ (post-refactor fanout ~7-8).
+    // Bit  [11] : bufferH64$ (high fanout from npu_node2 + adder).
+    // Bits [31:12]: upper vaddy bits feed seg_limit / exception checks
+    //               with uniform fanout ~8 -> bulk-buffer with bufferH16$.
+    assign latches_ld_vaddy_o[9:0]   = latches_ld_vaddy_pre_buf[9:0];
+    bufferH16$ u_attach_ld_vaddy_b10 (.out(latches_ld_vaddy_o[10]), .in(latches_ld_vaddy_pre_buf[10]));
     bufferH64$ u_attach_ld_vaddy_b11 (.out(latches_ld_vaddy_o[11]), .in(latches_ld_vaddy_pre_buf[11]));
+    genvar gi_ldv;
+    generate
+        for (gi_ldv = 12; gi_ldv <= 31; gi_ldv = gi_ldv + 1) begin : g_ld_vaddy_buf
+            bufferH16$ u_attach_ld_vaddy (.out(latches_ld_vaddy_o[gi_ldv]), .in(latches_ld_vaddy_pre_buf[gi_ldv]));
+        end
+    endgenerate
     `REG_RST_WE(dc_latches_seg0_limit_w_datasize,          32,  clk, rst, effective_we, seg0_limit_w_datasize_d,          latches_seg0_limit_w_datasize_o);
     `REG_RST_WE(dc_latches_seg0_limit_wo_datasize,         32,  clk, rst, effective_we, seg0_limit_wo_datasize_d,         latches_seg0_limit_wo_datasize_o);
-    // fanout: redirect dc_latches_next_ld_vaddy q to staging bus, attach bufferH16$ on bit 31 only
+    // fanout: redirect dc_latches_next_ld_vaddy q to staging bus. Upper bits
+    // [31:12] feed cross-page calc + seg_limit checks uniformly -> bulk buffer.
     wire [31:0] latches_next_ld_vaddy_pre_buf;
     `REG_RST_WE(dc_latches_next_ld_vaddy,                  32,  clk, rst, effective_we, next_ld_vaddy_d,                  latches_next_ld_vaddy_pre_buf);
-    assign latches_next_ld_vaddy_o[30:0] = latches_next_ld_vaddy_pre_buf[30:0];
-    bufferH16$ u_attach_next_ld_vaddy_b31 (.out(latches_next_ld_vaddy_o[31]), .in(latches_next_ld_vaddy_pre_buf[31]));
+    assign latches_next_ld_vaddy_o[11:0] = latches_next_ld_vaddy_pre_buf[11:0];
+    genvar gi_nldv;
+    generate
+        for (gi_nldv = 12; gi_nldv <= 31; gi_nldv = gi_nldv + 1) begin : g_next_ld_vaddy_buf
+            bufferH16$ u_attach_next_ld_vaddy (.out(latches_next_ld_vaddy_o[gi_nldv]), .in(latches_next_ld_vaddy_pre_buf[gi_nldv]));
+        end
+    endgenerate
     `REG_RST_WE(dc_latches_ld_laddy,                       32,  clk, rst, effective_we, ld_laddy_d,                       latches_ld_laddy_o);
     `REG_RST_WE(dc_latches_ld_stack_access,                1,   clk, rst, effective_we, ld_stack_access_d,                latches_ld_stack_access_o);
 
-    // fanout: redirect dc_latches_st_vaddy q to staging bus, attach bufferH16$ on bit 31 only
+    // fanout: redirect dc_latches_st_vaddy q to staging bus. Bulk-buffer all
+    // 32 bits with bufferH16$ since both upper and lower bits show fanout >4
+    // (st_vaddy feeds seg_limit checks + paddr formation).
     wire [31:0] latches_st_vaddy_pre_buf;
     `REG_RST_WE(dc_latches_st_vaddy,                       32,  clk, rst, effective_we, st_vaddy_d,                       latches_st_vaddy_pre_buf);
-    assign latches_st_vaddy_o[30:0] = latches_st_vaddy_pre_buf[30:0];
-    bufferH16$ u_attach_st_vaddy_b31 (.out(latches_st_vaddy_o[31]), .in(latches_st_vaddy_pre_buf[31]));
+    genvar gi_stv;
+    generate
+        for (gi_stv = 0; gi_stv <= 31; gi_stv = gi_stv + 1) begin : g_st_vaddy_buf
+            bufferH16$ u_attach_st_vaddy (.out(latches_st_vaddy_o[gi_stv]), .in(latches_st_vaddy_pre_buf[gi_stv]));
+        end
+    endgenerate
     `REG_RST_WE(dc_latches_seg1_limit_w_datasize,          32,  clk, rst, effective_we, seg1_limit_w_datasize_d,          latches_seg1_limit_w_datasize_o);
     `REG_RST_WE(dc_latches_seg1_limit_wo_datasize,         32,  clk, rst, effective_we, seg1_limit_wo_datasize_d,         latches_seg1_limit_wo_datasize_o);
-    // fanout: redirect dc_latches_next_st_vaddy q to staging bus, attach bufferH16$ on bit 31 only
+    // fanout: redirect dc_latches_next_st_vaddy q to staging bus. Same pattern
+    // as ld_vaddy -> bulk buffer upper bits [31:12].
     wire [31:0] latches_next_st_vaddy_pre_buf;
     `REG_RST_WE(dc_latches_next_st_vaddy,                  32,  clk, rst, effective_we, next_st_vaddy_d,                  latches_next_st_vaddy_pre_buf);
-    assign latches_next_st_vaddy_o[30:0] = latches_next_st_vaddy_pre_buf[30:0];
-    bufferH16$ u_attach_next_st_vaddy_b31 (.out(latches_next_st_vaddy_o[31]), .in(latches_next_st_vaddy_pre_buf[31]));
+    assign latches_next_st_vaddy_o[11:0] = latches_next_st_vaddy_pre_buf[11:0];
+    genvar gi_nstv;
+    generate
+        for (gi_nstv = 12; gi_nstv <= 31; gi_nstv = gi_nstv + 1) begin : g_next_st_vaddy_buf
+            bufferH16$ u_attach_next_st_vaddy (.out(latches_next_st_vaddy_o[gi_nstv]), .in(latches_next_st_vaddy_pre_buf[gi_nstv]));
+        end
+    endgenerate
     `REG_RST_WE(dc_latches_st_laddy,                       32,  clk, rst, effective_we, st_laddy_d,                       latches_st_laddy_o);
     `REG_RST_WE(dc_latches_st_stack_access,                1,   clk, rst, effective_we, st_stack_access_d,                latches_st_stack_access_o);
 
@@ -534,15 +574,15 @@ module DC_Latches (
     `MUX_2(u_dc_mux_cs_datasize_0, 2, cs_datasize_0_d, nextLatches_cs_datasize_0_i, 2'b0, combined_flush);
     `MUX_2(u_dc_mux_cs_datasize_1, 2, cs_datasize_1_d, nextLatches_cs_datasize_1_i, 2'b0, combined_flush);
     `MUX_2(u_dc_mux_cs_datasize_2, 2, cs_datasize_2_d, nextLatches_cs_datasize_2_i, 2'b0, combined_flush);
-    // fanout: redirect dc_latches_cs_datasize_0 q to staging bus, attach bufferH16$ on bit 1 only
+    // fanout: redirect dc_latches_cs_datasize_0 q to staging bus, attach bufferH16$ on both bits
     wire [1:0] latches_cs_datasize_0_pre_buf;
     `REG_RST_WE(dc_latches_cs_datasize_0, 2, clk, rst, effective_we, cs_datasize_0_d, latches_cs_datasize_0_pre_buf);
-    assign latches_cs_datasize_0_o[0] = latches_cs_datasize_0_pre_buf[0];
+    bufferH16$ u_attach_cs_datasize_0_b0 (.out(latches_cs_datasize_0_o[0]), .in(latches_cs_datasize_0_pre_buf[0]));
     bufferH16$ u_attach_cs_datasize_0_b1 (.out(latches_cs_datasize_0_o[1]), .in(latches_cs_datasize_0_pre_buf[1]));
-    // fanout: redirect dc_latches_cs_datasize_1 q to staging bus, attach bufferH16$ on bit 1 only
+    // fanout: redirect dc_latches_cs_datasize_1 q to staging bus, attach bufferH16$ on both bits
     wire [1:0] latches_cs_datasize_1_pre_buf;
     `REG_RST_WE(dc_latches_cs_datasize_1, 2, clk, rst, effective_we, cs_datasize_1_d, latches_cs_datasize_1_pre_buf);
-    assign latches_cs_datasize_1_o[0] = latches_cs_datasize_1_pre_buf[0];
+    bufferH16$ u_attach_cs_datasize_1_b0 (.out(latches_cs_datasize_1_o[0]), .in(latches_cs_datasize_1_pre_buf[0]));
     bufferH16$ u_attach_cs_datasize_1_b1 (.out(latches_cs_datasize_1_o[1]), .in(latches_cs_datasize_1_pre_buf[1]));
     `REG_RST_WE(dc_latches_cs_datasize_2, 2, clk, rst, effective_we, cs_datasize_2_d, latches_cs_datasize_2_o);
 

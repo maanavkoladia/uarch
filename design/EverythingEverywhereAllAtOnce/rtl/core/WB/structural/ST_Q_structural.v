@@ -106,8 +106,20 @@ module ST_Q (
     // Internal feedback (np_left/right_shift, full/empty, NOR for low_w) uses
     // next_push_high_q / next_push_low_w directly so the buffers don't sit in
     // the next_push state-update loop.
+    //
+    // Fanout split: bit 3 of next_push_high_q (= full_w) is consumed by both
+    // tight internal feedback (u_full_notpop, u_inv_full, u_np_din right-shift,
+    // u_np_low NOR) AND external taps (u_buf_npw4, outputs_full → DCache_Arb).
+    // To keep the internal loop tight (no buffer delay) we add a 1-bit
+    // replicated register u_next_push_full_ext (instantiated after u_next_push
+    // below, where its DIN/WE wires are declared) driven by the same
+    // din[3]/we/clk/rst -- bit-identical to high_q[3] every cycle, but its
+    // own physical net so the external loads don't accumulate on the
+    // internal-feedback Q output.
+    wire next_push_full_ext_w;   // = high_q[3]  (replicated for external)
+
     wire [4:0] next_push_w_raw;
-    assign next_push_w_raw = {next_push_high_q, next_push_low_w};
+    assign next_push_w_raw = {next_push_full_ext_w, next_push_high_q[2:0], next_push_low_w};
     bufferH256$  u_buf_npw0 (.out(next_push_w[0]), .in(next_push_w_raw[0]));
     bufferH1024$ u_buf_npw1 (.out(next_push_w[1]), .in(next_push_w_raw[1]));
     bufferH1024$ u_buf_npw2 (.out(next_push_w[2]), .in(next_push_w_raw[2]));
@@ -154,7 +166,10 @@ module ST_Q (
     `AND_2(u_full_notpop, 1, full_and_notpop_w, full_w, inv_pop_in_w)
     `AND_2(u_push_fail,   1, outputs_push_fail, wb_in_push, full_and_notpop_w)
 
-    assign outputs_full  = full_w;
+    // outputs_full uses the replicated u_next_push_full_ext copy so the
+    // external load (DCache_Arb g_st_override) does not pile onto the
+    // internal-feedback Q[3] of u_next_push.
+    assign outputs_full  = next_push_full_ext_w;
     assign outputs_empty = empty_w;
 
     // ===================================================================
@@ -184,6 +199,13 @@ module ST_Q (
     `MUX_2(u_np_din, 4, next_push_din_w, np_left_shift_w, np_right_shift_w, valid_pop_w)
 
     `REG_RST_WE(u_next_push, 4, clk, rst, next_push_we_w, next_push_din_w, next_push_high_q)
+
+    // External-fanout replica of u_next_push bit 3 (= full_w). Same DIN/WE/
+    // CLK/RST as u_next_push, so its Q is bit-identical to high_q[3] every
+    // cycle. Drives only u_buf_npw4 + outputs_full so the internal-feedback
+    // Q[3] of u_next_push stays at fanout 4.
+    `REG_RST_WE(u_next_push_full_ext, 1, clk, rst,
+                next_push_we_w, next_push_din_w[3], next_push_full_ext_w)
 
     // ===================================================================
     // Slot register signals (q[0..3])
@@ -329,20 +351,64 @@ module ST_Q (
     `REG_RST_WE(u_q3_d, 128, clk, rst, we_w, din_3_data_w,    q_3_data_w)
 
     // ===================================================================
+    // External-fanout replicas / buffers
+    //
+    //   q_1/2/3 .valid Q outputs see 4 internal mux inputs (smpp/smpo/din)
+    //   PLUS dep_check (g_slot[N].u_mux_valid_0 + _mux_valid_1) = 6 loads,
+    //   violating the fanout-4 limit on a reg64e$ Q. Replicate each 1-bit
+    //   valid register: the _ext copy takes the same DIN/WE/CLK/RST and is
+    //   bit-identical to the internal copy every cycle, but its Q drives
+    //   only outputs_valid_N. The internal Q is left at fanout=4 (no buffer
+    //   in the shift recurrence). Cost: 3 extra 1-bit FFs per ST_Q.
+    //
+    //   q_0 .address: 2 internal mux loads. Bits [14:4] also feed dep_check
+    //     (2) + DCache_Arb (1) externally = 5 total. Buffer bits [14:4]
+    //     through bufferH16$ -> Q sees 2 internal + 1 buffer = 3 loads.
+    //   q_1/2/3 .address: 4 internal mux loads + dep_check (2) externally = 6
+    //     total. Adding a buffer would push internal direct fanout to 5
+    //     (4 mux + 1 buffer.in) which still violates. Instead, replicate the
+    //     15-bit register: u_qN_a (internal) drives only the 4 internal mux
+    //     inputs (fanout 4); u_qN_a_ext drives outputs_address_N directly
+    //     (fanout = 2 dep_check loads per bit + the output port). Same
+    //     DIN/WE/CLK/RST so they stay bit-identical. Cost: 3 x 15 = 45 extra
+    //     FFs per ST_Q.
+    // ===================================================================
+    wire q_1_valid_ext_w, q_2_valid_ext_w, q_3_valid_ext_w;
+    `REG_RST_WE(u_q1_v_ext, 1, clk, rst, we_w, din_1_valid_w, q_1_valid_ext_w)
+    `REG_RST_WE(u_q2_v_ext, 1, clk, rst, we_w, din_2_valid_w, q_2_valid_ext_w)
+    `REG_RST_WE(u_q3_v_ext, 1, clk, rst, we_w, din_3_valid_w, q_3_valid_ext_w)
+
+    wire [14:0] q_1_address_ext_w, q_2_address_ext_w, q_3_address_ext_w;
+    `REG_RST_WE(u_q1_a_ext, 15, clk, rst, we_w, din_1_address_w, q_1_address_ext_w)
+    `REG_RST_WE(u_q2_a_ext, 15, clk, rst, we_w, din_2_address_w, q_2_address_ext_w)
+    `REG_RST_WE(u_q3_a_ext, 15, clk, rst, we_w, din_3_address_w, q_3_address_ext_w)
+
+    // q_0_address has only 2 internal mux loads (head); buffering [14:4] is
+    // sufficient to keep the reg Q at fanout 3 (2 internal + 1 buffer).
+    wire [14:0] q_0_address_buf_w;
+    assign q_0_address_buf_w[3:0] = q_0_address_w[3:0];
+    genvar gi_a;
+    generate
+        for (gi_a = 4; gi_a <= 14; gi_a = gi_a + 1) begin : g_q0addr_buf
+            bufferH16$ u_q0_a_buf (.out(q_0_address_buf_w[gi_a]), .in(q_0_address_w[gi_a]));
+        end
+    endgenerate
+
+    // ===================================================================
     // Combinational outputs
     //   q[0] is always the head, so head_address/bit_vec/data are
     //   direct register taps -- no mux needed (vs the old ring-buffer
     //   port that used a 4:1 head-select mux).
     // ===================================================================
-    assign outputs_valid_0      = q_0_valid_w;
-    assign outputs_valid_1      = q_1_valid_w;
-    assign outputs_valid_2      = q_2_valid_w;
-    assign outputs_valid_3      = q_3_valid_w;
-    assign outputs_address_0    = q_0_address_w;
-    assign outputs_address_1    = q_1_address_w;
-    assign outputs_address_2    = q_2_address_w;
-    assign outputs_address_3    = q_3_address_w;
-    assign outputs_head_address = q_0_address_w;
+    assign outputs_valid_0      = q_0_valid_w;          // fanout=4, OK
+    assign outputs_valid_1      = q_1_valid_ext_w;      // replicated copy
+    assign outputs_valid_2      = q_2_valid_ext_w;      // replicated copy
+    assign outputs_valid_3      = q_3_valid_ext_w;      // replicated copy
+    assign outputs_address_0    = q_0_address_buf_w;    // [14:4] via bufferH16$
+    assign outputs_address_1    = q_1_address_ext_w;    // replicated copy
+    assign outputs_address_2    = q_2_address_ext_w;    // replicated copy
+    assign outputs_address_3    = q_3_address_ext_w;    // replicated copy
+    assign outputs_head_address = q_0_address_buf_w;    // [14:4] via bufferH16$
     assign outputs_bit_vec      = q_0_bit_vec_w;
     assign outputs_data         = q_0_data_w;
 

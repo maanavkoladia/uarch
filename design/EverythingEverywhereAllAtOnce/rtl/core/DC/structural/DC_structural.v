@@ -415,30 +415,42 @@ module DC (
     // ----------------------------------------------------------------
     // Load-vs-in-flight-store dependency check
     // ----------------------------------------------------------------
+    // Split paddr [11:4]=offset (pre-TLB) and [14:12]=pfn (post-TLB) so the
+    // in_flight_sb_logic can start the 8-bit offset compares early and only
+    // wait on the 3-bit pfn compare post-TLB. Mirrors the wb_stq_sb_logic
+    // wiring above. Bits [3:0] (intra-line) are not part of the compare.
     in_flight_sb_logic in_flight_dep_check (
-        .ld_paddr_0    (ld_neuralnet_out_PADDR0),
-        .ld_paddr_1    (ld_neuralnet_out_PADDR1),
-        .LD_XCL        (ld_neuralnet_out_xcl),
-        .LD_OP         (latches_cs_LD_OP_0),
-        .valid         (latches_valid_0),
+        .ld_paddr_0_offset    (ld_neuralnet_out_PADDR0[11:4]),
+        .ld_paddr_0_pfn       (ld_neuralnet_out_PADDR0[14:12]),
+        .ld_paddr_1_offset    (ld_neuralnet_out_PADDR1[11:4]),
+        .ld_paddr_1_pfn       (ld_neuralnet_out_PADDR1[14:12]),
+        .LD_XCL               (ld_neuralnet_out_xcl),
+        .LD_OP                (latches_cs_LD_OP_0),
+        .valid                (latches_valid_0),
 
-        .mem_st_paddr0 (mem_outs_ST_PADDR_0),
-        .mem_st_paddr1 (mem_outs_ST_PADDR_1),
-        .mem_ST_OP     (mem_ST_OP),
-        .mem_ST_XCL    (mem_outs_ST_XCL),
-        .mem_valid     (mem_outs_valid),
+        .mem_st_paddr0_offset (mem_outs_ST_PADDR_0[11:4]),
+        .mem_st_paddr0_pfn    (mem_outs_ST_PADDR_0[14:12]),
+        .mem_st_paddr1_offset (mem_outs_ST_PADDR_1[11:4]),
+        .mem_st_paddr1_pfn    (mem_outs_ST_PADDR_1[14:12]),
+        .mem_ST_OP            (mem_ST_OP),
+        .mem_ST_XCL           (mem_outs_ST_XCL),
+        .mem_valid            (mem_outs_valid),
 
-        .exe_st_paddr0 (exe_outs_ST_PADDR_0),
-        .exe_st_paddr1 (exe_outs_ST_PADDR_1),
-        .exe_ST_OP     (exe_ST_OP),
-        .exe_ST_XCL    (exe_outs_ST_XCL),
-        .exe_valid     (exe_outs_valid),
+        .exe_st_paddr0_offset (exe_outs_ST_PADDR_0[11:4]),
+        .exe_st_paddr0_pfn    (exe_outs_ST_PADDR_0[14:12]),
+        .exe_st_paddr1_offset (exe_outs_ST_PADDR_1[11:4]),
+        .exe_st_paddr1_pfn    (exe_outs_ST_PADDR_1[14:12]),
+        .exe_ST_OP            (exe_ST_OP),
+        .exe_ST_XCL           (exe_outs_ST_XCL),
+        .exe_valid            (exe_outs_valid),
 
-        .wb_st_paddr0  (wb_outs_ST_PADDR_0),
-        .wb_st_paddr1  (wb_outs_ST_PADDR_1),
-        .wb_ST_OP      (wb_ST_OP),
-        .wb_ST_XCL     (wb_outs_ST_XCL),
-        .wb_valid      (wb_outs_valid),
+        .wb_st_paddr0_offset  (wb_outs_ST_PADDR_0[11:4]),
+        .wb_st_paddr0_pfn     (wb_outs_ST_PADDR_0[14:12]),
+        .wb_st_paddr1_offset  (wb_outs_ST_PADDR_1[11:4]),
+        .wb_st_paddr1_pfn     (wb_outs_ST_PADDR_1[14:12]),
+        .wb_ST_OP             (wb_ST_OP),
+        .wb_ST_XCL            (wb_outs_ST_XCL),
+        .wb_valid             (wb_outs_valid),
 
         .in_flight_mem_stall (in_flight_stall)
     );
@@ -447,11 +459,13 @@ module DC (
     // Store-queue dependency check (16 entries flattened)
     // ----------------------------------------------------------------
     wb_stq_sb_logic stq_dep_check (
-        .valid       (latches_valid_0),
-        .ld_paddr_0  (ld_neuralnet_out_PADDR0),
-        .ld_paddr_1  (ld_neuralnet_out_PADDR1),
-        .LD_OP       (latches_cs_LD_OP_0),
-        .LD_XCL      (ld_neuralnet_out_xcl),
+        .valid              (latches_valid_0),
+        .ld_paddr_0_offset  (ld_neuralnet_out_PADDR0[11:4]),
+        .ld_paddr_0_pfn     (ld_neuralnet_out_PADDR0[14:12]),
+        .ld_paddr_1_offset  (ld_neuralnet_out_PADDR1[11:4]),
+        .ld_paddr_1_pfn     (ld_neuralnet_out_PADDR1[14:12]),
+        .LD_OP              (latches_cs_LD_OP_0),
+        .LD_XCL             (ld_neuralnet_out_xcl),
 
         .stq_addr_0  (wb_outs_dep_check_entry_0_address),
         .stq_addr_1  (wb_outs_dep_check_entry_1_address),

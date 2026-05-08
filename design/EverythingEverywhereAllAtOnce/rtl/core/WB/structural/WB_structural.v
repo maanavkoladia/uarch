@@ -454,18 +454,27 @@ module WB (
 
     // ===================================================================
     // Stall logic: 5-input OR of all push_fail signals
+    //
+    // The OR_5 result drives outputs_wb_stall, which is consumed by ~6
+    // external loads (stall sinks across the core). Insert a bufferH16$
+    // between the OR_5 output and the module port so the wire-driver-of-
+    // record is a buffer cell (which is rated for 16 fanout) rather than
+    // the internal nand3 inside OR_5 (which is fanout-limited).
     // ===================================================================
     `OR_5(u_stall_or, 1, stall_flop_next,
           stq_out_0_push_fail, stq_out_1_push_fail,
           stq_out_2_push_fail, stq_out_3_push_fail,
           mio_push_fail)
 
+    wire stall_flop_next_buf;
+    bufferH16$ u_stall_buf (.out(stall_flop_next_buf), .in(stall_flop_next));
+
 
     // ===================================================================
     // Scalar outputs
     // ===================================================================
     assign outputs_valid      = wb_latches_valid;
-    assign outputs_wb_stall   = stall_flop_next;
+    assign outputs_wb_stall   = stall_flop_next_buf;
     assign outputs_ST_OP      = wb_latches_cs_ST_OP;
     assign outputs_ST_XCL     = wb_latches_ST_XCL;
     assign outputs_ST_PADDR_0 = wb_latches_ST_PADDR_0;
