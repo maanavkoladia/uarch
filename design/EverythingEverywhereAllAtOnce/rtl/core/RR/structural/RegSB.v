@@ -130,6 +130,13 @@ module RegSB (
     bufferH64$  u_buf_updateSB_we  (.out(updateSB_we_buf),  .in(updateSB_we));
     bufferH256$ u_buf_updateSB_din (.out(updateSB_din_buf), .in(updateSB_din));
 
+    // flush enters from EXE.u_br_res with very high external fanout (~285).
+    // Inside RegSB it drives 104 loads (g_we_0/g_we_1 generates: OR_3 + MUX_2
+    // sel per iteration x 26 regs x 2 phases). Buffering at module entry drops
+    // RegSB's contribution to the upstream and3$ fanout from 104 to 1.
+    wire flush_buf;
+    bufferH1024$ u_buf_flush (.out(flush_buf), .in(flush));
+
     // 2D arrays indexed by reg id (see reg_ids_define.vh: CS=0 ... NO_REG=25)
     // SB regs duplicated: SB_o_a drives local inc/dec consumers + ECX/CS outputs;
     // SB_o_b drives the 6 wide stall-mux comparators. Both clocked identically.

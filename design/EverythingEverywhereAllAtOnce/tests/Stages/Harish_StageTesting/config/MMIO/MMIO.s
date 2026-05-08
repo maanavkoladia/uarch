@@ -121,15 +121,42 @@ nonsense_mem_ops:
     movl $0, %esi
 nonsense_loop:
     mov (%esi), %ebx
-    add $1, (%esi)
-    //mov (%esi), %ebx
-    mov 0x200(%esi), %ebx
-    add $2, 0x200(%esi)
-    add $2, 0x400(%esi)
-    add $2, 0x600(%esi)
-    add $2, 0x800(%esi)
-    add $2, 0xA00(%esi)
-    add $2, 0xC00(%esi)
+    nop
+    nop
+    nop
+        nop
+    nop
+    nop
+        nop
+    nop
+    nop
+        nop
+    nop
+    nop
+        nop
+    nop
+    nop
+        nop
+    nop
+    nop
+        nop
+    nop
+    nop
+    nop
+    nop
+    nop
+        nop
+    nop
+    nop
+        nop
+    nop
+    nop
+        nop
+    nop
+    nop
+        nop
+    nop
+    nop
 
     addl $-1, %ecx
     jne nonsense_loop

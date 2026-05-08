@@ -312,11 +312,12 @@ wire WB_stall_i_inv;
 wire DC_we_o_nT2;
 wire DC_we_o_nT3;
 wire DC_we_o_nT4;
+wire DC_temp;
 `NAND_2(DC_we_o_nand_t2, 1, DC_we_o_nT2, DC_stall_i_inv, MEM_V_i_inv)
 `NAND_3(DC_we_o_nand_t3, 1, DC_we_o_nT3, DC_stall_i_inv, MEM_stall_i_inv, WB_stall_i_inv)
 `NAND_3(DC_we_o_nand_t4, 1, DC_we_o_nT4, DC_stall_i_inv, MEM_stall_i_inv, EXE_V_i_inv)
-`NAND_4(DC_we_o_nand_top, 1, DC_we_o, DC_V_i, DC_we_o_nT2, DC_we_o_nT3, DC_we_o_nT4)
-
+`NAND_4(DC_we_o_nand_top, 1, DC_temp, DC_V_i, DC_we_o_nT2, DC_we_o_nT3, DC_we_o_nT4)
+bufferH64$(DC_we_o,DC_temp);
 // N_DC_V_o = (!RR_stall_i & RR_V_i) = NOR2(RR_stall_i, RR_V_i_inv)
 // Path: INV(0.15) -> NOR2(0.20) = 0.35 ns
 `NOR_2(N_DC_V_o_nor, 1, N_DC_V_o, RR_stall_i, RR_V_i_inv)

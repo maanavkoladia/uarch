@@ -16,7 +16,7 @@ TARGET = system_testing
 STRUCTRURAL := true
 
 RTL_RUN_LOG_FILE := $(LOG_DIR)/run.log
-CLK_PERIOD := 12
+CLK_PERIOD := 10.6
 
 # DCache dump cycle range (default -1 = disabled).
 # Set at make time:   make DCACHE_DUMP_START=50 	p	DCACHE_DUMP_END=100
@@ -27,7 +27,7 @@ SIMFLAGS          ?=
 
 SIM_DIR = $(PROJECT_ROOT)/scripts/sim/
 
-TEST_CASE_PATH ?= $(TEST_DIR)/config/TheBigOne/
+TEST_CASE_PATH ?= $(TEST_DIR)/config/test1/
 
 #sim rtl vars (segmented sim consumes test-dir + program.bin)
 TEST_CASE_DIR = $(TEST_CASE_PATH)
@@ -146,7 +146,7 @@ see:
 	@echo $(SRC_FILES) | sed 's/ /\n/g' | sed 's#//#/#g'
 	@echo -e "\n"
 	
-view: run
+view: 
 	$(SIM_TOOL) $(SIM_TOOL_FLAGS) -vpd *.vpd &
 
 makeLogDir:

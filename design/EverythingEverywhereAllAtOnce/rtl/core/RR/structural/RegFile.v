@@ -84,9 +84,10 @@ module RegFile (
     `REG_RST_WE(REG_CS_b, 64, clk, rst, we_CS, din_CS, REG_CS_b_o_pre_buf)
     `REG_RST_WE(REG_CS_c, 64, clk, rst, we_CS, din_CS, REG_CS_c_o)
     // fanout buf attach
-    bufferH16$ u_attach_REG_CS_b_q_15 (.out(REG_CS_b_o[15]), .in(REG_CS_b_o_pre_buf[15]));
+    //bufferH16$ u_attach_REG_CS_b_q_15 (.out(REG_CS_b_o[15]), .in(REG_CS_b_o_pre_buf[15]));
+    `BUFFER_DELAY(u_attach_REG_CS_b_q_15, 1, 16, REG_CS_b_o_pre_buf[15:0], REG_CS_b_o[15:0])
     assign REG_CS_b_o[63:16] = REG_CS_b_o_pre_buf[63:16];
-    assign REG_CS_b_o[14:0]  = REG_CS_b_o_pre_buf[14:0];
+    //assign REG_CS_b_o[14:0]  = REG_CS_b_o_pre_buf[14:0];
     assign REG_CS_o = REG_CS_c_o;
 
     // ----- DS  (ID 1) -----
@@ -204,9 +205,13 @@ module RegFile (
     `REG_RST_WE(REG_EAX_b, 64, clk, rst, we_EAX, din_EAX, REG_EAX_b_o)
     `REG_RST_WE(REG_EAX_c, 64, clk, rst, we_EAX, din_EAX, REG_EAX_c_o_pre_buf)
     // fanout buf attach
-    bufferH16$ u_attach_REG_EAX_c_q_31 (.out(REG_EAX_c_o[31]), .in(REG_EAX_c_o_pre_buf[31]));
+    //bufferH16$ u_attach_REG_EAX_c_q_28 (.out(REG_EAX_c_o[28]), .in(REG_EAX_c_o_pre_buf[28]));
+    //bufferH16$ u_attach_REG_EAX_c_q_29 (.out(REG_EAX_c_o[29]), .in(REG_EAX_c_o_pre_buf[29]));
+    //bufferH16$ u_attach_REG_EAX_c_q_30 (.out(REG_EAX_c_o[30]), .in(REG_EAX_c_o_pre_buf[30]));
+    //bufferH16$ u_attach_REG_EAX_c_q_31 (.out(REG_EAX_c_o[31]), .in(REG_EAX_c_o_pre_buf[31]));
+    `BUFFER_DELAY(u_attach_REG_EAX_c_q, 1, 32, REG_EAX_c_o_pre_buf[31:0], REG_EAX_c_o[31:0])
     assign REG_EAX_c_o[63:32] = REG_EAX_c_o_pre_buf[63:32];
-    assign REG_EAX_c_o[30:0]  = REG_EAX_c_o_pre_buf[30:0];
+    //assign REG_EAX_c_o[27:0]  = REG_EAX_c_o_pre_buf[27:0];
     assign REG_EAX_o = REG_EAX_c_o;
 
     // ----- EBX  (ID 8) -----
@@ -602,8 +607,10 @@ module RegFile (
     // mux pins + 3 external loads (Fetch.seg_Xlation gen_pg[14] AND/XOR + EXE
     // exp_call_op tristate) = 6, over the reg64e$ drive limit. Buffering bit 14
     // shifts the 3 external sinks onto bufferH16$, keeping _b.Q[14] at 4 loads.
+    bufferH16$ u_attach_CS_data_b12 (.out(CS_data[12]), .in(REG_CS_b_o[12]));
+    bufferH16$ u_attach_CS_data_b13 (.out(CS_data[13]), .in(REG_CS_b_o[13]));
     bufferH16$ u_attach_CS_data_b14 (.out(CS_data[14]), .in(REG_CS_b_o[14]));
     assign CS_data[31:15] = REG_CS_b_o[31:15];
-    assign CS_data[13:0]  = REG_CS_b_o[13:0];
+    assign CS_data[11:0]  = REG_CS_b_o[11:0];
 
 endmodule
