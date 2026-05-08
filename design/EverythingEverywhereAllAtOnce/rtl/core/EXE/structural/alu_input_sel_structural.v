@@ -24,8 +24,20 @@ module alu_input_sel (
     input  wire [`EXE_STRUCT_SRC_SEL_W-1:0] br_input_sel,
 
     output wire [63:0]                 exp_ld_buf_o,
-    output wire [63:0]                 srA_64,
-    output wire [63:0]                 srB_64,
+    // 4-way replicated srA / srB output ports.
+    // Each bit was previously buffered by a single bufferH256$ (0.54 ns)
+    // covering ~178 transitive loads.  Splitting to 4 sub-ports driven by
+    // bufferH64$ (0.30 ns, rated 64) keeps each per-bit fanout under ~45
+    // and shaves ~0.24 ns off the alu_input_sel -> FU CP.  EXE_structural.v
+    // distributes the FU consumers across the 4 sub-ports.
+    output wire [63:0]                 srA_64_0,
+    output wire [63:0]                 srA_64_1,
+    output wire [63:0]                 srA_64_2,
+    output wire [63:0]                 srA_64_3,
+    output wire [63:0]                 srB_64_0,
+    output wire [63:0]                 srB_64_1,
+    output wire [63:0]                 srB_64_2,
+    output wire [63:0]                 srB_64_3,
     output wire [31:0]                 br_sel
 );
 
@@ -305,20 +317,29 @@ module alu_input_sel (
 
     // -------------------------------------------------------------------------
     // Output buffering for high-fanout operand ports.
-    //   srA_64 worst-case fanout ~178 across all 64 bits
-    //   srB_64 worst-case fanout ~74  across all 64 bits
-    // bufferH256$ is the smallest H-buffer covering 178 loads (rated <=256,
-    // 0.54 ns typ). bufferH64$ would be faster (0.30 ns) but tops out at 64
-    // loads, so it can't safely cover srA_64 (or the 65+ bits of srB_64).
-    // bufferH1024$ / bufferH4096$ work but cost extra delay (0.60 / 0.80 ns).
-    // Using the same cell for both signals keeps the operand-arrival skew
-    // matched at the FU inputs.
+    //
+    // srA_64 / srB_64 each split 4-way across bufferH64$ (0.30 ns, rated 64).
+    // The MUX_32 output srA_64_raw / srB_64_raw drives all 4 buffers in
+    // parallel per bit, fanning to fanout 4 internally.  Each sub-port is
+    // wired to a distinct subset of the FU consumers in EXE_structural.v
+    // so per-port transitive fanout per bit stays at ~45 (within H64).
     // -------------------------------------------------------------------------
+    // _0/_1/_2 use bufferH64$ (0.30 ns).  _3 is the "heavy single FU" port
+    // (sar in crit, paddd/w+pavgb/w in ctrl) where one consumer's intrinsic
+    // per-bit internal fanout (~67 in sar) exceeds the H64 rating, so _3
+    // gets bufferH256$ (0.54 ns).  Sub-ports _0/_1/_2 still get the 0.24 ns
+    // win over the original single bufferH256$ design.
     genvar gi_buf;
     generate
         for (gi_buf = 0; gi_buf < 64; gi_buf = gi_buf + 1) begin : g_out_buf
-            bufferH256$ u_buf_srA (.out(srA_64[gi_buf]), .in(srA_64_raw[gi_buf]));
-            bufferH256$ u_buf_srB (.out(srB_64[gi_buf]), .in(srB_64_raw[gi_buf]));
+            bufferH64$  u_buf_srA_0 (.out(srA_64_0[gi_buf]), .in(srA_64_raw[gi_buf]));
+            bufferH64$  u_buf_srA_1 (.out(srA_64_1[gi_buf]), .in(srA_64_raw[gi_buf]));
+            bufferH64$  u_buf_srA_2 (.out(srA_64_2[gi_buf]), .in(srA_64_raw[gi_buf]));
+            bufferH256$ u_buf_srA_3 (.out(srA_64_3[gi_buf]), .in(srA_64_raw[gi_buf]));
+            bufferH64$  u_buf_srB_0 (.out(srB_64_0[gi_buf]), .in(srB_64_raw[gi_buf]));
+            bufferH64$  u_buf_srB_1 (.out(srB_64_1[gi_buf]), .in(srB_64_raw[gi_buf]));
+            bufferH64$  u_buf_srB_2 (.out(srB_64_2[gi_buf]), .in(srB_64_raw[gi_buf]));
+            bufferH256$ u_buf_srB_3 (.out(srB_64_3[gi_buf]), .in(srB_64_raw[gi_buf]));
         end
     endgenerate
 

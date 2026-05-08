@@ -115,7 +115,12 @@ EXE execute_unit ( \
     .outs_br_res_valid_btb             (exe_outputs_br_res_valid_btb), \
     .outs_br_res_valid_pred            (exe_outputs_br_res_valid_pred), \
     .outs_br_res_valid_fetch           (exe_outputs_br_res_valid_fetch), \
-    .outs_br_res_flush                 (exe_outputs_br_res_flush), \
+    .outs_br_res_flush_decode          (exe_outputs_br_res_flush_decode), \
+    .outs_br_res_flush_fetch           (exe_outputs_br_res_flush_fetch), \
+    .outs_br_res_flush_dc              (exe_outputs_br_res_flush_dc), \
+    .outs_br_res_flush_mem             (exe_outputs_br_res_flush_mem), \
+    .outs_br_res_flush_rr              (exe_outputs_br_res_flush_rr), \
+    .outs_br_res_flush_exe_latches     (exe_outputs_br_res_flush_exe_latches), \
     .outs_br_res_farFlush              (exe_outputs_br_res_farFlush), \
     .outs_br_res_callFlush             (exe_outputs_br_res_callFlush), \
     .outs_br_res_miss_prediction_pred  (exe_outputs_br_res_miss_prediction_pred), \

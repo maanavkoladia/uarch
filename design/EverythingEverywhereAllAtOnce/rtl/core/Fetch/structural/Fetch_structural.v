@@ -175,6 +175,12 @@ module Fetch (
     output wire        outs_int_mode_jk
 );
 
+    // Port-input buffer: the producer (EXE/branch_res) split outs_flush 6 ways
+    // so this port sees only the Fetch cluster's loads (~9 internal). One
+    // bufferH16$ covers them and replaces the EXE-stage wire crossing.
+    wire flush_int;
+    bufferH16$ u_buf_flush (.out(flush_int), .in(exe_outs_br_res_flush));
+
     // ----------------------------------------------------------------
     // Internal storage outputs (driven by structural REG cells)
     // ----------------------------------------------------------------
@@ -563,7 +569,7 @@ module Fetch (
     //   DMA_int_jk   : set=dma_int,            clr=int_mode_jk
     // ----------------------------------------------------------------
     `AND_2(u_flush_and_valid, 1, flush_and_valid,
-            exe_outs_br_res_flush, exe_outs_br_res_valid_fetch)
+            flush_int, exe_outs_br_res_valid_fetch)
 
     `OR_2 (u_exp_clr,         1, exp_clr,
             exe_outs_br_res_clr_exp_mode, flush_and_valid)
@@ -681,7 +687,7 @@ module Fetch (
         .clk          (clk),
         .rst          (rst),
         .spc          (SPC),
-        .flush        (exe_outs_br_res_flush),
+        .flush        (flush_int),
         .decode_stall (decode_outs_stall),
 
         .btb_hit       (btb_hit),
@@ -745,7 +751,7 @@ module Fetch (
         .clk            (clk),
         .rst            (rst),
         .eip            (decode_outs_eip),
-        .flush          (exe_outs_br_res_flush),
+        .flush          (flush_int),
         .exp_pipeclear  (exp_set_exp_pipe_clear),
         .int_pipe_clear (exp_set_int_pipe_clear),
         .decode_stall   (decode_outs_stall),

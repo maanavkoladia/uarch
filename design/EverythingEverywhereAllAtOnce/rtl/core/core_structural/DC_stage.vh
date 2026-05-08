@@ -76,7 +76,7 @@
         .exe_outs_ST_XCL(exe_outputs_ST_XCL), \
         .exe_outs_ST_PADDR_0(exe_outputs_ST_PADDR_0), \
         .exe_outs_ST_PADDR_1(exe_outputs_ST_PADDR_1), \
-        .exe_outs_br_res_flush(exe_outputs_br_res_flush), \
+        .exe_outs_br_res_flush(exe_outputs_br_res_flush_dc), \
         .wb_outs_valid(wb_outputs_valid), \
         .wb_outs_wb_stall(wb_outputs_wb_stall), \
         .wb_outs_ST_OP(wb_outputs_ST_OP), \

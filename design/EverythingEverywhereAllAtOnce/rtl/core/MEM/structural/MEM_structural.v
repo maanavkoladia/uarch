@@ -252,7 +252,9 @@ module MEM (
     // p_address_t = 15 bits, $clog2(CACHE_LINES_SIZE_B)=4 -> bits [5:4]
     assign bank_num_0 = latches_LD_PADDR_0[5:4];
     assign bank_num_1 = latches_LD_PADDR_1[5:4];
-    assign flush_w    = exe_outs_br_res_flush;
+    // Port-input buffer: EXE/branch_res replicated outs_flush per cluster, so
+    // this MEM port sees only the MEM cluster's ~5 internal loads. bufferH16$.
+    bufferH16$ u_buf_flush (.out(flush_w), .in(exe_outs_br_res_flush));
 
     // =========================================================================
     // BRANCH TARGET GENERATOR  (replaces MEM.sv:65-75 case + add)

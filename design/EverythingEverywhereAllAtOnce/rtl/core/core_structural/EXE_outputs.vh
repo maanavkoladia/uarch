@@ -22,7 +22,12 @@ wire exe_outputs_br_res_valid_decode; \
 wire exe_outputs_br_res_valid_btb; \
 wire exe_outputs_br_res_valid_pred; \
 wire exe_outputs_br_res_valid_fetch; \
-wire exe_outputs_br_res_flush; \
+wire exe_outputs_br_res_flush_decode; \
+wire exe_outputs_br_res_flush_fetch; \
+wire exe_outputs_br_res_flush_dc; \
+wire exe_outputs_br_res_flush_mem; \
+wire exe_outputs_br_res_flush_rr; \
+wire exe_outputs_br_res_flush_exe_latches; \
 wire exe_outputs_br_res_farFlush; \
 wire exe_outputs_br_res_callFlush; \
 wire exe_outputs_br_res_miss_prediction_pred; \

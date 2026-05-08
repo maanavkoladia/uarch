@@ -48,7 +48,7 @@ MEM mem_unit( \
     .latches_LD_PADDR_0(mem_latches_LD_PADDR_0), \
     .latches_LD_PADDR_1(mem_latches_LD_PADDR_1), \
     .exe_outs_valid(exe_outputs_valid), \
-    .exe_outs_br_res_flush(exe_outputs_br_res_flush), \
+    .exe_outs_br_res_flush(exe_outputs_br_res_flush_mem), \
     .wb_outs_wb_stall(wb_outputs_wb_stall), \
     .hit_0(dcache2Core_hit_0_o), \
     .hit_1(dcache2Core_hit_1_o), \

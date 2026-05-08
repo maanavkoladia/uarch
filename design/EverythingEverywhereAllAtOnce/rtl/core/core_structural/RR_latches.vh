@@ -129,7 +129,7 @@
         .clk(clk), \
         .rst(rst), \
         .write_enable_i (decode_outputs_rr_stage_latch_we), \
-        .flush          (exe_outputs_br_res_flush), \
+        .flush          (exe_outputs_br_res_flush_rr), \
         .farFlush       (exe_outputs_br_res_farFlush), \
         .exp_pipe_clear (fetch_outputs_exp_pipe_clear), \
         .nextLatches_normal_valid_i                (rr_latches_next_normal_latches_valid), \

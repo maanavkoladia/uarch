@@ -69,6 +69,15 @@ module RegSB (
     output wire        codeSeg_sb
 );
 
+    // Port-input flush replication: with NUM_REGS=26 each generate loop below
+    // drives 5 loads per iter (1 OR_3 + 4 mux sels) = 130 loads. Two parallel
+    // bufferH256$ split the EXE-stage flush net so neither replica exceeds
+    // the cell's rated fanout. The producer (EXE/branch_res) already gives us
+    // a dedicated cluster wire with no other consumers, so the input here
+    // carries exactly two loads.
+    wire flush_for_g0, flush_for_g1;
+    bufferH256$ u_buf_flush_g0 (.out(flush_for_g0), .in(flush));
+    bufferH256$ u_buf_flush_g1 (.out(flush_for_g1), .in(flush));
 
     //lowkey don't want to use reg ids, nvm might have to
     //nv, maybe not since just use segnment0/1 id since if needed here we will wait.
@@ -383,8 +392,8 @@ module RegSB (
     genvar gi_we_0;
     generate
         for (gi_we_0 = 0; gi_we_0 < `NUM_REGS; gi_we_0 = gi_we_0 + 1) begin : g_we_0
-            `OR_3 (u_we_sb_or,       1, we_SB_0[gi_we_0],        sel_inc_0[gi_we_0], sel_dec_0[gi_we_0], flush)
-            `MUX_2(u_din_gated_mux,  4, din_SB_gated_0[gi_we_0], din_SB_0[gi_we_0],  4'b0, flush)
+            `OR_3 (u_we_sb_or,       1, we_SB_0[gi_we_0],        sel_inc_0[gi_we_0], sel_dec_0[gi_we_0], flush_for_g0)
+            `MUX_2(u_din_gated_mux,  4, din_SB_gated_0[gi_we_0], din_SB_0[gi_we_0],  4'b0, flush_for_g0)
         end
     endgenerate
 
@@ -464,8 +473,8 @@ module RegSB (
     genvar gi_we_1;
     generate
         for (gi_we_1 = 0; gi_we_1 < `NUM_REGS; gi_we_1 = gi_we_1 + 1) begin : g_we_1
-            `OR_3 (u_we_sb_or,       1, we_SB_1[gi_we_1],        sel_inc_1[gi_we_1], sel_dec_1[gi_we_1], flush)
-            `MUX_2(u_din_gated_mux,  4, din_SB_gated_1[gi_we_1], din_SB_1[gi_we_1],  4'b0, flush)
+            `OR_3 (u_we_sb_or,       1, we_SB_1[gi_we_1],        sel_inc_1[gi_we_1], sel_dec_1[gi_we_1], flush_for_g1)
+            `MUX_2(u_din_gated_mux,  4, din_SB_gated_1[gi_we_1], din_SB_1[gi_we_1],  4'b0, flush_for_g1)
         end
     endgenerate
 

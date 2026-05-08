@@ -42,7 +42,7 @@
         .mem_outs_stall (mem_outputs_stall), \
         .exe_outs_valid            (exe_outputs_valid), \
         .exe_outs_br_res_valid     (exe_outputs_br_res_valid_decode), \
-        .exe_outs_br_res_flush     (exe_outputs_br_res_flush), \
+        .exe_outs_br_res_flush     (exe_outputs_br_res_flush_decode), \
         .exe_outs_br_res_br_target (exe_outputs_br_res_br_target), \
         .exe_outs_clr_ZF_sb        (exe_outputs_clr_ZF_sb), \
         .exe_outs_ZF               (exe_outputs_ZF), \

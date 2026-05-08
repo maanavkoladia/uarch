@@ -136,7 +136,7 @@
         .mem_outs_valid (mem_outputs_valid), \
         .mem_outs_stall (mem_outputs_stall), \
         .exe_outs_valid           (exe_outputs_valid), \
-        .exe_outs_br_res_flush    (exe_outputs_br_res_flush), \
+        .exe_outs_br_res_flush    (exe_outputs_br_res_flush_rr), \
         .exe_outs_br_res_farFlush (exe_outputs_br_res_farFlush), \
         .exe_outs_br_res_callFlush(exe_outputs_br_res_callFlush), \
         .exe_outs_DR_0_we         (exe_outputs_DR_0_we), \

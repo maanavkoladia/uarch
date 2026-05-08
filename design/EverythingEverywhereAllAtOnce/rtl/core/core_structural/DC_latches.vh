@@ -65,7 +65,7 @@ DC_Latches dc_latches_unit ( \
     .clk            (clk), \
     .rst            (rst), \
     .write_enable_i (rr_outputs_dc_stage_latch_we), \
-    .flush          (exe_outputs_br_res_flush), \
+    .flush          (exe_outputs_br_res_flush_dc), \
     .farFlush       (exe_outputs_br_res_farFlush), \
     .exp_pipe_clear (fetch_outputs_exp_pipe_clear), \
     .nextLatches_valid_i                       (dc_latches_next_valid), \

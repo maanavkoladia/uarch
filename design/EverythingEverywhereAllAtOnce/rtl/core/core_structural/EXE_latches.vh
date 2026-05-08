@@ -65,7 +65,7 @@ EXE_Latches exe_latches_unit ( \
     .clk            (clk), \
     .rst            (rst), \
     .write_enable_n_i (mem_outputs_exe_stage_latch_we_n), \
-    .flush          (exe_outputs_br_res_flush), \
+    .flush          (exe_outputs_br_res_flush_exe_latches), \
     .nextLatches_valid_i                       (exe_latches_next_valid), \
     .nextLatches_cs_ST_OP_i                    (exe_latches_next_cs_ST_OP), \
     .nextLatches_cs_OP_TYPE_i                  (exe_latches_next_cs_OP_TYPE), \

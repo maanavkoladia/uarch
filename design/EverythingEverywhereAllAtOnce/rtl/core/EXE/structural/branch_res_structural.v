@@ -39,7 +39,16 @@ module branch_res (
     output wire        outs_valid_to_btb_o,
     output wire        outs_valid_to_pred_o,
     output wire        outs_valid_to_fetch_o,
-    output wire        outs_flush_o,
+    // outs_flush replicated 6-way to break the 285-load fanout. Each cluster
+    // (Decode, Fetch, DC+DC_Latches, MEM+MEM_Latches, RR+RR_Latches+RegSB,
+    // EXE_Latches) gets its own dedicated AND_3, and consumers add their own
+    // port-input buffers sized to their internal load count.
+    output wire        outs_flush_to_decode_o,
+    output wire        outs_flush_to_fetch_o,
+    output wire        outs_flush_to_dc_o,
+    output wire        outs_flush_to_mem_o,
+    output wire        outs_flush_to_rr_o,
+    output wire        outs_flush_to_exe_latches_o,
     output wire        outs_farFlush_o,
     output wire        outs_callFlush_o,
     // miss_prediction replicated to keep the external consumer (Predictor/GShare)
@@ -58,8 +67,10 @@ module branch_res (
     wire valid;
     wire valid_raw;
     `AND_2(u_and_valid, 1, valid_raw, stage_valid_i, br_info_valid_i)
-    // valid fanout 7 → bufferH16$ smallest fit.
-    bufferH16$ u_buf_valid (.out(valid), .in(valid_raw));
+    // valid fans out to ~17 cells (6× outs_flush replicas + 5× outs_valid
+    // replicas + miss_pred_int/pred + taken/farFlush/callFlush/clr_exp).
+    // bufferH64$ rated 64 absorbs the cluster.
+    bufferH64$ u_buf_valid (.out(valid), .in(valid_raw));
 
     // second_flag_result = second_flag_needed_i ? ~CF : 1'b1
     wire nCF;
@@ -118,11 +129,14 @@ module branch_res (
     wire mp_combined;
     `OR_3(u_or_mp_combined, 1, mp_combined, taken_xor_pred, and3_term, flush_or_term)
 
-    // miss_prediction replicated: one internal copy for u_and_outs_flush below,
-    // one external copy that drives the Predictor/GShare port.
+    // miss_prediction replicated: one internal copy for the 6 u_and_outs_flush_*
+    // replicas below, one external copy that drives the Predictor/GShare port.
+    // The internal copy now feeds 6 AND_3s, so add a small port buffer.
+    wire miss_prediction_int_raw;
     wire miss_prediction_int;
-    `AND_2(u_and_miss_pred_int,  1, miss_prediction_int,            mp_combined, valid)
+    `AND_2(u_and_miss_pred_int,  1, miss_prediction_int_raw,        mp_combined, valid)
     `AND_2(u_and_miss_pred_pred, 1, outs_miss_prediction_to_pred_o, mp_combined, valid)
+    bufferH16$ u_buf_miss_pred_int (.out(miss_prediction_int), .in(miss_prediction_int_raw));
 
     // clr_exp_mode = special_br_i & valid
     wire clr_exp_mode;
@@ -142,8 +156,15 @@ module branch_res (
     `AND_2(u_and_outs_valid_pred,   1, outs_valid_to_pred_o,   valid, n_flush_mask)
     `AND_2(u_and_outs_valid_fetch,  1, outs_valid_to_fetch_o,  valid, n_flush_mask)
 
-    // outs.flush = miss_prediction_int & ~flush_mask & valid (uses internal copies)
-    `AND_3(u_and_outs_flush, 1, outs_flush_o, miss_prediction_int, n_flush_mask, valid)
+    // outs.flush = miss_prediction_int & ~flush_mask & valid
+    // 6-way replicated AND_3, one per consumer cluster. Producer-side parallel
+    // ANDs keep the high-fanout net from ever crossing module boundaries.
+    `AND_3(u_and_outs_flush_decode,      1, outs_flush_to_decode_o,      miss_prediction_int, n_flush_mask, valid)
+    `AND_3(u_and_outs_flush_fetch,       1, outs_flush_to_fetch_o,       miss_prediction_int, n_flush_mask, valid)
+    `AND_3(u_and_outs_flush_dc,          1, outs_flush_to_dc_o,          miss_prediction_int, n_flush_mask, valid)
+    `AND_3(u_and_outs_flush_mem,         1, outs_flush_to_mem_o,         miss_prediction_int, n_flush_mask, valid)
+    `AND_3(u_and_outs_flush_rr,          1, outs_flush_to_rr_o,          miss_prediction_int, n_flush_mask, valid)
+    `AND_3(u_and_outs_flush_exe_latches, 1, outs_flush_to_exe_latches_o, miss_prediction_int, n_flush_mask, valid)
 
     // outs.br_target = taken ? real_br_target : NEIP_i
     // mux2$ output (32-bit) drives 66 cells/bit -- bufferH256$ per bit.

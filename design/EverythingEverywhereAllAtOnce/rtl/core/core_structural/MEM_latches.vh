@@ -49,7 +49,7 @@ MEM_Latches mem_latches_unit ( \
     .clk            (clk), \
     .rst            (rst), \
     .write_enable_i (dc_outputs_mem_stage_latch_we), \
-    .flush          (exe_outputs_br_res_flush), \
+    .flush          (exe_outputs_br_res_flush_mem), \
     .farFlush       (exe_outputs_br_res_farFlush), \
     .nextLatches_valid_i                       (mem_latches_next_valid), \
     .nextLatches_cs_ST_OP_i                    (mem_latches_next_cs_ST_OP), \

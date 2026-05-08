@@ -174,10 +174,12 @@ task automatic print_exe_outputs();
     // replicas carry the same logical value -- pick _fetch for debug.
     // outs_br_res_miss_prediction was renamed _miss_prediction_pred (single
     // remaining external consumer is Predictor/GShare).
+    // outs_br_res_flush is replicated 6-way (decode/fetch/dc/mem/rr/exe_latches);
+    // all replicas carry the same logical value -- pick _fetch for debug.
     $fdisplay(`LOG_FD,
         "  BR_RES: valid=%0b  flush=%0b  farFlush=%0b  mispredict=%0b  taken=%0b",
         `EXE_UNIT_PATH.outs_br_res_valid_fetch,
-        `EXE_UNIT_PATH.outs_br_res_flush,
+        `EXE_UNIT_PATH.outs_br_res_flush_fetch,
         `EXE_UNIT_PATH.outs_br_res_farFlush,
         `EXE_UNIT_PATH.outs_br_res_miss_prediction_pred,
         `EXE_UNIT_PATH.outs_br_res_taken);

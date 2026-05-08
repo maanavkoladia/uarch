@@ -175,7 +175,15 @@ module EXE (
     output wire         outs_br_res_valid_btb,
     output wire         outs_br_res_valid_pred,
     output wire         outs_br_res_valid_fetch,
-    output wire         outs_br_res_flush,
+    // outs_br_res_flush replicated 6-way to break the 285-load fanout. Each
+    // cluster gets its own dedicated AND_3 in branch_res and routes to a
+    // single downstream consumer module via core_structural .vh files.
+    output wire         outs_br_res_flush_decode,
+    output wire         outs_br_res_flush_fetch,
+    output wire         outs_br_res_flush_dc,
+    output wire         outs_br_res_flush_mem,
+    output wire         outs_br_res_flush_rr,
+    output wire         outs_br_res_flush_exe_latches,
     output wire         outs_br_res_farFlush,
     output wire         outs_br_res_callFlush,
     // miss_prediction replicated: external port goes only to Predictor/GShare;
@@ -238,8 +246,16 @@ module EXE (
     //==========================================================================
     // REGFILE-VALUE FORWARDING MUX
     //==========================================================================
-    wire [63:0] dr_data;
-    wire [63:0] sr_data;
+    // 4-way replicated dr_data / sr_data buffer outputs.  Originally a single
+    // bufferH64$ per bit (0.30 ns) drove ~25 transitive loads.  With four
+    // dedicated nets a/b/c/d, each replica handles one consumer and uses
+    // bufferH16$ (0.24 ns) -- saves 0.06 ns on the RegFile -> ALU/res_buf path.
+    //   _a -> u_alu_input_sel_crit / u_res_buf_sel
+    //   _b -> u_alu_input_sel_arith
+    //   _c -> u_alu_input_sel_ctrl
+    //   _d -> u_sr_sel  (sr_data only -- dr_data has u_res_buf_sel here)
+    wire [63:0] dr_data_a, dr_data_b, dr_data_c, dr_data_d;
+    wire [63:0] sr_data_a, sr_data_b, sr_data_c, sr_data_d;
     wire [31:0] eax_data;
 
     // Pre-buffer wires; dr_data / sr_data are driven by bufferH16$ below
@@ -281,15 +297,21 @@ module EXE (
         64'h0, 64'h0, 64'h0, 64'h0, 64'h0, 64'h0,
         latches_sr_id)
 
-    // Buffer dr_data / sr_data.  After replicating alu_input_sel x3, dr_data's
-    // per-bit transitive fanout is 25 (over bufferH16's 16 rating).  Use
-    // bufferH64$ (rated 64, 0.30 ns) for both -- 0.06 ns more than H16, but
-    // fanout-clean.
+    // 4-way replication: each *_raw[bit] now drives 4 parallel bufferH16$
+    // cells (one per consumer cluster).  Source-side fanout per bit is 4
+    // (well within rating of any sane upstream cell).  Each replica wire
+    // sees ~6-8 pin loads transitively, comfortably within bufferH16$.
     genvar gi_buf_rf;
     generate
         for (gi_buf_rf = 0; gi_buf_rf < 64; gi_buf_rf = gi_buf_rf + 1) begin : g_rf_buf
-            bufferH64$ u_buf_dr (.out(dr_data[gi_buf_rf]), .in(dr_data_raw[gi_buf_rf]));
-            bufferH64$ u_buf_sr (.out(sr_data[gi_buf_rf]), .in(sr_data_raw[gi_buf_rf]));
+            bufferH16$ u_buf_dr_a (.out(dr_data_a[gi_buf_rf]), .in(dr_data_raw[gi_buf_rf]));
+            bufferH16$ u_buf_dr_b (.out(dr_data_b[gi_buf_rf]), .in(dr_data_raw[gi_buf_rf]));
+            bufferH16$ u_buf_dr_c (.out(dr_data_c[gi_buf_rf]), .in(dr_data_raw[gi_buf_rf]));
+            bufferH16$ u_buf_dr_d (.out(dr_data_d[gi_buf_rf]), .in(dr_data_raw[gi_buf_rf]));
+            bufferH16$ u_buf_sr_a (.out(sr_data_a[gi_buf_rf]), .in(sr_data_raw[gi_buf_rf]));
+            bufferH16$ u_buf_sr_b (.out(sr_data_b[gi_buf_rf]), .in(sr_data_raw[gi_buf_rf]));
+            bufferH16$ u_buf_sr_c (.out(sr_data_c[gi_buf_rf]), .in(sr_data_raw[gi_buf_rf]));
+            bufferH16$ u_buf_sr_d (.out(sr_data_d[gi_buf_rf]), .in(sr_data_raw[gi_buf_rf]));
         end
     endgenerate
 
@@ -385,9 +407,23 @@ module EXE (
     //  no functional change.  br_sel and exp_ld_buf_o are taken from the
     //  ctrl-cluster instance (single low-fanout consumers each).
     //==========================================================================
-    wire [63:0] srA, srB;
-    wire [63:0] srA_arith, srB_arith;
-    wire [63:0] srA_ctrl,  srB_ctrl;
+    // 4-way sub-ports per alu_input_sel instance.  Each bit was previously
+    // buffered by bufferH256$ (0.54 ns) covering up to ~178 transitive loads;
+    // splitting to 4 bufferH64$-driven sub-ports drops per-port fanout to
+    // ~45/bit and shaves ~0.24 ns off the alu_input_sel -> FU CP.
+    //
+    //   crit  cluster: cmp,rep_cmp / cmpxchg / sal,sar / xchg
+    //   arith cluster: adc,bsf,mov / add,not,movs / add_df,or / and,sbb
+    //   ctrl  cluster: aaa,call,far_call,exp_call,far_jmp /
+    //                  iretd,ret,ret_imm,ret_far,ret_far_imm /
+    //                  pop,push,packssdw,packsswb /
+    //                  paddd,paddw,pavgb,pavgw
+    wire [63:0] srA_0, srA_1, srA_2, srA_3;
+    wire [63:0] srB_0, srB_1, srB_2, srB_3;
+    wire [63:0] srA_arith_0, srA_arith_1, srA_arith_2, srA_arith_3;
+    wire [63:0] srB_arith_0, srB_arith_1, srB_arith_2, srB_arith_3;
+    wire [63:0] srA_ctrl_0,  srA_ctrl_1,  srA_ctrl_2,  srA_ctrl_3;
+    wire [63:0] srB_ctrl_0,  srB_ctrl_1,  srB_ctrl_2,  srB_ctrl_3;
     wire [31:0] br_sel;
     wire [63:0] exp_ld_buf_o;
     // unconnected sinks for the unused secondary outputs of the arith/ctrl copies
@@ -398,8 +434,8 @@ module EXE (
         .ld_addr_0      (latches_ld_addy),
         .res_buf_in     (latches_ld_buf),
         .imm64          (latches_imm64),
-        .sr_data        (sr_data),
-        .dr_data        (dr_data),
+        .sr_data        (sr_data_a),
+        .dr_data        (dr_data_a),
         .EAX            (eax_data),
         .NEIP           (latches_NEIP),
         .EIP            (latches_EIP),
@@ -410,8 +446,14 @@ module EXE (
         .shift_sr_up    (latches_shift_sr_up),
         .br_input_sel   (latches_cs_branch_target_sel),
         .exp_ld_buf_o   (exp_ld_buf_o),
-        .srA_64         (srA),
-        .srB_64         (srB),
+        .srA_64_0       (srA_0),
+        .srA_64_1       (srA_1),
+        .srA_64_2       (srA_2),
+        .srA_64_3       (srA_3),
+        .srB_64_0       (srB_0),
+        .srB_64_1       (srB_1),
+        .srB_64_2       (srB_2),
+        .srB_64_3       (srB_3),
         .br_sel         (br_sel)
     );
 
@@ -419,8 +461,8 @@ module EXE (
         .ld_addr_0      (latches_ld_addy_b),
         .res_buf_in     (latches_ld_buf_b),
         .imm64          (latches_imm64),
-        .sr_data        (sr_data),
-        .dr_data        (dr_data),
+        .sr_data        (sr_data_b),
+        .dr_data        (dr_data_b),
         .EAX            (eax_data),
         .NEIP           (latches_NEIP),
         .EIP            (latches_EIP),
@@ -431,8 +473,14 @@ module EXE (
         .shift_sr_up    (latches_shift_sr_up_b),
         .br_input_sel   (latches_cs_branch_target_sel_b),
         .exp_ld_buf_o   (exp_ld_buf_arith_unused),
-        .srA_64         (srA_arith),
-        .srB_64         (srB_arith),
+        .srA_64_0       (srA_arith_0),
+        .srA_64_1       (srA_arith_1),
+        .srA_64_2       (srA_arith_2),
+        .srA_64_3       (srA_arith_3),
+        .srB_64_0       (srB_arith_0),
+        .srB_64_1       (srB_arith_1),
+        .srB_64_2       (srB_arith_2),
+        .srB_64_3       (srB_arith_3),
         .br_sel         (br_sel_arith_unused)
     );
 
@@ -440,8 +488,8 @@ module EXE (
         .ld_addr_0      (latches_ld_addy_c),
         .res_buf_in     (latches_ld_buf_c),
         .imm64          (latches_imm64),
-        .sr_data        (sr_data),
-        .dr_data        (dr_data),
+        .sr_data        (sr_data_c),
+        .dr_data        (dr_data_c),
         .EAX            (eax_data),
         .NEIP           (latches_NEIP),
         .EIP            (latches_EIP),
@@ -452,8 +500,14 @@ module EXE (
         .shift_sr_up    (latches_shift_sr_up_c),
         .br_input_sel   (latches_cs_branch_target_sel_c),
         .exp_ld_buf_o   (), // unused: exp_call_op uses ctrl srA but exp_ld_buf from crit
-        .srA_64         (srA_ctrl),
-        .srB_64         (srB_ctrl),
+        .srA_64_0       (srA_ctrl_0),
+        .srA_64_1       (srA_ctrl_1),
+        .srA_64_2       (srA_ctrl_2),
+        .srA_64_3       (srA_ctrl_3),
+        .srB_64_0       (srB_ctrl_0),
+        .srB_64_1       (srB_ctrl_1),
+        .srB_64_2       (srB_ctrl_2),
+        .srB_64_3       (srB_ctrl_3),
         .br_sel         (br_sel_ctrl_unused)
     );
 
@@ -586,7 +640,7 @@ module EXE (
         .xchg_dr_i        (xchg_dr_o),
         .exp_call_dr_i    (exp_call_dr_o),
         .iretd_cs_dr_i    (iretd_cs_o),
-        .dr_data          (dr_data),
+        .dr_data          (dr_data_d),
         .dr_o             (dr_next)
     );
 
@@ -594,7 +648,7 @@ module EXE (
     sr_sel u_sr_sel (
         .op_type          (op_type_datasel),
         .WB_SR            (latches_wb_cs_WB_SR),
-        .sr_data          (sr_data),
+        .sr_data          (sr_data_d),
         .add_df_sr_i      (add_df_sr_o),
         .mov_s_sr_i       (mov_s_sr_o),
         .pop_sr_i         (pop_sr_o),
@@ -652,7 +706,12 @@ module EXE (
     wire        br_outs_valid_btb_w;
     wire        br_outs_valid_pred_w;
     wire        br_outs_valid_fetch_w;
-    wire        br_outs_flush_w;
+    wire        br_outs_flush_decode_w;
+    wire        br_outs_flush_fetch_w;
+    wire        br_outs_flush_dc_w;
+    wire        br_outs_flush_mem_w;
+    wire        br_outs_flush_rr_w;
+    wire        br_outs_flush_exe_latches_w;
     wire        br_outs_farFlush_w;
     wire        br_outs_callFlush_w;
     wire        br_outs_miss_prediction_pred_w;
@@ -688,7 +747,12 @@ module EXE (
         .outs_valid_to_btb_o             (br_outs_valid_btb_w),
         .outs_valid_to_pred_o            (br_outs_valid_pred_w),
         .outs_valid_to_fetch_o           (br_outs_valid_fetch_w),
-        .outs_flush_o                    (br_outs_flush_w),
+        .outs_flush_to_decode_o          (br_outs_flush_decode_w),
+        .outs_flush_to_fetch_o           (br_outs_flush_fetch_w),
+        .outs_flush_to_dc_o              (br_outs_flush_dc_w),
+        .outs_flush_to_mem_o             (br_outs_flush_mem_w),
+        .outs_flush_to_rr_o              (br_outs_flush_rr_w),
+        .outs_flush_to_exe_latches_o     (br_outs_flush_exe_latches_w),
         .outs_farFlush_o                 (br_outs_farFlush_w),
         .outs_callFlush_o                (br_outs_callFlush_w),
         .outs_miss_prediction_to_pred_o  (br_outs_miss_prediction_pred_w),
@@ -915,7 +979,12 @@ module EXE (
     assign outs_br_res_valid_btb    = br_outs_valid_btb_w;
     assign outs_br_res_valid_pred   = br_outs_valid_pred_w;
     assign outs_br_res_valid_fetch  = br_outs_valid_fetch_w;
-    assign outs_br_res_flush        = br_outs_flush_w;
+    assign outs_br_res_flush_decode      = br_outs_flush_decode_w;
+    assign outs_br_res_flush_fetch       = br_outs_flush_fetch_w;
+    assign outs_br_res_flush_dc          = br_outs_flush_dc_w;
+    assign outs_br_res_flush_mem         = br_outs_flush_mem_w;
+    assign outs_br_res_flush_rr          = br_outs_flush_rr_w;
+    assign outs_br_res_flush_exe_latches = br_outs_flush_exe_latches_w;
     assign outs_br_res_farFlush     = br_outs_farFlush_w;
     assign outs_br_res_callFlush    = br_outs_callFlush_w;
     assign outs_br_res_miss_prediction_pred = br_outs_miss_prediction_pred_w;
@@ -946,7 +1015,7 @@ module EXE (
     //==========================================================================
     // ---- CTRL cluster: srA_ctrl / srB_ctrl ----
     aaa_op u_aaa (
-        .EAX_in    (srA_ctrl),
+        .EAX_in    (srA_ctrl_0),
         .AF_flag_in(flags_reg_alu[`EXE_FLAG_AF_IDX]),
         .dr_o      (aaa_dr_o),
         .CF        (aaa_cf_o),
@@ -956,7 +1025,7 @@ module EXE (
     // ---- ARITH cluster: srA_arith / srB_arith ----
     // ---- ARITH cluster A: adc, add, and, or use data_size_arith_a ----
     adc_op u_adc_op (
-        .srA(srA_arith), .srB(srB_arith),
+        .srA(srA_arith_0), .srB(srB_arith_0),
         .CF_in(flags_reg_alu[`EXE_FLAG_CF_IDX]),
         .data_size(data_size_arith_a),
         .dr_o(adc_dr_o), .res_buf_o(adc_res_buf_o),
@@ -965,7 +1034,7 @@ module EXE (
     );
 
     add_op u_add_op (
-        .srA(srA_arith), .srB(srB_arith), .data_size(data_size_arith_a),
+        .srA(srA_arith_0), .srB(srB_arith_0), .data_size(data_size_arith_a),
         .dr_o(add_dr_o), .res_buf_o(add_res_buf_o),
         .ZF(add_zf_o), .SF(add_sf_o), .PF(add_pf_o),
         .OF(add_of_o), .CF(add_cf_o), .AF(add_af_o)
@@ -973,13 +1042,13 @@ module EXE (
 
     // ---- CRIT cluster: srA / srB ----
     rep_cmp u_rep_cmp_op (
-        .srA(srA), .srB(srB),
+        .srA(srA_0), .srB(srB_0),
         .ZF(rep_cmp_zf_o)
     );
 
     // ---- ARITH cluster C: bsf, mov, movs, add_df use data_size_arith_c ----
     add_df_op u_add_df_op (
-        .srA(srA_arith), .srB(srB_arith),
+        .srA(srA_arith_3), .srB(srB_arith_3),
         .curr_df_flag(flags_reg_alu[`EXE_FLAG_DF_IDX]),
         .data_size(data_size_arith_c),
         .dr_o(add_df_dr_o), .sr_o(add_df_sr_o)
@@ -987,7 +1056,7 @@ module EXE (
 
     // ---- ARITH cluster A: and, or use data_size_arith_a ----
     and_op u_and_op (
-        .srA(srA_arith), .srB(srB_arith), .data_size(data_size_arith_a),
+        .srA(srA_arith_0), .srB(srB_arith_0), .data_size(data_size_arith_a),
         .dr_o(and_dr_o), .res_buf_o(and_res_buf_o),
         .ZF(and_zf_o), .SF(and_sf_o), .PF(and_pf_o),
         .OF(and_of_o), .CF(and_cf_o), .AF(and_af_o)
@@ -995,20 +1064,20 @@ module EXE (
 
     // ---- ARITH cluster C: bsf uses data_size_arith_c ----
     bsf_op u_bsf (
-        .srA(srA_arith), .srB(srB_arith), .data_size(data_size_arith_c),
+        .srA(srA_arith_2), .srB(srB_arith_2), .data_size(data_size_arith_c),
         .dr_o(bsf_dr_o), .res_buf_o(bsf_res_buf_o),
         .ZF(bsf_zf_o)
     );
 
     // ---- ARITH cluster B: sbb, cmp, cmpxchg, not use data_size_arith_b ----
     cmp u_cmp (
-        .srA(srA), .srB(srB), .data_size(data_size_arith_b),
+        .srA(srA_0), .srB(srB_0), .data_size(data_size_arith_b),
         .CF(cmp_cf_o), .OF(cmp_of_o), .SF(cmp_sf_o),
         .ZF(cmp_zf_o), .AF(cmp_af_o), .PF(cmp_pf_o)
     );
 
     cmpxchg_op u_cmpxchg_op (
-        .EAX(srB[31:0]), .rm(srA), .r(srB[63:32]),
+        .EAX(srB_1[31:0]), .rm(srA_1), .r(srB_1[63:32]),
         .data_size(data_size_arith_b), .sr_data_size_vec(latches_sr_data_size_vec),
         .dr_o(cmpxchg_dr_o), .EAX_o(cmpxchg_EAX_o), .res_buf(cmpxchg_buf_o),
         .ZF(cmpxchg_zf_o), .SF(cmpxchg_sf_o), .PF(cmpxchg_pf_o),
@@ -1016,12 +1085,12 @@ module EXE (
     );
 
     not_op u_not_op (
-        .srA(srA_arith), .data_size(data_size_arith_b),
+        .srA(srA_arith_1), .data_size(data_size_arith_b),
         .dr_o(not_dr_o), .res_buf_o(not_res_buf_o)
     );
 
     or_op u_or_op (
-        .srA(srA_arith), .srB(srB_arith), .data_size(data_size_arith_a),
+        .srA(srA_arith_1), .srB(srB_arith_1), .data_size(data_size_arith_a),
         .dr_o(or_dr_o), .res_buf_o(or_res_buf_o),
         .ZF(or_zf_o), .SF(or_sf_o), .PF(or_pf_o),
         .OF(or_of_o), .CF(or_cf_o), .AF(or_af_o)
@@ -1029,7 +1098,7 @@ module EXE (
 
     // ---- CRIT cluster: shift ops use the dedicated flags_reg_shift replica ----
     sal_op u_sal_op (
-        .value_i(srA), .shift_amt_i(srB),
+        .value_i(srA_2), .shift_amt_i(srB_2),
         .data_size(data_size_shift), .sr_data_size_vec(latches_sr_data_size_vec),
         .shift_by_one(latches_cs_shift_by_one),
         .curr_zf_flag(flags_reg_shift[`EXE_FLAG_ZF_IDX]),
@@ -1044,7 +1113,7 @@ module EXE (
     );
 
     sar_op u_sar_op (
-        .value_i(srA), .shift_amt_i(srB),
+        .value_i(srA_3), .shift_amt_i(srB_3),
         .data_size(data_size_shift), .shift_by_one(latches_cs_shift_by_one),
         .sr_data_size_vec(latches_sr_data_size_vec),
         .curr_zf_flag(flags_reg_shift[`EXE_FLAG_ZF_IDX]),
@@ -1059,7 +1128,7 @@ module EXE (
     );
 
     sbb_op u_sbb_op (
-        .srA(srA_arith), .srB(srB_arith),
+        .srA(srA_arith_1), .srB(srB_arith_1),
         .CF_in(flags_reg_alu[`EXE_FLAG_CF_IDX]),
         .data_size(data_size_arith_b),
         .dr_o(sbb_dr_o), .res_buf_o(sbb_res_buf_o),
@@ -1069,14 +1138,14 @@ module EXE (
 
     // ---- ARITH cluster C: mov, movs use data_size_arith_c ----
     mov_op u_mov_op (
-        .srA(srA_arith), .srB(srB_arith), .data_size(data_size_arith_c),
+        .srA(srA_arith_2), .srB(srB_arith_2), .data_size(data_size_arith_c),
         .op_type(op_type_fu),
         .curr_cf_flag(flags_reg_alu[`EXE_FLAG_CF_IDX]),
         .res_buf_o(mov_res_buf_o), .dr_o(mov_dr_o)
     );
 
     movs_op u_movs_op (
-        .srA(srA_arith), .srB(srB_arith), .data_size(data_size_arith_c),
+        .srA(srA_arith_2), .srB(srB_arith_2), .data_size(data_size_arith_c),
         .curr_df_flag(flags_reg_alu[`EXE_FLAG_DF_IDX]),
         .res_buf_o(mov_s_res_buf_o), .dr_o(mov_s_dr_o), .sr_o(mov_s_sr_o)
     );
@@ -1084,8 +1153,8 @@ module EXE (
     // ---- CRIT cluster: xchg uses dedicated data_size_mem_xchg (~149 fanout) ----
     // xchg_op uses sr_id / dr_id replica _b (dedicated)
     xchg_op u_xchg_op(
-        .srA(srA),
-        .srB(srB),
+        .srA(srA_1),
+        .srB(srB_1),
         .srA_id(latches_dr_id_b),
         .srB_id(latches_sr_id_b),
         .st_op(latches_cs_ST_OP),
@@ -1098,63 +1167,63 @@ module EXE (
 
     // ---- CTRL cluster ----
     call_op u_call_op (
-        .NEIP(srA_ctrl), .stack_ptr(srB_ctrl),
+        .NEIP(srA_ctrl_0), .stack_ptr(srB_ctrl_0),
         .sr_o(call_sr_o), .res_buf(call_res_buf)
     );
 
     far_call_op u_far_op (
-        .neip(srA_ctrl[31:0]), .segment(srA_ctrl[63:32]),
-        .stack_ptr(srB_ctrl), .new_cs({16'd0, latches_imm64[47:32]}),
+        .neip(srA_ctrl_0[31:0]), .segment(srA_ctrl_0[63:32]),
+        .stack_ptr(srB_ctrl_0), .new_cs({16'd0, latches_imm64[47:32]}),
         .res_buf(far_call_res_buf), .sr_o(far_call_sr_o), .dr_o(far_call_dr_o)
     );
 
     exp_call_op u_exp_call_op (
-        .idt(exp_ld_buf_o), .eip(srA_ctrl[63:32]),
-        .curr_cs(rr_outs_codeSeg_data), .stack_ptr(srB_ctrl),
+        .idt(exp_ld_buf_o), .eip(srA_ctrl_0[63:32]),
+        .curr_cs(rr_outs_codeSeg_data), .stack_ptr(srB_ctrl_0),
         .res_buf(exp_call_res_buf), .dr_o(exp_call_dr_o),
         .sr_o(exp_call_sr_o), .exp_eip(exp_call_eip)
     );
 
     far_jmp_op u_far_jmp_op (
-        .op_type(op_type_fu), .srA(srA_ctrl), .dr_o(far_jmp_dr_o)
+        .op_type(op_type_fu), .srA(srA_ctrl_0), .dr_o(far_jmp_dr_o)
     );
 
     iretd_op u_iretd_op (
-        .cs(srA_ctrl[31:0]), .flags(srA_ctrl[63:32]), .stack_ptr(srB_ctrl),
+        .cs(srA_ctrl_1[31:0]), .flags(srA_ctrl_1[63:32]), .stack_ptr(srB_ctrl_1),
         .dr_o(iretd_cs_o), .sr_o(iretd_stack_ptr_o),
         .CF(iretd_cf_o), .PF(iretd_pf_o), .AF(iretd_af_o),
         .ZF(iretd_zf_o), .SF(iretd_sf_o), .OF(iretd_of_o)
     );
 
-    ret_op u_ret_op (.stack_ptr(srB_ctrl), .sr_o(ret_sr_o));
-    ret_imm_op u_ret_imm_op (.imm64(srA_ctrl), .stack_ptr(srB_ctrl), .sr_o(ret_imm_sr_o));
+    ret_op u_ret_op (.stack_ptr(srB_ctrl_1), .sr_o(ret_sr_o));
+    ret_imm_op u_ret_imm_op (.imm64(srA_ctrl_1), .stack_ptr(srB_ctrl_1), .sr_o(ret_imm_sr_o));
 
     ret_far_op u_ret_far_op (
-        .cs(srA_ctrl[63:32]), .stack_ptr(srB_ctrl),
+        .cs(srA_ctrl_1[63:32]), .stack_ptr(srB_ctrl_1),
         .dr_o(ret_far_cs_o), .sr_o(ret_far_next_ptr_o)
     );
 
     ret_far_imm u_ret_far_imm (
-        .cs(srA_ctrl[63:32]), .stack_ptr(srB_ctrl), .imm64(latches_imm64),
+        .cs(srA_ctrl_1[63:32]), .stack_ptr(srB_ctrl_1), .imm64(latches_imm64),
         .dr_o(ret_far_imm_dr_o), .sr_o(ret_far_imm_sr_o)
     );
 
     pop_op u_pop_op (
-        .value_i(srA_ctrl), .sp_i(srB_ctrl), .curr_dr(latches_dr_data),
+        .value_i(srA_ctrl_2), .sp_i(srB_ctrl_2), .curr_dr(latches_dr_data),
         .data_size(data_size_mem_oth),
         .dr_o(pop_dr_o), .sr_o(pop_sr_o), .res_buf(pop_res_buf)
     );
 
     push_op u_push_op (
-        .value(srA_ctrl), .sp(srB_ctrl), .data_size_vec(data_size_mem_oth),
+        .value(srA_ctrl_2), .sp(srB_ctrl_2), .data_size_vec(data_size_mem_oth),
         .res_buf(push_res_buf), .sr_o(push_sr_o)
     );
 
-    packssdw u_packssdw (.srA(srA_ctrl), .srB(srB_ctrl), .dr_o(packssdw_dr_o));
-    packsswb u_packsswb (.srA(srA_ctrl), .srB(srB_ctrl), .dr_o(packsswb_dr_o));
-    paddd    u_paddd    (.srA(srA_ctrl), .srB(srB_ctrl), .dr_o(paddd_dr_o));
-    paddw    u_paddw    (.srA(srA_ctrl), .srB(srB_ctrl), .dr_o(paddw_dr_o));
-    pavgb    u_pavgb    (.srA(srA_ctrl), .srB(srB_ctrl), .dr_o(pavgb_dr_o));
-    pavgw    u_pavgw    (.srA(srA_ctrl), .srB(srB_ctrl), .dr_o(pavgw_dr_o));
+    packssdw u_packssdw (.srA(srA_ctrl_2), .srB(srB_ctrl_2), .dr_o(packssdw_dr_o));
+    packsswb u_packsswb (.srA(srA_ctrl_2), .srB(srB_ctrl_2), .dr_o(packsswb_dr_o));
+    paddd    u_paddd    (.srA(srA_ctrl_3), .srB(srB_ctrl_3), .dr_o(paddd_dr_o));
+    paddw    u_paddw    (.srA(srA_ctrl_3), .srB(srB_ctrl_3), .dr_o(paddw_dr_o));
+    pavgb    u_pavgb    (.srA(srA_ctrl_3), .srB(srB_ctrl_3), .dr_o(pavgb_dr_o));
+    pavgw    u_pavgw    (.srA(srA_ctrl_3), .srB(srB_ctrl_3), .dr_o(pavgw_dr_o));
 
 endmodule

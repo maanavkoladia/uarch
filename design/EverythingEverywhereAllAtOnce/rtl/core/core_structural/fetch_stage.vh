@@ -41,7 +41,7 @@
         .exe_outs_br_res_valid_btb        (exe_outputs_br_res_valid_btb), \
         .exe_outs_br_res_valid_pred       (exe_outputs_br_res_valid_pred), \
         .exe_outs_br_res_valid_fetch      (exe_outputs_br_res_valid_fetch), \
-        .exe_outs_br_res_flush            (exe_outputs_br_res_flush), \
+        .exe_outs_br_res_flush            (exe_outputs_br_res_flush_fetch), \
         .exe_outs_br_res_miss_prediction_pred  (exe_outputs_br_res_miss_prediction_pred), \
         .exe_outs_br_res_br_eip           (exe_outputs_br_res_br_eip), \
         .exe_outs_br_res_neip             (exe_outputs_br_res_neip), \

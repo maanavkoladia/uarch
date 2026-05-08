@@ -274,6 +274,12 @@ module DC (
     output wire        dc_outs_mem_stage_latch_we
 );
 
+    // Port-input buffer: EXE/branch_res replicated outs_flush per cluster, so
+    // this port now sees only the DC cluster's ~5 loads (req_gen_logic + the
+    // u_not_flush inverter). Single bufferH16$ absorbs them.
+    wire flush_int;
+    bufferH16$ u_buf_flush (.out(flush_int), .in(exe_outs_br_res_flush));
+
     // ----------------------------------------------------------------
     // Internal nets (formerly bool / p_address_t / logic[3:0])
     // ----------------------------------------------------------------
@@ -397,7 +403,7 @@ module DC (
     wire not_flush;
     `OR_3 (u_exp_or,    1, exp_or,
            ld_exception, st_exception, rr_exception)
-    `INV_N(u_not_flush, 1, exe_outs_br_res_flush, not_flush)
+    `INV_N(u_not_flush, 1, flush_int, not_flush)
     // fanout: redirect u_exp_stall AND_3 output to staging wire, attach bufferH16$
     wire exp_stall_pre_buf;
     `AND_3(u_exp_stall, 1, exp_stall_pre_buf, exp_or, latches_valid_2, not_flush)
@@ -510,7 +516,7 @@ module DC (
     req_gen_logic req_gen (
         .clk       (clk),
         .rst       (rst),
-        .flush     (exe_outs_br_res_flush),
+        .flush     (flush_int),
         .valid     (latches_valid_1),
         .LD_OP     (latches_cs_LD_OP_1),
         .XCL       (ld_neuralnet_out_xcl),
