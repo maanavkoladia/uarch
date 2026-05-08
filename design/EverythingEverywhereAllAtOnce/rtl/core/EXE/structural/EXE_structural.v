@@ -674,7 +674,7 @@ module EXE (
     wire [63:0] dr0_data_o, dr1_data_o;
 
     wire [63:0] next_EAX;
-    assign next_EAX = latches_wb_cs_WB_EAX ? cmpxchg_EAX_o : {32'd0, eax_data};
+    `MUX_2(u_next_eax_mux, 64, next_EAX, {32'd0, eax_data}, cmpxchg_EAX_o, latches_wb_cs_WB_EAX)
 
     // reg_wb uses sr_id / dr_id replica _c (dedicated)
     reg_wb_logic u_reg_wb (
