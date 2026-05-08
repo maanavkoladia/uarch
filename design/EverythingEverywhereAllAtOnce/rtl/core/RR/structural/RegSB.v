@@ -535,10 +535,61 @@ module RegSB (
     // seg1_stall    = Segment1_valid && busy_b_idx[Segment1_ID]
     // sib_base_stall= cs_sib_size    && busy_b_idx[sib_base_id]
     // sib_idx_stall = cs_sib_size    && busy_b_idx[sib_idx_id]
-    assign seg0_stall = busy_b_idx[Segment0_ID];
-    `AND_2(u_seg1_stall_and,     1, seg1_stall,     Segment1_valid, busy_b_idx[Segment1_ID])
-    `AND_2(u_sib_base_stall_and, 1, sib_base_stall, cs_sib_size,    busy_b_idx[sib_base_id])
-    `AND_2(u_sib_idx_stall_and,  1, sib_idx_stall,  cs_sib_size,    busy_b_idx[sib_idx_id])
+    //
+    // Variable-indexed reads into the busy_b_idx[] unpacked array were letting
+    // DC infer its own one-hot decode (AND-OR tree) for each consumer. Replaced
+    // with explicit MUX_32 instances — same pattern as u_dr_sb_mux / u_sr_sb_mux
+    // — so the index bits drive a structural MPS_MUX_IN32 (mux4$ tree) directly
+    // and no decode logic is inferred.
+    wire seg0_sb_nz, seg1_sb_nz, sib_base_sb_nz, sib_idx_sb_nz;
+
+    `MUX_32(u_seg0_sb_mux, 1, seg0_sb_nz,
+        busy_b_idx[ 0], busy_b_idx[ 1], busy_b_idx[ 2], busy_b_idx[ 3],
+        busy_b_idx[ 4], busy_b_idx[ 5], busy_b_idx[ 6], busy_b_idx[ 7],
+        busy_b_idx[ 8], busy_b_idx[ 9], busy_b_idx[10], busy_b_idx[11],
+        busy_b_idx[12], busy_b_idx[13], busy_b_idx[14], busy_b_idx[15],
+        busy_b_idx[16], busy_b_idx[17], busy_b_idx[18], busy_b_idx[19],
+        busy_b_idx[20], busy_b_idx[21], busy_b_idx[22], busy_b_idx[23],
+        busy_b_idx[24], busy_b_idx[25],           1'b0,           1'b0,
+                  1'b0,           1'b0,           1'b0,           1'b0,
+        Segment0_ID)
+    assign seg0_stall = seg0_sb_nz;
+
+    `MUX_32(u_seg1_sb_mux, 1, seg1_sb_nz,
+        busy_b_idx[ 0], busy_b_idx[ 1], busy_b_idx[ 2], busy_b_idx[ 3],
+        busy_b_idx[ 4], busy_b_idx[ 5], busy_b_idx[ 6], busy_b_idx[ 7],
+        busy_b_idx[ 8], busy_b_idx[ 9], busy_b_idx[10], busy_b_idx[11],
+        busy_b_idx[12], busy_b_idx[13], busy_b_idx[14], busy_b_idx[15],
+        busy_b_idx[16], busy_b_idx[17], busy_b_idx[18], busy_b_idx[19],
+        busy_b_idx[20], busy_b_idx[21], busy_b_idx[22], busy_b_idx[23],
+        busy_b_idx[24], busy_b_idx[25],           1'b0,           1'b0,
+                  1'b0,           1'b0,           1'b0,           1'b0,
+        Segment1_ID)
+    `AND_2(u_seg1_stall_and, 1, seg1_stall, Segment1_valid, seg1_sb_nz)
+
+    `MUX_32(u_sib_base_sb_mux, 1, sib_base_sb_nz,
+        busy_b_idx[ 0], busy_b_idx[ 1], busy_b_idx[ 2], busy_b_idx[ 3],
+        busy_b_idx[ 4], busy_b_idx[ 5], busy_b_idx[ 6], busy_b_idx[ 7],
+        busy_b_idx[ 8], busy_b_idx[ 9], busy_b_idx[10], busy_b_idx[11],
+        busy_b_idx[12], busy_b_idx[13], busy_b_idx[14], busy_b_idx[15],
+        busy_b_idx[16], busy_b_idx[17], busy_b_idx[18], busy_b_idx[19],
+        busy_b_idx[20], busy_b_idx[21], busy_b_idx[22], busy_b_idx[23],
+        busy_b_idx[24], busy_b_idx[25],           1'b0,           1'b0,
+                  1'b0,           1'b0,           1'b0,           1'b0,
+        sib_base_id)
+    `AND_2(u_sib_base_stall_and, 1, sib_base_stall, cs_sib_size, sib_base_sb_nz)
+
+    `MUX_32(u_sib_idx_sb_mux, 1, sib_idx_sb_nz,
+        busy_b_idx[ 0], busy_b_idx[ 1], busy_b_idx[ 2], busy_b_idx[ 3],
+        busy_b_idx[ 4], busy_b_idx[ 5], busy_b_idx[ 6], busy_b_idx[ 7],
+        busy_b_idx[ 8], busy_b_idx[ 9], busy_b_idx[10], busy_b_idx[11],
+        busy_b_idx[12], busy_b_idx[13], busy_b_idx[14], busy_b_idx[15],
+        busy_b_idx[16], busy_b_idx[17], busy_b_idx[18], busy_b_idx[19],
+        busy_b_idx[20], busy_b_idx[21], busy_b_idx[22], busy_b_idx[23],
+        busy_b_idx[24], busy_b_idx[25],           1'b0,           1'b0,
+                  1'b0,           1'b0,           1'b0,           1'b0,
+        sib_idx_id)
+    `AND_2(u_sib_idx_stall_and, 1, sib_idx_stall, cs_sib_size, sib_idx_sb_nz)
 
     `OR_7(u_dep_stall_or, 1, depStall_Internal,
           dr_stall, sr_stall, seg0_stall, seg1_stall,
