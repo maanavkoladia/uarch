@@ -11,7 +11,7 @@ module sib_processor (
 
     `MUX_4(sib_scale_mux, 8, sib_scale, 8'd0, 8'd1, 8'd2, 8'd3, sib_byte[7:6])
 
-    assign sib_segment_override = (sib_base_id == `ESP);
+    `CMP_N(u_sib_seg_ovrd_cmp, `REG_ID_W, sib_segment_override, sib_base_id, `ESP)
 
 
 endmodule
