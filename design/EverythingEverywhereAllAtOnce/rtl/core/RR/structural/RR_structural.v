@@ -471,8 +471,11 @@ module RR (
     wire [31:0] latchesInUse_displacement;
 
     // -- MUX_2 instances (sel=0 -> normal_latches, sel=1 -> rep_latches) ----
-    `MUX_2(u_mx_valid,                  1, latchesInUse_valid,
+    // fanout: redirect u_mx_valid MUX_2 output to staging wire, attach bufferH16$
+    wire latchesInUse_valid_pre_buf;
+    `MUX_2(u_mx_valid,                  1, latchesInUse_valid_pre_buf,
         latches_normal_latches_valid,   latches_rep_latches_valid, decode_outs_rep_latch)
+    bufferH16$ u_attach_mx_valid (.out(latchesInUse_valid), .in(latchesInUse_valid_pre_buf));
 
     // rr_cs_t
     wire latchesInUse_cs_ST_SEL_pre;
@@ -491,10 +494,26 @@ module RR (
         latches_normal_latches_cs_LD_OP,          latches_rep_latches_cs_LD_OP,          decode_outs_rep_latch)
     `MUX_2(u_mx_cs_ST_OP,               1, latchesInUse_cs_ST_OP,
         latches_normal_latches_cs_ST_OP,          latches_rep_latches_cs_ST_OP,          decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_dr_id,               5, latchesInUse_cs_dr_id,
+    // fanout: redirect u_mx_cs_dr_id MUX_2 output to staging bus, attach per-bit buffers
+    // Per-bit fanouts: 3 bits via bufferH256$, 2 bits via bufferH1024$
+    wire [4:0] latchesInUse_cs_dr_id_pre_buf;
+    `MUX_2(u_mx_cs_dr_id,               5, latchesInUse_cs_dr_id_pre_buf,
         latches_normal_latches_cs_dr_id,          latches_rep_latches_cs_dr_id,          decode_outs_rep_latch)
-    `MUX_2(u_mx_cs_sr_id,               5, latchesInUse_cs_sr_id,
+    bufferH256$  u_attach_cs_dr_id_b0 (.out(latchesInUse_cs_dr_id[0]), .in(latchesInUse_cs_dr_id_pre_buf[0]));
+    bufferH256$  u_attach_cs_dr_id_b1 (.out(latchesInUse_cs_dr_id[1]), .in(latchesInUse_cs_dr_id_pre_buf[1]));
+    bufferH256$  u_attach_cs_dr_id_b2 (.out(latchesInUse_cs_dr_id[2]), .in(latchesInUse_cs_dr_id_pre_buf[2]));
+    bufferH1024$ u_attach_cs_dr_id_b3 (.out(latchesInUse_cs_dr_id[3]), .in(latchesInUse_cs_dr_id_pre_buf[3]));
+    bufferH1024$ u_attach_cs_dr_id_b4 (.out(latchesInUse_cs_dr_id[4]), .in(latchesInUse_cs_dr_id_pre_buf[4]));
+    // fanout: redirect u_mx_cs_sr_id MUX_2 output to staging bus, attach per-bit buffers
+    // Per-bit fanouts: 3 bits via bufferH256$, 2 bits via bufferH1024$
+    wire [4:0] latchesInUse_cs_sr_id_pre_buf;
+    `MUX_2(u_mx_cs_sr_id,               5, latchesInUse_cs_sr_id_pre_buf,
         latches_normal_latches_cs_sr_id,          latches_rep_latches_cs_sr_id,          decode_outs_rep_latch)
+    bufferH256$  u_attach_cs_sr_id_b0 (.out(latchesInUse_cs_sr_id[0]), .in(latchesInUse_cs_sr_id_pre_buf[0]));
+    bufferH256$  u_attach_cs_sr_id_b1 (.out(latchesInUse_cs_sr_id[1]), .in(latchesInUse_cs_sr_id_pre_buf[1]));
+    bufferH256$  u_attach_cs_sr_id_b2 (.out(latchesInUse_cs_sr_id[2]), .in(latchesInUse_cs_sr_id_pre_buf[2]));
+    bufferH1024$ u_attach_cs_sr_id_b3 (.out(latchesInUse_cs_sr_id[3]), .in(latchesInUse_cs_sr_id_pre_buf[3]));
+    bufferH1024$ u_attach_cs_sr_id_b4 (.out(latchesInUse_cs_sr_id[4]), .in(latchesInUse_cs_sr_id_pre_buf[4]));
     `MUX_2(u_mx_cs_dr_rd,               1, latchesInUse_cs_dr_rd,
         latches_normal_latches_cs_dr_rd,          latches_rep_latches_cs_dr_rd,          decode_outs_rep_latch)
     `MUX_2(u_mx_cs_sr_rd,               1, latchesInUse_cs_sr_rd,
@@ -553,8 +572,11 @@ module RR (
     bufferH64$ u_buf_cs_special_br (.out(latchesInUse_cs_special_br), .in(latchesInUse_cs_special_br_pre));
 
     // dc_cs_t
-    `MUX_2(u_mx_dc_cs_LD_OP,            1, latchesInUse_dc_cs_LD_OP,
+    // fanout: redirect u_mx_dc_cs_LD_OP MUX_2 output to staging wire, attach bufferH16$
+    wire latchesInUse_dc_cs_LD_OP_pre_buf;
+    `MUX_2(u_mx_dc_cs_LD_OP,            1, latchesInUse_dc_cs_LD_OP_pre_buf,
         latches_normal_latches_dc_cs_LD_OP,       latches_rep_latches_dc_cs_LD_OP,       decode_outs_rep_latch)
+    bufferH16$ u_attach_mx_dc_cs_LD_OP (.out(latchesInUse_dc_cs_LD_OP), .in(latchesInUse_dc_cs_LD_OP_pre_buf));
     `MUX_2(u_mx_dc_cs_ST_OP,            1, latchesInUse_dc_cs_ST_OP,
         latches_normal_latches_dc_cs_ST_OP,       latches_rep_latches_dc_cs_ST_OP,       decode_outs_rep_latch)
     `MUX_2(u_mx_dc_cs_dr_upper8,        1, latchesInUse_dc_cs_dr_upper8,
@@ -934,7 +956,10 @@ module RR (
     );
 
     // rr_stall = latchesInUse.valid && depstall
-    `AND_2(u_rr_stall, 1, rr_stall_w, latchesInUse_valid, depstall_w)
+    // fanout: redirect u_rr_stall AND_2 output to staging wire, attach bufferH16$
+    wire rr_stall_w_pre_buf;
+    `AND_2(u_rr_stall, 1, rr_stall_w_pre_buf, latchesInUse_valid, depstall_w)
+    bufferH16$ u_attach_rr_stall (.out(rr_stall_w), .in(rr_stall_w_pre_buf));
 
     // =========================================================================
     // dc_valid_logic (auto-generated flat module)

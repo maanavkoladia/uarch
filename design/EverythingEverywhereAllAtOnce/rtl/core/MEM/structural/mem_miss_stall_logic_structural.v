@@ -130,6 +130,9 @@ module mem_miss_stall_logic (
     wire any_miss;
 
     `OR_3(or_any_miss,    1, any_miss,   mio_miss, ld_miss, xcl_miss)
-    `AND_2(and_miss_stall, 1, miss_stall, any_miss, valid)
+    // fanout: redirect and_miss_stall AND_2 output to staging wire, attach bufferH16$
+    wire miss_stall_pre_buf;
+    `AND_2(and_miss_stall, 1, miss_stall_pre_buf, any_miss, valid)
+    bufferH16$ u_attach_miss_stall (.out(miss_stall), .in(miss_stall_pre_buf));
 
 endmodule

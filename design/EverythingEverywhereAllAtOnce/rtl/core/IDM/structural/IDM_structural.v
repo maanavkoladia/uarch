@@ -189,10 +189,14 @@ module IDM (
     wire [31:0] brtgt_q  [0:NUM_IDM_SLOTS-1];
     wire        brxcl_q  [0:NUM_IDM_SLOTS-1];
     wire [127:0] data_q  [0:NUM_IDM_SLOTS-1];
+    // fanout: pre-buf staging for u_r_valid q-output (per slot, fanout=6)
+    wire        valid_q_pre_buf [0:NUM_IDM_SLOTS-1];
 
     generate
         for (gi = 0; gi < NUM_IDM_SLOTS; gi = gi + 1) begin: g_reg
-            `REG_RST_WE(u_r_valid, 1,   clk, rst, we_valid_w[gi], d_valid_w[gi],  valid_q[gi])
+            `REG_RST_WE(u_r_valid, 1,   clk, rst, we_valid_w[gi], d_valid_w[gi],  valid_q_pre_buf[gi])
+            // fanout: attach bufferH16$ to valid_q[gi]
+            bufferH16$ u_attach_valid (.out(valid_q[gi]), .in(valid_q_pre_buf[gi]));
             `REG_RST_WE(u_r_brval, 1,   clk, rst, ld_meta_w[gi],  in_brval_w[gi], brval_q[gi])
             `REG_RST_WE(u_r_breip, 32,  clk, rst, ld_meta_w[gi],  in_breip_w[gi], breip_q[gi])
             `REG_RST_WE(u_r_brtgt, 32,  clk, rst, ld_meta_w[gi],  in_brtgt_w[gi], brtgt_q[gi])

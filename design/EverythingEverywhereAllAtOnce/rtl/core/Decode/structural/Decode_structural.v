@@ -378,7 +378,9 @@ module Decode (
     bufferH16$ buf_ecx_sb (.out(rr_outs_ecx_sb_buf), .in(rr_outs_ecx_sb));
 
     wire decode_forward;
-    `AND_2 (decode_forward_u, 1, decode_forward, rr_latch_we_o, next_rr_valid)
+    wire decode_forward_pre_buf;
+    `AND_2 (decode_forward_u, 1, decode_forward_pre_buf, rr_latch_we_o, next_rr_valid)
+    bufferH16$ u_attach_decode_forward_0 (.out(decode_forward), .in(decode_forward_pre_buf)); // fanout
 
     wire [511:0] flattened_queue;
     assign flattened_queue = {idm_outs_idm_slots_3_data, idm_outs_idm_slots_2_data, idm_outs_idm_slots_1_data, idm_outs_idm_slots_0_data};
@@ -612,8 +614,10 @@ module Decode (
 
     wire rep_din_g;
     `MUX_2(u_rep_din_g, 1, rep_din_g, rep_capture, 1'b0, sync_clear_flush)
+    wire REP_LATCH_pre_buf;
     `REG_RST_WE(u_rep_latch, 1, clk, rst,
-                rep_we_g, rep_din_g, REP_LATCH)
+                rep_we_g, rep_din_g, REP_LATCH_pre_buf)
+    bufferH1024$ u_attach_rep_latch_0 (.out(REP_LATCH), .in(REP_LATCH_pre_buf)); // fanout
 
     wire [`REG_ID_W-1:0] saved_seg0_din;
     `MUX_2(u_saved_seg0_mux, `REG_ID_W, saved_seg0_din, `REG_ID_W'b0, segment0, rep_capture)
@@ -719,7 +723,11 @@ module Decode (
     wire eip_next_we;
     `MUX_2(u_eip_next_we, 1, eip_next_we, eip_next_we_df0, eip_next_we_df1, decode_forward)
 
-    `REG_RST_WE(u_eip, 32, clk, rst, eip_next_we, eip_next, EIP)
+    // u_eip: bit 31 violates (fanout 39) -> bufferH64$ attach; others pass through
+    wire [31:0] EIP_pre_buf;
+    `REG_RST_WE(u_eip, 32, clk, rst, eip_next_we, eip_next, EIP_pre_buf)
+    assign EIP[30:0] = EIP_pre_buf[30:0];
+    bufferH64$ u_attach_eip_31 (.out(EIP[31]), .in(EIP_pre_buf[31])); // fanout
 
 
 

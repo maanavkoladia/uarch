@@ -103,7 +103,9 @@ module branch_res (
     `OR_3(u_or_mp_combined, 1, mp_combined, taken_xor_pred, and3_term, flush_or_term)
 
     wire miss_prediction;
-    `AND_2(u_and_miss_pred, 1, miss_prediction, mp_combined, valid)
+    wire miss_prediction_pre_buf; // fanout
+    `AND_2(u_and_miss_pred, 1, miss_prediction_pre_buf, mp_combined, valid)
+    bufferH16$ u_attach_miss_pred_0 (.out(miss_prediction), .in(miss_prediction_pre_buf)); // fanout
 
     // clr_exp_mode = special_br_i & valid
     wire clr_exp_mode;
@@ -113,10 +115,14 @@ module branch_res (
     // outs.valid = valid & ~flush_mask
     wire n_flush_mask;
     `INV_N(u_inv_flush_mask, 1, flush_mask, n_flush_mask)
-    `AND_2(u_and_outs_valid, 1, outs_valid_o, valid, n_flush_mask)
+    wire outs_valid_o_pre_buf; // fanout
+    `AND_2(u_and_outs_valid, 1, outs_valid_o_pre_buf, valid, n_flush_mask)
+    bufferH256$ u_attach_outs_valid_0 (.out(outs_valid_o), .in(outs_valid_o_pre_buf)); // fanout
 
     // outs.flush = miss_prediction & ~flush_mask & valid
-    `AND_3(u_and_outs_flush, 1, outs_flush_o, miss_prediction, n_flush_mask, valid)
+    wire outs_flush_o_pre_buf; // fanout
+    `AND_3(u_and_outs_flush, 1, outs_flush_o_pre_buf, miss_prediction, n_flush_mask, valid)
+    bufferH1024$ u_attach_outs_flush_0 (.out(outs_flush_o), .in(outs_flush_o_pre_buf)); // fanout
 
     // outs.br_target = taken ? real_br_target : NEIP_i
     `MUX_2(u_mux_br_target, `ADDRESS_BITS, outs_br_target_o, NEIP_i, real_br_target, taken)

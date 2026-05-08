@@ -92,6 +92,7 @@ module ST_Q (
     //   reconstructed full view = next_push_w[4:0]
     // ===================================================================
     wire [3:0] next_push_high_q;
+    wire [3:0] next_push_high_q_pre_buf; // fanout
     wire       next_push_low_w;
     wire [4:0] next_push_w;
 
@@ -161,7 +162,12 @@ module ST_Q (
     wire [3:0] next_push_din_w;
     `MUX_2(u_np_din, 4, next_push_din_w, np_left_shift_w, np_right_shift_w, valid_pop_w)
 
-    `REG_RST_WE(u_next_push, 4, clk, rst, next_push_we_w, next_push_din_w, next_push_high_q)
+    `REG_RST_WE(u_next_push, 4, clk, rst, next_push_we_w, next_push_din_w, next_push_high_q_pre_buf)
+    // fanout: bit 3 needs buffer, others passthrough
+    assign next_push_high_q[0] = next_push_high_q_pre_buf[0];
+    assign next_push_high_q[1] = next_push_high_q_pre_buf[1];
+    assign next_push_high_q[2] = next_push_high_q_pre_buf[2];
+    bufferH16$ u_attach_next_push_3 (.out(next_push_high_q[3]), .in(next_push_high_q_pre_buf[3]));
 
     // ===================================================================
     // Slot register signals (q[0..3])
@@ -171,6 +177,15 @@ module ST_Q (
     wire [14:0] q_0_address_w, q_1_address_w, q_2_address_w, q_3_address_w;
     wire [15:0] q_0_bit_vec_w, q_1_bit_vec_w, q_2_bit_vec_w, q_3_bit_vec_w;
     wire [127:0] q_0_data_w, q_1_data_w, q_2_data_w, q_3_data_w;
+
+    // fanout: pre-buffer staging wires for register outputs that violate
+    wire [14:0] q_0_address_w_pre_buf;
+    wire [14:0] q_1_address_w_pre_buf;
+    wire [14:0] q_2_address_w_pre_buf;
+    wire [14:0] q_3_address_w_pre_buf;
+    wire        q_1_valid_w_pre_buf;
+    wire        q_2_valid_w_pre_buf;
+    wire        q_3_valid_w_pre_buf;
 
     // Common slot WE and 4:1 MUX sel
     wire we_w;
@@ -207,9 +222,12 @@ module ST_Q (
     `MUX_4(u_din0_d, 128, din_0_data_w,    q_0_data_w,    q_1_data_w,    smpo0_data_w,    smpp0_data_w,    sel_w)
 
     `REG_RST_WE(u_q0_v, 1,   clk, rst, we_w, din_0_valid_w,   q_0_valid_w)
-    `REG_RST_WE(u_q0_a, 15,  clk, rst, we_w, din_0_address_w, q_0_address_w)
+    `REG_RST_WE(u_q0_a, 15,  clk, rst, we_w, din_0_address_w, q_0_address_w_pre_buf)
     `REG_RST_WE(u_q0_b, 16,  clk, rst, we_w, din_0_bit_vec_w, q_0_bit_vec_w)
     `REG_RST_WE(u_q0_d, 128, clk, rst, we_w, din_0_data_w,    q_0_data_w)
+    // fanout: q_0_address bit 14 needs buffer
+    assign q_0_address_w[13:0] = q_0_address_w_pre_buf[13:0];
+    bufferH16$ u_attach_q0_a_14 (.out(q_0_address_w[14]), .in(q_0_address_w_pre_buf[14]));
 
     // -------- Slot 1 (q[i]=q[1], q[i+1]=q[2]) --------
     wire        smpo1_valid_w, smpp1_valid_w;
@@ -236,10 +254,14 @@ module ST_Q (
     `MUX_4(u_din1_b, 16,  din_1_bit_vec_w, q_1_bit_vec_w, q_2_bit_vec_w, smpo1_bit_vec_w, smpp1_bit_vec_w, sel_w)
     `MUX_4(u_din1_d, 128, din_1_data_w,    q_1_data_w,    q_2_data_w,    smpo1_data_w,    smpp1_data_w,    sel_w)
 
-    `REG_RST_WE(u_q1_v, 1,   clk, rst, we_w, din_1_valid_w,   q_1_valid_w)
-    `REG_RST_WE(u_q1_a, 15,  clk, rst, we_w, din_1_address_w, q_1_address_w)
+    `REG_RST_WE(u_q1_v, 1,   clk, rst, we_w, din_1_valid_w,   q_1_valid_w_pre_buf)
+    `REG_RST_WE(u_q1_a, 15,  clk, rst, we_w, din_1_address_w, q_1_address_w_pre_buf)
     `REG_RST_WE(u_q1_b, 16,  clk, rst, we_w, din_1_bit_vec_w, q_1_bit_vec_w)
     `REG_RST_WE(u_q1_d, 128, clk, rst, we_w, din_1_data_w,    q_1_data_w)
+    // fanout: q_1_valid bit 0 and q_1_address bit 14 need buffers
+    bufferH16$ u_attach_q1_v_0 (.out(q_1_valid_w), .in(q_1_valid_w_pre_buf));
+    assign q_1_address_w[13:0] = q_1_address_w_pre_buf[13:0];
+    bufferH16$ u_attach_q1_a_14 (.out(q_1_address_w[14]), .in(q_1_address_w_pre_buf[14]));
 
     // -------- Slot 2 (q[i]=q[2], q[i+1]=q[3]) --------
     wire        smpo2_valid_w, smpp2_valid_w;
@@ -266,10 +288,14 @@ module ST_Q (
     `MUX_4(u_din2_b, 16,  din_2_bit_vec_w, q_2_bit_vec_w, q_3_bit_vec_w, smpo2_bit_vec_w, smpp2_bit_vec_w, sel_w)
     `MUX_4(u_din2_d, 128, din_2_data_w,    q_2_data_w,    q_3_data_w,    smpo2_data_w,    smpp2_data_w,    sel_w)
 
-    `REG_RST_WE(u_q2_v, 1,   clk, rst, we_w, din_2_valid_w,   q_2_valid_w)
-    `REG_RST_WE(u_q2_a, 15,  clk, rst, we_w, din_2_address_w, q_2_address_w)
+    `REG_RST_WE(u_q2_v, 1,   clk, rst, we_w, din_2_valid_w,   q_2_valid_w_pre_buf)
+    `REG_RST_WE(u_q2_a, 15,  clk, rst, we_w, din_2_address_w, q_2_address_w_pre_buf)
     `REG_RST_WE(u_q2_b, 16,  clk, rst, we_w, din_2_bit_vec_w, q_2_bit_vec_w)
     `REG_RST_WE(u_q2_d, 128, clk, rst, we_w, din_2_data_w,    q_2_data_w)
+    // fanout: q_2_valid bit 0 and q_2_address bit 14 need buffers
+    bufferH16$ u_attach_q2_v_0 (.out(q_2_valid_w), .in(q_2_valid_w_pre_buf));
+    assign q_2_address_w[13:0] = q_2_address_w_pre_buf[13:0];
+    bufferH16$ u_attach_q2_a_14 (.out(q_2_address_w[14]), .in(q_2_address_w_pre_buf[14]));
 
     // -------- Slot 3 (q[i]=q[3], q[i+1]=q[4]=hardwired 0) --------
     wire        smpo3_valid_w, smpp3_valid_w;
@@ -297,10 +323,14 @@ module ST_Q (
     `MUX_4(u_din3_b, 16,  din_3_bit_vec_w, q_3_bit_vec_w, 16'd0,  smpo3_bit_vec_w, smpp3_bit_vec_w, sel_w)
     `MUX_4(u_din3_d, 128, din_3_data_w,    q_3_data_w,    128'd0, smpo3_data_w,    smpp3_data_w,    sel_w)
 
-    `REG_RST_WE(u_q3_v, 1,   clk, rst, we_w, din_3_valid_w,   q_3_valid_w)
-    `REG_RST_WE(u_q3_a, 15,  clk, rst, we_w, din_3_address_w, q_3_address_w)
+    `REG_RST_WE(u_q3_v, 1,   clk, rst, we_w, din_3_valid_w,   q_3_valid_w_pre_buf)
+    `REG_RST_WE(u_q3_a, 15,  clk, rst, we_w, din_3_address_w, q_3_address_w_pre_buf)
     `REG_RST_WE(u_q3_b, 16,  clk, rst, we_w, din_3_bit_vec_w, q_3_bit_vec_w)
     `REG_RST_WE(u_q3_d, 128, clk, rst, we_w, din_3_data_w,    q_3_data_w)
+    // fanout: q_3_valid bit 0 and q_3_address bit 14 need buffers
+    bufferH16$ u_attach_q3_v_0 (.out(q_3_valid_w), .in(q_3_valid_w_pre_buf));
+    assign q_3_address_w[13:0] = q_3_address_w_pre_buf[13:0];
+    bufferH16$ u_attach_q3_a_14 (.out(q_3_address_w[14]), .in(q_3_address_w_pre_buf[14]));
 
     // ===================================================================
     // Combinational outputs

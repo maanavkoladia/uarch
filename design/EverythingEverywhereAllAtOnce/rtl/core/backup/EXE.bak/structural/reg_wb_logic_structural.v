@@ -39,7 +39,9 @@ module reg_wb_logic (
     `INV_N(u_inv_stall, 1, stall_flop, nstall)
 
     // dr0_we_o = WB_DR & nstall & valid
-    `AND_3(u_and_dr0_we, 1, dr0_we_o, WB_DR, nstall, valid)
+    wire dr0_we_o_pre_buf; // fanout
+    `AND_3(u_and_dr0_we, 1, dr0_we_o_pre_buf, WB_DR, nstall, valid)
+    bufferH64$ u_attach_dr0_we_0 (.out(dr0_we_o), .in(dr0_we_o_pre_buf)); // fanout
 
     // dr1_data_o = WB_EAX ? next_EAX : next_sr_data
     `MUX_2(u_mux_dr1_data, 64, dr1_data_o, next_sr_data, next_EAX, WB_EAX)
@@ -54,6 +56,8 @@ module reg_wb_logic (
     `OR_2(u_or_wb_sr_eax, 1, wb_sr_or_eax, WB_SR, WB_EAX)
 
     // dr1_we_o = wb_sr_or_eax & nstall & valid
-    `AND_3(u_and_dr1_we, 1, dr1_we_o, wb_sr_or_eax, nstall, valid)
+    wire dr1_we_o_pre_buf; // fanout
+    `AND_3(u_and_dr1_we, 1, dr1_we_o_pre_buf, wb_sr_or_eax, nstall, valid)
+    bufferH64$ u_attach_dr1_we_0 (.out(dr1_we_o), .in(dr1_we_o_pre_buf)); // fanout
 
 endmodule

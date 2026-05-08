@@ -398,12 +398,18 @@ module DC (
     `OR_3 (u_exp_or,    1, exp_or,
            ld_exception, st_exception, rr_exception)
     `INV_N(u_not_flush, 1, exe_outs_br_res_flush, not_flush)
-    `AND_3(u_exp_stall, 1, exp_stall, exp_or, latches_valid_2, not_flush)
+    // fanout: redirect u_exp_stall AND_3 output to staging wire, attach bufferH16$
+    wire exp_stall_pre_buf;
+    `AND_3(u_exp_stall, 1, exp_stall_pre_buf, exp_or, latches_valid_2, not_flush)
+    bufferH16$ u_attach_exp_stall (.out(exp_stall), .in(exp_stall_pre_buf));
 
     // ----------------------------------------------------------------
     // dc_stall = dep_stall | arb_stall | exp_stall
     // ----------------------------------------------------------------
-    `OR_3(u_dc_stall, 1, dc_stall, dep_stall, arb_stall, exp_stall)
+    // fanout: redirect u_dc_stall OR_3 output to staging wire, attach bufferH16$
+    wire dc_stall_pre_buf;
+    `OR_3(u_dc_stall, 1, dc_stall_pre_buf, dep_stall, arb_stall, exp_stall)
+    bufferH16$ u_attach_dc_stall (.out(dc_stall), .in(dc_stall_pre_buf));
 
 
     // ----------------------------------------------------------------
@@ -629,7 +635,10 @@ module DC (
     wire not_gp;
     `OR_2(u_isGp, 1, dc_gp, ld_segx_gp, st_segx_gp)
     `INV_N(u_not_gp, 1, dc_gp, not_gp)
-    `OR_2(u_dc_exp_pf, 1, is_dc_pf, ld_neuralnet_out_DC_PF, st_neuralnet_out_DC_PF)
+    // fanout: redirect u_dc_exp_pf OR_2 output to staging wire, attach bufferH16$
+    wire is_dc_pf_pre_buf;
+    `OR_2(u_dc_exp_pf, 1, is_dc_pf_pre_buf, ld_neuralnet_out_DC_PF, st_neuralnet_out_DC_PF)
+    bufferH16$ u_attach_is_dc_pf (.out(is_dc_pf), .in(is_dc_pf_pre_buf));
     `AND_2(u_dc_exp, 1, dc_outs_exp_pf_w, is_dc_pf, not_gp)
 
 

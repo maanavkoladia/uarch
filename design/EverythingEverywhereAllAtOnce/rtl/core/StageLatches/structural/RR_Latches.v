@@ -434,9 +434,14 @@ module RR_Latches (
 
     wire combined_flush;
     wire effective_we;
+    // fanout: staging wire for u_rr_effective_we OR_2 output (126)
+    wire effective_we_pre_buf;
 
     `OR_2(u_rr_combined_flush, 1, combined_flush, flush, exp_pipe_clear);
-    `OR_2(u_rr_effective_we,   1, effective_we,  write_enable_i,   combined_flush);
+    `OR_2(u_rr_effective_we,   1, effective_we_pre_buf,  write_enable_i,   combined_flush);
+
+    // fanout: attach buffer on u_rr_effective_we OR_2 output
+    bufferH256$ u_attach_effective_we (.out(effective_we), .in(effective_we_pre_buf));
 
     // ============================================================
     // Flush-gated data wires (input to each REG_RST_WE)

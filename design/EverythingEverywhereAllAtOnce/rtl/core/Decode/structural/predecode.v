@@ -126,7 +126,9 @@ module predecode(
     `MUX_4(sib_size_mux, 1, sib_size, ppu_sib_size[0], ppu_sib_size[1], ppu_sib_size[2],
         ppu_sib_size[3], {num_pfs[1], num_pfs[0]})
 
-    assign invalid_inst = !true_inst_valid;
+    wire invalid_inst_pre_buf;
+    assign invalid_inst_pre_buf = !true_inst_valid;
+    bufferH1024$ u_attach_invalid_inst_0 (.out(invalid_inst), .in(invalid_inst_pre_buf)); // fanout
 
     wire pf0, pf1, pf2;
     pf_checker checker0(.IRbyte(IR[0]), .pf(pf0), .pf_vector(pf_vector0));

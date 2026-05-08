@@ -455,10 +455,12 @@ module WB (
     // ===================================================================
     // Stall logic: 5-input OR of all push_fail signals
     // ===================================================================
-    `OR_5(u_stall_or, 1, stall_flop_next,
+    wire stall_flop_next_pre_buf; // fanout
+    `OR_5(u_stall_or, 1, stall_flop_next_pre_buf,
           stq_out_0_push_fail, stq_out_1_push_fail,
           stq_out_2_push_fail, stq_out_3_push_fail,
           mio_push_fail)
+    bufferH16$ u_attach_stall_or_0 (.out(stall_flop_next), .in(stall_flop_next_pre_buf)); // fanout
 
 
     // ===================================================================

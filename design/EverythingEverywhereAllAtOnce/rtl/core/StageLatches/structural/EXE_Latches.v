@@ -378,7 +378,9 @@ module EXE_Latches (
 
     // ---- Flops (Q -> _q wires; non-violating flops still write directly to _o) ----
 
-    `REG_RST_WE(exe_latches_valid,                    1,   clk, rst, write_enable_i, valid_d,                    latches_valid_o);
+    wire valid_q;
+    `REG_RST_WE(exe_latches_valid,                    1,   clk, rst, write_enable_i, valid_d,                    valid_q);
+    bufferH16$ u_attach_valid_0 (.out(latches_valid_o), .in(valid_q)); // fanout
     `REG_RST_WE(exe_latches_cs_ST_OP,                 1,   clk, rst, write_enable_i, cs_ST_OP_d,                 latches_cs_ST_OP_o);
     `REG_RST_WE(exe_latches_cs_OP_TYPE,               6,   clk, rst, write_enable_i, cs_OP_TYPE_d,               latches_cs_OP_TYPE_o);
 
@@ -442,7 +444,18 @@ module EXE_Latches (
 
     `REG_RST_WE(exe_latches_imm64,                    64,  clk, rst, write_enable_i, imm64_d,                    imm64_q);
 
-    `REG_RST_WE(exe_latches_ld_buf,                   256, clk, rst, write_enable_i, ld_buf_d,                   latches_ld_buf_o);
+    wire [255:0] ld_buf_q;
+    `REG_RST_WE(exe_latches_ld_buf,                   256, clk, rst, write_enable_i, ld_buf_d,                   ld_buf_q);
+    // ld_buf q-bit attach: 63,127,191 -> bufferH64$; 239 -> bufferH16$; rest passthrough
+    bufferH64$ u_attach_ldbuf_63  (.out(latches_ld_buf_o[63]),  .in(ld_buf_q[63]));  // fanout
+    bufferH64$ u_attach_ldbuf_127 (.out(latches_ld_buf_o[127]), .in(ld_buf_q[127])); // fanout
+    bufferH64$ u_attach_ldbuf_191 (.out(latches_ld_buf_o[191]), .in(ld_buf_q[191])); // fanout
+    bufferH16$ u_attach_ldbuf_239 (.out(latches_ld_buf_o[239]), .in(ld_buf_q[239])); // fanout
+    assign latches_ld_buf_o[62:0]    = ld_buf_q[62:0];
+    assign latches_ld_buf_o[126:64]  = ld_buf_q[126:64];
+    assign latches_ld_buf_o[190:128] = ld_buf_q[190:128];
+    assign latches_ld_buf_o[238:192] = ld_buf_q[238:192];
+    assign latches_ld_buf_o[255:240] = ld_buf_q[255:240];
 
     // 3-way replicated sr_id, dr_id
     `REG_RST_WE(exe_latches_sr_id_a,                  5,   clk, rst, write_enable_i, sr_id_d,                    sr_id_a_q);
@@ -463,21 +476,81 @@ module EXE_Latches (
     // Output buffers (Q -> port)
     // ============================================================
 
-    // alu_inputA/B_sel: per-replica fanout 64 -> bufferH64$
+    // alu_inputA/B_sel + branch_target_sel staging buses (fanout attach below)
+    wire [4:0] _pre_inA_a, _pre_inA_b, _pre_inA_c;
+    wire [4:0] _pre_inB_a, _pre_inB_b, _pre_inB_c;
+    wire [4:0] _pre_brT_a, _pre_brT_b, _pre_brT_c;
+
     genvar gi_a5;
     generate
         for (gi_a5 = 0; gi_a5 < 5; gi_a5 = gi_a5 + 1) begin : g_a5_buf
-            bufferH64$ u_buf_inA_a (.out(latches_cs_alu_inputA_sel_o[gi_a5]),   .in(alu_inputA_sel_a_q[gi_a5]));
-            bufferH64$ u_buf_inA_b (.out(latches_cs_alu_inputA_sel_b_o[gi_a5]), .in(alu_inputA_sel_b_q[gi_a5]));
-            bufferH64$ u_buf_inA_c (.out(latches_cs_alu_inputA_sel_c_o[gi_a5]), .in(alu_inputA_sel_c_q[gi_a5]));
-            bufferH64$ u_buf_inB_a (.out(latches_cs_alu_inputB_sel_o[gi_a5]),   .in(alu_inputB_sel_a_q[gi_a5]));
-            bufferH64$ u_buf_inB_b (.out(latches_cs_alu_inputB_sel_b_o[gi_a5]), .in(alu_inputB_sel_b_q[gi_a5]));
-            bufferH64$ u_buf_inB_c (.out(latches_cs_alu_inputB_sel_c_o[gi_a5]), .in(alu_inputB_sel_c_q[gi_a5]));
-            bufferH64$ u_buf_brT_a (.out(latches_cs_branch_target_sel_o[gi_a5]),   .in(branch_target_a_q[gi_a5]));
-            bufferH64$ u_buf_brT_b (.out(latches_cs_branch_target_sel_b_o[gi_a5]), .in(branch_target_b_q[gi_a5]));
-            bufferH64$ u_buf_brT_c (.out(latches_cs_branch_target_sel_c_o[gi_a5]), .in(branch_target_c_q[gi_a5]));
+            bufferH64$ u_buf_inA_a (.out(_pre_inA_a[gi_a5]), .in(alu_inputA_sel_a_q[gi_a5]));
+            bufferH64$ u_buf_inA_b (.out(_pre_inA_b[gi_a5]), .in(alu_inputA_sel_b_q[gi_a5]));
+            bufferH64$ u_buf_inA_c (.out(_pre_inA_c[gi_a5]), .in(alu_inputA_sel_c_q[gi_a5]));
+            bufferH64$ u_buf_inB_a (.out(_pre_inB_a[gi_a5]), .in(alu_inputB_sel_a_q[gi_a5]));
+            bufferH64$ u_buf_inB_b (.out(_pre_inB_b[gi_a5]), .in(alu_inputB_sel_b_q[gi_a5]));
+            bufferH64$ u_buf_inB_c (.out(_pre_inB_c[gi_a5]), .in(alu_inputB_sel_c_q[gi_a5]));
+            bufferH64$ u_buf_brT_a (.out(_pre_brT_a[gi_a5]), .in(branch_target_a_q[gi_a5]));
+            bufferH64$ u_buf_brT_b (.out(_pre_brT_b[gi_a5]), .in(branch_target_b_q[gi_a5]));
+            bufferH64$ u_buf_brT_c (.out(_pre_brT_c[gi_a5]), .in(branch_target_c_q[gi_a5]));
         end
     endgenerate
+
+    // per-bit attached buffers per fanout report (alu_inputA_sel a/b/c: bits 0,1=1024; 2,3=256; 4 passthrough)
+    bufferH1024$ u_attach_inA_a_0 (.out(latches_cs_alu_inputA_sel_o[0]), .in(_pre_inA_a[0])); // fanout
+    bufferH1024$ u_attach_inA_a_1 (.out(latches_cs_alu_inputA_sel_o[1]), .in(_pre_inA_a[1])); // fanout
+    bufferH256$  u_attach_inA_a_2 (.out(latches_cs_alu_inputA_sel_o[2]), .in(_pre_inA_a[2])); // fanout
+    bufferH256$  u_attach_inA_a_3 (.out(latches_cs_alu_inputA_sel_o[3]), .in(_pre_inA_a[3])); // fanout
+    assign latches_cs_alu_inputA_sel_o[4] = _pre_inA_a[4];
+
+    bufferH1024$ u_attach_inA_b_0 (.out(latches_cs_alu_inputA_sel_b_o[0]), .in(_pre_inA_b[0])); // fanout
+    bufferH1024$ u_attach_inA_b_1 (.out(latches_cs_alu_inputA_sel_b_o[1]), .in(_pre_inA_b[1])); // fanout
+    bufferH256$  u_attach_inA_b_2 (.out(latches_cs_alu_inputA_sel_b_o[2]), .in(_pre_inA_b[2])); // fanout
+    bufferH256$  u_attach_inA_b_3 (.out(latches_cs_alu_inputA_sel_b_o[3]), .in(_pre_inA_b[3])); // fanout
+    assign latches_cs_alu_inputA_sel_b_o[4] = _pre_inA_b[4];
+
+    bufferH1024$ u_attach_inA_c_0 (.out(latches_cs_alu_inputA_sel_c_o[0]), .in(_pre_inA_c[0])); // fanout
+    bufferH1024$ u_attach_inA_c_1 (.out(latches_cs_alu_inputA_sel_c_o[1]), .in(_pre_inA_c[1])); // fanout
+    bufferH256$  u_attach_inA_c_2 (.out(latches_cs_alu_inputA_sel_c_o[2]), .in(_pre_inA_c[2])); // fanout
+    bufferH256$  u_attach_inA_c_3 (.out(latches_cs_alu_inputA_sel_c_o[3]), .in(_pre_inA_c[3])); // fanout
+    assign latches_cs_alu_inputA_sel_c_o[4] = _pre_inA_c[4];
+
+    bufferH1024$ u_attach_inB_a_0 (.out(latches_cs_alu_inputB_sel_o[0]), .in(_pre_inB_a[0])); // fanout
+    bufferH1024$ u_attach_inB_a_1 (.out(latches_cs_alu_inputB_sel_o[1]), .in(_pre_inB_a[1])); // fanout
+    bufferH256$  u_attach_inB_a_2 (.out(latches_cs_alu_inputB_sel_o[2]), .in(_pre_inB_a[2])); // fanout
+    bufferH256$  u_attach_inB_a_3 (.out(latches_cs_alu_inputB_sel_o[3]), .in(_pre_inB_a[3])); // fanout
+    assign latches_cs_alu_inputB_sel_o[4] = _pre_inB_a[4];
+
+    bufferH1024$ u_attach_inB_b_0 (.out(latches_cs_alu_inputB_sel_b_o[0]), .in(_pre_inB_b[0])); // fanout
+    bufferH1024$ u_attach_inB_b_1 (.out(latches_cs_alu_inputB_sel_b_o[1]), .in(_pre_inB_b[1])); // fanout
+    bufferH256$  u_attach_inB_b_2 (.out(latches_cs_alu_inputB_sel_b_o[2]), .in(_pre_inB_b[2])); // fanout
+    bufferH256$  u_attach_inB_b_3 (.out(latches_cs_alu_inputB_sel_b_o[3]), .in(_pre_inB_b[3])); // fanout
+    assign latches_cs_alu_inputB_sel_b_o[4] = _pre_inB_b[4];
+
+    bufferH1024$ u_attach_inB_c_0 (.out(latches_cs_alu_inputB_sel_c_o[0]), .in(_pre_inB_c[0])); // fanout
+    bufferH1024$ u_attach_inB_c_1 (.out(latches_cs_alu_inputB_sel_c_o[1]), .in(_pre_inB_c[1])); // fanout
+    bufferH256$  u_attach_inB_c_2 (.out(latches_cs_alu_inputB_sel_c_o[2]), .in(_pre_inB_c[2])); // fanout
+    bufferH256$  u_attach_inB_c_3 (.out(latches_cs_alu_inputB_sel_c_o[3]), .in(_pre_inB_c[3])); // fanout
+    assign latches_cs_alu_inputB_sel_c_o[4] = _pre_inB_c[4];
+
+    // branch_target_sel a/b/c: bits 0,1=256; 2,3,4 passthrough
+    bufferH256$ u_attach_brT_a_0 (.out(latches_cs_branch_target_sel_o[0]), .in(_pre_brT_a[0])); // fanout
+    bufferH256$ u_attach_brT_a_1 (.out(latches_cs_branch_target_sel_o[1]), .in(_pre_brT_a[1])); // fanout
+    assign latches_cs_branch_target_sel_o[2] = _pre_brT_a[2];
+    assign latches_cs_branch_target_sel_o[3] = _pre_brT_a[3];
+    assign latches_cs_branch_target_sel_o[4] = _pre_brT_a[4];
+
+    bufferH256$ u_attach_brT_b_0 (.out(latches_cs_branch_target_sel_b_o[0]), .in(_pre_brT_b[0])); // fanout
+    bufferH256$ u_attach_brT_b_1 (.out(latches_cs_branch_target_sel_b_o[1]), .in(_pre_brT_b[1])); // fanout
+    assign latches_cs_branch_target_sel_b_o[2] = _pre_brT_b[2];
+    assign latches_cs_branch_target_sel_b_o[3] = _pre_brT_b[3];
+    assign latches_cs_branch_target_sel_b_o[4] = _pre_brT_b[4];
+
+    bufferH256$ u_attach_brT_c_0 (.out(latches_cs_branch_target_sel_c_o[0]), .in(_pre_brT_c[0])); // fanout
+    bufferH256$ u_attach_brT_c_1 (.out(latches_cs_branch_target_sel_c_o[1]), .in(_pre_brT_c[1])); // fanout
+    assign latches_cs_branch_target_sel_c_o[2] = _pre_brT_c[2];
+    assign latches_cs_branch_target_sel_c_o[3] = _pre_brT_c[3];
+    assign latches_cs_branch_target_sel_c_o[4] = _pre_brT_c[4];
 
     // 1-bit signals (sized per fanout)
     bufferH16$  u_buf_shift_by_one  (.out(latches_cs_shift_by_one_o),     .in(shift_by_one_q));
@@ -507,15 +580,21 @@ module EXE_Latches (
         end
     endgenerate
 
-    // ST_PADDR_0 3 replicas, per port ~92-137 -> bufferH256$ per bit
+    // ST_PADDR_0 3 replicas; b-replica bits 0,1 need bufferH1024$ attach
+    wire [14:0] _pre_paddr_b;
     genvar gi_paddr;
     generate
         for (gi_paddr = 0; gi_paddr < 15; gi_paddr = gi_paddr + 1) begin : g_paddr_buf
             bufferH256$ u_buf_paddr_a (.out(latches_ST_PADDR_0_o[gi_paddr]),   .in(ST_PADDR_0_a_q[gi_paddr]));
-            bufferH256$ u_buf_paddr_b (.out(latches_ST_PADDR_0_b_o[gi_paddr]), .in(ST_PADDR_0_b_q[gi_paddr]));
+            bufferH256$ u_buf_paddr_b (.out(_pre_paddr_b[gi_paddr]),           .in(ST_PADDR_0_b_q[gi_paddr]));
             bufferH256$ u_buf_paddr_c (.out(latches_ST_PADDR_0_c_o[gi_paddr]), .in(ST_PADDR_0_c_q[gi_paddr]));
         end
     endgenerate
+
+    // ST_PADDR_0_b: bits 0,1 -> bufferH1024$ attach; rest passthrough
+    bufferH1024$ u_attach_paddr_b_0 (.out(latches_ST_PADDR_0_b_o[0]), .in(_pre_paddr_b[0])); // fanout
+    bufferH1024$ u_attach_paddr_b_1 (.out(latches_ST_PADDR_0_b_o[1]), .in(_pre_paddr_b[1])); // fanout
+    assign latches_ST_PADDR_0_b_o[14:2] = _pre_paddr_b[14:2];
 
     // br_info_br_eip (32-bit, fanout 128) -> bufferH256$ per bit
     genvar gi_br_eip;
@@ -534,34 +613,71 @@ module EXE_Latches (
         end
     endgenerate
 
-    // imm64 (fanout 6) -> bufferH16$ per bit
+    // imm64: bits 0..6 need bufferH64$ attach; bit 7 needs bufferH256$; rest passthrough
+    wire [63:0] _pre_imm;
     genvar gi_imm;
     generate
         for (gi_imm = 0; gi_imm < 64; gi_imm = gi_imm + 1) begin : g_imm_buf
-            bufferH16$ u_buf_imm (.out(latches_imm64_o[gi_imm]), .in(imm64_q[gi_imm]));
+            bufferH16$ u_buf_imm (.out(_pre_imm[gi_imm]), .in(imm64_q[gi_imm]));
         end
     endgenerate
 
-    // sr_id, dr_id 3 replicas, each ~22 fanout -> bufferH64$ per bit
+    bufferH64$  u_attach_imm_0 (.out(latches_imm64_o[0]), .in(_pre_imm[0])); // fanout
+    bufferH64$  u_attach_imm_1 (.out(latches_imm64_o[1]), .in(_pre_imm[1])); // fanout
+    bufferH64$  u_attach_imm_2 (.out(latches_imm64_o[2]), .in(_pre_imm[2])); // fanout
+    bufferH64$  u_attach_imm_3 (.out(latches_imm64_o[3]), .in(_pre_imm[3])); // fanout
+    bufferH64$  u_attach_imm_4 (.out(latches_imm64_o[4]), .in(_pre_imm[4])); // fanout
+    bufferH64$  u_attach_imm_5 (.out(latches_imm64_o[5]), .in(_pre_imm[5])); // fanout
+    bufferH64$  u_attach_imm_6 (.out(latches_imm64_o[6]), .in(_pre_imm[6])); // fanout
+    bufferH256$ u_attach_imm_7 (.out(latches_imm64_o[7]), .in(_pre_imm[7])); // fanout
+    assign latches_imm64_o[63:8] = _pre_imm[63:8];
+
+    // sr_id, dr_id 3 replicas; sr_a / dr_a need attach: bits 0,1 -> 1024; bits 2,3,4 -> 256
+    wire [4:0] _pre_sr_a, _pre_dr_a;
     generate
         for (gi_a5 = 0; gi_a5 < 5; gi_a5 = gi_a5 + 1) begin : g_id_buf
-            bufferH64$ u_buf_sr_a (.out(latches_sr_id_o[gi_a5]),   .in(sr_id_a_q[gi_a5]));
+            bufferH64$ u_buf_sr_a (.out(_pre_sr_a[gi_a5]),         .in(sr_id_a_q[gi_a5]));
             bufferH64$ u_buf_sr_b (.out(latches_sr_id_b_o[gi_a5]), .in(sr_id_b_q[gi_a5]));
             bufferH64$ u_buf_sr_c (.out(latches_sr_id_c_o[gi_a5]), .in(sr_id_c_q[gi_a5]));
-            bufferH64$ u_buf_dr_a (.out(latches_dr_id_o[gi_a5]),   .in(dr_id_a_q[gi_a5]));
+            bufferH64$ u_buf_dr_a (.out(_pre_dr_a[gi_a5]),         .in(dr_id_a_q[gi_a5]));
             bufferH64$ u_buf_dr_b (.out(latches_dr_id_b_o[gi_a5]), .in(dr_id_b_q[gi_a5]));
             bufferH64$ u_buf_dr_c (.out(latches_dr_id_c_o[gi_a5]), .in(dr_id_c_q[gi_a5]));
         end
     endgenerate
 
-    // ld_addy 3 replicas, each ~128 fanout -> bufferH256$ per bit
+    bufferH1024$ u_attach_sr_a_0 (.out(latches_sr_id_o[0]), .in(_pre_sr_a[0])); // fanout
+    bufferH1024$ u_attach_sr_a_1 (.out(latches_sr_id_o[1]), .in(_pre_sr_a[1])); // fanout
+    bufferH256$  u_attach_sr_a_2 (.out(latches_sr_id_o[2]), .in(_pre_sr_a[2])); // fanout
+    bufferH256$  u_attach_sr_a_3 (.out(latches_sr_id_o[3]), .in(_pre_sr_a[3])); // fanout
+    bufferH256$  u_attach_sr_a_4 (.out(latches_sr_id_o[4]), .in(_pre_sr_a[4])); // fanout
+
+    bufferH1024$ u_attach_dr_a_0 (.out(latches_dr_id_o[0]), .in(_pre_dr_a[0])); // fanout
+    bufferH1024$ u_attach_dr_a_1 (.out(latches_dr_id_o[1]), .in(_pre_dr_a[1])); // fanout
+    bufferH256$  u_attach_dr_a_2 (.out(latches_dr_id_o[2]), .in(_pre_dr_a[2])); // fanout
+    bufferH256$  u_attach_dr_a_3 (.out(latches_dr_id_o[3]), .in(_pre_dr_a[3])); // fanout
+    bufferH256$  u_attach_dr_a_4 (.out(latches_dr_id_o[4]), .in(_pre_dr_a[4])); // fanout
+
+    // ld_addy 3 replicas; bits 0,1 of each replica need bufferH1024$ attach
+    wire [14:0] _pre_ldy_a, _pre_ldy_b, _pre_ldy_c;
     genvar gi_ldy;
     generate
         for (gi_ldy = 0; gi_ldy < 15; gi_ldy = gi_ldy + 1) begin : g_ldy_buf
-            bufferH256$ u_buf_ldy_a (.out(latches_ld_addy_o[gi_ldy]),   .in(ld_addy_a_q[gi_ldy]));
-            bufferH256$ u_buf_ldy_b (.out(latches_ld_addy_b_o[gi_ldy]), .in(ld_addy_b_q[gi_ldy]));
-            bufferH256$ u_buf_ldy_c (.out(latches_ld_addy_c_o[gi_ldy]), .in(ld_addy_c_q[gi_ldy]));
+            bufferH256$ u_buf_ldy_a (.out(_pre_ldy_a[gi_ldy]), .in(ld_addy_a_q[gi_ldy]));
+            bufferH256$ u_buf_ldy_b (.out(_pre_ldy_b[gi_ldy]), .in(ld_addy_b_q[gi_ldy]));
+            bufferH256$ u_buf_ldy_c (.out(_pre_ldy_c[gi_ldy]), .in(ld_addy_c_q[gi_ldy]));
         end
     endgenerate
+
+    bufferH1024$ u_attach_ldy_a_0 (.out(latches_ld_addy_o[0]), .in(_pre_ldy_a[0])); // fanout
+    bufferH1024$ u_attach_ldy_a_1 (.out(latches_ld_addy_o[1]), .in(_pre_ldy_a[1])); // fanout
+    assign latches_ld_addy_o[14:2] = _pre_ldy_a[14:2];
+
+    bufferH1024$ u_attach_ldy_b_0 (.out(latches_ld_addy_b_o[0]), .in(_pre_ldy_b[0])); // fanout
+    bufferH1024$ u_attach_ldy_b_1 (.out(latches_ld_addy_b_o[1]), .in(_pre_ldy_b[1])); // fanout
+    assign latches_ld_addy_b_o[14:2] = _pre_ldy_b[14:2];
+
+    bufferH1024$ u_attach_ldy_c_0 (.out(latches_ld_addy_c_o[0]), .in(_pre_ldy_c[0])); // fanout
+    bufferH1024$ u_attach_ldy_c_1 (.out(latches_ld_addy_c_o[1]), .in(_pre_ldy_c[1])); // fanout
+    assign latches_ld_addy_c_o[14:2] = _pre_ldy_c[14:2];
 
 endmodule

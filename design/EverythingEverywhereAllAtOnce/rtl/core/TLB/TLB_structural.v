@@ -151,9 +151,12 @@ module TLB (
     `AND_2(u_mio_term_6, 1, mio_term_6, hit_6_aux, mmio_6)
     `AND_2(u_mio_term_7, 1, mio_term_7, hit_7_aux, mmio_7)
     wire mio_w;
-    `OR_8(u_mio, 1, mio_w,
+    // fanout: attach bufferH16$ to mio_w (fanout=7)
+    wire mio_w_pre_buf;
+    `OR_8(u_mio, 1, mio_w_pre_buf,
           mio_term_0, mio_term_1, mio_term_2, mio_term_3,
           mio_term_4, mio_term_5, mio_term_6, mio_term_7)
+    bufferH16$ u_attach_mio (.out(mio_w), .in(mio_w_pre_buf));
 
     // ----------------------------------------------------------------
     // gp_exp = OR(hit_i & write_intention & ~r_w_i)

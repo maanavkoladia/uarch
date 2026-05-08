@@ -117,7 +117,10 @@ module npu_node2 (
     wire bank0_xor;
     `XOR_2(u_bank0_xor, 1, bank0_xor,
            vaddy_start[`DCACHE_BANK_BANK_LB], vaddy_end[`DCACHE_BANK_BANK_LB])
-    `AND_2(u_xcl, 1, xcl, bank0_xor, mem_op)
+    // fanout: redirect u_xcl AND_2 output to staging wire, attach bufferH16$
+    wire xcl_pre_buf;
+    `AND_2(u_xcl, 1, xcl_pre_buf, bank0_xor, mem_op)
+    bufferH16$ u_attach_xcl (.out(xcl), .in(xcl_pre_buf));
 
     // ----------------------------------------------------------------
     // TLB instances (new flat-port TLB_structural.v interface)
@@ -167,7 +170,23 @@ module npu_node2 (
     wire [14:0] paddr1_same;
     assign paddr1_cross = {tlb1_physical_addr[14:4], 4'b0000};
     assign paddr1_same  = {tlb0_physical_addr[14:12], vaddy_end[11:0]};
-    `MUX_2(u_paddr1, 15, PADDR1, paddr1_same, paddr1_cross, cross_page_cp)
+    // fanout: redirect u_paddr1 MUX_2 output to staging bus, attach per-bit buffers
+    // 9 bits via bufferH16$, 2 bits ([5:4] bank-bank) via bufferH256$, 4 bits passthrough
+    wire [14:0] PADDR1_pre_buf;
+    `MUX_2(u_paddr1, 15, PADDR1_pre_buf, paddr1_same, paddr1_cross, cross_page_cp)
+    assign PADDR1[14:12] = PADDR1_pre_buf[14:12];
+    assign PADDR1[0]     = PADDR1_pre_buf[0];
+    bufferH16$  u_attach_PADDR1_b11 (.out(PADDR1[11]), .in(PADDR1_pre_buf[11]));
+    bufferH16$  u_attach_PADDR1_b10 (.out(PADDR1[10]), .in(PADDR1_pre_buf[10]));
+    bufferH16$  u_attach_PADDR1_b9  (.out(PADDR1[9]),  .in(PADDR1_pre_buf[9]));
+    bufferH16$  u_attach_PADDR1_b8  (.out(PADDR1[8]),  .in(PADDR1_pre_buf[8]));
+    bufferH16$  u_attach_PADDR1_b7  (.out(PADDR1[7]),  .in(PADDR1_pre_buf[7]));
+    bufferH16$  u_attach_PADDR1_b6  (.out(PADDR1[6]),  .in(PADDR1_pre_buf[6]));
+    bufferH256$ u_attach_PADDR1_b5  (.out(PADDR1[5]),  .in(PADDR1_pre_buf[5]));
+    bufferH256$ u_attach_PADDR1_b4  (.out(PADDR1[4]),  .in(PADDR1_pre_buf[4]));
+    bufferH16$  u_attach_PADDR1_b3  (.out(PADDR1[3]),  .in(PADDR1_pre_buf[3]));
+    bufferH16$  u_attach_PADDR1_b2  (.out(PADDR1[2]),  .in(PADDR1_pre_buf[2]));
+    bufferH16$  u_attach_PADDR1_b1  (.out(PADDR1[1]),  .in(PADDR1_pre_buf[1]));
 
     // ----------------------------------------------------------------
     // DC_PF / DC_GP -- gate per-stage page-fault/gp by cross_page (for

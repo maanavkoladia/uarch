@@ -88,26 +88,40 @@ module IDM_Ctrl_Logic (
     wire [3:0] wr_en;          // active-high write enable (after one INV)
     wire [3:0] br_active;
 
+    // fanout: pre-buf staging wires for u_ldm/u_we/u_bra outputs
+    wire [3:0] ldm_pre_buf;
+    wire [3:0] we_pre_buf;
+    wire [3:0] bra_pre_buf;
+
     genvar i;
     generate
         for (i = 0; i < 4; i = i + 1) begin : g_slot
             // ld_meta_data[i] = invalidate[i] | ~slot_valid[i]
             //                 = ~(~invalidate[i] & slot_valid[i])
             `INV_N (u_invn, 1, invalidate[i],     invalidate_n[i])
-            `NAND_2(u_ldm,  1, idm_req_ld_meta_data[i],
+            `NAND_2(u_ldm,  1, ldm_pre_buf[i],
                     invalidate_n[i], idm_slot_valid[i])
+            // fanout: attach bufferH16$ to idm_req_ld_meta_data[i] (fanout=5)
+            bufferH16$ u_attach_ldm (.out(idm_req_ld_meta_data[i]),
+                                    .in (ldm_pre_buf[i]));
 
             // wr_en_n[i] = ~(~slot_valid[i] & slot_oh[i] & idm_loadable)
             // wr_en[i]   = INV(wr_en_n[i])
             `INV_N (u_svn,  1, idm_slot_valid[i], slot_valid_n[i])
             `NAND_3(u_wen,  1, wr_en_n[i],
                     slot_valid_n[i], slot_oh[i], idm_loadable)
-            `INV_N (u_we,   1, wr_en_n[i],        wr_en[i])
+            `INV_N (u_we,   1, wr_en_n[i],        we_pre_buf[i])
+            // fanout: attach bufferH256$ to wr_en[i] (fanout=131)
+            bufferH256$ u_attach_we (.out(wr_en[i]),
+                                    .in (we_pre_buf[i]));
 
             // br_active[i] = wr_en[i] & btb_hit & pred_taken & flush_reg_n
             //              = ~wr_en_n[i] & ~br_cond_n
             //              = NOR_2(wr_en_n[i], br_cond_n)
-            `NOR_2 (u_bra,  1, br_active[i],      wr_en_n[i], br_cond_n)
+            `NOR_2 (u_bra,  1, bra_pre_buf[i],    wr_en_n[i], br_cond_n)
+            // fanout: attach bufferH256$ to br_active[i] (fanout=66)
+            bufferH256$ u_attach_bra (.out(br_active[i]),
+                                    .in (bra_pre_buf[i]));
         end
     endgenerate
 

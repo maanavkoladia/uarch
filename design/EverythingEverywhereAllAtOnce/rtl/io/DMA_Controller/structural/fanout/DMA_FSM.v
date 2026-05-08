@@ -47,8 +47,12 @@ wire S_0_q, S_1_q;
 wire S_0_a, S_0_b, S_0_c;
 wire S_1_a, S_1_b, S_1_c;
 
-`REG_RST(ff_0, 1, clk, rst, NS_0, S_0_q)
-`REG_RST(ff_1, 1, clk, rst, NS_1, S_1_q)
+// ff_0 / ff_1 q outputs are now redirected through attached buffers per spec.
+wire S_0_q_pre_buf, S_1_q_pre_buf;
+`REG_RST(ff_0, 1, clk, rst, NS_0, S_0_q_pre_buf)
+bufferH16$ u_attach_ff_0_q_0 (.out(S_0_q), .in(S_0_q_pre_buf)); // fanout
+`REG_RST(ff_1, 1, clk, rst, NS_1, S_1_q_pre_buf)
+bufferH16$ u_attach_ff_1_q_0 (.out(S_1_q), .in(S_1_q_pre_buf)); // fanout
 `REG_RST(ff_2, 1, clk, rst, NS_2, S_2)
 
 bufferH16$ u_S_0_a_buf (.out(S_0_a), .in(S_0_q));

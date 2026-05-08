@@ -34,12 +34,16 @@ module ICache_En_Logic (
     `INV_N(u_inv_dm, 1, DMA_int,  not_DMA_int)
 
     // 6-input AND: enable when all "block" signals are low and we're out of reset
-    `AND_6(u_en, 1, out,
+    wire u_en_pre_buf;
+    `AND_6(u_en, 1, u_en_pre_buf,
            not_exp_mode,
            not_cs_sb,
            not_int_mode,
            not_f_exp,
            not_DMA_int,
            rst)
+
+    // attach bufferH16$ on output (fanout=11)
+    bufferH16$ u_attach_buf_en (.out(out), .in(u_en_pre_buf));
 
 endmodule

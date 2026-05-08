@@ -362,8 +362,12 @@ module Fetch (
     // exp_mode_jk vector + flat output assignments
     //   outs_o.exp_pipe_clear = exp_pipe_clear | int_pipe_clear
     // ----------------------------------------------------------------
-    `OR_2(u_outs_exp_pipe_clear_or, 1, outs_exp_pipe_clear_w,
+    // fanout: attach bufferH16$ to outs_exp_pipe_clear_w (fanout=13)
+    wire outs_exp_pipe_clear_w_pre_buf;
+    `OR_2(u_outs_exp_pipe_clear_or, 1, outs_exp_pipe_clear_w_pre_buf,
           exp_set_exp_pipe_clear, exp_set_int_pipe_clear)
+    bufferH16$ u_attach_outs_exp_pipe_clear (.out(outs_exp_pipe_clear_w),
+                                            .in (outs_exp_pipe_clear_w_pre_buf));
 
     assign outs_fetch_2_icache_icache_en           = en_icache;
     assign outs_fetch_2_icache_p_addr              = tlb_physical_addr;
@@ -513,11 +517,36 @@ module Fetch (
     // +0.24 ns added to SPC distribution.
     // ----------------------------------------------------------------
     wire [31:0] SPC_raw;
+    wire [31:0] SPC_int;
     `REG_RST(u_spc_reg, 32, clk, rst, next_spc, SPC_raw)
     genvar gs;
     generate
         for (gs = 0; gs < 32; gs = gs + 1) begin : g_spc_buf
-            bufferH16$ u_spc_buf (.out(SPC[gs]), .in(SPC_raw[gs]));
+            bufferH16$ u_spc_buf (.out(SPC_int[gs]), .in(SPC_raw[gs]));
+        end
+    endgenerate
+    // fanout: per-bit attached buffers for violating SPC bits
+    bufferH4096$ u_attach_spc_4  (.out(SPC[4]),  .in(SPC_int[4]));
+    bufferH4096$ u_attach_spc_5  (.out(SPC[5]),  .in(SPC_int[5]));
+    bufferH1024$ u_attach_spc_6  (.out(SPC[6]),  .in(SPC_int[6]));
+    bufferH1024$ u_attach_spc_7  (.out(SPC[7]),  .in(SPC_int[7]));
+    bufferH256$  u_attach_spc_8  (.out(SPC[8]),  .in(SPC_int[8]));
+    bufferH256$  u_attach_spc_9  (.out(SPC[9]),  .in(SPC_int[9]));
+    bufferH64$   u_attach_spc_12 (.out(SPC[12]), .in(SPC_int[12]));
+    bufferH64$   u_attach_spc_13 (.out(SPC[13]), .in(SPC_int[13]));
+    bufferH64$   u_attach_spc_14 (.out(SPC[14]), .in(SPC_int[14]));
+    bufferH64$   u_attach_spc_15 (.out(SPC[15]), .in(SPC_int[15]));
+    // pass-through for non-violating bits
+    assign SPC[0]  = SPC_int[0];
+    assign SPC[1]  = SPC_int[1];
+    assign SPC[2]  = SPC_int[2];
+    assign SPC[3]  = SPC_int[3];
+    assign SPC[10] = SPC_int[10];
+    assign SPC[11] = SPC_int[11];
+    genvar gs2;
+    generate
+        for (gs2 = 16; gs2 < 32; gs2 = gs2 + 1) begin : g_spc_pass
+            assign SPC[gs2] = SPC_int[gs2];
         end
     endgenerate
 
@@ -542,7 +571,10 @@ module Fetch (
             exp_set_exp_pipe_clear, exp_clr)
     `AND_2(u_exp0_d,  1, exp0_d,
             exp_set_exp_pipe_clear, not_exp_clr)
-    `REG_RST_WE(u_exp_mode_jk_0_reg, 1, clk, rst, exp0_we, exp0_d, exp_mode_jk_0)
+    // fanout: attach bufferH16$ to exp_mode_jk_0 (fanout=5)
+    wire exp_mode_jk_0_pre_buf;
+    `REG_RST_WE(u_exp_mode_jk_0_reg, 1, clk, rst, exp0_we, exp0_d, exp_mode_jk_0_pre_buf)
+    bufferH16$ u_attach_exp_mode_jk_0 (.out(exp_mode_jk_0), .in(exp_mode_jk_0_pre_buf));
 
     // exp_mode_jk[1]
     `OR_2 (u_exp1_we, 1, exp1_we,
@@ -556,7 +588,10 @@ module Fetch (
             exp_set_int_pipe_clear, exe_outs_br_res_clr_exp_mode)
     `AND_2(u_int_d,  1, int_d,
             exp_set_int_pipe_clear, not_clr_exp_mode)
-    `REG_RST_WE(u_int_mode_jk_reg, 1, clk, rst, int_we, int_d, int_mode_jk)
+    // fanout: attach bufferH16$ to int_mode_jk (fanout=7)
+    wire int_mode_jk_pre_buf;
+    `REG_RST_WE(u_int_mode_jk_reg, 1, clk, rst, int_we, int_d, int_mode_jk_pre_buf)
+    bufferH16$ u_attach_int_mode_jk (.out(int_mode_jk), .in(int_mode_jk_pre_buf));
 
     // ----------------------------------------------------------------
     // exp_or_int duplicate JK flops

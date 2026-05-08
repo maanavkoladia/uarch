@@ -84,7 +84,15 @@ module WB_Latches (
     // Gate-level body: one REG_RST_WE per former struct field.
     //   `REG_RST_WE(unit, width, clk, rst, we, din, dout)`  (async-low rst)
     // ============================================================
-    `REG_RST_WE(wb_latches_valid,        1,   clk, rst, write_enable_i, nextLatches_valid_i,        latches_valid_o)
+
+    // Staging wires for fanout-violating Q outputs
+    wire        wb_latches_valid_pre_buf;
+    wire [14:0] wb_latches_ST_PADDR_0_pre_buf;
+    wire [14:0] wb_latches_ST_PADDR_1_pre_buf;
+    wire [255:0] wb_latches_res_buf_pre_buf;
+
+    `REG_RST_WE(wb_latches_valid,        1,   clk, rst, write_enable_i, nextLatches_valid_i,        wb_latches_valid_pre_buf)
+    bufferH16$ u_attach_valid_0 (.out(latches_valid_o), .in(wb_latches_valid_pre_buf)); // fanout
 
     `REG_RST_WE(wb_latches_cs_ST_OP,     1,   clk, rst, write_enable_i, nextLatches_cs_ST_OP_i,     latches_cs_ST_OP_o)
     `REG_RST_WE(wb_latches_cs_WB_DR,     1,   clk, rst, write_enable_i, nextLatches_cs_WB_DR_i,     latches_cs_WB_DR_o)
@@ -92,14 +100,28 @@ module WB_Latches (
     `REG_RST_WE(wb_latches_cs_WB_EAX,    1,   clk, rst, write_enable_i, nextLatches_cs_WB_EAX_i,    latches_cs_WB_EAX_o)
 
     `REG_RST_WE(wb_latches_ST_XCL,       1,   clk, rst, write_enable_i, nextLatches_ST_XCL_i,       latches_ST_XCL_o)
-    `REG_RST_WE(wb_latches_ST_PADDR_0,   15,  clk, rst, write_enable_i, nextLatches_ST_PADDR_0_i,   latches_ST_PADDR_0_o)
+    `REG_RST_WE(wb_latches_ST_PADDR_0,   15,  clk, rst, write_enable_i, nextLatches_ST_PADDR_0_i,   wb_latches_ST_PADDR_0_pre_buf)
+    // ST_PADDR_0: only bit 14 violates -> attached buffer; other bits pass through
+    assign latches_ST_PADDR_0_o[13:0] = wb_latches_ST_PADDR_0_pre_buf[13:0];
+    bufferH16$ u_attach_ST_PADDR_0_14 (.out(latches_ST_PADDR_0_o[14]), .in(wb_latches_ST_PADDR_0_pre_buf[14])); // fanout
+
     `REG_RST_WE(wb_latches_ST_BIT_VEC_0, 16,  clk, rst, write_enable_i, nextLatches_ST_BIT_VEC_0_i, latches_ST_BIT_VEC_0_o)
-    `REG_RST_WE(wb_latches_ST_PADDR_1,   15,  clk, rst, write_enable_i, nextLatches_ST_PADDR_1_i,   latches_ST_PADDR_1_o)
+    `REG_RST_WE(wb_latches_ST_PADDR_1,   15,  clk, rst, write_enable_i, nextLatches_ST_PADDR_1_i,   wb_latches_ST_PADDR_1_pre_buf)
+    // ST_PADDR_1: only bit 14 violates -> attached buffer; other bits pass through
+    assign latches_ST_PADDR_1_o[13:0] = wb_latches_ST_PADDR_1_pre_buf[13:0];
+    bufferH16$ u_attach_ST_PADDR_1_14 (.out(latches_ST_PADDR_1_o[14]), .in(wb_latches_ST_PADDR_1_pre_buf[14])); // fanout
+
     `REG_RST_WE(wb_latches_ST_BIT_VEC_1, 16,  clk, rst, write_enable_i, nextLatches_ST_BIT_VEC_1_i, latches_ST_BIT_VEC_1_o)
     `REG_RST_WE(wb_latches_MIO,          1,   clk, rst, write_enable_i, nextLatches_MIO_i,          latches_MIO_o)
     `REG_RST_WE(wb_latches_EIP,          32,  clk, rst, write_enable_i, nextLatches_EIP_i,          latches_EIP_o)
 
-    `REG_RST_WE(wb_latches_res_buf,      256, clk, rst, write_enable_i, nextLatches_res_buf_i,      latches_res_buf_o)
+    `REG_RST_WE(wb_latches_res_buf,      256, clk, rst, write_enable_i, nextLatches_res_buf_i,      wb_latches_res_buf_pre_buf)
+    // res_buf: bits 63 and 127 violate -> attached buffers; other bits pass through
+    assign latches_res_buf_o[62:0]    = wb_latches_res_buf_pre_buf[62:0];
+    bufferH16$ u_attach_res_buf_63  (.out(latches_res_buf_o[63]),  .in(wb_latches_res_buf_pre_buf[63])); // fanout
+    assign latches_res_buf_o[126:64]  = wb_latches_res_buf_pre_buf[126:64];
+    bufferH16$ u_attach_res_buf_127 (.out(latches_res_buf_o[127]), .in(wb_latches_res_buf_pre_buf[127])); // fanout
+    assign latches_res_buf_o[255:128] = wb_latches_res_buf_pre_buf[255:128];
 
     `REG_RST_WE(wb_latches_sr_id,        5,   clk, rst, write_enable_i, nextLatches_sr_id_i,        latches_sr_id_o)
     `REG_RST_WE(wb_latches_sr_data,      64,  clk, rst, write_enable_i, nextLatches_sr_data_i,      latches_sr_data_o)

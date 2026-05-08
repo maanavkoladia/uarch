@@ -71,6 +71,7 @@ module MIO_Q (
 
     // ---------------- state register: full_q ----------------
     wire full_q;
+    wire full_q_pre_buf; // fanout
 
     // ---------------- combinational control ----------------
     wire inv_full_w;        // ~full_q
@@ -111,7 +112,8 @@ module MIO_Q (
 
     // ---------------- registers ----------------
     // full_q: always-clocked, sync active-low reset to 0.
-    `REG_RST(u_full_q, 1, clk, rst, next_full_w, full_q)
+    `REG_RST(u_full_q, 1, clk, rst, next_full_w, full_q_pre_buf)
+    bufferH16$ u_attach_full_q_0 (.out(full_q), .in(full_q_pre_buf)); // fanout
 
     // address: WE = valid_push  (only updated on a real push; else holds)
     `REG_RST_WE(u_qaddr, 15, clk, rst, valid_push_w, mio_input_data_address, outs_address)
