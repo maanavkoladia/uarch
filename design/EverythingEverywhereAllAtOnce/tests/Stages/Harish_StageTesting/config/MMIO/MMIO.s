@@ -121,42 +121,15 @@ nonsense_mem_ops:
     movl $0, %esi
 nonsense_loop:
     mov (%esi), %ebx
-    nop
-    nop
-    nop
-        nop
-    nop
-    nop
-        nop
-    nop
-    nop
-        nop
-    nop
-    nop
-        nop
-    nop
-    nop
-        nop
-    nop
-    nop
-        nop
-    nop
-    nop
-    nop
-    nop
-    nop
-        nop
-    nop
-    nop
-        nop
-    nop
-    nop
-        nop
-    nop
-    nop
-        nop
-    nop
-    nop
+    add $1, (%esi)
+    //mov (%esi), %ebx
+    mov 0x200(%esi), %ebx
+    add $2, 0x200(%esi)
+    add $2, 0x400(%esi)
+    add $2, 0x600(%esi)
+    add $2, 0x800(%esi)
+    add $2, 0xA00(%esi)
+    add $2, 0xC00(%esi)
 
     addl $-1, %ecx
     jne nonsense_loop
@@ -205,5 +178,3 @@ data_page:
 .byte 0x0 //type_attr
 .word 0x0000 //offset_high
 //8 entry bytes
-
-

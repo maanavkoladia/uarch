@@ -61,14 +61,6 @@ module res_buf_sel (
     `NOR_4(u_nor_grp_b, 1, grp_b_zero, is_cmpxchg, is_far_call, is_mov,  is_movs)
     `NOR_4(u_nor_grp_c, 1, grp_c_zero, is_not,     is_or,       is_push, is_pop)
     `NOR_4(u_nor_grp_d, 1, grp_d_zero, is_sar,     is_sal,      is_sbb,  is_xchg)
-    wire matched_in_first_16;
-    `NAND_4(u_nand_first16, 1, matched_in_first_16, grp_a_zero, grp_b_zero, grp_c_zero, grp_d_zero)
-    wire match_any;
-    wire match_any_raw;
-    `OR_2(u_or_match_any, 1, match_any_raw, matched_in_first_16, is_exp_call)
-    // match_any feeds 64 mux2$ select pins inside u_mux_res_buf_o (fanout 64).
-    // bufferH64$ is the exact-fit choice (rated 64, 0.30 ns typ).
-    bufferH64$ u_buf_match_any (.out(match_any), .in(match_any_raw));
 
     // ---- Active-low enables ----
     wire enbar_adc, enbar_add, enbar_and, enbar_call, enbar_cmpxchg, enbar_far_call;
@@ -117,18 +109,12 @@ module res_buf_sel (
     `TRISTATE_L(u_tri_xchg,     64, enbar_xchg,     xchg_res_buf_i,     tristated_bus)
     `TRISTATE_L(u_tri_exp_call, 64, enbar_exp_call, exp_call_res_buf_i, tristated_bus)
 
-    // ---- Final 2:1 mux: match_any ? tristated_bus : 64'h0 ----
-    wire [63:0] zero64;
-    assign zero64 = 64'h0;
-    wire [63:0] res_buf_o_raw;
-    `MUX_2(u_mux_res_buf_o, 64, res_buf_o_raw, zero64, tristated_bus, match_any)
-
-    // Buffer res_buf_o with bufferH16$ (0.24 ns typ, rated 16 loads) — fanout
-    // is exactly 16, the largest load bufferH16$ supports without slowdown.
+    // ---- Final output: tristated_bus drives res_buf_o directly ----
+    // When no op matches the bus is high-Z (don't care — caller gates on ST_OP).
     genvar gi_buf_rb;
     generate
         for (gi_buf_rb = 0; gi_buf_rb < 64; gi_buf_rb = gi_buf_rb + 1) begin : g_rb_buf
-            bufferH16$ u_buf (.out(res_buf_o[gi_buf_rb]), .in(res_buf_o_raw[gi_buf_rb]));
+            bufferH16$ u_buf (.out(res_buf_o[gi_buf_rb]), .in(tristated_bus[gi_buf_rb]));
         end
     endgenerate
 

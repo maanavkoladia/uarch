@@ -41,7 +41,7 @@ module reg_wb_logic (
     genvar gi_dr0;
     generate
         for (gi_dr0 = 0; gi_dr0 < `EXE_STRUCT_REG_ID_W; gi_dr0 = gi_dr0 + 1) begin : g_dr0_buf
-            bufferH64$ u_buf_dr0 (.out(dr0_id_o[gi_dr0]), .in(dr0_id_raw[gi_dr0]));
+            bufferH256$ u_buf_dr0 (.out(dr0_id_o[gi_dr0]), .in(dr0_id_raw[gi_dr0]));
         end
     endgenerate
 
@@ -62,7 +62,7 @@ module reg_wb_logic (
     genvar gi_dr1d;
     generate
         for (gi_dr1d = 0; gi_dr1d < 64; gi_dr1d = gi_dr1d + 1) begin : g_dr1d_buf
-            bufferH64$ u_buf_dr1d (.out(dr1_data_o[gi_dr1d]), .in(dr1_data_raw[gi_dr1d]));
+            bufferH256$ u_buf_dr1d (.out(dr1_data_o[gi_dr1d]), .in(dr1_data_raw[gi_dr1d]));
         end
     endgenerate
 
