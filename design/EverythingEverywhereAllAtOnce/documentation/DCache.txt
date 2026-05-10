@@ -1,0 +1,419 @@
+========================================================================
+DCache Subsystem Design Report
+========================================================================
+
+1. ROLE AND POSITION IN THE PIPELINE
+------------------------------------
+The DCache subsystem services memory operations issued from the MEM
+stage (loads) and the WB-stage store queues (stores), and provides the
+non-cacheable MMIO path (DMA control, DDR5 power-gating, temperature
+read). It interfaces to:
+  - the core: core_2_dcache_t in, dcache_2_core_t out
+  - the DTE/scheduler: dte_2_dcache_t in, dcache_2_scheduler_t out
+  - a 32-bit data bus and a 32-bit address bus, both tristate
+
+The DCache is non-blocking only at the granularity of independent
+banks: a miss in one bank does not stall accesses to the other three.
+A single bank serializes its own outstanding miss until the fill (or
+swap) completes.
+
+
+2. STORAGE GEOMETRY
+-------------------
+Cacheable region is the lower 15 bits of the physical address. The
+address is decomposed two different ways depending on which structure
+is being indexed.
+
+DCache bank decomposition (set-associative-style direct mapping):
+  [14:9]  tag    (6  bits)
+  [ 8:6]  index  (3  bits, 8 lines)
+  [ 5:4]  bank   (2  bits, 4 banks - selects which DCache_Block)
+  [ 3:0]  offset (4  bits, 16-byte line)
+
+VCache decomposition (fully-associative within a block):
+  [14:6]  tag    (9  bits, includes what would be the DCache index)
+  [ 5:4]  bank   (2  bits)
+  [ 3:0]  offset (4  bits)
+
+Capacities per block:
+  DCache bank : 8 lines x 16B = 128B, direct mapped
+  VCache      : 4 lines x 16B =  64B, fully associative, victim cache
+  EvictionBuf : 1 line  x 16B =  16B, holds one dirty victim awaiting
+                                       writeback to main memory
+
+Aggregate cacheable storage across the 4 blocks: 4*(128 + 64 + 16) =
+832B. The MIO_Block has no storage; it is a request shaping path.
+
+
+3. TOP-LEVEL HIERARCHY
+----------------------
+DCache_TOP
+  +-- DCache_Arbitration                              (1)
+  +-- DCache_Block                                    (4, bank-interleaved)
+  |     +-- DCache_Bank
+  |     |     +-- DCache_Bank_TagStore (1x ram8b8w$)
+  |     |     +-- DCache_Bank_DataStore (16x ram8b8w$)
+  |     |     +-- DCache_Bank_FSM       (10 states, 4 bits)
+  |     +-- VCache
+  |     |     +-- VCache_TagStore  (4 ways x 2x ram8b4w$)
+  |     |     +-- VCache_DataStore (16x ram8b4w$, 4 entries each)
+  |     |     +-- VCache_FSM       (6 states, 3 bits)
+  |     |     +-- LRU              (3-bit pseudo-LRU tree)
+  |     +-- EvictionBuf            (single registered entry)
+  +-- MIO_Block                                       (1)
+
+Each block owns a bank id determined statically by the bank arbiter
+routing on p_addr[5:4]. There is no inter-block coherence traffic;
+addresses partition cleanly across blocks.
+
+
+4. ARBITRATION (DCache_Arbitration)
+-----------------------------------
+The arbiter receives up to two independent load addresses
+(ld_addr_0/1) per cycle and the heads of NUM_WB_ST_QS=4 store queues,
+one per block. It produces one block_req_t per block per cycle,
+latched into a per-block holding register `reqs[i]`.
+
+Per-block selection priority when block i is `readyForNewReq`
+(currently means: no in-flight request held in the latch):
+
+  (1) Store-priority override:
+        If stq_heads[i].full was observed (latched into st_override[i])
+        and stq_heads[i] is non-empty, OR no load this cycle targets
+        bank i and stq_heads[i] is non-empty, issue the store at
+        stq_heads[i] with byte-vector `bit_vec` and 16B `data`. Drive
+        writeSuccess_o[i] high (the store is accepted into the
+        DCache; success vs. miss/fill is resolved internally).
+
+  (2) Load 0:  if ld_addr_0_V and bank(ld_addr_0)==i, issue load.
+  (3) Load 1:  if ld_addr_1_V and bank(ld_addr_1)==i, issue load.
+
+The held request is cleared when:
+  - memStage_CLR_REQ[i] is high and the held request is a load, or
+  - block_hit_i[i] is high and the held request is a write
+    (a write is considered serviced as soon as the bank reports a hit,
+    which gates the actual RAM write through the phase-shifted clock).
+
+st_override[i] is a sticky bit: set on stq full, cleared on stq empty.
+Without it, stores can starve under a steady stream of loads to the
+same bank.
+
+reqServed_0/1_o report which load port was consumed this cycle so the
+MEM stage can retire the request out of its pending queue.
+
+
+5. DCACHE_BLOCK INTEGRATION
+---------------------------
+DCache_Block wires together the bank, victim cache, and eviction
+buffer into a single request-serving unit. Block-internal bus:
+
+  block_busy = dcache_bank.busy | vcache.busy
+
+`block_busy` is the global gate for "do an access" inside the bank
+and the VCache (datastore OE/WE qualifiers, hit logic, etc.). Both
+the bank and the VCache latch the block_req on entry to a busy
+sequence (`saveReq` / `useSavedReq`) so that the arbiter can clear
+the holding register without losing the request that is mid-fill.
+
+Hit selection at the block output:
+  {bank.hit, vcache.hit} ==
+     2'b00 or 2'b10 -> drive bank.data_lineOut
+     2'b01          -> drive vcache.lineOut
+     2'b11          -> illegal (would assert $fatal in sim;
+                       in current code the fatal is commented out
+                       behind a flag for waveform debug)
+
+A simultaneous bank+VCache hit is impossible by construction because
+a line is never resident in both at once: the VCache only holds lines
+that were evicted from the bank, and any swap that brings a line back
+into the bank invalidates the VCache copy via the swap-buffer
+clear path.
+
+
+6. DCACHE_BANK
+--------------
+Single-ported, direct-mapped, write-back, write-allocate.
+
+6.1 Tag store
+  - 8 entries x 6-bit tag, packed into one ram8b8w$ cell with the top
+    2 bits zeroed on write. Valid and dirty bits are kept in
+    `tagMetaStore` (FF array, not RAM) since they are read every cycle
+    and must reset cleanly.
+  - `valid` is set on fill3_i (last beat of a memory fill) or on
+    ld_From_V_Swap_i (line installed from VCache swap buffer). Once
+    set it is never cleared in normal operation.
+  - `dirty` is set on `writeSuccess` (hit on a write), and is also
+    inherited from V_Cache_SwapBuf_DirtyBit when a line is pulled back
+    from the VCache. Once dirty, sticky until evicted ("once a dirty
+    little bit, always a dirty little bit" per the source comment).
+
+6.2 Data store
+  - 16 ram8b8w$ cells, one per byte position; each holds 8 entries
+    indexed by p_addr[8:6]. Per-byte WR enable allows the byte vector
+    on a store hit to gate which cells write.
+  - WR is the AND of a combinational "want to write" and the
+    phase-delayed clock `clk_45_phase` (#CLK_PHASE_DELAY = 2.5). This
+    creates a write window that opens after the address/data have
+    settled and before the next rising edge, removing read/write
+    contention on the same cell within one cycle.
+  - DIN multiplexer (one-hot on the FSM fill[0..3] and ldFrom_V_swap):
+       ldFrom_V_swap : full 16B from VCache swap buffer
+       fill0..fill3  : 4 bytes from dataBus into the corresponding
+                       quadrant of the line
+       neither       : st_q_data, gated by st_data_vec on a write hit
+
+6.3 Bank FSM (10 states, 4 bits, IDLE = 0000, ERROR synthesised)
+  States:
+    IDLE
+    EB_BLOCKING       - the request hits the eviction buffer; we must
+                        wait for it to drain before refilling, since
+                        we cannot snoop-forward writes from the EB
+                        cleanly.
+    EVICTING          - a dirty line is being pushed out; bank held
+                        until D_Swap_valid_i drops (DTE has consumed
+                        the swap buffer for the writeback).
+    Req0..Req3        - the four 4-byte fill beats from the data bus,
+                        each gated by DTE_Mem_valid_i.
+    SWAPPING_LD       - VCache reported a hit; pull that line into
+                        the bank via ldFrom_V_swap_o.
+    SWAPPING_ST0      - one-cycle delay before SWAPPING_LD when the
+                        request is a write; lets the VSwap-buf
+                        machinery in the VCache settle so the
+                        installed line is correct before the write
+                        is replayed by the arbiter.
+    ERROR             - synthesised trap; all outputs zero.
+
+  Outputs (asserted only in the named states):
+    write_to_dswap_o : IDLE on D-miss with line_valid (push current
+                       line to D-swap so VCache can absorb it).
+    D_will_evict_o   : IDLE on D-miss + V-miss + !EB_hit + line_valid
+                       (informs VCache it must accept the swap and
+                       possibly evict to EB).
+    ldFrom_V_swap_o,
+    clr_v_swap_o     : SWAPPING_LD.
+    MakeReq_o        : Req0 while DTE_Mem_valid_i=0 (request to
+                       scheduler that we need a memory fill).
+    Blocked_o        : EB_BLOCKING when EB_Hit_i still asserted.
+    busy_o           : asserted in every non-IDLE/ERROR state.
+    fill0..fill3_o   : Req0..Req3 with DTE_Mem_valid_i.
+
+  Decision in IDLE on D_Miss_i:
+    !line_valid                 -> Req0      (bypass VCache, no victim)
+    line_valid, V_Miss_i, EB_hit-> EB_BLOCKING
+    line_valid, V_Miss_i, !EB_h -> EVICTING  (current line dirty
+                                              path eventually)
+    line_valid, !V_Miss_i, !we  -> SWAPPING_LD
+    line_valid, !V_Miss_i,  we  -> SWAPPING_ST0
+
+6.4 Saved-request register
+  `savedReq` captures `blockReq_i` on every cycle the FSM is not
+  busy. Once busy, `reqInUse = savedReq`. The arbiter is therefore
+  free to retract or reissue the request from the holding latch
+  during a multi-cycle fill without affecting the bank.
+
+
+7. VCACHE
+---------
+Single-ported, 4-way fully associative victim cache. Lines are
+installed only from the DCache bank's swap path. The VCache never
+fetches from main memory directly; its only fill source is the
+sister bank's swap buffer.
+
+7.1 Tag store
+  - 4 ways x 9-bit tag. Implemented as 4*2 = 8 ram8b4w$ cells, each
+    addressed by 2'b0 (so one tag register per way). All ways are
+    read in parallel for the parallel-compare hit logic.
+  - Per-way write enable indexed by `savedIDX`; tag is sourced from
+    the DCache swap-buf address (the address of the line being
+    pushed in).
+  - tagMetaStore: per-way valid/dirty/idx (the idx field exists for
+    LRU bookkeeping symmetry but the LRU module derives its own way
+    selector from the LRU tree).
+
+7.2 Data store
+  - 16 ram8b4w$ cells, one per byte; each holds 4 entries (one per
+    way). The address bus into the data store carries the way index
+    (hitIDX, savedIDX, or evictionIDX depending on operation).
+  - Same phase-shifted write window (#CLK_PHASE_DELAY = 2.5).
+
+7.3 Hit logic
+  `doAccess = (oe | we) & !busy`. On doAccess, every way's tag is
+  compared in parallel to p_addr[14:6]; first matching valid way
+  drives `hit` and `hitIdx`.
+
+7.4 LRU module (pseudo-LRU)
+  - 3-bit tree-PLRU for 4 ways:
+      LRU[ROOT]      selects subtree (0=left/ways 0-1, 1=right/ways 2-3)
+      LRU[LEFT_LEAF] selects within the left subtree
+      LRU[RIGHT_LEAF]selects within the right subtree
+    Bits point toward the MRU; the LRU way is read out by inverting
+    the path:
+      currLRU_IDX[1] = !LRU[ROOT]
+      currLRU_IDX[0] = !LRU[ROOT] ? !LRU[RIGHT_LEAF]
+                                  : !LRU[LEFT_LEAF]
+  - Updated on `Update_LRU` (asserted with WRITE_2_VCACHE) using
+    `savedIDX`, which is the way that was just written or just got
+    the hit.
+
+7.5 VCache FSM (6 states, 3 bits, IDLE = 000, ERROR synthesised)
+  States:
+    IDLE
+    LD_VC_SWAP        - the request was a write that hit the VCache;
+                        delay one cycle so the VSwap buffer gets the
+                        right line before the bank pulls it back.
+    WRITE_2_VCACHE    - load the D-Cache swap-buf line into the
+                        VCache way selected by savedIDX, update LRU,
+                        clear the D-swap valid bit.
+    WRITE_EB          - drive the chosen LRU way out into the
+                        EvictionBuf via WR_2_EB.
+    WAITEVICT         - the EB is occupied; spin here driving WR_2_EB
+                        until EB_V drops, then proceed to
+                        WRITE_2_VCACHE.
+
+  Outputs:
+    WR_2_EB           : WRITE_EB and WAITEVICT.
+    CLR_D_SWAP_V,
+    Read_DSWAP,
+    Update_LRU        : WRITE_2_VCACHE.
+    Write_VSWAP       : LD_VC_SWAP, and IDLE on a V-hit read.
+    busy              : every non-IDLE state.
+    blocked           : WAITEVICT while EB_V_i is high (visible
+                        externally so the block reports
+                        DCACHE_EB_BLOCKING_* to the scheduler).
+
+  IDLE transitions on the bank FSM's signal `DC_will_evict_i`:
+    !V_Hit, DC_will_evict, !VC_needs_2_evict        -> WRITE_2_VCACHE
+    !V_Hit, DC_will_evict,  VC_needs_2_evict, !EB_V -> WRITE_EB
+    !V_Hit, DC_will_evict,  VC_needs_2_evict,  EB_V -> WAITEVICT
+    V_Hit, !we                                      -> WRITE_2_VCACHE
+                                                       (drives lineOut
+                                                       to bank, also
+                                                       latches VSWAP)
+    V_Hit,  we                                      -> LD_VC_SWAP
+
+
+8. EVICTION BUFFER
+------------------
+A single registered entry per block: { dataLine[16B], address,
+valid, commiting }.
+
+  - Loaded when vcache_outputs.LD_EB asserts and `valid` is currently
+    0. (The VCache FSM's WAITEVICT spin guarantees this precondition
+    is met.)
+  - `commiting` is set by the DTE when the writeback is being driven
+    onto the bus, and `valid` is cleared on `eb_clr_i` when the
+    writeback is acknowledged.
+  - `reqHit` asserts when an incoming bank request matches on bits
+    [14:4] (line granularity) while the EB is valid. The bank FSM
+    treats this as `EB_Hit_i` and takes the EB_BLOCKING path rather
+    than risking a stale fill on top of an in-flight writeback.
+
+
+9. SCHEDULER REQUEST ENCODING (per block, mutually exclusive)
+-------------------------------------------------------------
+The block multiplexes one request to the DTE/scheduler each cycle,
+priority high-to-low:
+
+  DCACHE_EB_BLOCKING_BANK         - bank stalled on EB hit
+  DCACHE_EB_BLOCKING_ST_OVERRIDE  - VCache blocked, store-override req
+  DCACHE_EB_BLOCKING_LD           - VCache blocked, load underlying
+  DCACHE_EB_BLOCK_ST              - VCache blocked, store underlying
+  DCACHE_FILL_ST_OVERRIDE         - bank wants a fill, store priority
+  DCACHE_FILL_LD                  - bank wants a fill for a load
+  DCACHE_FILL_ST                  - bank wants a fill for a store
+  DCACHE_EB_WR                    - EB has a victim ready to drain
+  NO_REQ
+
+The MIO_Block emits DCACHE_MIO_LD_FROM_SIMPLE / DCACHE_MIO_WR_SIMPLE
+/ DCACHE_MIO_WR_COMPLEX, decoded from oe/we plus an address mask
+(WE_ADDR_MASK = 15'h0040, the DDR5 power-gating register; addresses
+that intersect this mask are treated as the "simple" write path).
+
+
+10. BUS DRIVING DISCIPLINE
+--------------------------
+Both the address bus and the data bus are 32-bit tristate, shared by
+all 4 blocks and the MIO block. Per-block bus drivers:
+
+  Address bus: driven if (permissionToDriveAddrBus_Ld |
+                          permissionToDriveAddrBus_eb).
+               Source mux: Ld -> block_req.p_addr,
+                           eb -> eb_outputs.addr.
+
+  Data bus:    four BUS_TRISTATE drivers, one per 32-bit quadrant of
+               the 128-bit eviction line. Each driver enabled
+               separately by permissionToDriveDataBus_evictionBuf[i],
+               driven from the corresponding slice of
+               eb_outputs.lineOut. The DTE schedules these 4 beats.
+
+Permissions are granted by the DTE. The cache never spontaneously
+drives a bus.
+
+
+11. MIO_BLOCK
+-------------
+A degenerate cache: no tag/data store, just a single in-flight
+block_req_mio_t latched per cycle. Loads (from ld_addr_MIO with
+ld_addr_MIO_V) take precedence over stores from stq_info_mio when
+both are present in `readyForNewReq`. Outputs to the core:
+
+  hit_o         <- reqServed_FromDTE_i & block_req.oe
+                  (load completes when the DTE acks the bus phase)
+  writeSuccess  <- combinational on store accept
+  dataLineOut   <- bottom 32 bits of dataBus, zero-extended into 16B
+                  (the simple-MMIO path returns only one bus beat)
+  reqServed     <- 1 when a new load is accepted into the latch
+
+readyForNewReq fires on:
+  - write held and reqServed_FromDTE_i (writeback acked), OR
+  - load held and memStage_CLR_REQ_MIO (core retired the load), OR
+  - latch idle.
+
+Bus behavior is identical in spirit to the cache blocks (tristate
+drive only when permission asserts).
+
+
+12. CLOCKING / WRITE WINDOW
+---------------------------
+The RAM cells are level-sensitive on WR_n. Inside both data stores
+and both tag stores the pattern is:
+
+  WR_clk     <= combinational want-to-write (active low)
+  WR_actual  <= (WR_clk == 0) && clk_phase_45 ? 0 : 1
+  clk_phase_45 = #CLK_PHASE_DELAY clk      (CLK_PHASE_DELAY = 2.5)
+
+This produces a write pulse of width (T_clk - 2.5 - input_settle)
+that opens after combinational inputs to the cells have settled
+relative to the rising edge, and closes before the next rising edge.
+It is what allows a request issued in cycle N to (a) read the cell
+combinationally early in N for hit detection and (b) write the cell
+late in N if it is a write hit, without read/write contention.
+
+The same scheme is used for the FSM-driven fills: fill0..fill3 each
+fire in a single cycle and write 4 bytes through the phased clock.
+
+
+13. KNOWN INVARIANTS / NOTES FOR REVIEWERS
+------------------------------------------
+- A line is in at most one of {bank, VCache, EB} at any time, per
+  block. The `2'b11` bank-and-VCache hit case is treated as an
+  unreachable error (sim-only fatal hook is present but currently
+  commented out).
+- The bank's holding register is always cleared the cycle a request
+  is consumed (write-hit) or retired by the MEM stage (load), so the
+  arbiter never double-issues a request that is still being serviced
+  inside the bank's `savedReq`.
+- st_override is necessary to avoid store starvation; without it, a
+  steady load stream to bank i with a non-empty stq_heads[i] never
+  yields the bank to the store queue.
+- The VCache tag width localparam comment says `// = 7` but the
+  actual width is 9 (TAG_UB=14, TAG_LB=6). The RTL uses the computed
+  value; the comment is stale.
+- The bank FSM's SWAPPING_ST0 -> SWAPPING_LD detour exists only for
+  writes; loads jump straight to SWAPPING_LD. The extra cycle is to
+  give the VCache's VSwap path one cycle of slack so the line that
+  is about to be installed in the bank reflects the just-resolved
+  hit way.
+- All FSM ERROR states are synthesised by the FSM generator; any
+  undefined transition lands there with all outputs deasserted, and
+  the state is unreachable from valid input sequences.

@@ -1,0 +1,298 @@
+========================================================================
+BusArbitration Subsystem Design Report
+========================================================================
+
+1. ROLE AND POSITION
+--------------------
+BusArbitration is the chip's central traffic controller. Every entity
+that wants to use the shared address/data bus pair sends a request
+to this block; this block decides which request wins each cycle and
+then drives every bus-control signal that gates address-bus drives,
+data-bus drives, mem_valid, mem_ready, eviction-buffer commit, and
+MIO ack.
+
+Requesters and targets handled here:
+  - ICache fills    (MEM -> ICache)
+  - DCache fills    (MEM -> DCache, per bank)
+  - DCache writebacks (DCache -> MEM, per bank)
+  - DMA writes      (DMA -> MEM)
+  - MIO load from a simple DDR5 register (DDR5 -> Core)
+  - MIO store to a simple DDR5 register  (Core -> DDR5)
+  - MIO store routed to the DMA controller (Core -> DMA)
+
+External interfaces:
+  iCache_2_Sch_i, dte_out_2_icache_o
+  dCache_2_Sch_i, dte_out_2_dcache_o
+  mem_2_Sch_i, mem_2_dte_i, dte_2_mem_o
+  dma_2_sch_i, dte_2_dma_o
+  dte_2_ddr5_o
+
+
+2. HIERARCHY
+------------
+BusArbitration
+  +-- Scheduler                      (1)
+  |     +-- Scheduler_DCachePicking  (combinational tournament across
+  |                                    the 4 DCache bank requests)
+  +-- DTE                            (1)
+        +-- DTE_MEM_2_ICache_FSM     (1 instance,  7 states)
+        +-- DTE_MEM_2_DCache_FSM     (4 instances, 7 states each)
+        +-- DTE_DCache_2_MEM_FSM     (4 instances, 6 states each)
+        +-- DTE_DDR5_2_Core_FSM      (1 instance,  4 states)
+        +-- DTE_Core_2_DDR5_FSM      (1 instance,  4 states)
+        +-- DTE_Core_2_DMA_FSM       (1 instance,  4 states)
+        +-- DTE_DMA_2_MEM_FSM        (1 instance,  6 states)
+
+Total: 13 transaction FSMs running in parallel inside the DTE, all
+gated by a shared DTE_Busy signal that enforces single-transaction
+mutual exclusion on the buses.
+
+
+3. PRIORITY ENCODING (req_2_sch_t)
+----------------------------------
+The req_2_sch_t enum is encoded so that priority comparisons reduce
+to unsigned >= on the encoded value. Higher = higher priority.
+
+  ICACHE_HIGH_PRI                  = 14   (highest)
+  DCACHE_EB_BLOCKING_BANK          = 13
+  DCACHE_EB_BLOCKING_ST_OVERRIDE   = 12
+  DCACHE_EB_BLOCKING_LD            = 11
+  DCACHE_EB_BLOCK_ST               = 10
+  DCACHE_FILL_ST_OVERRIDE          =  9
+  DCACHE_FILL_LD                   =  8
+  DCACHE_FILL_ST                   =  7
+  DCACHE_EB_WR                     =  6
+  DCACHE_MIO_LD_FROM_SIMPLE        =  5
+  DCACHE_MIO_WR_COMPLEX            =  4
+  DCACHE_MIO_WR_SIMPLE             =  3
+  ICACHE_LOW_PRI_REQ               =  2
+  DMA_WRITE_REQ                    =  1
+  NO_REQ                           =  0
+
+This is the primary mechanism of choice in the Scheduler: every
+tournament is a single ternary on `>=`. The encoding ranks EB-
+blocking requests above ordinary fills (an EB blocking the bank
+must drain before that bank can make any forward progress), and
+ranks ICache high-pri above everything (a starved fetch stalls the
+front end harder than anything else).
+
+
+4. SCHEDULER
+------------
+The Scheduler runs in three phases per cycle:
+
+4.1 Latching (sequential)
+  All incoming requests are latched into sch_latches on the rising
+  edge. This adds one cycle of latency from request to consideration
+  but breaks long combinational paths from each requester through
+  the tournament network. The latched bundle is sch_latched_reqs_t:
+
+    req_2_sch_t i_cache_req
+    req_2_sch_t d_cache_reqs[NUM_DCACHE_PORTS]
+    p_address_t eb_addr[NUM_DCACHE_PORTS]
+    req_2_sch_t mio_req                       (from dCache_2_Sch_i.req_mio)
+    req_2_sch_t dma_req
+    p_address_t dma_write_addr
+    bool        writeBuf_V_List[numWriteBufsInMem]   (from mem_2_Sch_i)
+
+4.2 Hazard cleaning (combinational)
+  Two hazards are filtered out before the tournament:
+
+  (a) DCache EB-related requests vs main-memory write buffers.
+      A DCache writeback (any of DCACHE_EB_BLOCKING_BANK,
+      DCACHE_EB_BLOCKING_ST_OVERRIDE, DCACHE_EB_BLOCKING_LD,
+      DCACHE_EB_BLOCK_ST, DCACHE_EB_WR) is squashed to NO_REQ if
+      the bank group it would target already has a valid write
+      buffer in main memory. This is done in
+      Scheduler_DCachePicking using
+        writeBuf_V[ eb_addr[i][MEM_BANKGROUP_BITS_UB:LD] ].
+      Without this, the Scheduler could pick a writeback that
+      memory cannot accept, and the DTE would have to spin.
+
+  (b) DMA write request vs main-memory write buffers.
+      Same idea, applied at the Scheduler level on dma_req against
+      writeBuf_V[ dma_write_addr[bankgroup bits] ]. If the target
+      bank group is busy, the DMA req is squashed to NO_REQ.
+
+4.3 Tournament pick (combinational)
+  DCache pick (in Scheduler_DCachePicking):
+    pick_0  = max(d_cache_req[0], d_cache_req[1])  with bk_id 0/1
+    pick_1  = max(d_cache_req[2], d_cache_req[3])  with bk_id 2/3
+    dcache_Best_Pick = max(pick_0, pick_1)         with the matching bk_id
+  Top-level (in Scheduler):
+    IC_MIO_Pick      = max(i_cache_req, mio_req)
+    IC_MIO_DMA_Pick  = max(IC_MIO_Pick, dma_req)
+    bestPick         = max(dcache_Best_Pick, IC_MIO_DMA_Pick)
+  bestPick and the DCache bank id are latched one more cycle into
+  bestPick_ff and dcache_Best_Pick_BK_ID_ff before they leave the
+  Scheduler. End-to-end: 2 cycles of latency from a requester
+  asserting to the DTE seeing the winning request.
+
+The bk_id field is needed because the per-bank DCache FSMs in the
+DTE need to know which bank owns the winning DCache request. For
+non-DCache transactions the bk_id is don't-care (no bank FSM in
+those paths uses it).
+
+
+5. DTE
+------
+The DTE is a federation of independent transaction FSMs, one per
+bus traffic class. Each FSM looks at bestPick_i; if bestPick_i
+encodes a request that this FSM owns (and, for the per-bank ones,
+bestPick_bk_id_i matches this instance), the FSM begins driving
+its sequence and asserts its busy_o. Otherwise it stays in IDLE.
+
+5.1 The seven transaction FSMs
+  DTE_MEM_2_ICache_FSM (1 inst, 7 states)
+    States: IDLE, MEM_REQ, LD0..LD3, ERROR.
+    Owns:   ICACHE_HIGH_PRI, ICACHE_LOW_PRI_REQ
+    Drives: dte_2_mem_o.ld_req,
+            dte_2_mem_o.permission2DriveBus[0..3] (4-beat sequence),
+            dte_out_2_icache_o.Mem_Valid,
+            dte_out_2_icache_o.driveAddrBus.
+
+  DTE_MEM_2_DCache_FSM (4 inst, 7 states)
+    States: same shape as ICache fill - request, then 4 line beats.
+    Owns:   DCACHE_FILL_ST_OVERRIDE, DCACHE_FILL_LD, DCACHE_FILL_ST
+            (plus a bank_hit on bestPick_bk_id_i).
+    Drives: dte_2_mem_o.ld_req (per-bank, OR-reduced upstream),
+            dte_2_mem_o.permission2DriveBus[0..3] (per-bank,
+            OR-reduced),
+            dte_out_2_dcache_o.mem_valid[i],
+            dte_out_2_dcache_o.permissionToDriveAddrBus_Ld[i].
+
+  DTE_DCache_2_MEM_FSM (4 inst, 6 states)
+    States: IDLE, WR_REQ, WR0..WR2, ERROR.
+    Owns:   DCACHE_EB_BLOCKING_BANK, DCACHE_EB_BLOCKING_ST_OVERRIDE,
+            DCACHE_EB_BLOCKING_LD, DCACHE_EB_BLOCK_ST, DCACHE_EB_WR.
+    Drives: dte_2_mem_o.st_req (per-bank, OR-reduced),
+            dte_out_2_dcache_o.evictionBuf_clr[i],
+            dte_out_2_dcache_o.evictionBuf_setCommiting[i],
+            dte_out_2_dcache_o.permissionToDriveAddrBus_eb[i],
+            dte_out_2_dcache_o.permissionToDriveDataBus_evictionBuf[i][0..3].
+
+  DTE_DDR5_2_Core_FSM (1 inst, 4 states)
+    States: IDLE, DELAY, LD_DDR5, ERROR.
+    Owns:   DCACHE_MIO_LD_FROM_SIMPLE.
+    Drives: reqServed (back into MIO via the OR-reduce),
+            address-bus permission for MIO,
+            DDR5.driveDataBus.
+
+  DTE_Core_2_DDR5_FSM (1 inst, 4 states)
+    States: IDLE, DELAY, ST_DDR5, ERROR.
+    Owns:   DCACHE_MIO_WR_SIMPLE.
+    Drives: reqServed, MIO addr-bus permission, MIO data-bus
+            permission, dte_2_ddr5_o.newPowerGateValueFromCore.
+
+  DTE_Core_2_DMA_FSM (1 inst, 4 states)
+    States: IDLE, DELAY, ST_DMA, ERROR.
+    Owns:   DCACHE_MIO_WR_COMPLEX.
+    Drives: reqServed, MIO addr/data permissions, dte_2_dma_o.coreValOnBus.
+
+  DTE_DMA_2_MEM_FSM (1 inst, 6 states)
+    States: IDLE, ST_REQ, ST0..ST2, ERROR.
+    Owns:   DMA_WRITE_REQ.
+    Drives: dte_2_mem_o.st_req (OR-reduced with the DCache-2-MEM
+            instances),
+            dte_2_dma_o.writeComplete,
+            dte_2_dma_o.commiting,
+            dte_2_dma_o.permission2DriveADDRBus,
+            dte_2_dma_o.permission2DriveDataBus[0..3].
+
+5.2 DTE_Busy and mutual exclusion
+  Every FSM has a busy_o output. They are OR-reduced into:
+
+    DTE_Busy = mem_2_icache_busy
+             | mem_2_dcache_busy   (OR over 4 banks)
+             | dcache_2_mem_busy   (OR over 4 banks)
+             | ddr5_2_core_busy
+             | core_2_ddr5_busy
+             | core_2_dma_busy
+             | dma_2_mem_busy
+
+  DTE_Busy is fed back into every FSM's `others_busy_i` input. An
+  IDLE FSM only commits to leaving IDLE if no other FSM is busy.
+  This is the mechanism that guarantees exactly one transaction
+  drives the address/data buses at any moment.
+
+  By construction, a busy_o is only asserted from non-IDLE states,
+  so the gating is safe: an FSM does not see itself as "busy" while
+  deciding to enter the busy region. The comment block in DTE.sv
+  (line 60-63) explicitly notes this is to avoid a Mealy-style
+  combinational loop.
+
+5.3 Output OR-reduction
+  Several DTE outputs can be driven by more than one FSM:
+    dte_2_mem_o.ld_req                : icache fill OR per-bank
+                                        dcache fill
+    dte_2_mem_o.permission2DriveBus[i]: same set
+    dte_2_mem_o.st_req                : per-bank dcache writeback
+                                        OR DMA write
+    reqServed_mio                     : ddr5_2_core OR core_2_ddr5
+                                        OR core_2_dma
+    permissionToDriveAddrBus_mio      : same set
+    permission2DriveDataBus_mio       : core_2_ddr5 OR core_2_dma
+
+  Each output is collected into per-FSM intermediate wires and OR-
+  reduced in a single always_comb. Mutual exclusion via DTE_Busy
+  guarantees at most one source asserts at any time, so the OR is
+  semantically equivalent to a one-hot mux but does not require a
+  selector.
+
+
+6. END-TO-END TIMING OF A TRANSACTION
+-------------------------------------
+For an example DCache fill on bank 2:
+
+  cycle 0: DCache bank 2 asserts DCACHE_FILL_LD on dCache_2_Sch_i.req[2].
+  cycle 1: Scheduler latches it into sch_latches.
+           Tournament pick selects it (assuming nothing higher is
+           pending). bestPick / dcache_Best_Pick_BK_ID computed combo;
+           latched into bestPick_ff at end of cycle.
+  cycle 2: DTE sees bestPick_i = DCACHE_FILL_LD, bestPick_bk_id_i = 2.
+           If DTE_Busy is 0, DTE_MEM_2_DCache_FSM[2] leaves IDLE,
+           asserts mem_ready handshake / ld_req to mem.
+  cycle 3..N: FSM walks through MEM_REQ -> LD0 -> LD1 -> LD2 -> LD3.
+           In each LDx state, permission2DriveBus[x] asserts and
+           memory drives the corresponding 32-bit beat onto the
+           data bus, captured by the DCache bank's fillX path.
+  cycle N+1: FSM returns to IDLE, busy_o drops, DTE_Busy may drop,
+           next transaction can start.
+
+The 4 LDx beats line up with main memory's set_ld_tristate hold and
+with the DCache bank's fill0..fill3 enables, all driven by
+independent FSMs that just happen to use the same length sequence
+because the bus geometry (128-bit line / 32-bit bus = 4 beats) is
+fixed.
+
+
+7. KNOWN INVARIANTS / NOTES
+---------------------------
+- ICache and DCache cannot both fill in the same cycle: both paths
+  drive dte_2_mem_o.ld_req and dte_2_mem_o.permission2DriveBus, and
+  DTE_Busy serialises them.
+- DCache writeback and DMA write cannot both be active in the same
+  cycle: same reason on dte_2_mem_o.st_req.
+- The MIO triplet (DDR5_2_Core, Core_2_DDR5, Core_2_DMA) shares
+  reqServed_mio / permissionToDriveAddrBus_mio. Only one of those
+  three FSMs is ever non-IDLE at a time, again guaranteed by
+  DTE_Busy.
+- The Scheduler's two-cycle pipeline (input latch -> tournament ->
+  output latch) is a deliberate choice to keep the priority
+  comparison out of any external timing path. The cost is two
+  cycles of decision latency on every request; the benefit is that
+  no requester sees a path through the tournament in its critical
+  path.
+- The cleaning step that nullifies EB-related requests against
+  writeBuf_V is what prevents the DTE from picking a DCache
+  writeback that main memory cannot accept; without it, the DTE
+  would commit to a writeback whose target bank group's write
+  buffer is occupied, and the transaction would hang waiting for
+  acceptance.
+- Same cleaning is applied to DMA_WRITE_REQ at the Scheduler
+  level. There is no equivalent gating on DCache fills, because a
+  fill is a load on the memory side and only contends on
+  writeBuf_V if memory itself is doing a concurrent write (which
+  is prevented by the controller's ld+st ERROR arc).
+- Synthesised ERROR states exist on every transaction FSM as a
+  trap; they are unreachable from valid input sequences.

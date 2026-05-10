@@ -1,0 +1,142 @@
+========================================================================
+DCache Subsystem - Concise Design Overview
+========================================================================
+
+1. ROLE
+-------
+Services loads from the MEM stage, stores from the WB store queues,
+and non-cacheable MMIO accesses (DMA control, DDR5 power-gating,
+temperature). Talks to the core, the DTE/scheduler, and a shared
+32-bit address/data bus pair.
+
+
+2. GEOMETRY
+-----------
+Cacheable address space uses bits [14:0] of the physical address.
+
+  bits [5:4] select one of 4 bank-interleaved blocks
+  bits [3:0] are the 16-byte line offset
+
+Per block:
+  DCache bank : 8 lines, direct mapped       (128 B)
+  VCache      : 4 lines, fully associative   ( 64 B), victim cache
+  EvictionBuf : 1 line                       ( 16 B), holds dirty
+                                                       victim awaiting
+                                                       writeback
+
+Aggregate cacheable storage: 832 B across 4 blocks. Lines are
+write-back, write-allocate.
+
+
+3. HIERARCHY
+------------
+DCache_TOP
+  +-- DCache_Arbitration                (1)
+  +-- DCache_Block x 4 (bank-interleaved)
+  |     +-- DCache_Bank   (tag store, data store, FSM)
+  |     +-- VCache        (tag store, data store, FSM, tree-PLRU)
+  |     +-- EvictionBuf
+  +-- MIO_Block                         (1, no storage)
+
+A line is in at most one of {bank, VCache, EB} per block.
+
+
+4. KEY DESIGN CHOICES AND THEIR PAYOFF
+--------------------------------------
+4.1 Bank interleaving (4 blocks on p_addr[5:4])
+    - Two independent load addresses + four store-queue heads can
+      all be serviced in the same cycle if they map to distinct
+      banks.
+    - A miss in one bank does not stall accesses to the other three;
+      the cache is non-blocking at bank granularity.
+    - Per-bank state machines mean each block can independently be
+      filling, swapping, or evicting without cross-block hand-off.
+
+4.2 Direct-mapped L1 + 4-entry fully-associative VCache
+    - The L1 stays cheap and fast (single-tag compare, single ram
+      lookup) so the common-case hit is one cycle.
+    - The victim cache absorbs conflict misses that the direct-map
+      would otherwise turn into full memory fills. On a VCache hit
+      the line is swapped back into the bank via internal swap
+      buffers in a few cycles, no bus traffic.
+    - Tree pseudo-LRU (3 bits) selects the VCache victim: cheap to
+      maintain and good enough for 4 ways.
+
+4.3 Swap buffers between bank and VCache
+    - Decouple the bank's eviction from the VCache's install. The
+      bank can post its outgoing line into D-swap and resume
+      sequencing while the VCache consumes it.
+    - Avoids a long combinational path that would otherwise span
+      bank-tag-read, VCache-tag-compare, and a write back into the
+      bank in one cycle.
+
+4.4 Single-entry EvictionBuf with explicit "blocking" path
+    - Writebacks to main memory are decoupled from new fills: the
+      bank can take new misses while a dirty victim sits in the EB,
+      provided the new miss does not collide with the EB address.
+    - On a collision, the bank parks in its EB-blocking state and
+      surfaces a distinct request type to the scheduler so the DTE
+      can prioritise draining the EB.
+
+4.5 Store-priority override in arbitration
+    - A sticky `st_override` bit is set when a store queue goes full
+      and cleared when it goes empty. While set, that block prefers
+      its store-queue head over fresh loads to the same bank.
+    - Prevents store starvation under load-heavy workloads without
+      hurting steady-state load throughput.
+
+4.6 Two-port load + four-port store arbitration in one cycle
+    - The arbiter routes both load ports and all four store-queue
+      heads to their target banks combinationally, one request per
+      block per cycle. No cross-bank serialization in the arbiter.
+
+4.7 Phase-shifted write clock (CLK_PHASE_DELAY = 2.5)
+    - RAM cells are written through a delayed clock edge so reads
+      and writes can occur in the same cycle without contention.
+    - Lets a write hit be detected combinationally and committed in
+      the same cycle, without an extra pipeline stage.
+
+4.8 Latched per-bank requests (savedReq)
+    - The arbiter is free to clear or reissue its holding latch
+      while a multi-cycle fill or swap is in progress; the bank
+      keeps the original request internally. Simplifies the
+      arbiter's clearing logic and avoids dropping a request mid-
+      fill.
+
+4.9 FSM-driven bank/VCache interaction
+    - The bank and VCache exchange hit/miss/dirty/swap-valid signals
+      through their two FSMs. The FSMs sequence multi-cycle
+      operations (fill, swap, evict) without handshaking through
+      the arbiter or the scheduler. Fills, swaps, and evictions
+      compose cleanly because each FSM owns its side of the
+      interaction.
+
+4.10 Bus tristate, permission-gated by the DTE
+    - The cache never spontaneously drives the shared address or
+      data bus. The DTE schedules every drive cycle, which lets the
+      same buses be shared by all four blocks and the MIO path
+      with no arbitration logic inside the cache.
+
+
+5. MMIO PATH (MIO_Block)
+------------------------
+A single in-flight non-cacheable request. Loads take precedence over
+stores when both are pending. Address-mask decoding distinguishes
+"simple" MMIO writes (e.g. DDR5 power gating) from "complex" ones
+(e.g. DMA setup), which the scheduler uses to pick the right
+external sequence. No tag/data storage; this is a request shaper
+plus a bus-drive gate.
+
+
+6. PERFORMANCE SUMMARY
+----------------------
+  - Common-case load/store hit  : 1 cycle, parallel across 4 banks.
+  - L1 conflict miss + VCache hit: handled internally via swap
+                                   buffers, no main-memory traffic.
+  - True miss                    : 4-beat fill from the data bus,
+                                   overlapped with eviction of the
+                                   dirty victim through the EB.
+  - Up to two loads + four store-queue stores can be accepted per
+    cycle as long as they hit distinct banks.
+  - Store-override prevents WB-side back-pressure from blocking the
+    pipeline when a store queue fills.

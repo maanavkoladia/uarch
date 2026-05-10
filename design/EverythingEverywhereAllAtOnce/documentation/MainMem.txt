@@ -1,0 +1,362 @@
+========================================================================
+Main Memory Subsystem Design Report
+========================================================================
+
+1. ROLE AND POSITION
+--------------------
+The Main Memory subsystem (mem_TOP) is the back end of the storage
+hierarchy. It services:
+  - line fills to the DCache (loads from physical addresses)
+  - line fills to the ICache (instruction loads)
+  - line writebacks from DCache eviction buffers (stores)
+  - DMA writes into main memory
+
+From mem_TOP's point of view all four traffic classes are uniform:
+they arrive as a ld_req or st_req on the DTE interface, with the
+address on the shared address bus and (for stores/DMA writes) data
+on the shared data bus. Discrimination by requester is handled
+upstream by the DTE / scheduler; main memory just sees ld_req or
+st_req, and writeBuf_V back-pressure flows the same way regardless
+of who originated the write.
+
+It interfaces to:
+  - the DTE: dte_2_mem_t in (ld_req, st_req, permission2DriveBus),
+             mem_2_dte_t out (mem_Ready)
+  - the scheduler: mem_2_scheduler_t out (writeBuf_V[NUM_BANK_GROUPS])
+  - the shared 32-bit address bus (read-only at this level; main
+    memory never drives the address bus)
+  - the shared 32-bit data bus (driven, gated by DTE permission)
+
+Main memory is modeled as a DDR5-style hierarchy of chips, bank
+groups, and banks. Loads are accelerated by an open-row table; stores
+are aggregated through bank-group write buffers and committed to SRAM
+on a multi-cycle latency schedule that mirrors real DRAM timing.
+
+
+2. STORAGE GEOMETRY
+-------------------
+Total addressable memory: MEM_SIZE = 1 << 15 = 32 KiB.
+Physical address width  : PHY_MEM_ADDRESS_SIZE = 15 bits.
+
+Bank topology (mem_common_pkg):
+  NUM_BANKS               = 64
+  NUM_BANK_GROUPS         = 8       (8 banks per bank group)
+  NUM_OF_BANK_CHIPS       = 16      (4 banks per chip)
+
+Each bank:
+  4 x sram32x32$ cells (NUM_SRAM_CELLS = 4)
+  32 rows x 32 bits per cell = 32 rows x 128 bits per bank
+  one row == one 16-byte cache line
+
+Per-bank address width = NUM_SRAM_ADDRESS_BITS = $clog2(32) = 5.
+
+Address decomposition seen by mem_controller:
+  bits [14:10]  row index inside a chip   (5 bits, 32 rows)
+  bits [ 9: 6]  chip number               (4 bits, 16 chips)
+  bits [ 5: 4]  bank-within-chip          (2 bits, 4 banks/chip)
+  bits [ 3: 0]  byte offset inside a 16B line
+
+The same address is also reinterpreted into a bank-group view for
+store routing:
+  bankGroup              = address[6:4]                (3 bits)
+  bank_num_in_bank_group = { address[9:7], bankGroup } (selects
+                                                        one of 64
+                                                        banks)
+
+
+3. HIERARCHY
+------------
+mem_TOP
+  +-- mem_bank x NUM_BANKS (64)
+  |     +-- 4 x sram32x32$
+  |     +-- bank_controller_fsm_logic            (per-bank FSM)
+  +-- mem_controller (1)
+        +-- chipTable[NUM_OF_BANK_CHIPS]         (open-row table)
+        +-- bankGroupTable[NUM_BANK_GROUPS]      (write buffers)
+        +-- mem_controller_fsm                   (top-level FSM)
+
+Two key nets:
+  mem_bus  : MEM_BUS_SIZE = CACHE_LINES_SIZE_BITS = 128 bits;
+             internal to main memory; carries the 16B line being
+             read out of a bank to the data-bus driver.
+  data_bus : 32-bit external bus, driven by mem_TOP only when
+             DTE permission asserts. The 128-bit mem_bus is
+             marshalled out over the 32-bit data bus in 4 beats
+             (MEM_BUS_SIZE / DATA_BUS_WIDTH_BITS = 4).
+
+
+4. mem_TOP
+----------
+Mostly wiring:
+  - generates NUM_BANKS instances of mem_bank
+  - instantiates the single mem_controller
+  - tristates the address bus to 'z (memory is sink-only on
+    addresses)
+  - drives the data bus from a slice of mem_bus selected by
+    inFromDte.permission2DriveBus[i]; the data bus drive is
+    delayed by #5 to give the bank a settling window before the
+    bus is asserted.
+
+The controller never owns the external bus directly. It owns the
+permission to grant an internal bank the right to drive mem_bus,
+and the DTE owns the permission to forward mem_bus onto the
+external data bus.
+
+
+5. mem_controller
+-----------------
+Turns DTE-level requests (ld_req, st_req) into per-bank commands
+(mem_controller_2_mem_bank_t). Two internal tables provide DRAM-
+style state.
+
+5.1 chipTable[NUM_OF_BANK_CHIPS]
+   typedef struct {
+       bool valid;
+       logic [PHY_MEM_ADDRESS_SIZE-1:0] address;
+       logic precharge_Status[NUM_BANKS_PER_CHIP];
+   } chip_entry_t;
+
+  - One entry per "chip" (16 of them).
+  - `address` holds the row currently open in that chip. Latched
+    on ld_address_changed (a load whose row does not match what
+    the chip currently has open).
+  - `precharge_Status[bank_in_chip]` is wired from the bank's
+    `precharged` output, indicating that the per-bank FSM has
+    finished its row-access wait and the row is ready to read.
+  - The hit signal back into the controller FSM is:
+        hit_into_fsm = ld_req
+                     & (chipTable[chipNum].address[14:10] ==
+                        address_bus[14:10])
+                     & chipTable[chipNum].precharge_Status[bankBits_InChip]
+    i.e. the chip is already open on the requested row and that
+    row has finished precharging in the targeted bank.
+
+5.2 bankGroupTable[NUM_BANK_GROUPS]
+   typedef struct {
+       bool valid;
+       bool writeBuf_Valid;
+       logic [14:0] address;
+       byte_t writeBuf[CACHE_LINES_SIZE_B];
+   } bankgroup_table_entry_t;
+
+  - One write buffer per bank group (8 total).
+  - `writeBuf_Valid` is set on set_WriteBuf_V (asserted in IDLE on
+    a fresh st_req); the controller latches the address into the
+    selected bank-group entry at the same time.
+  - The 16B `writeBuf` is filled in 4 beats from the data bus
+    using fill0/fill1/fill2/fill3 (4 bytes per beat), driven by
+    the controller FSM.
+  - When a bank reports clear_writebufV, the corresponding bank
+    group's writeBuf_Valid is cleared, freeing the group to accept
+    a new write.
+  - writeBuf_V[NUM_BANK_GROUPS] is exposed to the scheduler so it
+    can avoid issuing a second write to the same group while one
+    is still committing.
+
+5.3 Routing of bank commands
+  Each cycle the controller fans out:
+    - ld_address (5 bits)             : the row currently held in
+                                        chipTable[i].address[14:10],
+                                        broadcast to all banks of
+                                        chip i.
+    - ld_address_change               : pulsed to the 4 banks of
+                                        chipNum when the FSM
+                                        asserts ld_address_changed.
+    - driveMemBus                     : asserted on exactly one
+                                        bank (bank_num_for_chip)
+                                        when set_ld_tristate is on.
+    - st_address (5 bits)             : the row of bank-group i,
+                                        broadcast to the 8 banks
+                                        of that group.
+    - start_store                     : pulsed to one bank
+                                        (bank_num_in_bank_group)
+                                        when the FSM asserts
+                                        start_store.
+    - writeBuf[16B]                   : broadcast from each bank
+                                        group's buffer to its 8
+                                        banks.
+
+5.4 Controller FSM (mem_controller_fsm)
+  10 states (IDLE = 0, ERROR synthesised), 4-bit encoding:
+    IDLE     - decode the request, dispatch
+    LD_HIT   - row already open, begin driving mem_bus
+    LD_0     - beat 1 of the 4-beat load
+    LD_1     - beat 2
+    LD_2     - beat 3 (next IDLE returns)
+    LD_MISS  - spin until the bank reports precharge complete;
+               once hit_i asserts, jump to LD_HIT
+    W0       - first beat of write absorption (set_WriteBuf_V +
+               fill0)
+    W1       - fill1
+    W2       - fill2; transition to IDLE pulses fill3 + start_store
+    ERROR    - trap state; entered if ld_req and st_req both arrive
+               in the same cycle.
+
+  Outputs:
+    mem_ready_o          : LD_HIT (and LD_MISS->LD_HIT transition)
+                           - the line is on the bus this cycle.
+    set_ld_tristate_o    : LD_HIT, LD_0, LD_1, LD_2 - hold the
+                           selected bank's drive-mem-bus permission
+                           for 4 beats.
+    set_WriteBuf_V_o,
+    fill0_o              : IDLE on st_req (W0 transition)
+    fill1_o              : W0
+    fill2_o              : W1
+    fill3_o,
+    start_store_o        : W2 (next state IDLE)
+    ld_address_changed_o : IDLE on ld_req with !hit (the LD_MISS
+                           transition).
+
+  The four-beat hold of set_ld_tristate is what walks the 128-bit
+  mem_bus out over the 32-bit data bus, beat by beat, under DTE
+  permission.
+
+
+6. mem_bank
+-----------
+A single bank: 4 x sram32x32$ cells, each providing 32 entries of
+32 bits. Concatenated they form a 128-bit DIO that connects to
+mem_bus through a tristate gated by controller2bank_i.driveMemBus.
+
+Address mux:
+  bank_address_i = mem_bank_controller_send_store_address_delayed
+                   ? controller2bank_i.st_address
+                   : controller2bank_i.ld_address
+The "delayed" version of the FSM signal (#1) sequences the address
+mux switch slightly behind the FSM's transition to avoid a glitch
+on the SRAM address pins between the load and store phases.
+
+Write data path:
+  bank_write_data is the unpacked 16-byte controller2bank_i.writeBuf
+  concatenated MSB-first into a 128-bit vector, driven onto bank_bus
+  whenever WE is active (bank_bus = !WE ? bank_write_data : 'z).
+
+6.1 Bank controller FSM (bank_controller_fsm_logic)
+  Models per-bank DDR-style timing. Three lanes:
+
+  Load lane:  IDLE -> LD_WAIT_0 ... LD_WAIT_7
+    - Each LD_WAIT_n cycle keeps OE asserted on the SRAM cells.
+    - Once LD_WAIT_7 is reached (without ld_address_change pulling
+      the chain back to LD_WAIT_0), the bank asserts PreCharged_o,
+      becoming "row open / ready". That feeds chipTable's
+      precharge_Status, which in turn lets a future load to the
+      same row hit immediately.
+    - If ld_address_change pulses at any LD_WAIT_n, the FSM
+      resets to LD_WAIT_0. This models opening a new row in the
+      bank: any previous progress toward "row ready" is lost.
+    - PreCharged_o stays asserted in LD_WAIT_7, so as long as the
+      chip's row stays open, repeated reads to that bank hit
+      instantly through the controller's hit logic.
+
+  Store address lane:  ST_ADDR_WAIT_0 .. ST_ADDR_WAIT_3
+    - Entered from IDLE or any LD_WAIT_n on start_store.
+    - st_addr_release_o is asserted: this flips the bank's
+      address mux to st_address (with one extra cycle of delay
+      through the #1 net).
+    - Models a tRCD-style row-to-column delay before the actual
+      write can happen.
+
+  Store write lane:  ST_WRITE_WAIT_0 .. ST_WRITE_WAIT_7
+    - WE asserted (active low; FSM drives WE_o = 0).
+    - 8 wait cycles model write latency.
+    - On the final cycle clear_writebufV pulses, telling the
+      controller to invalidate that bank group's write buffer.
+      The bank then returns to IDLE.
+
+  IDLE -> LD_WAIT_0 happens unconditionally as soon as start_store
+  is not asserted, so a bank with no work is immediately pulled
+  into the load lane and starts walking toward "row ready" on the
+  current chipTable address.
+
+
+7. CHIP TABLE / OPEN-ROW SEMANTICS
+----------------------------------
+The chipTable is what makes the second access to an open row fast.
+On every cycle:
+  - For each chip, the broadcast ld_address is the row currently
+    held in chipTable[i].address[14:10].
+  - The 4 banks of that chip are walking through their LD_WAIT
+    states toward PreCharged for that row.
+  - When the controller sees a load whose chip + row + bank
+    already matches an entry that has finished precharging, it
+    skips LD_MISS and jumps straight to LD_HIT, then drives the
+    line out in 4 beats.
+  - When the load row does not match, the controller asserts
+    ld_address_changed:
+      (a) chipTable[chipNum].address is latched to the new
+          address.
+      (b) The 4 banks in that chip see ld_address_change, which
+          resets their LD_WAIT chain to LD_WAIT_0 and drops their
+          PreCharged outputs.
+    The controller then waits in LD_MISS until that chip's banks
+    walk back up the LD_WAIT chain to PreCharged on the new row.
+
+Net effect: a real DDR-style "row buffer hit" - streaming or
+stride-1 access patterns within a 32-row chip pay the row opening
+cost once, then hit for every subsequent access to that row.
+
+
+8. BANK-GROUP WRITE BUFFERING
+-----------------------------
+Stores follow a different path. The DCache writeback delivers the
+16B line over 4 bus beats:
+  W0 latches the address and starts the write buffer
+     (set_WriteBuf_V + fill0)
+  W1 fills bytes 4..7 (fill1)
+  W2 fills bytes 8..11 (fill2); the W2->IDLE transition emits
+     fill3 + start_store, so on the next cycle the targeted bank
+     begins its store sequence.
+
+The store target is one specific bank in the bank group, picked
+by bank_num_in_bank_group = { address[9:7], bankGroup }. While
+that bank walks through its ST_ADDR_WAIT and ST_WRITE_WAIT lanes
+(a long sequence relative to a load), the rest of the bank
+group's banks are free, and the controller's IDLE state is free
+to begin servicing another load or another bank group's write.
+
+When the bank's FSM finishes its write, it pulses clear_writebufV
+back. The controller clears the bank group's writeBuf_Valid and
+surfaces the new value through writeBuf_V to the scheduler, which
+uses it to decide that the group is free to accept another store.
+
+
+9. BUS-DRIVING DISCIPLINE
+-------------------------
+Three permission gates compose to put a line on the external data
+bus:
+  1. mem_controller_fsm asserts set_ld_tristate (4 cycles).
+  2. set_ld_tristate steers driveMemBus on exactly one bank in
+     the targeted chip, and that bank then drives the internal
+     mem_bus through OE on its SRAM cells.
+  3. dte_2_mem.permission2DriveBus[i] (one bit per 32-bit slice)
+     gates which slice of mem_bus is driven onto the external
+     data_bus. The DTE pulses these in sequence over 4 cycles to
+     match the controller's 4-beat tristate hold.
+
+The address bus is never driven by main memory; mem_TOP forces it
+to 'z. The address into the mem_controller is taken from the
+external address bus, sliced to PHY_MEM_ADDRESS_SIZE bits.
+
+
+10. KNOWN INVARIANTS / NOTES
+----------------------------
+- Loads and stores at the controller are mutually exclusive in
+  any given cycle (the IDLE-with-both transition is the ERROR
+  arc). Higher-level scheduling guarantees this through
+  writeBuf_V back pressure and load arbitration.
+- The chipTable is initialised with valid=1 and address=0 at
+  reset. The first load to row 0 of any chip will appear to "hit"
+  the metadata, but precharge_Status is 0 until the bank's FSM
+  walks through LD_WAIT_0..LD_WAIT_7, so the controller correctly
+  takes LD_MISS until precharge.
+- Writes overwrite an existing row's data without any explicit
+  invalidation of chipTable. This is correct because chipTable
+  only caches which row is open, not the line contents; the next
+  load to that row reads the SRAM cells directly.
+- The bank's #1 delay on st_addr_release is intentional: it
+  staggers the address-mux switch slightly behind the FSM
+  transition into ST_ADDR_WAIT_0 so the SRAM address pins do not
+  see a brief glitch from the read-side address.
+- The mem_controller never directly drives the data bus; it
+  drives internal mem_bus permissions. mem_TOP marshalls mem_bus
+  to data_bus under DTE permission with a #5 settling delay.
