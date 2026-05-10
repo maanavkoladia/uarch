@@ -1,0 +1,159 @@
+========================================================================
+DMA Controller Design Report
+========================================================================
+
+1. ROLE
+-------
+The DMA Controller is a memory-mapped peripheral that copies a
+contiguous run of bytes from a backing disk into main memory without
+involving the core for each transfer beat. The core configures it
+through four MMIO registers and then triggers the transfer; the
+controller streams the data from disk into a write buffer, asks the
+DTE for memory write permission one cache line at a time, and
+raises an interrupt when the whole transfer is complete.
+
+
+2. HIERARCHY
+------------
+DMA_Controller
+  +-- DMA_FSM       (5 states: IDLE, LD_BUF, WAIT_FOR_LD,
+                                WAIT_FOR_WR, ERROR)
+  +-- DiskWrapper   (models the backing disk, returns a page after
+                     a fixed delay)
+
+
+3. CONTROL REGISTERS
+--------------------
+Four core-writeable MMIO registers, written by the core through the
+MIO path on the address bus:
+
+  0x00000000  srcAddr        - byte address into the disk
+  0x00000010  destAddr       - target physical address in main mem
+  0x00000020  numBytes       - total transfer length
+  0x00000030  startWrite     - 1-bit go bit (LSB of the data bus
+                               write at this address)
+
+The MIO datapath drives `coreValOnBus` from the DTE while the core
+issues a write to one of these addresses. The controller decodes
+addrBus against the four constants and latches dataBus into the
+matching register, but only while !fsmOuts.busy (so an in-progress
+transfer cannot be reconfigured under itself). The startWrite bit
+is the trigger; the FSM clears it through clr_start_write_bit when
+the transfer finishes.
+
+
+4. DATA PATH
+------------
+A transfer moves data through three buffers:
+
+  disk_ld_Buffer  : PAGE_SIZE-byte buffer inside DiskWrapper, filled
+                    in one shot from the model disk after a fixed
+                    delay (DISK_LOAD_DELAY = 75 cycles).
+
+  writeBuf        : 16-byte buffer inside the controller. One cache
+                    line of the disk page, sliced out at offset
+                    `counter`. Driven onto the data bus 4 bytes at
+                    a time when the DTE grants
+                    permission2DriveDataBus[i].
+
+  main memory     : the destination, written one 16-byte line at a
+                    time at address (destAddr + counter).
+
+`counter` is the byte offset into the page. It is reset to 0 on
+ld_counter and incremented by CACHE_LINES_SIZE_B (16) on
+inc_counter, which moves the slicing window forward one cache line
+per outbound write.
+
+
+5. FSM SEQUENCING
+-----------------
+States and arcs:
+
+  IDLE
+    - waits for dma_Regs.startWrite
+    - on startWrite: assert req_ld (tells DiskWrapper to begin
+      loading), go to WAIT_FOR_LD
+
+  WAIT_FOR_LD
+    - asserts busy_o
+    - spins until DiskWrapper raises disk_ld_Buffer_V (75 cycles
+      after req_ld was pulsed)
+    - on ld_buf_data_V: assert ld_counter (reset counter to 0),
+      go to LD_BUF
+
+  LD_BUF
+    - if writeComplete (counter >= numBytes): assert
+      clr_start_write_bit and interrupt, return to IDLE
+    - otherwise: assert ld_writeBuf - one cache line is sliced
+      out of disk_ld_Buffer at offset `counter` into the
+      controller's writeBuf, writeBuf_V is set, writeBuf_addr
+      becomes destAddr + counter; go to WAIT_FOR_WR
+
+  WAIT_FOR_WR
+    - asserts req_bus (signals the Scheduler with DMA_WRITE_REQ
+      via out2Sch_o.dma_req)
+    - waits for the DTE to drain writeBuf into memory; the DTE
+      eventually asserts writeComplete back, which clears
+      writeBuf_V via the writeBuf flop block
+    - when writeBuf_V drops: assert inc_counter (advance counter
+      by one line), go back to LD_BUF for the next slice
+
+  ERROR
+    - synthesised trap state.
+
+The interrupt output (out2Core_o.intOut) pulses on the LD_BUF ->
+IDLE arc that fires when writeComplete asserts.
+
+
+6. INTERFACE TO THE BUS / DTE
+-----------------------------
+The controller talks to the DTE through dte_2_dma_controller_t:
+
+  permission2DriveADDRBus       - drive (destAddr + counter) onto
+                                  the address bus
+  permission2DriveDataBus[0..3] - drive a 32-bit slice of writeBuf
+                                  onto the data bus
+  commiting                     - latched into a `commiting` flag
+                                  inside the controller
+  writeComplete                 - DTE has finished pushing the line
+                                  to memory; the controller drops
+                                  writeBuf_V and lets the FSM
+                                  advance
+
+It talks back to the rest of the chip through:
+
+  out2Sch_o.dma_req            = DMA_WRITE_REQ when req_bus is
+                                  asserted and !commiting
+                                 = NO_REQ otherwise
+  out2Sch_o.writeBuf_Address   = writeBuf_addr (destAddr + counter)
+  out2Core_o.intOut            = FSM interrupt pulse
+
+The `commiting` flag suppresses dma_req while the DTE is mid-
+transaction, so the Scheduler does not see DMA_WRITE_REQ for a line
+that is already being committed.
+
+
+7. BUS DRIVING
+--------------
+Address bus:
+  addrBus_drv = destAddr + counter
+  addrBus = inFromDTE_i.permission2DriveADDRBus ? addrBus_drv : 'z
+  (with a #5 delay on the drive)
+
+Data bus:
+  one of permission2DriveDataBus[0..3] selects which 4-byte slice
+  of writeBuf is driven (writeBuf[i*4 +: 4]). Driven 'z when no
+  permission bit is set.
+
+
+8. DISKWRAPPER
+--------------
+A simple model of a backing disk for simulation. Holds DISK_SIZE =
+4 * PAGE_SIZE bytes. On ld_write_buf_req it kicks off a
+DISK_LOAD_DELAY = 75-cycle wait, and then copies up to PAGE_SIZE
+bytes starting at ld_diskAddr into disk_ld_Buffer in one cycle. It
+asserts disk_ld_Buffer_V to tell the DMA FSM the page is ready.
+
+The number of bytes copied per request is bounded by ld_num_bytes
+modulo PAGE_SIZE, so transfers smaller than a page only fill the
+front of the buffer.

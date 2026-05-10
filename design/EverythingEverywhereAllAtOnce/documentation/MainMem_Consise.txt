@@ -1,0 +1,120 @@
+========================================================================
+Main Memory Subsystem - Concise Design Overview
+========================================================================
+
+1. ROLE
+-------
+Back end of the storage hierarchy. Services DCache line fills,
+ICache line fills, DCache writebacks, and DMA writes - all four
+arrive at mem_TOP uniformly as a ld_req or st_req on the DTE
+interface. Talks to the DTE (ld_req/st_req in, mem_Ready out) and
+to the scheduler (writeBuf_V[NUM_BANK_GROUPS] back-pressure).
+Receives the address bus and drives the data bus under DTE
+permission.
+
+
+2. GEOMETRY
+-----------
+Total memory: 32 KiB, 15-bit physical address.
+
+  64 banks, organised three different ways:
+    - 8 bank groups x 8 banks/group   (write routing)
+    - 16 chips      x 4 banks/chip    (load routing / open-row)
+  Each bank: 4 x sram32x32$ = 32 rows of 16 bytes.
+  One row == one cache line.
+
+Address layout:
+  [14:10] row inside a chip (5 bits, 32 rows)
+  [ 9: 6] chip number       (4 bits, 16 chips)
+  [ 5: 4] bank within chip  (2 bits, 4 banks/chip)
+  [ 3: 0] byte offset       (4 bits, 16B line)
+
+Bank group is a different slice of the same address
+(bankGroup = address[6:4]), so writes and loads naturally fan out
+across the topology.
+
+
+3. HIERARCHY
+------------
+mem_TOP
+  +-- mem_bank x 64       (each owns its own FSM and 4 SRAM cells)
+  +-- mem_controller      (chipTable, bankGroupTable, top-level FSM)
+
+A 128-bit internal mem_bus carries a full 16B line out of one bank;
+mem_TOP marshalls it onto the 32-bit external data bus over 4 beats
+under DTE permission.
+
+
+4. KEY DESIGN CHOICES AND THEIR PAYOFF
+--------------------------------------
+4.1 DDR5-style chip / bank-group / bank topology
+    - Models real DRAM organisation, so the timing characteristics
+      (row open, tRCD-equivalent, write latency) match what the
+      pipeline will see in silicon-class behavior.
+    - The two orthogonal slicings (chip-major for loads, bank-
+      group-major for stores) keep concurrent loads and stores out
+      of each other's way.
+
+4.2 Open-row chipTable
+    - Per-chip scoreboard of "what row is currently open and is it
+      ready". A second load to the same row is a 1-cycle hit
+      decision in the controller FSM, then the line walks out in
+      4 beats - no precharge wait.
+    - Stride-1 / streaming access patterns within a 32-row chip
+      pay the row-opening cost once, then hit until the row is
+      changed.
+
+4.3 Bank-level pseudo-precharge FSM
+    - Each bank has its own FSM that walks through LD_WAIT states
+      after a row change, modelling row-access latency. Once it
+      reaches "row ready", the bank stays ready until the row
+      changes.
+    - Because every bank does this on its own clock, banks across
+      different chips can be opening different rows in parallel
+      without any centralised scheduling.
+
+4.4 Per-bank-group write buffer
+    - The scheduler can issue a 16B write to a bank group even
+      while the actual SRAM commit is still in progress: the
+      controller absorbs the bus payload into a write buffer in 4
+      beats, then hands it off to the targeted bank, then
+      immediately returns to IDLE.
+    - The bank's long ST_ADDR_WAIT + ST_WRITE_WAIT sequence does
+      not hold up the controller or the bus. writeBuf_V to the
+      scheduler is the back-pressure that prevents a second write
+      to the same group before the first commits.
+
+4.5 Layered bus permission
+    - Three independent permission gates compose to drive the
+      external data bus:
+        controller decides which internal bank may drive mem_bus,
+        the bank's FSM owns its OE,
+        the DTE owns the per-slice data-bus permission.
+    - This lets the same set of buses be shared across the whole
+      memory subsystem and the rest of the chip with no internal
+      arbitration logic.
+
+4.6 Read/write mutual exclusion enforced by FSM
+    - ld_req + st_req in the same cycle drops the controller into
+      its synthesised ERROR state. The scheduler is responsible
+      for never asserting both. Simplifies the controller and
+      makes illegal traffic visible immediately in simulation.
+
+
+5. PERFORMANCE SUMMARY
+----------------------
+  - Open-row hit (load whose row is the chipTable entry and the
+    bank is precharged): one decision cycle in IDLE, then 4 bus
+    beats = 5 cycles total to put a 16B line on the bus.
+  - Closed-row miss: chipTable updates and the targeted chip's
+    banks reset; controller spins in LD_MISS until the bank walks
+    through 8 LD_WAIT states; then the same 4-beat drive.
+  - Writes: 4-beat absorb into the bank-group write buffer (the
+    controller is free to take a new request after that), then a
+    long bank-internal commit that is invisible to the bus.
+  - Bank-group parallelism: 8 independent bank-group write
+    buffers, so up to 8 stores can be in-flight against memory
+    simultaneously without bus contention.
+  - Chip-level parallelism: 16 chips can each hold a different
+    open row at once; the cost of a row miss is paid by one
+    chip's banks, not by the whole memory.

@@ -1,0 +1,97 @@
+========================================================================
+BusArbitration Subsystem - Concise Design Overview
+========================================================================
+
+1. ROLE
+-------
+Central traffic controller for the shared address/data buses. Every
+on-chip entity that needs the bus (ICache, DCache banks, DMA, MIO
+paths to DDR5 and the DMA controller) sends a request here.
+BusArbitration picks one winner per cycle and drives every bus
+permission, mem_valid, eviction-buffer commit, and MIO ack signal
+needed to carry that transaction to completion.
+
+Handles 7 transaction classes:
+  ICache fill, DCache fill (per bank), DCache writeback (per bank),
+  DMA write to memory, MIO load from a DDR5 register, MIO write to
+  a DDR5 register, MIO write routed through the DMA controller.
+
+
+2. HIERARCHY
+------------
+BusArbitration
+  +-- Scheduler                       (latch + clean + tournament pick)
+  |     +-- Scheduler_DCachePicking   (4-bank DCache tournament)
+  +-- DTE                             (13 transaction FSMs in parallel,
+                                       serialised by a shared DTE_Busy)
+
+
+3. KEY DESIGN CHOICES AND THEIR PAYOFF
+--------------------------------------
+3.1 Priority encoded directly into the request enum
+    - req_2_sch_t values are assigned so that "higher priority"
+      maps to "larger unsigned integer". Every tournament reduces
+      to a single ternary on `>=`.
+    - No comparators per request type, no priority tables, no
+      shifters. The picker is a tree of `max` operations and
+      synthesises down to small comparators.
+
+3.2 Two-cycle Scheduler pipeline (latch / pick / latch)
+    - All incoming requests are registered on entry, the tournament
+      runs combinationally on the latched bundle, and the winner
+      is registered again on exit.
+    - Keeps the priority tree out of any requester's critical
+      path. A DCache bank firing a request never sees the
+      tournament network as a timing arc back to itself; it just
+      sees a register on the way out and another on the way back.
+
+3.3 Hazard cleaning before the tournament
+    - DCache eviction-related requests and the DMA write request
+      are squashed to NO_REQ if their target main-memory bank
+      group's write buffer is already valid.
+    - Prevents the DTE from ever picking a transaction that the
+      back end cannot accept; no spinning, no stall arcs in the
+      DTE FSMs to handle this case.
+
+3.4 One FSM per transaction class, all running in parallel
+    - 13 small FSMs (1 + 4 + 4 + 1 + 1 + 1 + 1) each owning a
+      narrow set of bus signals for one traffic class. Logic for
+      each class is local and easy to reason about.
+    - Per-bank DCache instances mean a bank-2 fill and a bank-0
+      writeback do not share state - the DTE doesn't have to
+      multiplex bank ids inside a single FSM.
+
+3.5 Single shared DTE_Busy enforces bus mutex
+    - Each FSM exposes busy_o; they are OR-reduced into DTE_Busy
+      and fed back as others_busy_i to every FSM. An IDLE FSM
+      only commits to leaving IDLE if no other FSM is busy.
+    - Guarantees exactly one transaction owns the buses at any
+      moment without a centralised arbiter and without per-FSM
+      handshakes between transaction classes.
+    - busy_o is asserted only from non-IDLE states, so this
+      gating cannot form a Mealy combinational loop.
+
+3.6 Per-bank DCache fan-out keyed by bestPick_bk_id
+    - The Scheduler emits not only the winning request but also
+      the bank id (when the winner is a DCache request). The
+      per-bank DTE FSMs gate their own activation on bank_hit_i =
+      (bestPick_bk_id == i).
+    - Lets one bank do a writeback while another does a fill in
+      consecutive cycles, with no shared state inside the DTE.
+
+
+4. PERFORMANCE SUMMARY
+----------------------
+  - One winning transaction per cycle.
+  - Decision latency from request to DTE-visible: 2 cycles
+    (Scheduler input latch + Scheduler output latch).
+  - Most transactions are 4-beat data-bus sequences (LD0..LD3 or
+    WR0..WR3 / ST0..ST3); the burst length matches the 128-bit
+    cache line over the 32-bit data bus exactly, so no bus cycle
+    is wasted.
+  - DCache, DMA, and MIO traffic compete fairly via priority
+    encoding; ICache high-pri sits above everything to protect
+    the front end from starvation.
+  - Hazard cleaning prevents wasted bus cycles - any pick the
+    Scheduler emits is guaranteed to be acceptable to its target
+    requester downstream.

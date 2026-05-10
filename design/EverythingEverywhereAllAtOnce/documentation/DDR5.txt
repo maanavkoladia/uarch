@@ -1,0 +1,86 @@
+========================================================================
+DDR5 ("Dynamic Degree Reader") Design Report
+========================================================================
+
+NOTE: the module name "ddr5" is a joke; this block has nothing to do
+with DRAM. The acronym stands for "Dynamic Degree Reader" - a
+temperature sensor with a software-controlled power-gate switch,
+exposed to the core through two MMIO registers.
+
+
+1. ROLE
+-------
+A small MMIO peripheral that the core can:
+  - read to obtain a temperature value
+  - write to power-gate the sensor on or off
+
+When power-gated off, the temperature register reads 0. When power-
+gated on, it reads the constant TEMP_VAL (3000), which in this model
+is the "current temperature".
+
+
+2. CONTROL / STATUS REGISTERS
+-----------------------------
+Two MMIO addresses (defined in io_common_pkg):
+
+  0x00000040  DDR5_WRITE_POWERGATE_VAL_ADDRESS
+              core write of bit 0 sets the powerGate flop
+              (1 = gated / off, 0 = ungated / on).
+
+  0x00000050  DDR5_WRITE_LD_TEMP_VAL_ADDRESS
+              core read; the DTE drives the address onto the bus,
+              the ddr5 module drives the temperature value back.
+
+The module itself does not decode the address bus - the DTE has
+already decided that the current bus phase belongs to this block by
+the time `driveDataBus` or `newPowerGateValueFromCore` is asserted.
+
+
+3. INTERNAL STATE
+-----------------
+Two registers:
+
+  powerGate : 1-bit flop. Reset value is 1 (sensor starts gated
+              off). Updated when the DTE asserts
+              newPowerGateValueFromCore - the new value is taken
+              from dataBus[0].
+
+  tempValue : 32-bit flop. Reloaded every cycle:
+                if !rst || powerGate -> 0
+                else                 -> TEMP_VAL (= 3000)
+              i.e. while the sensor is gated off the register reads
+              0; while ungated, it holds the constant temperature.
+
+
+4. INTERFACE TO THE BUS / DTE
+-----------------------------
+The DTE drives two control bits in dte_2_ddr5_t:
+
+  newPowerGateValueFromCore : pulse during a core MIO write to
+                              0x00000040; the module latches
+                              dataBus[0] into powerGate.
+
+  driveDataBus              : pulse during a core MIO read of
+                              0x00000050; the module drives
+                              tempValue onto the data bus.
+
+Bus driving:
+  dataBus = inFromDTE_i.driveDataBus ? tempValue : 'z   (with #5)
+  addrBus is never driven by this block.
+
+
+5. SUMMARY OF OPERATION
+-----------------------
+Read temperature:
+  Core issues an MIO load to 0x00000050. The MIO/DTE path arbitrates
+  it through DTE_DDR5_2_Core_FSM, which pulses driveDataBus for one
+  cycle. ddr5 drives tempValue onto the 32-bit data bus during that
+  cycle; the core captures it through the MIO_Block path back into
+  the pipeline.
+
+Write power-gate:
+  Core issues an MIO store to 0x00000040 with the new gate value in
+  bit 0 of the data. The DTE_Core_2_DDR5_FSM pulses
+  newPowerGateValueFromCore; ddr5 latches dataBus[0] into powerGate
+  on the next rising edge. On the cycle after, tempValue updates to
+  match (0 if gated off, TEMP_VAL if on).
