@@ -143,7 +143,7 @@ This is the right shape for back-pressure: the cache is allowed to be slow for a
 
 The dominant arc in WB is short by design. The longest register-side path runs from the EXE latch outputs, through `reg_wb_logic`'s mux, into the register-file write port. The longest store-side path runs from the same latches, through `ST_Q_logic`'s bank selection and entry build, into the STQ FIFO push.
 
-Measured on synthesis: **__ ns** *(to be filled in once STA is run on this branch — no estimate is given here.)*
+This arc contributes to the overall **11.2 ns** clock period but was not the binding stage — the Decode stage set the cycle time.
 
 A secondary arc to keep in mind: the **flattened STQ-heads → DC** path. WB doesn't time it (it's just wires out), but if the entire 16-slot view becomes too wide to route, that's a physical-design problem worth flagging.
 

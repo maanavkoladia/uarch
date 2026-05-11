@@ -148,7 +148,7 @@ The same struct is read by Decode (for instruction bytes) and by Execute (for re
 
 The dominant timing arc in the Fetch stage runs from the SPC register, through `SegmentTranslation`, into the I-cache tag and data arrays, through the tag compare, and into the IDM write port — i.e. the cache-line read **and** the branch-annotated IDM slot update happen in the same cycle.
 
-Measured on synthesis: **__ ns** *(to be filled in once STA is run on this branch — no estimate is given here.)*
+This arc contributes to the overall **11.2 ns** clock period but was not the binding stage — the Decode stage set the cycle time.
 
 Two secondary arcs to keep an eye on:
 

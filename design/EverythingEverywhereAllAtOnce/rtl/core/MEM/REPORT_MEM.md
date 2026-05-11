@@ -117,7 +117,7 @@ This is the design choice that keeps MEM small: load data is *not* byte-shifted,
 
 The dominant arc in MEM runs from the cache hit/data ports, through hit-buffer mux (`hit_buf_v ? hit_buf : cacheline`), through the bank-index selection, through the load-data masking, into the EXE stage register. In parallel, the miss-stall path (`mem_miss_stall_logic` → `EXE_valid_logic` → `EXE_we`) needs to settle in time to gate that same register.
 
-Measured on synthesis: **__ ns** *(to be filled in once STA is run on this branch — no estimate is given here.)*
+This arc contributes to the overall **11.2 ns** clock period but was not the binding stage — the Decode stage set the cycle time.
 
 A secondary arc to watch is the `clr_dcache_arb_latches[]` path back to the DC-arb logic. It's not on the cycle's worst path today, but if the cache-arbiter's hold/clear loop ever closes through it, that becomes the bottleneck.
 

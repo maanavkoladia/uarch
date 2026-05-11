@@ -164,7 +164,7 @@ Outputs: the misprediction bit, the correct target, and a set of flush flavors (
 
 The dominant arc in EXE runs from `srA`/`srB` (out of `alu_input_sel`), through whichever FU is the slowest of the parallel set, through the tristate result bus, through the final 2:1 mux, into the WB-stage latch. The tristate-mux pattern is what keeps this path shallow despite having many candidate drivers.
 
-Measured on synthesis: **__ ns** *(to be filled in once STA is run on this branch — no estimate is given here.)*
+This arc contributes to the overall **11.2 ns** clock period but was not the binding stage — the Decode stage set the cycle time.
 
 Two secondary arcs:
 

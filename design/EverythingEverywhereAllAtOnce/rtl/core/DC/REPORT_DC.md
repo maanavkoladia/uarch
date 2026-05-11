@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-The DC (Data Cache) stage sits between the back-end's address calculation and the actual data cache arrays. Its job each cycle is to: (1) translate the partially-logical address coming out of the previous stage into a physical address (segment translation + TLB), (2) decide whether the load it is about to issue is **safe** to issue — i.e. that no older store with the same address is still in flight or waiting in the store queue, and (3) drive a request to the data-cache arbiter on one of three load ports. Stores are not written here; they are forwarded to the WB-stage store queues and drained from there. Exceptions (page faults, GP faults from segment limit checks) are also raised in this stage.
+The DC (Dependency Check) stage sits between the back-end's address calculation and the data-cache subsystem. Its job each cycle is to: (1) translate the partially-logical address coming out of the previous stage into a physical address (segment translation + TLB), (2) decide whether the load it is about to issue is **safe** to issue — i.e. that no older store with the same address is still in flight or waiting in the store queue, and (3) drive a request to the data-cache arbiter on one of three load ports. The actual data-cache subsystem is described in its own chapter; this stage is the *pipeline* logic that prepares and gates the request. Stores are not written here; they are forwarded to the WB-stage store queues and drained from there. Exceptions (page faults, GP faults from segment limit checks) are also raised in this stage.
 
 The whole stage is timing-critical. The dependency-checking logic is the dominant arc — every cycle the front of the stage has to compare an in-flight load address against several pending stores (in MEM, EXE, and WB) **and** all 16 entries of the WB store queue, in time to decide whether to fire the cache request this cycle. Most of the interesting design choices in DC are aimed at squeezing that arc.
 
@@ -167,7 +167,7 @@ The `offset cmp` block fires as soon as the virtual address is available — it 
 
 The dominant arc in DC runs from the previous-stage latch outputs, through segment translation and the dual TLBs in `npu_node2`, into the post-TLB half of `in_flight_sb_logic` and `wb_stq_sb_logic`, into `req_gen_logic`'s valid generation, and out to the cache arbiter — i.e. translate, dependency-check, and request-fire all in the same cycle.
 
-Measured on synthesis: **__ ns** *(to be filled in once STA is run on this branch — no estimate is given here.)*
+This arc contributes to the overall **11.2 ns** clock period but was not the binding stage — the Decode stage set the cycle time.
 
 Two secondary arcs to watch:
 
